@@ -104,6 +104,42 @@ func TestConvertTime(t *testing.T) {
 	}
 }
 
+func TestConvertRange(t *testing.T) {
+	schema := Schema{
+		{Type: RangeFieldType, RangeElementType: &RangeElementType{Type: TimestampFieldType}},
+		{Type: RangeFieldType, RangeElementType: &RangeElementType{Type: DateTimeFieldType}},
+		{Type: RangeFieldType, RangeElementType: &RangeElementType{Type: DateFieldType}},
+		// Test null value
+		{Type: RangeFieldType, RangeElementType: &RangeElementType{Type: TimestampFieldType}},
+	}
+
+	ts := testTimestamp.Round(time.Millisecond)
+	row := &bq.TableRow{
+		F: []*bq.TableCell{
+			{V: fmt.Sprintf("[%d, UNBOUNDED)", ts.UnixMicro())},
+			{V: fmt.Sprintf("[UNBOUNDED, %s)", testDateTime.String())},
+			{V: fmt.Sprintf("[%s, %s)", testDate.String(), testDate.String())},
+			{V: nil}, // NULL RANGE
+		},
+	}
+	got, err := convertRow(row, schema)
+	if err != nil {
+		t.Fatalf("error converting: %v", err)
+	}
+	want := []Value{
+		&RangeValue{Start: ts},
+		&RangeValue{End: testDateTime},
+		&RangeValue{Start: testDate, End: testDate},
+		nil,
+	}
+	for i, g := range got {
+		w := want[i]
+		if !testutil.Equal(g, w) {
+			t.Errorf("#%d: got:\n%v\nwant:\n%v", i, g, w)
+		}
+	}
+}
+
 func TestConvertSmallTimes(t *testing.T) {
 	for _, year := range []int{1600, 1066, 1} {
 		want := time.Date(year, time.January, 1, 0, 0, 0, 0, time.UTC)

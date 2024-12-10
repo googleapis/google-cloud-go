@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/orchestration/airflow/service/apiv1",
-    "version": "1.9.5",
+    "version": "1.11.1",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,52 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "composer_v1_generated_Environments_CheckUpgrade_sync",
+      "title": "composer CheckUpgrade Sample",
+      "description": "CheckUpgrade check if an upgrade operation on the environment will succeed.\n\nIn case of problems detailed info can be found in the returned Operation.",
+      "file": "EnvironmentsClient/CheckUpgrade/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CheckUpgrade",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.CheckUpgrade",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.CheckUpgradeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CheckUpgradeOperation",
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "CheckUpgrade",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.CheckUpgrade",
+          "service": {
+            "shortName": "Environments",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "composer_v1_generated_Environments_CreateEnvironment_sync",
       "title": "composer CreateEnvironment Sample",

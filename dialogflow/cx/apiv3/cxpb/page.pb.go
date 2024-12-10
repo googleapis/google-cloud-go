@@ -69,8 +69,8 @@ type Page struct {
 	// [Pages.UpdatePage][google.cloud.dialogflow.cx.v3.Pages.UpdatePage] method.
 	// [Pages.CreatePage][google.cloud.dialogflow.cx.v3.Pages.CreatePage]
 	// populates the name automatically.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/flows/<Flow ID>/pages/<Page ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>/pages/<PageID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. The human-readable name of the page, unique within the flow.
 	DisplayName string `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
@@ -95,11 +95,10 @@ type Page struct {
 	//   - If multiple transition route groups within a page contain the same
 	//     intent, then the first group in the ordered list takes precedence.
 	//
-	// Format:`projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/flows/<Flow ID>/transitionRouteGroups/<TransitionRouteGroup ID>`
-	// or `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/transitionRouteGroups/<TransitionRouteGroup ID>` for agent-level
-	// groups.
+	// Format:`projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>/transitionRouteGroups/<TransitionRouteGroupID>`
+	// or
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/transitionRouteGroups/<TransitionRouteGroupID>`
+	// for agent-level groups.
 	TransitionRouteGroups []string `protobuf:"bytes,11,rep,name=transition_route_groups,json=transitionRouteGroups,proto3" json:"transition_route_groups,omitempty"`
 	// A list of transitions for the transition rules of this page.
 	// They route the conversation to another page in the same flow, or another
@@ -412,15 +411,15 @@ type isEventHandler_Target interface {
 
 type EventHandler_TargetPage struct {
 	// The target page to transition to.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/flows/<Flow ID>/pages/<Page ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>/pages/<PageID>`.
 	TargetPage string `protobuf:"bytes,2,opt,name=target_page,json=targetPage,proto3,oneof"`
 }
 
 type EventHandler_TargetFlow struct {
 	// The target flow to transition to.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/flows/<Flow ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>`.
 	TargetFlow string `protobuf:"bytes,3,opt,name=target_flow,json=targetFlow,proto3,oneof"`
 }
 
@@ -455,8 +454,8 @@ type TransitionRoute struct {
 	// 500 characters.
 	Description string `protobuf:"bytes,8,opt,name=description,proto3" json:"description,omitempty"`
 	// The unique identifier of an [Intent][google.cloud.dialogflow.cx.v3.Intent].
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/intents/<Intent ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/intents/<IntentID>`.
 	// Indicates that the transition can only happen when the given intent is
 	// matched.
 	// At least one of `intent` or `condition` must be specified. When both
@@ -583,15 +582,15 @@ type isTransitionRoute_Target interface {
 
 type TransitionRoute_TargetPage struct {
 	// The target page to transition to.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/flows/<Flow ID>/pages/<Page ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>/pages/<PageID>`.
 	TargetPage string `protobuf:"bytes,4,opt,name=target_page,json=targetPage,proto3,oneof"`
 }
 
 type TransitionRoute_TargetFlow struct {
 	// The target flow to transition to.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/flows/<Flow ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>`.
 	TargetFlow string `protobuf:"bytes,5,opt,name=target_flow,json=targetFlow,proto3,oneof"`
 }
 
@@ -607,8 +606,8 @@ type ListPagesRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The flow to list all pages for.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/flows/<Flow ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The language to list pages for. The following fields are language
 	// dependent:
@@ -768,8 +767,8 @@ type GetPageRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The name of the page.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/flows/<Flow ID>/pages/<Page ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>/pages/<PageID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The language to retrieve the page for. The following fields are language
 	// dependent:
@@ -849,8 +848,8 @@ type CreatePageRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The flow to create a page for.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/flows/<Flow ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The page to create.
 	Page *Page `protobuf:"bytes,2,opt,name=page,proto3" json:"page,omitempty"`
@@ -1026,8 +1025,8 @@ type DeletePageRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The name of the page to delete.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/Flows/<flow ID>/pages/<Page ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/Flows/<flowID>/pages/<PageID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// This field has no effect for pages with no incoming transitions.
 	// For pages with incoming transitions:
@@ -1200,15 +1199,15 @@ type isKnowledgeConnectorSettings_Target interface {
 
 type KnowledgeConnectorSettings_TargetPage struct {
 	// The target page to transition to.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/flows/<Flow ID>/pages/<Page ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>/pages/<PageID>`.
 	TargetPage string `protobuf:"bytes,4,opt,name=target_page,json=targetPage,proto3,oneof"`
 }
 
 type KnowledgeConnectorSettings_TargetFlow struct {
 	// The target flow to transition to.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/flows/<Flow ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>`.
 	TargetFlow string `protobuf:"bytes,5,opt,name=target_flow,json=targetFlow,proto3,oneof"`
 }
 
@@ -1230,11 +1229,12 @@ type Form_Parameter struct {
 	// Required parameters must be filled before form filling concludes.
 	Required bool `protobuf:"varint,2,opt,name=required,proto3" json:"required,omitempty"`
 	// Required. The entity type of the parameter.
-	// Format: `projects/-/locations/-/agents/-/entityTypes/<System Entity Type
-	// ID>` for system entity types (for example,
+	// Format:
+	// `projects/-/locations/-/agents/-/entityTypes/<SystemEntityTypeID>` for
+	// system entity types (for example,
 	// `projects/-/locations/-/agents/-/entityTypes/sys.date`), or
-	// `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/entityTypes/<Entity Type ID>` for developer entity types.
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/entityTypes/<EntityTypeID>`
+	// for developer entity types.
 	EntityType string `protobuf:"bytes,3,opt,name=entity_type,json=entityType,proto3" json:"entity_type,omitempty"`
 	// Indicates whether the parameter represents a list of values.
 	IsList bool `protobuf:"varint,4,opt,name=is_list,json=isList,proto3" json:"is_list,omitempty"`
@@ -1760,19 +1760,19 @@ var file_google_cloud_dialogflow_cx_v3_page_proto_rawDesc = []byte{
 	0x74, 0x68, 0x2f, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2d, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72,
 	0x6d, 0x2c, 0x68, 0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f, 0x2f, 0x77, 0x77, 0x77, 0x2e, 0x67, 0x6f,
 	0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x61, 0x75, 0x74,
-	0x68, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x42, 0xaf, 0x01, 0x0a,
+	0x68, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x42, 0xac, 0x01, 0x0a,
 	0x21, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75,
 	0x64, 0x2e, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x63, 0x78, 0x2e,
 	0x76, 0x33, 0x42, 0x09, 0x50, 0x61, 0x67, 0x65, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a,
 	0x31, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f,
 	0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2f,
 	0x63, 0x78, 0x2f, 0x61, 0x70, 0x69, 0x76, 0x33, 0x2f, 0x63, 0x78, 0x70, 0x62, 0x3b, 0x63, 0x78,
-	0x70, 0x62, 0xf8, 0x01, 0x01, 0xa2, 0x02, 0x02, 0x44, 0x46, 0xaa, 0x02, 0x1d, 0x47, 0x6f, 0x6f,
-	0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x44, 0x69, 0x61, 0x6c, 0x6f, 0x67,
-	0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x43, 0x78, 0x2e, 0x56, 0x33, 0xea, 0x02, 0x21, 0x47, 0x6f, 0x6f,
-	0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x3a, 0x3a, 0x44, 0x69, 0x61, 0x6c,
-	0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x3a, 0x3a, 0x43, 0x58, 0x3a, 0x3a, 0x56, 0x33, 0x62, 0x06,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x70, 0x62, 0xa2, 0x02, 0x02, 0x44, 0x46, 0xaa, 0x02, 0x1d, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x44, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f,
+	0x77, 0x2e, 0x43, 0x78, 0x2e, 0x56, 0x33, 0xea, 0x02, 0x21, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x3a, 0x3a, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x3a, 0x3a, 0x44, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66,
+	0x6c, 0x6f, 0x77, 0x3a, 0x3a, 0x43, 0x58, 0x3a, 0x3a, 0x56, 0x33, 0x62, 0x06, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x33,
 }
 
 var (

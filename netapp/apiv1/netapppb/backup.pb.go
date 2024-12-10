@@ -534,10 +534,9 @@ type CreateBackupRequest struct {
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The ID to use for the backup.
 	// The ID must be unique within the specified backupVault.
-	// This value must start with a lowercase letter followed by up to 62
-	// lowercase letters, numbers, or hyphens, and cannot end with a hyphen.
-	// Values that do not match this pattern will trigger an INVALID_ARGUMENT
-	// error.
+	// Must contain only letters, numbers and hyphen, with the first
+	// character a letter, the last a letter or a
+	// number, and a 63 character maximum.
 	BackupId string `protobuf:"bytes,2,opt,name=backup_id,json=backupId,proto3" json:"backup_id,omitempty"`
 	// Required. A backup resource
 	Backup *Backup `protobuf:"bytes,3,opt,name=backup,proto3" json:"backup,omitempty"`

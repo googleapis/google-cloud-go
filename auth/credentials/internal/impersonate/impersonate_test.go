@@ -83,7 +83,7 @@ func TestNewImpersonatedTokenProvider(t *testing.T) {
 		URL:       ts.URL,
 		Delegates: []string{"sa1@developer.gserviceaccount.com", "sa2@developer.gserviceaccount.com"},
 		Scopes:    []string{"https://www.googleapis.com/auth/cloud-platform"},
-		Client:    internal.CloneDefaultClient(),
+		Client:    internal.DefaultClient(),
 	})
 	if err != nil {
 		t.Fatal(err)

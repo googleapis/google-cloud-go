@@ -1,5 +1,79 @@
 # Changes
 
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.15.1...contactcenterinsights/v1.16.0) (2024-11-19)
+
+
+### Features
+
+* **contactcenterinsights:** Add AnalysisRules resource and APIs ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **contactcenterinsights:** Add FeedbackLabel resource and APIs ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **contactcenterinsights:** Add Quality AI resources and APIs ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **contactcenterinsights:** Add QueryMetrics API ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+
+
+### Documentation
+
+* **contactcenterinsights:** A comment for field `custom_metadata_keys` in message `.google.cloud.contactcenterinsights.v1.IngestConversationsRequest` is changed ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **contactcenterinsights:** A comment for field `encryption_spec` in message `.google.cloud.contactcenterinsights.v1.InitializeEncryptionSpecRequest` is changed ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **contactcenterinsights:** A comment for field `kms_key` in message `.google.cloud.contactcenterinsights.v1.EncryptionSpec` is changed ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **contactcenterinsights:** A comment for field `labels` in message `.google.cloud.contactcenterinsights.v1.Conversation` is changed ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **contactcenterinsights:** A comment for field `metadata_json` in message `.google.cloud.contactcenterinsights.v1.Conversation` is changed ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **contactcenterinsights:** A comment for field `partial_errors` in message `.google.cloud.contactcenterinsights.v1.InitializeEncryptionSpecMetadata` is changed ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **contactcenterinsights:** A comment for message `EncryptionSpec` is changed ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **contactcenterinsights:** A comment for method `InitializeEncryptionSpec` in service `ContactCenterInsights` is changed ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+
+## [1.15.1](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.15.0...contactcenterinsights/v1.15.1) (2024-10-23)
+
+
+### Bug Fixes
+
+* **contactcenterinsights:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **contactcenterinsights:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.14.1...contactcenterinsights/v1.15.0) (2024-10-09)
+
+
+### Features
+
+* **contactcenterinsights:** Add CMEK InitializeLroSpec ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **contactcenterinsights:** Add import / export IssueModel ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **contactcenterinsights:** Add metadata import to IngestConversations ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **contactcenterinsights:** Add sampling to IngestConversations ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+
+
+### Documentation
+
+* **contactcenterinsights:** Add a comment for valid `order_by` values in ListConversations ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **contactcenterinsights:** Add a comment for valid `update_mask` values in UpdateConversation ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+
+## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.14.0...contactcenterinsights/v1.14.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **contactcenterinsights:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.13.7...contactcenterinsights/v1.14.0) (2024-08-20)
+
+
+### Features
+
+* **contactcenterinsights:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.13.7](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.13.6...contactcenterinsights/v1.13.7) (2024-08-08)
+
+
+### Bug Fixes
+
+* **contactcenterinsights:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+## [1.13.6](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.13.5...contactcenterinsights/v1.13.6) (2024-07-24)
+
+
+### Bug Fixes
+
+* **contactcenterinsights:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
 ## [1.13.5](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.13.4...contactcenterinsights/v1.13.5) (2024-07-10)
 
 

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dlp/apiv2",
-    "version": "1.14.3",
+    "version": "1.20.0",
     "language": "GO",
     "apis": [
       {
@@ -1613,7 +1613,7 @@
     {
       "regionTag": "dlp_v2_generated_DlpService_ListConnections_sync",
       "title": "dlp ListConnections Sample",
-      "description": "ListConnections lists Connections in a parent.",
+      "description": "ListConnections lists Connections in a parent. Use SearchConnections to see all connections\nwithin an organization.",
       "file": "Client/ListConnections/main.go",
       "language": "GO",
       "clientMethod": {

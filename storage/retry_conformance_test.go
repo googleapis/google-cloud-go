@@ -24,6 +24,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -598,6 +599,10 @@ func TestRetryConformance(t *testing.T) {
 		t.Fatalf("storage.NewClient: %v", err)
 	}
 
+	// TODO: Remove once storage testbench emits 501 Not Implemented for these
+	// operations in gRPC.
+	skippedGRPCMethods := []string{"storage.hmacKey.delete", "storage.hmacKey.create", "storage.hmacKey.list", "storage.hmacKey.get", "storage.hmacKey.update", "storage.serviceaccount.get"}
+
 	_, _, testFiles := parseFiles(t)
 
 	for _, testFile := range testFiles {
@@ -616,6 +621,10 @@ func TestRetryConformance(t *testing.T) {
 						for _, transport := range transports {
 							testName := fmt.Sprintf("%v-%v-%v-%v-%v", transport, retryTest.Id, instructions.Instructions, methodName, i)
 							t.Run(testName, func(t *testing.T) {
+								if transport == "grpc" && slices.Contains(skippedGRPCMethods, methodName) {
+									t.Skip("not supported")
+								}
+
 								// Create the retry subtest
 								subtest := &emulatorTest{T: t, name: testName, host: endpoint}
 								subtest.create(map[string][]string{
@@ -768,7 +777,11 @@ func (et *emulatorTest) create(instructions map[string][]string, transport strin
 		et.T.Skip("This retry test case is not yet supported in the testbench.")
 	}
 	if err != nil || resp.StatusCode != 200 {
-		et.Fatalf("creating retry test: err: %v, resp: %+v", err, resp)
+		var respBody string
+		if body, err := io.ReadAll(resp.Body); err != nil {
+			respBody = string(body)
+		}
+		et.Fatalf("creating retry test: err: %v, resp: %+v, resp body: %v", err, resp, respBody)
 	}
 	defer func() {
 		closeErr := resp.Body.Close()

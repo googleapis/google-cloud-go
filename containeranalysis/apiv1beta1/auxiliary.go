@@ -41,7 +41,7 @@ type NoteIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*grafeaspb.Note, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *NoteIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -88,7 +88,7 @@ type OccurrenceIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*grafeaspb.Occurrence, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *OccurrenceIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

@@ -111,7 +111,7 @@ type GroupResultIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*securitycenterpb.GroupResult, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *GroupResultIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -158,7 +158,7 @@ type ListAssetsResponse_ListAssetsResultIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*securitycenterpb.ListAssetsResponse_ListAssetsResult, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ListAssetsResponse_ListAssetsResultIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -205,7 +205,7 @@ type ListFindingsResponse_ListFindingsResultIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*securitycenterpb.ListFindingsResponse_ListFindingsResult, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ListFindingsResponse_ListFindingsResultIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -252,7 +252,7 @@ type NotificationConfigIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*securitycenterpb.NotificationConfig, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *NotificationConfigIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -299,7 +299,7 @@ type SourceIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*securitycenterpb.Source, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *SourceIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

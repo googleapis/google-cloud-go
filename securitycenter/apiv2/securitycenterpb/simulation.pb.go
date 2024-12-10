@@ -44,7 +44,7 @@ type Simulation struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Full resource name of the Simulation:
-	// organizations/123/simulations/456
+	// `organizations/123/simulations/456`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. Time simulation was created
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`

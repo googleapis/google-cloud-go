@@ -1,6 +1,60 @@
 # Changes
 
 
+## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.11.0...orchestration/v1.11.1) (2024-10-23)
+
+
+### Bug Fixes
+
+* **orchestration:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **orchestration:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.10.1...orchestration/v1.11.0) (2024-09-19)
+
+
+### Features
+
+* **orchestration/airflow/service:** A new field `airflow_metadata_retention_config` is added to message `.google.cloud.orchestration.airflow.service.v1.DataRetentionConfig` ([c56f8ac](https://github.com/googleapis/google-cloud-go/commit/c56f8ac77567ab52f374fdd02364a2c0a3df879c))
+* **orchestration/airflow/service:** A new field `satisfies_pzi` is added to message `.google.cloud.orchestration.airflow.service.v1.Environment` ([c56f8ac](https://github.com/googleapis/google-cloud-go/commit/c56f8ac77567ab52f374fdd02364a2c0a3df879c))
+* **orchestration/airflow/service:** A new message `AirflowMetadataRetentionPolicyConfig` is added ([c56f8ac](https://github.com/googleapis/google-cloud-go/commit/c56f8ac77567ab52f374fdd02364a2c0a3df879c))
+* **orchestration/airflow/service:** A new message `CheckUpgradeRequest` is added ([c56f8ac](https://github.com/googleapis/google-cloud-go/commit/c56f8ac77567ab52f374fdd02364a2c0a3df879c))
+* **orchestration/airflow/service:** A new method `CheckUpgrade` is added to service `Environments` ([#10854](https://github.com/googleapis/google-cloud-go/issues/10854)) ([c56f8ac](https://github.com/googleapis/google-cloud-go/commit/c56f8ac77567ab52f374fdd02364a2c0a3df879c))
+
+
+### Documentation
+
+* **orchestration/airflow/service:** A comment for field `maintenance_window` in message `.google.cloud.orchestration.airflow.service.v1.EnvironmentConfig` is changed ([c56f8ac](https://github.com/googleapis/google-cloud-go/commit/c56f8ac77567ab52f374fdd02364a2c0a3df879c))
+* **orchestration/airflow/service:** A comment for field `storage_mode` in message `.google.cloud.orchestration.airflow.service.v1.TaskLogsRetentionConfig` is changed ([c56f8ac](https://github.com/googleapis/google-cloud-go/commit/c56f8ac77567ab52f374fdd02364a2c0a3df879c))
+* **orchestration/airflow/service:** A comment for message `WorkloadsConfig` is changed ([c56f8ac](https://github.com/googleapis/google-cloud-go/commit/c56f8ac77567ab52f374fdd02364a2c0a3df879c))
+
+## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.10.0...orchestration/v1.10.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **orchestration:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.9.7...orchestration/v1.10.0) (2024-08-20)
+
+
+### Features
+
+* **orchestration:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.9.7](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.9.6...orchestration/v1.9.7) (2024-08-08)
+
+
+### Bug Fixes
+
+* **orchestration:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+## [1.9.6](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.9.5...orchestration/v1.9.6) (2024-07-24)
+
+
+### Bug Fixes
+
+* **orchestration:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
 ## [1.9.5](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.9.4...orchestration/v1.9.5) (2024-07-10)
 
 

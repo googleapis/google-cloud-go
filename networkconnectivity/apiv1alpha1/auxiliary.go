@@ -408,7 +408,7 @@ type HubIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*networkconnectivitypb.Hub, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *HubIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -455,7 +455,7 @@ type SpokeIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*networkconnectivitypb.Spoke, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *SpokeIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

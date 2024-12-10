@@ -1,5 +1,93 @@
 # Changes
 
+## [1.42.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.41.0...container/v1.42.0) (2024-11-14)
+
+
+### Features
+
+* **container:** Add desired_enterprise_config,desired_node_pool_auto_config_linux_node_config to ClusterUpdate. ([f072178](https://github.com/googleapis/google-cloud-go/commit/f072178f6fd90537a5782395f4229e4c8b30af7e))
+* **container:** Add desired_tier to EnterpriseConfig. ([f072178](https://github.com/googleapis/google-cloud-go/commit/f072178f6fd90537a5782395f4229e4c8b30af7e))
+* **container:** Add DesiredEnterpriseConfig proto message ([f072178](https://github.com/googleapis/google-cloud-go/commit/f072178f6fd90537a5782395f4229e4c8b30af7e))
+* **container:** Add LinuxNodeConfig in NodePoolAutoConfig ([f072178](https://github.com/googleapis/google-cloud-go/commit/f072178f6fd90537a5782395f4229e4c8b30af7e))
+* **container:** Add LocalSsdEncryptionMode in NodeConfig ([#11103](https://github.com/googleapis/google-cloud-go/issues/11103)) ([f072178](https://github.com/googleapis/google-cloud-go/commit/f072178f6fd90537a5782395f4229e4c8b30af7e))
+* **container:** Add UpgradeInfoEvent proto message ([f072178](https://github.com/googleapis/google-cloud-go/commit/f072178f6fd90537a5782395f4229e4c8b30af7e))
+
+
+### Documentation
+
+* **container:** Minor documentation updates ([f072178](https://github.com/googleapis/google-cloud-go/commit/f072178f6fd90537a5782395f4229e4c8b30af7e))
+
+## [1.41.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.40.0...container/v1.41.0) (2024-10-23)
+
+
+### Features
+
+* **container:** Add an effective_cgroup_mode field in node config ([f0b05e2](https://github.com/googleapis/google-cloud-go/commit/f0b05e260435d5e8889b9a0ca0ab215fcde169ab))
+* **container:** Add API to enable/disable secret manager csi component on GKE clusters ([f0b05e2](https://github.com/googleapis/google-cloud-go/commit/f0b05e260435d5e8889b9a0ca0ab215fcde169ab))
+* **container:** Add CompliancePosture field for configuration of GKE Compliance Posture product ([f0b05e2](https://github.com/googleapis/google-cloud-go/commit/f0b05e260435d5e8889b9a0ca0ab215fcde169ab))
+* **container:** Add CompliancePosture field for configuration of GKE Compliance Posture product ([f0b05e2](https://github.com/googleapis/google-cloud-go/commit/f0b05e260435d5e8889b9a0ca0ab215fcde169ab))
+* **container:** Add KCP_SSHD and KCP_CONNECTION to the supported values for the --logging flag for the create and update cluster commands ([f0b05e2](https://github.com/googleapis/google-cloud-go/commit/f0b05e260435d5e8889b9a0ca0ab215fcde169ab))
+* **container:** Add RBACBindingConfig to API ([f0b05e2](https://github.com/googleapis/google-cloud-go/commit/f0b05e260435d5e8889b9a0ca0ab215fcde169ab))
+* **container:** Added support for Parallelstore CSI Driver ([f0b05e2](https://github.com/googleapis/google-cloud-go/commit/f0b05e260435d5e8889b9a0ca0ab215fcde169ab))
+* **container:** Surface upgrade_target_version in GetServerConfig for all supported release channels ([f0b05e2](https://github.com/googleapis/google-cloud-go/commit/f0b05e260435d5e8889b9a0ca0ab215fcde169ab))
+
+
+### Bug Fixes
+
+* **container:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **container:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
+
+### Documentation
+
+* **container:** Minor documentation updates ([f0b05e2](https://github.com/googleapis/google-cloud-go/commit/f0b05e260435d5e8889b9a0ca0ab215fcde169ab))
+
+## [1.40.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.39.0...container/v1.40.0) (2024-09-12)
+
+
+### Features
+
+* **container:** Add ReleaseChannel EXTENDED value ([b3ea577](https://github.com/googleapis/google-cloud-go/commit/b3ea5776b171fc60b4e96035d56d35dbd7505f3b))
+
+
+### Bug Fixes
+
+* **container:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+## [1.39.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.38.1...container/v1.39.0) (2024-08-20)
+
+
+### Features
+
+* **container:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.38.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.38.0...container/v1.38.1) (2024-08-08)
+
+
+### Bug Fixes
+
+* **container:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+## [1.38.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.37.3...container/v1.38.0) (2024-07-24)
+
+
+### Features
+
+* **container:** Add DCGM enum in monitoring config ([eb63f0d](https://github.com/googleapis/google-cloud-go/commit/eb63f0d4f42a06581e1425f99c2a03d52d6cb404))
+* **container:** Support for Ray Clusters ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+
+
+### Bug Fixes
+
+* **container:** Deprecate "EXPERIMENTAL" option for Gateway API (this value has never been supported) ([eb63f0d](https://github.com/googleapis/google-cloud-go/commit/eb63f0d4f42a06581e1425f99c2a03d52d6cb404))
+* **container:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+
+### Documentation
+
+* **container:** Minor updates to reference documentation ([#10579](https://github.com/googleapis/google-cloud-go/issues/10579)) ([ddbc02b](https://github.com/googleapis/google-cloud-go/commit/ddbc02b8630b7cc9d49d1692e317521db7a8b825))
+* **container:** Trivial updates ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+
 ## [1.37.3](https://github.com/googleapis/google-cloud-go/compare/container/v1.37.2...container/v1.37.3) (2024-07-10)
 
 

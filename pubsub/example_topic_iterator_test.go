@@ -16,6 +16,7 @@ package pubsub_test
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"cloud.google.com/go/pubsub"
@@ -42,7 +43,7 @@ func ExampleTopicIterator_Next() {
 	it := client.Topics(ctx)
 	for {
 		t, err := it.Next()
-		if err == iterator.Done {
+		if errors.Is(err, iterator.Done) {
 			break
 		}
 		if err != nil {

@@ -324,9 +324,10 @@ type CreateSnapshotRequest struct {
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. A snapshot resource
 	Snapshot *Snapshot `protobuf:"bytes,2,opt,name=snapshot,proto3" json:"snapshot,omitempty"`
-	// Required. ID of the snapshot to create.
-	// This value must start with a lowercase letter followed by up to 62
-	// lowercase letters, numbers, or hyphens, and cannot end with a hyphen.
+	// Required. ID of the snapshot to create. Must be unique within the parent
+	// resource. Must contain only letters, numbers and hyphen, with the first
+	// character a letter, the last a letter or a
+	// number, and a 63 character maximum.
 	SnapshotId string `protobuf:"bytes,3,opt,name=snapshot_id,json=snapshotId,proto3" json:"snapshot_id,omitempty"`
 }
 

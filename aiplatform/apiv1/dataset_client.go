@@ -81,6 +81,7 @@ func defaultDatasetGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -343,6 +344,8 @@ func (c *DatasetClient) GetAnnotationSpec(ctx context.Context, req *aiplatformpb
 }
 
 // ListAnnotations lists Annotations belongs to a dataitem
+// This RPC is only available in InternalDatasetService. It is only used for
+// exporting conversation data to CCAI Insights.
 func (c *DatasetClient) ListAnnotations(ctx context.Context, req *aiplatformpb.ListAnnotationsRequest, opts ...gax.CallOption) *AnnotationIterator {
 	return c.internalClient.ListAnnotations(ctx, req, opts...)
 }

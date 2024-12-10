@@ -496,6 +496,70 @@ func (op *DeleteStreamOperation) Name() string {
 	return op.lro.Name()
 }
 
+// RunStreamOperation manages a long-running operation from RunStream.
+type RunStreamOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *RunStreamOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*datastreampb.Stream, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp datastreampb.Stream
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *RunStreamOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*datastreampb.Stream, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp datastreampb.Stream
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *RunStreamOperation) Metadata() (*datastreampb.OperationMetadata, error) {
+	var meta datastreampb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *RunStreamOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *RunStreamOperation) Name() string {
+	return op.lro.Name()
+}
+
 // UpdateConnectionProfileOperation manages a long-running operation from UpdateConnectionProfile.
 type UpdateConnectionProfileOperation struct {
 	lro      *longrunning.Operation
@@ -644,7 +708,7 @@ type ConnectionProfileIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*datastreampb.ConnectionProfile, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ConnectionProfileIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -691,7 +755,7 @@ type LocationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *LocationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -738,7 +802,7 @@ type OperationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *OperationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -785,7 +849,7 @@ type PrivateConnectionIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*datastreampb.PrivateConnection, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *PrivateConnectionIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -832,7 +896,7 @@ type RouteIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*datastreampb.Route, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *RouteIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -879,7 +943,7 @@ type StreamIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*datastreampb.Stream, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *StreamIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -926,7 +990,7 @@ type StreamObjectIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*datastreampb.StreamObject, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *StreamObjectIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -973,7 +1037,7 @@ type StringIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []string, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *StringIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

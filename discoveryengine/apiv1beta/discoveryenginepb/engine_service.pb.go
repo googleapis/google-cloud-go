@@ -579,7 +579,7 @@ type PauseEngineRequest struct {
 
 	// Required. The name of the engine to pause.
 	// Format:
-	// `projects/{project_number}/locations/{location_id}/collections/{collection_id}/engines/{engine_id}`
+	// `projects/{project}/locations/{location}/collections/{collection_id}/engines/{engine_id}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -630,7 +630,7 @@ type ResumeEngineRequest struct {
 
 	// Required. The name of the engine to resume.
 	// Format:
-	// `projects/{project_number}/locations/{location_id}/collections/{collection_id}/engines/{engine_id}`
+	// `projects/{project}/locations/{location}/collections/{collection_id}/engines/{engine_id}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -682,7 +682,7 @@ type TuneEngineRequest struct {
 
 	// Required. The resource name of the engine to tune.
 	// Format:
-	// `projects/{project_number}/locations/{location_id}/collections/{collection_id}/engines/{engine_id}`
+	// `projects/{project}/locations/{location}/collections/{collection_id}/engines/{engine_id}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -733,7 +733,7 @@ type TuneEngineMetadata struct {
 
 	// Required. The resource name of the engine that this tune applies to.
 	// Format:
-	// `projects/{project_number}/locations/{location_id}/collections/{collection_id}/engines/{engine_id}`
+	// `projects/{project}/locations/{location}/collections/{collection_id}/engines/{engine_id}`
 	Engine string `protobuf:"bytes,1,opt,name=engine,proto3" json:"engine,omitempty"`
 }
 

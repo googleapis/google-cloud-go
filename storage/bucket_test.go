@@ -17,9 +17,11 @@ package storage
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"testing"
 	"time"
 
+	"cloud.google.com/go/compute/metadata"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/go-cmp/cmp"
@@ -477,7 +479,10 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 	}
 	got = au3.toRawBucket()
 	want = &raw.Bucket{
-		NullFields: []string{"RetentionPolicy", "Encryption", "Logging", "Website", "SoftDeletePolicy"},
+		NullFields: []string{"RetentionPolicy", "Encryption", "Logging", "Website"},
+		SoftDeletePolicy: &raw.BucketSoftDeletePolicy{
+			ForceSendFields: []string{"RetentionDurationSeconds"},
+		},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
 		t.Error(msg)
@@ -605,6 +610,7 @@ func TestNewBucket(t *testing.T) {
 		Metageneration:        3,
 		StorageClass:          "sc",
 		TimeCreated:           "2017-10-23T04:05:06Z",
+		Updated:               "2024-08-21T17:24:53Z",
 		Versioning:            &raw.BucketVersioning{Enabled: true},
 		Labels:                labels,
 		Billing:               &raw.BucketBilling{RequesterPays: true},
@@ -676,6 +682,7 @@ func TestNewBucket(t *testing.T) {
 		MetaGeneration:        3,
 		StorageClass:          "sc",
 		Created:               time.Date(2017, 10, 23, 4, 5, 6, 0, time.UTC),
+		Updated:               time.Date(2024, 8, 21, 17, 24, 53, 0, time.UTC),
 		VersioningEnabled:     true,
 		Labels:                labels,
 		Etag:                  "Zkyw9ACJZUvcYmlFaKGChzhmtnE/dt1zHSfweiWpwzdGsqXwuJZqiD0",
@@ -767,6 +774,7 @@ func TestNewBucketFromProto(t *testing.T) {
 		Rpo:            rpoAsyncTurbo,
 		Metageneration: int64(39),
 		CreateTime:     toProtoTimestamp(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
+		UpdateTime:     toProtoTimestamp(time.Date(2024, 1, 2, 3, 4, 5, 6, time.UTC)),
 		Labels:         map[string]string{"label": "value"},
 		Cors: []*storagepb.Bucket_Cors{
 			{
@@ -820,6 +828,7 @@ func TestNewBucketFromProto(t *testing.T) {
 		RPO:                      RPOAsyncTurbo,
 		MetaGeneration:           39,
 		Created:                  time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+		Updated:                  time.Date(2024, 1, 2, 3, 4, 5, 6, time.UTC),
 		Labels:                   map[string]string{"label": "value"},
 		CORS: []CORS{
 			{
@@ -1110,11 +1119,11 @@ func TestBucketRetryer(t *testing.T) {
 					WithErrorFunc(func(err error) bool { return false }))
 			},
 			want: &retryConfig{
-				backoff: &gax.Backoff{
+				backoff: gaxBackoffFromStruct(&gax.Backoff{
 					Initial:    2 * time.Second,
 					Max:        30 * time.Second,
 					Multiplier: 3,
-				},
+				}),
 				policy:      RetryAlways,
 				maxAttempts: expectedAttempts(5),
 				shouldRetry: func(err error) bool { return false },
@@ -1129,9 +1138,9 @@ func TestBucketRetryer(t *testing.T) {
 					}))
 			},
 			want: &retryConfig{
-				backoff: &gax.Backoff{
+				backoff: gaxBackoffFromStruct(&gax.Backoff{
 					Multiplier: 3,
-				}},
+				})},
 		},
 		{
 			name: "set policy only",
@@ -1301,6 +1310,16 @@ func TestDetectDefaultGoogleAccessID(t *testing.T) {
 				}
 				if id != tc.serviceAccount {
 					t.Errorf("service account not found correctly; got: %s, want: %s", id, tc.serviceAccount)
+				}
+			} else if metadata.OnGCE() {
+				// On GCE, we fall back to the default service account. Check that's
+				// what happened.
+				defaultServiceAccount, err := metadata.Email("default")
+				if err != nil {
+					t.Errorf("could not load metadata service account for fallback: %v", err)
+				}
+				if id != defaultServiceAccount {
+					t.Errorf("service account not found correctly on fallback; got: %s, want: %s", id, defaultServiceAccount)
 				}
 			} else if err == nil {
 				t.Error("expected error but detectDefaultGoogleAccessID did not return one")
@@ -1623,5 +1642,32 @@ func TestBucketSignedURL_Endpoint_Emulator_Host(t *testing.T) {
 				s.Fatalf("bucket.SidnedURL:\n\tgot:\t%v\n\twant:\t%v", got, test.want)
 			}
 		})
+	}
+}
+
+// Test retry logic for default SignBlob function used by BucketHandle.SignedURL.
+// This cannot be tested via the emulator so we use a mock.
+func TestDefaultSignBlobRetry(t *testing.T) {
+	ctx := context.Background()
+
+	// Use mock transport. Return 2 503 responses before succeeding.
+	mt := mockTransport{}
+	mt.addResult(&http.Response{StatusCode: 503, Body: bodyReader("")}, nil)
+	mt.addResult(&http.Response{StatusCode: 503, Body: bodyReader("")}, nil)
+	mt.addResult(&http.Response{StatusCode: 200, Body: bodyReader("{}")}, nil)
+
+	client, err := NewClient(ctx, option.WithHTTPClient(&http.Client{Transport: &mt}))
+	if err != nil {
+		t.Fatalf("NewClient: %v", err)
+	}
+
+	b := client.Bucket("fakebucket")
+
+	if _, err := b.SignedURL("fakeobj", &SignedURLOptions{
+		Method:    "GET",
+		Expires:   time.Now().Add(time.Hour),
+		SignBytes: b.defaultSignBytesFunc("example@example.com"),
+	}); err != nil {
+		t.Fatalf("BucketHandle.SignedURL: %v", err)
 	}
 }

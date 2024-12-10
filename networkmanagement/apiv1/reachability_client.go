@@ -263,7 +263,7 @@ func (c *ReachabilityClient) CreateConnectivityTestOperation(name string) *Creat
 //
 // If the endpoint specifications in ConnectivityTest are incomplete, the
 // reachability result returns a value of AMBIGUOUS. See the documentation
-// in ConnectivityTest for for more details.
+// in ConnectivityTest for more details.
 func (c *ReachabilityClient) UpdateConnectivityTest(ctx context.Context, req *networkmanagementpb.UpdateConnectivityTestRequest, opts ...gax.CallOption) (*UpdateConnectivityTestOperation, error) {
 	return c.internalClient.UpdateConnectivityTest(ctx, req, opts...)
 }
@@ -1170,7 +1170,7 @@ func (c *reachabilityRESTClient) CreateConnectivityTest(ctx context.Context, req
 //
 // If the endpoint specifications in ConnectivityTest are incomplete, the
 // reachability result returns a value of AMBIGUOUS. See the documentation
-// in ConnectivityTest for for more details.
+// in ConnectivityTest for more details.
 func (c *reachabilityRESTClient) UpdateConnectivityTest(ctx context.Context, req *networkmanagementpb.UpdateConnectivityTestRequest, opts ...gax.CallOption) (*UpdateConnectivityTestOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetResource()
@@ -1188,11 +1188,11 @@ func (c *reachabilityRESTClient) UpdateConnectivityTest(ctx context.Context, req
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()

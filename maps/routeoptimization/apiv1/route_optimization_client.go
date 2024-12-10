@@ -202,11 +202,23 @@ func (c *Client) OptimizeTours(ctx context.Context, req *routeoptimizationpb.Opt
 //
 // This method is a Long Running Operation (LRO). The inputs for optimization
 // (OptimizeToursRequest messages) and outputs (OptimizeToursResponse
-// messages) are read/written from/to Cloud Storage in user-specified
+// messages) are read from and written to Cloud Storage in user-specified
 // format. Like the OptimizeTours method, each OptimizeToursRequest
 // contains a ShipmentModel and returns an OptimizeToursResponse
-// containing ShipmentRoutes, which are a set of routes to be performed by
-// vehicles minimizing the overall cost.
+// containing ShipmentRoute fields, which are a set of routes to be
+// performed by vehicles minimizing the overall cost.
+//
+// The user can poll operations.get to check the status of the LRO:
+//
+// If the LRO done field is false, then at least one request is still
+// being processed. Other requests may have completed successfully and their
+// results are available in Cloud Storage.
+//
+// If the LRO’s done field is true, then all requests have been processed.
+// Any successfully processed requests will have their results available in
+// Cloud Storage. Any requests that failed will not have their results
+// available in Cloud Storage. If the LRO’s error field is set, then it
+// contains the error from one of the failed requests.
 func (c *Client) BatchOptimizeTours(ctx context.Context, req *routeoptimizationpb.BatchOptimizeToursRequest, opts ...gax.CallOption) (*BatchOptimizeToursOperation, error) {
 	return c.internalClient.BatchOptimizeTours(ctx, req, opts...)
 }
@@ -595,11 +607,23 @@ func (c *restClient) OptimizeTours(ctx context.Context, req *routeoptimizationpb
 //
 // This method is a Long Running Operation (LRO). The inputs for optimization
 // (OptimizeToursRequest messages) and outputs (OptimizeToursResponse
-// messages) are read/written from/to Cloud Storage in user-specified
+// messages) are read from and written to Cloud Storage in user-specified
 // format. Like the OptimizeTours method, each OptimizeToursRequest
 // contains a ShipmentModel and returns an OptimizeToursResponse
-// containing ShipmentRoutes, which are a set of routes to be performed by
-// vehicles minimizing the overall cost.
+// containing ShipmentRoute fields, which are a set of routes to be
+// performed by vehicles minimizing the overall cost.
+//
+// The user can poll operations.get to check the status of the LRO:
+//
+// If the LRO done field is false, then at least one request is still
+// being processed. Other requests may have completed successfully and their
+// results are available in Cloud Storage.
+//
+// If the LRO’s done field is true, then all requests have been processed.
+// Any successfully processed requests will have their results available in
+// Cloud Storage. Any requests that failed will not have their results
+// available in Cloud Storage. If the LRO’s error field is set, then it
+// contains the error from one of the failed requests.
 func (c *restClient) BatchOptimizeTours(ctx context.Context, req *routeoptimizationpb.BatchOptimizeToursRequest, opts ...gax.CallOption) (*BatchOptimizeToursOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

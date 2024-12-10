@@ -511,9 +511,45 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		ListFileStoreDataProfiles:  []gax.CallOption{},
-		GetFileStoreDataProfile:    []gax.CallOption{},
-		DeleteFileStoreDataProfile: []gax.CallOption{},
+		ListFileStoreDataProfiles: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetFileStoreDataProfile: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteFileStoreDataProfile: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GetTableDataProfile: []gax.CallOption{
 			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -924,9 +960,42 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
-		ListFileStoreDataProfiles:  []gax.CallOption{},
-		GetFileStoreDataProfile:    []gax.CallOption{},
-		DeleteFileStoreDataProfile: []gax.CallOption{},
+		ListFileStoreDataProfiles: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		GetFileStoreDataProfile: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		DeleteFileStoreDataProfile: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
 		GetTableDataProfile: []gax.CallOption{
 			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -1032,13 +1101,9 @@ type internalClient interface {
 // Client is a client for interacting with Sensitive Data Protection (DLP).
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// The Cloud Data Loss Prevention (DLP) API is a service that allows clients
-// to detect the presence of Personally Identifiable Information (PII) and other
-// privacy-sensitive data in user-supplied, unstructured data streams, like text
-// blocks or images.
-// The service also includes methods for sensitive data redaction and
-// scheduling of data scans on Google Cloud Platform based data sets.
-//
+// Sensitive Data Protection provides access to a powerful sensitive data
+// inspection, classification, and de-identification platform that works
+// on text, images, and Google Cloud storage repositories.
 // To learn more about concepts and find how-to guides see
 // https://cloud.google.com/sensitive-data-protection/docs/ (at https://cloud.google.com/sensitive-data-protection/docs/).
 type Client struct {
@@ -1464,7 +1529,8 @@ func (c *Client) GetConnection(ctx context.Context, req *dlppb.GetConnectionRequ
 	return c.internalClient.GetConnection(ctx, req, opts...)
 }
 
-// ListConnections lists Connections in a parent.
+// ListConnections lists Connections in a parent. Use SearchConnections to see all connections
+// within an organization.
 func (c *Client) ListConnections(ctx context.Context, req *dlppb.ListConnectionsRequest, opts ...gax.CallOption) *ConnectionIterator {
 	return c.internalClient.ListConnections(ctx, req, opts...)
 }
@@ -1504,13 +1570,9 @@ type gRPCClient struct {
 // NewClient creates a new dlp service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// The Cloud Data Loss Prevention (DLP) API is a service that allows clients
-// to detect the presence of Personally Identifiable Information (PII) and other
-// privacy-sensitive data in user-supplied, unstructured data streams, like text
-// blocks or images.
-// The service also includes methods for sensitive data redaction and
-// scheduling of data scans on Google Cloud Platform based data sets.
-//
+// Sensitive Data Protection provides access to a powerful sensitive data
+// inspection, classification, and de-identification platform that works
+// on text, images, and Google Cloud storage repositories.
 // To learn more about concepts and find how-to guides see
 // https://cloud.google.com/sensitive-data-protection/docs/ (at https://cloud.google.com/sensitive-data-protection/docs/).
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
@@ -1583,13 +1645,9 @@ type restClient struct {
 
 // NewRESTClient creates a new dlp service rest client.
 //
-// The Cloud Data Loss Prevention (DLP) API is a service that allows clients
-// to detect the presence of Personally Identifiable Information (PII) and other
-// privacy-sensitive data in user-supplied, unstructured data streams, like text
-// blocks or images.
-// The service also includes methods for sensitive data redaction and
-// scheduling of data scans on Google Cloud Platform based data sets.
-//
+// Sensitive Data Protection provides access to a powerful sensitive data
+// inspection, classification, and de-identification platform that works
+// on text, images, and Google Cloud storage repositories.
 // To learn more about concepts and find how-to guides see
 // https://cloud.google.com/sensitive-data-protection/docs/ (at https://cloud.google.com/sensitive-data-protection/docs/).
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
@@ -6443,7 +6501,8 @@ func (c *restClient) GetConnection(ctx context.Context, req *dlppb.GetConnection
 	return resp, nil
 }
 
-// ListConnections lists Connections in a parent.
+// ListConnections lists Connections in a parent. Use SearchConnections to see all connections
+// within an organization.
 func (c *restClient) ListConnections(ctx context.Context, req *dlppb.ListConnectionsRequest, opts ...gax.CallOption) *ConnectionIterator {
 	it := &ConnectionIterator{}
 	req = proto.Clone(req).(*dlppb.ListConnectionsRequest)

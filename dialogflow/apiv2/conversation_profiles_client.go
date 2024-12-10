@@ -332,7 +332,9 @@ func (c *ConversationProfilesClient) GetConversationProfile(ctx context.Context,
 
 // CreateConversationProfile creates a conversation profile in the specified project.
 //
-// ConversationProfile.CreateTime and ConversationProfile.UpdateTime
+// ConversationProfile.create_time
+// and
+// ConversationProfile.update_time
 // aren’t populated in the response. You can retrieve them via
 // GetConversationProfile
 // API.
@@ -342,7 +344,9 @@ func (c *ConversationProfilesClient) CreateConversationProfile(ctx context.Conte
 
 // UpdateConversationProfile updates the specified conversation profile.
 //
-// ConversationProfile.CreateTime and ConversationProfile.UpdateTime
+// ConversationProfile.create_time
+// and
+// ConversationProfile.update_time
 // aren’t populated in the response. You can retrieve them via
 // GetConversationProfile
 // API.
@@ -1064,7 +1068,9 @@ func (c *conversationProfilesRESTClient) GetConversationProfile(ctx context.Cont
 
 // CreateConversationProfile creates a conversation profile in the specified project.
 //
-// ConversationProfile.CreateTime and ConversationProfile.UpdateTime
+// ConversationProfile.create_time
+// and
+// ConversationProfile.update_time
 // aren’t populated in the response. You can retrieve them via
 // GetConversationProfile
 // API.
@@ -1136,7 +1142,9 @@ func (c *conversationProfilesRESTClient) CreateConversationProfile(ctx context.C
 
 // UpdateConversationProfile updates the specified conversation profile.
 //
-// ConversationProfile.CreateTime and ConversationProfile.UpdateTime
+// ConversationProfile.create_time
+// and
+// ConversationProfile.update_time
 // aren’t populated in the response. You can retrieve them via
 // GetConversationProfile
 // API.
@@ -1157,11 +1165,11 @@ func (c *conversationProfilesRESTClient) UpdateConversationProfile(ctx context.C
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()

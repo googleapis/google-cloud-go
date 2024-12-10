@@ -27,6 +27,7 @@ import (
 	"cloud.google.com/go/spanner/internal/testutil"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -48,7 +49,7 @@ func setupInstanceAdminServer() {
 	}
 	go serv.Serve(lis)
 
-	conn, err := grpc.Dial(lis.Addr().String(), grpc.WithInsecure())
+	conn, err := grpc.Dial(lis.Addr().String(), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatal(err)
 	}

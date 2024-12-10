@@ -374,10 +374,11 @@ type UpdateFeatureOnlineStoreRequest struct {
 	//
 	// Updatable fields:
 	//
-	//   - `big_query_source`
-	//   - `bigtable`
 	//   - `labels`
-	//   - `sync_config`
+	//   - `description`
+	//   - `bigtable`
+	//   - `bigtable.auto_scaling`
+	//   - `bigtable.enable_multi_region_replica`
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
 
@@ -835,7 +836,14 @@ type UpdateFeatureViewRequest struct {
 	// Updatable fields:
 	//
 	//   - `labels`
-	//   - `serviceAgentType`
+	//   - `service_agent_type`
+	//   - `big_query_source`
+	//   - `big_query_source.uri`
+	//   - `big_query_source.entity_id_columns`
+	//   - `feature_registry_source`
+	//   - `feature_registry_source.feature_groups`
+	//   - `sync_config`
+	//   - `sync_config.cron`
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
 
@@ -1183,7 +1191,7 @@ func (x *SyncFeatureViewRequest) GetFeatureView() string {
 	return ""
 }
 
-// Respose message for
+// Response message for
 // [FeatureOnlineStoreAdminService.SyncFeatureView][google.cloud.aiplatform.v1beta1.FeatureOnlineStoreAdminService.SyncFeatureView].
 type SyncFeatureViewResponse struct {
 	state         protoimpl.MessageState

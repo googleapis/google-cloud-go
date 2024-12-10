@@ -68,6 +68,7 @@ func defaultModelGardenGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -359,6 +360,7 @@ func defaultModelGardenRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -689,6 +691,12 @@ func (c *modelGardenRESTClient) GetPublisherModel(ctx context.Context, req *aipl
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetHuggingFaceToken() != "" {
+		params.Add("huggingFaceToken", fmt.Sprintf("%v", req.GetHuggingFaceToken()))
+	}
+	if req.GetIsHuggingFaceModel() {
+		params.Add("isHuggingFaceModel", fmt.Sprintf("%v", req.GetIsHuggingFaceModel()))
+	}
 	if req.GetLanguageCode() != "" {
 		params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
 	}
@@ -773,6 +781,9 @@ func (c *modelGardenRESTClient) ListPublisherModels(ctx context.Context, req *ai
 		}
 		if req.GetLanguageCode() != "" {
 			params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
+		}
+		if req.GetListAllVersions() {
+			params.Add("listAllVersions", fmt.Sprintf("%v", req.GetListAllVersions()))
 		}
 		if req.GetOrderBy() != "" {
 			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
@@ -1454,11 +1465,11 @@ func (c *modelGardenRESTClient) WaitOperation(ctx context.Context, req *longrunn
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetTimeout() != nil {
-		timeout, err := protojson.Marshal(req.GetTimeout())
+		field, err := protojson.Marshal(req.GetTimeout())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("timeout", string(timeout[1:len(timeout)-1]))
+		params.Add("timeout", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()

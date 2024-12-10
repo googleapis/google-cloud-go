@@ -735,7 +735,7 @@ type CdnKeyIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*stitcherpb.CdnKey, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *CdnKeyIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -782,7 +782,7 @@ type LiveAdTagDetailIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*stitcherpb.LiveAdTagDetail, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *LiveAdTagDetailIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -829,7 +829,7 @@ type LiveConfigIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*stitcherpb.LiveConfig, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *LiveConfigIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -876,7 +876,7 @@ type OperationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *OperationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -923,7 +923,7 @@ type SlateIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*stitcherpb.Slate, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *SlateIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -970,7 +970,7 @@ type VodAdTagDetailIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*stitcherpb.VodAdTagDetail, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *VodAdTagDetailIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1017,7 +1017,7 @@ type VodConfigIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*stitcherpb.VodConfig, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *VodConfigIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1064,7 +1064,7 @@ type VodStitchDetailIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*stitcherpb.VodStitchDetail, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *VodStitchDetailIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

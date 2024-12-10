@@ -101,10 +101,11 @@ func defaultDocumentProcessorCallOptions() *DocumentProcessorCallOptions {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
+					Initial:    1000 * time.Millisecond,
+					Max:        90000 * time.Millisecond,
+					Multiplier: 9.00,
 				})
 			}),
 		},
@@ -115,9 +116,9 @@ func defaultDocumentProcessorCallOptions() *DocumentProcessorCallOptions {
 					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
+					Initial:    1000 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
+					Multiplier: 1.50,
 				})
 			}),
 		},
@@ -144,9 +145,9 @@ func defaultDocumentProcessorCallOptions() *DocumentProcessorCallOptions {
 					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
+					Initial:    1000 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
+					Multiplier: 1.50,
 				})
 			}),
 		},
@@ -168,21 +169,22 @@ func defaultDocumentProcessorRESTCallOptions() *DocumentProcessorCallOptions {
 			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
+					Initial:    1000 * time.Millisecond,
+					Max:        90000 * time.Millisecond,
+					Multiplier: 9.00,
 				},
 					http.StatusGatewayTimeout,
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
 		},
 		BatchProcessDocuments: []gax.CallOption{
 			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    100 * time.Millisecond,
+					Initial:    1000 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
+					Multiplier: 1.50,
 				},
 					http.StatusGatewayTimeout,
 					http.StatusServiceUnavailable)
@@ -208,9 +210,9 @@ func defaultDocumentProcessorRESTCallOptions() *DocumentProcessorCallOptions {
 			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    100 * time.Millisecond,
+					Initial:    1000 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
+					Multiplier: 1.50,
 				},
 					http.StatusGatewayTimeout,
 					http.StatusServiceUnavailable)
@@ -422,6 +424,10 @@ func (c *DocumentProcessorClient) UndeployProcessorVersionOperation(name string)
 // CreateProcessor creates a processor from the
 // ProcessorType provided.
 // The processor will be at ENABLED state by default after its creation.
+// Note that this method requires the documentai.processors.create
+// permission on the project, which is highly privileged. A user or service
+// account with this permission can create new processors that can interact
+// with any gcs bucket in your project.
 func (c *DocumentProcessorClient) CreateProcessor(ctx context.Context, req *documentaipb.CreateProcessorRequest, opts ...gax.CallOption) (*documentaipb.Processor, error) {
 	return c.internalClient.CreateProcessor(ctx, req, opts...)
 }
@@ -2353,6 +2359,10 @@ func (c *documentProcessorRESTClient) UndeployProcessorVersion(ctx context.Conte
 // CreateProcessor creates a processor from the
 // ProcessorType provided.
 // The processor will be at ENABLED state by default after its creation.
+// Note that this method requires the documentai.processors.create
+// permission on the project, which is highly privileged. A user or service
+// account with this permission can create new processors that can interact
+// with any gcs bucket in your project.
 func (c *documentProcessorRESTClient) CreateProcessor(ctx context.Context, req *documentaipb.CreateProcessorRequest, opts ...gax.CallOption) (*documentaipb.Processor, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetProcessor()

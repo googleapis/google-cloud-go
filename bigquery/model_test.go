@@ -56,10 +56,7 @@ func TestBQToModelMetadata(t *testing.T) {
 			},
 		},
 	} {
-		got, err := bqToModelMetadata(test.in)
-		if err != nil {
-			t.Fatal(err)
-		}
+		got := bqToModelMetadata(test.in)
 		if diff := testutil.Diff(got, test.want, cmpopts.IgnoreUnexported(ModelMetadata{})); diff != "" {
 			t.Errorf("%+v:\n, -got, +want:\n%s", test.in, diff)
 		}

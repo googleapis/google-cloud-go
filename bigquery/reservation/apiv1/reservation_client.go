@@ -49,6 +49,7 @@ type CallOptions struct {
 	GetReservation           []gax.CallOption
 	DeleteReservation        []gax.CallOption
 	UpdateReservation        []gax.CallOption
+	FailoverReservation      []gax.CallOption
 	CreateCapacityCommitment []gax.CallOption
 	ListCapacityCommitments  []gax.CallOption
 	GetCapacityCommitment    []gax.CallOption
@@ -76,6 +77,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://bigqueryreservation.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -128,6 +130,7 @@ func defaultCallOptions() *CallOptions {
 		UpdateReservation: []gax.CallOption{
 			gax.WithTimeout(300000 * time.Millisecond),
 		},
+		FailoverReservation: []gax.CallOption{},
 		CreateCapacityCommitment: []gax.CallOption{
 			gax.WithTimeout(300000 * time.Millisecond),
 		},
@@ -289,6 +292,7 @@ func defaultRESTCallOptions() *CallOptions {
 		UpdateReservation: []gax.CallOption{
 			gax.WithTimeout(300000 * time.Millisecond),
 		},
+		FailoverReservation: []gax.CallOption{},
 		CreateCapacityCommitment: []gax.CallOption{
 			gax.WithTimeout(300000 * time.Millisecond),
 		},
@@ -409,6 +413,7 @@ type internalClient interface {
 	GetReservation(context.Context, *reservationpb.GetReservationRequest, ...gax.CallOption) (*reservationpb.Reservation, error)
 	DeleteReservation(context.Context, *reservationpb.DeleteReservationRequest, ...gax.CallOption) error
 	UpdateReservation(context.Context, *reservationpb.UpdateReservationRequest, ...gax.CallOption) (*reservationpb.Reservation, error)
+	FailoverReservation(context.Context, *reservationpb.FailoverReservationRequest, ...gax.CallOption) (*reservationpb.Reservation, error)
 	CreateCapacityCommitment(context.Context, *reservationpb.CreateCapacityCommitmentRequest, ...gax.CallOption) (*reservationpb.CapacityCommitment, error)
 	ListCapacityCommitments(context.Context, *reservationpb.ListCapacityCommitmentsRequest, ...gax.CallOption) *CapacityCommitmentIterator
 	GetCapacityCommitment(context.Context, *reservationpb.GetCapacityCommitmentRequest, ...gax.CallOption) (*reservationpb.CapacityCommitment, error)
@@ -501,6 +506,15 @@ func (c *Client) DeleteReservation(ctx context.Context, req *reservationpb.Delet
 // UpdateReservation updates an existing reservation resource.
 func (c *Client) UpdateReservation(ctx context.Context, req *reservationpb.UpdateReservationRequest, opts ...gax.CallOption) (*reservationpb.Reservation, error) {
 	return c.internalClient.UpdateReservation(ctx, req, opts...)
+}
+
+// FailoverReservation fail over a reservation to the secondary location. The operation should be
+// done in the current secondary location, which will be promoted to the
+// new primary location for the reservation.
+// Attempting to failover a reservation in the current primary location will
+// fail with the error code google.rpc.Code.FAILED_PRECONDITION.
+func (c *Client) FailoverReservation(ctx context.Context, req *reservationpb.FailoverReservationRequest, opts ...gax.CallOption) (*reservationpb.Reservation, error) {
+	return c.internalClient.FailoverReservation(ctx, req, opts...)
 }
 
 // CreateCapacityCommitment creates a new capacity commitment resource.
@@ -887,6 +901,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://bigqueryreservation.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -1021,6 +1036,24 @@ func (c *gRPCClient) UpdateReservation(ctx context.Context, req *reservationpb.U
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.UpdateReservation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) FailoverReservation(ctx context.Context, req *reservationpb.FailoverReservationRequest, opts ...gax.CallOption) (*reservationpb.Reservation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).FailoverReservation[0:len((*c.CallOptions).FailoverReservation):len((*c.CallOptions).FailoverReservation)], opts...)
+	var resp *reservationpb.Reservation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.FailoverReservation(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -1702,11 +1735,11 @@ func (c *restClient) UpdateReservation(ctx context.Context, req *reservationpb.U
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1725,6 +1758,76 @@ func (c *restClient) UpdateReservation(ctx context.Context, req *reservationpb.U
 			baseUrl.Path = settings.Path
 		}
 		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// FailoverReservation fail over a reservation to the secondary location. The operation should be
+// done in the current secondary location, which will be promoted to the
+// new primary location for the reservation.
+// Attempting to failover a reservation in the current primary location will
+// fail with the error code google.rpc.Code.FAILED_PRECONDITION.
+func (c *restClient) FailoverReservation(ctx context.Context, req *reservationpb.FailoverReservationRequest, opts ...gax.CallOption) (*reservationpb.Reservation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:failoverReservation", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).FailoverReservation[0:len((*c.CallOptions).FailoverReservation):len((*c.CallOptions).FailoverReservation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &reservationpb.Reservation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
 		}
@@ -2051,11 +2154,11 @@ func (c *restClient) UpdateCapacityCommitment(ctx context.Context, req *reservat
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2851,11 +2954,11 @@ func (c *restClient) UpdateAssignment(ctx context.Context, req *reservationpb.Up
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2992,11 +3095,11 @@ func (c *restClient) UpdateBiReservation(ctx context.Context, req *reservationpb
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()

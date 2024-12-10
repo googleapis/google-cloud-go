@@ -17,11 +17,41 @@ package cert
 import (
 	"bytes"
 	"errors"
+	"os"
+	"path/filepath"
 	"testing"
 )
 
 func TestSecureConnectSource_ConfigMissing(t *testing.T) {
 	source, err := NewSecureConnectProvider("missing.json")
+	if got, want := err, errSourceUnavailable; !errors.Is(err, errSourceUnavailable) {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+	if source != nil {
+		t.Errorf("got %v, want nil source", source)
+	}
+}
+
+func TestSecureConnectSource_ConfigNotDirMissing(t *testing.T) {
+	source, err := NewSecureConnectProvider("/dev/null/missing.json")
+	if got, want := err, errSourceUnavailable; !errors.Is(err, errSourceUnavailable) {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+	if source != nil {
+		t.Errorf("got %v, want nil source", source)
+	}
+}
+
+func TestSecureConnectSource_ConfigMissingPerms(t *testing.T) {
+	if os.Getuid() == 0 {
+		t.Skip("skipping permissions-related test because UID is 0 (reads never get EPERM while running as root in the current namespace)")
+	}
+	td := t.TempDir()
+	tmpFilePath := filepath.Join(td, "unreadable.json")
+	if wrErr := os.WriteFile(tmpFilePath, []byte{}, 0000); wrErr != nil {
+		t.Fatalf("failed to write temp file with permissions 000: %s", wrErr)
+	}
+	source, err := NewSecureConnectProvider(tmpFilePath)
 	if got, want := err, errSourceUnavailable; !errors.Is(err, errSourceUnavailable) {
 		t.Fatalf("got %v, want %v", got, want)
 	}

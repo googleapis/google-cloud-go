@@ -33,9 +33,9 @@ var (
 
 // This retry predicate is used for higher level retries, enqueing appends onto to a bidi
 // channel and evaluating whether an append should be retried (re-enqueued).
-func retryPredicate(err error) (shouldRetry, aggressiveBackoff bool) {
+func retryPredicate(err error) bool {
 	if err == nil {
-		return
+		return false
 	}
 
 	s, ok := status.FromError(err)
@@ -43,11 +43,10 @@ func retryPredicate(err error) (shouldRetry, aggressiveBackoff bool) {
 	if !ok {
 		// EOF can happen in the case of connection close.
 		if errors.Is(err, io.EOF) {
-			shouldRetry = true
-			return
+			return true
 		}
 		// All other non-status errors are treated as non-retryable (including context errors).
-		return
+		return false
 	}
 	switch s.Code() {
 	case codes.Aborted,
@@ -56,17 +55,15 @@ func retryPredicate(err error) (shouldRetry, aggressiveBackoff bool) {
 		codes.FailedPrecondition,
 		codes.Internal,
 		codes.Unavailable:
-		shouldRetry = true
-		return
+		return true
 	case codes.ResourceExhausted:
 		if strings.HasPrefix(s.Message(), "Exceeds 'AppendRows throughput' quota") {
 			// Note: internal b/246031522 opened to give this a structured error
 			// and avoid string parsing.  Should be a QuotaFailure or similar.
-			shouldRetry = true
-			return
+			return true
 		}
 	}
-	return
+	return false
 }
 
 // unaryRetryer is for retrying a unary-style operation, like (re)-opening the bidi connection.
@@ -75,7 +72,7 @@ type unaryRetryer struct {
 }
 
 func (ur *unaryRetryer) Retry(err error) (time.Duration, bool) {
-	shouldRetry, _ := retryPredicate(err)
+	shouldRetry := retryPredicate(err)
 	return ur.bo.Pause(), shouldRetry
 }
 
@@ -86,10 +83,9 @@ type statelessRetryer struct {
 	mu sync.Mutex // guards r
 	r  *rand.Rand
 
-	minBackoff       time.Duration
-	jitter           time.Duration
-	aggressiveFactor int
-	maxAttempts      int
+	minBackoff  time.Duration
+	jitter      time.Duration
+	maxAttempts int
 }
 
 func newStatelessRetryer() *statelessRetryer {
@@ -101,7 +97,7 @@ func newStatelessRetryer() *statelessRetryer {
 	}
 }
 
-func (sr *statelessRetryer) pause(aggressiveBackoff bool) time.Duration {
+func (sr *statelessRetryer) pause() time.Duration {
 	jitter := sr.jitter.Nanoseconds()
 	if jitter > 0 {
 		sr.mu.Lock()
@@ -109,9 +105,6 @@ func (sr *statelessRetryer) pause(aggressiveBackoff bool) time.Duration {
 		sr.mu.Unlock()
 	}
 	pause := sr.minBackoff.Nanoseconds() + jitter
-	if aggressiveBackoff {
-		pause = pause * int64(sr.aggressiveFactor)
-	}
 	return time.Duration(pause)
 }
 
@@ -119,9 +112,8 @@ func (sr *statelessRetryer) Retry(err error, attemptCount int) (time.Duration, b
 	if attemptCount >= sr.maxAttempts {
 		return 0, false
 	}
-	shouldRetry, aggressive := retryPredicate(err)
-	if shouldRetry {
-		return sr.pause(aggressive), true
+	if retryPredicate(err) {
+		return sr.pause(), true
 	}
 	return 0, false
 }

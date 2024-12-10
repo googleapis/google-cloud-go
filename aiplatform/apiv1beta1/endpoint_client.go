@@ -48,24 +48,25 @@ var newEndpointClientHook clientHook
 
 // EndpointCallOptions contains the retry settings for each method of EndpointClient.
 type EndpointCallOptions struct {
-	CreateEndpoint      []gax.CallOption
-	GetEndpoint         []gax.CallOption
-	ListEndpoints       []gax.CallOption
-	UpdateEndpoint      []gax.CallOption
-	DeleteEndpoint      []gax.CallOption
-	DeployModel         []gax.CallOption
-	UndeployModel       []gax.CallOption
-	MutateDeployedModel []gax.CallOption
-	GetLocation         []gax.CallOption
-	ListLocations       []gax.CallOption
-	GetIamPolicy        []gax.CallOption
-	SetIamPolicy        []gax.CallOption
-	TestIamPermissions  []gax.CallOption
-	CancelOperation     []gax.CallOption
-	DeleteOperation     []gax.CallOption
-	GetOperation        []gax.CallOption
-	ListOperations      []gax.CallOption
-	WaitOperation       []gax.CallOption
+	CreateEndpoint            []gax.CallOption
+	GetEndpoint               []gax.CallOption
+	ListEndpoints             []gax.CallOption
+	UpdateEndpoint            []gax.CallOption
+	UpdateEndpointLongRunning []gax.CallOption
+	DeleteEndpoint            []gax.CallOption
+	DeployModel               []gax.CallOption
+	UndeployModel             []gax.CallOption
+	MutateDeployedModel       []gax.CallOption
+	GetLocation               []gax.CallOption
+	ListLocations             []gax.CallOption
+	GetIamPolicy              []gax.CallOption
+	SetIamPolicy              []gax.CallOption
+	TestIamPermissions        []gax.CallOption
+	CancelOperation           []gax.CallOption
+	DeleteOperation           []gax.CallOption
+	GetOperation              []gax.CallOption
+	ListOperations            []gax.CallOption
+	WaitOperation             []gax.CallOption
 }
 
 func defaultEndpointGRPCClientOptions() []option.ClientOption {
@@ -77,6 +78,7 @@ func defaultEndpointGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -96,6 +98,7 @@ func defaultEndpointCallOptions() *EndpointCallOptions {
 		UpdateEndpoint: []gax.CallOption{
 			gax.WithTimeout(5000 * time.Millisecond),
 		},
+		UpdateEndpointLongRunning: []gax.CallOption{},
 		DeleteEndpoint: []gax.CallOption{
 			gax.WithTimeout(5000 * time.Millisecond),
 		},
@@ -133,6 +136,7 @@ func defaultEndpointRESTCallOptions() *EndpointCallOptions {
 		UpdateEndpoint: []gax.CallOption{
 			gax.WithTimeout(5000 * time.Millisecond),
 		},
+		UpdateEndpointLongRunning: []gax.CallOption{},
 		DeleteEndpoint: []gax.CallOption{
 			gax.WithTimeout(5000 * time.Millisecond),
 		},
@@ -166,6 +170,8 @@ type internalEndpointClient interface {
 	GetEndpoint(context.Context, *aiplatformpb.GetEndpointRequest, ...gax.CallOption) (*aiplatformpb.Endpoint, error)
 	ListEndpoints(context.Context, *aiplatformpb.ListEndpointsRequest, ...gax.CallOption) *EndpointIterator
 	UpdateEndpoint(context.Context, *aiplatformpb.UpdateEndpointRequest, ...gax.CallOption) (*aiplatformpb.Endpoint, error)
+	UpdateEndpointLongRunning(context.Context, *aiplatformpb.UpdateEndpointLongRunningRequest, ...gax.CallOption) (*UpdateEndpointLongRunningOperation, error)
+	UpdateEndpointLongRunningOperation(name string) *UpdateEndpointLongRunningOperation
 	DeleteEndpoint(context.Context, *aiplatformpb.DeleteEndpointRequest, ...gax.CallOption) (*DeleteEndpointOperation, error)
 	DeleteEndpointOperation(name string) *DeleteEndpointOperation
 	DeployModel(context.Context, *aiplatformpb.DeployModelRequest, ...gax.CallOption) (*DeployModelOperation, error)
@@ -250,6 +256,17 @@ func (c *EndpointClient) ListEndpoints(ctx context.Context, req *aiplatformpb.Li
 // UpdateEndpoint updates an Endpoint.
 func (c *EndpointClient) UpdateEndpoint(ctx context.Context, req *aiplatformpb.UpdateEndpointRequest, opts ...gax.CallOption) (*aiplatformpb.Endpoint, error) {
 	return c.internalClient.UpdateEndpoint(ctx, req, opts...)
+}
+
+// UpdateEndpointLongRunning updates an Endpoint with a long running operation.
+func (c *EndpointClient) UpdateEndpointLongRunning(ctx context.Context, req *aiplatformpb.UpdateEndpointLongRunningRequest, opts ...gax.CallOption) (*UpdateEndpointLongRunningOperation, error) {
+	return c.internalClient.UpdateEndpointLongRunning(ctx, req, opts...)
+}
+
+// UpdateEndpointLongRunningOperation returns a new UpdateEndpointLongRunningOperation from a given name.
+// The name must be that of a previously created UpdateEndpointLongRunningOperation, possibly from a different process.
+func (c *EndpointClient) UpdateEndpointLongRunningOperation(name string) *UpdateEndpointLongRunningOperation {
+	return c.internalClient.UpdateEndpointLongRunningOperation(name)
 }
 
 // DeleteEndpoint deletes an Endpoint.
@@ -519,6 +536,7 @@ func defaultEndpointRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -647,6 +665,26 @@ func (c *endpointGRPCClient) UpdateEndpoint(ctx context.Context, req *aiplatform
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *endpointGRPCClient) UpdateEndpointLongRunning(ctx context.Context, req *aiplatformpb.UpdateEndpointLongRunningRequest, opts ...gax.CallOption) (*UpdateEndpointLongRunningOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint.name", url.QueryEscape(req.GetEndpoint().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateEndpointLongRunning[0:len((*c.CallOptions).UpdateEndpointLongRunning):len((*c.CallOptions).UpdateEndpointLongRunning)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.endpointClient.UpdateEndpointLongRunning(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateEndpointLongRunningOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *endpointGRPCClient) DeleteEndpoint(ctx context.Context, req *aiplatformpb.DeleteEndpointRequest, opts ...gax.CallOption) (*DeleteEndpointOperation, error) {
@@ -1124,11 +1162,11 @@ func (c *endpointRESTClient) ListEndpoints(ctx context.Context, req *aiplatformp
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
 		if req.GetReadMask() != nil {
-			readMask, err := protojson.Marshal(req.GetReadMask())
+			field, err := protojson.Marshal(req.GetReadMask())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask[1:len(readMask)-1]))
+			params.Add("readMask", string(field[1:len(field)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -1208,11 +1246,11 @@ func (c *endpointRESTClient) UpdateEndpoint(ctx context.Context, req *aiplatform
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1262,6 +1300,76 @@ func (c *endpointRESTClient) UpdateEndpoint(ctx context.Context, req *aiplatform
 		return nil, e
 	}
 	return resp, nil
+}
+
+// UpdateEndpointLongRunning updates an Endpoint with a long running operation.
+func (c *endpointRESTClient) UpdateEndpointLongRunning(ctx context.Context, req *aiplatformpb.UpdateEndpointLongRunningRequest, opts ...gax.CallOption) (*UpdateEndpointLongRunningOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:update", req.GetEndpoint().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint.name", url.QueryEscape(req.GetEndpoint().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/ui/%s", resp.GetName())
+	return &UpdateEndpointLongRunningOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
 }
 
 // DeleteEndpoint deletes an Endpoint.
@@ -2150,11 +2258,11 @@ func (c *endpointRESTClient) WaitOperation(ctx context.Context, req *longrunning
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetTimeout() != nil {
-		timeout, err := protojson.Marshal(req.GetTimeout())
+		field, err := protojson.Marshal(req.GetTimeout())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("timeout", string(timeout[1:len(timeout)-1]))
+		params.Add("timeout", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2291,6 +2399,24 @@ func (c *endpointGRPCClient) UndeployModelOperation(name string) *UndeployModelO
 func (c *endpointRESTClient) UndeployModelOperation(name string) *UndeployModelOperation {
 	override := fmt.Sprintf("/ui/%s", name)
 	return &UndeployModelOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// UpdateEndpointLongRunningOperation returns a new UpdateEndpointLongRunningOperation from a given name.
+// The name must be that of a previously created UpdateEndpointLongRunningOperation, possibly from a different process.
+func (c *endpointGRPCClient) UpdateEndpointLongRunningOperation(name string) *UpdateEndpointLongRunningOperation {
+	return &UpdateEndpointLongRunningOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateEndpointLongRunningOperation returns a new UpdateEndpointLongRunningOperation from a given name.
+// The name must be that of a previously created UpdateEndpointLongRunningOperation, possibly from a different process.
+func (c *endpointRESTClient) UpdateEndpointLongRunningOperation(name string) *UpdateEndpointLongRunningOperation {
+	override := fmt.Sprintf("/ui/%s", name)
+	return &UpdateEndpointLongRunningOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

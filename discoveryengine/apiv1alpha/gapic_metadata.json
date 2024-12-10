@@ -153,6 +153,11 @@
                 "GetOperation"
               ]
             },
+            "ImportCompletionSuggestions": {
+              "methods": [
+                "ImportCompletionSuggestions"
+              ]
+            },
             "ImportSuggestionDenyListEntries": {
               "methods": [
                 "ImportSuggestionDenyListEntries"
@@ -161,6 +166,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "PurgeCompletionSuggestions": {
+              "methods": [
+                "PurgeCompletionSuggestions"
               ]
             },
             "PurgeSuggestionDenyListEntries": {
@@ -188,6 +198,11 @@
                 "GetOperation"
               ]
             },
+            "ImportCompletionSuggestions": {
+              "methods": [
+                "ImportCompletionSuggestions"
+              ]
+            },
             "ImportSuggestionDenyListEntries": {
               "methods": [
                 "ImportSuggestionDenyListEntries"
@@ -196,6 +211,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "PurgeCompletionSuggestions": {
+              "methods": [
+                "PurgeCompletionSuggestions"
               ]
             },
             "PurgeSuggestionDenyListEntries": {
@@ -594,6 +614,11 @@
         "grpc": {
           "libraryClient": "DocumentClient",
           "rpcs": {
+            "BatchGetDocumentsMetadata": {
+              "methods": [
+                "BatchGetDocumentsMetadata"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -654,6 +679,11 @@
         "rest": {
           "libraryClient": "DocumentClient",
           "rpcs": {
+            "BatchGetDocumentsMetadata": {
+              "methods": [
+                "BatchGetDocumentsMetadata"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -880,6 +910,90 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "EvaluationService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "EvaluationClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateEvaluation": {
+              "methods": [
+                "CreateEvaluation"
+              ]
+            },
+            "GetEvaluation": {
+              "methods": [
+                "GetEvaluation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListEvaluationResults": {
+              "methods": [
+                "ListEvaluationResults"
+              ]
+            },
+            "ListEvaluations": {
+              "methods": [
+                "ListEvaluations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "EvaluationClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateEvaluation": {
+              "methods": [
+                "CreateEvaluation"
+              ]
+            },
+            "GetEvaluation": {
+              "methods": [
+                "GetEvaluation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListEvaluationResults": {
+              "methods": [
+                "ListEvaluationResults"
+              ]
+            },
+            "ListEvaluations": {
+              "methods": [
+                "ListEvaluations"
               ]
             },
             "ListOperations": {
@@ -1121,6 +1235,204 @@
             "Recommend": {
               "methods": [
                 "Recommend"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "SampleQueryService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "SampleQueryClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateSampleQuery": {
+              "methods": [
+                "CreateSampleQuery"
+              ]
+            },
+            "DeleteSampleQuery": {
+              "methods": [
+                "DeleteSampleQuery"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSampleQuery": {
+              "methods": [
+                "GetSampleQuery"
+              ]
+            },
+            "ImportSampleQueries": {
+              "methods": [
+                "ImportSampleQueries"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListSampleQueries": {
+              "methods": [
+                "ListSampleQueries"
+              ]
+            },
+            "UpdateSampleQuery": {
+              "methods": [
+                "UpdateSampleQuery"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "SampleQueryClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateSampleQuery": {
+              "methods": [
+                "CreateSampleQuery"
+              ]
+            },
+            "DeleteSampleQuery": {
+              "methods": [
+                "DeleteSampleQuery"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSampleQuery": {
+              "methods": [
+                "GetSampleQuery"
+              ]
+            },
+            "ImportSampleQueries": {
+              "methods": [
+                "ImportSampleQueries"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListSampleQueries": {
+              "methods": [
+                "ListSampleQueries"
+              ]
+            },
+            "UpdateSampleQuery": {
+              "methods": [
+                "UpdateSampleQuery"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "SampleQuerySetService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "SampleQuerySetClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateSampleQuerySet": {
+              "methods": [
+                "CreateSampleQuerySet"
+              ]
+            },
+            "DeleteSampleQuerySet": {
+              "methods": [
+                "DeleteSampleQuerySet"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSampleQuerySet": {
+              "methods": [
+                "GetSampleQuerySet"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListSampleQuerySets": {
+              "methods": [
+                "ListSampleQuerySets"
+              ]
+            },
+            "UpdateSampleQuerySet": {
+              "methods": [
+                "UpdateSampleQuerySet"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "SampleQuerySetClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateSampleQuerySet": {
+              "methods": [
+                "CreateSampleQuerySet"
+              ]
+            },
+            "DeleteSampleQuerySet": {
+              "methods": [
+                "DeleteSampleQuerySet"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSampleQuerySet": {
+              "methods": [
+                "GetSampleQuerySet"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListSampleQuerySets": {
+              "methods": [
+                "ListSampleQuerySets"
+              ]
+            },
+            "UpdateSampleQuerySet": {
+              "methods": [
+                "UpdateSampleQuerySet"
               ]
             }
           }
@@ -1473,6 +1785,11 @@
                 "GetTargetSite"
               ]
             },
+            "GetUriPatternDocumentData": {
+              "methods": [
+                "GetUriPatternDocumentData"
+              ]
+            },
             "ListOperations": {
               "methods": [
                 "ListOperations"
@@ -1486,6 +1803,11 @@
             "RecrawlUris": {
               "methods": [
                 "RecrawlUris"
+              ]
+            },
+            "SetUriPatternDocumentData": {
+              "methods": [
+                "SetUriPatternDocumentData"
               ]
             },
             "UpdateTargetSite": {
@@ -1553,6 +1875,11 @@
                 "GetTargetSite"
               ]
             },
+            "GetUriPatternDocumentData": {
+              "methods": [
+                "GetUriPatternDocumentData"
+              ]
+            },
             "ListOperations": {
               "methods": [
                 "ListOperations"
@@ -1566,6 +1893,11 @@
             "RecrawlUris": {
               "methods": [
                 "RecrawlUris"
+              ]
+            },
+            "SetUriPatternDocumentData": {
+              "methods": [
+                "SetUriPatternDocumentData"
               ]
             },
             "UpdateTargetSite": {

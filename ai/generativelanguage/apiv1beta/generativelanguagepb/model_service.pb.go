@@ -104,8 +104,7 @@ type ListModelsRequest struct {
 
 	// The maximum number of `Models` to return (per page).
 	//
-	// The service may return fewer models.
-	// If unspecified, at most 50 models will be returned per page.
+	// If unspecified, 50 models will be returned per page.
 	// This method returns at most 1000 models per page, even if you pass a larger
 	// page_size.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
@@ -437,7 +436,7 @@ type CreateTunedModelRequest struct {
 	// Optional. The unique id for the tuned model if specified.
 	// This value should be up to 40 characters, the first character must be a
 	// letter, the last could be a letter or a number. The id must match the
-	// regular expression: [a-z]([a-z0-9-]{0,38}[a-z0-9])?.
+	// regular expression: `[a-z]([a-z0-9-]{0,38}[a-z0-9])?`.
 	TunedModelId *string `protobuf:"bytes,1,opt,name=tuned_model_id,json=tunedModelId,proto3,oneof" json:"tuned_model_id,omitempty"`
 	// Required. The tuned model to create.
 	TunedModel *TunedModel `protobuf:"bytes,2,opt,name=tuned_model,json=tunedModel,proto3" json:"tuned_model,omitempty"`
@@ -583,7 +582,7 @@ type UpdateTunedModelRequest struct {
 
 	// Required. The tuned model to update.
 	TunedModel *TunedModel `protobuf:"bytes,1,opt,name=tuned_model,json=tunedModel,proto3" json:"tuned_model,omitempty"`
-	// Required. The list of fields to update.
+	// Optional. The list of fields to update.
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
 
@@ -795,7 +794,7 @@ var file_google_ai_generativelanguage_v1beta_model_service_proto_rawDesc = []byt
 	0x6f, 0x64, 0x65, 0x6c, 0x12, 0x40, 0x0a, 0x0b, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x5f, 0x6d,
 	0x61, 0x73, 0x6b, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
 	0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x46, 0x69, 0x65, 0x6c,
-	0x64, 0x4d, 0x61, 0x73, 0x6b, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x0a, 0x75, 0x70, 0x64, 0x61,
+	0x64, 0x4d, 0x61, 0x73, 0x6b, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x0a, 0x75, 0x70, 0x64, 0x61,
 	0x74, 0x65, 0x4d, 0x61, 0x73, 0x6b, 0x22, 0x63, 0x0a, 0x17, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65,
 	0x54, 0x75, 0x6e, 0x65, 0x64, 0x4d, 0x6f, 0x64, 0x65, 0x6c, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
 	0x74, 0x12, 0x48, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42,
@@ -1122,19 +1121,25 @@ const _ = grpc.SupportPackageIsVersion6
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type ModelServiceClient interface {
-	// Gets information about a specific Model.
+	// Gets information about a specific `Model` such as its version number, token
+	// limits,
+	// [parameters](https://ai.google.dev/gemini-api/docs/models/generative-models#model-parameters)
+	// and other metadata. Refer to the [Gemini models
+	// guide](https://ai.google.dev/gemini-api/docs/models/gemini) for detailed
+	// model information.
 	GetModel(ctx context.Context, in *GetModelRequest, opts ...grpc.CallOption) (*Model, error)
-	// Lists models available through the API.
+	// Lists the [`Model`s](https://ai.google.dev/gemini-api/docs/models/gemini)
+	// available through the Gemini API.
 	ListModels(ctx context.Context, in *ListModelsRequest, opts ...grpc.CallOption) (*ListModelsResponse, error)
 	// Gets information about a specific TunedModel.
 	GetTunedModel(ctx context.Context, in *GetTunedModelRequest, opts ...grpc.CallOption) (*TunedModel, error)
-	// Lists tuned models owned by the user.
+	// Lists created tuned models.
 	ListTunedModels(ctx context.Context, in *ListTunedModelsRequest, opts ...grpc.CallOption) (*ListTunedModelsResponse, error)
 	// Creates a tuned model.
-	// Intermediate tuning progress (if any) is accessed through the
+	// Check intermediate tuning progress (if any) through the
 	// [google.longrunning.Operations] service.
 	//
-	// Status and results can be accessed through the Operations service.
+	// Access status and results through the Operations service.
 	// Example:
 	//
 	//	GET /v1/tunedModels/az2mb0bpw6i/operations/000-111-222
@@ -1218,19 +1223,25 @@ func (c *modelServiceClient) DeleteTunedModel(ctx context.Context, in *DeleteTun
 
 // ModelServiceServer is the server API for ModelService service.
 type ModelServiceServer interface {
-	// Gets information about a specific Model.
+	// Gets information about a specific `Model` such as its version number, token
+	// limits,
+	// [parameters](https://ai.google.dev/gemini-api/docs/models/generative-models#model-parameters)
+	// and other metadata. Refer to the [Gemini models
+	// guide](https://ai.google.dev/gemini-api/docs/models/gemini) for detailed
+	// model information.
 	GetModel(context.Context, *GetModelRequest) (*Model, error)
-	// Lists models available through the API.
+	// Lists the [`Model`s](https://ai.google.dev/gemini-api/docs/models/gemini)
+	// available through the Gemini API.
 	ListModels(context.Context, *ListModelsRequest) (*ListModelsResponse, error)
 	// Gets information about a specific TunedModel.
 	GetTunedModel(context.Context, *GetTunedModelRequest) (*TunedModel, error)
-	// Lists tuned models owned by the user.
+	// Lists created tuned models.
 	ListTunedModels(context.Context, *ListTunedModelsRequest) (*ListTunedModelsResponse, error)
 	// Creates a tuned model.
-	// Intermediate tuning progress (if any) is accessed through the
+	// Check intermediate tuning progress (if any) through the
 	// [google.longrunning.Operations] service.
 	//
-	// Status and results can be accessed through the Operations service.
+	// Access status and results through the Operations service.
 	// Example:
 	//
 	//	GET /v1/tunedModels/az2mb0bpw6i/operations/000-111-222

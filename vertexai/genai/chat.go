@@ -32,7 +32,7 @@ func (m *GenerativeModel) StartChat() *ChatSession {
 // SendMessage sends a request to the model as part of a chat session.
 func (cs *ChatSession) SendMessage(ctx context.Context, parts ...Part) (*GenerateContentResponse, error) {
 	// Call the underlying client with the entire history plus the argument Content.
-	cs.History = append(cs.History, newUserContent(parts))
+	cs.History = append(cs.History, NewUserContent(parts...))
 	req := cs.m.newGenerateContentRequest(cs.History...)
 	cc := int32(1)
 	req.GenerationConfig.CandidateCount = &cc
@@ -46,7 +46,7 @@ func (cs *ChatSession) SendMessage(ctx context.Context, parts ...Part) (*Generat
 
 // SendMessageStream is like SendMessage, but with a streaming request.
 func (cs *ChatSession) SendMessageStream(ctx context.Context, parts ...Part) *GenerateContentResponseIterator {
-	cs.History = append(cs.History, newUserContent(parts))
+	cs.History = append(cs.History, NewUserContent(parts...))
 	req := cs.m.newGenerateContentRequest(cs.History...)
 	var cc int32 = 1
 	req.GenerationConfig.CandidateCount = &cc
