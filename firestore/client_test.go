@@ -16,12 +16,17 @@ package firestore
 
 import (
 	"context"
+	"log"
 	"testing"
 	"time"
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/reflect/protoreflect"
 	tspb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -58,6 +63,7 @@ func TestNewClientWithDatabase(t *testing.T) {
 		},
 	} {
 		client, err := NewClientWithDatabase(context.Background(), tc.projectID, tc.databaseID)
+		//option.WithGRPCDialOption(grpc.WithUnaryInterceptor(loggingUnaryInterceptor())))
 
 		if err != nil && !tc.wantErr {
 			t.Errorf("NewClientWithDatabase: %s got %v want nil", tc.desc, err)
@@ -70,6 +76,29 @@ func TestNewClientWithDatabase(t *testing.T) {
 	}
 }
 
+func loggingUnaryInterceptor() grpc.UnaryClientInterceptor {
+	return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+		for _, opt := range opts {
+			// if opt, ok := opt.(gax.WithRetry); ok {
+			// 	//
+			// }
+		}
+		err := invoker(ctx, method, req, reply, cc, opts...)
+		log.Printf("Invoked method: %v", method)
+		md, ok := metadata.FromOutgoingContext(ctx)
+		if ok {
+			log.Println("Metadata:")
+			for k, v := range md {
+				log.Printf("Key: %v, Value: %v", k, v)
+			}
+		}
+		reqb, merr := protojson.Marshal(req.(protoreflect.ProtoMessage))
+		if merr == nil {
+			log.Printf("Request: %s", reqb)
+		}
+		return err
+	}
+}
 func TestClientCollectionAndDoc(t *testing.T) {
 	coll1 := testClient.Collection("X")
 	db := "projects/projectID/databases/(default)"
