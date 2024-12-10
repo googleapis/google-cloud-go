@@ -125,6 +125,11 @@
                 "ListSpokes"
               ]
             },
+            "QueryHubStatus": {
+              "methods": [
+                "QueryHubStatus"
+              ]
+            },
             "RejectHubSpoke": {
               "methods": [
                 "RejectHubSpoke"
@@ -138,6 +143,11 @@
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
+              ]
+            },
+            "UpdateGroup": {
+              "methods": [
+                "UpdateGroup"
               ]
             },
             "UpdateHub": {

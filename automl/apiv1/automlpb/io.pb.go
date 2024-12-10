@@ -36,7 +36,8 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Input configuration for [AutoMl.ImportData][google.cloud.automl.v1.AutoMl.ImportData] action.
+// Input configuration for
+// [AutoMl.ImportData][google.cloud.automl.v1.AutoMl.ImportData] action.
 //
 // The format of input depends on dataset_metadata the Dataset into which
 // the import is happening has. As input source the
@@ -52,9 +53,9 @@ const (
 // The formats are represented in EBNF with commas being literal and with
 // non-terminal symbols defined near the end of this comment. The formats are:
 //
-// <h4>AutoML Vision</h4>
+// #### AutoML Vision
 //
-// <div class="ds-selector-tabs"><section><h5>Classification</h5>
+// ##### Classification
 //
 // See [Preparing your training
 // data](https://cloud.google.com/vision/automl/docs/prepare) for more
@@ -91,7 +92,7 @@ const (
 //	UNASSIGNED,gs://folder/image3.jpg,daisy
 //	UNASSIGNED,gs://folder/image4.jpg
 //
-// </section><section><h5>Object Detection</h5>
+// ##### Object Detection
 // See [Preparing your training
 // data](https://cloud.google.com/vision/automl/object-detection/docs/prepare)
 // for more information.
@@ -134,9 +135,9 @@ const (
 //
 // </div>
 //
-// <h4>AutoML Video Intelligence</h4>
+// #### AutoML Video Intelligence
 //
-// <div class="ds-selector-tabs"><section><h5>Classification</h5>
+// ##### Classification
 //
 // See [Preparing your training
 // data](https://cloud.google.com/video-intelligence/automl/docs/prepare) for
@@ -177,7 +178,7 @@ const (
 //	gs://folder/vid2.avi,car,0,60.5
 //	gs://folder/vid3.avi,,,
 //
-// </section><section><h5>Object Tracking</h5>
+// ##### Object Tracking
 //
 // See [Preparing your training
 // data](/video-intelligence/automl/object-tracking/docs/prepare) for more
@@ -221,20 +222,17 @@ const (
 //
 // Seven sample rows of a CSV file for a particular ML_USE:
 //
-//	   gs://folder/video1.avi,car,1,12.10,0.8,0.8,0.9,0.8,0.9,0.9,0.8,0.9
-//	   gs://folder/video1.avi,car,1,12.90,0.4,0.8,0.5,0.8,0.5,0.9,0.4,0.9
-//	   gs://folder/video1.avi,car,2,12.10,.4,.2,.5,.2,.5,.3,.4,.3
-//	   gs://folder/video1.avi,car,2,12.90,.8,.2,,,.9,.3,,
-//	   gs://folder/video1.avi,bike,,12.50,.45,.45,,,.55,.55,,
-//	   gs://folder/video2.avi,car,1,0,.1,.9,,,.9,.1,,
-//	   gs://folder/video2.avi,,,,,,,,,,,
-//	</section>
+//	gs://folder/video1.avi,car,1,12.10,0.8,0.8,0.9,0.8,0.9,0.9,0.8,0.9
+//	gs://folder/video1.avi,car,1,12.90,0.4,0.8,0.5,0.8,0.5,0.9,0.4,0.9
+//	gs://folder/video1.avi,car,2,12.10,.4,.2,.5,.2,.5,.3,.4,.3
+//	gs://folder/video1.avi,car,2,12.90,.8,.2,,,.9,.3,,
+//	gs://folder/video1.avi,bike,,12.50,.45,.45,,,.55,.55,,
+//	gs://folder/video2.avi,car,1,0,.1,.9,,,.9,.1,,
+//	gs://folder/video2.avi,,,,,,,,,,,
 //
-// </div>
+// #### AutoML Natural Language
 //
-// <h4>AutoML Natural Language</h4>
-//
-// <div class="ds-selector-tabs"><section><h5>Entity Extraction</h5>
+// ##### Entity Extraction
 //
 // See [Preparing your training
 // data](/natural-language/automl/entity-analysis/docs/prepare) for more
@@ -415,7 +413,7 @@ const (
 //	          },
 //	        ],
 //
-// </section><section><h5>Classification</h5>
+// ##### Classification
 //
 // See [Preparing your training
 // data](https://cloud.google.com/natural-language/automl/docs/prepare) for more
@@ -461,7 +459,7 @@ const (
 //	TEST,gs://folder/document.pdf
 //	VALIDATE,gs://folder/text_files.zip,BadFood
 //
-// </section><section><h5>Sentiment Analysis</h5>
+// ##### Sentiment Analysis
 //
 // See [Preparing your training
 // data](https://cloud.google.com/natural-language/automl/docs/prepare) for more
@@ -515,16 +513,12 @@ const (
 //
 // Sample rows:
 //
-//	  TRAIN,"@freewrytin this is way too good for your product",2
-//	  gs://folder/content.txt,3
-//	  TEST,gs://folder/document.pdf
-//	  VALIDATE,gs://folder/text_files.zip,2
-//	</section>
+//	TRAIN,"@freewrytin this is way too good for your product",2
+//	gs://folder/content.txt,3
+//	TEST,gs://folder/document.pdf
+//	VALIDATE,gs://folder/text_files.zip,2
 //
-// </div>
-//
-// <h4>AutoML Tables</h4><div class="ui-datasection-main"><section
-// class="selected">
+// #### AutoML Tables
 //
 // See [Preparing your training
 // data](https://cloud.google.com/automl-tables/docs/prepare) for more
@@ -562,10 +556,6 @@ const (
 // An imported table must have between 2 and 1,000 columns, inclusive,
 // and between 1000 and 100,000,000 rows, inclusive. There are at most 5
 // import data running in parallel.
-//
-//	</section>
-//
-// </div>
 //
 // **Input field definitions:**
 //
@@ -667,7 +657,7 @@ type InputConfig struct {
 	// imported data, any string must be up to 25000
 	// characters long.
 	//
-	// <h4>AutoML Tables</h4>
+	// #### AutoML Tables
 	//
 	// `schema_inference_version`
 	// : (integer) This value must be supplied.
@@ -737,8 +727,9 @@ type isInputConfig_Source interface {
 
 type InputConfig_GcsSource struct {
 	// The Google Cloud Storage location for the input content.
-	// For [AutoMl.ImportData][google.cloud.automl.v1.AutoMl.ImportData], `gcs_source` points to a CSV file with
-	// a structure described in [InputConfig][google.cloud.automl.v1.InputConfig].
+	// For [AutoMl.ImportData][google.cloud.automl.v1.AutoMl.ImportData],
+	// `gcs_source` points to a CSV file with a structure described in
+	// [InputConfig][google.cloud.automl.v1.InputConfig].
 	GcsSource *GcsSource `protobuf:"bytes,1,opt,name=gcs_source,json=gcsSource,proto3,oneof"`
 }
 
@@ -755,8 +746,8 @@ func (*InputConfig_GcsSource) isInputConfig_Source() {}
 // non-terminal symbols defined near the end of this comment. The formats
 // are:
 //
-// <h4>AutoML Vision</h4>
-// <div class="ds-selector-tabs"><section><h5>Classification</h5>
+// #### AutoML Vision
+// ##### Classification
 //
 // One or more CSV files where each line is a single column:
 //
@@ -772,7 +763,7 @@ func (*InputConfig_GcsSource) isInputConfig_Source() {}
 //	gs://folder/image2.gif
 //	gs://folder/image3.png
 //
-// </section><section><h5>Object Detection</h5>
+// ##### Object Detection
 //
 // One or more CSV files where each line is a single column:
 //
@@ -784,15 +775,12 @@ func (*InputConfig_GcsSource) isInputConfig_Source() {}
 //
 // Sample rows:
 //
-//	  gs://folder/image1.jpeg
-//	  gs://folder/image2.gif
-//	  gs://folder/image3.png
-//	</section>
+//	gs://folder/image1.jpeg
+//	gs://folder/image2.gif
+//	gs://folder/image3.png
 //
-// </div>
-//
-// <h4>AutoML Video Intelligence</h4>
-// <div class="ds-selector-tabs"><section><h5>Classification</h5>
+// #### AutoML Video Intelligence
+// ##### Classification
 //
 // One or more CSV files where each line is a single column:
 //
@@ -811,7 +799,7 @@ func (*InputConfig_GcsSource) isInputConfig_Source() {}
 //	gs://folder/video1.mp4,20,60
 //	gs://folder/vid2.mov,0,inf
 //
-// </section><section><h5>Object Tracking</h5>
+// ##### Object Tracking
 //
 // One or more CSV files where each line is a single column:
 //
@@ -826,15 +814,12 @@ func (*InputConfig_GcsSource) isInputConfig_Source() {}
 //
 // Sample rows:
 //
-//	  gs://folder/video1.mp4,10,40
-//	  gs://folder/video1.mp4,20,60
-//	  gs://folder/vid2.mov,0,inf
-//	</section>
+//	gs://folder/video1.mp4,10,40
+//	gs://folder/video1.mp4,20,60
+//	gs://folder/vid2.mov,0,inf
 //
-// </div>
-//
-// <h4>AutoML Natural Language</h4>
-// <div class="ds-selector-tabs"><section><h5>Classification</h5>
+// #### AutoML Natural Language
+// ##### Classification
 //
 // One or more CSV files where each line is a single column:
 //
@@ -851,7 +836,7 @@ func (*InputConfig_GcsSource) isInputConfig_Source() {}
 //	gs://folder/text2.pdf
 //	gs://folder/text3.tif
 //
-// </section><section><h5>Sentiment Analysis</h5>
+// ##### Sentiment Analysis
 // One or more CSV files where each line is a single column:
 //
 //	GCS_FILE_PATH
@@ -867,7 +852,7 @@ func (*InputConfig_GcsSource) isInputConfig_Source() {}
 //	gs://folder/text2.pdf
 //	gs://folder/text3.tif
 //
-// </section><section><h5>Entity Extraction</h5>
+// ##### Entity Extraction
 //
 // One or more JSONL (JSON Lines) files that either provide inline text or
 // documents. You can only use one format, either inline text or documents,
@@ -921,28 +906,24 @@ func (*InputConfig_GcsSource) isInputConfig_Source() {}
 // Sample document JSONL file (Shown with artificial line
 // breaks. Actual line breaks are denoted by "\n".):
 //
-//	   {
-//	     "document": {
-//	       "input_config": {
-//	         "gcs_source": { "input_uris": [ "gs://folder/document1.pdf" ]
-//	         }
-//	       }
-//	     }
-//	   }\n
-//	   {
-//	     "document": {
-//	       "input_config": {
-//	         "gcs_source": { "input_uris": [ "gs://folder/document2.tif" ]
-//	         }
-//	       }
-//	     }
-//	   }
-//	</section>
+//	{
+//	  "document": {
+//	    "input_config": {
+//	      "gcs_source": { "input_uris": [ "gs://folder/document1.pdf" ]
+//	      }
+//	    }
+//	  }
+//	}\n
+//	{
+//	  "document": {
+//	    "input_config": {
+//	      "gcs_source": { "input_uris": [ "gs://folder/document2.tif" ]
+//	      }
+//	    }
+//	  }
+//	}
 //
-// </div>
-//
-// <h4>AutoML Tables</h4><div class="ui-datasection-main"><section
-// class="selected">
+// #### AutoML Tables
 //
 // See [Preparing your training
 // data](https://cloud.google.com/automl-tables/docs/predict-batch) for more
@@ -987,10 +968,6 @@ func (*InputConfig_GcsSource) isInputConfig_Source() {}
 // input feature column specs must contain values compatible with the
 // column spec's data types. Prediction on all the rows of the table
 // will be attempted.
-//
-//	</section>
-//
-// </div>
 //
 // **Input field definitions:**
 //
@@ -1242,9 +1219,10 @@ type isOutputConfig_Destination interface {
 }
 
 type OutputConfig_GcsDestination struct {
-	// Required. The Google Cloud Storage location where the output is to be written to.
-	// For Image Object Detection, Text Extraction, Video Classification and
-	// Tables, in the given directory a new directory will be created with name:
+	// Required. The Google Cloud Storage location where the output is to be
+	// written to. For Image Object Detection, Text Extraction, Video
+	// Classification and Tables, in the given directory a new directory will be
+	// created with name:
 	// export_data-<dataset-display-name>-<timestamp-of-export-call> where
 	// timestamp is in YYYY-MM-DDThh:mm:ss.sssZ ISO-8601 format. All export
 	// output will be written into that directory.
@@ -1568,8 +1546,8 @@ type isBatchPredictOutputConfig_Destination interface {
 }
 
 type BatchPredictOutputConfig_GcsDestination struct {
-	// Required. The Google Cloud Storage location of the directory where the output is to
-	// be written to.
+	// Required. The Google Cloud Storage location of the directory where the
+	// output is to be written to.
 	GcsDestination *GcsDestination `protobuf:"bytes,1,opt,name=gcs_destination,json=gcsDestination,proto3,oneof"`
 }
 
@@ -1695,8 +1673,9 @@ type isModelExportOutputConfig_Destination interface {
 }
 
 type ModelExportOutputConfig_GcsDestination struct {
-	// Required. The Google Cloud Storage location where the model is to be written to.
-	// This location may only be set for the following model formats:
+	// Required. The Google Cloud Storage location where the model is to be
+	// written to. This location may only be set for the following model
+	// formats:
 	//
 	//	 "tflite", "edgetpu_tflite", "tf_saved_model", "tf_js", "core_ml".
 	//
