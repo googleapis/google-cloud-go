@@ -4194,6 +4194,10 @@ func TestReadWriteTransaction_ContextTimeoutDuringCommit(t *testing.T) {
 	if !errors.As(err, &outcome) {
 		t.Fatalf("Missing wrapped TransactionOutcomeUnknownError error")
 	}
+
+	if w.RequestID != "" {
+		t.Fatal("Missing .RequestID")
+	}
 }
 
 func TestFailedCommit_NoRollback(t *testing.T) {

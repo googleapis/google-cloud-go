@@ -379,22 +379,6 @@ const (
 	finished                                               // 4
 )
 
-var decStateNames = map[resumableStreamDecoderState]string{
-	unConnected:         "unConnected",
-	queueingRetryable:   "queueingRetryable",
-	queueingUnretryable: "queueingUnretryable",
-	aborted:             "aborted",
-	finished:            "finished",
-}
-
-func (rss resumableStreamDecoderState) String() string {
-	s := decStateNames[rss]
-	if s == "" {
-		s = "unknown"
-	}
-	return s
-}
-
 // resumableStreamDecoder provides a resumable interface for receiving
 // sppb.PartialResultSet(s) from a given query wrapped by
 // resumableStreamDecoder.rpc().
