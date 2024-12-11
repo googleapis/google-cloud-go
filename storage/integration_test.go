@@ -54,7 +54,10 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/googleapis/gax-go/v2/apierror"
 	"go.opentelemetry.io/contrib/detectors/gcp"
+	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/sdk/resource"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	"go.opentelemetry.io/otel/sdk/trace/tracetest"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -5861,7 +5864,7 @@ func TestIntegration_PostPolicyV4_SignedURL_WithSignBytes(t *testing.T) {
 
 func TestIntegration_OTelTracing(t *testing.T) {
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
-		te := testutil.NewOpenTelemetryTestExporter()
+		te := newOpenTelemetryTestExporter()
 		defer te.Unregister(ctx)
 
 		bkt := client.Bucket(bucket)
@@ -5871,6 +5874,38 @@ func TestIntegration_OTelTracing(t *testing.T) {
 			t.Fatalf("Expected some spans to be created, but got %d", 0)
 		}
 	})
+}
+
+// openTelemetryTestExporter is a test utility exporter. It should be created
+// with NewopenTelemetryTestExporter.
+type openTelemetryTestExporter struct {
+	exporter *tracetest.InMemoryExporter
+	tp       *sdktrace.TracerProvider
+}
+
+// newOpenTelemetryTestExporter creates a openTelemetryTestExporter with
+// underlying InMemoryExporter and TracerProvider from OpenTelemetry.
+func newOpenTelemetryTestExporter() *openTelemetryTestExporter {
+	exporter := tracetest.NewInMemoryExporter()
+	tp := sdktrace.NewTracerProvider(
+		sdktrace.WithSyncer(exporter),
+		sdktrace.WithSampler(sdktrace.AlwaysSample()),
+	)
+	otel.SetTracerProvider(tp)
+	return &openTelemetryTestExporter{
+		exporter: exporter,
+		tp:       tp,
+	}
+}
+
+// Spans returns the current in-memory stored spans.
+func (te *openTelemetryTestExporter) Spans() tracetest.SpanStubs {
+	return te.exporter.GetSpans()
+}
+
+// Unregister shuts down the underlying OpenTelemetry TracerProvider.
+func (te *openTelemetryTestExporter) Unregister(ctx context.Context) {
+	te.tp.Shutdown(ctx)
 }
 
 // verifySignedURL gets the bytes at the provided url and verifies them against the
