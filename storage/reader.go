@@ -60,7 +60,11 @@ type ReaderObjectAttrs struct {
 	Generation int64
 
 	// Metadata represents user-provided metadata, in key/value pairs.
-	// Not supported by the JSON api.  Use ObjectHandle.Attrs instead.
+	//
+	// It can be nil if no metadata is present, or if the client uses the JSON
+	// API for downloads. Only the XML and gRPC APIs support getting
+	// custom metadata via the Reader; for JSON make a separate call to
+	// ObjectHandle.Attrs.
 	Metadata map[string]string
 
 	// Metageneration is the version of the metadata for this object at

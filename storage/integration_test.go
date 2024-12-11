@@ -37,7 +37,6 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"os"
-	"reflect"
 	"sort"
 	"strconv"
 	"strings"
@@ -205,10 +204,10 @@ func initIntegrationTest() func() error {
 		if err != nil {
 			log.Fatalf("NewStorageControlClient: %v", err)
 		}
-		if err := client.Bucket(bucketName).Create(ctx, testutil.ProjID(), &BucketAttrs{SoftDeletePolicy: &SoftDeletePolicy{RetentionDuration: 0}}); err != nil {
+		if err := client.Bucket(bucketName).Create(ctx, testutil.ProjID(), nil); err != nil {
 			log.Fatalf("creating bucket %q: %v", bucketName, err)
 		}
-		if err := client.Bucket(grpcBucketName).Create(ctx, testutil.ProjID(), &BucketAttrs{SoftDeletePolicy: &SoftDeletePolicy{RetentionDuration: 0}}); err != nil {
+		if err := client.Bucket(grpcBucketName).Create(ctx, testutil.ProjID(), nil); err != nil {
 			log.Fatalf("creating bucket %q: %v", grpcBucketName, err)
 		}
 		return cleanup
@@ -5042,8 +5041,8 @@ func TestIntegration_ReaderAttrs(t *testing.T) {
 			Metageneration:  attrs.Metageneration,
 			CRC32C:          crc32c(c),
 		}
-		if !reflect.DeepEqual(got, want) {
-			t.Fatalf("got\t%v,\nwanted\t%v", got, want)
+		if diff := cmp.Diff(got, want); diff != "" {
+			t.Fatalf("diff got vs want: %v", diff)
 		}
 	})
 }
@@ -5053,18 +5052,18 @@ func TestIntegration_ReaderAttrs_Metadata(t *testing.T) {
 		bkt := client.Bucket(bucket)
 
 		const defaultType = "text/plain"
-		o := bkt.Object("reader-attrs-obj")
+		o := bkt.Object("reader-attrs-metadata-obj")
 		c := randomContents()
 		if err := writeObject(ctx, o, defaultType, c); err != nil {
 			t.Errorf("Write for %v failed with %v", o.ObjectName(), err)
 		}
-		defer func() {
+		t.Cleanup(func() {
 			if err := o.Delete(ctx); err != nil {
 				log.Printf("failed to delete test object: %v", err)
 			}
-		}()
+		})
 
-		oa, err := o.Update(ctx, ObjectAttrsToUpdate{Metadata: map[string]string{"Custom-Key": "custom-value"}})
+		oa, err := o.Update(ctx, ObjectAttrsToUpdate{Metadata: map[string]string{"Custom-Key": "custom-value", "Other-Key": "other-value"}})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -5076,25 +5075,14 @@ func TestIntegration_ReaderAttrs_Metadata(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		attrs, err := o.Attrs(ctx)
-		if err != nil {
-			t.Fatal(err)
+		got := rc.Attrs.Metadata
+		want := map[string]string{
+			"Custom-Key": "custom-value",
+			"Other-Key":  "other-value",
 		}
 
-		got := rc.Attrs
-		want := ReaderObjectAttrs{
-			Size:            attrs.Size,
-			ContentType:     attrs.ContentType,
-			ContentEncoding: attrs.ContentEncoding,
-			CacheControl:    got.CacheControl, // ignored, tested separately
-			LastModified:    got.LastModified, // ignored, tested separately
-			Generation:      attrs.Generation,
-			Metadata:        map[string]string{"Custom-Key": "custom-value"},
-			Metageneration:  attrs.Metageneration,
-			CRC32C:          crc32c(c),
-		}
-		if !reflect.DeepEqual(got, want) {
-			t.Fatalf("got\t%v,\nwanted\t%v", got, want)
+		if diff := cmp.Diff(got, want); diff != "" {
+			t.Fatalf("diff got vs want: %v", diff)
 		}
 	})
 }

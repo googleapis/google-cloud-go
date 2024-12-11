@@ -796,7 +796,7 @@ func TestOpenReaderEmulated(t *testing.T) {
 }
 
 func TestOpenReaderEmulated_Metadata(t *testing.T) {
-	transportClientTest(skipHTTP("metadata on read not supported by JSON api"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		// Populate test data.
 		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
 			Name: bucket,
@@ -818,7 +818,8 @@ func TestOpenReaderEmulated_Metadata(t *testing.T) {
 		}
 		if _, err := veneerClient.Bucket(bucket).Object(want.Name).Update(ctx, ObjectAttrsToUpdate{
 			Metadata: map[string]string{
-				"Custom-Key": "custom-value",
+				"Custom-Key":     "custom-value",
+				"Some-Other-Key": "some-other-value",
 			},
 		}); err != nil {
 			t.Fatalf("failed to update test object: %v", err)
