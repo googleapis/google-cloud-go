@@ -10,6 +10,7 @@ env -C .googleapis/ bazelisk fetch //google/storage/control/v2:control_go_proto 
 env -C .googleapis/ bazelisk build //google/storage/control/v2:control_go_proto //google/storage/control/v2:control_go_gapic //google/storage/control/v2:gapi-cloud-storage-control-v2-go
 bazel_output=$(env -C .googleapis/ bazelisk info output_path)
 tar -zx --strip-components=3 -f ${bazel_output}/k8-fastbuild/bin/google/storage/control/v2/gapi-cloud-storage-control-v2-go.tar.gz ./cloud.google.com/go/storage/control/apiv2/
+git checkout main storage/control/apiv2/storage_control_client_example_go123_test.go storage/control/apiv2/storage_control_client_example_test.go storage/control/apiv2/storage_control_client.go
 popd
-go run postprocessor.go > ../storage_control_client_mod.go
+go run postprocessor.go 1> ../storage_control_client_mod.go
 mv ../storage_control_client_mod.go ../storage_control_client.go
