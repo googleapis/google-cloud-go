@@ -5859,10 +5859,10 @@ func TestIntegration_PostPolicyV4_SignedURL_WithSignBytes(t *testing.T) {
 	})
 }
 
-func TestIntegration_OCTracing(t *testing.T) {
+func TestIntegration_OTelTracing(t *testing.T) {
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
-		te := testutil.NewTestExporter()
-		defer te.Unregister()
+		te := testutil.NewOpenTelemetryTestExporter()
+		defer te.Unregister(ctx)
 
 		bkt := client.Bucket(bucket)
 		bkt.Attrs(ctx)
