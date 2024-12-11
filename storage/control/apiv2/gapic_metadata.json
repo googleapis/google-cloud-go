@@ -20,6 +20,11 @@
                 "CreateManagedFolder"
               ]
             },
+            "DeleteBucket": {
+              "methods": [
+                "DeleteBucket"
+              ]
+            },
             "DeleteFolder": {
               "methods": [
                 "DeleteFolder"
@@ -28,6 +33,11 @@
             "DeleteManagedFolder": {
               "methods": [
                 "DeleteManagedFolder"
+              ]
+            },
+            "GetBucket": {
+              "methods": [
+                "GetBucket"
               ]
             },
             "GetFolder": {

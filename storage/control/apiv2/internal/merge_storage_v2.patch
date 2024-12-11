@@ -1,0 +1,644 @@
+diff --git a/google/storage/control/v2/BUILD.bazel b/google/storage/control/v2/BUILD.bazel
+index 3fa0b64c8..9aa5d2903 100644
+--- a/google/storage/control/v2/BUILD.bazel
++++ b/google/storage/control/v2/BUILD.bazel
+@@ -29,9 +29,12 @@ proto_library(
+         "//google/api:field_info_proto",
+         "//google/api:resource_proto",
+         "//google/api:routing_proto",
++        "//google/type:date_proto",
+         "//google/longrunning:operations_proto",
++        "@com_google_protobuf//:duration_proto",
+         "@com_google_protobuf//:empty_proto",
+         "@com_google_protobuf//:timestamp_proto",
++        "@com_google_protobuf//:field_mask_proto",
+     ],
+ )
+ 
+@@ -122,6 +125,7 @@ go_proto_library(
+     deps = [
+         "//google/api:annotations_go_proto",
+         "//google/longrunning:longrunning_go_proto",
++        "//google/type:date_go_proto",
+     ],
+ )
+ 
+diff --git a/google/storage/control/v2/storage_control.proto b/google/storage/control/v2/storage_control.proto
+index 28551e3ef..8d97808e9 100644
+--- a/google/storage/control/v2/storage_control.proto
++++ b/google/storage/control/v2/storage_control.proto
+@@ -24,6 +24,9 @@ import "google/api/routing.proto";
+ import "google/longrunning/operations.proto";
+ import "google/protobuf/empty.proto";
+ import "google/protobuf/timestamp.proto";
++import "google/protobuf/duration.proto";
++import "google/protobuf/field_mask.proto";
++import "google/type/date.proto";
+ 
+ option csharp_namespace = "Google.Cloud.Storage.Control.V2";
+ option go_package = "cloud.google.com/go/storage/control/apiv2/controlpb;controlpb";
+@@ -158,6 +161,604 @@ service StorageControl {
+     };
+     option (google.api.method_signature) = "parent";
+   }
++
++  // Permanently deletes an empty bucket.
++  rpc DeleteBucket(DeleteBucketRequest) returns (google.protobuf.Empty) {
++    option (google.api.routing) = {
++      routing_parameters { field: "name" path_template: "{bucket=**}" }
++    };
++    option (google.api.method_signature) = "name";
++  }
++
++  // Returns metadata for the specified bucket.
++  rpc GetBucket(GetBucketRequest) returns (Bucket) {
++    option (google.api.routing) = {
++      routing_parameters { field: "name" path_template: "{bucket=**}" }
++    };
++    option (google.api.method_signature) = "name";
++  }
++}
++
++message GetBucketRequest {
++  // Required. Name of a bucket.
++  string name = 1 [
++    (google.api.field_behavior) = REQUIRED,
++    (google.api.resource_reference) = { type: "storage.googleapis.com/Bucket" }
++  ];
++
++  // If set, and if the bucket's current metageneration does not match the
++  // specified value, the request will return an error.
++  optional int64 if_metageneration_match = 2;
++
++  // If set, and if the bucket's current metageneration matches the specified
++  // value, the request will return an error.
++  optional int64 if_metageneration_not_match = 3;
++
++  // Mask specifying which fields to read.
++  // A "*" field may be used to indicate all fields.
++  // If no mask is specified, will default to all fields.
++  optional google.protobuf.FieldMask read_mask = 5;
++}
++
++// A bucket.
++message Bucket {
++  option (google.api.resource) = {
++    type: "storage.googleapis.com/Bucket"
++    pattern: "projects/{project}/buckets/{bucket}"
++    plural: "buckets"
++    singular: "bucket"
++  };
++
++  // Billing properties of a bucket.
++  message Billing {
++    // When set to true, Requester Pays is enabled for this bucket.
++    bool requester_pays = 1;
++  }
++
++  // Cross-Origin Response sharing (CORS) properties for a bucket.
++  // For more on Cloud Storage and CORS, see
++  // https://cloud.google.com/storage/docs/cross-origin.
++  // For more on CORS in general, see https://tools.ietf.org/html/rfc6454.
++  message Cors {
++    // The list of Origins eligible to receive CORS response headers. See
++    // [https://tools.ietf.org/html/rfc6454][RFC 6454] for more on origins.
++    // Note: "*" is permitted in the list of origins, and means "any Origin".
++    repeated string origin = 1;
++
++    // The list of HTTP methods on which to include CORS response headers,
++    // (`GET`, `OPTIONS`, `POST`, etc) Note: "*" is permitted in the list of
++    // methods, and means "any method".
++    repeated string method = 2;
++
++    // The list of HTTP headers other than the
++    // [https://www.w3.org/TR/cors/#simple-response-header][simple response
++    // headers] to give permission for the user-agent to share across domains.
++    repeated string response_header = 3;
++
++    // The value, in seconds, to return in the
++    // [https://www.w3.org/TR/cors/#access-control-max-age-response-header][Access-Control-Max-Age
++    // header] used in preflight responses.
++    int32 max_age_seconds = 4;
++  }
++
++  // Encryption properties of a bucket.
++  message Encryption {
++    // The name of the Cloud KMS key that will be used to encrypt objects
++    // inserted into this bucket, if no encryption method is specified.
++    string default_kms_key = 1 [(google.api.resource_reference) = {
++      type: "cloudkms.googleapis.com/CryptoKey"
++    }];
++  }
++
++  // Bucket restriction options.
++  message IamConfig {
++    // Settings for Uniform Bucket level access.
++    // See https://cloud.google.com/storage/docs/uniform-bucket-level-access.
++    message UniformBucketLevelAccess {
++      // If set, access checks only use bucket-level IAM policies or above.
++      bool enabled = 1;
++
++      // The deadline time for changing
++      // `iam_config.uniform_bucket_level_access.enabled` from `true` to
++      // `false`. Mutable until the specified deadline is reached, but not
++      // afterward.
++      google.protobuf.Timestamp lock_time = 2;
++    }
++
++    // Bucket restriction options currently enforced on the bucket.
++    UniformBucketLevelAccess uniform_bucket_level_access = 1;
++
++    // Whether IAM will enforce public access prevention. Valid values are
++    // "enforced" or "inherited".
++    string public_access_prevention = 3;
++  }
++
++  // Lifecycle properties of a bucket.
++  // For more information, see https://cloud.google.com/storage/docs/lifecycle.
++  message Lifecycle {
++    // A lifecycle Rule, combining an action to take on an object and a
++    // condition which will trigger that action.
++    message Rule {
++      // An action to take on an object.
++      message Action {
++        // Type of the action. Currently, only `Delete`, `SetStorageClass`, and
++        // `AbortIncompleteMultipartUpload` are supported.
++        string type = 1;
++
++        // Target storage class. Required iff the type of the action is
++        // SetStorageClass.
++        string storage_class = 2;
++      }
++
++      // A condition of an object which triggers some action.
++      message Condition {
++        // Age of an object (in days). This condition is satisfied when an
++        // object reaches the specified age.
++        // A value of 0 indicates that all objects immediately match this
++        // condition.
++        optional int32 age_days = 1;
++
++        // This condition is satisfied when an object is created before midnight
++        // of the specified date in UTC.
++        google.type.Date created_before = 2;
++
++        // Relevant only for versioned objects. If the value is
++        // `true`, this condition matches live objects; if the value
++        // is `false`, it matches archived objects.
++        optional bool is_live = 3;
++
++        // Relevant only for versioned objects. If the value is N, this
++        // condition is satisfied when there are at least N versions (including
++        // the live version) newer than this version of the object.
++        optional int32 num_newer_versions = 4;
++
++        // Objects having any of the storage classes specified by this condition
++        // will be matched. Values include `MULTI_REGIONAL`, `REGIONAL`,
++        // `NEARLINE`, `COLDLINE`, `STANDARD`, and
++        // `DURABLE_REDUCED_AVAILABILITY`.
++        repeated string matches_storage_class = 5;
++
++        // Number of days that have elapsed since the custom timestamp set on an
++        // object.
++        // The value of the field must be a nonnegative integer.
++        optional int32 days_since_custom_time = 7;
++
++        // An object matches this condition if the custom timestamp set on the
++        // object is before the specified date in UTC.
++        google.type.Date custom_time_before = 8;
++
++        // This condition is relevant only for versioned objects. An object
++        // version satisfies this condition only if these many days have been
++        // passed since it became noncurrent. The value of the field must be a
++        // nonnegative integer. If it's zero, the object version will become
++        // eligible for Lifecycle action as soon as it becomes noncurrent.
++        optional int32 days_since_noncurrent_time = 9;
++
++        // This condition is relevant only for versioned objects. An object
++        // version satisfies this condition only if it became noncurrent before
++        // the specified date in UTC.
++        google.type.Date noncurrent_time_before = 10;
++
++        // List of object name prefixes. If any prefix exactly matches the
++        // beginning of the object name, the condition evaluates to true.
++        repeated string matches_prefix = 11;
++
++        // List of object name suffixes. If any suffix exactly matches the
++        // end of the object name, the condition evaluates to true.
++        repeated string matches_suffix = 12;
++      }
++
++      // The action to take.
++      Action action = 1;
++
++      // The condition(s) under which the action will be taken.
++      Condition condition = 2;
++    }
++
++    // A lifecycle management rule, which is made of an action to take and the
++    // condition(s) under which the action will be taken.
++    repeated Rule rule = 1;
++  }
++
++  // Logging-related properties of a bucket.
++  message Logging {
++    // The destination bucket where the current bucket's logs should be placed,
++    // using path format (like `projects/123456/buckets/foo`).
++    string log_bucket = 1;
++
++    // A prefix for log object names.
++    string log_object_prefix = 2;
++  }
++
++  // Retention policy properties of a bucket.
++  message RetentionPolicy {
++    // Server-determined value that indicates the time from which policy was
++    // enforced and effective.
++    google.protobuf.Timestamp effective_time = 1;
++
++    // Once locked, an object retention policy cannot be modified.
++    bool is_locked = 2;
++
++    // The duration that objects need to be retained. Retention duration must be
++    // greater than zero and less than 100 years. Note that enforcement of
++    // retention periods less than a day is not guaranteed. Such periods should
++    // only be used for testing purposes. Any `nanos` value specified will be
++    // rounded down to the nearest second.
++    google.protobuf.Duration retention_duration = 4;
++  }
++
++  // Soft delete policy properties of a bucket.
++  message SoftDeletePolicy {
++    // The period of time that soft-deleted objects in the bucket must be
++    // retained and cannot be permanently deleted. The duration must be greater
++    // than or equal to 7 days and less than 1 year.
++    optional google.protobuf.Duration retention_duration = 1;
++
++    // Time from which the policy was effective. This is service-provided.
++    optional google.protobuf.Timestamp effective_time = 2;
++  }
++
++  // Properties of a bucket related to versioning.
++  // For more on Cloud Storage versioning, see
++  // https://cloud.google.com/storage/docs/object-versioning.
++  message Versioning {
++    // While set to true, versioning is fully enabled for this bucket.
++    bool enabled = 1;
++  }
++
++  // Properties of a bucket related to accessing the contents as a static
++  // website. For more on hosting a static website via Cloud Storage, see
++  // https://cloud.google.com/storage/docs/hosting-static-website.
++  message Website {
++    // If the requested object path is missing, the service will ensure the path
++    // has a trailing '/', append this suffix, and attempt to retrieve the
++    // resulting object. This allows the creation of `index.html`
++    // objects to represent directory pages.
++    string main_page_suffix = 1;
++
++    // If the requested object path is missing, and any
++    // `mainPageSuffix` object is missing, if applicable, the service
++    // will return the named object from this bucket as the content for a
++    // [https://tools.ietf.org/html/rfc7231#section-6.5.4][404 Not Found]
++    // result.
++    string not_found_page = 2;
++  }
++
++  // Configuration for Custom Dual Regions.  It should specify precisely two
++  // eligible regions within the same Multiregion. More information on regions
++  // may be found [https://cloud.google.com/storage/docs/locations][here].
++  message CustomPlacementConfig {
++    // List of locations to use for data placement.
++    repeated string data_locations = 1;
++  }
++
++  // Configuration for a bucket's Autoclass feature.
++  message Autoclass {
++    // Enables Autoclass.
++    bool enabled = 1;
++
++    // Output only. Latest instant at which the `enabled` field was set to true
++    // after being disabled/unconfigured or set to false after being enabled. If
++    // Autoclass is enabled when the bucket is created, the toggle_time is set
++    // to the bucket creation time.
++    google.protobuf.Timestamp toggle_time = 2
++        [(google.api.field_behavior) = OUTPUT_ONLY];
++
++    // An object in an Autoclass bucket will eventually cool down to the
++    // terminal storage class if there is no access to the object.
++    // The only valid values are NEARLINE and ARCHIVE.
++    optional string terminal_storage_class = 3;
++
++    // Output only. Latest instant at which the autoclass terminal storage class
++    // was updated.
++    optional google.protobuf.Timestamp terminal_storage_class_update_time = 4
++        [(google.api.field_behavior) = OUTPUT_ONLY];
++  }
++
++  // Configuration for a bucket's hierarchical namespace feature.
++  message HierarchicalNamespace {
++    // Optional. Enables the hierarchical namespace feature.
++    bool enabled = 1 [(google.api.field_behavior) = OPTIONAL];
++  }
++
++  // Immutable. The name of the bucket.
++  // Format: `projects/{project}/buckets/{bucket}`
++  string name = 1 [(google.api.field_behavior) = IMMUTABLE];
++
++  // Output only. The user-chosen part of the bucket name. The `{bucket}`
++  // portion of the `name` field. For globally unique buckets, this is equal to
++  // the "bucket name" of other Cloud Storage APIs. Example: "pub".
++  string bucket_id = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
++
++  // The etag of the bucket.
++  // If included in the metadata of an UpdateBucketRequest, the operation will
++  // only be performed if the etag matches that of the bucket.
++  string etag = 29;
++
++  // Immutable. The project which owns this bucket, in the format of
++  // "projects/{projectIdentifier}".
++  // {projectIdentifier} can be the project ID or project number.
++  string project = 3 [
++    (google.api.field_behavior) = IMMUTABLE,
++    (google.api.resource_reference) = {
++      type: "cloudresourcemanager.googleapis.com/Project"
++    }
++  ];
++
++  // Output only. The metadata generation of this bucket.
++  int64 metageneration = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
++
++  // Immutable. The location of the bucket. Object data for objects in the
++  // bucket resides in physical storage within this region.  Defaults to `US`.
++  // See the
++  // [https://developers.google.com/storage/docs/concepts-techniques#specifyinglocations"][developer's
++  // guide] for the authoritative list. Attempting to update this field after
++  // the bucket is created will result in an error.
++  string location = 5 [(google.api.field_behavior) = IMMUTABLE];
++
++  // Output only. The location type of the bucket (region, dual-region,
++  // multi-region, etc).
++  string location_type = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
++
++  // The bucket's default storage class, used whenever no storageClass is
++  // specified for a newly-created object. This defines how objects in the
++  // bucket are stored and determines the SLA and the cost of storage.
++  // If this value is not specified when the bucket is created, it will default
++  // to `STANDARD`. For more information, see
++  // https://developers.google.com/storage/docs/storage-classes.
++  string storage_class = 7;
++
++  // The recovery point objective for cross-region replication of the bucket.
++  // Applicable only for dual- and multi-region buckets. "DEFAULT" uses default
++  // replication. "ASYNC_TURBO" enables turbo replication, valid for dual-region
++  // buckets only. If rpo is not specified when the bucket is created, it
++  // defaults to "DEFAULT". For more information, see
++  // https://cloud.google.com/storage/docs/availability-durability#turbo-replication.
++  string rpo = 27;
++
++  // Access controls on the bucket.
++  // If iam_config.uniform_bucket_level_access is enabled on this bucket,
++  // requests to set, read, or modify acl is an error.
++  repeated BucketAccessControl acl = 8;
++
++  // Default access controls to apply to new objects when no ACL is provided.
++  // If iam_config.uniform_bucket_level_access is enabled on this bucket,
++  // requests to set, read, or modify acl is an error.
++  repeated ObjectAccessControl default_object_acl = 9;
++
++  // The bucket's lifecycle config. See
++  // [https://developers.google.com/storage/docs/lifecycle]Lifecycle Management]
++  // for more information.
++  Lifecycle lifecycle = 10;
++
++  // Output only. The creation time of the bucket.
++  google.protobuf.Timestamp create_time = 11
++      [(google.api.field_behavior) = OUTPUT_ONLY];
++
++  // The bucket's [https://www.w3.org/TR/cors/][Cross-Origin Resource Sharing]
++  // (CORS) config.
++  repeated Cors cors = 12;
++
++  // Output only. The modification time of the bucket.
++  google.protobuf.Timestamp update_time = 13
++      [(google.api.field_behavior) = OUTPUT_ONLY];
++
++  // The default value for event-based hold on newly created objects in this
++  // bucket.  Event-based hold is a way to retain objects indefinitely until an
++  // event occurs, signified by the
++  // hold's release. After being released, such objects will be subject to
++  // bucket-level retention (if any).  One sample use case of this flag is for
++  // banks to hold loan documents for at least 3 years after loan is paid in
++  // full. Here, bucket-level retention is 3 years and the event is loan being
++  // paid in full. In this example, these objects will be held intact for any
++  // number of years until the event has occurred (event-based hold on the
++  // object is released) and then 3 more years after that. That means retention
++  // duration of the objects begins from the moment event-based hold
++  // transitioned from true to false.  Objects under event-based hold cannot be
++  // deleted, overwritten or archived until the hold is removed.
++  bool default_event_based_hold = 14;
++
++  // User-provided labels, in key/value pairs.
++  map<string, string> labels = 15;
++
++  // The bucket's website config, controlling how the service behaves
++  // when accessing bucket contents as a web site. See the
++  // [https://cloud.google.com/storage/docs/static-website][Static Website
++  // Examples] for more information.
++  Website website = 16;
++
++  // The bucket's versioning config.
++  Versioning versioning = 17;
++
++  // The bucket's logging config, which defines the destination bucket
++  // and name prefix (if any) for the current bucket's logs.
++  Logging logging = 18;
++
++  // Output only. The owner of the bucket. This is always the project team's
++  // owner group.
++  Owner owner = 19 [(google.api.field_behavior) = OUTPUT_ONLY];
++
++  // Encryption config for a bucket.
++  Encryption encryption = 20;
++
++  // The bucket's billing config.
++  Billing billing = 21;
++
++  // The bucket's retention policy. The retention policy enforces a minimum
++  // retention time for all objects contained in the bucket, based on their
++  // creation time. Any attempt to overwrite or delete objects younger than the
++  // retention period will result in a PERMISSION_DENIED error.  An unlocked
++  // retention policy can be modified or removed from the bucket via a
++  // storage.buckets.update operation. A locked retention policy cannot be
++  // removed or shortened in duration for the lifetime of the bucket.
++  // Attempting to remove or decrease period of a locked retention policy will
++  // result in a PERMISSION_DENIED error.
++  RetentionPolicy retention_policy = 22;
++
++  // The bucket's IAM config.
++  IamConfig iam_config = 23;
++
++  // Reserved for future use.
++  bool satisfies_pzs = 25;
++
++  // Configuration that, if present, specifies the data placement for a
++  // [https://cloud.google.com/storage/docs/locations#location-dr][configurable
++  // dual-region].
++  CustomPlacementConfig custom_placement_config = 26;
++
++  // The bucket's Autoclass configuration. If there is no configuration, the
++  // Autoclass feature will be disabled and have no effect on the bucket.
++  Autoclass autoclass = 28;
++
++  // Optional. The bucket's hierarchical namespace configuration. If there is no
++  // configuration, the hierarchical namespace feature will be disabled and have
++  // no effect on the bucket.
++  HierarchicalNamespace hierarchical_namespace = 32
++      [(google.api.field_behavior) = OPTIONAL];
++
++  // Optional. The bucket's soft delete policy. The soft delete policy prevents
++  // soft-deleted objects from being permanently deleted.
++  SoftDeletePolicy soft_delete_policy = 31
++      [(google.api.field_behavior) = OPTIONAL];
++}
++
++// An access-control entry.
++message BucketAccessControl {
++  // The access permission for the entity.
++  string role = 1;
++
++  // The ID of the access-control entry.
++  string id = 2;
++
++  // The entity holding the permission, in one of the following forms:
++  // * `user-{userid}`
++  // * `user-{email}`
++  // * `group-{groupid}`
++  // * `group-{email}`
++  // * `domain-{domain}`
++  // * `project-{team}-{projectnumber}`
++  // * `project-{team}-{projectid}`
++  // * `allUsers`
++  // * `allAuthenticatedUsers`
++  // Examples:
++  // * The user `liz@example.com` would be `user-liz@example.com`.
++  // * The group `example@googlegroups.com` would be
++  // `group-example@googlegroups.com`
++  // * All members of the Google Apps for Business domain `example.com` would be
++  // `domain-example.com`
++  // For project entities, `project-{team}-{projectnumber}` format will be
++  // returned on response.
++  string entity = 3;
++
++  // Output only. The alternative entity format, if exists. For project
++  // entities, `project-{team}-{projectid}` format will be returned on response.
++  string entity_alt = 9 [(google.api.field_behavior) = OUTPUT_ONLY];
++
++  // The ID for the entity, if any.
++  string entity_id = 4;
++
++  // The etag of the BucketAccessControl.
++  // If included in the metadata of an update or delete request message, the
++  // operation operation will only be performed if the etag matches that of the
++  // bucket's BucketAccessControl.
++  string etag = 8;
++
++  // The email address associated with the entity, if any.
++  string email = 5;
++
++  // The domain associated with the entity, if any.
++  string domain = 6;
++
++  // The project team associated with the entity, if any.
++  ProjectTeam project_team = 7;
++}
++
++// An access-control entry.
++message ObjectAccessControl {
++  // The access permission for the entity. One of the following values:
++  // * `READER`
++  // * `WRITER`
++  // * `OWNER`
++  string role = 1;
++
++  // The ID of the access-control entry.
++  string id = 2;
++
++  // The entity holding the permission, in one of the following forms:
++  // * `user-{userid}`
++  // * `user-{email}`
++  // * `group-{groupid}`
++  // * `group-{email}`
++  // * `domain-{domain}`
++  // * `project-{team}-{projectnumber}`
++  // * `project-{team}-{projectid}`
++  // * `allUsers`
++  // * `allAuthenticatedUsers`
++  // Examples:
++  // * The user `liz@example.com` would be `user-liz@example.com`.
++  // * The group `example@googlegroups.com` would be
++  // `group-example@googlegroups.com`.
++  // * All members of the Google Apps for Business domain `example.com` would be
++  // `domain-example.com`.
++  // For project entities, `project-{team}-{projectnumber}` format will be
++  // returned on response.
++  string entity = 3;
++
++  // Output only. The alternative entity format, if exists. For project
++  // entities, `project-{team}-{projectid}` format will be returned on response.
++  string entity_alt = 9 [(google.api.field_behavior) = OUTPUT_ONLY];
++
++  // The ID for the entity, if any.
++  string entity_id = 4;
++
++  // The etag of the ObjectAccessControl.
++  // If included in the metadata of an update or delete request message, the
++  // operation will only be performed if the etag matches that of the live
++  // object's ObjectAccessControl.
++  string etag = 8;
++
++  // The email address associated with the entity, if any.
++  string email = 5;
++
++  // The domain associated with the entity, if any.
++  string domain = 6;
++
++  // The project team associated with the entity, if any.
++  ProjectTeam project_team = 7;
++}
++
++// Represents the Viewers, Editors, or Owners of a given project.
++message ProjectTeam {
++  // The project number.
++  string project_number = 1;
++
++  // The team.
++  string team = 2;
++}
++
++// The owner of a specific resource.
++message Owner {
++  // The entity, in the form `user-`*userId*.
++  string entity = 1;
++
++  // The ID for the entity.
++  string entity_id = 2;
++}
++
++
++message DeleteBucketRequest {
++  // Required. Name of a bucket to delete.
++  string name = 1 [
++    (google.api.field_behavior) = REQUIRED,
++    (google.api.resource_reference) = { type: "storage.googleapis.com/Bucket" }
++  ];
++
++  // If set, only deletes the bucket if its metageneration matches this value.
++  optional int64 if_metageneration_match = 2;
++
++  // If set, only deletes the bucket if its metageneration does not match this
++  // value.
++  optional int64 if_metageneration_not_match = 3;
+ }
+ 
+ // Contains information about a pending rename operation.

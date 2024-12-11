@@ -19,6 +19,7 @@ package control
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 	"regexp"
@@ -26,9 +27,12 @@ import (
 	"time"
 
 	"cloud.google.com/go/longrunning"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	controlpb "cloud.google.com/go/storage/control/apiv2/controlpb"
+	sv2pb "cloud.google.com/go/storage/internal/apiv2"
+	storagepb "cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/uuid"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
@@ -44,16 +48,16 @@ var newStorageControlClientHook clientHook
 
 // StorageControlCallOptions contains the retry settings for each method of StorageControlClient.
 type StorageControlCallOptions struct {
-	CreateFolder        []gax.CallOption
-	DeleteFolder        []gax.CallOption
-	GetFolder           []gax.CallOption
-	ListFolders         []gax.CallOption
-	RenameFolder        []gax.CallOption
-	GetStorageLayout    []gax.CallOption
-	CreateManagedFolder []gax.CallOption
-	DeleteManagedFolder []gax.CallOption
-	GetManagedFolder    []gax.CallOption
-	ListManagedFolders  []gax.CallOption
+	CreateFolder		[]gax.CallOption
+	DeleteFolder		[]gax.CallOption
+	GetFolder		[]gax.CallOption
+	ListFolders		[]gax.CallOption
+	RenameFolder		[]gax.CallOption
+	GetStorageLayout	[]gax.CallOption
+	CreateManagedFolder	[]gax.CallOption
+	DeleteManagedFolder	[]gax.CallOption
+	GetManagedFolder	[]gax.CallOption
+	ListManagedFolders	[]gax.CallOption
 }
 
 func defaultStorageControlGRPCClientOptions() []option.ClientOption {
@@ -89,9 +93,9 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 					codes.Internal,
 					codes.Unknown,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 2.00,
+					Initial:	1000 * time.Millisecond,
+					Max:		60000 * time.Millisecond,
+					Multiplier:	2.00,
 				})
 			}),
 		},
@@ -105,9 +109,9 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 					codes.Internal,
 					codes.Unknown,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 2.00,
+					Initial:	1000 * time.Millisecond,
+					Max:		60000 * time.Millisecond,
+					Multiplier:	2.00,
 				})
 			}),
 		},
@@ -121,9 +125,9 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 					codes.Internal,
 					codes.Unknown,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 2.00,
+					Initial:	1000 * time.Millisecond,
+					Max:		60000 * time.Millisecond,
+					Multiplier:	2.00,
 				})
 			}),
 		},
@@ -137,9 +141,9 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 					codes.Internal,
 					codes.Unknown,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 2.00,
+					Initial:	1000 * time.Millisecond,
+					Max:		60000 * time.Millisecond,
+					Multiplier:	2.00,
 				})
 			}),
 		},
@@ -159,9 +163,9 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 					codes.Internal,
 					codes.Unknown,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 2.00,
+					Initial:	1000 * time.Millisecond,
+					Max:		60000 * time.Millisecond,
+					Multiplier:	2.00,
 				})
 			}),
 		},
@@ -175,9 +179,9 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 					codes.Internal,
 					codes.Unknown,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 2.00,
+					Initial:	1000 * time.Millisecond,
+					Max:		60000 * time.Millisecond,
+					Multiplier:	2.00,
 				})
 			}),
 		},
@@ -208,18 +212,20 @@ type internalStorageControlClient interface {
 // StorageControl service includes selected control plane operations.
 type StorageControlClient struct {
 	// The internal transport-dependent client.
-	internalClient internalStorageControlClient
+	internalClient	internalStorageControlClient
 
 	// The call options for this service.
-	CallOptions *StorageControlCallOptions
+	CallOptions	*StorageControlCallOptions
 
 	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-}
+	LROClient		*lroauto.OperationsClient
+	internalStorageClient	*
 
-// Wrapper methods routed to the internal client.
+	// Wrapper methods routed to the internal client.
+	sv2pb.Client
+}
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
@@ -310,21 +316,23 @@ func (c *StorageControlClient) ListManagedFolders(ctx context.Context, req *cont
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type storageControlGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
-	connPool gtransport.ConnPool
+	connPool	gtransport.ConnPool
 
 	// Points back to the CallOptions field of the containing StorageControlClient
-	CallOptions **StorageControlCallOptions
+	CallOptions	**StorageControlCallOptions
 
 	// The gRPC API client.
-	storageControlClient controlpb.StorageControlClient
+	storageControlClient	controlpb.StorageControlClient
 
 	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient **lroauto.OperationsClient
+	LROClient	**lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogHeaders []string
+	xGoogHeaders	[]string
+
+	logger	*slog.Logger
 }
 
 // NewStorageControlClient creates a new storage control client based on gRPC.
@@ -348,9 +356,10 @@ func NewStorageControlClient(ctx context.Context, opts ...option.ClientOption) (
 	client := StorageControlClient{CallOptions: defaultStorageControlCallOptions()}
 
 	c := &storageControlGRPCClient{
-		connPool:             connPool,
-		storageControlClient: controlpb.NewStorageControlClient(connPool),
-		CallOptions:          &client.CallOptions,
+		connPool:		connPool,
+		storageControlClient:	controlpb.NewStorageControlClient(connPool),
+		CallOptions:		&client.CallOptions,
+		logger:			internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -367,13 +376,20 @@ func NewStorageControlClient(ctx context.Context, opts ...option.ClientOption) (
 		return nil, err
 	}
 	c.LROClient = &client.LROClient
+	v2, err := sv2pb.NewClient(ctx,
+
+	// Connection returns a connection to the API service.
+	//
+	// Deprecated: Connections are now pooled so this method does not always
+	// return the same resource.
+	opts...)
+	if err != nil {
+		return nil, err
+	}
+	client.internalStorageClient = v2
 	return &client, nil
 }
 
-// Connection returns a connection to the API service.
-//
-// Deprecated: Connections are now pooled so this method does not always
-// return the same resource.
 func (c *storageControlGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -416,7 +432,7 @@ func (c *storageControlGRPCClient) CreateFolder(ctx context.Context, req *contro
 	var resp *controlpb.Folder
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.storageControlClient.CreateFolder(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.storageControlClient.CreateFolder, req, settings.GRPC, c.logger, "CreateFolder")
 		return err
 	}, opts...)
 	if err != nil {
@@ -445,7 +461,7 @@ func (c *storageControlGRPCClient) DeleteFolder(ctx context.Context, req *contro
 	opts = append((*c.CallOptions).DeleteFolder[0:len((*c.CallOptions).DeleteFolder):len((*c.CallOptions).DeleteFolder)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.storageControlClient.DeleteFolder(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.storageControlClient.DeleteFolder, req, settings.GRPC, c.logger, "DeleteFolder")
 		return err
 	}, opts...)
 	return err
@@ -472,7 +488,7 @@ func (c *storageControlGRPCClient) GetFolder(ctx context.Context, req *controlpb
 	var resp *controlpb.Folder
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.storageControlClient.GetFolder(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.storageControlClient.GetFolder, req, settings.GRPC, c.logger, "GetFolder")
 		return err
 	}, opts...)
 	if err != nil {
@@ -510,7 +526,7 @@ func (c *storageControlGRPCClient) ListFolders(ctx context.Context, req *control
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.storageControlClient.ListFolders(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.storageControlClient.ListFolders, req, settings.GRPC, c.logger, "ListFolders")
 			return err
 		}, opts...)
 		if err != nil {
@@ -554,7 +570,7 @@ func (c *storageControlGRPCClient) RenameFolder(ctx context.Context, req *contro
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.storageControlClient.RenameFolder(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.storageControlClient.RenameFolder, req, settings.GRPC, c.logger, "RenameFolder")
 		return err
 	}, opts...)
 	if err != nil {
@@ -586,7 +602,7 @@ func (c *storageControlGRPCClient) GetStorageLayout(ctx context.Context, req *co
 	var resp *controlpb.StorageLayout
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.storageControlClient.GetStorageLayout(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.storageControlClient.GetStorageLayout, req, settings.GRPC, c.logger, "GetStorageLayout")
 		return err
 	}, opts...)
 	if err != nil {
@@ -616,7 +632,7 @@ func (c *storageControlGRPCClient) CreateManagedFolder(ctx context.Context, req 
 	var resp *controlpb.ManagedFolder
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.storageControlClient.CreateManagedFolder(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.storageControlClient.CreateManagedFolder, req, settings.GRPC, c.logger, "CreateManagedFolder")
 		return err
 	}, opts...)
 	if err != nil {
@@ -645,7 +661,7 @@ func (c *storageControlGRPCClient) DeleteManagedFolder(ctx context.Context, req 
 	opts = append((*c.CallOptions).DeleteManagedFolder[0:len((*c.CallOptions).DeleteManagedFolder):len((*c.CallOptions).DeleteManagedFolder)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.storageControlClient.DeleteManagedFolder(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.storageControlClient.DeleteManagedFolder, req, settings.GRPC, c.logger, "DeleteManagedFolder")
 		return err
 	}, opts...)
 	return err
@@ -672,7 +688,7 @@ func (c *storageControlGRPCClient) GetManagedFolder(ctx context.Context, req *co
 	var resp *controlpb.ManagedFolder
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.storageControlClient.GetManagedFolder(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.storageControlClient.GetManagedFolder, req, settings.GRPC, c.logger, "GetManagedFolder")
 		return err
 	}, opts...)
 	if err != nil {
@@ -710,7 +726,7 @@ func (c *storageControlGRPCClient) ListManagedFolders(ctx context.Context, req *
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.storageControlClient.ListManagedFolders(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.storageControlClient.ListManagedFolders, req, settings.GRPC, c.logger, "ListManagedFolders")
 			return err
 		}, opts...)
 		if err != nil {
@@ -742,4 +758,12 @@ func (c *storageControlGRPCClient) RenameFolderOperation(name string) *RenameFol
 	return &RenameFolderOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
+}
+
+func (c *StorageControlClient) DeleteBucket(ctx context.Context, req *controlpb.DeleteBucketRequest, opts ...gax.CallOption) error {
+	return c.internalStorageClient.DeleteBucket(ctx, req, opts...)
+}
+
+func (c *StorageControlClient) GetBucket(ctx context.Context, req *controlpb.GetBucketRequest, opts ...gax.CallOption) (*controlpb.Bucket, error) {
+	return c.internalStorageClient.GetBucket(ctx, req, opts...)
 }
