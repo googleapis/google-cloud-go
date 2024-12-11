@@ -53,9 +53,10 @@ func stream(
 	ctx context.Context,
 	logger *log.Logger,
 	meterTracerFactory *builtinMetricsTracerFactory,
-	rpc func(ct context.Context, resumeToken []byte) (streamingReceiver, error),
+	rpc func(ct context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error),
 	setTimestamp func(time.Time),
 	release func(error),
+	gsc *grpcSpannerClient,
 ) *RowIterator {
 	return streamWithReplaceSessionFunc(
 		ctx,
@@ -69,6 +70,7 @@ func stream(
 		},
 		setTimestamp,
 		release,
+		gsc,
 	)
 }
 
@@ -79,18 +81,19 @@ func streamWithReplaceSessionFunc(
 	ctx context.Context,
 	logger *log.Logger,
 	meterTracerFactory *builtinMetricsTracerFactory,
-	rpc func(ct context.Context, resumeToken []byte) (streamingReceiver, error),
+	rpc func(ct context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error),
 	replaceSession func(ctx context.Context) error,
 	setTransactionID func(transactionID),
 	updateTxState func(err error) error,
 	setTimestamp func(time.Time),
 	release func(error),
+	gsc *grpcSpannerClient,
 ) *RowIterator {
 	ctx, cancel := context.WithCancel(ctx)
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.RowIterator")
 	return &RowIterator{
 		meterTracerFactory: meterTracerFactory,
-		streamd:            newResumableStreamDecoder(ctx, logger, rpc, replaceSession),
+		streamd:            newResumableStreamDecoder(ctx, logger, rpc, replaceSession, gsc),
 		rowd:               &partialResultSetDecoder{},
 		setTransactionID:   setTransactionID,
 		updateTxState:      updateTxState,
@@ -376,6 +379,22 @@ const (
 	finished                                               // 4
 )
 
+var decStateNames = map[resumableStreamDecoderState]string{
+	unConnected:         "unConnected",
+	queueingRetryable:   "queueingRetryable",
+	queueingUnretryable: "queueingUnretryable",
+	aborted:             "aborted",
+	finished:            "finished",
+}
+
+func (rss resumableStreamDecoderState) String() string {
+	s := decStateNames[rss]
+	if s == "" {
+		s = "unknown"
+	}
+	return s
+}
+
 // resumableStreamDecoder provides a resumable interface for receiving
 // sppb.PartialResultSet(s) from a given query wrapped by
 // resumableStreamDecoder.rpc().
@@ -395,7 +414,7 @@ type resumableStreamDecoder struct {
 	// a previous stream from the point encoded in restartToken.
 	// rpc is always a wrapper of a Cloud Spanner query which is
 	// resumable.
-	rpc func(ctx context.Context, restartToken []byte) (streamingReceiver, error)
+	rpc func(ctx context.Context, restartToken []byte, opts ...gax.CallOption) (streamingReceiver, error)
 
 	// replaceSessionFunc is a function that can be used to replace the session
 	// that is being used to execute the read operation. This function should
@@ -437,12 +456,14 @@ type resumableStreamDecoder struct {
 
 	// backoff is used for the retry settings
 	backoff gax.Backoff
+
+	gsc *grpcSpannerClient
 }
 
 // newResumableStreamDecoder creates a new resumeableStreamDecoder instance.
 // Parameter rpc should be a function that creates a new stream beginning at the
 // restartToken if non-nil.
-func newResumableStreamDecoder(ctx context.Context, logger *log.Logger, rpc func(ct context.Context, restartToken []byte) (streamingReceiver, error), replaceSession func(ctx context.Context) error) *resumableStreamDecoder {
+func newResumableStreamDecoder(ctx context.Context, logger *log.Logger, rpc func(ct context.Context, restartToken []byte, opts ...gax.CallOption) (streamingReceiver, error), replaceSession func(ctx context.Context) error, gsc *grpcSpannerClient) *resumableStreamDecoder {
 	return &resumableStreamDecoder{
 		ctx:                         ctx,
 		logger:                      logger,
@@ -450,6 +471,7 @@ func newResumableStreamDecoder(ctx context.Context, logger *log.Logger, rpc func
 		replaceSessionFunc:          replaceSession,
 		maxBytesBetweenResumeTokens: atomic.LoadInt32(&maxBytesBetweenResumeTokens),
 		backoff:                     DefaultRetryBackoff,
+		gsc:                         gsc,
 	}
 }
 
@@ -533,11 +555,17 @@ var (
 
 func (d *resumableStreamDecoder) next(mt *builtinMetricsTracer) bool {
 	retryer := onCodes(d.backoff, codes.Unavailable, codes.ResourceExhausted, codes.Internal)
+
+	// Setup and track x-goog-request-id in the manual retries for ExecuteStreamingSql.
+	attempt := uint32(0)
+	riw := d.gsc.generateRequestIDHeaderInjector()
+
 	for {
 		switch d.state {
 		case unConnected:
+			attempt++
 			// If no gRPC stream is available, try to initiate one.
-			d.stream, d.err = d.rpc(context.WithValue(d.ctx, metricsTracerKey, mt), d.resumeToken)
+			d.stream, d.err = d.rpc(context.WithValue(d.ctx, metricsTracerKey, mt), d.resumeToken, riw.withNextRetryAttempt(attempt))
 			if d.err == nil {
 				d.changeState(queueingRetryable)
 				continue

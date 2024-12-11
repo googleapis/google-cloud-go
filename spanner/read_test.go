@@ -640,7 +640,7 @@ func TestRsdNonblockingStates(t *testing.T) {
 		name         string
 		resumeTokens [][]byte
 		prsErrors    []PartialResultSetExecutionTime
-		rpc          func(ct context.Context, resumeToken []byte) (streamingReceiver, error)
+		rpc          func(ct context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error)
 		sql          string
 		// Expected values
 		want         []*sppb.PartialResultSet      // PartialResultSets that should be returned to caller
@@ -796,12 +796,12 @@ func TestRsdNonblockingStates(t *testing.T) {
 			}
 
 			if test.rpc == nil {
-				test.rpc = func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
+				test.rpc = func(ct context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
 					return mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
 						Session:     session.Name,
 						Sql:         test.sql,
 						ResumeToken: resumeToken,
-					})
+					}, opts...)
 				}
 			}
 			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -812,6 +812,7 @@ func TestRsdNonblockingStates(t *testing.T) {
 				nil,
 				test.rpc,
 				nil,
+				mc.(*grpcSpannerClient),
 			)
 			st := []resumableStreamDecoderState{}
 			var lastErr error
@@ -905,7 +906,7 @@ func TestRsdBlockingStates(t *testing.T) {
 	for _, test := range []struct {
 		name         string
 		resumeTokens [][]byte
-		rpc          func(ct context.Context, resumeToken []byte) (streamingReceiver, error)
+		rpc          func(ct context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error)
 		sql          string
 		// Expected values
 		want         []*sppb.PartialResultSet      // PartialResultSets that should be returned to caller
@@ -917,7 +918,7 @@ func TestRsdBlockingStates(t *testing.T) {
 		{
 			// unConnected -> unConnected
 			name: "unConnected -> unConnected",
-			rpc: func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
+			rpc: func(ct context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
 				return nil, status.Errorf(codes.Unavailable, "trust me: server is unavailable")
 			},
 			sql:          "SELECT * from t_whatever",
@@ -1094,12 +1095,12 @@ func TestRsdBlockingStates(t *testing.T) {
 				// Avoid using test.sql directly in closure because for loop changes
 				// test.
 				sql := test.sql
-				test.rpc = func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
+				test.rpc = func(ct context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
 					return mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
 						Session:     session.Name,
 						Sql:         sql,
 						ResumeToken: resumeToken,
-					})
+					}, opts...)
 				}
 			}
 			ctx, cancel := context.WithCancel(context.Background())
@@ -1110,6 +1111,7 @@ func TestRsdBlockingStates(t *testing.T) {
 				nil,
 				test.rpc,
 				nil,
+				mc.(*grpcSpannerClient),
 			)
 			// Override backoff to make the test run faster.
 			r.backoff = gax.Backoff{
@@ -1274,16 +1276,17 @@ func TestQueueBytes(t *testing.T) {
 	decoder := newResumableStreamDecoder(
 		ctx,
 		nil,
-		func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
+		func(ct context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
 			r, err := mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
 				Session:     session.Name,
 				Sql:         "SELECT t.key key, t.value value FROM t_mock t",
 				ResumeToken: resumeToken,
-			})
+			}, opts...)
 			sr.rpcReceiver = r
 			return sr, err
 		},
 		nil,
+		mc.(*grpcSpannerClient),
 	)
 
 	sizeOfPRS := proto.Size(&sppb.PartialResultSet{
@@ -1372,17 +1375,17 @@ func TestResumeToken(t *testing.T) {
 	streaming := func() *RowIterator {
 		return stream(context.Background(), nil,
 			c.metricsTracerFactory,
-			func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
+			func(ct context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
 				r, err := mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
 					Session:     session.Name,
 					Sql:         query,
 					ResumeToken: resumeToken,
-				})
+				}, opts...)
 				sr.rpcReceiver = r
 				return sr, err
 			},
 			nil,
-			func(error) {})
+			func(error) {}, mc.(*grpcSpannerClient))
 	}
 
 	// Establish a stream to mock cloud spanner server.
@@ -1517,17 +1520,17 @@ func TestGrpcReconnect(t *testing.T) {
 	r := -1
 	// Establish a stream to mock cloud spanner server.
 	iter := stream(context.Background(), nil, c.metricsTracerFactory,
-		func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
+		func(ct context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
 			r++
 			return mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
 				Session:     session.Name,
 				Sql:         SelectSingerIDAlbumIDAlbumTitleFromAlbums,
 				ResumeToken: resumeToken,
-			})
+			}, opts...)
 
 		},
 		nil,
-		func(error) {})
+		func(error) {}, mc.(*grpcSpannerClient))
 	defer iter.Stop()
 	for {
 		_, err := iter.Next()
@@ -1570,15 +1573,15 @@ func TestCancelTimeout(t *testing.T) {
 	go func() {
 		// Establish a stream to mock cloud spanner server.
 		iter := stream(ctx, nil, c.metricsTracerFactory,
-			func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
+			func(ct context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
 				return mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
 					Session:     session.Name,
 					Sql:         SelectSingerIDAlbumIDAlbumTitleFromAlbums,
 					ResumeToken: resumeToken,
-				})
+				}, opts...)
 			},
 			nil,
-			func(error) {})
+			func(error) {}, mc.(*grpcSpannerClient))
 		defer iter.Stop()
 		for {
 			_, err = iter.Next()
@@ -1607,15 +1610,15 @@ func TestCancelTimeout(t *testing.T) {
 	go func() {
 		// Establish a stream to mock cloud spanner server.
 		iter := stream(ctx, nil, c.metricsTracerFactory,
-			func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
+			func(ct context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
 				return mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
 					Session:     session.Name,
 					Sql:         SelectSingerIDAlbumIDAlbumTitleFromAlbums,
 					ResumeToken: resumeToken,
-				})
+				}, opts...)
 			},
 			nil,
-			func(error) {})
+			func(error) {}, mc.(*grpcSpannerClient))
 		defer iter.Stop()
 		for {
 			_, err = iter.Next()
@@ -1687,15 +1690,15 @@ func TestRowIteratorDo(t *testing.T) {
 
 	nRows := 0
 	iter := stream(context.Background(), nil, c.metricsTracerFactory,
-		func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
+		func(ct context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
 			return mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
 				Session:     session.Name,
 				Sql:         SelectSingerIDAlbumIDAlbumTitleFromAlbums,
 				ResumeToken: resumeToken,
-			})
+			}, opts...)
 		},
 		nil,
-		func(error) {})
+		func(error) {}, mc.(*grpcSpannerClient))
 	err = iter.Do(func(r *Row) error { nRows++; return nil })
 	if err != nil {
 		t.Errorf("Using Do: %v", err)
@@ -1722,15 +1725,15 @@ func TestRowIteratorDoWithError(t *testing.T) {
 	}
 
 	iter := stream(context.Background(), nil, c.metricsTracerFactory,
-		func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
+		func(ct context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
 			return mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
 				Session:     session.Name,
 				Sql:         SelectSingerIDAlbumIDAlbumTitleFromAlbums,
 				ResumeToken: resumeToken,
-			})
+			}, opts...)
 		},
 		nil,
-		func(error) {})
+		func(error) {}, mc.(*grpcSpannerClient))
 	injected := errors.New("Failed iterator")
 	err = iter.Do(func(r *Row) error { return injected })
 	if err != injected {
@@ -1756,15 +1759,15 @@ func TestIteratorStopEarly(t *testing.T) {
 	}
 
 	iter := stream(ctx, nil, c.metricsTracerFactory,
-		func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
+		func(ct context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
 			return mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
 				Session:     session.Name,
 				Sql:         SelectSingerIDAlbumIDAlbumTitleFromAlbums,
 				ResumeToken: resumeToken,
-			})
+			}, opts...)
 		},
 		nil,
-		func(error) {})
+		func(error) {}, mc.(*grpcSpannerClient))
 	_, err = iter.Next()
 	if err != nil {
 		t.Fatalf("before Stop: %v", err)
