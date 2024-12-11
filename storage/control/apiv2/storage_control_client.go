@@ -761,9 +761,29 @@ func (c *storageControlGRPCClient) RenameFolderOperation(name string) *RenameFol
 }
 
 func (c *StorageControlClient) DeleteBucket(ctx context.Context, req *controlpb.DeleteBucketRequest, opts ...gax.CallOption) error {
-	return c.internalStorageClient.DeleteBucket(ctx, req, opts...)
+	sreq := &storagepb.DeleteBucketRequest{
+		Name: req.Name,
+		IfMetagenerationMatch: req.IfMetagenerationMatch,
+		IfMetagenerationNotMatch: req.IfMetagenerationNotMatch,
+	}
+	return c.internalStorageClient.DeleteBucket(ctx, sreq, opts...)
 }
 
 func (c *StorageControlClient) GetBucket(ctx context.Context, req *controlpb.GetBucketRequest, opts ...gax.CallOption) (*controlpb.Bucket, error) {
-	return c.internalStorageClient.GetBucket(ctx, req, opts...)
+	sreq := &storagepb.GetBucketRequest{
+		Name: req.Name,
+		IfMetagenerationMatch: req.IfMetagenerationMatch,
+		IfMetagenerationNotMatch: req.IfMetagenerationNotMatch,
+		ReadMask: req.ReadMask,
+	}
+	sresp, err := c.internalStorageClient.GetBucket(ctx, sreq, opts...)
+	if err != nil {
+		return nil, err
+	}
+	resp := &controlpb.Bucket{
+		Name: sresp.Name,
+		BucketId: sresp.BucketId,
+		Etag: sresp.Etag,
+	}
+	return resp, nil
 }

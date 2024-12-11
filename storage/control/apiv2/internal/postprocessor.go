@@ -95,6 +95,45 @@ func AddStorageV2ContextToControl(f *ast.File) {
 	})
 }
 
+func getStructFields(file *ast.File, structName string) []*ast.Field {
+	var fields []*ast.Field
+	ast.Inspect(file, func(n ast.Node) bool {
+		if ts, ok := n.(*ast.TypeSpec); ok {
+			if ts.Name.Name == structName {
+				if st, ok := ts.Type.(*ast.StructType); ok {
+					fields = st.Fields.List
+					return false
+				}
+			}
+		}
+		return true
+	})
+	return fields
+}
+
+func GenerateWrapper(storagev2 *ast.File, storageControl *ast.File, structType string) *ast.FuncDecl {
+	// Create the assignment statements for each field.
+	var assignStmts []ast.Stmt
+	for _, field := range getStructFields(storageControl, structType) { // Replace "StructA" with your actual struct name
+		assignStmt := &ast.AssignStmt{
+			Lhs: []ast.Expr{
+				&ast.SelectorExpr{
+					X:   ast.NewIdent("r"),
+					Sel: ast.NewIdent(field.Names[0].Name)},
+			},
+			Tok: token.ASSIGN,
+			Rhs: []ast.Expr{
+				&ast.SelectorExpr{
+					X:   ast.NewIdent("a"),
+					Sel: ast.NewIdent(field.Names[0].Name),
+				},
+			},
+		}
+		assignStmts = append(assignStmts, assignStmt)
+	}
+
+}
+
 func GetStorageV2Funcs(file *ast.File, structName string, includedFuncNames []string, newStructName, internalClientName string) ([]*ast.FuncDecl, map[string]*alias) {
 	var fi []*ast.FuncDecl
 	aliases := make(map[string]*alias)
