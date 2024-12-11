@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	resourcemanagerpb "cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -71,6 +70,7 @@ func defaultProjectsGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://cloudresourcemanager.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -500,6 +500,8 @@ type projectsGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewProjectsClient creates a new projects client based on gRPC.
@@ -526,6 +528,7 @@ func NewProjectsClient(ctx context.Context, opts ...option.ClientOption) (*Proje
 		connPool:         connPool,
 		projectsClient:   resourcemanagerpb.NewProjectsClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -560,7 +563,9 @@ func (c *projectsGRPCClient) Connection() *grpc.ClientConn {
 func (c *projectsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -587,6 +592,8 @@ type projectsRESTClient struct {
 
 	// Points back to the CallOptions field of the containing ProjectsClient
 	CallOptions **ProjectsCallOptions
+
+	logger *slog.Logger
 }
 
 // NewProjectsRESTClient creates a new projects rest client.
@@ -604,6 +611,7 @@ func NewProjectsRESTClient(ctx context.Context, opts ...option.ClientOption) (*P
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -628,6 +636,7 @@ func defaultProjectsRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudresourcemanager.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -637,7 +646,9 @@ func defaultProjectsRESTClientOptions() []option.ClientOption {
 func (c *projectsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -663,7 +674,7 @@ func (c *projectsGRPCClient) GetProject(ctx context.Context, req *resourcemanage
 	var resp *resourcemanagerpb.Project
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.projectsClient.GetProject(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.projectsClient.GetProject, req, settings.GRPC, c.logger, "GetProject")
 		return err
 	}, opts...)
 	if err != nil {
@@ -689,7 +700,7 @@ func (c *projectsGRPCClient) ListProjects(ctx context.Context, req *resourcemana
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.projectsClient.ListProjects(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.projectsClient.ListProjects, req, settings.GRPC, c.logger, "ListProjects")
 			return err
 		}, opts...)
 		if err != nil {
@@ -732,7 +743,7 @@ func (c *projectsGRPCClient) SearchProjects(ctx context.Context, req *resourcema
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.projectsClient.SearchProjects(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.projectsClient.SearchProjects, req, settings.GRPC, c.logger, "SearchProjects")
 			return err
 		}, opts...)
 		if err != nil {
@@ -764,7 +775,7 @@ func (c *projectsGRPCClient) CreateProject(ctx context.Context, req *resourceman
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.projectsClient.CreateProject(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.projectsClient.CreateProject, req, settings.GRPC, c.logger, "CreateProject")
 		return err
 	}, opts...)
 	if err != nil {
@@ -784,7 +795,7 @@ func (c *projectsGRPCClient) UpdateProject(ctx context.Context, req *resourceman
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.projectsClient.UpdateProject(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.projectsClient.UpdateProject, req, settings.GRPC, c.logger, "UpdateProject")
 		return err
 	}, opts...)
 	if err != nil {
@@ -804,7 +815,7 @@ func (c *projectsGRPCClient) MoveProject(ctx context.Context, req *resourcemanag
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.projectsClient.MoveProject(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.projectsClient.MoveProject, req, settings.GRPC, c.logger, "MoveProject")
 		return err
 	}, opts...)
 	if err != nil {
@@ -824,7 +835,7 @@ func (c *projectsGRPCClient) DeleteProject(ctx context.Context, req *resourceman
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.projectsClient.DeleteProject(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.projectsClient.DeleteProject, req, settings.GRPC, c.logger, "DeleteProject")
 		return err
 	}, opts...)
 	if err != nil {
@@ -844,7 +855,7 @@ func (c *projectsGRPCClient) UndeleteProject(ctx context.Context, req *resourcem
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.projectsClient.UndeleteProject(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.projectsClient.UndeleteProject, req, settings.GRPC, c.logger, "UndeleteProject")
 		return err
 	}, opts...)
 	if err != nil {
@@ -864,7 +875,7 @@ func (c *projectsGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIam
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.projectsClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.projectsClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -882,7 +893,7 @@ func (c *projectsGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIam
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.projectsClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.projectsClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -900,7 +911,7 @@ func (c *projectsGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.projectsClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.projectsClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -918,7 +929,7 @@ func (c *projectsGRPCClient) GetOperation(ctx context.Context, req *longrunningp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -964,17 +975,7 @@ func (c *projectsRESTClient) GetProject(ctx context.Context, req *resourcemanage
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetProject")
 		if err != nil {
 			return err
 		}
@@ -1045,21 +1046,10 @@ func (c *projectsRESTClient) ListProjects(ctx context.Context, req *resourcemana
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListProjects")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1146,21 +1136,10 @@ func (c *projectsRESTClient) SearchProjects(ctx context.Context, req *resourcema
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "SearchProjects")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1230,21 +1209,10 @@ func (c *projectsRESTClient) CreateProject(ctx context.Context, req *resourceman
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateProject")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1285,11 +1253,11 @@ func (c *projectsRESTClient) UpdateProject(ctx context.Context, req *resourceman
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1313,21 +1281,10 @@ func (c *projectsRESTClient) UpdateProject(ctx context.Context, req *resourceman
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateProject")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1396,21 +1353,10 @@ func (c *projectsRESTClient) MoveProject(ctx context.Context, req *resourcemanag
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "MoveProject")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1492,21 +1438,10 @@ func (c *projectsRESTClient) DeleteProject(ctx context.Context, req *resourceman
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteProject")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1570,21 +1505,10 @@ func (c *projectsRESTClient) UndeleteProject(ctx context.Context, req *resourcem
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UndeleteProject")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1643,17 +1567,7 @@ func (c *projectsRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIam
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -1749,17 +1663,7 @@ func (c *projectsRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIam
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -1816,17 +1720,7 @@ func (c *projectsRESTClient) TestIamPermissions(ctx context.Context, req *iampb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
 		if err != nil {
 			return err
 		}
@@ -1876,17 +1770,7 @@ func (c *projectsRESTClient) GetOperation(ctx context.Context, req *longrunningp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}

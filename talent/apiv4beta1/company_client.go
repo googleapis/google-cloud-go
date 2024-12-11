@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -29,7 +29,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	talentpb "cloud.google.com/go/talent/apiv4beta1/talentpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -62,6 +61,7 @@ func defaultCompanyGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://jobs.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -262,6 +262,8 @@ type companyGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewCompanyClient creates a new company service client based on gRPC.
@@ -288,6 +290,7 @@ func NewCompanyClient(ctx context.Context, opts ...option.ClientOption) (*Compan
 		connPool:         connPool,
 		companyClient:    talentpb.NewCompanyServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -311,7 +314,9 @@ func (c *companyGRPCClient) Connection() *grpc.ClientConn {
 func (c *companyGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -333,6 +338,8 @@ type companyRESTClient struct {
 
 	// Points back to the CallOptions field of the containing CompanyClient
 	CallOptions **CompanyCallOptions
+
+	logger *slog.Logger
 }
 
 // NewCompanyRESTClient creates a new company service rest client.
@@ -350,6 +357,7 @@ func NewCompanyRESTClient(ctx context.Context, opts ...option.ClientOption) (*Co
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -364,6 +372,7 @@ func defaultCompanyRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://jobs.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -373,7 +382,9 @@ func defaultCompanyRESTClientOptions() []option.ClientOption {
 func (c *companyRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -399,7 +410,7 @@ func (c *companyGRPCClient) CreateCompany(ctx context.Context, req *talentpb.Cre
 	var resp *talentpb.Company
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.companyClient.CreateCompany(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.companyClient.CreateCompany, req, settings.GRPC, c.logger, "CreateCompany")
 		return err
 	}, opts...)
 	if err != nil {
@@ -417,7 +428,7 @@ func (c *companyGRPCClient) GetCompany(ctx context.Context, req *talentpb.GetCom
 	var resp *talentpb.Company
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.companyClient.GetCompany(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.companyClient.GetCompany, req, settings.GRPC, c.logger, "GetCompany")
 		return err
 	}, opts...)
 	if err != nil {
@@ -435,7 +446,7 @@ func (c *companyGRPCClient) UpdateCompany(ctx context.Context, req *talentpb.Upd
 	var resp *talentpb.Company
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.companyClient.UpdateCompany(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.companyClient.UpdateCompany, req, settings.GRPC, c.logger, "UpdateCompany")
 		return err
 	}, opts...)
 	if err != nil {
@@ -452,7 +463,7 @@ func (c *companyGRPCClient) DeleteCompany(ctx context.Context, req *talentpb.Del
 	opts = append((*c.CallOptions).DeleteCompany[0:len((*c.CallOptions).DeleteCompany):len((*c.CallOptions).DeleteCompany)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.companyClient.DeleteCompany(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.companyClient.DeleteCompany, req, settings.GRPC, c.logger, "DeleteCompany")
 		return err
 	}, opts...)
 	return err
@@ -478,7 +489,7 @@ func (c *companyGRPCClient) ListCompanies(ctx context.Context, req *talentpb.Lis
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.companyClient.ListCompanies(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.companyClient.ListCompanies, req, settings.GRPC, c.logger, "ListCompanies")
 			return err
 		}, opts...)
 		if err != nil {
@@ -513,7 +524,7 @@ func (c *companyGRPCClient) GetOperation(ctx context.Context, req *longrunningpb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -561,17 +572,7 @@ func (c *companyRESTClient) CreateCompany(ctx context.Context, req *talentpb.Cre
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateCompany")
 		if err != nil {
 			return err
 		}
@@ -621,17 +622,7 @@ func (c *companyRESTClient) GetCompany(ctx context.Context, req *talentpb.GetCom
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCompany")
 		if err != nil {
 			return err
 		}
@@ -687,17 +678,7 @@ func (c *companyRESTClient) UpdateCompany(ctx context.Context, req *talentpb.Upd
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateCompany")
 		if err != nil {
 			return err
 		}
@@ -745,15 +726,8 @@ func (c *companyRESTClient) DeleteCompany(ctx context.Context, req *talentpb.Del
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteCompany")
+		return err
 	}, opts...)
 }
 
@@ -805,21 +779,10 @@ func (c *companyRESTClient) ListCompanies(ctx context.Context, req *talentpb.Lis
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListCompanies")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -882,17 +845,7 @@ func (c *companyRESTClient) GetOperation(ctx context.Context, req *longrunningpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}

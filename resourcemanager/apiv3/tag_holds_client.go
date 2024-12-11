@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -30,7 +30,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	resourcemanagerpb "cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -60,6 +59,7 @@ func defaultTagHoldsGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://cloudresourcemanager.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -195,6 +195,8 @@ type tagHoldsGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewTagHoldsClient creates a new tag holds client based on gRPC.
@@ -225,6 +227,7 @@ func NewTagHoldsClient(ctx context.Context, opts ...option.ClientOption) (*TagHo
 		connPool:         connPool,
 		tagHoldsClient:   resourcemanagerpb.NewTagHoldsClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -259,7 +262,9 @@ func (c *tagHoldsGRPCClient) Connection() *grpc.ClientConn {
 func (c *tagHoldsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -286,6 +291,8 @@ type tagHoldsRESTClient struct {
 
 	// Points back to the CallOptions field of the containing TagHoldsClient
 	CallOptions **TagHoldsCallOptions
+
+	logger *slog.Logger
 }
 
 // NewTagHoldsRESTClient creates a new tag holds rest client.
@@ -307,6 +314,7 @@ func NewTagHoldsRESTClient(ctx context.Context, opts ...option.ClientOption) (*T
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -331,6 +339,7 @@ func defaultTagHoldsRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudresourcemanager.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -340,7 +349,9 @@ func defaultTagHoldsRESTClientOptions() []option.ClientOption {
 func (c *tagHoldsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -366,7 +377,7 @@ func (c *tagHoldsGRPCClient) CreateTagHold(ctx context.Context, req *resourceman
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tagHoldsClient.CreateTagHold(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tagHoldsClient.CreateTagHold, req, settings.GRPC, c.logger, "CreateTagHold")
 		return err
 	}, opts...)
 	if err != nil {
@@ -386,7 +397,7 @@ func (c *tagHoldsGRPCClient) DeleteTagHold(ctx context.Context, req *resourceman
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tagHoldsClient.DeleteTagHold(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tagHoldsClient.DeleteTagHold, req, settings.GRPC, c.logger, "DeleteTagHold")
 		return err
 	}, opts...)
 	if err != nil {
@@ -417,7 +428,7 @@ func (c *tagHoldsGRPCClient) ListTagHolds(ctx context.Context, req *resourcemana
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.tagHoldsClient.ListTagHolds(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.tagHoldsClient.ListTagHolds, req, settings.GRPC, c.logger, "ListTagHolds")
 			return err
 		}, opts...)
 		if err != nil {
@@ -452,7 +463,7 @@ func (c *tagHoldsGRPCClient) GetOperation(ctx context.Context, req *longrunningp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -504,21 +515,10 @@ func (c *tagHoldsRESTClient) CreateTagHold(ctx context.Context, req *resourceman
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateTagHold")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -571,21 +571,10 @@ func (c *tagHoldsRESTClient) DeleteTagHold(ctx context.Context, req *resourceman
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteTagHold")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -651,21 +640,10 @@ func (c *tagHoldsRESTClient) ListTagHolds(ctx context.Context, req *resourcemana
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListTagHolds")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -728,17 +706,7 @@ func (c *tagHoldsRESTClient) GetOperation(ctx context.Context, req *longrunningp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}

@@ -19,6 +19,7 @@ package apigeeregistry
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 
@@ -64,6 +65,7 @@ func defaultProvisioningGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://apigeeregistry.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -257,6 +259,8 @@ type provisioningGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewProvisioningClient creates a new provisioning client based on gRPC.
@@ -284,6 +288,7 @@ func NewProvisioningClient(ctx context.Context, opts ...option.ClientOption) (*P
 		connPool:           connPool,
 		provisioningClient: apigeeregistrypb.NewProvisioningClient(connPool),
 		CallOptions:        &client.CallOptions,
+		logger:             internaloption.GetLogger(opts),
 		operationsClient:   longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:    iampb.NewIAMPolicyClient(connPool),
 		locationsClient:    locationpb.NewLocationsClient(connPool),
@@ -320,7 +325,9 @@ func (c *provisioningGRPCClient) Connection() *grpc.ClientConn {
 func (c *provisioningGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -338,7 +345,7 @@ func (c *provisioningGRPCClient) CreateInstance(ctx context.Context, req *apigee
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.provisioningClient.CreateInstance(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.provisioningClient.CreateInstance, req, settings.GRPC, c.logger, "CreateInstance")
 		return err
 	}, opts...)
 	if err != nil {
@@ -358,7 +365,7 @@ func (c *provisioningGRPCClient) DeleteInstance(ctx context.Context, req *apigee
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.provisioningClient.DeleteInstance(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.provisioningClient.DeleteInstance, req, settings.GRPC, c.logger, "DeleteInstance")
 		return err
 	}, opts...)
 	if err != nil {
@@ -378,7 +385,7 @@ func (c *provisioningGRPCClient) GetInstance(ctx context.Context, req *apigeereg
 	var resp *apigeeregistrypb.Instance
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.provisioningClient.GetInstance(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.provisioningClient.GetInstance, req, settings.GRPC, c.logger, "GetInstance")
 		return err
 	}, opts...)
 	if err != nil {
@@ -396,7 +403,7 @@ func (c *provisioningGRPCClient) GetLocation(ctx context.Context, req *locationp
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -425,7 +432,7 @@ func (c *provisioningGRPCClient) ListLocations(ctx context.Context, req *locatio
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -460,7 +467,7 @@ func (c *provisioningGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -478,7 +485,7 @@ func (c *provisioningGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -496,7 +503,7 @@ func (c *provisioningGRPCClient) TestIamPermissions(ctx context.Context, req *ia
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -513,7 +520,7 @@ func (c *provisioningGRPCClient) CancelOperation(ctx context.Context, req *longr
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -527,7 +534,7 @@ func (c *provisioningGRPCClient) DeleteOperation(ctx context.Context, req *longr
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -542,7 +549,7 @@ func (c *provisioningGRPCClient) GetOperation(ctx context.Context, req *longrunn
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -571,7 +578,7 @@ func (c *provisioningGRPCClient) ListOperations(ctx context.Context, req *longru
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {

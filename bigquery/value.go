@@ -82,6 +82,9 @@ func loadMap(m map[string]Value, vals []Value, s Schema) {
 			}
 			v = vs
 		}
+		if f.Repeated && (v == nil || reflect.ValueOf(v).IsNil()) {
+			v = []Value{}
+		}
 
 		m[f.Name] = v
 	}
@@ -897,7 +900,7 @@ func convertRow(r *bq.TableRow, schema Schema) ([]Value, error) {
 			if fs.RangeElementType == nil {
 				return nil, errors.New("bigquery: incomplete range schema for conversion")
 			}
-			v, err = convertRangeValue(cell.V.(string), fs.RangeElementType.Type)
+			v, err = convertRangeTableCell(cell, fs)
 		} else {
 			v, err = convertValue(cell.V, fs.Type, fs.Schema)
 		}
@@ -1018,7 +1021,11 @@ var unboundedRangeSentinel = "UNBOUNDED"
 
 // convertRangeValue aids in parsing the compound RANGE api data representation.
 // The format for a range value is: "[startval, endval)"
-func convertRangeValue(val string, elementType FieldType) (Value, error) {
+func convertRangeValue(cellVal interface{}, elementType FieldType) (Value, error) {
+	if cellVal == nil {
+		return nil, nil
+	}
+	val := cellVal.(string)
 	supported := false
 	for _, t := range []FieldType{DateFieldType, DateTimeFieldType, TimestampFieldType} {
 		if elementType == t {
@@ -1054,4 +1061,22 @@ func convertRangeValue(val string, elementType FieldType) (Value, error) {
 		rv.End = ev
 	}
 	return rv, nil
+}
+
+// convertRangeTableCell handles parsing of the API representation of the RANGE type,
+// which can come as a single value or array.
+func convertRangeTableCell(cell *bq.TableCell, fs *FieldSchema) (Value, error) {
+	if fs.Repeated {
+		rangeValues := []Value{}
+		for _, val := range cell.V.([]interface{}) {
+			rawRangeValue := val.(map[string]interface{})["v"]
+			rangeVal, err := convertRangeValue(rawRangeValue, fs.RangeElementType.Type)
+			if err != nil {
+				return nil, err
+			}
+			rangeValues = append(rangeValues, rangeVal)
+		}
+		return rangeValues, nil
+	}
+	return convertRangeValue(cell.V, fs.RangeElementType.Type)
 }

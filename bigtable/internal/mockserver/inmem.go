@@ -20,7 +20,7 @@ import (
 	"context"
 	"net"
 
-	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
+	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

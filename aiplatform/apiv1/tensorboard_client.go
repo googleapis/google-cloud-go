@@ -19,6 +19,7 @@ package aiplatform
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 
@@ -92,6 +93,7 @@ func defaultTensorboardGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -522,6 +524,8 @@ type tensorboardGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewTensorboardClient creates a new tensorboard service client based on gRPC.
@@ -548,6 +552,7 @@ func NewTensorboardClient(ctx context.Context, opts ...option.ClientOption) (*Te
 		connPool:          connPool,
 		tensorboardClient: aiplatformpb.NewTensorboardServiceClient(connPool),
 		CallOptions:       &client.CallOptions,
+		logger:            internaloption.GetLogger(opts),
 		operationsClient:  longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:   iampb.NewIAMPolicyClient(connPool),
 		locationsClient:   locationpb.NewLocationsClient(connPool),
@@ -584,7 +589,9 @@ func (c *tensorboardGRPCClient) Connection() *grpc.ClientConn {
 func (c *tensorboardGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -602,7 +609,7 @@ func (c *tensorboardGRPCClient) CreateTensorboard(ctx context.Context, req *aipl
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.CreateTensorboard(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.CreateTensorboard, req, settings.GRPC, c.logger, "CreateTensorboard")
 		return err
 	}, opts...)
 	if err != nil {
@@ -622,7 +629,7 @@ func (c *tensorboardGRPCClient) GetTensorboard(ctx context.Context, req *aiplatf
 	var resp *aiplatformpb.Tensorboard
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.GetTensorboard(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.GetTensorboard, req, settings.GRPC, c.logger, "GetTensorboard")
 		return err
 	}, opts...)
 	if err != nil {
@@ -640,7 +647,7 @@ func (c *tensorboardGRPCClient) UpdateTensorboard(ctx context.Context, req *aipl
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.UpdateTensorboard(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.UpdateTensorboard, req, settings.GRPC, c.logger, "UpdateTensorboard")
 		return err
 	}, opts...)
 	if err != nil {
@@ -671,7 +678,7 @@ func (c *tensorboardGRPCClient) ListTensorboards(ctx context.Context, req *aipla
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.tensorboardClient.ListTensorboards(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.tensorboardClient.ListTensorboards, req, settings.GRPC, c.logger, "ListTensorboards")
 			return err
 		}, opts...)
 		if err != nil {
@@ -706,7 +713,7 @@ func (c *tensorboardGRPCClient) DeleteTensorboard(ctx context.Context, req *aipl
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.DeleteTensorboard(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.DeleteTensorboard, req, settings.GRPC, c.logger, "DeleteTensorboard")
 		return err
 	}, opts...)
 	if err != nil {
@@ -726,7 +733,7 @@ func (c *tensorboardGRPCClient) ReadTensorboardUsage(ctx context.Context, req *a
 	var resp *aiplatformpb.ReadTensorboardUsageResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.ReadTensorboardUsage(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.ReadTensorboardUsage, req, settings.GRPC, c.logger, "ReadTensorboardUsage")
 		return err
 	}, opts...)
 	if err != nil {
@@ -744,7 +751,7 @@ func (c *tensorboardGRPCClient) ReadTensorboardSize(ctx context.Context, req *ai
 	var resp *aiplatformpb.ReadTensorboardSizeResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.ReadTensorboardSize(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.ReadTensorboardSize, req, settings.GRPC, c.logger, "ReadTensorboardSize")
 		return err
 	}, opts...)
 	if err != nil {
@@ -762,7 +769,7 @@ func (c *tensorboardGRPCClient) CreateTensorboardExperiment(ctx context.Context,
 	var resp *aiplatformpb.TensorboardExperiment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.CreateTensorboardExperiment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.CreateTensorboardExperiment, req, settings.GRPC, c.logger, "CreateTensorboardExperiment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -780,7 +787,7 @@ func (c *tensorboardGRPCClient) GetTensorboardExperiment(ctx context.Context, re
 	var resp *aiplatformpb.TensorboardExperiment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.GetTensorboardExperiment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.GetTensorboardExperiment, req, settings.GRPC, c.logger, "GetTensorboardExperiment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -798,7 +805,7 @@ func (c *tensorboardGRPCClient) UpdateTensorboardExperiment(ctx context.Context,
 	var resp *aiplatformpb.TensorboardExperiment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.UpdateTensorboardExperiment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.UpdateTensorboardExperiment, req, settings.GRPC, c.logger, "UpdateTensorboardExperiment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -827,7 +834,7 @@ func (c *tensorboardGRPCClient) ListTensorboardExperiments(ctx context.Context, 
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.tensorboardClient.ListTensorboardExperiments(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.tensorboardClient.ListTensorboardExperiments, req, settings.GRPC, c.logger, "ListTensorboardExperiments")
 			return err
 		}, opts...)
 		if err != nil {
@@ -862,7 +869,7 @@ func (c *tensorboardGRPCClient) DeleteTensorboardExperiment(ctx context.Context,
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.DeleteTensorboardExperiment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.DeleteTensorboardExperiment, req, settings.GRPC, c.logger, "DeleteTensorboardExperiment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -882,7 +889,7 @@ func (c *tensorboardGRPCClient) CreateTensorboardRun(ctx context.Context, req *a
 	var resp *aiplatformpb.TensorboardRun
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.CreateTensorboardRun(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.CreateTensorboardRun, req, settings.GRPC, c.logger, "CreateTensorboardRun")
 		return err
 	}, opts...)
 	if err != nil {
@@ -900,7 +907,7 @@ func (c *tensorboardGRPCClient) BatchCreateTensorboardRuns(ctx context.Context, 
 	var resp *aiplatformpb.BatchCreateTensorboardRunsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.BatchCreateTensorboardRuns(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.BatchCreateTensorboardRuns, req, settings.GRPC, c.logger, "BatchCreateTensorboardRuns")
 		return err
 	}, opts...)
 	if err != nil {
@@ -918,7 +925,7 @@ func (c *tensorboardGRPCClient) GetTensorboardRun(ctx context.Context, req *aipl
 	var resp *aiplatformpb.TensorboardRun
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.GetTensorboardRun(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.GetTensorboardRun, req, settings.GRPC, c.logger, "GetTensorboardRun")
 		return err
 	}, opts...)
 	if err != nil {
@@ -936,7 +943,7 @@ func (c *tensorboardGRPCClient) UpdateTensorboardRun(ctx context.Context, req *a
 	var resp *aiplatformpb.TensorboardRun
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.UpdateTensorboardRun(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.UpdateTensorboardRun, req, settings.GRPC, c.logger, "UpdateTensorboardRun")
 		return err
 	}, opts...)
 	if err != nil {
@@ -965,7 +972,7 @@ func (c *tensorboardGRPCClient) ListTensorboardRuns(ctx context.Context, req *ai
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.tensorboardClient.ListTensorboardRuns(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.tensorboardClient.ListTensorboardRuns, req, settings.GRPC, c.logger, "ListTensorboardRuns")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1000,7 +1007,7 @@ func (c *tensorboardGRPCClient) DeleteTensorboardRun(ctx context.Context, req *a
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.DeleteTensorboardRun(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.DeleteTensorboardRun, req, settings.GRPC, c.logger, "DeleteTensorboardRun")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1020,7 +1027,7 @@ func (c *tensorboardGRPCClient) BatchCreateTensorboardTimeSeries(ctx context.Con
 	var resp *aiplatformpb.BatchCreateTensorboardTimeSeriesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.BatchCreateTensorboardTimeSeries(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.BatchCreateTensorboardTimeSeries, req, settings.GRPC, c.logger, "BatchCreateTensorboardTimeSeries")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1038,7 +1045,7 @@ func (c *tensorboardGRPCClient) CreateTensorboardTimeSeries(ctx context.Context,
 	var resp *aiplatformpb.TensorboardTimeSeries
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.CreateTensorboardTimeSeries(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.CreateTensorboardTimeSeries, req, settings.GRPC, c.logger, "CreateTensorboardTimeSeries")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1056,7 +1063,7 @@ func (c *tensorboardGRPCClient) GetTensorboardTimeSeries(ctx context.Context, re
 	var resp *aiplatformpb.TensorboardTimeSeries
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.GetTensorboardTimeSeries(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.GetTensorboardTimeSeries, req, settings.GRPC, c.logger, "GetTensorboardTimeSeries")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1074,7 +1081,7 @@ func (c *tensorboardGRPCClient) UpdateTensorboardTimeSeries(ctx context.Context,
 	var resp *aiplatformpb.TensorboardTimeSeries
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.UpdateTensorboardTimeSeries(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.UpdateTensorboardTimeSeries, req, settings.GRPC, c.logger, "UpdateTensorboardTimeSeries")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1103,7 +1110,7 @@ func (c *tensorboardGRPCClient) ListTensorboardTimeSeries(ctx context.Context, r
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.tensorboardClient.ListTensorboardTimeSeries(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.tensorboardClient.ListTensorboardTimeSeries, req, settings.GRPC, c.logger, "ListTensorboardTimeSeries")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1138,7 +1145,7 @@ func (c *tensorboardGRPCClient) DeleteTensorboardTimeSeries(ctx context.Context,
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.DeleteTensorboardTimeSeries(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.DeleteTensorboardTimeSeries, req, settings.GRPC, c.logger, "DeleteTensorboardTimeSeries")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1158,7 +1165,7 @@ func (c *tensorboardGRPCClient) BatchReadTensorboardTimeSeriesData(ctx context.C
 	var resp *aiplatformpb.BatchReadTensorboardTimeSeriesDataResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.BatchReadTensorboardTimeSeriesData(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.BatchReadTensorboardTimeSeriesData, req, settings.GRPC, c.logger, "BatchReadTensorboardTimeSeriesData")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1176,7 +1183,7 @@ func (c *tensorboardGRPCClient) ReadTensorboardTimeSeriesData(ctx context.Contex
 	var resp *aiplatformpb.ReadTensorboardTimeSeriesDataResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.ReadTensorboardTimeSeriesData(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.ReadTensorboardTimeSeriesData, req, settings.GRPC, c.logger, "ReadTensorboardTimeSeriesData")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1194,7 +1201,9 @@ func (c *tensorboardGRPCClient) ReadTensorboardBlobData(ctx context.Context, req
 	var resp aiplatformpb.TensorboardService_ReadTensorboardBlobDataClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "ReadTensorboardBlobData")
 		resp, err = c.tensorboardClient.ReadTensorboardBlobData(ctx, req, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "ReadTensorboardBlobData")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1212,7 +1221,7 @@ func (c *tensorboardGRPCClient) WriteTensorboardExperimentData(ctx context.Conte
 	var resp *aiplatformpb.WriteTensorboardExperimentDataResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.WriteTensorboardExperimentData(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.WriteTensorboardExperimentData, req, settings.GRPC, c.logger, "WriteTensorboardExperimentData")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1230,7 +1239,7 @@ func (c *tensorboardGRPCClient) WriteTensorboardRunData(ctx context.Context, req
 	var resp *aiplatformpb.WriteTensorboardRunDataResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.WriteTensorboardRunData(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.WriteTensorboardRunData, req, settings.GRPC, c.logger, "WriteTensorboardRunData")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1259,7 +1268,7 @@ func (c *tensorboardGRPCClient) ExportTensorboardTimeSeriesData(ctx context.Cont
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.tensorboardClient.ExportTensorboardTimeSeriesData(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.tensorboardClient.ExportTensorboardTimeSeriesData, req, settings.GRPC, c.logger, "ExportTensorboardTimeSeriesData")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1294,7 +1303,7 @@ func (c *tensorboardGRPCClient) GetLocation(ctx context.Context, req *locationpb
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1323,7 +1332,7 @@ func (c *tensorboardGRPCClient) ListLocations(ctx context.Context, req *location
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1358,7 +1367,7 @@ func (c *tensorboardGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.Get
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1376,7 +1385,7 @@ func (c *tensorboardGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.Set
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1394,7 +1403,7 @@ func (c *tensorboardGRPCClient) TestIamPermissions(ctx context.Context, req *iam
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1411,7 +1420,7 @@ func (c *tensorboardGRPCClient) CancelOperation(ctx context.Context, req *longru
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -1425,7 +1434,7 @@ func (c *tensorboardGRPCClient) DeleteOperation(ctx context.Context, req *longru
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -1440,7 +1449,7 @@ func (c *tensorboardGRPCClient) GetOperation(ctx context.Context, req *longrunni
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1469,7 +1478,7 @@ func (c *tensorboardGRPCClient) ListOperations(ctx context.Context, req *longrun
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1504,7 +1513,7 @@ func (c *tensorboardGRPCClient) WaitOperation(ctx context.Context, req *longrunn
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.WaitOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.WaitOperation, req, settings.GRPC, c.logger, "WaitOperation")
 		return err
 	}, opts...)
 	if err != nil {

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/networkconnectivity/apiv1",
-    "version": "1.14.6",
+    "version": "1.14.10",
     "language": "GO",
     "apis": [
       {
@@ -932,7 +932,7 @@
     {
       "regionTag": "networkconnectivity_v1_generated_HubService_ListRouteTables_sync",
       "title": "networkconnectivity ListRouteTables Sample",
-      "description": "ListRouteTables lists route tables in a given project.",
+      "description": "ListRouteTables lists route tables in a given hub.",
       "file": "HubClient/ListRouteTables/main.go",
       "language": "GO",
       "clientMethod": {
@@ -978,7 +978,7 @@
     {
       "regionTag": "networkconnectivity_v1_generated_HubService_ListRoutes_sync",
       "title": "networkconnectivity ListRoutes Sample",
-      "description": "ListRoutes lists routes in a given project.",
+      "description": "ListRoutes lists routes in a given route table.",
       "file": "HubClient/ListRoutes/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1052,6 +1052,52 @@
         "method": {
           "shortName": "ListSpokes",
           "fullName": "google.cloud.networkconnectivity.v1.HubService.ListSpokes",
+          "service": {
+            "shortName": "HubService",
+            "fullName": "google.cloud.networkconnectivity.v1.HubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_HubService_QueryHubStatus_sync",
+      "title": "networkconnectivity QueryHubStatus Sample",
+      "description": "QueryHubStatus query the Private Service Connect propagation status of a Network\nConnectivity Center hub.",
+      "file": "HubClient/QueryHubStatus/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "QueryHubStatus",
+        "fullName": "google.cloud.networkconnectivity.v1.HubClient.QueryHubStatus",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.QueryHubStatusRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "HubStatusEntryIterator",
+        "client": {
+          "shortName": "HubClient",
+          "fullName": "google.cloud.networkconnectivity.v1.HubClient"
+        },
+        "method": {
+          "shortName": "QueryHubStatus",
+          "fullName": "google.cloud.networkconnectivity.v1.HubService.QueryHubStatus",
           "service": {
             "shortName": "HubService",
             "fullName": "google.cloud.networkconnectivity.v1.HubService"
@@ -1201,6 +1247,52 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_HubService_UpdateGroup_sync",
+      "title": "networkconnectivity UpdateGroup Sample",
+      "description": "UpdateGroup updates the parameters of a Network Connectivity Center group.",
+      "file": "HubClient/UpdateGroup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateGroup",
+        "fullName": "google.cloud.networkconnectivity.v1.HubClient.UpdateGroup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.UpdateGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateGroupOperation",
+        "client": {
+          "shortName": "HubClient",
+          "fullName": "google.cloud.networkconnectivity.v1.HubClient"
+        },
+        "method": {
+          "shortName": "UpdateGroup",
+          "fullName": "google.cloud.networkconnectivity.v1.HubService.UpdateGroup",
+          "service": {
+            "shortName": "HubService",
+            "fullName": "google.cloud.networkconnectivity.v1.HubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]

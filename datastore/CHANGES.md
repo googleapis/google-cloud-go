@@ -1,5 +1,56 @@
 # Changes
 
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.19.0...datastore/v1.20.0) (2024-10-29)
+
+
+### Features
+
+* **datastore:** Add FindNearest API to the stable branch ([#10980](https://github.com/googleapis/google-cloud-go/issues/10980)) ([f0b05e2](https://github.com/googleapis/google-cloud-go/commit/f0b05e260435d5e8889b9a0ca0ab215fcde169ab))
+* **datastore:** Support for field update operators in the Datastore API and resolution strategies when there is a conflict at write time ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+
+
+### Bug Fixes
+
+* **datastore:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+* **datastore:** Do not delay on final transaction attempt ([#10824](https://github.com/googleapis/google-cloud-go/issues/10824)) ([0d732cc](https://github.com/googleapis/google-cloud-go/commit/0d732cc87b432589f156c96d430e13c792dceeeb))
+* **datastore:** Remove namespace from Key.String() ([40229e6](https://github.com/googleapis/google-cloud-go/commit/40229e65f574d63e2f31e5b15ec61d565db59fef))
+* **datastore:** Remove namespace from Key.String() ([#10684](https://github.com/googleapis/google-cloud-go/issues/10684)) ([#10823](https://github.com/googleapis/google-cloud-go/issues/10823)) ([40229e6](https://github.com/googleapis/google-cloud-go/commit/40229e65f574d63e2f31e5b15ec61d565db59fef))
+* **datastore:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **datastore:** Use local retryer in transactions ([#11050](https://github.com/googleapis/google-cloud-go/issues/11050)) ([3ef61a2](https://github.com/googleapis/google-cloud-go/commit/3ef61a29f10d34355d44830b5d473cacd6cf2be5))
+* **datastore:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.18.0...datastore/v1.19.0) (2024-08-22)
+
+
+### Features
+
+* **datastore:** Reference new protos ([#10724](https://github.com/googleapis/google-cloud-go/issues/10724)) ([d8887df](https://github.com/googleapis/google-cloud-go/commit/d8887df4a12fe56606515c116fe1db12a6549aa1))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.17.1...datastore/v1.18.0) (2024-08-21)
+
+
+### Features
+
+* **datastore:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+* **datastore:** Start generating datastorepb protos ([946a5fc](https://github.com/googleapis/google-cloud-go/commit/946a5fcfeb85e22b1d8e995cda6b18b745459656))
+
+
+### Bug Fixes
+
+* **datastore:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+* **datastore:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+* **datastore:** Ignore field mismatch errors ([#8694](https://github.com/googleapis/google-cloud-go/issues/8694)) ([6625d12](https://github.com/googleapis/google-cloud-go/commit/6625d12c3135587f188cc8f801beb9ae5a0c7515))
+* **datastore:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+* **datastore:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.17.0...datastore/v1.17.1) (2024-06-10)
+
+
+### Bug Fixes
+
+* **datastore:** Regenerate protos in new namespace ([#10158](https://github.com/googleapis/google-cloud-go/issues/10158)) ([8875511](https://github.com/googleapis/google-cloud-go/commit/8875511ca0c640d1260248f51c7b88e55136cdc6)), refs [#10155](https://github.com/googleapis/google-cloud-go/issues/10155)
+* **datastore:** Update retry transaction logic to be inline with Spanner ([#10349](https://github.com/googleapis/google-cloud-go/issues/10349)) ([5929a6e](https://github.com/googleapis/google-cloud-go/commit/5929a6e67891b425d33128155af5cc76ecfc87a1))
+
 ## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.16.0...datastore/v1.17.0) (2024-05-08)
 
 

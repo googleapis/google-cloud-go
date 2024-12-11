@@ -19,6 +19,7 @@ package apigeeconnect
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 	"time"
@@ -50,6 +51,7 @@ func defaultConnectionGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://apigeeconnect.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -137,6 +139,8 @@ type connectionGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewConnectionClient creates a new connection service client based on gRPC.
@@ -163,6 +167,7 @@ func NewConnectionClient(ctx context.Context, opts ...option.ClientOption) (*Con
 		connPool:         connPool,
 		connectionClient: apigeeconnectpb.NewConnectionServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -185,7 +190,9 @@ func (c *connectionGRPCClient) Connection() *grpc.ClientConn {
 func (c *connectionGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -214,7 +221,7 @@ func (c *connectionGRPCClient) ListConnections(ctx context.Context, req *apigeec
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.connectionClient.ListConnections(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.connectionClient.ListConnections, req, settings.GRPC, c.logger, "ListConnections")
 			return err
 		}, opts...)
 		if err != nil {

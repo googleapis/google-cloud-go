@@ -48,6 +48,9 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	gax "github.com/googleapis/gax-go/v2"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	"go.opentelemetry.io/otel/trace"
+	"go.opentelemetry.io/otel/trace/noop"
 	"golang.org/x/oauth2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -308,13 +311,13 @@ func TestToLogEntry(t *testing.T) {
 				HTTPRequest: &logging.HTTPRequest{
 					Request: &http.Request{
 						URL:    u,
-						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b120001000/000000000000004a;o=1"}},
+						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b12000100000/000000000000001;o=1"}},
 					},
 				},
 			},
 			want: &logpb.LogEntry{
-				Trace:        "projects/P/traces/105445aa7843bc8bf206b120001000",
-				SpanId:       "000000000000004a",
+				Trace:        "projects/P/traces/105445aa7843bc8bf206b12000100000",
+				SpanId:       "0000000000000001",
 				TraceSampled: true,
 			},
 		}, {
@@ -324,14 +327,42 @@ func TestToLogEntry(t *testing.T) {
 				HTTPRequest: &logging.HTTPRequest{
 					Request: &http.Request{
 						URL:    u,
-						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b120001000/000000000000004a;o=0"}},
+						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b12000100000/0000000000000001;o=0"}},
 					},
 				},
 			},
 			want: &logpb.LogEntry{
-				Trace:        "projects/P/traces/105445aa7843bc8bf206b120001000",
-				SpanId:       "000000000000004a",
+				Trace:        "projects/P/traces/105445aa7843bc8bf206b12000100000",
+				SpanId:       "0000000000000001",
 				TraceSampled: true,
+			},
+		}, {
+			name: "X-Trace-Context header with all fields; Span ID properly encoded in hexadecimal",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b12000100000/16;o=1"}},
+					},
+				},
+			},
+			want: &logpb.LogEntry{
+				Trace:        "projects/P/traces/105445aa7843bc8bf206b12000100000",
+				SpanId:       "0000000000000010",
+				TraceSampled: true,
+			},
+		}, {
+			name: "X-Trace-Context with Span ID too large",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b12000100000/99999999999999999999999999999999"}},
+					},
+				},
+			},
+			want: &logpb.LogEntry{
+				Trace: "projects/P/traces/105445aa7843bc8bf206b12000100000",
 			},
 		}, {
 			name: "X-Trace-Context header with all fields; TraceSampled from Header",
@@ -339,13 +370,13 @@ func TestToLogEntry(t *testing.T) {
 				HTTPRequest: &logging.HTTPRequest{
 					Request: &http.Request{
 						URL:    u,
-						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b120001000/000000000000004a;o=1"}},
+						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b12000100000/0000000000000001;o=1"}},
 					},
 				},
 			},
 			want: &logpb.LogEntry{
-				Trace:        "projects/P/traces/105445aa7843bc8bf206b120001000",
-				SpanId:       "000000000000004a",
+				Trace:        "projects/P/traces/105445aa7843bc8bf206b12000100000",
+				SpanId:       "0000000000000001",
 				TraceSampled: true,
 			},
 		}, {
@@ -365,12 +396,12 @@ func TestToLogEntry(t *testing.T) {
 				HTTPRequest: &logging.HTTPRequest{
 					Request: &http.Request{
 						URL:    u,
-						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b120001000/;o=0"}},
+						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b12000100000/;o=0"}},
 					},
 				},
 			},
 			want: &logpb.LogEntry{
-				Trace: "projects/P/traces/105445aa7843bc8bf206b120001000",
+				Trace: "projects/P/traces/105445aa7843bc8bf206b12000100000",
 			},
 		}, {
 			name: "X-Trace-Context header with missing traceSampled aka ?o=*",
@@ -378,12 +409,12 @@ func TestToLogEntry(t *testing.T) {
 				HTTPRequest: &logging.HTTPRequest{
 					Request: &http.Request{
 						URL:    u,
-						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b120001000/0"}},
+						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b12000100000/0"}},
 					},
 				},
 			},
 			want: &logpb.LogEntry{
-				Trace: "projects/P/traces/105445aa7843bc8bf206b120001000",
+				Trace: "projects/P/traces/105445aa7843bc8bf206b12000100000",
 			},
 		}, {
 			name: "X-Trace-Context header with all blank fields",
@@ -604,6 +635,132 @@ func TestToLogEntry(t *testing.T) {
 			}
 			if got := e.TraceSampled; got != test.want.TraceSampled {
 				t.Errorf("TraceSampled: %+v: got %t, want %t", test.in, got, test.want.TraceSampled)
+			}
+		})
+	}
+}
+
+func TestToLogEntryOTelIntegration(t *testing.T) {
+	// Some slight modifications need to be done for testing ToLogEntry
+	// for the OpenTelemetry integration, so they are in a separate function.
+	u := &url.URL{Scheme: "http"}
+	tests := []struct {
+		name string
+		in   logging.Entry
+		want *logpb.LogEntry // if want is nil, pull wants from spanContext
+	}{
+		{
+			name: "Using OpenTelemetry with a valid span",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL: u,
+					},
+				},
+			},
+		},
+		{
+			name: "Using OpenTelemetry only with a valid span + valid traceparent headers (precedence test)",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL: u,
+						Header: http.Header{
+							"Traceparent": {"00-105445aa7843bc8bf206b12000100012-000000000000004a-01"},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "Using OpenTelemetry only with a valid span + valid XCTC headers (precedence test)",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL: u,
+						Header: http.Header{
+							"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b120000000/0000000000000bbb;o=1"},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "Using OpenTelemetry with a valid span + trace info set in Entry object",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL: u,
+					},
+				},
+				Trace:        "abc",
+				SpanID:       "def",
+				TraceSampled: false,
+			},
+			want: &logpb.LogEntry{
+				Trace:        "abc",
+				SpanId:       "def",
+				TraceSampled: false,
+			},
+		},
+		{
+			name: "Using OpenTelemetry without a request",
+			in:   logging.Entry{},
+			want: &logpb.LogEntry{},
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			var span trace.Span
+			ctx := context.Background()
+
+			// Set up an OTel SDK tracer if integration test, mock noop tracer if not.
+			if integrationTest {
+				tracerProvider := sdktrace.NewTracerProvider()
+				defer tracerProvider.Shutdown(ctx)
+
+				ctx, span = tracerProvider.Tracer("integration-test-tracer").Start(ctx, "test span")
+				defer span.End()
+			} else {
+				otelTraceID, _ := trace.TraceIDFromHex(strings.Repeat("a", 32))
+				otelSpanID, _ := trace.SpanIDFromHex(strings.Repeat("f", 16))
+				otelTraceFlags := trace.FlagsSampled // tracesampled = true
+				mockSpanContext := trace.NewSpanContext(trace.SpanContextConfig{
+					TraceID:    otelTraceID,
+					SpanID:     otelSpanID,
+					TraceFlags: otelTraceFlags,
+				})
+				ctx = trace.ContextWithSpanContext(ctx, mockSpanContext)
+				ctx, span = noop.NewTracerProvider().Tracer("test tracer").Start(ctx, "test span")
+				defer span.End()
+			}
+
+			if test.in.HTTPRequest != nil && test.in.HTTPRequest.Request != nil {
+				test.in.HTTPRequest.Request = test.in.HTTPRequest.Request.WithContext(ctx)
+			}
+			spanContext := trace.SpanContextFromContext(ctx)
+
+			// if want is nil, pull wants from spanContext
+			if test.want == nil {
+				test.want = &logpb.LogEntry{
+					Trace:        "projects/P/traces/" + spanContext.TraceID().String(),
+					SpanId:       spanContext.SpanID().String(),
+					TraceSampled: spanContext.TraceFlags().IsSampled(),
+				}
+			}
+
+			e, err := logging.ToLogEntry(test.in, "projects/P")
+			if err != nil {
+				t.Fatalf("Unexpected error: %+v: %v", test.in, err)
+			}
+			if got := e.Trace; got != test.want.Trace {
+				t.Errorf("TraceId: %+v: SpanContext: %+v: got %q, want %q", test.in, spanContext, got, test.want.Trace)
+			}
+			if got := e.SpanId; got != test.want.SpanId {
+				t.Errorf("SpanId: %+v: SpanContext: %+v: got %q, want %q", test.in, spanContext, got, test.want.SpanId)
+			}
+			if got := e.TraceSampled; got != test.want.TraceSampled {
+				t.Errorf("TraceSampled: %+v: SpanContext: %+v: got %t, want %t", test.in, spanContext, got, test.want.TraceSampled)
 			}
 		})
 	}

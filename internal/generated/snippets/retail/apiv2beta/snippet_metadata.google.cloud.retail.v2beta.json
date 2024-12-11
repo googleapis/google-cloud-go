@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/retail/apiv2beta",
-    "version": "1.16.2",
+    "version": "1.19.1",
     "language": "GO",
     "apis": [
       {
@@ -1298,6 +1298,328 @@
       ]
     },
     {
+      "regionTag": "retail_v2beta_generated_GenerativeQuestionService_BatchUpdateGenerativeQuestionConfigs_sync",
+      "title": "retail BatchUpdateGenerativeQuestionConfigs Sample",
+      "description": "BatchUpdateGenerativeQuestionConfigs allows management of multiple questions.",
+      "file": "GenerativeQuestionClient/BatchUpdateGenerativeQuestionConfigs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchUpdateGenerativeQuestionConfigs",
+        "fullName": "google.cloud.retail.v2beta.GenerativeQuestionClient.BatchUpdateGenerativeQuestionConfigs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "retailpb.BatchUpdateGenerativeQuestionConfigsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*retailpb.BatchUpdateGenerativeQuestionConfigsResponse",
+        "client": {
+          "shortName": "GenerativeQuestionClient",
+          "fullName": "google.cloud.retail.v2beta.GenerativeQuestionClient"
+        },
+        "method": {
+          "shortName": "BatchUpdateGenerativeQuestionConfigs",
+          "fullName": "google.cloud.retail.v2beta.GenerativeQuestionService.BatchUpdateGenerativeQuestionConfigs",
+          "service": {
+            "shortName": "GenerativeQuestionService",
+            "fullName": "google.cloud.retail.v2beta.GenerativeQuestionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "retail_v2beta_generated_GenerativeQuestionService_GetGenerativeQuestionsFeatureConfig_sync",
+      "title": "retail GetGenerativeQuestionsFeatureConfig Sample",
+      "description": "GetGenerativeQuestionsFeatureConfig manages overal generative question feature state -- enables toggling\nfeature on and off.",
+      "file": "GenerativeQuestionClient/GetGenerativeQuestionsFeatureConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetGenerativeQuestionsFeatureConfig",
+        "fullName": "google.cloud.retail.v2beta.GenerativeQuestionClient.GetGenerativeQuestionsFeatureConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "retailpb.GetGenerativeQuestionsFeatureConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*retailpb.GenerativeQuestionsFeatureConfig",
+        "client": {
+          "shortName": "GenerativeQuestionClient",
+          "fullName": "google.cloud.retail.v2beta.GenerativeQuestionClient"
+        },
+        "method": {
+          "shortName": "GetGenerativeQuestionsFeatureConfig",
+          "fullName": "google.cloud.retail.v2beta.GenerativeQuestionService.GetGenerativeQuestionsFeatureConfig",
+          "service": {
+            "shortName": "GenerativeQuestionService",
+            "fullName": "google.cloud.retail.v2beta.GenerativeQuestionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "retail_v2beta_generated_GenerativeQuestionService_GetOperation_sync",
+      "title": "retail GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "GenerativeQuestionClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.retail.v2beta.GenerativeQuestionClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "GenerativeQuestionClient",
+          "fullName": "google.cloud.retail.v2beta.GenerativeQuestionClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "retail_v2beta_generated_GenerativeQuestionService_ListGenerativeQuestionConfigs_sync",
+      "title": "retail ListGenerativeQuestionConfigs Sample",
+      "description": "ListGenerativeQuestionConfigs returns all questions for a given catalog.",
+      "file": "GenerativeQuestionClient/ListGenerativeQuestionConfigs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListGenerativeQuestionConfigs",
+        "fullName": "google.cloud.retail.v2beta.GenerativeQuestionClient.ListGenerativeQuestionConfigs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "retailpb.ListGenerativeQuestionConfigsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*retailpb.ListGenerativeQuestionConfigsResponse",
+        "client": {
+          "shortName": "GenerativeQuestionClient",
+          "fullName": "google.cloud.retail.v2beta.GenerativeQuestionClient"
+        },
+        "method": {
+          "shortName": "ListGenerativeQuestionConfigs",
+          "fullName": "google.cloud.retail.v2beta.GenerativeQuestionService.ListGenerativeQuestionConfigs",
+          "service": {
+            "shortName": "GenerativeQuestionService",
+            "fullName": "google.cloud.retail.v2beta.GenerativeQuestionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "retail_v2beta_generated_GenerativeQuestionService_ListOperations_sync",
+      "title": "retail ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "GenerativeQuestionClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.retail.v2beta.GenerativeQuestionClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "GenerativeQuestionClient",
+          "fullName": "google.cloud.retail.v2beta.GenerativeQuestionClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "retail_v2beta_generated_GenerativeQuestionService_UpdateGenerativeQuestionConfig_sync",
+      "title": "retail UpdateGenerativeQuestionConfig Sample",
+      "description": "UpdateGenerativeQuestionConfig allows management of individual questions.",
+      "file": "GenerativeQuestionClient/UpdateGenerativeQuestionConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateGenerativeQuestionConfig",
+        "fullName": "google.cloud.retail.v2beta.GenerativeQuestionClient.UpdateGenerativeQuestionConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "retailpb.UpdateGenerativeQuestionConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*retailpb.GenerativeQuestionConfig",
+        "client": {
+          "shortName": "GenerativeQuestionClient",
+          "fullName": "google.cloud.retail.v2beta.GenerativeQuestionClient"
+        },
+        "method": {
+          "shortName": "UpdateGenerativeQuestionConfig",
+          "fullName": "google.cloud.retail.v2beta.GenerativeQuestionService.UpdateGenerativeQuestionConfig",
+          "service": {
+            "shortName": "GenerativeQuestionService",
+            "fullName": "google.cloud.retail.v2beta.GenerativeQuestionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "retail_v2beta_generated_GenerativeQuestionService_UpdateGenerativeQuestionsFeatureConfig_sync",
+      "title": "retail UpdateGenerativeQuestionsFeatureConfig Sample",
+      "description": "UpdateGenerativeQuestionsFeatureConfig manages overal generative question feature state -- enables toggling\nfeature on and off.",
+      "file": "GenerativeQuestionClient/UpdateGenerativeQuestionsFeatureConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateGenerativeQuestionsFeatureConfig",
+        "fullName": "google.cloud.retail.v2beta.GenerativeQuestionClient.UpdateGenerativeQuestionsFeatureConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "retailpb.UpdateGenerativeQuestionsFeatureConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*retailpb.GenerativeQuestionsFeatureConfig",
+        "client": {
+          "shortName": "GenerativeQuestionClient",
+          "fullName": "google.cloud.retail.v2beta.GenerativeQuestionClient"
+        },
+        "method": {
+          "shortName": "UpdateGenerativeQuestionsFeatureConfig",
+          "fullName": "google.cloud.retail.v2beta.GenerativeQuestionService.UpdateGenerativeQuestionsFeatureConfig",
+          "service": {
+            "shortName": "GenerativeQuestionService",
+            "fullName": "google.cloud.retail.v2beta.GenerativeQuestionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "retail_v2beta_generated_ModelService_CreateModel_sync",
       "title": "retail CreateModel Sample",
       "description": "CreateModel creates a new model.",
@@ -1897,7 +2219,7 @@
     {
       "regionTag": "retail_v2beta_generated_ProductService_AddFulfillmentPlaces_sync",
       "title": "retail AddFulfillmentPlaces Sample",
-      "description": "AddFulfillmentPlaces it is recommended to use the\n[ProductService.AddLocalInventories][google.cloud.retail.v2beta.ProductService.AddLocalInventories]\nmethod instead of\n[ProductService.AddFulfillmentPlaces][google.cloud.retail.v2beta.ProductService.AddFulfillmentPlaces].\n[ProductService.AddLocalInventories][google.cloud.retail.v2beta.ProductService.AddLocalInventories]\nachieves the same results but provides more fine-grained control over\ningesting local inventory data.\n\nIncrementally adds place IDs to\n[Product.fulfillment_info.place_ids][google.cloud.retail.v2beta.FulfillmentInfo.place_ids].\n\nThis process is asynchronous and does not require the\n[Product][google.cloud.retail.v2beta.Product] to exist before updating\nfulfillment information. If the request is valid, the update will be\nenqueued and processed downstream. As a consequence, when a response is\nreturned, the added place IDs are not immediately manifested in the\n[Product][google.cloud.retail.v2beta.Product] queried by\n[ProductService.GetProduct][google.cloud.retail.v2beta.ProductService.GetProduct]\nor\n[ProductService.ListProducts][google.cloud.retail.v2beta.ProductService.ListProducts].\n\nThe returned [Operation][google.longrunning.Operation]s will be obsolete\nafter 1 day, and [GetOperation][google.longrunning.Operations.GetOperation]\nAPI will return NOT_FOUND afterwards.\n\nIf conflicting updates are issued, the\n[Operation][google.longrunning.Operation]s associated with the stale\nupdates will not be marked as [done][google.longrunning.Operation.done]\nuntil being obsolete.",
+      "description": "AddFulfillmentPlaces we recommend that you use the\n[ProductService.AddLocalInventories][google.cloud.retail.v2beta.ProductService.AddLocalInventories]\nmethod instead of the\n[ProductService.AddFulfillmentPlaces][google.cloud.retail.v2beta.ProductService.AddFulfillmentPlaces]\nmethod.\n[ProductService.AddLocalInventories][google.cloud.retail.v2beta.ProductService.AddLocalInventories]\nachieves the same results but provides more fine-grained control over\ningesting local inventory data.\n\nIncrementally adds place IDs to\n[Product.fulfillment_info.place_ids][google.cloud.retail.v2beta.FulfillmentInfo.place_ids].\n\nThis process is asynchronous and does not require the\n[Product][google.cloud.retail.v2beta.Product] to exist before updating\nfulfillment information. If the request is valid, the update will be\nenqueued and processed downstream. As a consequence, when a response is\nreturned, the added place IDs are not immediately manifested in the\n[Product][google.cloud.retail.v2beta.Product] queried by\n[ProductService.GetProduct][google.cloud.retail.v2beta.ProductService.GetProduct]\nor\n[ProductService.ListProducts][google.cloud.retail.v2beta.ProductService.ListProducts].\n\nThe returned [Operation][google.longrunning.Operation]s will be obsolete\nafter 1 day, and [GetOperation][google.longrunning.Operations.GetOperation]\nAPI will return NOT_FOUND afterwards.\n\nIf conflicting updates are issued, the\n[Operation][google.longrunning.Operation]s associated with the stale\nupdates will not be marked as [done][google.longrunning.Operation.done]\nuntil being obsolete.",
       "file": "ProductClient/AddFulfillmentPlaces/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2073,6 +2395,52 @@
         {
           "start": 18,
           "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "retail_v2beta_generated_ProductService_ExportProducts_sync",
+      "title": "retail ExportProducts Sample",
+      "description": "ExportProducts exports multiple [Product][google.cloud.retail.v2beta.Product]s.",
+      "file": "ProductClient/ExportProducts/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportProducts",
+        "fullName": "google.cloud.retail.v2beta.ProductClient.ExportProducts",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "retailpb.ExportProductsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExportProductsOperation",
+        "client": {
+          "shortName": "ProductClient",
+          "fullName": "google.cloud.retail.v2beta.ProductClient"
+        },
+        "method": {
+          "shortName": "ExportProducts",
+          "fullName": "google.cloud.retail.v2beta.ProductService.ExportProducts",
+          "service": {
+            "shortName": "ProductService",
+            "fullName": "google.cloud.retail.v2beta.ProductService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -2308,9 +2676,55 @@
       ]
     },
     {
+      "regionTag": "retail_v2beta_generated_ProductService_PurgeProducts_sync",
+      "title": "retail PurgeProducts Sample",
+      "description": "PurgeProducts permanently deletes all selected\n[Product][google.cloud.retail.v2beta.Product]s under a branch.\n\nThis process is asynchronous. If the request is valid, the removal will be\nenqueued and processed offline. Depending on the number of\n[Product][google.cloud.retail.v2beta.Product]s, this operation could take\nhours to complete. Before the operation completes, some\n[Product][google.cloud.retail.v2beta.Product]s may still be returned by\n[ProductService.GetProduct][google.cloud.retail.v2beta.ProductService.GetProduct]\nor\n[ProductService.ListProducts][google.cloud.retail.v2beta.ProductService.ListProducts].\n\nDepending on the number of [Product][google.cloud.retail.v2beta.Product]s,\nthis operation could take hours to complete. To get a sample of\n[Product][google.cloud.retail.v2beta.Product]s that would be deleted, set\n[PurgeProductsRequest.force][google.cloud.retail.v2beta.PurgeProductsRequest.force]\nto false.",
+      "file": "ProductClient/PurgeProducts/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PurgeProducts",
+        "fullName": "google.cloud.retail.v2beta.ProductClient.PurgeProducts",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "retailpb.PurgeProductsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PurgeProductsOperation",
+        "client": {
+          "shortName": "ProductClient",
+          "fullName": "google.cloud.retail.v2beta.ProductClient"
+        },
+        "method": {
+          "shortName": "PurgeProducts",
+          "fullName": "google.cloud.retail.v2beta.ProductService.PurgeProducts",
+          "service": {
+            "shortName": "ProductService",
+            "fullName": "google.cloud.retail.v2beta.ProductService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "retail_v2beta_generated_ProductService_RemoveFulfillmentPlaces_sync",
       "title": "retail RemoveFulfillmentPlaces Sample",
-      "description": "RemoveFulfillmentPlaces it is recommended to use the\n[ProductService.RemoveLocalInventories][google.cloud.retail.v2beta.ProductService.RemoveLocalInventories]\nmethod instead of\n[ProductService.RemoveFulfillmentPlaces][google.cloud.retail.v2beta.ProductService.RemoveFulfillmentPlaces].\n[ProductService.RemoveLocalInventories][google.cloud.retail.v2beta.ProductService.RemoveLocalInventories]\nachieves the same results but provides more fine-grained control over\ningesting local inventory data.\n\nIncrementally removes place IDs from a\n[Product.fulfillment_info.place_ids][google.cloud.retail.v2beta.FulfillmentInfo.place_ids].\n\nThis process is asynchronous and does not require the\n[Product][google.cloud.retail.v2beta.Product] to exist before updating\nfulfillment information. If the request is valid, the update will be\nenqueued and processed downstream. As a consequence, when a response is\nreturned, the removed place IDs are not immediately manifested in the\n[Product][google.cloud.retail.v2beta.Product] queried by\n[ProductService.GetProduct][google.cloud.retail.v2beta.ProductService.GetProduct]\nor\n[ProductService.ListProducts][google.cloud.retail.v2beta.ProductService.ListProducts].\n\nThe returned [Operation][google.longrunning.Operation]s will be obsolete\nafter 1 day, and [GetOperation][google.longrunning.Operations.GetOperation]\nAPI will return NOT_FOUND afterwards.\n\nIf conflicting updates are issued, the\n[Operation][google.longrunning.Operation]s associated with the stale\nupdates will not be marked as [done][google.longrunning.Operation.done]\nuntil being obsolete.",
+      "description": "RemoveFulfillmentPlaces we recommend that you use the\n[ProductService.RemoveLocalInventories][google.cloud.retail.v2beta.ProductService.RemoveLocalInventories]\nmethod instead of the\n[ProductService.RemoveFulfillmentPlaces][google.cloud.retail.v2beta.ProductService.RemoveFulfillmentPlaces]\nmethod.\n[ProductService.RemoveLocalInventories][google.cloud.retail.v2beta.ProductService.RemoveLocalInventories]\nachieves the same results but provides more fine-grained control over\ningesting local inventory data.\n\nIncrementally removes place IDs from a\n[Product.fulfillment_info.place_ids][google.cloud.retail.v2beta.FulfillmentInfo.place_ids].\n\nThis process is asynchronous and does not require the\n[Product][google.cloud.retail.v2beta.Product] to exist before updating\nfulfillment information. If the request is valid, the update will be\nenqueued and processed downstream. As a consequence, when a response is\nreturned, the removed place IDs are not immediately manifested in the\n[Product][google.cloud.retail.v2beta.Product] queried by\n[ProductService.GetProduct][google.cloud.retail.v2beta.ProductService.GetProduct]\nor\n[ProductService.ListProducts][google.cloud.retail.v2beta.ProductService.ListProducts].\n\nThe returned [Operation][google.longrunning.Operation]s will be obsolete\nafter 1 day, and [GetOperation][google.longrunning.Operations.GetOperation]\nAPI will return NOT_FOUND afterwards.\n\nIf conflicting updates are issued, the\n[Operation][google.longrunning.Operation]s associated with the stale\nupdates will not be marked as [done][google.longrunning.Operation.done]\nuntil being obsolete.",
       "file": "ProductClient/RemoveFulfillmentPlaces/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2479,6 +2893,190 @@
           "service": {
             "shortName": "ProductService",
             "fullName": "google.cloud.retail.v2beta.ProductService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "retail_v2beta_generated_ProjectService_GetAlertConfig_sync",
+      "title": "retail GetAlertConfig Sample",
+      "description": "GetAlertConfig get the [AlertConfig][google.cloud.retail.v2beta.AlertConfig] of the\nrequested project.",
+      "file": "ProjectClient/GetAlertConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAlertConfig",
+        "fullName": "google.cloud.retail.v2beta.ProjectClient.GetAlertConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "retailpb.GetAlertConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*retailpb.AlertConfig",
+        "client": {
+          "shortName": "ProjectClient",
+          "fullName": "google.cloud.retail.v2beta.ProjectClient"
+        },
+        "method": {
+          "shortName": "GetAlertConfig",
+          "fullName": "google.cloud.retail.v2beta.ProjectService.GetAlertConfig",
+          "service": {
+            "shortName": "ProjectService",
+            "fullName": "google.cloud.retail.v2beta.ProjectService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "retail_v2beta_generated_ProjectService_GetOperation_sync",
+      "title": "retail GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "ProjectClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.retail.v2beta.ProjectClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "ProjectClient",
+          "fullName": "google.cloud.retail.v2beta.ProjectClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "retail_v2beta_generated_ProjectService_ListOperations_sync",
+      "title": "retail ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "ProjectClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.retail.v2beta.ProjectClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "ProjectClient",
+          "fullName": "google.cloud.retail.v2beta.ProjectClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "retail_v2beta_generated_ProjectService_UpdateAlertConfig_sync",
+      "title": "retail UpdateAlertConfig Sample",
+      "description": "UpdateAlertConfig update the alert config of the requested project.",
+      "file": "ProjectClient/UpdateAlertConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateAlertConfig",
+        "fullName": "google.cloud.retail.v2beta.ProjectClient.UpdateAlertConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "retailpb.UpdateAlertConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*retailpb.AlertConfig",
+        "client": {
+          "shortName": "ProjectClient",
+          "fullName": "google.cloud.retail.v2beta.ProjectClient"
+        },
+        "method": {
+          "shortName": "UpdateAlertConfig",
+          "fullName": "google.cloud.retail.v2beta.ProjectService.UpdateAlertConfig",
+          "service": {
+            "shortName": "ProjectService",
+            "fullName": "google.cloud.retail.v2beta.ProjectService"
           }
         }
       },
@@ -3084,6 +3682,52 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "retail_v2beta_generated_UserEventService_ExportUserEvents_sync",
+      "title": "retail ExportUserEvents Sample",
+      "description": "ExportUserEvents exports user events.\n\n`Operation.response` is of type `ExportResponse`.\n`Operation.metadata` is of type `ExportMetadata`.",
+      "file": "UserEventClient/ExportUserEvents/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportUserEvents",
+        "fullName": "google.cloud.retail.v2beta.UserEventClient.ExportUserEvents",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "retailpb.ExportUserEventsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExportUserEventsOperation",
+        "client": {
+          "shortName": "UserEventClient",
+          "fullName": "google.cloud.retail.v2beta.UserEventClient"
+        },
+        "method": {
+          "shortName": "ExportUserEvents",
+          "fullName": "google.cloud.retail.v2beta.UserEventService.ExportUserEvents",
+          "service": {
+            "shortName": "UserEventService",
+            "fullName": "google.cloud.retail.v2beta.UserEventService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]

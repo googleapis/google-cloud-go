@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	identitytoolkitpb "cloud.google.com/go/identitytoolkit/apiv2/identitytoolkitpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -54,6 +53,7 @@ func defaultAuthenticationGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://identitytoolkit.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -150,6 +150,8 @@ type authenticationGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewAuthenticationClient creates a new authentication service client based on gRPC.
@@ -176,6 +178,7 @@ func NewAuthenticationClient(ctx context.Context, opts ...option.ClientOption) (
 		connPool:             connPool,
 		authenticationClient: identitytoolkitpb.NewAuthenticationServiceClient(connPool),
 		CallOptions:          &client.CallOptions,
+		logger:               internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -198,7 +201,9 @@ func (c *authenticationGRPCClient) Connection() *grpc.ClientConn {
 func (c *authenticationGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -220,6 +225,8 @@ type authenticationRESTClient struct {
 
 	// Points back to the CallOptions field of the containing AuthenticationClient
 	CallOptions **AuthenticationCallOptions
+
+	logger *slog.Logger
 }
 
 // NewAuthenticationRESTClient creates a new authentication service rest client.
@@ -237,6 +244,7 @@ func NewAuthenticationRESTClient(ctx context.Context, opts ...option.ClientOptio
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -251,6 +259,7 @@ func defaultAuthenticationRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://identitytoolkit.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -260,7 +269,9 @@ func defaultAuthenticationRESTClientOptions() []option.ClientOption {
 func (c *authenticationRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -283,7 +294,7 @@ func (c *authenticationGRPCClient) FinalizeMfaSignIn(ctx context.Context, req *i
 	var resp *identitytoolkitpb.FinalizeMfaSignInResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.authenticationClient.FinalizeMfaSignIn(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.authenticationClient.FinalizeMfaSignIn, req, settings.GRPC, c.logger, "FinalizeMfaSignIn")
 		return err
 	}, opts...)
 	if err != nil {
@@ -298,7 +309,7 @@ func (c *authenticationGRPCClient) StartMfaSignIn(ctx context.Context, req *iden
 	var resp *identitytoolkitpb.StartMfaSignInResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.authenticationClient.StartMfaSignIn(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.authenticationClient.StartMfaSignIn, req, settings.GRPC, c.logger, "StartMfaSignIn")
 		return err
 	}, opts...)
 	if err != nil {
@@ -343,17 +354,7 @@ func (c *authenticationRESTClient) FinalizeMfaSignIn(ctx context.Context, req *i
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "FinalizeMfaSignIn")
 		if err != nil {
 			return err
 		}
@@ -406,17 +407,7 @@ func (c *authenticationRESTClient) StartMfaSignIn(ctx context.Context, req *iden
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "StartMfaSignIn")
 		if err != nil {
 			return err
 		}

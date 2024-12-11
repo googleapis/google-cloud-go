@@ -145,6 +145,11 @@
                 "UpdateDataset"
               ]
             },
+            "UpdateDatasetVersion": {
+              "methods": [
+                "UpdateDatasetVersion"
+              ]
+            },
             "WaitOperation": {
               "methods": [
                 "WaitOperation"
@@ -227,6 +232,11 @@
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
+              ]
+            },
+            "UpdateDeploymentResourcePool": {
+              "methods": [
+                "UpdateDeploymentResourcePool"
               ]
             },
             "WaitOperation": {
@@ -326,6 +336,75 @@
             "UpdateEndpoint": {
               "methods": [
                 "UpdateEndpoint"
+              ]
+            },
+            "UpdateEndpointLongRunning": {
+              "methods": [
+                "UpdateEndpointLongRunning"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "EvaluationService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "EvaluationClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "EvaluateInstances": {
+              "methods": [
+                "EvaluateInstances"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "WaitOperation": {
@@ -535,6 +614,11 @@
         "grpc": {
           "libraryClient": "FeatureRegistryClient",
           "rpcs": {
+            "BatchCreateFeatures": {
+              "methods": [
+                "BatchCreateFeatures"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -935,6 +1019,11 @@
             "ListTuningJobs": {
               "methods": [
                 "ListTuningJobs"
+              ]
+            },
+            "RebaseTunedModel": {
+              "methods": [
+                "RebaseTunedModel"
               ]
             },
             "SetIamPolicy": {
@@ -2037,9 +2126,19 @@
                 "CancelOperation"
               ]
             },
+            "CreateNotebookExecutionJob": {
+              "methods": [
+                "CreateNotebookExecutionJob"
+              ]
+            },
             "CreateNotebookRuntimeTemplate": {
               "methods": [
                 "CreateNotebookRuntimeTemplate"
+              ]
+            },
+            "DeleteNotebookExecutionJob": {
+              "methods": [
+                "DeleteNotebookExecutionJob"
               ]
             },
             "DeleteNotebookRuntime": {
@@ -2067,6 +2166,11 @@
                 "GetLocation"
               ]
             },
+            "GetNotebookExecutionJob": {
+              "methods": [
+                "GetNotebookExecutionJob"
+              ]
+            },
             "GetNotebookRuntime": {
               "methods": [
                 "GetNotebookRuntime"
@@ -2085,6 +2189,11 @@
             "ListLocations": {
               "methods": [
                 "ListLocations"
+              ]
+            },
+            "ListNotebookExecutionJobs": {
+              "methods": [
+                "ListNotebookExecutionJobs"
               ]
             },
             "ListNotebookRuntimeTemplates": {
@@ -2112,9 +2221,19 @@
                 "StartNotebookRuntime"
               ]
             },
+            "StopNotebookRuntime": {
+              "methods": [
+                "StopNotebookRuntime"
+              ]
+            },
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
+              ]
+            },
+            "UpdateNotebookRuntimeTemplate": {
+              "methods": [
+                "UpdateNotebookRuntimeTemplate"
               ]
             },
             "UpgradeNotebookRuntime": {
@@ -2844,6 +2963,189 @@
             "WriteTensorboardRunData": {
               "methods": [
                 "WriteTensorboardRunData"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "VertexRagDataService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "VertexRagDataClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateRagCorpus": {
+              "methods": [
+                "CreateRagCorpus"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteRagCorpus": {
+              "methods": [
+                "DeleteRagCorpus"
+              ]
+            },
+            "DeleteRagFile": {
+              "methods": [
+                "DeleteRagFile"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetRagCorpus": {
+              "methods": [
+                "GetRagCorpus"
+              ]
+            },
+            "GetRagFile": {
+              "methods": [
+                "GetRagFile"
+              ]
+            },
+            "ImportRagFiles": {
+              "methods": [
+                "ImportRagFiles"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListRagCorpora": {
+              "methods": [
+                "ListRagCorpora"
+              ]
+            },
+            "ListRagFiles": {
+              "methods": [
+                "ListRagFiles"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateRagCorpus": {
+              "methods": [
+                "UpdateRagCorpus"
+              ]
+            },
+            "UploadRagFile": {
+              "methods": [
+                "UploadRagFile"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "VertexRagService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "VertexRagClient",
+          "rpcs": {
+            "AugmentPrompt": {
+              "methods": [
+                "AugmentPrompt"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CorroborateContent": {
+              "methods": [
+                "CorroborateContent"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RetrieveContexts": {
+              "methods": [
+                "RetrieveContexts"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
               ]
             }
           }

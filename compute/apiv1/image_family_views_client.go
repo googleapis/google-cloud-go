@@ -19,14 +19,13 @@ package compute
 import (
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"time"
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	httptransport "google.golang.org/api/transport/http"
@@ -119,6 +118,8 @@ type imageFamilyViewsRESTClient struct {
 
 	// Points back to the CallOptions field of the containing ImageFamilyViewsClient
 	CallOptions **ImageFamilyViewsCallOptions
+
+	logger *slog.Logger
 }
 
 // NewImageFamilyViewsRESTClient creates a new image family views rest client.
@@ -136,6 +137,7 @@ func NewImageFamilyViewsRESTClient(ctx context.Context, opts ...option.ClientOpt
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -150,6 +152,7 @@ func defaultImageFamilyViewsRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -159,7 +162,9 @@ func defaultImageFamilyViewsRESTClientOptions() []option.ClientOption {
 func (c *imageFamilyViewsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -205,17 +210,7 @@ func (c *imageFamilyViewsRESTClient) Get(ctx context.Context, req *computepb.Get
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "Get")
 		if err != nil {
 			return err
 		}

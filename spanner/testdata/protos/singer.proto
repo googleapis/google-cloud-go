@@ -14,10 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-syntax = "proto2";
+syntax = "proto3";
 
-package spanner.examples.music;
-option go_package = "./protos";
+package examples.spanner.music;
+option go_package = "protos/";
 
 message SingerInfo {
   optional int64 singer_id = 1;
@@ -31,4 +31,15 @@ enum Genre {
   JAZZ = 1;
   FOLK = 2;
   ROCK = 3;
+}
+
+message CustomSingerInfo {
+  optional string singer_name = 1;
+}
+
+enum CustomGenre {
+  CUSTOM_POP = 0;
+  CUSTOM_JAZZ = 1;
+  CUSTOM_FOLK = 2;
+  CUSTOM_ROCK = 3;
 }

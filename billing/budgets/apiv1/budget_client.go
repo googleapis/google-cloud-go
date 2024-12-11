@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	budgetspb "cloud.google.com/go/billing/budgets/apiv1/budgetspb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -60,6 +59,7 @@ func defaultBudgetGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://billingbudgets.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -285,6 +285,8 @@ type budgetGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewBudgetClient creates a new budget service client based on gRPC.
@@ -312,6 +314,7 @@ func NewBudgetClient(ctx context.Context, opts ...option.ClientOption) (*BudgetC
 		connPool:     connPool,
 		budgetClient: budgetspb.NewBudgetServiceClient(connPool),
 		CallOptions:  &client.CallOptions,
+		logger:       internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -334,7 +337,9 @@ func (c *budgetGRPCClient) Connection() *grpc.ClientConn {
 func (c *budgetGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -356,6 +361,8 @@ type budgetRESTClient struct {
 
 	// Points back to the CallOptions field of the containing BudgetClient
 	CallOptions **BudgetCallOptions
+
+	logger *slog.Logger
 }
 
 // NewBudgetRESTClient creates a new budget service rest client.
@@ -374,6 +381,7 @@ func NewBudgetRESTClient(ctx context.Context, opts ...option.ClientOption) (*Bud
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -388,6 +396,7 @@ func defaultBudgetRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://billingbudgets.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -397,7 +406,9 @@ func defaultBudgetRESTClientOptions() []option.ClientOption {
 func (c *budgetRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -423,7 +434,7 @@ func (c *budgetGRPCClient) CreateBudget(ctx context.Context, req *budgetspb.Crea
 	var resp *budgetspb.Budget
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.budgetClient.CreateBudget(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.budgetClient.CreateBudget, req, settings.GRPC, c.logger, "CreateBudget")
 		return err
 	}, opts...)
 	if err != nil {
@@ -441,7 +452,7 @@ func (c *budgetGRPCClient) UpdateBudget(ctx context.Context, req *budgetspb.Upda
 	var resp *budgetspb.Budget
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.budgetClient.UpdateBudget(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.budgetClient.UpdateBudget, req, settings.GRPC, c.logger, "UpdateBudget")
 		return err
 	}, opts...)
 	if err != nil {
@@ -459,7 +470,7 @@ func (c *budgetGRPCClient) GetBudget(ctx context.Context, req *budgetspb.GetBudg
 	var resp *budgetspb.Budget
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.budgetClient.GetBudget(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.budgetClient.GetBudget, req, settings.GRPC, c.logger, "GetBudget")
 		return err
 	}, opts...)
 	if err != nil {
@@ -488,7 +499,7 @@ func (c *budgetGRPCClient) ListBudgets(ctx context.Context, req *budgetspb.ListB
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.budgetClient.ListBudgets(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.budgetClient.ListBudgets, req, settings.GRPC, c.logger, "ListBudgets")
 			return err
 		}, opts...)
 		if err != nil {
@@ -522,7 +533,7 @@ func (c *budgetGRPCClient) DeleteBudget(ctx context.Context, req *budgetspb.Dele
 	opts = append((*c.CallOptions).DeleteBudget[0:len((*c.CallOptions).DeleteBudget):len((*c.CallOptions).DeleteBudget)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.budgetClient.DeleteBudget(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.budgetClient.DeleteBudget, req, settings.GRPC, c.logger, "DeleteBudget")
 		return err
 	}, opts...)
 	return err
@@ -570,17 +581,7 @@ func (c *budgetRESTClient) CreateBudget(ctx context.Context, req *budgetspb.Crea
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateBudget")
 		if err != nil {
 			return err
 		}
@@ -619,11 +620,11 @@ func (c *budgetRESTClient) UpdateBudget(ctx context.Context, req *budgetspb.Upda
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -648,17 +649,7 @@ func (c *budgetRESTClient) UpdateBudget(ctx context.Context, req *budgetspb.Upda
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateBudget")
 		if err != nil {
 			return err
 		}
@@ -713,17 +704,7 @@ func (c *budgetRESTClient) GetBudget(ctx context.Context, req *budgetspb.GetBudg
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetBudget")
 		if err != nil {
 			return err
 		}
@@ -793,21 +774,10 @@ func (c *budgetRESTClient) ListBudgets(ctx context.Context, req *budgetspb.ListB
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListBudgets")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -867,14 +837,7 @@ func (c *budgetRESTClient) DeleteBudget(ctx context.Context, req *budgetspb.Dele
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteBudget")
+		return err
 	}, opts...)
 }

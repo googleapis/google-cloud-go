@@ -19,6 +19,7 @@ package aiplatform
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 
@@ -75,6 +76,7 @@ func defaultFeatureOnlineStoreAdminGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -374,6 +376,8 @@ type featureOnlineStoreAdminGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewFeatureOnlineStoreAdminClient creates a new feature online store admin service client based on gRPC.
@@ -401,6 +405,7 @@ func NewFeatureOnlineStoreAdminClient(ctx context.Context, opts ...option.Client
 		connPool:                      connPool,
 		featureOnlineStoreAdminClient: aiplatformpb.NewFeatureOnlineStoreAdminServiceClient(connPool),
 		CallOptions:                   &client.CallOptions,
+		logger:                        internaloption.GetLogger(opts),
 		operationsClient:              longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:               iampb.NewIAMPolicyClient(connPool),
 		locationsClient:               locationpb.NewLocationsClient(connPool),
@@ -437,7 +442,9 @@ func (c *featureOnlineStoreAdminGRPCClient) Connection() *grpc.ClientConn {
 func (c *featureOnlineStoreAdminGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -455,7 +462,7 @@ func (c *featureOnlineStoreAdminGRPCClient) CreateFeatureOnlineStore(ctx context
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featureOnlineStoreAdminClient.CreateFeatureOnlineStore(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featureOnlineStoreAdminClient.CreateFeatureOnlineStore, req, settings.GRPC, c.logger, "CreateFeatureOnlineStore")
 		return err
 	}, opts...)
 	if err != nil {
@@ -475,7 +482,7 @@ func (c *featureOnlineStoreAdminGRPCClient) GetFeatureOnlineStore(ctx context.Co
 	var resp *aiplatformpb.FeatureOnlineStore
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featureOnlineStoreAdminClient.GetFeatureOnlineStore(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featureOnlineStoreAdminClient.GetFeatureOnlineStore, req, settings.GRPC, c.logger, "GetFeatureOnlineStore")
 		return err
 	}, opts...)
 	if err != nil {
@@ -504,7 +511,7 @@ func (c *featureOnlineStoreAdminGRPCClient) ListFeatureOnlineStores(ctx context.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.featureOnlineStoreAdminClient.ListFeatureOnlineStores(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.featureOnlineStoreAdminClient.ListFeatureOnlineStores, req, settings.GRPC, c.logger, "ListFeatureOnlineStores")
 			return err
 		}, opts...)
 		if err != nil {
@@ -539,7 +546,7 @@ func (c *featureOnlineStoreAdminGRPCClient) UpdateFeatureOnlineStore(ctx context
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featureOnlineStoreAdminClient.UpdateFeatureOnlineStore(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featureOnlineStoreAdminClient.UpdateFeatureOnlineStore, req, settings.GRPC, c.logger, "UpdateFeatureOnlineStore")
 		return err
 	}, opts...)
 	if err != nil {
@@ -559,7 +566,7 @@ func (c *featureOnlineStoreAdminGRPCClient) DeleteFeatureOnlineStore(ctx context
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featureOnlineStoreAdminClient.DeleteFeatureOnlineStore(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featureOnlineStoreAdminClient.DeleteFeatureOnlineStore, req, settings.GRPC, c.logger, "DeleteFeatureOnlineStore")
 		return err
 	}, opts...)
 	if err != nil {
@@ -579,7 +586,7 @@ func (c *featureOnlineStoreAdminGRPCClient) CreateFeatureView(ctx context.Contex
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featureOnlineStoreAdminClient.CreateFeatureView(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featureOnlineStoreAdminClient.CreateFeatureView, req, settings.GRPC, c.logger, "CreateFeatureView")
 		return err
 	}, opts...)
 	if err != nil {
@@ -599,7 +606,7 @@ func (c *featureOnlineStoreAdminGRPCClient) GetFeatureView(ctx context.Context, 
 	var resp *aiplatformpb.FeatureView
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featureOnlineStoreAdminClient.GetFeatureView(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featureOnlineStoreAdminClient.GetFeatureView, req, settings.GRPC, c.logger, "GetFeatureView")
 		return err
 	}, opts...)
 	if err != nil {
@@ -628,7 +635,7 @@ func (c *featureOnlineStoreAdminGRPCClient) ListFeatureViews(ctx context.Context
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.featureOnlineStoreAdminClient.ListFeatureViews(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.featureOnlineStoreAdminClient.ListFeatureViews, req, settings.GRPC, c.logger, "ListFeatureViews")
 			return err
 		}, opts...)
 		if err != nil {
@@ -663,7 +670,7 @@ func (c *featureOnlineStoreAdminGRPCClient) UpdateFeatureView(ctx context.Contex
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featureOnlineStoreAdminClient.UpdateFeatureView(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featureOnlineStoreAdminClient.UpdateFeatureView, req, settings.GRPC, c.logger, "UpdateFeatureView")
 		return err
 	}, opts...)
 	if err != nil {
@@ -683,7 +690,7 @@ func (c *featureOnlineStoreAdminGRPCClient) DeleteFeatureView(ctx context.Contex
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featureOnlineStoreAdminClient.DeleteFeatureView(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featureOnlineStoreAdminClient.DeleteFeatureView, req, settings.GRPC, c.logger, "DeleteFeatureView")
 		return err
 	}, opts...)
 	if err != nil {
@@ -703,7 +710,7 @@ func (c *featureOnlineStoreAdminGRPCClient) SyncFeatureView(ctx context.Context,
 	var resp *aiplatformpb.SyncFeatureViewResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featureOnlineStoreAdminClient.SyncFeatureView(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featureOnlineStoreAdminClient.SyncFeatureView, req, settings.GRPC, c.logger, "SyncFeatureView")
 		return err
 	}, opts...)
 	if err != nil {
@@ -721,7 +728,7 @@ func (c *featureOnlineStoreAdminGRPCClient) GetFeatureViewSync(ctx context.Conte
 	var resp *aiplatformpb.FeatureViewSync
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featureOnlineStoreAdminClient.GetFeatureViewSync(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featureOnlineStoreAdminClient.GetFeatureViewSync, req, settings.GRPC, c.logger, "GetFeatureViewSync")
 		return err
 	}, opts...)
 	if err != nil {
@@ -750,7 +757,7 @@ func (c *featureOnlineStoreAdminGRPCClient) ListFeatureViewSyncs(ctx context.Con
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.featureOnlineStoreAdminClient.ListFeatureViewSyncs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.featureOnlineStoreAdminClient.ListFeatureViewSyncs, req, settings.GRPC, c.logger, "ListFeatureViewSyncs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -785,7 +792,7 @@ func (c *featureOnlineStoreAdminGRPCClient) GetLocation(ctx context.Context, req
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -814,7 +821,7 @@ func (c *featureOnlineStoreAdminGRPCClient) ListLocations(ctx context.Context, r
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -849,7 +856,7 @@ func (c *featureOnlineStoreAdminGRPCClient) GetIamPolicy(ctx context.Context, re
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -867,7 +874,7 @@ func (c *featureOnlineStoreAdminGRPCClient) SetIamPolicy(ctx context.Context, re
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -885,7 +892,7 @@ func (c *featureOnlineStoreAdminGRPCClient) TestIamPermissions(ctx context.Conte
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -902,7 +909,7 @@ func (c *featureOnlineStoreAdminGRPCClient) CancelOperation(ctx context.Context,
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -916,7 +923,7 @@ func (c *featureOnlineStoreAdminGRPCClient) DeleteOperation(ctx context.Context,
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -931,7 +938,7 @@ func (c *featureOnlineStoreAdminGRPCClient) GetOperation(ctx context.Context, re
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -960,7 +967,7 @@ func (c *featureOnlineStoreAdminGRPCClient) ListOperations(ctx context.Context, 
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -995,7 +1002,7 @@ func (c *featureOnlineStoreAdminGRPCClient) WaitOperation(ctx context.Context, r
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.WaitOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.WaitOperation, req, settings.GRPC, c.logger, "WaitOperation")
 		return err
 	}, opts...)
 	if err != nil {

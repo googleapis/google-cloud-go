@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -29,7 +29,6 @@ import (
 	osloginpb "cloud.google.com/go/oslogin/apiv1beta/osloginpb"
 	commonpb "cloud.google.com/go/oslogin/common/commonpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -62,6 +61,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://oslogin.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -343,6 +343,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new os login service client based on gRPC.
@@ -372,6 +374,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      osloginpb.NewOsLoginServiceClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -394,7 +397,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -416,6 +421,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new os login service rest client.
@@ -436,6 +443,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -450,6 +458,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://oslogin.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -459,7 +468,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -485,7 +496,7 @@ func (c *gRPCClient) CreateSshPublicKey(ctx context.Context, req *osloginpb.Crea
 	var resp *commonpb.SshPublicKey
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateSshPublicKey(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateSshPublicKey, req, settings.GRPC, c.logger, "CreateSshPublicKey")
 		return err
 	}, opts...)
 	if err != nil {
@@ -502,7 +513,7 @@ func (c *gRPCClient) DeletePosixAccount(ctx context.Context, req *osloginpb.Dele
 	opts = append((*c.CallOptions).DeletePosixAccount[0:len((*c.CallOptions).DeletePosixAccount):len((*c.CallOptions).DeletePosixAccount)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeletePosixAccount(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeletePosixAccount, req, settings.GRPC, c.logger, "DeletePosixAccount")
 		return err
 	}, opts...)
 	return err
@@ -516,7 +527,7 @@ func (c *gRPCClient) DeleteSshPublicKey(ctx context.Context, req *osloginpb.Dele
 	opts = append((*c.CallOptions).DeleteSshPublicKey[0:len((*c.CallOptions).DeleteSshPublicKey):len((*c.CallOptions).DeleteSshPublicKey)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteSshPublicKey(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteSshPublicKey, req, settings.GRPC, c.logger, "DeleteSshPublicKey")
 		return err
 	}, opts...)
 	return err
@@ -531,7 +542,7 @@ func (c *gRPCClient) GetLoginProfile(ctx context.Context, req *osloginpb.GetLogi
 	var resp *osloginpb.LoginProfile
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetLoginProfile(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetLoginProfile, req, settings.GRPC, c.logger, "GetLoginProfile")
 		return err
 	}, opts...)
 	if err != nil {
@@ -549,7 +560,7 @@ func (c *gRPCClient) GetSshPublicKey(ctx context.Context, req *osloginpb.GetSshP
 	var resp *commonpb.SshPublicKey
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetSshPublicKey(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetSshPublicKey, req, settings.GRPC, c.logger, "GetSshPublicKey")
 		return err
 	}, opts...)
 	if err != nil {
@@ -567,7 +578,7 @@ func (c *gRPCClient) ImportSshPublicKey(ctx context.Context, req *osloginpb.Impo
 	var resp *osloginpb.ImportSshPublicKeyResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ImportSshPublicKey(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ImportSshPublicKey, req, settings.GRPC, c.logger, "ImportSshPublicKey")
 		return err
 	}, opts...)
 	if err != nil {
@@ -585,7 +596,7 @@ func (c *gRPCClient) UpdateSshPublicKey(ctx context.Context, req *osloginpb.Upda
 	var resp *commonpb.SshPublicKey
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateSshPublicKey(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateSshPublicKey, req, settings.GRPC, c.logger, "UpdateSshPublicKey")
 		return err
 	}, opts...)
 	if err != nil {
@@ -603,7 +614,7 @@ func (c *gRPCClient) SignSshPublicKey(ctx context.Context, req *osloginpb.SignSs
 	var resp *osloginpb.SignSshPublicKeyResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.SignSshPublicKey(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.SignSshPublicKey, req, settings.GRPC, c.logger, "SignSshPublicKey")
 		return err
 	}, opts...)
 	if err != nil {
@@ -652,17 +663,7 @@ func (c *restClient) CreateSshPublicKey(ctx context.Context, req *osloginpb.Crea
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateSshPublicKey")
 		if err != nil {
 			return err
 		}
@@ -709,15 +710,8 @@ func (c *restClient) DeletePosixAccount(ctx context.Context, req *osloginpb.Dele
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeletePosixAccount")
+		return err
 	}, opts...)
 }
 
@@ -751,15 +745,8 @@ func (c *restClient) DeleteSshPublicKey(ctx context.Context, req *osloginpb.Dele
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteSshPublicKey")
+		return err
 	}, opts...)
 }
 
@@ -806,17 +793,7 @@ func (c *restClient) GetLoginProfile(ctx context.Context, req *osloginpb.GetLogi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLoginProfile")
 		if err != nil {
 			return err
 		}
@@ -866,17 +843,7 @@ func (c *restClient) GetSshPublicKey(ctx context.Context, req *osloginpb.GetSshP
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSshPublicKey")
 		if err != nil {
 			return err
 		}
@@ -946,17 +913,7 @@ func (c *restClient) ImportSshPublicKey(ctx context.Context, req *osloginpb.Impo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ImportSshPublicKey")
 		if err != nil {
 			return err
 		}
@@ -992,11 +949,11 @@ func (c *restClient) UpdateSshPublicKey(ctx context.Context, req *osloginpb.Upda
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1021,17 +978,7 @@ func (c *restClient) UpdateSshPublicKey(ctx context.Context, req *osloginpb.Upda
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateSshPublicKey")
 		if err != nil {
 			return err
 		}
@@ -1087,17 +1034,7 @@ func (c *restClient) SignSshPublicKey(ctx context.Context, req *osloginpb.SignSs
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SignSshPublicKey")
 		if err != nil {
 			return err
 		}

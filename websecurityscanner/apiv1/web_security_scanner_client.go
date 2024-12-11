@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	websecurityscannerpb "cloud.google.com/go/websecurityscanner/apiv1/websecurityscannerpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -68,6 +67,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://websecurityscanner.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -470,6 +470,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new web security scanner client based on gRPC.
@@ -498,6 +500,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      websecurityscannerpb.NewWebSecurityScannerClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -520,7 +523,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -542,6 +547,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new web security scanner rest client.
@@ -561,6 +568,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -575,6 +583,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://websecurityscanner.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -584,7 +593,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -610,7 +621,7 @@ func (c *gRPCClient) CreateScanConfig(ctx context.Context, req *websecurityscann
 	var resp *websecurityscannerpb.ScanConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateScanConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateScanConfig, req, settings.GRPC, c.logger, "CreateScanConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -627,7 +638,7 @@ func (c *gRPCClient) DeleteScanConfig(ctx context.Context, req *websecurityscann
 	opts = append((*c.CallOptions).DeleteScanConfig[0:len((*c.CallOptions).DeleteScanConfig):len((*c.CallOptions).DeleteScanConfig)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteScanConfig(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteScanConfig, req, settings.GRPC, c.logger, "DeleteScanConfig")
 		return err
 	}, opts...)
 	return err
@@ -642,7 +653,7 @@ func (c *gRPCClient) GetScanConfig(ctx context.Context, req *websecurityscannerp
 	var resp *websecurityscannerpb.ScanConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetScanConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetScanConfig, req, settings.GRPC, c.logger, "GetScanConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -671,7 +682,7 @@ func (c *gRPCClient) ListScanConfigs(ctx context.Context, req *websecurityscanne
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListScanConfigs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListScanConfigs, req, settings.GRPC, c.logger, "ListScanConfigs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -706,7 +717,7 @@ func (c *gRPCClient) UpdateScanConfig(ctx context.Context, req *websecurityscann
 	var resp *websecurityscannerpb.ScanConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateScanConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateScanConfig, req, settings.GRPC, c.logger, "UpdateScanConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -724,7 +735,7 @@ func (c *gRPCClient) StartScanRun(ctx context.Context, req *websecurityscannerpb
 	var resp *websecurityscannerpb.ScanRun
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.StartScanRun(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.StartScanRun, req, settings.GRPC, c.logger, "StartScanRun")
 		return err
 	}, opts...)
 	if err != nil {
@@ -742,7 +753,7 @@ func (c *gRPCClient) GetScanRun(ctx context.Context, req *websecurityscannerpb.G
 	var resp *websecurityscannerpb.ScanRun
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetScanRun(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetScanRun, req, settings.GRPC, c.logger, "GetScanRun")
 		return err
 	}, opts...)
 	if err != nil {
@@ -771,7 +782,7 @@ func (c *gRPCClient) ListScanRuns(ctx context.Context, req *websecurityscannerpb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListScanRuns(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListScanRuns, req, settings.GRPC, c.logger, "ListScanRuns")
 			return err
 		}, opts...)
 		if err != nil {
@@ -806,7 +817,7 @@ func (c *gRPCClient) StopScanRun(ctx context.Context, req *websecurityscannerpb.
 	var resp *websecurityscannerpb.ScanRun
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.StopScanRun(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.StopScanRun, req, settings.GRPC, c.logger, "StopScanRun")
 		return err
 	}, opts...)
 	if err != nil {
@@ -835,7 +846,7 @@ func (c *gRPCClient) ListCrawledUrls(ctx context.Context, req *websecurityscanne
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListCrawledUrls(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListCrawledUrls, req, settings.GRPC, c.logger, "ListCrawledUrls")
 			return err
 		}, opts...)
 		if err != nil {
@@ -870,7 +881,7 @@ func (c *gRPCClient) GetFinding(ctx context.Context, req *websecurityscannerpb.G
 	var resp *websecurityscannerpb.Finding
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetFinding(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetFinding, req, settings.GRPC, c.logger, "GetFinding")
 		return err
 	}, opts...)
 	if err != nil {
@@ -899,7 +910,7 @@ func (c *gRPCClient) ListFindings(ctx context.Context, req *websecurityscannerpb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListFindings(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListFindings, req, settings.GRPC, c.logger, "ListFindings")
 			return err
 		}, opts...)
 		if err != nil {
@@ -934,7 +945,7 @@ func (c *gRPCClient) ListFindingTypeStats(ctx context.Context, req *websecuritys
 	var resp *websecurityscannerpb.ListFindingTypeStatsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ListFindingTypeStats(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ListFindingTypeStats, req, settings.GRPC, c.logger, "ListFindingTypeStats")
 		return err
 	}, opts...)
 	if err != nil {
@@ -983,17 +994,7 @@ func (c *restClient) CreateScanConfig(ctx context.Context, req *websecurityscann
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateScanConfig")
 		if err != nil {
 			return err
 		}
@@ -1040,15 +1041,8 @@ func (c *restClient) DeleteScanConfig(ctx context.Context, req *websecurityscann
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteScanConfig")
+		return err
 	}, opts...)
 }
 
@@ -1085,17 +1079,7 @@ func (c *restClient) GetScanConfig(ctx context.Context, req *websecurityscannerp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetScanConfig")
 		if err != nil {
 			return err
 		}
@@ -1157,21 +1141,10 @@ func (c *restClient) ListScanConfigs(ctx context.Context, req *websecurityscanne
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListScanConfigs")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1219,11 +1192,11 @@ func (c *restClient) UpdateScanConfig(ctx context.Context, req *websecurityscann
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1248,17 +1221,7 @@ func (c *restClient) UpdateScanConfig(ctx context.Context, req *websecurityscann
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateScanConfig")
 		if err != nil {
 			return err
 		}
@@ -1314,17 +1277,7 @@ func (c *restClient) StartScanRun(ctx context.Context, req *websecurityscannerpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "StartScanRun")
 		if err != nil {
 			return err
 		}
@@ -1374,17 +1327,7 @@ func (c *restClient) GetScanRun(ctx context.Context, req *websecurityscannerpb.G
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetScanRun")
 		if err != nil {
 			return err
 		}
@@ -1447,21 +1390,10 @@ func (c *restClient) ListScanRuns(ctx context.Context, req *websecurityscannerpb
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListScanRuns")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1530,17 +1462,7 @@ func (c *restClient) StopScanRun(ctx context.Context, req *websecurityscannerpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "StopScanRun")
 		if err != nil {
 			return err
 		}
@@ -1602,21 +1524,10 @@ func (c *restClient) ListCrawledUrls(ctx context.Context, req *websecurityscanne
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListCrawledUrls")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1679,17 +1590,7 @@ func (c *restClient) GetFinding(ctx context.Context, req *websecurityscannerpb.G
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetFinding")
 		if err != nil {
 			return err
 		}
@@ -1754,21 +1655,10 @@ func (c *restClient) ListFindings(ctx context.Context, req *websecurityscannerpb
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListFindings")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1831,17 +1721,7 @@ func (c *restClient) ListFindingTypeStats(ctx context.Context, req *websecuritys
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListFindingTypeStats")
 		if err != nil {
 			return err
 		}

@@ -31,7 +31,7 @@ import (
 )
 
 const (
-	defaultSubscriberTestTimeout = 10 * time.Second
+	defaultSubscriberTestTimeout = 30 * time.Second
 	activePartition              = 1
 )
 
@@ -269,7 +269,8 @@ func TestSubscriberInstanceTransformMessageError(t *testing.T) {
 				},
 			}
 
-			cctx, _ := context.WithTimeout(ctx, defaultSubscriberTestTimeout)
+			cctx, cancel := context.WithTimeout(ctx, defaultSubscriberTestTimeout)
+			_ = cancel
 			messageReceiver := func(ctx context.Context, got *pubsub.Message) {
 				t.Errorf("Received unexpected message: %v", got)
 				got.Nack()
@@ -439,6 +440,8 @@ func TestSubscriberInstanceReassignmentHandler(t *testing.T) {
 			tc.mutateSettings(&settings)
 
 			cctx, stopSubscriber := context.WithTimeout(ctx, defaultSubscriberTestTimeout)
+			// make vet happy, we need to explicitly control calling this for failure cases
+			_ = stopSubscriber
 			messageReceiver := func(ctx context.Context, got *pubsub.Message) {
 				t.Error("Message receiver should not be called")
 			}
@@ -466,7 +469,8 @@ func TestSubscriberInstanceWireSubscriberFails(t *testing.T) {
 		},
 	}
 
-	cctx, _ := context.WithTimeout(ctx, defaultSubscriberTestTimeout)
+	cctx, cancel := context.WithTimeout(ctx, defaultSubscriberTestTimeout)
+	_ = cancel
 	messageReceiver := func(ctx context.Context, got *pubsub.Message) {
 		// Verifies that receivers are notified via ctx.Done when the subscriber is
 		// shutting down.

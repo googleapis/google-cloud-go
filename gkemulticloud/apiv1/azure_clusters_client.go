@@ -19,6 +19,7 @@ package gkemulticloud
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 	"time"
@@ -75,6 +76,7 @@ func defaultAzureClustersGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://gkemulticloud.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -245,7 +247,7 @@ func defaultAzureClustersCallOptions() *AzureClustersCallOptions {
 	}
 }
 
-// internalAzureClustersClient is an interface that defines the methods available from Anthos Multi-Cloud API.
+// internalAzureClustersClient is an interface that defines the methods available from GKE Multi-Cloud API.
 type internalAzureClustersClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -283,7 +285,7 @@ type internalAzureClustersClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// AzureClustersClient is a client for interacting with Anthos Multi-Cloud API.
+// AzureClustersClient is a client for interacting with GKE Multi-Cloud API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The AzureClusters API provides a single centrally managed service
@@ -542,7 +544,7 @@ func (c *AzureClustersClient) ListOperations(ctx context.Context, req *longrunni
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// azureClustersGRPCClient is a client for interacting with Anthos Multi-Cloud API over gRPC transport.
+// azureClustersGRPCClient is a client for interacting with GKE Multi-Cloud API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type azureClustersGRPCClient struct {
@@ -564,6 +566,8 @@ type azureClustersGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewAzureClustersClient creates a new azure clusters client based on gRPC.
@@ -591,6 +595,7 @@ func NewAzureClustersClient(ctx context.Context, opts ...option.ClientOption) (*
 		connPool:            connPool,
 		azureClustersClient: gkemulticloudpb.NewAzureClustersClient(connPool),
 		CallOptions:         &client.CallOptions,
+		logger:              internaloption.GetLogger(opts),
 		operationsClient:    longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -625,7 +630,9 @@ func (c *azureClustersGRPCClient) Connection() *grpc.ClientConn {
 func (c *azureClustersGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -643,7 +650,7 @@ func (c *azureClustersGRPCClient) CreateAzureClient(ctx context.Context, req *gk
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.azureClustersClient.CreateAzureClient(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.azureClustersClient.CreateAzureClient, req, settings.GRPC, c.logger, "CreateAzureClient")
 		return err
 	}, opts...)
 	if err != nil {
@@ -663,7 +670,7 @@ func (c *azureClustersGRPCClient) GetAzureClient(ctx context.Context, req *gkemu
 	var resp *gkemulticloudpb.AzureClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.azureClustersClient.GetAzureClient(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.azureClustersClient.GetAzureClient, req, settings.GRPC, c.logger, "GetAzureClient")
 		return err
 	}, opts...)
 	if err != nil {
@@ -692,7 +699,7 @@ func (c *azureClustersGRPCClient) ListAzureClients(ctx context.Context, req *gke
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.azureClustersClient.ListAzureClients(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.azureClustersClient.ListAzureClients, req, settings.GRPC, c.logger, "ListAzureClients")
 			return err
 		}, opts...)
 		if err != nil {
@@ -727,7 +734,7 @@ func (c *azureClustersGRPCClient) DeleteAzureClient(ctx context.Context, req *gk
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.azureClustersClient.DeleteAzureClient(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.azureClustersClient.DeleteAzureClient, req, settings.GRPC, c.logger, "DeleteAzureClient")
 		return err
 	}, opts...)
 	if err != nil {
@@ -747,7 +754,7 @@ func (c *azureClustersGRPCClient) CreateAzureCluster(ctx context.Context, req *g
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.azureClustersClient.CreateAzureCluster(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.azureClustersClient.CreateAzureCluster, req, settings.GRPC, c.logger, "CreateAzureCluster")
 		return err
 	}, opts...)
 	if err != nil {
@@ -767,7 +774,7 @@ func (c *azureClustersGRPCClient) UpdateAzureCluster(ctx context.Context, req *g
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.azureClustersClient.UpdateAzureCluster(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.azureClustersClient.UpdateAzureCluster, req, settings.GRPC, c.logger, "UpdateAzureCluster")
 		return err
 	}, opts...)
 	if err != nil {
@@ -787,7 +794,7 @@ func (c *azureClustersGRPCClient) GetAzureCluster(ctx context.Context, req *gkem
 	var resp *gkemulticloudpb.AzureCluster
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.azureClustersClient.GetAzureCluster(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.azureClustersClient.GetAzureCluster, req, settings.GRPC, c.logger, "GetAzureCluster")
 		return err
 	}, opts...)
 	if err != nil {
@@ -816,7 +823,7 @@ func (c *azureClustersGRPCClient) ListAzureClusters(ctx context.Context, req *gk
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.azureClustersClient.ListAzureClusters(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.azureClustersClient.ListAzureClusters, req, settings.GRPC, c.logger, "ListAzureClusters")
 			return err
 		}, opts...)
 		if err != nil {
@@ -851,7 +858,7 @@ func (c *azureClustersGRPCClient) DeleteAzureCluster(ctx context.Context, req *g
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.azureClustersClient.DeleteAzureCluster(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.azureClustersClient.DeleteAzureCluster, req, settings.GRPC, c.logger, "DeleteAzureCluster")
 		return err
 	}, opts...)
 	if err != nil {
@@ -871,7 +878,7 @@ func (c *azureClustersGRPCClient) GenerateAzureClusterAgentToken(ctx context.Con
 	var resp *gkemulticloudpb.GenerateAzureClusterAgentTokenResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.azureClustersClient.GenerateAzureClusterAgentToken(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.azureClustersClient.GenerateAzureClusterAgentToken, req, settings.GRPC, c.logger, "GenerateAzureClusterAgentToken")
 		return err
 	}, opts...)
 	if err != nil {
@@ -889,7 +896,7 @@ func (c *azureClustersGRPCClient) GenerateAzureAccessToken(ctx context.Context, 
 	var resp *gkemulticloudpb.GenerateAzureAccessTokenResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.azureClustersClient.GenerateAzureAccessToken(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.azureClustersClient.GenerateAzureAccessToken, req, settings.GRPC, c.logger, "GenerateAzureAccessToken")
 		return err
 	}, opts...)
 	if err != nil {
@@ -907,7 +914,7 @@ func (c *azureClustersGRPCClient) CreateAzureNodePool(ctx context.Context, req *
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.azureClustersClient.CreateAzureNodePool(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.azureClustersClient.CreateAzureNodePool, req, settings.GRPC, c.logger, "CreateAzureNodePool")
 		return err
 	}, opts...)
 	if err != nil {
@@ -927,7 +934,7 @@ func (c *azureClustersGRPCClient) UpdateAzureNodePool(ctx context.Context, req *
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.azureClustersClient.UpdateAzureNodePool(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.azureClustersClient.UpdateAzureNodePool, req, settings.GRPC, c.logger, "UpdateAzureNodePool")
 		return err
 	}, opts...)
 	if err != nil {
@@ -947,7 +954,7 @@ func (c *azureClustersGRPCClient) GetAzureNodePool(ctx context.Context, req *gke
 	var resp *gkemulticloudpb.AzureNodePool
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.azureClustersClient.GetAzureNodePool(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.azureClustersClient.GetAzureNodePool, req, settings.GRPC, c.logger, "GetAzureNodePool")
 		return err
 	}, opts...)
 	if err != nil {
@@ -976,7 +983,7 @@ func (c *azureClustersGRPCClient) ListAzureNodePools(ctx context.Context, req *g
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.azureClustersClient.ListAzureNodePools(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.azureClustersClient.ListAzureNodePools, req, settings.GRPC, c.logger, "ListAzureNodePools")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1011,7 +1018,7 @@ func (c *azureClustersGRPCClient) DeleteAzureNodePool(ctx context.Context, req *
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.azureClustersClient.DeleteAzureNodePool(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.azureClustersClient.DeleteAzureNodePool, req, settings.GRPC, c.logger, "DeleteAzureNodePool")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1031,7 +1038,7 @@ func (c *azureClustersGRPCClient) GetAzureOpenIdConfig(ctx context.Context, req 
 	var resp *gkemulticloudpb.AzureOpenIdConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.azureClustersClient.GetAzureOpenIdConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.azureClustersClient.GetAzureOpenIdConfig, req, settings.GRPC, c.logger, "GetAzureOpenIdConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1049,7 +1056,7 @@ func (c *azureClustersGRPCClient) GetAzureJsonWebKeys(ctx context.Context, req *
 	var resp *gkemulticloudpb.AzureJsonWebKeys
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.azureClustersClient.GetAzureJsonWebKeys(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.azureClustersClient.GetAzureJsonWebKeys, req, settings.GRPC, c.logger, "GetAzureJsonWebKeys")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1067,7 +1074,7 @@ func (c *azureClustersGRPCClient) GetAzureServerConfig(ctx context.Context, req 
 	var resp *gkemulticloudpb.AzureServerConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.azureClustersClient.GetAzureServerConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.azureClustersClient.GetAzureServerConfig, req, settings.GRPC, c.logger, "GetAzureServerConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1084,7 +1091,7 @@ func (c *azureClustersGRPCClient) CancelOperation(ctx context.Context, req *long
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -1098,7 +1105,7 @@ func (c *azureClustersGRPCClient) DeleteOperation(ctx context.Context, req *long
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -1113,7 +1120,7 @@ func (c *azureClustersGRPCClient) GetOperation(ctx context.Context, req *longrun
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1142,7 +1149,7 @@ func (c *azureClustersGRPCClient) ListOperations(ctx context.Context, req *longr
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {

@@ -38,10 +38,18 @@ func (identityConverter) genTransformTo() string    { return "" }
 // A derefConverter converts between T in the veneer and *T in the proto.
 type derefConverter struct{}
 
-func (derefConverter) genFrom(arg string) string { return fmt.Sprintf("support.DerefOrZero(%s)", arg) }
-func (derefConverter) genTo(arg string) string   { return fmt.Sprintf("support.AddrOrNil(%s)", arg) }
-func (derefConverter) genTransformFrom() string  { panic("can't handle deref slices") }
-func (derefConverter) genTransformTo() string    { panic("can't handle deref slices") }
+func (derefConverter) genFrom(arg string) string {
+	needSupport("pvDerefOrZero")
+	return fmt.Sprintf("pvDerefOrZero(%s)", arg)
+}
+
+func (derefConverter) genTo(arg string) string {
+	needSupport("pvAddrOrNil")
+	return fmt.Sprintf("pvAddrOrNil(%s)", arg)
+}
+
+func (derefConverter) genTransformFrom() string { panic("can't handle deref slices") }
+func (derefConverter) genTransformTo() string   { panic("can't handle deref slices") }
 
 type enumConverter struct {
 	protoName, veneerName string
@@ -105,14 +113,16 @@ type sliceConverter struct {
 
 func (c sliceConverter) genFrom(arg string) string {
 	if fn := c.eltConverter.genTransformFrom(); fn != "" {
-		return fmt.Sprintf("support.TransformSlice(%s, %s)", arg, fn)
+		needSupport("pvTransformSlice")
+		return fmt.Sprintf("pvTransformSlice(%s, %s)", arg, fn)
 	}
 	return c.eltConverter.genFrom(arg)
 }
 
 func (c sliceConverter) genTo(arg string) string {
 	if fn := c.eltConverter.genTransformTo(); fn != "" {
-		return fmt.Sprintf("support.TransformSlice(%s, %s)", arg, fn)
+		needSupport("pvTransformSlice")
+		return fmt.Sprintf("pvTransformSlice(%s, %s)", arg, fn)
 	}
 	return c.eltConverter.genTo(arg)
 }
@@ -132,14 +142,16 @@ type mapConverter struct {
 
 func (c mapConverter) genFrom(arg string) string {
 	if fn := c.valueConverter.genTransformFrom(); fn != "" {
-		return fmt.Sprintf("support.TransformMapValues(%s, %s)", arg, fn)
+		needSupport("pvTransformMapValues")
+		return fmt.Sprintf("pvTransformMapValues(%s, %s)", arg, fn)
 	}
 	return c.valueConverter.genFrom(arg)
 }
 
 func (c mapConverter) genTo(arg string) string {
 	if fn := c.valueConverter.genTransformTo(); fn != "" {
-		return fmt.Sprintf("support.TransformMapValues(%s, %s)", arg, fn)
+		needSupport("pvTransformMapValues")
+		return fmt.Sprintf("pvTransformMapValues(%s, %s)", arg, fn)
 	}
 	return c.valueConverter.genTo(arg)
 }

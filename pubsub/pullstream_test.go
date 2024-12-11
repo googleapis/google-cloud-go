@@ -67,7 +67,7 @@ func TestPullStreamGet(t *testing.T) {
 			test.errors = test.errors[1:]
 			return &testStreamingPullClient{sendError: err}, nil
 		}
-		ps := newPullStream(context.Background(), streamingPull, "", 100, 1000, 0)
+		ps := newPullStream(context.Background(), streamingPull, "", "", 100, 1000, 0)
 		_, err := ps.get(nil)
 		if got := status.Code(err); got != test.wantCode {
 			t.Errorf("%s: got %s, want %s", test.desc, got, test.wantCode)

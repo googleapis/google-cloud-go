@@ -27,9 +27,9 @@ import (
 	"reflect"
 	"testing"
 
+	pb "cloud.google.com/go/datastore/apiv1/datastorepb"
 	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/api/option"
-	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/protobuf/encoding/prototext"
@@ -114,7 +114,7 @@ func (s *mockServer) addRPCAdjust(wantReq proto.Message, resp interface{}, adjus
 // was expected or there are no expected rpcs.
 func (s *mockServer) popRPC(gotReq proto.Message) (interface{}, error) {
 	if len(s.reqItems) == 0 {
-		panic(fmt.Sprintf("out of RPCs, saw %v", reflect.TypeOf(gotReq)))
+		return nil, fmt.Errorf("out of RPCs, saw %v", reflect.TypeOf(gotReq))
 	}
 	ri := s.reqItems[0]
 	s.reqItems = s.reqItems[1:]
@@ -148,6 +148,14 @@ func (s *mockServer) Lookup(ctx context.Context, in *pb.LookupRequest) (*pb.Look
 		return nil, err
 	}
 	return res.(*pb.LookupResponse), nil
+}
+
+func (s *mockServer) Rollback(_ context.Context, in *pb.RollbackRequest) (*pb.RollbackResponse, error) {
+	res, err := s.popRPC(in)
+	if err != nil {
+		return nil, err
+	}
+	return res.(*pb.RollbackResponse), nil
 }
 
 func (s *mockServer) Commit(_ context.Context, in *pb.CommitRequest) (*pb.CommitResponse, error) {

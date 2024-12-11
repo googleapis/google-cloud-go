@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -29,7 +29,6 @@ import (
 	dialogflowpb "cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -68,6 +67,7 @@ func defaultContextsGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -360,6 +360,8 @@ type contextsGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewContextsClient creates a new contexts client based on gRPC.
@@ -386,6 +388,7 @@ func NewContextsClient(ctx context.Context, opts ...option.ClientOption) (*Conte
 		connPool:         connPool,
 		contextsClient:   dialogflowpb.NewContextsClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
@@ -410,7 +413,9 @@ func (c *contextsGRPCClient) Connection() *grpc.ClientConn {
 func (c *contextsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -432,6 +437,8 @@ type contextsRESTClient struct {
 
 	// Points back to the CallOptions field of the containing ContextsClient
 	CallOptions **ContextsCallOptions
+
+	logger *slog.Logger
 }
 
 // NewContextsRESTClient creates a new contexts rest client.
@@ -449,6 +456,7 @@ func NewContextsRESTClient(ctx context.Context, opts ...option.ClientOption) (*C
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -463,6 +471,7 @@ func defaultContextsRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -472,7 +481,9 @@ func defaultContextsRESTClientOptions() []option.ClientOption {
 func (c *contextsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -509,7 +520,7 @@ func (c *contextsGRPCClient) ListContexts(ctx context.Context, req *dialogflowpb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.contextsClient.ListContexts(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.contextsClient.ListContexts, req, settings.GRPC, c.logger, "ListContexts")
 			return err
 		}, opts...)
 		if err != nil {
@@ -544,7 +555,7 @@ func (c *contextsGRPCClient) GetContext(ctx context.Context, req *dialogflowpb.G
 	var resp *dialogflowpb.Context
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.contextsClient.GetContext(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.contextsClient.GetContext, req, settings.GRPC, c.logger, "GetContext")
 		return err
 	}, opts...)
 	if err != nil {
@@ -562,7 +573,7 @@ func (c *contextsGRPCClient) CreateContext(ctx context.Context, req *dialogflowp
 	var resp *dialogflowpb.Context
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.contextsClient.CreateContext(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.contextsClient.CreateContext, req, settings.GRPC, c.logger, "CreateContext")
 		return err
 	}, opts...)
 	if err != nil {
@@ -580,7 +591,7 @@ func (c *contextsGRPCClient) UpdateContext(ctx context.Context, req *dialogflowp
 	var resp *dialogflowpb.Context
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.contextsClient.UpdateContext(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.contextsClient.UpdateContext, req, settings.GRPC, c.logger, "UpdateContext")
 		return err
 	}, opts...)
 	if err != nil {
@@ -597,7 +608,7 @@ func (c *contextsGRPCClient) DeleteContext(ctx context.Context, req *dialogflowp
 	opts = append((*c.CallOptions).DeleteContext[0:len((*c.CallOptions).DeleteContext):len((*c.CallOptions).DeleteContext)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.contextsClient.DeleteContext(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.contextsClient.DeleteContext, req, settings.GRPC, c.logger, "DeleteContext")
 		return err
 	}, opts...)
 	return err
@@ -611,7 +622,7 @@ func (c *contextsGRPCClient) DeleteAllContexts(ctx context.Context, req *dialogf
 	opts = append((*c.CallOptions).DeleteAllContexts[0:len((*c.CallOptions).DeleteAllContexts):len((*c.CallOptions).DeleteAllContexts)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.contextsClient.DeleteAllContexts(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.contextsClient.DeleteAllContexts, req, settings.GRPC, c.logger, "DeleteAllContexts")
 		return err
 	}, opts...)
 	return err
@@ -626,7 +637,7 @@ func (c *contextsGRPCClient) GetLocation(ctx context.Context, req *locationpb.Ge
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -655,7 +666,7 @@ func (c *contextsGRPCClient) ListLocations(ctx context.Context, req *locationpb.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -689,7 +700,7 @@ func (c *contextsGRPCClient) CancelOperation(ctx context.Context, req *longrunni
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -704,7 +715,7 @@ func (c *contextsGRPCClient) GetOperation(ctx context.Context, req *longrunningp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -733,7 +744,7 @@ func (c *contextsGRPCClient) ListOperations(ctx context.Context, req *longrunnin
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -804,21 +815,10 @@ func (c *contextsRESTClient) ListContexts(ctx context.Context, req *dialogflowpb
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListContexts")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -881,17 +881,7 @@ func (c *contextsRESTClient) GetContext(ctx context.Context, req *dialogflowpb.G
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetContext")
 		if err != nil {
 			return err
 		}
@@ -950,17 +940,7 @@ func (c *contextsRESTClient) CreateContext(ctx context.Context, req *dialogflowp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateContext")
 		if err != nil {
 			return err
 		}
@@ -995,11 +975,11 @@ func (c *contextsRESTClient) UpdateContext(ctx context.Context, req *dialogflowp
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1024,17 +1004,7 @@ func (c *contextsRESTClient) UpdateContext(ctx context.Context, req *dialogflowp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateContext")
 		if err != nil {
 			return err
 		}
@@ -1081,15 +1051,8 @@ func (c *contextsRESTClient) DeleteContext(ctx context.Context, req *dialogflowp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteContext")
+		return err
 	}, opts...)
 }
 
@@ -1123,15 +1086,8 @@ func (c *contextsRESTClient) DeleteAllContexts(ctx context.Context, req *dialogf
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteAllContexts")
+		return err
 	}, opts...)
 }
 
@@ -1168,17 +1124,7 @@ func (c *contextsRESTClient) GetLocation(ctx context.Context, req *locationpb.Ge
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -1243,21 +1189,10 @@ func (c *contextsRESTClient) ListLocations(ctx context.Context, req *locationpb.
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1317,15 +1252,8 @@ func (c *contextsRESTClient) CancelOperation(ctx context.Context, req *longrunni
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -1362,17 +1290,7 @@ func (c *contextsRESTClient) GetOperation(ctx context.Context, req *longrunningp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -1437,21 +1355,10 @@ func (c *contextsRESTClient) ListOperations(ctx context.Context, req *longrunnin
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

@@ -99,6 +99,10 @@ var (
 				Type: bigquery.TimestampFieldType,
 			},
 		},
+		{
+			Name: "json_type",
+			Type: bigquery.JSONFieldType,
+		},
 	}
 
 	// We currently follow proto2 rules here, hence the well known types getting treated as records.

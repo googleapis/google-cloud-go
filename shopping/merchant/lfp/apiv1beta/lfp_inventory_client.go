@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	lfppb "cloud.google.com/go/shopping/merchant/lfp/apiv1beta/lfppb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -54,6 +53,7 @@ func defaultLfpInventoryGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://merchantapi.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -159,6 +159,8 @@ type lfpInventoryGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewLfpInventoryClient creates a new lfp inventory service client based on gRPC.
@@ -187,6 +189,7 @@ func NewLfpInventoryClient(ctx context.Context, opts ...option.ClientOption) (*L
 		connPool:           connPool,
 		lfpInventoryClient: lfppb.NewLfpInventoryServiceClient(connPool),
 		CallOptions:        &client.CallOptions,
+		logger:             internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -209,7 +212,9 @@ func (c *lfpInventoryGRPCClient) Connection() *grpc.ClientConn {
 func (c *lfpInventoryGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -231,6 +236,8 @@ type lfpInventoryRESTClient struct {
 
 	// Points back to the CallOptions field of the containing LfpInventoryClient
 	CallOptions **LfpInventoryCallOptions
+
+	logger *slog.Logger
 }
 
 // NewLfpInventoryRESTClient creates a new lfp inventory service rest client.
@@ -250,6 +257,7 @@ func NewLfpInventoryRESTClient(ctx context.Context, opts ...option.ClientOption)
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -264,6 +272,7 @@ func defaultLfpInventoryRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://merchantapi.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -273,7 +282,9 @@ func defaultLfpInventoryRESTClientOptions() []option.ClientOption {
 func (c *lfpInventoryRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -299,7 +310,7 @@ func (c *lfpInventoryGRPCClient) InsertLfpInventory(ctx context.Context, req *lf
 	var resp *lfppb.LfpInventory
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.lfpInventoryClient.InsertLfpInventory(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.lfpInventoryClient.InsertLfpInventory, req, settings.GRPC, c.logger, "InsertLfpInventory")
 		return err
 	}, opts...)
 	if err != nil {
@@ -350,17 +361,7 @@ func (c *lfpInventoryRESTClient) InsertLfpInventory(ctx context.Context, req *lf
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "InsertLfpInventory")
 		if err != nil {
 			return err
 		}

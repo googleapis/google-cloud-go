@@ -1,6 +1,162 @@
 # Changes
 
 
+## [1.26.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.25.1...deploy/v1.26.0) (2024-12-04)
+
+
+### Features
+
+* **deploy:** A new field `dns_endpoint` is added to message `.google.cloud.deploy.v1.GkeCluster` ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+
+
+### Documentation
+
+* **deploy:** A comment for field `internal_ip` in message `.google.cloud.deploy.v1.GkeCluster` is changed ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+* **deploy:** A comment for field `requested_cancellation` in message `.google.cloud.deploy.v1.OperationMetadata` is changed ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+* **deploy:** A comment for field `skaffold_version` in message `.google.cloud.deploy.v1.Release` is changed ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+* **deploy:** Documentation improvements. `skaffold_version` field is no longer explicitly marked as optional ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+
+## [1.25.1](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.25.0...deploy/v1.25.1) (2024-11-21)
+
+
+### Documentation
+
+* **deploy:** Minor documentation updates ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+
+## [1.25.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.24.0...deploy/v1.25.0) (2024-11-14)
+
+
+### Features
+
+* **deploy:** A new field `timed_promote_release_condition` is added to message `.google.cloud.deploy.v1.AutomationRuleCondition` ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **deploy:** A new field `timed_promote_release_operation` is added to message `.google.cloud.deploy.v1.AutomationRun` ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **deploy:** A new field `timed_promote_release_rule` is added to message `.google.cloud.deploy.v1.AutomationRule` ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **deploy:** A new message `TimedPromoteReleaseCondition` is added ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **deploy:** A new message `TimedPromoteReleaseOperation` is added ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **deploy:** A new message `TimedPromoteReleaseRule` is added ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+
+
+### Documentation
+
+* **deploy:** A comment for field `target_id` in message `.google.cloud.deploy.v1.AutomationRun` is changed ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+
+## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.23.1...deploy/v1.24.0) (2024-11-06)
+
+
+### Features
+
+* **deploy:** Added new fields for the Automation Repair rule ([2c83297](https://github.com/googleapis/google-cloud-go/commit/2c83297a569117b0252b5b2edaecb09e4924d979))
+* **deploy:** Added route destination related fields to Gateway service mesh message ([2c83297](https://github.com/googleapis/google-cloud-go/commit/2c83297a569117b0252b5b2edaecb09e4924d979))
+
+## [1.23.1](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.23.0...deploy/v1.23.1) (2024-10-23)
+
+
+### Bug Fixes
+
+* **deploy:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **deploy:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
+## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.22.1...deploy/v1.23.0) (2024-10-09)
+
+
+### Features
+
+* **deploy:** Added support for deploy policies ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+
+
+### Documentation
+
+* **deploy:** Minor documentation updates ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+
+## [1.22.1](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.22.0...deploy/v1.22.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **deploy:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.21.2...deploy/v1.22.0) (2024-08-20)
+
+
+### Features
+
+* **deploy:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.21.2](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.21.1...deploy/v1.21.2) (2024-08-13)
+
+
+### Documentation
+
+* **deploy:** Very minor documentation updates ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+
+## [1.21.1](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.21.0...deploy/v1.21.1) (2024-08-08)
+
+
+### Bug Fixes
+
+* **deploy:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.20.0...deploy/v1.21.0) (2024-08-01)
+
+
+### Features
+
+* **deploy:** Add support for different Pod selector labels when doing canaries ([#10581](https://github.com/googleapis/google-cloud-go/issues/10581)) ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+
+
+### Bug Fixes
+
+* **deploy:** Make changes to an API that is disabled on the server, but whose client libraries were prematurely published ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **deploy:** Remove an API that was mistakenly made public ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.19.3...deploy/v1.20.0) (2024-07-24)
+
+
+### Features
+
+* **deploy:** Added support for configuring a proxy_url to a Kubernetes server ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+* **deploy:** Added support for deploy policies ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+* **deploy:** Added support for new custom target type and deploy policy platform logs ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+
+
+### Bug Fixes
+
+* **deploy:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+
+### Documentation
+
+* **deploy:** Small Cloud Deploy API documentation updates ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+* **deploy:** Small corrections to Cloud Deploy API documentation ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+
+## [1.19.3](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.19.2...deploy/v1.19.3) (2024-07-10)
+
+
+### Bug Fixes
+
+* **deploy:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.19.2](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.19.1...deploy/v1.19.2) (2024-07-01)
+
+
+### Bug Fixes
+
+* **deploy:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.19.1](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.19.0...deploy/v1.19.1) (2024-06-26)
+
+
+### Bug Fixes
+
+* **deploy:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.18.1...deploy/v1.19.0) (2024-05-16)
+
+
+### Features
+
+* **deploy:** Add Skaffold verbose support to Execution Environment properties ([652ba8f](https://github.com/googleapis/google-cloud-go/commit/652ba8fa79d4d23b4267fd201acf5ca692228959))
+
 ## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.18.0...deploy/v1.18.1) (2024-05-08)
 
 

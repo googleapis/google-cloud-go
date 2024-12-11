@@ -19,7 +19,7 @@ package appengine
 import (
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -27,7 +27,6 @@ import (
 
 	appenginepb "cloud.google.com/go/appengine/apiv1/appenginepb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -54,6 +53,7 @@ func defaultAuthorizedDomainsGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://appengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -140,6 +140,8 @@ type authorizedDomainsGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewAuthorizedDomainsClient creates a new authorized domains client based on gRPC.
@@ -168,6 +170,7 @@ func NewAuthorizedDomainsClient(ctx context.Context, opts ...option.ClientOption
 		connPool:                connPool,
 		authorizedDomainsClient: appenginepb.NewAuthorizedDomainsClient(connPool),
 		CallOptions:             &client.CallOptions,
+		logger:                  internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -190,7 +193,9 @@ func (c *authorizedDomainsGRPCClient) Connection() *grpc.ClientConn {
 func (c *authorizedDomainsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -212,6 +217,8 @@ type authorizedDomainsRESTClient struct {
 
 	// Points back to the CallOptions field of the containing AuthorizedDomainsClient
 	CallOptions **AuthorizedDomainsCallOptions
+
+	logger *slog.Logger
 }
 
 // NewAuthorizedDomainsRESTClient creates a new authorized domains rest client.
@@ -231,6 +238,7 @@ func NewAuthorizedDomainsRESTClient(ctx context.Context, opts ...option.ClientOp
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -245,6 +253,7 @@ func defaultAuthorizedDomainsRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://appengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -254,7 +263,9 @@ func defaultAuthorizedDomainsRESTClientOptions() []option.ClientOption {
 func (c *authorizedDomainsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -291,7 +302,7 @@ func (c *authorizedDomainsGRPCClient) ListAuthorizedDomains(ctx context.Context,
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.authorizedDomainsClient.ListAuthorizedDomains(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.authorizedDomainsClient.ListAuthorizedDomains, req, settings.GRPC, c.logger, "ListAuthorizedDomains")
 			return err
 		}, opts...)
 		if err != nil {
@@ -362,21 +373,10 @@ func (c *authorizedDomainsRESTClient) ListAuthorizedDomains(ctx context.Context,
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAuthorizedDomains")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

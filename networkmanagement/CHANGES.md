@@ -1,5 +1,102 @@
 # Changes
 
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.16.0...networkmanagement/v1.17.0) (2024-11-19)
+
+
+### Features
+
+* **networkmanagement:** Add round-trip mode ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.15.0...networkmanagement/v1.16.0) (2024-11-14)
+
+
+### Features
+
+* **networkmanagement:** Add DNS endpoint of Google Kubernetes Engine cluster control plane ([f072178](https://github.com/googleapis/google-cloud-go/commit/f072178f6fd90537a5782395f4229e4c8b30af7e))
+* **networkmanagement:** Add more detailed drop causes to corresponding enum ([f072178](https://github.com/googleapis/google-cloud-go/commit/f072178f6fd90537a5782395f4229e4c8b30af7e))
+
+
+### Documentation
+
+* **networkmanagement:** Update outdated comments ([f072178](https://github.com/googleapis/google-cloud-go/commit/f072178f6fd90537a5782395f4229e4c8b30af7e))
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.14.1...networkmanagement/v1.15.0) (2024-10-23)
+
+
+### Features
+
+* **networkmanagement:** Add fields related to advertised routes to the RouteInfo proto ([1a33f93](https://github.com/googleapis/google-cloud-go/commit/1a33f9393851d7f9ba45f4226e3792960909d99e))
+* **networkmanagement:** Add firewall policy URI to the FirewallInfo proto ([1a33f93](https://github.com/googleapis/google-cloud-go/commit/1a33f9393851d7f9ba45f4226e3792960909d99e))
+* **networkmanagement:** Add load balancer name to the ForwardingRuleInfo proto ([1a33f93](https://github.com/googleapis/google-cloud-go/commit/1a33f9393851d7f9ba45f4226e3792960909d99e))
+* **networkmanagement:** Add messages and fields related to Redis Clusters ([1a33f93](https://github.com/googleapis/google-cloud-go/commit/1a33f9393851d7f9ba45f4226e3792960909d99e))
+* **networkmanagement:** Add messages and fields related to Redis Instances ([#10995](https://github.com/googleapis/google-cloud-go/issues/10995)) ([1a33f93](https://github.com/googleapis/google-cloud-go/commit/1a33f9393851d7f9ba45f4226e3792960909d99e))
+* **networkmanagement:** Add more detailed abort and drop causes to corresponding enums ([1a33f93](https://github.com/googleapis/google-cloud-go/commit/1a33f9393851d7f9ba45f4226e3792960909d99e))
+* **networkmanagement:** Add PSC network attachment URI to the InstanceInfo proto ([1a33f93](https://github.com/googleapis/google-cloud-go/commit/1a33f9393851d7f9ba45f4226e3792960909d99e))
+* **networkmanagement:** Add PSC target fields to the ForwardingRuleInfo proto ([1a33f93](https://github.com/googleapis/google-cloud-go/commit/1a33f9393851d7f9ba45f4226e3792960909d99e))
+* **networkmanagement:** Add region name field to the RouteInfo proto ([1a33f93](https://github.com/googleapis/google-cloud-go/commit/1a33f9393851d7f9ba45f4226e3792960909d99e))
+* **networkmanagement:** Add region name to the ForwardingRuleInfo proto ([1a33f93](https://github.com/googleapis/google-cloud-go/commit/1a33f9393851d7f9ba45f4226e3792960909d99e))
+* **networkmanagement:** Add subnet URI and region name to the NetworkInfo proto ([1a33f93](https://github.com/googleapis/google-cloud-go/commit/1a33f9393851d7f9ba45f4226e3792960909d99e))
+
+
+### Bug Fixes
+
+* **networkmanagement:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **networkmanagement:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
+
+### Documentation
+
+* **networkmanagement:** Update outdated comments in the FirewallInfo proto ([1a33f93](https://github.com/googleapis/google-cloud-go/commit/1a33f9393851d7f9ba45f4226e3792960909d99e))
+
+## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.14.0...networkmanagement/v1.14.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **networkmanagement:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.13.7...networkmanagement/v1.14.0) (2024-08-20)
+
+
+### Features
+
+* **networkmanagement:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.13.7](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.13.6...networkmanagement/v1.13.7) (2024-08-08)
+
+
+### Bug Fixes
+
+* **networkmanagement:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+## [1.13.6](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.13.5...networkmanagement/v1.13.6) (2024-07-24)
+
+
+### Bug Fixes
+
+* **networkmanagement:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+## [1.13.5](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.13.4...networkmanagement/v1.13.5) (2024-07-10)
+
+
+### Bug Fixes
+
+* **networkmanagement:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.13.4](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.13.3...networkmanagement/v1.13.4) (2024-07-01)
+
+
+### Bug Fixes
+
+* **networkmanagement:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.13.3](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.13.2...networkmanagement/v1.13.3) (2024-06-26)
+
+
+### Bug Fixes
+
+* **networkmanagement:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.13.2](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.13.1...networkmanagement/v1.13.2) (2024-05-01)
 
 

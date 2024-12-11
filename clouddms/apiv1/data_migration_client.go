@@ -19,6 +19,7 @@ package clouddms
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 	"time"
@@ -104,6 +105,7 @@ func defaultDataMigrationGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://datamigration.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -860,6 +862,8 @@ type dataMigrationGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewDataMigrationClient creates a new data migration service client based on gRPC.
@@ -886,6 +890,7 @@ func NewDataMigrationClient(ctx context.Context, opts ...option.ClientOption) (*
 		connPool:            connPool,
 		dataMigrationClient: clouddmspb.NewDataMigrationServiceClient(connPool),
 		CallOptions:         &client.CallOptions,
+		logger:              internaloption.GetLogger(opts),
 		operationsClient:    longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:     iampb.NewIAMPolicyClient(connPool),
 		locationsClient:     locationpb.NewLocationsClient(connPool),
@@ -922,7 +927,9 @@ func (c *dataMigrationGRPCClient) Connection() *grpc.ClientConn {
 func (c *dataMigrationGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -951,7 +958,7 @@ func (c *dataMigrationGRPCClient) ListMigrationJobs(ctx context.Context, req *cl
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.dataMigrationClient.ListMigrationJobs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.dataMigrationClient.ListMigrationJobs, req, settings.GRPC, c.logger, "ListMigrationJobs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -986,7 +993,7 @@ func (c *dataMigrationGRPCClient) GetMigrationJob(ctx context.Context, req *clou
 	var resp *clouddmspb.MigrationJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataMigrationClient.GetMigrationJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataMigrationClient.GetMigrationJob, req, settings.GRPC, c.logger, "GetMigrationJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1004,7 +1011,7 @@ func (c *dataMigrationGRPCClient) CreateMigrationJob(ctx context.Context, req *c
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataMigrationClient.CreateMigrationJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataMigrationClient.CreateMigrationJob, req, settings.GRPC, c.logger, "CreateMigrationJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1024,7 +1031,7 @@ func (c *dataMigrationGRPCClient) UpdateMigrationJob(ctx context.Context, req *c
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataMigrationClient.UpdateMigrationJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataMigrationClient.UpdateMigrationJob, req, settings.GRPC, c.logger, "UpdateMigrationJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1044,7 +1051,7 @@ func (c *dataMigrationGRPCClient) DeleteMigrationJob(ctx context.Context, req *c
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataMigrationClient.DeleteMigrationJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataMigrationClient.DeleteMigrationJob, req, settings.GRPC, c.logger, "DeleteMigrationJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1064,7 +1071,7 @@ func (c *dataMigrationGRPCClient) StartMigrationJob(ctx context.Context, req *cl
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataMigrationClient.StartMigrationJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataMigrationClient.StartMigrationJob, req, settings.GRPC, c.logger, "StartMigrationJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1084,7 +1091,7 @@ func (c *dataMigrationGRPCClient) StopMigrationJob(ctx context.Context, req *clo
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataMigrationClient.StopMigrationJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataMigrationClient.StopMigrationJob, req, settings.GRPC, c.logger, "StopMigrationJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1104,7 +1111,7 @@ func (c *dataMigrationGRPCClient) ResumeMigrationJob(ctx context.Context, req *c
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataMigrationClient.ResumeMigrationJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataMigrationClient.ResumeMigrationJob, req, settings.GRPC, c.logger, "ResumeMigrationJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1124,7 +1131,7 @@ func (c *dataMigrationGRPCClient) PromoteMigrationJob(ctx context.Context, req *
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataMigrationClient.PromoteMigrationJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataMigrationClient.PromoteMigrationJob, req, settings.GRPC, c.logger, "PromoteMigrationJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1144,7 +1151,7 @@ func (c *dataMigrationGRPCClient) VerifyMigrationJob(ctx context.Context, req *c
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataMigrationClient.VerifyMigrationJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataMigrationClient.VerifyMigrationJob, req, settings.GRPC, c.logger, "VerifyMigrationJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1164,7 +1171,7 @@ func (c *dataMigrationGRPCClient) RestartMigrationJob(ctx context.Context, req *
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataMigrationClient.RestartMigrationJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataMigrationClient.RestartMigrationJob, req, settings.GRPC, c.logger, "RestartMigrationJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1184,7 +1191,7 @@ func (c *dataMigrationGRPCClient) GenerateSshScript(ctx context.Context, req *cl
 	var resp *clouddmspb.SshScript
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataMigrationClient.GenerateSshScript(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataMigrationClient.GenerateSshScript, req, settings.GRPC, c.logger, "GenerateSshScript")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1202,7 +1209,7 @@ func (c *dataMigrationGRPCClient) GenerateTcpProxyScript(ctx context.Context, re
 	var resp *clouddmspb.TcpProxyScript
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataMigrationClient.GenerateTcpProxyScript(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataMigrationClient.GenerateTcpProxyScript, req, settings.GRPC, c.logger, "GenerateTcpProxyScript")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1231,7 +1238,7 @@ func (c *dataMigrationGRPCClient) ListConnectionProfiles(ctx context.Context, re
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.dataMigrationClient.ListConnectionProfiles(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.dataMigrationClient.ListConnectionProfiles, req, settings.GRPC, c.logger, "ListConnectionProfiles")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1266,7 +1273,7 @@ func (c *dataMigrationGRPCClient) GetConnectionProfile(ctx context.Context, req 
 	var resp *clouddmspb.ConnectionProfile
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataMigrationClient.GetConnectionProfile(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataMigrationClient.GetConnectionProfile, req, settings.GRPC, c.logger, "GetConnectionProfile")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1284,7 +1291,7 @@ func (c *dataMigrationGRPCClient) CreateConnectionProfile(ctx context.Context, r
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataMigrationClient.CreateConnectionProfile(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataMigrationClient.CreateConnectionProfile, req, settings.GRPC, c.logger, "CreateConnectionProfile")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1304,7 +1311,7 @@ func (c *dataMigrationGRPCClient) UpdateConnectionProfile(ctx context.Context, r
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataMigrationClient.UpdateConnectionProfile(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataMigrationClient.UpdateConnectionProfile, req, settings.GRPC, c.logger, "UpdateConnectionProfile")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1324,7 +1331,7 @@ func (c *dataMigrationGRPCClient) DeleteConnectionProfile(ctx context.Context, r
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataMigrationClient.DeleteConnectionProfile(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataMigrationClient.DeleteConnectionProfile, req, settings.GRPC, c.logger, "DeleteConnectionProfile")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1344,7 +1351,7 @@ func (c *dataMigrationGRPCClient) CreatePrivateConnection(ctx context.Context, r
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataMigrationClient.CreatePrivateConnection(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataMigrationClient.CreatePrivateConnection, req, settings.GRPC, c.logger, "CreatePrivateConnection")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1364,7 +1371,7 @@ func (c *dataMigrationGRPCClient) GetPrivateConnection(ctx context.Context, req 
 	var resp *clouddmspb.PrivateConnection
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataMigrationClient.GetPrivateConnection(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataMigrationClient.GetPrivateConnection, req, settings.GRPC, c.logger, "GetPrivateConnection")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1393,7 +1400,7 @@ func (c *dataMigrationGRPCClient) ListPrivateConnections(ctx context.Context, re
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.dataMigrationClient.ListPrivateConnections(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.dataMigrationClient.ListPrivateConnections, req, settings.GRPC, c.logger, "ListPrivateConnections")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1428,7 +1435,7 @@ func (c *dataMigrationGRPCClient) DeletePrivateConnection(ctx context.Context, r
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataMigrationClient.DeletePrivateConnection(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataMigrationClient.DeletePrivateConnection, req, settings.GRPC, c.logger, "DeletePrivateConnection")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1448,7 +1455,7 @@ func (c *dataMigrationGRPCClient) GetConversionWorkspace(ctx context.Context, re
 	var resp *clouddmspb.ConversionWorkspace
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataMigrationClient.GetConversionWorkspace(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataMigrationClient.GetConversionWorkspace, req, settings.GRPC, c.logger, "GetConversionWorkspace")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1477,7 +1484,7 @@ func (c *dataMigrationGRPCClient) ListConversionWorkspaces(ctx context.Context, 
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.dataMigrationClient.ListConversionWorkspaces(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.dataMigrationClient.ListConversionWorkspaces, req, settings.GRPC, c.logger, "ListConversionWorkspaces")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1512,7 +1519,7 @@ func (c *dataMigrationGRPCClient) CreateConversionWorkspace(ctx context.Context,
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataMigrationClient.CreateConversionWorkspace(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataMigrationClient.CreateConversionWorkspace, req, settings.GRPC, c.logger, "CreateConversionWorkspace")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1532,7 +1539,7 @@ func (c *dataMigrationGRPCClient) UpdateConversionWorkspace(ctx context.Context,
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataMigrationClient.UpdateConversionWorkspace(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataMigrationClient.UpdateConversionWorkspace, req, settings.GRPC, c.logger, "UpdateConversionWorkspace")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1552,7 +1559,7 @@ func (c *dataMigrationGRPCClient) DeleteConversionWorkspace(ctx context.Context,
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataMigrationClient.DeleteConversionWorkspace(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataMigrationClient.DeleteConversionWorkspace, req, settings.GRPC, c.logger, "DeleteConversionWorkspace")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1572,7 +1579,7 @@ func (c *dataMigrationGRPCClient) CreateMappingRule(ctx context.Context, req *cl
 	var resp *clouddmspb.MappingRule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataMigrationClient.CreateMappingRule(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataMigrationClient.CreateMappingRule, req, settings.GRPC, c.logger, "CreateMappingRule")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1589,7 +1596,7 @@ func (c *dataMigrationGRPCClient) DeleteMappingRule(ctx context.Context, req *cl
 	opts = append((*c.CallOptions).DeleteMappingRule[0:len((*c.CallOptions).DeleteMappingRule):len((*c.CallOptions).DeleteMappingRule)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.dataMigrationClient.DeleteMappingRule(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.dataMigrationClient.DeleteMappingRule, req, settings.GRPC, c.logger, "DeleteMappingRule")
 		return err
 	}, opts...)
 	return err
@@ -1615,7 +1622,7 @@ func (c *dataMigrationGRPCClient) ListMappingRules(ctx context.Context, req *clo
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.dataMigrationClient.ListMappingRules(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.dataMigrationClient.ListMappingRules, req, settings.GRPC, c.logger, "ListMappingRules")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1650,7 +1657,7 @@ func (c *dataMigrationGRPCClient) GetMappingRule(ctx context.Context, req *cloud
 	var resp *clouddmspb.MappingRule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataMigrationClient.GetMappingRule(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataMigrationClient.GetMappingRule, req, settings.GRPC, c.logger, "GetMappingRule")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1668,7 +1675,7 @@ func (c *dataMigrationGRPCClient) SeedConversionWorkspace(ctx context.Context, r
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataMigrationClient.SeedConversionWorkspace(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataMigrationClient.SeedConversionWorkspace, req, settings.GRPC, c.logger, "SeedConversionWorkspace")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1688,7 +1695,7 @@ func (c *dataMigrationGRPCClient) ImportMappingRules(ctx context.Context, req *c
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataMigrationClient.ImportMappingRules(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataMigrationClient.ImportMappingRules, req, settings.GRPC, c.logger, "ImportMappingRules")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1708,7 +1715,7 @@ func (c *dataMigrationGRPCClient) ConvertConversionWorkspace(ctx context.Context
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataMigrationClient.ConvertConversionWorkspace(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataMigrationClient.ConvertConversionWorkspace, req, settings.GRPC, c.logger, "ConvertConversionWorkspace")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1728,7 +1735,7 @@ func (c *dataMigrationGRPCClient) CommitConversionWorkspace(ctx context.Context,
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataMigrationClient.CommitConversionWorkspace(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataMigrationClient.CommitConversionWorkspace, req, settings.GRPC, c.logger, "CommitConversionWorkspace")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1748,7 +1755,7 @@ func (c *dataMigrationGRPCClient) RollbackConversionWorkspace(ctx context.Contex
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataMigrationClient.RollbackConversionWorkspace(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataMigrationClient.RollbackConversionWorkspace, req, settings.GRPC, c.logger, "RollbackConversionWorkspace")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1768,7 +1775,7 @@ func (c *dataMigrationGRPCClient) ApplyConversionWorkspace(ctx context.Context, 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataMigrationClient.ApplyConversionWorkspace(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataMigrationClient.ApplyConversionWorkspace, req, settings.GRPC, c.logger, "ApplyConversionWorkspace")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1799,7 +1806,7 @@ func (c *dataMigrationGRPCClient) DescribeDatabaseEntities(ctx context.Context, 
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.dataMigrationClient.DescribeDatabaseEntities(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.dataMigrationClient.DescribeDatabaseEntities, req, settings.GRPC, c.logger, "DescribeDatabaseEntities")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1834,7 +1841,7 @@ func (c *dataMigrationGRPCClient) SearchBackgroundJobs(ctx context.Context, req 
 	var resp *clouddmspb.SearchBackgroundJobsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataMigrationClient.SearchBackgroundJobs(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataMigrationClient.SearchBackgroundJobs, req, settings.GRPC, c.logger, "SearchBackgroundJobs")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1852,7 +1859,7 @@ func (c *dataMigrationGRPCClient) DescribeConversionWorkspaceRevisions(ctx conte
 	var resp *clouddmspb.DescribeConversionWorkspaceRevisionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataMigrationClient.DescribeConversionWorkspaceRevisions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataMigrationClient.DescribeConversionWorkspaceRevisions, req, settings.GRPC, c.logger, "DescribeConversionWorkspaceRevisions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1881,7 +1888,7 @@ func (c *dataMigrationGRPCClient) FetchStaticIps(ctx context.Context, req *cloud
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.dataMigrationClient.FetchStaticIps(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.dataMigrationClient.FetchStaticIps, req, settings.GRPC, c.logger, "FetchStaticIps")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1916,7 +1923,7 @@ func (c *dataMigrationGRPCClient) GetLocation(ctx context.Context, req *location
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1945,7 +1952,7 @@ func (c *dataMigrationGRPCClient) ListLocations(ctx context.Context, req *locati
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1980,7 +1987,7 @@ func (c *dataMigrationGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.G
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1998,7 +2005,7 @@ func (c *dataMigrationGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.S
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2016,7 +2023,7 @@ func (c *dataMigrationGRPCClient) TestIamPermissions(ctx context.Context, req *i
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2033,7 +2040,7 @@ func (c *dataMigrationGRPCClient) CancelOperation(ctx context.Context, req *long
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -2047,7 +2054,7 @@ func (c *dataMigrationGRPCClient) DeleteOperation(ctx context.Context, req *long
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -2062,7 +2069,7 @@ func (c *dataMigrationGRPCClient) GetOperation(ctx context.Context, req *longrun
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2091,7 +2098,7 @@ func (c *dataMigrationGRPCClient) ListOperations(ctx context.Context, req *longr
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {

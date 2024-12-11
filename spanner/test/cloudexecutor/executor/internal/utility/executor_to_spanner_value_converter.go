@@ -15,7 +15,6 @@
 package utility
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"math/big"
@@ -41,6 +40,14 @@ func BuildQuery(queryAction *executorpb.QueryAction) (spanner.Statement, error) 
 		stmt.Params[param.GetName()] = value
 	}
 	return stmt, nil
+}
+
+// encodedJSON is a pre-encoded JSON value, so when marshaled the underlying
+// bytes are returned as-is.
+type encodedJSON []byte
+
+func (v encodedJSON) MarshalJSON() ([]byte, error) {
+	return []byte(v), nil
 }
 
 // ExecutorValueToSpannerValue converts executorpb.Value with given spannerpb.Type into a cloud spanner interface.
@@ -97,12 +104,7 @@ func ExecutorValueToSpannerValue(t *spannerpb.Type, v *executorpb.Value, null bo
 			return spanner.NullJSON{}, nil
 		}
 		x := v.GetStringValue()
-		var y interface{}
-		err := json.Unmarshal([]byte(x), &y)
-		if err != nil {
-			return nil, err
-		}
-		return spanner.NullJSON{Value: y, Valid: true}, nil
+		return spanner.NullJSON{Value: encodedJSON(x), Valid: true}, nil
 	case spannerpb.TypeCode_STRUCT:
 		return executorStructValueToSpannerValue(t, v.GetStructValue(), null)
 	case spannerpb.TypeCode_ARRAY:

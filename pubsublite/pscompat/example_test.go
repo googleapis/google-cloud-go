@@ -324,6 +324,7 @@ func ExampleSubscriberClient_Receive_errorHandling() {
 			m.Ack()
 		})
 		if err != nil {
+			cancel()
 			fmt.Printf("Subscriber client stopped receiving due to error: %v\n", err)
 			if errors.Is(err, pscompat.ErrBackendUnavailable) {
 				// TODO: Alert if necessary. Receive can be retried.

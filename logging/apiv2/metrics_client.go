@@ -19,6 +19,7 @@ package logging
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 	"time"
@@ -58,6 +59,7 @@ func defaultMetricsGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://logging.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -237,6 +239,8 @@ type metricsGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewMetricsClient creates a new metrics service v2 client based on gRPC.
@@ -263,6 +267,7 @@ func NewMetricsClient(ctx context.Context, opts ...option.ClientOption) (*Metric
 		connPool:         connPool,
 		metricsClient:    loggingpb.NewMetricsServiceV2Client(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -286,7 +291,9 @@ func (c *metricsGRPCClient) Connection() *grpc.ClientConn {
 func (c *metricsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -315,7 +322,7 @@ func (c *metricsGRPCClient) ListLogMetrics(ctx context.Context, req *loggingpb.L
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.metricsClient.ListLogMetrics(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.metricsClient.ListLogMetrics, req, settings.GRPC, c.logger, "ListLogMetrics")
 			return err
 		}, opts...)
 		if err != nil {
@@ -350,7 +357,7 @@ func (c *metricsGRPCClient) GetLogMetric(ctx context.Context, req *loggingpb.Get
 	var resp *loggingpb.LogMetric
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metricsClient.GetLogMetric(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metricsClient.GetLogMetric, req, settings.GRPC, c.logger, "GetLogMetric")
 		return err
 	}, opts...)
 	if err != nil {
@@ -368,7 +375,7 @@ func (c *metricsGRPCClient) CreateLogMetric(ctx context.Context, req *loggingpb.
 	var resp *loggingpb.LogMetric
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metricsClient.CreateLogMetric(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metricsClient.CreateLogMetric, req, settings.GRPC, c.logger, "CreateLogMetric")
 		return err
 	}, opts...)
 	if err != nil {
@@ -386,7 +393,7 @@ func (c *metricsGRPCClient) UpdateLogMetric(ctx context.Context, req *loggingpb.
 	var resp *loggingpb.LogMetric
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metricsClient.UpdateLogMetric(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metricsClient.UpdateLogMetric, req, settings.GRPC, c.logger, "UpdateLogMetric")
 		return err
 	}, opts...)
 	if err != nil {
@@ -403,7 +410,7 @@ func (c *metricsGRPCClient) DeleteLogMetric(ctx context.Context, req *loggingpb.
 	opts = append((*c.CallOptions).DeleteLogMetric[0:len((*c.CallOptions).DeleteLogMetric):len((*c.CallOptions).DeleteLogMetric)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.metricsClient.DeleteLogMetric(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.metricsClient.DeleteLogMetric, req, settings.GRPC, c.logger, "DeleteLogMetric")
 		return err
 	}, opts...)
 	return err
@@ -417,7 +424,7 @@ func (c *metricsGRPCClient) CancelOperation(ctx context.Context, req *longrunnin
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -432,7 +439,7 @@ func (c *metricsGRPCClient) GetOperation(ctx context.Context, req *longrunningpb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -461,7 +468,7 @@ func (c *metricsGRPCClient) ListOperations(ctx context.Context, req *longrunning
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {

@@ -1,5 +1,109 @@
 # Changes
 
+
+## [1.20.2](https://github.com/googleapis/google-cloud-go/compare/kms/v1.20.1...kms/v1.20.2) (2024-12-04)
+
+
+### Documentation
+
+* **kms:** A comment for enum `CryptoKeyVersionAlgorithm` is changed ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+
+## [1.20.1](https://github.com/googleapis/google-cloud-go/compare/kms/v1.20.0...kms/v1.20.1) (2024-10-23)
+
+
+### Bug Fixes
+
+* **kms:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **kms:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.19.1...kms/v1.20.0) (2024-09-19)
+
+
+### Features
+
+* **kms:** Adding a state field for AutokeyConfig ([fdb4ea9](https://github.com/googleapis/google-cloud-go/commit/fdb4ea99189657880e5f0e0dce16bef1c3aa0d2f))
+
+
+### Bug Fixes
+
+* **kms:** Pagination feature is introduced for method `ListKeyHandles` in service `Autokey` ([fdb4ea9](https://github.com/googleapis/google-cloud-go/commit/fdb4ea99189657880e5f0e0dce16bef1c3aa0d2f))
+
+
+### Documentation
+
+* **kms:** A comment for field `destroy_scheduled_duration` in message `.google.cloud.kms.v1.CryptoKey` is updated for the default duration ([fdb4ea9](https://github.com/googleapis/google-cloud-go/commit/fdb4ea99189657880e5f0e0dce16bef1c3aa0d2f))
+* **kms:** Field service_resolvers in message .google.cloud.kms.v1.EkmConnection is Explicitly is marked as to have field behavior of Optional ([fdb4ea9](https://github.com/googleapis/google-cloud-go/commit/fdb4ea99189657880e5f0e0dce16bef1c3aa0d2f))
+
+## [1.19.1](https://github.com/googleapis/google-cloud-go/compare/kms/v1.19.0...kms/v1.19.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **kms:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.18.5...kms/v1.19.0) (2024-08-20)
+
+
+### Features
+
+* **kms:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.18.5](https://github.com/googleapis/google-cloud-go/compare/kms/v1.18.4...kms/v1.18.5) (2024-08-08)
+
+
+### Bug Fixes
+
+* **kms:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+## [1.18.4](https://github.com/googleapis/google-cloud-go/compare/kms/v1.18.3...kms/v1.18.4) (2024-07-24)
+
+
+### Bug Fixes
+
+* **kms:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+## [1.18.3](https://github.com/googleapis/google-cloud-go/compare/kms/v1.18.2...kms/v1.18.3) (2024-07-10)
+
+
+### Bug Fixes
+
+* **kms:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.18.2](https://github.com/googleapis/google-cloud-go/compare/kms/v1.18.1...kms/v1.18.2) (2024-07-01)
+
+
+### Bug Fixes
+
+* **kms:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/kms/v1.18.0...kms/v1.18.1) (2024-06-26)
+
+
+### Bug Fixes
+
+* **kms:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.17.1...kms/v1.18.0) (2024-06-20)
+
+
+### Features
+
+* **kms:** Support Key Access Justifications policy configuration ([#10398](https://github.com/googleapis/google-cloud-go/issues/10398)) ([4fa4308](https://github.com/googleapis/google-cloud-go/commit/4fa43082511e153044084c1e6736553de41a9894))
+
+## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/kms/v1.17.0...kms/v1.17.1) (2024-05-22)
+
+
+### Bug Fixes
+
+* **kms:** Enable cloud.google.com/go/auth ([#10246](https://github.com/googleapis/google-cloud-go/issues/10246)) ([1326df1](https://github.com/googleapis/google-cloud-go/commit/1326df1259942f2fd63b60b54379314ea69b6b80))
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.16.0...kms/v1.17.0) (2024-05-16)
+
+
+### Features
+
+* **kms:** Add client library for KMS Autokey service, which enables automated KMS key provision and management ([292e812](https://github.com/googleapis/google-cloud-go/commit/292e81231b957ae7ac243b47b8926564cee35920))
+
 ## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.15.9...kms/v1.16.0) (2024-05-08)
 
 

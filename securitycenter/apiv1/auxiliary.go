@@ -156,6 +156,53 @@ func (op *RunAssetDiscoveryOperation) Name() string {
 	return op.lro.Name()
 }
 
+// AttackPathIterator manages a stream of *securitycenterpb.AttackPath.
+type AttackPathIterator struct {
+	items    []*securitycenterpb.AttackPath
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*securitycenterpb.AttackPath, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *AttackPathIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *AttackPathIterator) Next() (*securitycenterpb.AttackPath, error) {
+	var item *securitycenterpb.AttackPath
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *AttackPathIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *AttackPathIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // BigQueryExportIterator manages a stream of *securitycenterpb.BigQueryExport.
 type BigQueryExportIterator struct {
 	items    []*securitycenterpb.BigQueryExport
@@ -176,7 +223,7 @@ type BigQueryExportIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*securitycenterpb.BigQueryExport, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *BigQueryExportIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -203,6 +250,53 @@ func (it *BigQueryExportIterator) takeBuf() interface{} {
 	return b
 }
 
+// EffectiveEventThreatDetectionCustomModuleIterator manages a stream of *securitycenterpb.EffectiveEventThreatDetectionCustomModule.
+type EffectiveEventThreatDetectionCustomModuleIterator struct {
+	items    []*securitycenterpb.EffectiveEventThreatDetectionCustomModule
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*securitycenterpb.EffectiveEventThreatDetectionCustomModule, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *EffectiveEventThreatDetectionCustomModuleIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *EffectiveEventThreatDetectionCustomModuleIterator) Next() (*securitycenterpb.EffectiveEventThreatDetectionCustomModule, error) {
+	var item *securitycenterpb.EffectiveEventThreatDetectionCustomModule
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *EffectiveEventThreatDetectionCustomModuleIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *EffectiveEventThreatDetectionCustomModuleIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // EffectiveSecurityHealthAnalyticsCustomModuleIterator manages a stream of *securitycenterpb.EffectiveSecurityHealthAnalyticsCustomModule.
 type EffectiveSecurityHealthAnalyticsCustomModuleIterator struct {
 	items    []*securitycenterpb.EffectiveSecurityHealthAnalyticsCustomModule
@@ -223,7 +317,7 @@ type EffectiveSecurityHealthAnalyticsCustomModuleIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*securitycenterpb.EffectiveSecurityHealthAnalyticsCustomModule, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *EffectiveSecurityHealthAnalyticsCustomModuleIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -250,6 +344,53 @@ func (it *EffectiveSecurityHealthAnalyticsCustomModuleIterator) takeBuf() interf
 	return b
 }
 
+// EventThreatDetectionCustomModuleIterator manages a stream of *securitycenterpb.EventThreatDetectionCustomModule.
+type EventThreatDetectionCustomModuleIterator struct {
+	items    []*securitycenterpb.EventThreatDetectionCustomModule
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*securitycenterpb.EventThreatDetectionCustomModule, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *EventThreatDetectionCustomModuleIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *EventThreatDetectionCustomModuleIterator) Next() (*securitycenterpb.EventThreatDetectionCustomModule, error) {
+	var item *securitycenterpb.EventThreatDetectionCustomModule
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *EventThreatDetectionCustomModuleIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *EventThreatDetectionCustomModuleIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // GroupResultIterator manages a stream of *securitycenterpb.GroupResult.
 type GroupResultIterator struct {
 	items    []*securitycenterpb.GroupResult
@@ -270,7 +411,7 @@ type GroupResultIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*securitycenterpb.GroupResult, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *GroupResultIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -317,7 +458,7 @@ type ListAssetsResponse_ListAssetsResultIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*securitycenterpb.ListAssetsResponse_ListAssetsResult, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ListAssetsResponse_ListAssetsResultIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -364,7 +505,7 @@ type ListFindingsResponse_ListFindingsResultIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*securitycenterpb.ListFindingsResponse_ListFindingsResult, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ListFindingsResponse_ListFindingsResultIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -411,7 +552,7 @@ type MuteConfigIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*securitycenterpb.MuteConfig, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *MuteConfigIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -458,7 +599,7 @@ type NotificationConfigIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*securitycenterpb.NotificationConfig, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *NotificationConfigIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -505,7 +646,7 @@ type OperationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *OperationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -532,6 +673,53 @@ func (it *OperationIterator) takeBuf() interface{} {
 	return b
 }
 
+// ResourceValueConfigIterator manages a stream of *securitycenterpb.ResourceValueConfig.
+type ResourceValueConfigIterator struct {
+	items    []*securitycenterpb.ResourceValueConfig
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*securitycenterpb.ResourceValueConfig, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *ResourceValueConfigIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *ResourceValueConfigIterator) Next() (*securitycenterpb.ResourceValueConfig, error) {
+	var item *securitycenterpb.ResourceValueConfig
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *ResourceValueConfigIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *ResourceValueConfigIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // SecurityHealthAnalyticsCustomModuleIterator manages a stream of *securitycenterpb.SecurityHealthAnalyticsCustomModule.
 type SecurityHealthAnalyticsCustomModuleIterator struct {
 	items    []*securitycenterpb.SecurityHealthAnalyticsCustomModule
@@ -552,7 +740,7 @@ type SecurityHealthAnalyticsCustomModuleIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*securitycenterpb.SecurityHealthAnalyticsCustomModule, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *SecurityHealthAnalyticsCustomModuleIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -599,7 +787,7 @@ type SourceIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*securitycenterpb.Source, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *SourceIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -621,6 +809,53 @@ func (it *SourceIterator) bufLen() int {
 }
 
 func (it *SourceIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// ValuedResourceIterator manages a stream of *securitycenterpb.ValuedResource.
+type ValuedResourceIterator struct {
+	items    []*securitycenterpb.ValuedResource
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*securitycenterpb.ValuedResource, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *ValuedResourceIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *ValuedResourceIterator) Next() (*securitycenterpb.ValuedResource, error) {
+	var item *securitycenterpb.ValuedResource
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *ValuedResourceIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *ValuedResourceIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

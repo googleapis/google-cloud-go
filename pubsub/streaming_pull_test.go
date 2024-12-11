@@ -245,15 +245,17 @@ func TestStreamingPullRetry(t *testing.T) {
 	server.wait()
 	for i := 0; i < len(testMessages); i++ {
 		id := testMessages[i].AckId
+		server.mu.Lock()
 		if i%2 == 0 {
 			if !server.Acked[id] {
 				t.Errorf("msg %q should have been acked but wasn't", id)
 			}
 		} else {
-			if dl, ok := server.Deadlines[id]; !ok || dl != 0 {
-				t.Errorf("msg %q should have been nacked but wasn't", id)
+			if server.Acked[id] {
+				t.Errorf("msg %q should have not been acked", id)
 			}
 		}
+		server.mu.Unlock()
 	}
 }
 

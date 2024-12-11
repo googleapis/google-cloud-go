@@ -41,7 +41,7 @@ type CrawledUrlIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*websecurityscannerpb.CrawledUrl, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *CrawledUrlIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -88,7 +88,7 @@ type FindingIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*websecurityscannerpb.Finding, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *FindingIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -135,7 +135,7 @@ type ScanConfigIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*websecurityscannerpb.ScanConfig, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ScanConfigIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -182,7 +182,7 @@ type ScanRunIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*websecurityscannerpb.ScanRun, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ScanRunIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

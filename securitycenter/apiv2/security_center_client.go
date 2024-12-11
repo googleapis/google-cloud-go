@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -33,7 +33,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	securitycenterpb "cloud.google.com/go/securitycenter/apiv2/securitycenterpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -103,6 +102,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://securitycenter.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -594,6 +594,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new security center client based on gRPC.
@@ -620,6 +622,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:         connPool,
 		client:           securitycenterpb.NewSecurityCenterClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -654,7 +657,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -681,6 +686,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new security center rest client.
@@ -698,6 +705,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -722,6 +730,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://securitycenter.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -731,7 +740,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -757,7 +768,7 @@ func (c *gRPCClient) BatchCreateResourceValueConfigs(ctx context.Context, req *s
 	var resp *securitycenterpb.BatchCreateResourceValueConfigsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.BatchCreateResourceValueConfigs(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.BatchCreateResourceValueConfigs, req, settings.GRPC, c.logger, "BatchCreateResourceValueConfigs")
 		return err
 	}, opts...)
 	if err != nil {
@@ -775,7 +786,7 @@ func (c *gRPCClient) BulkMuteFindings(ctx context.Context, req *securitycenterpb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.BulkMuteFindings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.BulkMuteFindings, req, settings.GRPC, c.logger, "BulkMuteFindings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -795,7 +806,7 @@ func (c *gRPCClient) CreateBigQueryExport(ctx context.Context, req *securitycent
 	var resp *securitycenterpb.BigQueryExport
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateBigQueryExport(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateBigQueryExport, req, settings.GRPC, c.logger, "CreateBigQueryExport")
 		return err
 	}, opts...)
 	if err != nil {
@@ -813,7 +824,7 @@ func (c *gRPCClient) CreateFinding(ctx context.Context, req *securitycenterpb.Cr
 	var resp *securitycenterpb.Finding
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateFinding(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateFinding, req, settings.GRPC, c.logger, "CreateFinding")
 		return err
 	}, opts...)
 	if err != nil {
@@ -846,7 +857,7 @@ func (c *gRPCClient) CreateMuteConfig(ctx context.Context, req *securitycenterpb
 	var resp *securitycenterpb.MuteConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateMuteConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateMuteConfig, req, settings.GRPC, c.logger, "CreateMuteConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -864,7 +875,7 @@ func (c *gRPCClient) CreateNotificationConfig(ctx context.Context, req *security
 	var resp *securitycenterpb.NotificationConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateNotificationConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateNotificationConfig, req, settings.GRPC, c.logger, "CreateNotificationConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -882,7 +893,7 @@ func (c *gRPCClient) CreateSource(ctx context.Context, req *securitycenterpb.Cre
 	var resp *securitycenterpb.Source
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateSource(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateSource, req, settings.GRPC, c.logger, "CreateSource")
 		return err
 	}, opts...)
 	if err != nil {
@@ -899,7 +910,7 @@ func (c *gRPCClient) DeleteBigQueryExport(ctx context.Context, req *securitycent
 	opts = append((*c.CallOptions).DeleteBigQueryExport[0:len((*c.CallOptions).DeleteBigQueryExport):len((*c.CallOptions).DeleteBigQueryExport)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteBigQueryExport(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteBigQueryExport, req, settings.GRPC, c.logger, "DeleteBigQueryExport")
 		return err
 	}, opts...)
 	return err
@@ -928,7 +939,7 @@ func (c *gRPCClient) DeleteMuteConfig(ctx context.Context, req *securitycenterpb
 	opts = append((*c.CallOptions).DeleteMuteConfig[0:len((*c.CallOptions).DeleteMuteConfig):len((*c.CallOptions).DeleteMuteConfig)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteMuteConfig(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteMuteConfig, req, settings.GRPC, c.logger, "DeleteMuteConfig")
 		return err
 	}, opts...)
 	return err
@@ -942,7 +953,7 @@ func (c *gRPCClient) DeleteNotificationConfig(ctx context.Context, req *security
 	opts = append((*c.CallOptions).DeleteNotificationConfig[0:len((*c.CallOptions).DeleteNotificationConfig):len((*c.CallOptions).DeleteNotificationConfig)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteNotificationConfig(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteNotificationConfig, req, settings.GRPC, c.logger, "DeleteNotificationConfig")
 		return err
 	}, opts...)
 	return err
@@ -956,7 +967,7 @@ func (c *gRPCClient) DeleteResourceValueConfig(ctx context.Context, req *securit
 	opts = append((*c.CallOptions).DeleteResourceValueConfig[0:len((*c.CallOptions).DeleteResourceValueConfig):len((*c.CallOptions).DeleteResourceValueConfig)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteResourceValueConfig(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteResourceValueConfig, req, settings.GRPC, c.logger, "DeleteResourceValueConfig")
 		return err
 	}, opts...)
 	return err
@@ -971,7 +982,7 @@ func (c *gRPCClient) GetBigQueryExport(ctx context.Context, req *securitycenterp
 	var resp *securitycenterpb.BigQueryExport
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetBigQueryExport(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetBigQueryExport, req, settings.GRPC, c.logger, "GetBigQueryExport")
 		return err
 	}, opts...)
 	if err != nil {
@@ -989,7 +1000,7 @@ func (c *gRPCClient) GetSimulation(ctx context.Context, req *securitycenterpb.Ge
 	var resp *securitycenterpb.Simulation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetSimulation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetSimulation, req, settings.GRPC, c.logger, "GetSimulation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1007,7 +1018,7 @@ func (c *gRPCClient) GetValuedResource(ctx context.Context, req *securitycenterp
 	var resp *securitycenterpb.ValuedResource
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetValuedResource(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetValuedResource, req, settings.GRPC, c.logger, "GetValuedResource")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1025,7 +1036,7 @@ func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1058,7 +1069,7 @@ func (c *gRPCClient) GetMuteConfig(ctx context.Context, req *securitycenterpb.Ge
 	var resp *securitycenterpb.MuteConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetMuteConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetMuteConfig, req, settings.GRPC, c.logger, "GetMuteConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1076,7 +1087,7 @@ func (c *gRPCClient) GetNotificationConfig(ctx context.Context, req *securitycen
 	var resp *securitycenterpb.NotificationConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetNotificationConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetNotificationConfig, req, settings.GRPC, c.logger, "GetNotificationConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1094,7 +1105,7 @@ func (c *gRPCClient) GetResourceValueConfig(ctx context.Context, req *securityce
 	var resp *securitycenterpb.ResourceValueConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetResourceValueConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetResourceValueConfig, req, settings.GRPC, c.logger, "GetResourceValueConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1112,7 +1123,7 @@ func (c *gRPCClient) GetSource(ctx context.Context, req *securitycenterpb.GetSou
 	var resp *securitycenterpb.Source
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetSource(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetSource, req, settings.GRPC, c.logger, "GetSource")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1141,7 +1152,7 @@ func (c *gRPCClient) GroupFindings(ctx context.Context, req *securitycenterpb.Gr
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.GroupFindings(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.GroupFindings, req, settings.GRPC, c.logger, "GroupFindings")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1187,7 +1198,7 @@ func (c *gRPCClient) ListAttackPaths(ctx context.Context, req *securitycenterpb.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListAttackPaths(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListAttackPaths, req, settings.GRPC, c.logger, "ListAttackPaths")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1233,7 +1244,7 @@ func (c *gRPCClient) ListBigQueryExports(ctx context.Context, req *securitycente
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListBigQueryExports(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListBigQueryExports, req, settings.GRPC, c.logger, "ListBigQueryExports")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1279,7 +1290,7 @@ func (c *gRPCClient) ListFindings(ctx context.Context, req *securitycenterpb.Lis
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListFindings(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListFindings, req, settings.GRPC, c.logger, "ListFindings")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1340,7 +1351,7 @@ func (c *gRPCClient) ListMuteConfigs(ctx context.Context, req *securitycenterpb.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListMuteConfigs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListMuteConfigs, req, settings.GRPC, c.logger, "ListMuteConfigs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1386,7 +1397,7 @@ func (c *gRPCClient) ListNotificationConfigs(ctx context.Context, req *securityc
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListNotificationConfigs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListNotificationConfigs, req, settings.GRPC, c.logger, "ListNotificationConfigs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1432,7 +1443,7 @@ func (c *gRPCClient) ListResourceValueConfigs(ctx context.Context, req *security
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListResourceValueConfigs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListResourceValueConfigs, req, settings.GRPC, c.logger, "ListResourceValueConfigs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1478,7 +1489,7 @@ func (c *gRPCClient) ListSources(ctx context.Context, req *securitycenterpb.List
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListSources(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListSources, req, settings.GRPC, c.logger, "ListSources")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1524,7 +1535,7 @@ func (c *gRPCClient) ListValuedResources(ctx context.Context, req *securitycente
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListValuedResources(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListValuedResources, req, settings.GRPC, c.logger, "ListValuedResources")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1559,7 +1570,7 @@ func (c *gRPCClient) SetFindingState(ctx context.Context, req *securitycenterpb.
 	var resp *securitycenterpb.Finding
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.SetFindingState(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.SetFindingState, req, settings.GRPC, c.logger, "SetFindingState")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1577,7 +1588,7 @@ func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1595,7 +1606,7 @@ func (c *gRPCClient) SetMute(ctx context.Context, req *securitycenterpb.SetMuteR
 	var resp *securitycenterpb.Finding
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.SetMute(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.SetMute, req, settings.GRPC, c.logger, "SetMute")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1613,7 +1624,7 @@ func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1631,7 +1642,7 @@ func (c *gRPCClient) UpdateBigQueryExport(ctx context.Context, req *securitycent
 	var resp *securitycenterpb.BigQueryExport
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateBigQueryExport(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateBigQueryExport, req, settings.GRPC, c.logger, "UpdateBigQueryExport")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1649,7 +1660,7 @@ func (c *gRPCClient) UpdateExternalSystem(ctx context.Context, req *securitycent
 	var resp *securitycenterpb.ExternalSystem
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateExternalSystem(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateExternalSystem, req, settings.GRPC, c.logger, "UpdateExternalSystem")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1667,7 +1678,7 @@ func (c *gRPCClient) UpdateFinding(ctx context.Context, req *securitycenterpb.Up
 	var resp *securitycenterpb.Finding
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateFinding(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateFinding, req, settings.GRPC, c.logger, "UpdateFinding")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1700,7 +1711,7 @@ func (c *gRPCClient) UpdateMuteConfig(ctx context.Context, req *securitycenterpb
 	var resp *securitycenterpb.MuteConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateMuteConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateMuteConfig, req, settings.GRPC, c.logger, "UpdateMuteConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1718,7 +1729,7 @@ func (c *gRPCClient) UpdateNotificationConfig(ctx context.Context, req *security
 	var resp *securitycenterpb.NotificationConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateNotificationConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateNotificationConfig, req, settings.GRPC, c.logger, "UpdateNotificationConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1736,7 +1747,7 @@ func (c *gRPCClient) UpdateResourceValueConfig(ctx context.Context, req *securit
 	var resp *securitycenterpb.ResourceValueConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateResourceValueConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateResourceValueConfig, req, settings.GRPC, c.logger, "UpdateResourceValueConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1754,7 +1765,7 @@ func (c *gRPCClient) UpdateSecurityMarks(ctx context.Context, req *securitycente
 	var resp *securitycenterpb.SecurityMarks
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateSecurityMarks(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateSecurityMarks, req, settings.GRPC, c.logger, "UpdateSecurityMarks")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1772,7 +1783,7 @@ func (c *gRPCClient) UpdateSource(ctx context.Context, req *securitycenterpb.Upd
 	var resp *securitycenterpb.Source
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateSource(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateSource, req, settings.GRPC, c.logger, "UpdateSource")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1789,7 +1800,7 @@ func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -1803,7 +1814,7 @@ func (c *gRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -1818,7 +1829,7 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1847,7 +1858,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1913,17 +1924,7 @@ func (c *restClient) BatchCreateResourceValueConfigs(ctx context.Context, req *s
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchCreateResourceValueConfigs")
 		if err != nil {
 			return err
 		}
@@ -1981,21 +1982,10 @@ func (c *restClient) BulkMuteFindings(ctx context.Context, req *securitycenterpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BulkMuteFindings")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2054,17 +2044,7 @@ func (c *restClient) CreateBigQueryExport(ctx context.Context, req *securitycent
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateBigQueryExport")
 		if err != nil {
 			return err
 		}
@@ -2123,17 +2103,7 @@ func (c *restClient) CreateFinding(ctx context.Context, req *securitycenterpb.Cr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateFinding")
 		if err != nil {
 			return err
 		}
@@ -2206,17 +2176,7 @@ func (c *restClient) CreateMuteConfig(ctx context.Context, req *securitycenterpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateMuteConfig")
 		if err != nil {
 			return err
 		}
@@ -2274,17 +2234,7 @@ func (c *restClient) CreateNotificationConfig(ctx context.Context, req *security
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateNotificationConfig")
 		if err != nil {
 			return err
 		}
@@ -2341,17 +2291,7 @@ func (c *restClient) CreateSource(ctx context.Context, req *securitycenterpb.Cre
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateSource")
 		if err != nil {
 			return err
 		}
@@ -2398,15 +2338,8 @@ func (c *restClient) DeleteBigQueryExport(ctx context.Context, req *securitycent
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteBigQueryExport")
+		return err
 	}, opts...)
 }
 
@@ -2456,15 +2389,8 @@ func (c *restClient) DeleteMuteConfig(ctx context.Context, req *securitycenterpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteMuteConfig")
+		return err
 	}, opts...)
 }
 
@@ -2498,15 +2424,8 @@ func (c *restClient) DeleteNotificationConfig(ctx context.Context, req *security
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteNotificationConfig")
+		return err
 	}, opts...)
 }
 
@@ -2540,15 +2459,8 @@ func (c *restClient) DeleteResourceValueConfig(ctx context.Context, req *securit
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteResourceValueConfig")
+		return err
 	}, opts...)
 }
 
@@ -2585,17 +2497,7 @@ func (c *restClient) GetBigQueryExport(ctx context.Context, req *securitycenterp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetBigQueryExport")
 		if err != nil {
 			return err
 		}
@@ -2646,17 +2548,7 @@ func (c *restClient) GetSimulation(ctx context.Context, req *securitycenterpb.Ge
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSimulation")
 		if err != nil {
 			return err
 		}
@@ -2706,17 +2598,7 @@ func (c *restClient) GetValuedResource(ctx context.Context, req *securitycenterp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetValuedResource")
 		if err != nil {
 			return err
 		}
@@ -2772,17 +2654,7 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -2848,17 +2720,7 @@ func (c *restClient) GetMuteConfig(ctx context.Context, req *securitycenterpb.Ge
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetMuteConfig")
 		if err != nil {
 			return err
 		}
@@ -2908,17 +2770,7 @@ func (c *restClient) GetNotificationConfig(ctx context.Context, req *securitycen
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetNotificationConfig")
 		if err != nil {
 			return err
 		}
@@ -2968,17 +2820,7 @@ func (c *restClient) GetResourceValueConfig(ctx context.Context, req *securityce
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetResourceValueConfig")
 		if err != nil {
 			return err
 		}
@@ -3028,17 +2870,7 @@ func (c *restClient) GetSource(ctx context.Context, req *securitycenterpb.GetSou
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSource")
 		if err != nil {
 			return err
 		}
@@ -3117,21 +2949,10 @@ func (c *restClient) GroupFindings(ctx context.Context, req *securitycenterpb.Gr
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GroupFindings")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3210,21 +3031,10 @@ func (c *restClient) ListAttackPaths(ctx context.Context, req *securitycenterpb.
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAttackPaths")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3303,21 +3113,10 @@ func (c *restClient) ListBigQueryExports(ctx context.Context, req *securitycente
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListBigQueryExports")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3379,11 +3178,11 @@ func (c *restClient) ListFindings(ctx context.Context, req *securitycenterpb.Lis
 		params := url.Values{}
 		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFieldMask() != nil {
-			fieldMask, err := protojson.Marshal(req.GetFieldMask())
+			field, err := protojson.Marshal(req.GetFieldMask())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("fieldMask", string(fieldMask[1:len(fieldMask)-1]))
+			params.Add("fieldMask", string(field[1:len(field)-1]))
 		}
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
@@ -3413,21 +3212,10 @@ func (c *restClient) ListFindings(ctx context.Context, req *securitycenterpb.Lis
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListFindings")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3503,21 +3291,10 @@ func (c *restClient) ListMuteConfigs(ctx context.Context, req *securitycenterpb.
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListMuteConfigs")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3592,21 +3369,10 @@ func (c *restClient) ListNotificationConfigs(ctx context.Context, req *securityc
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListNotificationConfigs")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3681,21 +3447,10 @@ func (c *restClient) ListResourceValueConfigs(ctx context.Context, req *security
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListResourceValueConfigs")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3770,21 +3525,10 @@ func (c *restClient) ListSources(ctx context.Context, req *securitycenterpb.List
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSources")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3865,21 +3609,10 @@ func (c *restClient) ListValuedResources(ctx context.Context, req *securitycente
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListValuedResources")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3949,17 +3682,7 @@ func (c *restClient) SetFindingState(ctx context.Context, req *securitycenterpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetFindingState")
 		if err != nil {
 			return err
 		}
@@ -4015,17 +3738,7 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -4082,17 +3795,7 @@ func (c *restClient) SetMute(ctx context.Context, req *securitycenterpb.SetMuteR
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetMute")
 		if err != nil {
 			return err
 		}
@@ -4148,17 +3851,7 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
 		if err != nil {
 			return err
 		}
@@ -4193,11 +3886,11 @@ func (c *restClient) UpdateBigQueryExport(ctx context.Context, req *securitycent
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4222,17 +3915,7 @@ func (c *restClient) UpdateBigQueryExport(ctx context.Context, req *securitycent
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateBigQueryExport")
 		if err != nil {
 			return err
 		}
@@ -4268,11 +3951,11 @@ func (c *restClient) UpdateExternalSystem(ctx context.Context, req *securitycent
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4297,17 +3980,7 @@ func (c *restClient) UpdateExternalSystem(ctx context.Context, req *securitycent
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateExternalSystem")
 		if err != nil {
 			return err
 		}
@@ -4344,11 +4017,11 @@ func (c *restClient) UpdateFinding(ctx context.Context, req *securitycenterpb.Up
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4373,17 +4046,7 @@ func (c *restClient) UpdateFinding(ctx context.Context, req *securitycenterpb.Up
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateFinding")
 		if err != nil {
 			return err
 		}
@@ -4419,11 +4082,11 @@ func (c *restClient) UpdateMuteConfig(ctx context.Context, req *securitycenterpb
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4463,17 +4126,7 @@ func (c *restClient) UpdateMuteConfig(ctx context.Context, req *securitycenterpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateMuteConfig")
 		if err != nil {
 			return err
 		}
@@ -4509,11 +4162,11 @@ func (c *restClient) UpdateNotificationConfig(ctx context.Context, req *security
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4538,17 +4191,7 @@ func (c *restClient) UpdateNotificationConfig(ctx context.Context, req *security
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateNotificationConfig")
 		if err != nil {
 			return err
 		}
@@ -4583,11 +4226,11 @@ func (c *restClient) UpdateResourceValueConfig(ctx context.Context, req *securit
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4612,17 +4255,7 @@ func (c *restClient) UpdateResourceValueConfig(ctx context.Context, req *securit
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateResourceValueConfig")
 		if err != nil {
 			return err
 		}
@@ -4659,11 +4292,11 @@ func (c *restClient) UpdateSecurityMarks(ctx context.Context, req *securitycente
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4688,17 +4321,7 @@ func (c *restClient) UpdateSecurityMarks(ctx context.Context, req *securitycente
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateSecurityMarks")
 		if err != nil {
 			return err
 		}
@@ -4733,11 +4356,11 @@ func (c *restClient) UpdateSource(ctx context.Context, req *securitycenterpb.Upd
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4762,17 +4385,7 @@ func (c *restClient) UpdateSource(ctx context.Context, req *securitycenterpb.Upd
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateSource")
 		if err != nil {
 			return err
 		}
@@ -4819,15 +4432,8 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -4861,15 +4467,8 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOperation")
+		return err
 	}, opts...)
 }
 
@@ -4906,17 +4505,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -4981,21 +4570,10 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

@@ -41,7 +41,7 @@ type InsightIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*recommenderpb.Insight, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *InsightIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -88,7 +88,7 @@ type RecommendationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*recommenderpb.Recommendation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *RecommendationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

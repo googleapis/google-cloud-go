@@ -26,12 +26,102 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "AnalyticsClient",
+          "rpcs": {
+            "ExportAnalyticsMetrics": {
+              "methods": [
+                "ExportAnalyticsMetrics"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
         }
       }
     },
     "CatalogService": {
       "clients": {
         "grpc": {
+          "libraryClient": "CatalogClient",
+          "rpcs": {
+            "AddCatalogAttribute": {
+              "methods": [
+                "AddCatalogAttribute"
+              ]
+            },
+            "GetAttributesConfig": {
+              "methods": [
+                "GetAttributesConfig"
+              ]
+            },
+            "GetCompletionConfig": {
+              "methods": [
+                "GetCompletionConfig"
+              ]
+            },
+            "GetDefaultBranch": {
+              "methods": [
+                "GetDefaultBranch"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListCatalogs": {
+              "methods": [
+                "ListCatalogs"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RemoveCatalogAttribute": {
+              "methods": [
+                "RemoveCatalogAttribute"
+              ]
+            },
+            "ReplaceCatalogAttribute": {
+              "methods": [
+                "ReplaceCatalogAttribute"
+              ]
+            },
+            "SetDefaultBranch": {
+              "methods": [
+                "SetDefaultBranch"
+              ]
+            },
+            "UpdateAttributesConfig": {
+              "methods": [
+                "UpdateAttributesConfig"
+              ]
+            },
+            "UpdateCatalog": {
+              "methods": [
+                "UpdateCatalog"
+              ]
+            },
+            "UpdateCompletionConfig": {
+              "methods": [
+                "UpdateCompletionConfig"
+              ]
+            }
+          }
+        },
+        "rest": {
           "libraryClient": "CatalogClient",
           "rpcs": {
             "AddCatalogAttribute": {
@@ -129,6 +219,31 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "CompletionClient",
+          "rpcs": {
+            "CompleteQuery": {
+              "methods": [
+                "CompleteQuery"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ImportCompletionData": {
+              "methods": [
+                "ImportCompletionData"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
         }
       }
     },
@@ -173,12 +288,191 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "ControlClient",
+          "rpcs": {
+            "CreateControl": {
+              "methods": [
+                "CreateControl"
+              ]
+            },
+            "DeleteControl": {
+              "methods": [
+                "DeleteControl"
+              ]
+            },
+            "GetControl": {
+              "methods": [
+                "GetControl"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListControls": {
+              "methods": [
+                "ListControls"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateControl": {
+              "methods": [
+                "UpdateControl"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "GenerativeQuestionService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "GenerativeQuestionClient",
+          "rpcs": {
+            "BatchUpdateGenerativeQuestionConfigs": {
+              "methods": [
+                "BatchUpdateGenerativeQuestionConfigs"
+              ]
+            },
+            "GetGenerativeQuestionsFeatureConfig": {
+              "methods": [
+                "GetGenerativeQuestionsFeatureConfig"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListGenerativeQuestionConfigs": {
+              "methods": [
+                "ListGenerativeQuestionConfigs"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateGenerativeQuestionConfig": {
+              "methods": [
+                "UpdateGenerativeQuestionConfig"
+              ]
+            },
+            "UpdateGenerativeQuestionsFeatureConfig": {
+              "methods": [
+                "UpdateGenerativeQuestionsFeatureConfig"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "GenerativeQuestionClient",
+          "rpcs": {
+            "BatchUpdateGenerativeQuestionConfigs": {
+              "methods": [
+                "BatchUpdateGenerativeQuestionConfigs"
+              ]
+            },
+            "GetGenerativeQuestionsFeatureConfig": {
+              "methods": [
+                "GetGenerativeQuestionsFeatureConfig"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListGenerativeQuestionConfigs": {
+              "methods": [
+                "ListGenerativeQuestionConfigs"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateGenerativeQuestionConfig": {
+              "methods": [
+                "UpdateGenerativeQuestionConfig"
+              ]
+            },
+            "UpdateGenerativeQuestionsFeatureConfig": {
+              "methods": [
+                "UpdateGenerativeQuestionsFeatureConfig"
+              ]
+            }
+          }
         }
       }
     },
     "ModelService": {
       "clients": {
         "grpc": {
+          "libraryClient": "ModelClient",
+          "rpcs": {
+            "CreateModel": {
+              "methods": [
+                "CreateModel"
+              ]
+            },
+            "DeleteModel": {
+              "methods": [
+                "DeleteModel"
+              ]
+            },
+            "GetModel": {
+              "methods": [
+                "GetModel"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListModels": {
+              "methods": [
+                "ListModels"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "PauseModel": {
+              "methods": [
+                "PauseModel"
+              ]
+            },
+            "ResumeModel": {
+              "methods": [
+                "ResumeModel"
+              ]
+            },
+            "TuneModel": {
+              "methods": [
+                "TuneModel"
+              ]
+            },
+            "UpdateModel": {
+              "methods": [
+                "UpdateModel"
+              ]
+            }
+          }
+        },
+        "rest": {
           "libraryClient": "ModelClient",
           "rpcs": {
             "CreateModel": {
@@ -256,6 +550,26 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "PredictionClient",
+          "rpcs": {
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "Predict": {
+              "methods": [
+                "Predict"
+              ]
+            }
+          }
         }
       }
     },
@@ -309,6 +623,86 @@
                 "ListProducts"
               ]
             },
+            "PurgeProducts": {
+              "methods": [
+                "PurgeProducts"
+              ]
+            },
+            "RemoveFulfillmentPlaces": {
+              "methods": [
+                "RemoveFulfillmentPlaces"
+              ]
+            },
+            "RemoveLocalInventories": {
+              "methods": [
+                "RemoveLocalInventories"
+              ]
+            },
+            "SetInventory": {
+              "methods": [
+                "SetInventory"
+              ]
+            },
+            "UpdateProduct": {
+              "methods": [
+                "UpdateProduct"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ProductClient",
+          "rpcs": {
+            "AddFulfillmentPlaces": {
+              "methods": [
+                "AddFulfillmentPlaces"
+              ]
+            },
+            "AddLocalInventories": {
+              "methods": [
+                "AddLocalInventories"
+              ]
+            },
+            "CreateProduct": {
+              "methods": [
+                "CreateProduct"
+              ]
+            },
+            "DeleteProduct": {
+              "methods": [
+                "DeleteProduct"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetProduct": {
+              "methods": [
+                "GetProduct"
+              ]
+            },
+            "ImportProducts": {
+              "methods": [
+                "ImportProducts"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListProducts": {
+              "methods": [
+                "ListProducts"
+              ]
+            },
+            "PurgeProducts": {
+              "methods": [
+                "PurgeProducts"
+              ]
+            },
             "RemoveFulfillmentPlaces": {
               "methods": [
                 "RemoveFulfillmentPlaces"
@@ -336,6 +730,26 @@
     "SearchService": {
       "clients": {
         "grpc": {
+          "libraryClient": "SearchClient",
+          "rpcs": {
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "Search": {
+              "methods": [
+                "Search"
+              ]
+            }
+          }
+        },
+        "rest": {
           "libraryClient": "SearchClient",
           "rpcs": {
             "GetOperation": {
@@ -408,12 +822,102 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "ServingConfigClient",
+          "rpcs": {
+            "AddControl": {
+              "methods": [
+                "AddControl"
+              ]
+            },
+            "CreateServingConfig": {
+              "methods": [
+                "CreateServingConfig"
+              ]
+            },
+            "DeleteServingConfig": {
+              "methods": [
+                "DeleteServingConfig"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetServingConfig": {
+              "methods": [
+                "GetServingConfig"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListServingConfigs": {
+              "methods": [
+                "ListServingConfigs"
+              ]
+            },
+            "RemoveControl": {
+              "methods": [
+                "RemoveControl"
+              ]
+            },
+            "UpdateServingConfig": {
+              "methods": [
+                "UpdateServingConfig"
+              ]
+            }
+          }
         }
       }
     },
     "UserEventService": {
       "clients": {
         "grpc": {
+          "libraryClient": "UserEventClient",
+          "rpcs": {
+            "CollectUserEvent": {
+              "methods": [
+                "CollectUserEvent"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ImportUserEvents": {
+              "methods": [
+                "ImportUserEvents"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "PurgeUserEvents": {
+              "methods": [
+                "PurgeUserEvents"
+              ]
+            },
+            "RejoinUserEvents": {
+              "methods": [
+                "RejoinUserEvents"
+              ]
+            },
+            "WriteUserEvent": {
+              "methods": [
+                "WriteUserEvent"
+              ]
+            }
+          }
+        },
+        "rest": {
           "libraryClient": "UserEventClient",
           "rpcs": {
             "CollectUserEvent": {

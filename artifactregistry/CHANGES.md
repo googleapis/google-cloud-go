@@ -1,5 +1,79 @@
 # Changes
 
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.15.2...artifactregistry/v1.16.0) (2024-11-06)
+
+
+### Features
+
+* **artifactregistry:** Add Artifact Registry attachment API ([ecf1cf6](https://github.com/googleapis/google-cloud-go/commit/ecf1cf68aabe32e131bfc66b7c4575c63ad41a22))
+* **artifactregistry:** Add Artifact Registry custom remote support ([ecf1cf6](https://github.com/googleapis/google-cloud-go/commit/ecf1cf68aabe32e131bfc66b7c4575c63ad41a22))
+* **artifactregistry:** Add Artifact Registry generic repository support ([ecf1cf6](https://github.com/googleapis/google-cloud-go/commit/ecf1cf68aabe32e131bfc66b7c4575c63ad41a22))
+* **artifactregistry:** Add Artifact Registry rule APIs ([ecf1cf6](https://github.com/googleapis/google-cloud-go/commit/ecf1cf68aabe32e131bfc66b7c4575c63ad41a22))
+* **artifactregistry:** Add Artifact Registry server side resource filtering and sorting ([ecf1cf6](https://github.com/googleapis/google-cloud-go/commit/ecf1cf68aabe32e131bfc66b7c4575c63ad41a22))
+* **artifactregistry:** Add Artifact Registry UpdateFile and DeleteFile APIs ([ecf1cf6](https://github.com/googleapis/google-cloud-go/commit/ecf1cf68aabe32e131bfc66b7c4575c63ad41a22))
+
+
+### Documentation
+
+* **artifactregistry:** Include max page size for all Artifact Registry APIs ([ecf1cf6](https://github.com/googleapis/google-cloud-go/commit/ecf1cf68aabe32e131bfc66b7c4575c63ad41a22))
+
+## [1.15.2](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.15.1...artifactregistry/v1.15.2) (2024-10-23)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **artifactregistry:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
+## [1.15.1](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.15.0...artifactregistry/v1.15.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.14...artifactregistry/v1.15.0) (2024-08-20)
+
+
+### Features
+
+* **artifactregistry:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.14.14](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.13...artifactregistry/v1.14.14) (2024-08-08)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+## [1.14.13](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.12...artifactregistry/v1.14.13) (2024-07-24)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+## [1.14.12](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.11...artifactregistry/v1.14.12) (2024-07-10)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.14.11](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.10...artifactregistry/v1.14.11) (2024-07-01)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.14.10](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.9...artifactregistry/v1.14.10) (2024-06-26)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.14.9](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.8...artifactregistry/v1.14.9) (2024-05-01)
 
 

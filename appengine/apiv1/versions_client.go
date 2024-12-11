@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -62,6 +61,7 @@ func defaultVersionsGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://appengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -271,6 +271,8 @@ type versionsGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewVersionsClient creates a new versions client based on gRPC.
@@ -297,6 +299,7 @@ func NewVersionsClient(ctx context.Context, opts ...option.ClientOption) (*Versi
 		connPool:       connPool,
 		versionsClient: appenginepb.NewVersionsClient(connPool),
 		CallOptions:    &client.CallOptions,
+		logger:         internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -330,7 +333,9 @@ func (c *versionsGRPCClient) Connection() *grpc.ClientConn {
 func (c *versionsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -357,6 +362,8 @@ type versionsRESTClient struct {
 
 	// Points back to the CallOptions field of the containing VersionsClient
 	CallOptions **VersionsCallOptions
+
+	logger *slog.Logger
 }
 
 // NewVersionsRESTClient creates a new versions rest client.
@@ -374,6 +381,7 @@ func NewVersionsRESTClient(ctx context.Context, opts ...option.ClientOption) (*V
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -398,6 +406,7 @@ func defaultVersionsRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://appengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -407,7 +416,9 @@ func defaultVersionsRESTClientOptions() []option.ClientOption {
 func (c *versionsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -444,7 +455,7 @@ func (c *versionsGRPCClient) ListVersions(ctx context.Context, req *appenginepb.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.versionsClient.ListVersions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.versionsClient.ListVersions, req, settings.GRPC, c.logger, "ListVersions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -479,7 +490,7 @@ func (c *versionsGRPCClient) GetVersion(ctx context.Context, req *appenginepb.Ge
 	var resp *appenginepb.Version
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.versionsClient.GetVersion(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.versionsClient.GetVersion, req, settings.GRPC, c.logger, "GetVersion")
 		return err
 	}, opts...)
 	if err != nil {
@@ -497,7 +508,7 @@ func (c *versionsGRPCClient) CreateVersion(ctx context.Context, req *appenginepb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.versionsClient.CreateVersion(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.versionsClient.CreateVersion, req, settings.GRPC, c.logger, "CreateVersion")
 		return err
 	}, opts...)
 	if err != nil {
@@ -517,7 +528,7 @@ func (c *versionsGRPCClient) UpdateVersion(ctx context.Context, req *appenginepb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.versionsClient.UpdateVersion(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.versionsClient.UpdateVersion, req, settings.GRPC, c.logger, "UpdateVersion")
 		return err
 	}, opts...)
 	if err != nil {
@@ -537,7 +548,7 @@ func (c *versionsGRPCClient) DeleteVersion(ctx context.Context, req *appenginepb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.versionsClient.DeleteVersion(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.versionsClient.DeleteVersion, req, settings.GRPC, c.logger, "DeleteVersion")
 		return err
 	}, opts...)
 	if err != nil {
@@ -596,21 +607,10 @@ func (c *versionsRESTClient) ListVersions(ctx context.Context, req *appenginepb.
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListVersions")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -678,17 +678,7 @@ func (c *versionsRESTClient) GetVersion(ctx context.Context, req *appenginepb.Ge
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetVersion")
 		if err != nil {
 			return err
 		}
@@ -744,21 +734,10 @@ func (c *versionsRESTClient) CreateVersion(ctx context.Context, req *appenginepb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateVersion")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -838,11 +817,11 @@ func (c *versionsRESTClient) UpdateVersion(ctx context.Context, req *appenginepb
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -866,21 +845,10 @@ func (c *versionsRESTClient) UpdateVersion(ctx context.Context, req *appenginepb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateVersion")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -930,21 +898,10 @@ func (c *versionsRESTClient) DeleteVersion(ctx context.Context, req *appenginepb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteVersion")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}

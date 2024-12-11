@@ -751,6 +751,70 @@ func (op *EnableAdvancedSiteSearchOperation) Name() string {
 	return op.lro.Name()
 }
 
+// ImportCompletionSuggestionsOperation manages a long-running operation from ImportCompletionSuggestions.
+type ImportCompletionSuggestionsOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *ImportCompletionSuggestionsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*discoveryenginepb.ImportCompletionSuggestionsResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp discoveryenginepb.ImportCompletionSuggestionsResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *ImportCompletionSuggestionsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*discoveryenginepb.ImportCompletionSuggestionsResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp discoveryenginepb.ImportCompletionSuggestionsResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *ImportCompletionSuggestionsOperation) Metadata() (*discoveryenginepb.ImportCompletionSuggestionsMetadata, error) {
+	var meta discoveryenginepb.ImportCompletionSuggestionsMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *ImportCompletionSuggestionsOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *ImportCompletionSuggestionsOperation) Name() string {
+	return op.lro.Name()
+}
+
 // ImportDocumentsOperation manages a long-running operation from ImportDocuments.
 type ImportDocumentsOperation struct {
 	lro      *longrunning.Operation
@@ -943,6 +1007,134 @@ func (op *ImportUserEventsOperation) Name() string {
 	return op.lro.Name()
 }
 
+// ProvisionProjectOperation manages a long-running operation from ProvisionProject.
+type ProvisionProjectOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *ProvisionProjectOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*discoveryenginepb.Project, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp discoveryenginepb.Project
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *ProvisionProjectOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*discoveryenginepb.Project, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp discoveryenginepb.Project
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *ProvisionProjectOperation) Metadata() (*discoveryenginepb.ProvisionProjectMetadata, error) {
+	var meta discoveryenginepb.ProvisionProjectMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *ProvisionProjectOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *ProvisionProjectOperation) Name() string {
+	return op.lro.Name()
+}
+
+// PurgeCompletionSuggestionsOperation manages a long-running operation from PurgeCompletionSuggestions.
+type PurgeCompletionSuggestionsOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *PurgeCompletionSuggestionsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*discoveryenginepb.PurgeCompletionSuggestionsResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp discoveryenginepb.PurgeCompletionSuggestionsResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *PurgeCompletionSuggestionsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*discoveryenginepb.PurgeCompletionSuggestionsResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp discoveryenginepb.PurgeCompletionSuggestionsResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *PurgeCompletionSuggestionsOperation) Metadata() (*discoveryenginepb.PurgeCompletionSuggestionsMetadata, error) {
+	var meta discoveryenginepb.PurgeCompletionSuggestionsMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *PurgeCompletionSuggestionsOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *PurgeCompletionSuggestionsOperation) Name() string {
+	return op.lro.Name()
+}
+
 // PurgeDocumentsOperation manages a long-running operation from PurgeDocuments.
 type PurgeDocumentsOperation struct {
 	lro      *longrunning.Operation
@@ -1071,6 +1263,70 @@ func (op *PurgeSuggestionDenyListEntriesOperation) Name() string {
 	return op.lro.Name()
 }
 
+// PurgeUserEventsOperation manages a long-running operation from PurgeUserEvents.
+type PurgeUserEventsOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *PurgeUserEventsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*discoveryenginepb.PurgeUserEventsResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp discoveryenginepb.PurgeUserEventsResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *PurgeUserEventsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*discoveryenginepb.PurgeUserEventsResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp discoveryenginepb.PurgeUserEventsResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *PurgeUserEventsOperation) Metadata() (*discoveryenginepb.PurgeUserEventsMetadata, error) {
+	var meta discoveryenginepb.PurgeUserEventsMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *PurgeUserEventsOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *PurgeUserEventsOperation) Name() string {
+	return op.lro.Name()
+}
+
 // RecrawlUrisOperation manages a long-running operation from RecrawlUris.
 type RecrawlUrisOperation struct {
 	lro      *longrunning.Operation
@@ -1132,6 +1388,70 @@ func (op *RecrawlUrisOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *RecrawlUrisOperation) Name() string {
+	return op.lro.Name()
+}
+
+// TrainCustomModelOperation manages a long-running operation from TrainCustomModel.
+type TrainCustomModelOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *TrainCustomModelOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*discoveryenginepb.TrainCustomModelResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp discoveryenginepb.TrainCustomModelResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *TrainCustomModelOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*discoveryenginepb.TrainCustomModelResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp discoveryenginepb.TrainCustomModelResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *TrainCustomModelOperation) Metadata() (*discoveryenginepb.TrainCustomModelMetadata, error) {
+	var meta discoveryenginepb.TrainCustomModelMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *TrainCustomModelOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *TrainCustomModelOperation) Name() string {
 	return op.lro.Name()
 }
 
@@ -1263,6 +1583,53 @@ func (op *UpdateTargetSiteOperation) Name() string {
 	return op.lro.Name()
 }
 
+// ControlIterator manages a stream of *discoveryenginepb.Control.
+type ControlIterator struct {
+	items    []*discoveryenginepb.Control
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*discoveryenginepb.Control, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *ControlIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *ControlIterator) Next() (*discoveryenginepb.Control, error) {
+	var item *discoveryenginepb.Control
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *ControlIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *ControlIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // ConversationIterator manages a stream of *discoveryenginepb.Conversation.
 type ConversationIterator struct {
 	items    []*discoveryenginepb.Conversation
@@ -1283,7 +1650,7 @@ type ConversationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*discoveryenginepb.Conversation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ConversationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1330,7 +1697,7 @@ type DataStoreIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*discoveryenginepb.DataStore, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *DataStoreIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1377,7 +1744,7 @@ type DocumentIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*discoveryenginepb.Document, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *DocumentIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1424,7 +1791,7 @@ type EngineIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*discoveryenginepb.Engine, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *EngineIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1471,7 +1838,7 @@ type OperationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *OperationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1518,7 +1885,7 @@ type SchemaIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*discoveryenginepb.Schema, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *SchemaIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1565,7 +1932,7 @@ type SearchResponse_SearchResultIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*discoveryenginepb.SearchResponse_SearchResult, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *SearchResponse_SearchResultIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1592,6 +1959,53 @@ func (it *SearchResponse_SearchResultIterator) takeBuf() interface{} {
 	return b
 }
 
+// SessionIterator manages a stream of *discoveryenginepb.Session.
+type SessionIterator struct {
+	items    []*discoveryenginepb.Session
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*discoveryenginepb.Session, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *SessionIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *SessionIterator) Next() (*discoveryenginepb.Session, error) {
+	var item *discoveryenginepb.Session
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *SessionIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *SessionIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // TargetSiteIterator manages a stream of *discoveryenginepb.TargetSite.
 type TargetSiteIterator struct {
 	items    []*discoveryenginepb.TargetSite
@@ -1612,7 +2026,7 @@ type TargetSiteIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*discoveryenginepb.TargetSite, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TargetSiteIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	dataflowpb "cloud.google.com/go/dataflow/apiv1beta3/dataflowpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -55,6 +54,7 @@ func defaultTemplatesGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://dataflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -163,6 +163,8 @@ type templatesGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewTemplatesClient creates a new templates service client based on gRPC.
@@ -189,6 +191,7 @@ func NewTemplatesClient(ctx context.Context, opts ...option.ClientOption) (*Temp
 		connPool:        connPool,
 		templatesClient: dataflowpb.NewTemplatesServiceClient(connPool),
 		CallOptions:     &client.CallOptions,
+		logger:          internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -211,7 +214,9 @@ func (c *templatesGRPCClient) Connection() *grpc.ClientConn {
 func (c *templatesGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -233,6 +238,8 @@ type templatesRESTClient struct {
 
 	// Points back to the CallOptions field of the containing TemplatesClient
 	CallOptions **TemplatesCallOptions
+
+	logger *slog.Logger
 }
 
 // NewTemplatesRESTClient creates a new templates service rest client.
@@ -250,6 +257,7 @@ func NewTemplatesRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -264,6 +272,7 @@ func defaultTemplatesRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://dataflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -273,7 +282,9 @@ func defaultTemplatesRESTClientOptions() []option.ClientOption {
 func (c *templatesRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -299,7 +310,7 @@ func (c *templatesGRPCClient) CreateJobFromTemplate(ctx context.Context, req *da
 	var resp *dataflowpb.Job
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.templatesClient.CreateJobFromTemplate(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.templatesClient.CreateJobFromTemplate, req, settings.GRPC, c.logger, "CreateJobFromTemplate")
 		return err
 	}, opts...)
 	if err != nil {
@@ -317,7 +328,7 @@ func (c *templatesGRPCClient) LaunchTemplate(ctx context.Context, req *dataflowp
 	var resp *dataflowpb.LaunchTemplateResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.templatesClient.LaunchTemplate(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.templatesClient.LaunchTemplate, req, settings.GRPC, c.logger, "LaunchTemplate")
 		return err
 	}, opts...)
 	if err != nil {
@@ -335,7 +346,7 @@ func (c *templatesGRPCClient) GetTemplate(ctx context.Context, req *dataflowpb.G
 	var resp *dataflowpb.GetTemplateResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.templatesClient.GetTemplate(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.templatesClient.GetTemplate, req, settings.GRPC, c.logger, "GetTemplate")
 		return err
 	}, opts...)
 	if err != nil {
@@ -383,17 +394,7 @@ func (c *templatesRESTClient) CreateJobFromTemplate(ctx context.Context, req *da
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateJobFromTemplate")
 		if err != nil {
 			return err
 		}
@@ -462,17 +463,7 @@ func (c *templatesRESTClient) LaunchTemplate(ctx context.Context, req *dataflowp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "LaunchTemplate")
 		if err != nil {
 			return err
 		}
@@ -528,17 +519,7 @@ func (c *templatesRESTClient) GetTemplate(ctx context.Context, req *dataflowpb.G
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetTemplate")
 		if err != nil {
 			return err
 		}

@@ -44,7 +44,7 @@ func TestLive(t *testing.T) {
 	}
 
 	ctx := context.Background()
-	client, err := NewClient(ctx, projectID, "us-central1")
+	client, err := NewClient(ctx, projectID, defaultLocation)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -63,23 +63,19 @@ func TestLive(t *testing.T) {
 	t.Run("system-instructions", func(t *testing.T) {
 		model := client.GenerativeModel(defaultModel)
 		model.Temperature = Ptr[float32](0)
-		model.SystemInstruction = &Content{
-			Parts: []Part{Text("You are Yoda from Star Wars.")},
-		}
+		model.SystemInstruction = NewUserContent(Text("You are Yoda from Star Wars."))
 		resp, err := model.GenerateContent(ctx, Text("What is the average size of a swallow?"))
 		if err != nil {
 			t.Fatal(err)
 		}
 		got := responseString(resp)
-		checkMatch(t, got, `[1-9][0-9].* cm|[1-9].* inches`)
-		fmt.Println(got)
-
+		checkMatch(t, got, `[1-9][0-9].* (cm|centimeters)|[1-9].* inches`)
 	})
 
 	t.Run("streaming", func(t *testing.T) {
 		iter := model.GenerateContentStream(ctx, Text("Are you hungry?"))
 		got := responsesString(t, iter)
-		checkMatch(t, got, `(capable.+experienc.+hunger)|((don't|do\s+not) (have|possess) .*(a .* body|the ability))`)
+		checkMatch(t, got, `(capable.+experienc.+hunger)|(capacity.+feel)|((don't|do\s+not) (have|possess) .*(a .* body|the ability))`)
 	})
 
 	t.Run("chat", func(t *testing.T) {
@@ -284,6 +280,30 @@ func TestLive(t *testing.T) {
 			}
 			checkMatch(t, responseString(res), "(it's|it is|weather) .*cold")
 		})
+		t.Run("funcall-stream", func(t *testing.T) {
+			session := model.StartChat()
+			iter := session.SendMessageStream(ctx, Text("What is the weather like in New York?"))
+
+			for {
+				_, err := iter.Next()
+				if err == iterator.Done {
+					break
+				}
+				if err != nil {
+					t.Fatal(err)
+				}
+			}
+			res, err := session.SendMessage(ctx, FunctionResponse{
+				Name: weatherTool.FunctionDeclarations[0].Name,
+				Response: map[string]any{
+					"weather_there": "cold",
+				},
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			checkMatch(t, responseString(res), "(it's|it is|weather) .*cold")
+		})
 		t.Run("funcall-none", func(t *testing.T) {
 			model.ToolConfig = &ToolConfig{
 				FunctionCallingConfig: &FunctionCallingConfig{
@@ -303,6 +323,35 @@ func TestLive(t *testing.T) {
 			}
 		})
 	})
+	t.Run("caching", func(t *testing.T) { testCaching(t, client) })
+}
+
+func TestLiveDefaultLocation(t *testing.T) {
+	projectID := os.Getenv("VERTEX_PROJECT_ID")
+	if testing.Short() {
+		t.Skip("skipping live test in -short mode")
+	}
+
+	if projectID == "" {
+		t.Skip("set a VERTEX_PROJECT_ID env var to run live tests")
+	}
+
+	ctx := context.Background()
+	// No location is passed explicitly: default is used
+	client, err := NewClient(ctx, projectID, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer client.Close()
+	model := client.GenerativeModel(defaultModel)
+	model.Temperature = Ptr[float32](0)
+
+	resp, err := model.GenerateContent(ctx, Text("Name the planets in the solar system"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := responseString(resp)
+	checkMatch(t, got, `venus|mars`)
 }
 
 func TestLiveREST(t *testing.T) {
@@ -316,7 +365,7 @@ func TestLiveREST(t *testing.T) {
 	}
 
 	ctx := context.Background()
-	client, err := NewClient(ctx, projectID, "us-central1", WithREST())
+	client, err := NewClient(ctx, projectID, defaultLocation, WithREST())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -434,7 +483,9 @@ func responseString(resp *GenerateContentResponse) string {
 		if len(resp.Candidates) > 1 {
 			fmt.Fprintf(&b, "%d:", i+1)
 		}
-		b.WriteString(contentString(cand.Content))
+		if cand.Content != nil {
+			b.WriteString(contentString(cand.Content))
+		}
 	}
 	return b.String()
 }
@@ -581,4 +632,56 @@ func TestIntFloatConversions(t *testing.T) {
 	if !reflect.DeepEqual(goti, Ptr[int32](1)) {
 		t.Errorf("got %v, want *1", goti)
 	}
+}
+
+func TestInferFullModelName(t *testing.T) {
+	for _, test := range []struct {
+		name string
+		want string
+	}{
+		{"xyz", "projects/proj/locations/loc/publishers/google/models/xyz"},
+		{"models/abc", "projects/proj/locations/loc/publishers/google/models/abc"},
+		{"publishers/foo/xyz", "projects/proj/locations/loc/publishers/foo/xyz"},
+		{"x/y/z", "x/y/z"},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			got := inferFullModelName("proj", "loc", test.name)
+			if got != test.want {
+				t.Errorf("got %q, want %q", got, test.want)
+			}
+		})
+	}
+}
+
+func TestInferLocation(t *testing.T) {
+	for _, test := range []struct {
+		name                             string
+		arg                              string
+		cloudRegionEnv, cloudMlRegionEnv string
+		want                             string
+	}{
+		{"arg passed", "us-west4", "abc", "def", "us-west4"},
+		{"first env", "", "abc", "", "abc"},
+		{"second env", "", "", "klm", "klm"},
+		{"default", "", "", "", defaultLocation},
+		{"first env precedence", "", "101", "klm", "101"},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			t.Setenv("GOOGLE_CLOUD_REGION", test.cloudRegionEnv)
+			t.Setenv("CLOUD_ML_REGION", test.cloudMlRegionEnv)
+			got := inferLocation(test.arg)
+			if got != test.want {
+				t.Errorf("got %q, want %q", got, test.want)
+			}
+		})
+	}
+}
+
+func printResponse(resp *GenerateContentResponse) {
+	for _, cand := range resp.Candidates {
+		for _, part := range cand.Content.Parts {
+			fmt.Println(part)
+		}
+	}
+	fmt.Println("---")
 }

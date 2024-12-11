@@ -80,6 +80,11 @@
                 "GetSpace"
               ]
             },
+            "GetSpaceEvent": {
+              "methods": [
+                "GetSpaceEvent"
+              ]
+            },
             "GetSpaceReadState": {
               "methods": [
                 "GetSpaceReadState"
@@ -105,9 +110,19 @@
                 "ListReactions"
               ]
             },
+            "ListSpaceEvents": {
+              "methods": [
+                "ListSpaceEvents"
+              ]
+            },
             "ListSpaces": {
               "methods": [
                 "ListSpaces"
+              ]
+            },
+            "SearchSpaces": {
+              "methods": [
+                "SearchSpaces"
               ]
             },
             "SetUpSpace": {
@@ -215,6 +230,11 @@
                 "GetSpace"
               ]
             },
+            "GetSpaceEvent": {
+              "methods": [
+                "GetSpaceEvent"
+              ]
+            },
             "GetSpaceReadState": {
               "methods": [
                 "GetSpaceReadState"
@@ -240,9 +260,19 @@
                 "ListReactions"
               ]
             },
+            "ListSpaceEvents": {
+              "methods": [
+                "ListSpaceEvents"
+              ]
+            },
             "ListSpaces": {
               "methods": [
                 "ListSpaces"
+              ]
+            },
+            "SearchSpaces": {
+              "methods": [
+                "SearchSpaces"
               ]
             },
             "SetUpSpace": {

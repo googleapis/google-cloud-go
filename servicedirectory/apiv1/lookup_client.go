@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	servicedirectorypb "cloud.google.com/go/servicedirectory/apiv1/servicedirectorypb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -59,6 +58,7 @@ func defaultLookupGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://servicedirectory.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -182,6 +182,8 @@ type lookupGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewLookupClient creates a new lookup service client based on gRPC.
@@ -208,6 +210,7 @@ func NewLookupClient(ctx context.Context, opts ...option.ClientOption) (*LookupC
 		connPool:        connPool,
 		lookupClient:    servicedirectorypb.NewLookupServiceClient(connPool),
 		CallOptions:     &client.CallOptions,
+		logger:          internaloption.GetLogger(opts),
 		locationsClient: locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -231,7 +234,9 @@ func (c *lookupGRPCClient) Connection() *grpc.ClientConn {
 func (c *lookupGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -253,6 +258,8 @@ type lookupRESTClient struct {
 
 	// Points back to the CallOptions field of the containing LookupClient
 	CallOptions **LookupCallOptions
+
+	logger *slog.Logger
 }
 
 // NewLookupRESTClient creates a new lookup service rest client.
@@ -270,6 +277,7 @@ func NewLookupRESTClient(ctx context.Context, opts ...option.ClientOption) (*Loo
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -284,6 +292,7 @@ func defaultLookupRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://servicedirectory.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -293,7 +302,9 @@ func defaultLookupRESTClientOptions() []option.ClientOption {
 func (c *lookupRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -319,7 +330,7 @@ func (c *lookupGRPCClient) ResolveService(ctx context.Context, req *servicedirec
 	var resp *servicedirectorypb.ResolveServiceResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.lookupClient.ResolveService(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.lookupClient.ResolveService, req, settings.GRPC, c.logger, "ResolveService")
 		return err
 	}, opts...)
 	if err != nil {
@@ -337,7 +348,7 @@ func (c *lookupGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetL
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -366,7 +377,7 @@ func (c *lookupGRPCClient) ListLocations(ctx context.Context, req *locationpb.Li
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -433,17 +444,7 @@ func (c *lookupRESTClient) ResolveService(ctx context.Context, req *servicedirec
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ResolveService")
 		if err != nil {
 			return err
 		}
@@ -493,17 +494,7 @@ func (c *lookupRESTClient) GetLocation(ctx context.Context, req *locationpb.GetL
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -568,21 +559,10 @@ func (c *lookupRESTClient) ListLocations(ctx context.Context, req *locationpb.Li
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

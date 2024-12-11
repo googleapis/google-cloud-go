@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -29,7 +29,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	retailpb "cloud.google.com/go/retail/apiv2alpha/retailpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -65,6 +64,7 @@ func defaultServingConfigGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -121,7 +121,7 @@ func defaultServingConfigRESTCallOptions() *ServingConfigCallOptions {
 	}
 }
 
-// internalServingConfigClient is an interface that defines the methods available from Retail API.
+// internalServingConfigClient is an interface that defines the methods available from Vertex AI Search for Retail API.
 type internalServingConfigClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -137,7 +137,7 @@ type internalServingConfigClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// ServingConfigClient is a client for interacting with Retail API.
+// ServingConfigClient is a client for interacting with Vertex AI Search for Retail API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Service for modifying ServingConfig.
@@ -235,7 +235,7 @@ func (c *ServingConfigClient) ListOperations(ctx context.Context, req *longrunni
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// servingConfigGRPCClient is a client for interacting with Retail API over gRPC transport.
+// servingConfigGRPCClient is a client for interacting with Vertex AI Search for Retail API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type servingConfigGRPCClient struct {
@@ -252,6 +252,8 @@ type servingConfigGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewServingConfigClient creates a new serving config service client based on gRPC.
@@ -278,6 +280,7 @@ func NewServingConfigClient(ctx context.Context, opts ...option.ClientOption) (*
 		connPool:            connPool,
 		servingConfigClient: retailpb.NewServingConfigServiceClient(connPool),
 		CallOptions:         &client.CallOptions,
+		logger:              internaloption.GetLogger(opts),
 		operationsClient:    longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -301,7 +304,9 @@ func (c *servingConfigGRPCClient) Connection() *grpc.ClientConn {
 func (c *servingConfigGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -323,6 +328,8 @@ type servingConfigRESTClient struct {
 
 	// Points back to the CallOptions field of the containing ServingConfigClient
 	CallOptions **ServingConfigCallOptions
+
+	logger *slog.Logger
 }
 
 // NewServingConfigRESTClient creates a new serving config service rest client.
@@ -340,6 +347,7 @@ func NewServingConfigRESTClient(ctx context.Context, opts ...option.ClientOption
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -354,6 +362,7 @@ func defaultServingConfigRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -363,7 +372,9 @@ func defaultServingConfigRESTClientOptions() []option.ClientOption {
 func (c *servingConfigRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -389,7 +400,7 @@ func (c *servingConfigGRPCClient) CreateServingConfig(ctx context.Context, req *
 	var resp *retailpb.ServingConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.servingConfigClient.CreateServingConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.servingConfigClient.CreateServingConfig, req, settings.GRPC, c.logger, "CreateServingConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -406,7 +417,7 @@ func (c *servingConfigGRPCClient) DeleteServingConfig(ctx context.Context, req *
 	opts = append((*c.CallOptions).DeleteServingConfig[0:len((*c.CallOptions).DeleteServingConfig):len((*c.CallOptions).DeleteServingConfig)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.servingConfigClient.DeleteServingConfig(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.servingConfigClient.DeleteServingConfig, req, settings.GRPC, c.logger, "DeleteServingConfig")
 		return err
 	}, opts...)
 	return err
@@ -421,7 +432,7 @@ func (c *servingConfigGRPCClient) UpdateServingConfig(ctx context.Context, req *
 	var resp *retailpb.ServingConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.servingConfigClient.UpdateServingConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.servingConfigClient.UpdateServingConfig, req, settings.GRPC, c.logger, "UpdateServingConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -439,7 +450,7 @@ func (c *servingConfigGRPCClient) GetServingConfig(ctx context.Context, req *ret
 	var resp *retailpb.ServingConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.servingConfigClient.GetServingConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.servingConfigClient.GetServingConfig, req, settings.GRPC, c.logger, "GetServingConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -468,7 +479,7 @@ func (c *servingConfigGRPCClient) ListServingConfigs(ctx context.Context, req *r
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.servingConfigClient.ListServingConfigs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.servingConfigClient.ListServingConfigs, req, settings.GRPC, c.logger, "ListServingConfigs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -503,7 +514,7 @@ func (c *servingConfigGRPCClient) AddControl(ctx context.Context, req *retailpb.
 	var resp *retailpb.ServingConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.servingConfigClient.AddControl(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.servingConfigClient.AddControl, req, settings.GRPC, c.logger, "AddControl")
 		return err
 	}, opts...)
 	if err != nil {
@@ -521,7 +532,7 @@ func (c *servingConfigGRPCClient) RemoveControl(ctx context.Context, req *retail
 	var resp *retailpb.ServingConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.servingConfigClient.RemoveControl(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.servingConfigClient.RemoveControl, req, settings.GRPC, c.logger, "RemoveControl")
 		return err
 	}, opts...)
 	if err != nil {
@@ -539,7 +550,7 @@ func (c *servingConfigGRPCClient) GetOperation(ctx context.Context, req *longrun
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -568,7 +579,7 @@ func (c *servingConfigGRPCClient) ListOperations(ctx context.Context, req *longr
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -640,17 +651,7 @@ func (c *servingConfigRESTClient) CreateServingConfig(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateServingConfig")
 		if err != nil {
 			return err
 		}
@@ -699,15 +700,8 @@ func (c *servingConfigRESTClient) DeleteServingConfig(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteServingConfig")
+		return err
 	}, opts...)
 }
 
@@ -729,11 +723,11 @@ func (c *servingConfigRESTClient) UpdateServingConfig(ctx context.Context, req *
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -758,17 +752,7 @@ func (c *servingConfigRESTClient) UpdateServingConfig(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateServingConfig")
 		if err != nil {
 			return err
 		}
@@ -820,17 +804,7 @@ func (c *servingConfigRESTClient) GetServingConfig(ctx context.Context, req *ret
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetServingConfig")
 		if err != nil {
 			return err
 		}
@@ -892,21 +866,10 @@ func (c *servingConfigRESTClient) ListServingConfigs(ctx context.Context, req *r
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListServingConfigs")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -981,17 +944,7 @@ func (c *servingConfigRESTClient) AddControl(ctx context.Context, req *retailpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AddControl")
 		if err != nil {
 			return err
 		}
@@ -1050,17 +1003,7 @@ func (c *servingConfigRESTClient) RemoveControl(ctx context.Context, req *retail
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RemoveControl")
 		if err != nil {
 			return err
 		}
@@ -1110,17 +1053,7 @@ func (c *servingConfigRESTClient) GetOperation(ctx context.Context, req *longrun
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -1185,21 +1118,10 @@ func (c *servingConfigRESTClient) ListOperations(ctx context.Context, req *longr
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

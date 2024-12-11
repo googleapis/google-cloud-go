@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	retailpb "cloud.google.com/go/retail/apiv2alpha/retailpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -62,6 +61,7 @@ func defaultCompletionGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -154,7 +154,7 @@ func defaultCompletionRESTCallOptions() *CompletionCallOptions {
 	}
 }
 
-// internalCompletionClient is an interface that defines the methods available from Retail API.
+// internalCompletionClient is an interface that defines the methods available from Vertex AI Search for Retail API.
 type internalCompletionClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -166,7 +166,7 @@ type internalCompletionClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// CompletionClient is a client for interacting with Retail API.
+// CompletionClient is a client for interacting with Vertex AI Search for Retail API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Autocomplete service for retail.
@@ -246,7 +246,7 @@ func (c *CompletionClient) ListOperations(ctx context.Context, req *longrunningp
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// completionGRPCClient is a client for interacting with Retail API over gRPC transport.
+// completionGRPCClient is a client for interacting with Vertex AI Search for Retail API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type completionGRPCClient struct {
@@ -268,6 +268,8 @@ type completionGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewCompletionClient creates a new completion service client based on gRPC.
@@ -297,6 +299,7 @@ func NewCompletionClient(ctx context.Context, opts ...option.ClientOption) (*Com
 		connPool:         connPool,
 		completionClient: retailpb.NewCompletionServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -331,7 +334,9 @@ func (c *completionGRPCClient) Connection() *grpc.ClientConn {
 func (c *completionGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -358,6 +363,8 @@ type completionRESTClient struct {
 
 	// Points back to the CallOptions field of the containing CompletionClient
 	CallOptions **CompletionCallOptions
+
+	logger *slog.Logger
 }
 
 // NewCompletionRESTClient creates a new completion service rest client.
@@ -378,6 +385,7 @@ func NewCompletionRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -402,6 +410,7 @@ func defaultCompletionRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -411,7 +420,9 @@ func defaultCompletionRESTClientOptions() []option.ClientOption {
 func (c *completionRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -437,7 +448,7 @@ func (c *completionGRPCClient) CompleteQuery(ctx context.Context, req *retailpb.
 	var resp *retailpb.CompleteQueryResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.completionClient.CompleteQuery(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.completionClient.CompleteQuery, req, settings.GRPC, c.logger, "CompleteQuery")
 		return err
 	}, opts...)
 	if err != nil {
@@ -455,7 +466,7 @@ func (c *completionGRPCClient) ImportCompletionData(ctx context.Context, req *re
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.completionClient.ImportCompletionData(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.completionClient.ImportCompletionData, req, settings.GRPC, c.logger, "ImportCompletionData")
 		return err
 	}, opts...)
 	if err != nil {
@@ -475,7 +486,7 @@ func (c *completionGRPCClient) GetOperation(ctx context.Context, req *longrunnin
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -504,7 +515,7 @@ func (c *completionGRPCClient) ListOperations(ctx context.Context, req *longrunn
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -590,17 +601,7 @@ func (c *completionRESTClient) CompleteQuery(ctx context.Context, req *retailpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "CompleteQuery")
 		if err != nil {
 			return err
 		}
@@ -663,21 +664,10 @@ func (c *completionRESTClient) ImportCompletionData(ctx context.Context, req *re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ImportCompletionData")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -728,17 +718,7 @@ func (c *completionRESTClient) GetOperation(ctx context.Context, req *longrunnin
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -803,21 +783,10 @@ func (c *completionRESTClient) ListOperations(ctx context.Context, req *longrunn
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

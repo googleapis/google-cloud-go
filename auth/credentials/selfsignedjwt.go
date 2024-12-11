@@ -16,7 +16,8 @@ package credentials
 
 import (
 	"context"
-	"crypto/rsa"
+	"crypto"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -35,7 +36,10 @@ var (
 // configureSelfSignedJWT uses the private key in the service account to create
 // a JWT without making a network call.
 func configureSelfSignedJWT(f *credsfile.ServiceAccountFile, opts *DetectOptions) (auth.TokenProvider, error) {
-	pk, err := internal.ParseKey([]byte(f.PrivateKey))
+	if len(opts.scopes()) == 0 && opts.Audience == "" {
+		return nil, errors.New("credentials: both scopes and audience are empty")
+	}
+	signer, err := internal.ParseKey([]byte(f.PrivateKey))
 	if err != nil {
 		return nil, fmt.Errorf("credentials: could not parse key: %w", err)
 	}
@@ -43,7 +47,7 @@ func configureSelfSignedJWT(f *credsfile.ServiceAccountFile, opts *DetectOptions
 		email:    f.ClientEmail,
 		audience: opts.Audience,
 		scopes:   opts.scopes(),
-		pk:       pk,
+		signer:   signer,
 		pkID:     f.PrivateKeyID,
 	}, nil
 }
@@ -52,7 +56,7 @@ type selfSignedTokenProvider struct {
 	email    string
 	audience string
 	scopes   []string
-	pk       *rsa.PrivateKey
+	signer   crypto.Signer
 	pkID     string
 }
 
@@ -73,7 +77,7 @@ func (tp *selfSignedTokenProvider) Token(context.Context) (*auth.Token, error) {
 		Type:      jwt.HeaderType,
 		KeyID:     string(tp.pkID),
 	}
-	msg, err := jwt.EncodeJWS(h, c, tp.pk)
+	msg, err := jwt.EncodeJWS(h, c, tp.signer)
 	if err != nil {
 		return nil, fmt.Errorf("credentials: could not encode JWT: %w", err)
 	}

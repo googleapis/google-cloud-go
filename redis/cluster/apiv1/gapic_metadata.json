@@ -35,6 +35,11 @@
                 "GetCluster"
               ]
             },
+            "GetClusterCertificateAuthority": {
+              "methods": [
+                "GetClusterCertificateAuthority"
+              ]
+            },
             "GetLocation": {
               "methods": [
                 "GetLocation"
@@ -93,6 +98,11 @@
             "GetCluster": {
               "methods": [
                 "GetCluster"
+              ]
+            },
+            "GetClusterCertificateAuthority": {
+              "methods": [
+                "GetClusterCertificateAuthority"
               ]
             },
             "GetLocation": {

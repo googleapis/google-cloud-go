@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -32,7 +32,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -69,6 +68,11 @@ type CloudDeployCallOptions struct {
 	GetRelease             []gax.CallOption
 	CreateRelease          []gax.CallOption
 	AbandonRelease         []gax.CallOption
+	CreateDeployPolicy     []gax.CallOption
+	UpdateDeployPolicy     []gax.CallOption
+	DeleteDeployPolicy     []gax.CallOption
+	ListDeployPolicies     []gax.CallOption
+	GetDeployPolicy        []gax.CallOption
 	ApproveRollout         []gax.CallOption
 	AdvanceRollout         []gax.CallOption
 	CancelRollout          []gax.CallOption
@@ -109,6 +113,7 @@ func defaultCloudDeployGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://clouddeploy.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -245,6 +250,39 @@ func defaultCloudDeployCallOptions() *CloudDeployCallOptions {
 		},
 		AbandonRelease: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateDeployPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateDeployPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteDeployPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListDeployPolicies: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetDeployPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
 		},
 		ApproveRollout: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
@@ -523,6 +561,37 @@ func defaultCloudDeployRESTCallOptions() *CloudDeployCallOptions {
 		AbandonRelease: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		CreateDeployPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateDeployPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteDeployPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListDeployPolicies: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetDeployPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		ApproveRollout: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
@@ -702,6 +771,14 @@ type internalCloudDeployClient interface {
 	CreateRelease(context.Context, *deploypb.CreateReleaseRequest, ...gax.CallOption) (*CreateReleaseOperation, error)
 	CreateReleaseOperation(name string) *CreateReleaseOperation
 	AbandonRelease(context.Context, *deploypb.AbandonReleaseRequest, ...gax.CallOption) (*deploypb.AbandonReleaseResponse, error)
+	CreateDeployPolicy(context.Context, *deploypb.CreateDeployPolicyRequest, ...gax.CallOption) (*CreateDeployPolicyOperation, error)
+	CreateDeployPolicyOperation(name string) *CreateDeployPolicyOperation
+	UpdateDeployPolicy(context.Context, *deploypb.UpdateDeployPolicyRequest, ...gax.CallOption) (*UpdateDeployPolicyOperation, error)
+	UpdateDeployPolicyOperation(name string) *UpdateDeployPolicyOperation
+	DeleteDeployPolicy(context.Context, *deploypb.DeleteDeployPolicyRequest, ...gax.CallOption) (*DeleteDeployPolicyOperation, error)
+	DeleteDeployPolicyOperation(name string) *DeleteDeployPolicyOperation
+	ListDeployPolicies(context.Context, *deploypb.ListDeployPoliciesRequest, ...gax.CallOption) *DeployPolicyIterator
+	GetDeployPolicy(context.Context, *deploypb.GetDeployPolicyRequest, ...gax.CallOption) (*deploypb.DeployPolicy, error)
 	ApproveRollout(context.Context, *deploypb.ApproveRolloutRequest, ...gax.CallOption) (*deploypb.ApproveRolloutResponse, error)
 	AdvanceRollout(context.Context, *deploypb.AdvanceRolloutRequest, ...gax.CallOption) (*deploypb.AdvanceRolloutResponse, error)
 	CancelRollout(context.Context, *deploypb.CancelRolloutRequest, ...gax.CallOption) (*deploypb.CancelRolloutResponse, error)
@@ -938,6 +1015,49 @@ func (c *CloudDeployClient) AbandonRelease(ctx context.Context, req *deploypb.Ab
 	return c.internalClient.AbandonRelease(ctx, req, opts...)
 }
 
+// CreateDeployPolicy creates a new DeployPolicy in a given project and location.
+func (c *CloudDeployClient) CreateDeployPolicy(ctx context.Context, req *deploypb.CreateDeployPolicyRequest, opts ...gax.CallOption) (*CreateDeployPolicyOperation, error) {
+	return c.internalClient.CreateDeployPolicy(ctx, req, opts...)
+}
+
+// CreateDeployPolicyOperation returns a new CreateDeployPolicyOperation from a given name.
+// The name must be that of a previously created CreateDeployPolicyOperation, possibly from a different process.
+func (c *CloudDeployClient) CreateDeployPolicyOperation(name string) *CreateDeployPolicyOperation {
+	return c.internalClient.CreateDeployPolicyOperation(name)
+}
+
+// UpdateDeployPolicy updates the parameters of a single DeployPolicy.
+func (c *CloudDeployClient) UpdateDeployPolicy(ctx context.Context, req *deploypb.UpdateDeployPolicyRequest, opts ...gax.CallOption) (*UpdateDeployPolicyOperation, error) {
+	return c.internalClient.UpdateDeployPolicy(ctx, req, opts...)
+}
+
+// UpdateDeployPolicyOperation returns a new UpdateDeployPolicyOperation from a given name.
+// The name must be that of a previously created UpdateDeployPolicyOperation, possibly from a different process.
+func (c *CloudDeployClient) UpdateDeployPolicyOperation(name string) *UpdateDeployPolicyOperation {
+	return c.internalClient.UpdateDeployPolicyOperation(name)
+}
+
+// DeleteDeployPolicy deletes a single DeployPolicy.
+func (c *CloudDeployClient) DeleteDeployPolicy(ctx context.Context, req *deploypb.DeleteDeployPolicyRequest, opts ...gax.CallOption) (*DeleteDeployPolicyOperation, error) {
+	return c.internalClient.DeleteDeployPolicy(ctx, req, opts...)
+}
+
+// DeleteDeployPolicyOperation returns a new DeleteDeployPolicyOperation from a given name.
+// The name must be that of a previously created DeleteDeployPolicyOperation, possibly from a different process.
+func (c *CloudDeployClient) DeleteDeployPolicyOperation(name string) *DeleteDeployPolicyOperation {
+	return c.internalClient.DeleteDeployPolicyOperation(name)
+}
+
+// ListDeployPolicies lists DeployPolicies in a given project and location.
+func (c *CloudDeployClient) ListDeployPolicies(ctx context.Context, req *deploypb.ListDeployPoliciesRequest, opts ...gax.CallOption) *DeployPolicyIterator {
+	return c.internalClient.ListDeployPolicies(ctx, req, opts...)
+}
+
+// GetDeployPolicy gets details of a single DeployPolicy.
+func (c *CloudDeployClient) GetDeployPolicy(ctx context.Context, req *deploypb.GetDeployPolicyRequest, opts ...gax.CallOption) (*deploypb.DeployPolicy, error) {
+	return c.internalClient.GetDeployPolicy(ctx, req, opts...)
+}
+
 // ApproveRollout approves a Rollout.
 func (c *CloudDeployClient) ApproveRollout(ctx context.Context, req *deploypb.ApproveRolloutRequest, opts ...gax.CallOption) (*deploypb.ApproveRolloutResponse, error) {
 	return c.internalClient.ApproveRollout(ctx, req, opts...)
@@ -1147,6 +1267,8 @@ type cloudDeployGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewCloudDeployClient creates a new cloud deploy client based on gRPC.
@@ -1174,6 +1296,7 @@ func NewCloudDeployClient(ctx context.Context, opts ...option.ClientOption) (*Cl
 		connPool:          connPool,
 		cloudDeployClient: deploypb.NewCloudDeployClient(connPool),
 		CallOptions:       &client.CallOptions,
+		logger:            internaloption.GetLogger(opts),
 		operationsClient:  longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:   iampb.NewIAMPolicyClient(connPool),
 		locationsClient:   locationpb.NewLocationsClient(connPool),
@@ -1210,7 +1333,9 @@ func (c *cloudDeployGRPCClient) Connection() *grpc.ClientConn {
 func (c *cloudDeployGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1237,6 +1362,8 @@ type cloudDeployRESTClient struct {
 
 	// Points back to the CallOptions field of the containing CloudDeployClient
 	CallOptions **CloudDeployCallOptions
+
+	logger *slog.Logger
 }
 
 // NewCloudDeployRESTClient creates a new cloud deploy rest client.
@@ -1255,6 +1382,7 @@ func NewCloudDeployRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -1279,6 +1407,7 @@ func defaultCloudDeployRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://clouddeploy.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -1288,7 +1417,9 @@ func defaultCloudDeployRESTClientOptions() []option.ClientOption {
 func (c *cloudDeployRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1325,7 +1456,7 @@ func (c *cloudDeployGRPCClient) ListDeliveryPipelines(ctx context.Context, req *
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudDeployClient.ListDeliveryPipelines(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudDeployClient.ListDeliveryPipelines, req, settings.GRPC, c.logger, "ListDeliveryPipelines")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1360,7 +1491,7 @@ func (c *cloudDeployGRPCClient) GetDeliveryPipeline(ctx context.Context, req *de
 	var resp *deploypb.DeliveryPipeline
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.GetDeliveryPipeline(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.GetDeliveryPipeline, req, settings.GRPC, c.logger, "GetDeliveryPipeline")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1378,7 +1509,7 @@ func (c *cloudDeployGRPCClient) CreateDeliveryPipeline(ctx context.Context, req 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.CreateDeliveryPipeline(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.CreateDeliveryPipeline, req, settings.GRPC, c.logger, "CreateDeliveryPipeline")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1398,7 +1529,7 @@ func (c *cloudDeployGRPCClient) UpdateDeliveryPipeline(ctx context.Context, req 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.UpdateDeliveryPipeline(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.UpdateDeliveryPipeline, req, settings.GRPC, c.logger, "UpdateDeliveryPipeline")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1418,7 +1549,7 @@ func (c *cloudDeployGRPCClient) DeleteDeliveryPipeline(ctx context.Context, req 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.DeleteDeliveryPipeline(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.DeleteDeliveryPipeline, req, settings.GRPC, c.logger, "DeleteDeliveryPipeline")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1449,7 +1580,7 @@ func (c *cloudDeployGRPCClient) ListTargets(ctx context.Context, req *deploypb.L
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudDeployClient.ListTargets(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudDeployClient.ListTargets, req, settings.GRPC, c.logger, "ListTargets")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1484,7 +1615,7 @@ func (c *cloudDeployGRPCClient) RollbackTarget(ctx context.Context, req *deployp
 	var resp *deploypb.RollbackTargetResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.RollbackTarget(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.RollbackTarget, req, settings.GRPC, c.logger, "RollbackTarget")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1502,7 +1633,7 @@ func (c *cloudDeployGRPCClient) GetTarget(ctx context.Context, req *deploypb.Get
 	var resp *deploypb.Target
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.GetTarget(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.GetTarget, req, settings.GRPC, c.logger, "GetTarget")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1520,7 +1651,7 @@ func (c *cloudDeployGRPCClient) CreateTarget(ctx context.Context, req *deploypb.
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.CreateTarget(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.CreateTarget, req, settings.GRPC, c.logger, "CreateTarget")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1540,7 +1671,7 @@ func (c *cloudDeployGRPCClient) UpdateTarget(ctx context.Context, req *deploypb.
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.UpdateTarget(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.UpdateTarget, req, settings.GRPC, c.logger, "UpdateTarget")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1560,7 +1691,7 @@ func (c *cloudDeployGRPCClient) DeleteTarget(ctx context.Context, req *deploypb.
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.DeleteTarget(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.DeleteTarget, req, settings.GRPC, c.logger, "DeleteTarget")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1591,7 +1722,7 @@ func (c *cloudDeployGRPCClient) ListCustomTargetTypes(ctx context.Context, req *
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudDeployClient.ListCustomTargetTypes(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudDeployClient.ListCustomTargetTypes, req, settings.GRPC, c.logger, "ListCustomTargetTypes")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1626,7 +1757,7 @@ func (c *cloudDeployGRPCClient) GetCustomTargetType(ctx context.Context, req *de
 	var resp *deploypb.CustomTargetType
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.GetCustomTargetType(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.GetCustomTargetType, req, settings.GRPC, c.logger, "GetCustomTargetType")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1644,7 +1775,7 @@ func (c *cloudDeployGRPCClient) CreateCustomTargetType(ctx context.Context, req 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.CreateCustomTargetType(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.CreateCustomTargetType, req, settings.GRPC, c.logger, "CreateCustomTargetType")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1664,7 +1795,7 @@ func (c *cloudDeployGRPCClient) UpdateCustomTargetType(ctx context.Context, req 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.UpdateCustomTargetType(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.UpdateCustomTargetType, req, settings.GRPC, c.logger, "UpdateCustomTargetType")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1684,7 +1815,7 @@ func (c *cloudDeployGRPCClient) DeleteCustomTargetType(ctx context.Context, req 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.DeleteCustomTargetType(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.DeleteCustomTargetType, req, settings.GRPC, c.logger, "DeleteCustomTargetType")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1715,7 +1846,7 @@ func (c *cloudDeployGRPCClient) ListReleases(ctx context.Context, req *deploypb.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudDeployClient.ListReleases(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudDeployClient.ListReleases, req, settings.GRPC, c.logger, "ListReleases")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1750,7 +1881,7 @@ func (c *cloudDeployGRPCClient) GetRelease(ctx context.Context, req *deploypb.Ge
 	var resp *deploypb.Release
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.GetRelease(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.GetRelease, req, settings.GRPC, c.logger, "GetRelease")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1768,7 +1899,7 @@ func (c *cloudDeployGRPCClient) CreateRelease(ctx context.Context, req *deploypb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.CreateRelease(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.CreateRelease, req, settings.GRPC, c.logger, "CreateRelease")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1788,7 +1919,131 @@ func (c *cloudDeployGRPCClient) AbandonRelease(ctx context.Context, req *deployp
 	var resp *deploypb.AbandonReleaseResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.AbandonRelease(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.AbandonRelease, req, settings.GRPC, c.logger, "AbandonRelease")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *cloudDeployGRPCClient) CreateDeployPolicy(ctx context.Context, req *deploypb.CreateDeployPolicyRequest, opts ...gax.CallOption) (*CreateDeployPolicyOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateDeployPolicy[0:len((*c.CallOptions).CreateDeployPolicy):len((*c.CallOptions).CreateDeployPolicy)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.cloudDeployClient.CreateDeployPolicy, req, settings.GRPC, c.logger, "CreateDeployPolicy")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateDeployPolicyOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *cloudDeployGRPCClient) UpdateDeployPolicy(ctx context.Context, req *deploypb.UpdateDeployPolicyRequest, opts ...gax.CallOption) (*UpdateDeployPolicyOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "deploy_policy.name", url.QueryEscape(req.GetDeployPolicy().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateDeployPolicy[0:len((*c.CallOptions).UpdateDeployPolicy):len((*c.CallOptions).UpdateDeployPolicy)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.cloudDeployClient.UpdateDeployPolicy, req, settings.GRPC, c.logger, "UpdateDeployPolicy")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateDeployPolicyOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *cloudDeployGRPCClient) DeleteDeployPolicy(ctx context.Context, req *deploypb.DeleteDeployPolicyRequest, opts ...gax.CallOption) (*DeleteDeployPolicyOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteDeployPolicy[0:len((*c.CallOptions).DeleteDeployPolicy):len((*c.CallOptions).DeleteDeployPolicy)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.cloudDeployClient.DeleteDeployPolicy, req, settings.GRPC, c.logger, "DeleteDeployPolicy")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteDeployPolicyOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *cloudDeployGRPCClient) ListDeployPolicies(ctx context.Context, req *deploypb.ListDeployPoliciesRequest, opts ...gax.CallOption) *DeployPolicyIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListDeployPolicies[0:len((*c.CallOptions).ListDeployPolicies):len((*c.CallOptions).ListDeployPolicies)], opts...)
+	it := &DeployPolicyIterator{}
+	req = proto.Clone(req).(*deploypb.ListDeployPoliciesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*deploypb.DeployPolicy, string, error) {
+		resp := &deploypb.ListDeployPoliciesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.cloudDeployClient.ListDeployPolicies, req, settings.GRPC, c.logger, "ListDeployPolicies")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetDeployPolicies(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *cloudDeployGRPCClient) GetDeployPolicy(ctx context.Context, req *deploypb.GetDeployPolicyRequest, opts ...gax.CallOption) (*deploypb.DeployPolicy, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetDeployPolicy[0:len((*c.CallOptions).GetDeployPolicy):len((*c.CallOptions).GetDeployPolicy)], opts...)
+	var resp *deploypb.DeployPolicy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.cloudDeployClient.GetDeployPolicy, req, settings.GRPC, c.logger, "GetDeployPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1806,7 +2061,7 @@ func (c *cloudDeployGRPCClient) ApproveRollout(ctx context.Context, req *deployp
 	var resp *deploypb.ApproveRolloutResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.ApproveRollout(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.ApproveRollout, req, settings.GRPC, c.logger, "ApproveRollout")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1824,7 +2079,7 @@ func (c *cloudDeployGRPCClient) AdvanceRollout(ctx context.Context, req *deployp
 	var resp *deploypb.AdvanceRolloutResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.AdvanceRollout(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.AdvanceRollout, req, settings.GRPC, c.logger, "AdvanceRollout")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1842,7 +2097,7 @@ func (c *cloudDeployGRPCClient) CancelRollout(ctx context.Context, req *deploypb
 	var resp *deploypb.CancelRolloutResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.CancelRollout(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.CancelRollout, req, settings.GRPC, c.logger, "CancelRollout")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1871,7 +2126,7 @@ func (c *cloudDeployGRPCClient) ListRollouts(ctx context.Context, req *deploypb.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudDeployClient.ListRollouts(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudDeployClient.ListRollouts, req, settings.GRPC, c.logger, "ListRollouts")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1906,7 +2161,7 @@ func (c *cloudDeployGRPCClient) GetRollout(ctx context.Context, req *deploypb.Ge
 	var resp *deploypb.Rollout
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.GetRollout(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.GetRollout, req, settings.GRPC, c.logger, "GetRollout")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1924,7 +2179,7 @@ func (c *cloudDeployGRPCClient) CreateRollout(ctx context.Context, req *deploypb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.CreateRollout(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.CreateRollout, req, settings.GRPC, c.logger, "CreateRollout")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1944,7 +2199,7 @@ func (c *cloudDeployGRPCClient) IgnoreJob(ctx context.Context, req *deploypb.Ign
 	var resp *deploypb.IgnoreJobResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.IgnoreJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.IgnoreJob, req, settings.GRPC, c.logger, "IgnoreJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1962,7 +2217,7 @@ func (c *cloudDeployGRPCClient) RetryJob(ctx context.Context, req *deploypb.Retr
 	var resp *deploypb.RetryJobResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.RetryJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.RetryJob, req, settings.GRPC, c.logger, "RetryJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1991,7 +2246,7 @@ func (c *cloudDeployGRPCClient) ListJobRuns(ctx context.Context, req *deploypb.L
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudDeployClient.ListJobRuns(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudDeployClient.ListJobRuns, req, settings.GRPC, c.logger, "ListJobRuns")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2026,7 +2281,7 @@ func (c *cloudDeployGRPCClient) GetJobRun(ctx context.Context, req *deploypb.Get
 	var resp *deploypb.JobRun
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.GetJobRun(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.GetJobRun, req, settings.GRPC, c.logger, "GetJobRun")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2044,7 +2299,7 @@ func (c *cloudDeployGRPCClient) TerminateJobRun(ctx context.Context, req *deploy
 	var resp *deploypb.TerminateJobRunResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.TerminateJobRun(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.TerminateJobRun, req, settings.GRPC, c.logger, "TerminateJobRun")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2062,7 +2317,7 @@ func (c *cloudDeployGRPCClient) GetConfig(ctx context.Context, req *deploypb.Get
 	var resp *deploypb.Config
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.GetConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.GetConfig, req, settings.GRPC, c.logger, "GetConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2080,7 +2335,7 @@ func (c *cloudDeployGRPCClient) CreateAutomation(ctx context.Context, req *deplo
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.CreateAutomation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.CreateAutomation, req, settings.GRPC, c.logger, "CreateAutomation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2100,7 +2355,7 @@ func (c *cloudDeployGRPCClient) UpdateAutomation(ctx context.Context, req *deplo
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.UpdateAutomation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.UpdateAutomation, req, settings.GRPC, c.logger, "UpdateAutomation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2120,7 +2375,7 @@ func (c *cloudDeployGRPCClient) DeleteAutomation(ctx context.Context, req *deplo
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.DeleteAutomation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.DeleteAutomation, req, settings.GRPC, c.logger, "DeleteAutomation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2140,7 +2395,7 @@ func (c *cloudDeployGRPCClient) GetAutomation(ctx context.Context, req *deploypb
 	var resp *deploypb.Automation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.GetAutomation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.GetAutomation, req, settings.GRPC, c.logger, "GetAutomation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2169,7 +2424,7 @@ func (c *cloudDeployGRPCClient) ListAutomations(ctx context.Context, req *deploy
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudDeployClient.ListAutomations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudDeployClient.ListAutomations, req, settings.GRPC, c.logger, "ListAutomations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2204,7 +2459,7 @@ func (c *cloudDeployGRPCClient) GetAutomationRun(ctx context.Context, req *deplo
 	var resp *deploypb.AutomationRun
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.GetAutomationRun(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.GetAutomationRun, req, settings.GRPC, c.logger, "GetAutomationRun")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2233,7 +2488,7 @@ func (c *cloudDeployGRPCClient) ListAutomationRuns(ctx context.Context, req *dep
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudDeployClient.ListAutomationRuns(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudDeployClient.ListAutomationRuns, req, settings.GRPC, c.logger, "ListAutomationRuns")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2268,7 +2523,7 @@ func (c *cloudDeployGRPCClient) CancelAutomationRun(ctx context.Context, req *de
 	var resp *deploypb.CancelAutomationRunResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.CancelAutomationRun(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.CancelAutomationRun, req, settings.GRPC, c.logger, "CancelAutomationRun")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2286,7 +2541,7 @@ func (c *cloudDeployGRPCClient) GetLocation(ctx context.Context, req *locationpb
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2315,7 +2570,7 @@ func (c *cloudDeployGRPCClient) ListLocations(ctx context.Context, req *location
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2350,7 +2605,7 @@ func (c *cloudDeployGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.Get
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2368,7 +2623,7 @@ func (c *cloudDeployGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.Set
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2386,7 +2641,7 @@ func (c *cloudDeployGRPCClient) TestIamPermissions(ctx context.Context, req *iam
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2403,7 +2658,7 @@ func (c *cloudDeployGRPCClient) CancelOperation(ctx context.Context, req *longru
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -2417,7 +2672,7 @@ func (c *cloudDeployGRPCClient) DeleteOperation(ctx context.Context, req *longru
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -2432,7 +2687,7 @@ func (c *cloudDeployGRPCClient) GetOperation(ctx context.Context, req *longrunni
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2461,7 +2716,7 @@ func (c *cloudDeployGRPCClient) ListOperations(ctx context.Context, req *longrun
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2538,21 +2793,10 @@ func (c *cloudDeployRESTClient) ListDeliveryPipelines(ctx context.Context, req *
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDeliveryPipelines")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2615,17 +2859,7 @@ func (c *cloudDeployRESTClient) GetDeliveryPipeline(ctx context.Context, req *de
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDeliveryPipeline")
 		if err != nil {
 			return err
 		}
@@ -2688,21 +2922,10 @@ func (c *cloudDeployRESTClient) CreateDeliveryPipeline(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDeliveryPipeline")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2744,11 +2967,11 @@ func (c *cloudDeployRESTClient) UpdateDeliveryPipeline(ctx context.Context, req 
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 	if req.GetValidateOnly() {
 		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
@@ -2775,21 +2998,10 @@ func (c *cloudDeployRESTClient) UpdateDeliveryPipeline(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateDeliveryPipeline")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2854,21 +3066,10 @@ func (c *cloudDeployRESTClient) DeleteDeliveryPipeline(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDeliveryPipeline")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2937,21 +3138,10 @@ func (c *cloudDeployRESTClient) ListTargets(ctx context.Context, req *deploypb.L
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListTargets")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3020,17 +3210,7 @@ func (c *cloudDeployRESTClient) RollbackTarget(ctx context.Context, req *deployp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RollbackTarget")
 		if err != nil {
 			return err
 		}
@@ -3080,17 +3260,7 @@ func (c *cloudDeployRESTClient) GetTarget(ctx context.Context, req *deploypb.Get
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetTarget")
 		if err != nil {
 			return err
 		}
@@ -3153,21 +3323,10 @@ func (c *cloudDeployRESTClient) CreateTarget(ctx context.Context, req *deploypb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateTarget")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3209,11 +3368,11 @@ func (c *cloudDeployRESTClient) UpdateTarget(ctx context.Context, req *deploypb.
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 	if req.GetValidateOnly() {
 		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
@@ -3240,21 +3399,10 @@ func (c *cloudDeployRESTClient) UpdateTarget(ctx context.Context, req *deploypb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateTarget")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3316,21 +3464,10 @@ func (c *cloudDeployRESTClient) DeleteTarget(ctx context.Context, req *deploypb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteTarget")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3399,21 +3536,10 @@ func (c *cloudDeployRESTClient) ListCustomTargetTypes(ctx context.Context, req *
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListCustomTargetTypes")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3476,17 +3602,7 @@ func (c *cloudDeployRESTClient) GetCustomTargetType(ctx context.Context, req *de
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCustomTargetType")
 		if err != nil {
 			return err
 		}
@@ -3549,21 +3665,10 @@ func (c *cloudDeployRESTClient) CreateCustomTargetType(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateCustomTargetType")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3605,11 +3710,11 @@ func (c *cloudDeployRESTClient) UpdateCustomTargetType(ctx context.Context, req 
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 	if req.GetValidateOnly() {
 		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
@@ -3636,21 +3741,10 @@ func (c *cloudDeployRESTClient) UpdateCustomTargetType(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateCustomTargetType")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3712,21 +3806,10 @@ func (c *cloudDeployRESTClient) DeleteCustomTargetType(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteCustomTargetType")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3795,21 +3878,10 @@ func (c *cloudDeployRESTClient) ListReleases(ctx context.Context, req *deploypb.
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListReleases")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3872,17 +3944,7 @@ func (c *cloudDeployRESTClient) GetRelease(ctx context.Context, req *deploypb.Ge
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetRelease")
 		if err != nil {
 			return err
 		}
@@ -3916,6 +3978,11 @@ func (c *cloudDeployRESTClient) CreateRelease(ctx context.Context, req *deploypb
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if items := req.GetOverrideDeployPolicy(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("overrideDeployPolicy", fmt.Sprintf("%v", item))
+		}
+	}
 	params.Add("releaseId", fmt.Sprintf("%v", req.GetReleaseId()))
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
@@ -3945,21 +4012,10 @@ func (c *cloudDeployRESTClient) CreateRelease(ctx context.Context, req *deploypb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateRelease")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4016,17 +4072,349 @@ func (c *cloudDeployRESTClient) AbandonRelease(ctx context.Context, req *deployp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AbandonRelease")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
 
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
+		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
 
-		buf, err := io.ReadAll(httpRsp.Body)
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateDeployPolicy creates a new DeployPolicy in a given project and location.
+func (c *cloudDeployRESTClient) CreateDeployPolicy(ctx context.Context, req *deploypb.CreateDeployPolicyRequest, opts ...gax.CallOption) (*CreateDeployPolicyOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetDeployPolicy()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/deployPolicies", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("deployPolicyId", fmt.Sprintf("%v", req.GetDeployPolicyId()))
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDeployPolicy")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateDeployPolicyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateDeployPolicy updates the parameters of a single DeployPolicy.
+func (c *cloudDeployRESTClient) UpdateDeployPolicy(ctx context.Context, req *deploypb.UpdateDeployPolicyRequest, opts ...gax.CallOption) (*UpdateDeployPolicyOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetDeployPolicy()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDeployPolicy().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetAllowMissing() {
+		params.Add("allowMissing", fmt.Sprintf("%v", req.GetAllowMissing()))
+	}
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "deploy_policy.name", url.QueryEscape(req.GetDeployPolicy().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateDeployPolicy")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateDeployPolicyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteDeployPolicy deletes a single DeployPolicy.
+func (c *cloudDeployRESTClient) DeleteDeployPolicy(ctx context.Context, req *deploypb.DeleteDeployPolicyRequest, opts ...gax.CallOption) (*DeleteDeployPolicyOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetAllowMissing() {
+		params.Add("allowMissing", fmt.Sprintf("%v", req.GetAllowMissing()))
+	}
+	if req.GetEtag() != "" {
+		params.Add("etag", fmt.Sprintf("%v", req.GetEtag()))
+	}
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDeployPolicy")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteDeployPolicyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ListDeployPolicies lists DeployPolicies in a given project and location.
+func (c *cloudDeployRESTClient) ListDeployPolicies(ctx context.Context, req *deploypb.ListDeployPoliciesRequest, opts ...gax.CallOption) *DeployPolicyIterator {
+	it := &DeployPolicyIterator{}
+	req = proto.Clone(req).(*deploypb.ListDeployPoliciesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*deploypb.DeployPolicy, string, error) {
+		resp := &deploypb.ListDeployPoliciesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/deployPolicies", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDeployPolicies")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetDeployPolicies(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetDeployPolicy gets details of a single DeployPolicy.
+func (c *cloudDeployRESTClient) GetDeployPolicy(ctx context.Context, req *deploypb.GetDeployPolicyRequest, opts ...gax.CallOption) (*deploypb.DeployPolicy, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetDeployPolicy[0:len((*c.CallOptions).GetDeployPolicy):len((*c.CallOptions).GetDeployPolicy)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &deploypb.DeployPolicy{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDeployPolicy")
 		if err != nil {
 			return err
 		}
@@ -4082,17 +4470,7 @@ func (c *cloudDeployRESTClient) ApproveRollout(ctx context.Context, req *deployp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ApproveRollout")
 		if err != nil {
 			return err
 		}
@@ -4148,17 +4526,7 @@ func (c *cloudDeployRESTClient) AdvanceRollout(ctx context.Context, req *deployp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AdvanceRollout")
 		if err != nil {
 			return err
 		}
@@ -4214,17 +4582,7 @@ func (c *cloudDeployRESTClient) CancelRollout(ctx context.Context, req *deploypb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelRollout")
 		if err != nil {
 			return err
 		}
@@ -4292,21 +4650,10 @@ func (c *cloudDeployRESTClient) ListRollouts(ctx context.Context, req *deploypb.
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListRollouts")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4369,17 +4716,7 @@ func (c *cloudDeployRESTClient) GetRollout(ctx context.Context, req *deploypb.Ge
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetRollout")
 		if err != nil {
 			return err
 		}
@@ -4413,6 +4750,11 @@ func (c *cloudDeployRESTClient) CreateRollout(ctx context.Context, req *deploypb
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if items := req.GetOverrideDeployPolicy(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("overrideDeployPolicy", fmt.Sprintf("%v", item))
+		}
+	}
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -4445,21 +4787,10 @@ func (c *cloudDeployRESTClient) CreateRollout(ctx context.Context, req *deploypb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateRollout")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4516,17 +4847,7 @@ func (c *cloudDeployRESTClient) IgnoreJob(ctx context.Context, req *deploypb.Ign
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "IgnoreJob")
 		if err != nil {
 			return err
 		}
@@ -4582,17 +4903,7 @@ func (c *cloudDeployRESTClient) RetryJob(ctx context.Context, req *deploypb.Retr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RetryJob")
 		if err != nil {
 			return err
 		}
@@ -4660,21 +4971,10 @@ func (c *cloudDeployRESTClient) ListJobRuns(ctx context.Context, req *deploypb.L
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListJobRuns")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4737,17 +5037,7 @@ func (c *cloudDeployRESTClient) GetJobRun(ctx context.Context, req *deploypb.Get
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetJobRun")
 		if err != nil {
 			return err
 		}
@@ -4803,17 +5093,7 @@ func (c *cloudDeployRESTClient) TerminateJobRun(ctx context.Context, req *deploy
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TerminateJobRun")
 		if err != nil {
 			return err
 		}
@@ -4863,17 +5143,7 @@ func (c *cloudDeployRESTClient) GetConfig(ctx context.Context, req *deploypb.Get
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetConfig")
 		if err != nil {
 			return err
 		}
@@ -4936,21 +5206,10 @@ func (c *cloudDeployRESTClient) CreateAutomation(ctx context.Context, req *deplo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateAutomation")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4992,11 +5251,11 @@ func (c *cloudDeployRESTClient) UpdateAutomation(ctx context.Context, req *deplo
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 	if req.GetValidateOnly() {
 		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
@@ -5023,21 +5282,10 @@ func (c *cloudDeployRESTClient) UpdateAutomation(ctx context.Context, req *deplo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateAutomation")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5099,21 +5347,10 @@ func (c *cloudDeployRESTClient) DeleteAutomation(ctx context.Context, req *deplo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteAutomation")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5164,17 +5401,7 @@ func (c *cloudDeployRESTClient) GetAutomation(ctx context.Context, req *deploypb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAutomation")
 		if err != nil {
 			return err
 		}
@@ -5242,21 +5469,10 @@ func (c *cloudDeployRESTClient) ListAutomations(ctx context.Context, req *deploy
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAutomations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -5319,17 +5535,7 @@ func (c *cloudDeployRESTClient) GetAutomationRun(ctx context.Context, req *deplo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAutomationRun")
 		if err != nil {
 			return err
 		}
@@ -5397,21 +5603,10 @@ func (c *cloudDeployRESTClient) ListAutomationRuns(ctx context.Context, req *dep
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAutomationRuns")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -5483,17 +5678,7 @@ func (c *cloudDeployRESTClient) CancelAutomationRun(ctx context.Context, req *de
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelAutomationRun")
 		if err != nil {
 			return err
 		}
@@ -5543,17 +5728,7 @@ func (c *cloudDeployRESTClient) GetLocation(ctx context.Context, req *locationpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -5618,21 +5793,10 @@ func (c *cloudDeployRESTClient) ListLocations(ctx context.Context, req *location
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -5699,17 +5863,7 @@ func (c *cloudDeployRESTClient) GetIamPolicy(ctx context.Context, req *iampb.Get
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -5769,17 +5923,7 @@ func (c *cloudDeployRESTClient) SetIamPolicy(ctx context.Context, req *iampb.Set
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -5841,17 +5985,7 @@ func (c *cloudDeployRESTClient) TestIamPermissions(ctx context.Context, req *iam
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
 		if err != nil {
 			return err
 		}
@@ -5904,15 +6038,8 @@ func (c *cloudDeployRESTClient) CancelOperation(ctx context.Context, req *longru
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -5946,15 +6073,8 @@ func (c *cloudDeployRESTClient) DeleteOperation(ctx context.Context, req *longru
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOperation")
+		return err
 	}, opts...)
 }
 
@@ -5991,17 +6111,7 @@ func (c *cloudDeployRESTClient) GetOperation(ctx context.Context, req *longrunni
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -6066,21 +6176,10 @@ func (c *cloudDeployRESTClient) ListOperations(ctx context.Context, req *longrun
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -6159,6 +6258,24 @@ func (c *cloudDeployGRPCClient) CreateDeliveryPipelineOperation(name string) *Cr
 func (c *cloudDeployRESTClient) CreateDeliveryPipelineOperation(name string) *CreateDeliveryPipelineOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateDeliveryPipelineOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// CreateDeployPolicyOperation returns a new CreateDeployPolicyOperation from a given name.
+// The name must be that of a previously created CreateDeployPolicyOperation, possibly from a different process.
+func (c *cloudDeployGRPCClient) CreateDeployPolicyOperation(name string) *CreateDeployPolicyOperation {
+	return &CreateDeployPolicyOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateDeployPolicyOperation returns a new CreateDeployPolicyOperation from a given name.
+// The name must be that of a previously created CreateDeployPolicyOperation, possibly from a different process.
+func (c *cloudDeployRESTClient) CreateDeployPolicyOperation(name string) *CreateDeployPolicyOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateDeployPolicyOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
@@ -6272,6 +6389,24 @@ func (c *cloudDeployRESTClient) DeleteDeliveryPipelineOperation(name string) *De
 	}
 }
 
+// DeleteDeployPolicyOperation returns a new DeleteDeployPolicyOperation from a given name.
+// The name must be that of a previously created DeleteDeployPolicyOperation, possibly from a different process.
+func (c *cloudDeployGRPCClient) DeleteDeployPolicyOperation(name string) *DeleteDeployPolicyOperation {
+	return &DeleteDeployPolicyOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteDeployPolicyOperation returns a new DeleteDeployPolicyOperation from a given name.
+// The name must be that of a previously created DeleteDeployPolicyOperation, possibly from a different process.
+func (c *cloudDeployRESTClient) DeleteDeployPolicyOperation(name string) *DeleteDeployPolicyOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteDeployPolicyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // DeleteTargetOperation returns a new DeleteTargetOperation from a given name.
 // The name must be that of a previously created DeleteTargetOperation, possibly from a different process.
 func (c *cloudDeployGRPCClient) DeleteTargetOperation(name string) *DeleteTargetOperation {
@@ -6339,6 +6474,24 @@ func (c *cloudDeployGRPCClient) UpdateDeliveryPipelineOperation(name string) *Up
 func (c *cloudDeployRESTClient) UpdateDeliveryPipelineOperation(name string) *UpdateDeliveryPipelineOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateDeliveryPipelineOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// UpdateDeployPolicyOperation returns a new UpdateDeployPolicyOperation from a given name.
+// The name must be that of a previously created UpdateDeployPolicyOperation, possibly from a different process.
+func (c *cloudDeployGRPCClient) UpdateDeployPolicyOperation(name string) *UpdateDeployPolicyOperation {
+	return &UpdateDeployPolicyOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateDeployPolicyOperation returns a new UpdateDeployPolicyOperation from a given name.
+// The name must be that of a previously created UpdateDeployPolicyOperation, possibly from a different process.
+func (c *cloudDeployRESTClient) UpdateDeployPolicyOperation(name string) *UpdateDeployPolicyOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateDeployPolicyOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

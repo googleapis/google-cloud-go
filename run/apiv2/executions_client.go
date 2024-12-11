@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -30,7 +30,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	runpb "cloud.google.com/go/run/apiv2/runpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -64,6 +63,7 @@ func defaultExecutionsGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://run.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -157,7 +157,8 @@ func (c *ExecutionsClient) GetExecution(ctx context.Context, req *runpb.GetExecu
 	return c.internalClient.GetExecution(ctx, req, opts...)
 }
 
-// ListExecutions lists Executions from a Job.
+// ListExecutions lists Executions from a Job. Results are sorted by creation time,
+// descending.
 func (c *ExecutionsClient) ListExecutions(ctx context.Context, req *runpb.ListExecutionsRequest, opts ...gax.CallOption) *ExecutionIterator {
 	return c.internalClient.ListExecutions(ctx, req, opts...)
 }
@@ -226,6 +227,8 @@ type executionsGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewExecutionsClient creates a new executions client based on gRPC.
@@ -252,6 +255,7 @@ func NewExecutionsClient(ctx context.Context, opts ...option.ClientOption) (*Exe
 		connPool:         connPool,
 		executionsClient: runpb.NewExecutionsClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -286,7 +290,9 @@ func (c *executionsGRPCClient) Connection() *grpc.ClientConn {
 func (c *executionsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -313,6 +319,8 @@ type executionsRESTClient struct {
 
 	// Points back to the CallOptions field of the containing ExecutionsClient
 	CallOptions **ExecutionsCallOptions
+
+	logger *slog.Logger
 }
 
 // NewExecutionsRESTClient creates a new executions rest client.
@@ -330,6 +338,7 @@ func NewExecutionsRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -354,6 +363,7 @@ func defaultExecutionsRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://run.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -363,7 +373,9 @@ func defaultExecutionsRESTClientOptions() []option.ClientOption {
 func (c *executionsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -389,7 +401,7 @@ func (c *executionsGRPCClient) GetExecution(ctx context.Context, req *runpb.GetE
 	var resp *runpb.Execution
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.executionsClient.GetExecution(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.executionsClient.GetExecution, req, settings.GRPC, c.logger, "GetExecution")
 		return err
 	}, opts...)
 	if err != nil {
@@ -418,7 +430,7 @@ func (c *executionsGRPCClient) ListExecutions(ctx context.Context, req *runpb.Li
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.executionsClient.ListExecutions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.executionsClient.ListExecutions, req, settings.GRPC, c.logger, "ListExecutions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -453,7 +465,7 @@ func (c *executionsGRPCClient) DeleteExecution(ctx context.Context, req *runpb.D
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.executionsClient.DeleteExecution(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.executionsClient.DeleteExecution, req, settings.GRPC, c.logger, "DeleteExecution")
 		return err
 	}, opts...)
 	if err != nil {
@@ -473,7 +485,7 @@ func (c *executionsGRPCClient) CancelExecution(ctx context.Context, req *runpb.C
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.executionsClient.CancelExecution(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.executionsClient.CancelExecution, req, settings.GRPC, c.logger, "CancelExecution")
 		return err
 	}, opts...)
 	if err != nil {
@@ -492,7 +504,7 @@ func (c *executionsGRPCClient) DeleteOperation(ctx context.Context, req *longrun
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -507,7 +519,7 @@ func (c *executionsGRPCClient) GetOperation(ctx context.Context, req *longrunnin
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -536,7 +548,7 @@ func (c *executionsGRPCClient) ListOperations(ctx context.Context, req *longrunn
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -571,7 +583,7 @@ func (c *executionsGRPCClient) WaitOperation(ctx context.Context, req *longrunni
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.WaitOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.WaitOperation, req, settings.GRPC, c.logger, "WaitOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -613,17 +625,7 @@ func (c *executionsRESTClient) GetExecution(ctx context.Context, req *runpb.GetE
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetExecution")
 		if err != nil {
 			return err
 		}
@@ -640,7 +642,8 @@ func (c *executionsRESTClient) GetExecution(ctx context.Context, req *runpb.GetE
 	return resp, nil
 }
 
-// ListExecutions lists Executions from a Job.
+// ListExecutions lists Executions from a Job. Results are sorted by creation time,
+// descending.
 func (c *executionsRESTClient) ListExecutions(ctx context.Context, req *runpb.ListExecutionsRequest, opts ...gax.CallOption) *ExecutionIterator {
 	it := &ExecutionIterator{}
 	req = proto.Clone(req).(*runpb.ListExecutionsRequest)
@@ -688,21 +691,10 @@ func (c *executionsRESTClient) ListExecutions(ctx context.Context, req *runpb.Li
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListExecutions")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -770,21 +762,10 @@ func (c *executionsRESTClient) DeleteExecution(ctx context.Context, req *runpb.D
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteExecution")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -840,21 +821,10 @@ func (c *executionsRESTClient) CancelExecution(ctx context.Context, req *runpb.C
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelExecution")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -902,15 +872,8 @@ func (c *executionsRESTClient) DeleteOperation(ctx context.Context, req *longrun
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOperation")
+		return err
 	}, opts...)
 }
 
@@ -947,17 +910,7 @@ func (c *executionsRESTClient) GetOperation(ctx context.Context, req *longrunnin
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -1022,21 +975,10 @@ func (c *executionsRESTClient) ListOperations(ctx context.Context, req *longrunn
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1105,17 +1047,7 @@ func (c *executionsRESTClient) WaitOperation(ctx context.Context, req *longrunni
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "WaitOperation")
 		if err != nil {
 			return err
 		}

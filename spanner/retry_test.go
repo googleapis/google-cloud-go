@@ -42,8 +42,38 @@ func TestRetryInfo(t *testing.T) {
 	}
 }
 
+func TestRetryInfoResourceExhausted(t *testing.T) {
+	s := status.New(codes.ResourceExhausted, "")
+	s, err := s.WithDetails(&edpb.RetryInfo{
+		RetryDelay: durationpb.New(time.Second),
+	})
+	if err != nil {
+		t.Fatalf("Error setting retry details: %v", err)
+	}
+	gotDelay, ok := ExtractRetryDelay(toSpannerErrorWithCommitInfo(s.Err(), true))
+	if !ok || !testEqual(time.Second, gotDelay) {
+		t.Errorf("<ok, retryDelay> = <%t, %v>, want <true, %v>", ok, gotDelay, time.Second)
+	}
+}
+
 func TestRetryInfoInWrappedError(t *testing.T) {
 	s := status.New(codes.Aborted, "")
+	s, err := s.WithDetails(&edpb.RetryInfo{
+		RetryDelay: durationpb.New(time.Second),
+	})
+	if err != nil {
+		t.Fatalf("Error setting retry details: %v", err)
+	}
+	gotDelay, ok := ExtractRetryDelay(
+		&wrappedTestError{wrapped: toSpannerErrorWithCommitInfo(s.Err(), true), msg: "Error that is wrapping a Spanner error"},
+	)
+	if !ok || !testEqual(time.Second, gotDelay) {
+		t.Errorf("<ok, retryDelay> = <%t, %v>, want <true, %v>", ok, gotDelay, time.Second)
+	}
+}
+
+func TestRetryInfoInWrappedErrorResourceExhausted(t *testing.T) {
+	s := status.New(codes.ResourceExhausted, "")
 	s, err := s.WithDetails(&edpb.RetryInfo{
 		RetryDelay: durationpb.New(time.Second),
 	})
@@ -80,6 +110,27 @@ func TestRetryerRespectsServerDelay(t *testing.T) {
 		t.Fatalf("Error setting retry details: %v", err)
 	}
 	retryer := onCodes(gax.Backoff{}, codes.Aborted)
+	err = toSpannerErrorWithCommitInfo(s.Err(), true)
+	maxSeenDelay, shouldRetry := retryer.Retry(err)
+	if !shouldRetry {
+		t.Fatalf("expected shouldRetry to be true")
+	}
+	if maxSeenDelay != serverDelay {
+		t.Fatalf("Retry delay mismatch:\ngot: %v\nwant: %v", maxSeenDelay, serverDelay)
+	}
+}
+
+func TestRetryerRespectsServerDelayResourceExhausted(t *testing.T) {
+	t.Parallel()
+	serverDelay := 50 * time.Millisecond
+	s := status.New(codes.ResourceExhausted, "transaction was aborted")
+	s, err := s.WithDetails(&edpb.RetryInfo{
+		RetryDelay: durationpb.New(serverDelay),
+	})
+	if err != nil {
+		t.Fatalf("Error setting retry details: %v", err)
+	}
+	retryer := onCodes(gax.Backoff{}, codes.ResourceExhausted)
 	err = toSpannerErrorWithCommitInfo(s.Err(), true)
 	maxSeenDelay, shouldRetry := retryer.Retry(err)
 	if !shouldRetry {

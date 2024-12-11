@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	iappb "cloud.google.com/go/iap/apiv1/iappb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -62,6 +61,7 @@ func defaultIdentityAwareProxyOAuthGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://iap.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -245,6 +245,8 @@ type identityAwareProxyOAuthGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewIdentityAwareProxyOAuthClient creates a new identity aware proxyo auth service client based on gRPC.
@@ -273,6 +275,7 @@ func NewIdentityAwareProxyOAuthClient(ctx context.Context, opts ...option.Client
 		connPool:                      connPool,
 		identityAwareProxyOAuthClient: iappb.NewIdentityAwareProxyOAuthServiceClient(connPool),
 		CallOptions:                   &client.CallOptions,
+		logger:                        internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -295,7 +298,9 @@ func (c *identityAwareProxyOAuthGRPCClient) Connection() *grpc.ClientConn {
 func (c *identityAwareProxyOAuthGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -317,6 +322,8 @@ type identityAwareProxyOAuthRESTClient struct {
 
 	// Points back to the CallOptions field of the containing IdentityAwareProxyOAuthClient
 	CallOptions **IdentityAwareProxyOAuthCallOptions
+
+	logger *slog.Logger
 }
 
 // NewIdentityAwareProxyOAuthRESTClient creates a new identity aware proxyo auth service rest client.
@@ -336,6 +343,7 @@ func NewIdentityAwareProxyOAuthRESTClient(ctx context.Context, opts ...option.Cl
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -350,6 +358,7 @@ func defaultIdentityAwareProxyOAuthRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://iap.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -359,7 +368,9 @@ func defaultIdentityAwareProxyOAuthRESTClientOptions() []option.ClientOption {
 func (c *identityAwareProxyOAuthRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -385,7 +396,7 @@ func (c *identityAwareProxyOAuthGRPCClient) ListBrands(ctx context.Context, req 
 	var resp *iappb.ListBrandsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.identityAwareProxyOAuthClient.ListBrands(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.identityAwareProxyOAuthClient.ListBrands, req, settings.GRPC, c.logger, "ListBrands")
 		return err
 	}, opts...)
 	if err != nil {
@@ -403,7 +414,7 @@ func (c *identityAwareProxyOAuthGRPCClient) CreateBrand(ctx context.Context, req
 	var resp *iappb.Brand
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.identityAwareProxyOAuthClient.CreateBrand(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.identityAwareProxyOAuthClient.CreateBrand, req, settings.GRPC, c.logger, "CreateBrand")
 		return err
 	}, opts...)
 	if err != nil {
@@ -421,7 +432,7 @@ func (c *identityAwareProxyOAuthGRPCClient) GetBrand(ctx context.Context, req *i
 	var resp *iappb.Brand
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.identityAwareProxyOAuthClient.GetBrand(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.identityAwareProxyOAuthClient.GetBrand, req, settings.GRPC, c.logger, "GetBrand")
 		return err
 	}, opts...)
 	if err != nil {
@@ -439,7 +450,7 @@ func (c *identityAwareProxyOAuthGRPCClient) CreateIdentityAwareProxyClient(ctx c
 	var resp *iappb.IdentityAwareProxyClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.identityAwareProxyOAuthClient.CreateIdentityAwareProxyClient(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.identityAwareProxyOAuthClient.CreateIdentityAwareProxyClient, req, settings.GRPC, c.logger, "CreateIdentityAwareProxyClient")
 		return err
 	}, opts...)
 	if err != nil {
@@ -468,7 +479,7 @@ func (c *identityAwareProxyOAuthGRPCClient) ListIdentityAwareProxyClients(ctx co
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.identityAwareProxyOAuthClient.ListIdentityAwareProxyClients(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.identityAwareProxyOAuthClient.ListIdentityAwareProxyClients, req, settings.GRPC, c.logger, "ListIdentityAwareProxyClients")
 			return err
 		}, opts...)
 		if err != nil {
@@ -503,7 +514,7 @@ func (c *identityAwareProxyOAuthGRPCClient) GetIdentityAwareProxyClient(ctx cont
 	var resp *iappb.IdentityAwareProxyClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.identityAwareProxyOAuthClient.GetIdentityAwareProxyClient(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.identityAwareProxyOAuthClient.GetIdentityAwareProxyClient, req, settings.GRPC, c.logger, "GetIdentityAwareProxyClient")
 		return err
 	}, opts...)
 	if err != nil {
@@ -521,7 +532,7 @@ func (c *identityAwareProxyOAuthGRPCClient) ResetIdentityAwareProxyClientSecret(
 	var resp *iappb.IdentityAwareProxyClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.identityAwareProxyOAuthClient.ResetIdentityAwareProxyClientSecret(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.identityAwareProxyOAuthClient.ResetIdentityAwareProxyClientSecret, req, settings.GRPC, c.logger, "ResetIdentityAwareProxyClientSecret")
 		return err
 	}, opts...)
 	if err != nil {
@@ -538,7 +549,7 @@ func (c *identityAwareProxyOAuthGRPCClient) DeleteIdentityAwareProxyClient(ctx c
 	opts = append((*c.CallOptions).DeleteIdentityAwareProxyClient[0:len((*c.CallOptions).DeleteIdentityAwareProxyClient):len((*c.CallOptions).DeleteIdentityAwareProxyClient)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.identityAwareProxyOAuthClient.DeleteIdentityAwareProxyClient(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.identityAwareProxyOAuthClient.DeleteIdentityAwareProxyClient, req, settings.GRPC, c.logger, "DeleteIdentityAwareProxyClient")
 		return err
 	}, opts...)
 	return err
@@ -577,17 +588,7 @@ func (c *identityAwareProxyOAuthRESTClient) ListBrands(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListBrands")
 		if err != nil {
 			return err
 		}
@@ -651,17 +652,7 @@ func (c *identityAwareProxyOAuthRESTClient) CreateBrand(ctx context.Context, req
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateBrand")
 		if err != nil {
 			return err
 		}
@@ -711,17 +702,7 @@ func (c *identityAwareProxyOAuthRESTClient) GetBrand(ctx context.Context, req *i
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetBrand")
 		if err != nil {
 			return err
 		}
@@ -780,17 +761,7 @@ func (c *identityAwareProxyOAuthRESTClient) CreateIdentityAwareProxyClient(ctx c
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateIdentityAwareProxyClient")
 		if err != nil {
 			return err
 		}
@@ -852,21 +823,10 @@ func (c *identityAwareProxyOAuthRESTClient) ListIdentityAwareProxyClients(ctx co
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListIdentityAwareProxyClients")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -930,17 +890,7 @@ func (c *identityAwareProxyOAuthRESTClient) GetIdentityAwareProxyClient(ctx cont
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetIdentityAwareProxyClient")
 		if err != nil {
 			return err
 		}
@@ -997,17 +947,7 @@ func (c *identityAwareProxyOAuthRESTClient) ResetIdentityAwareProxyClientSecret(
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ResetIdentityAwareProxyClientSecret")
 		if err != nil {
 			return err
 		}
@@ -1056,14 +996,7 @@ func (c *identityAwareProxyOAuthRESTClient) DeleteIdentityAwareProxyClient(ctx c
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteIdentityAwareProxyClient")
+		return err
 	}, opts...)
 }

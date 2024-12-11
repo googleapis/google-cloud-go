@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -32,7 +32,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -85,6 +84,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://accesscontextmanager.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -739,6 +739,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new access context manager client based on gRPC.
@@ -775,6 +777,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:         connPool,
 		client:           accesscontextmanagerpb.NewAccessContextManagerClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -809,7 +812,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -836,6 +841,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new access context manager rest client.
@@ -863,6 +870,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -887,6 +895,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://accesscontextmanager.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -896,7 +905,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -930,7 +941,7 @@ func (c *gRPCClient) ListAccessPolicies(ctx context.Context, req *accesscontextm
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListAccessPolicies(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListAccessPolicies, req, settings.GRPC, c.logger, "ListAccessPolicies")
 			return err
 		}, opts...)
 		if err != nil {
@@ -965,7 +976,7 @@ func (c *gRPCClient) GetAccessPolicy(ctx context.Context, req *accesscontextmana
 	var resp *accesscontextmanagerpb.AccessPolicy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetAccessPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetAccessPolicy, req, settings.GRPC, c.logger, "GetAccessPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -980,7 +991,7 @@ func (c *gRPCClient) CreateAccessPolicy(ctx context.Context, req *accesscontextm
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateAccessPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateAccessPolicy, req, settings.GRPC, c.logger, "CreateAccessPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1000,7 +1011,7 @@ func (c *gRPCClient) UpdateAccessPolicy(ctx context.Context, req *accesscontextm
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateAccessPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateAccessPolicy, req, settings.GRPC, c.logger, "UpdateAccessPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1020,7 +1031,7 @@ func (c *gRPCClient) DeleteAccessPolicy(ctx context.Context, req *accesscontextm
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteAccessPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteAccessPolicy, req, settings.GRPC, c.logger, "DeleteAccessPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1051,7 +1062,7 @@ func (c *gRPCClient) ListAccessLevels(ctx context.Context, req *accesscontextman
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListAccessLevels(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListAccessLevels, req, settings.GRPC, c.logger, "ListAccessLevels")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1086,7 +1097,7 @@ func (c *gRPCClient) GetAccessLevel(ctx context.Context, req *accesscontextmanag
 	var resp *accesscontextmanagerpb.AccessLevel
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetAccessLevel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetAccessLevel, req, settings.GRPC, c.logger, "GetAccessLevel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1104,7 +1115,7 @@ func (c *gRPCClient) CreateAccessLevel(ctx context.Context, req *accesscontextma
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateAccessLevel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateAccessLevel, req, settings.GRPC, c.logger, "CreateAccessLevel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1124,7 +1135,7 @@ func (c *gRPCClient) UpdateAccessLevel(ctx context.Context, req *accesscontextma
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateAccessLevel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateAccessLevel, req, settings.GRPC, c.logger, "UpdateAccessLevel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1144,7 +1155,7 @@ func (c *gRPCClient) DeleteAccessLevel(ctx context.Context, req *accesscontextma
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteAccessLevel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteAccessLevel, req, settings.GRPC, c.logger, "DeleteAccessLevel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1164,7 +1175,7 @@ func (c *gRPCClient) ReplaceAccessLevels(ctx context.Context, req *accesscontext
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ReplaceAccessLevels(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ReplaceAccessLevels, req, settings.GRPC, c.logger, "ReplaceAccessLevels")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1195,7 +1206,7 @@ func (c *gRPCClient) ListServicePerimeters(ctx context.Context, req *accessconte
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListServicePerimeters(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListServicePerimeters, req, settings.GRPC, c.logger, "ListServicePerimeters")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1230,7 +1241,7 @@ func (c *gRPCClient) GetServicePerimeter(ctx context.Context, req *accesscontext
 	var resp *accesscontextmanagerpb.ServicePerimeter
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetServicePerimeter(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetServicePerimeter, req, settings.GRPC, c.logger, "GetServicePerimeter")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1248,7 +1259,7 @@ func (c *gRPCClient) CreateServicePerimeter(ctx context.Context, req *accesscont
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateServicePerimeter(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateServicePerimeter, req, settings.GRPC, c.logger, "CreateServicePerimeter")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1268,7 +1279,7 @@ func (c *gRPCClient) UpdateServicePerimeter(ctx context.Context, req *accesscont
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateServicePerimeter(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateServicePerimeter, req, settings.GRPC, c.logger, "UpdateServicePerimeter")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1288,7 +1299,7 @@ func (c *gRPCClient) DeleteServicePerimeter(ctx context.Context, req *accesscont
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteServicePerimeter(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteServicePerimeter, req, settings.GRPC, c.logger, "DeleteServicePerimeter")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1308,7 +1319,7 @@ func (c *gRPCClient) ReplaceServicePerimeters(ctx context.Context, req *accessco
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ReplaceServicePerimeters(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ReplaceServicePerimeters, req, settings.GRPC, c.logger, "ReplaceServicePerimeters")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1328,7 +1339,7 @@ func (c *gRPCClient) CommitServicePerimeters(ctx context.Context, req *accesscon
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CommitServicePerimeters(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CommitServicePerimeters, req, settings.GRPC, c.logger, "CommitServicePerimeters")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1359,7 +1370,7 @@ func (c *gRPCClient) ListGcpUserAccessBindings(ctx context.Context, req *accessc
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListGcpUserAccessBindings(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListGcpUserAccessBindings, req, settings.GRPC, c.logger, "ListGcpUserAccessBindings")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1394,7 +1405,7 @@ func (c *gRPCClient) GetGcpUserAccessBinding(ctx context.Context, req *accesscon
 	var resp *accesscontextmanagerpb.GcpUserAccessBinding
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetGcpUserAccessBinding(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetGcpUserAccessBinding, req, settings.GRPC, c.logger, "GetGcpUserAccessBinding")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1412,7 +1423,7 @@ func (c *gRPCClient) CreateGcpUserAccessBinding(ctx context.Context, req *access
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateGcpUserAccessBinding(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateGcpUserAccessBinding, req, settings.GRPC, c.logger, "CreateGcpUserAccessBinding")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1432,7 +1443,7 @@ func (c *gRPCClient) UpdateGcpUserAccessBinding(ctx context.Context, req *access
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateGcpUserAccessBinding(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateGcpUserAccessBinding, req, settings.GRPC, c.logger, "UpdateGcpUserAccessBinding")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1452,7 +1463,7 @@ func (c *gRPCClient) DeleteGcpUserAccessBinding(ctx context.Context, req *access
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteGcpUserAccessBinding(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteGcpUserAccessBinding, req, settings.GRPC, c.logger, "DeleteGcpUserAccessBinding")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1472,7 +1483,7 @@ func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1490,7 +1501,7 @@ func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1508,7 +1519,7 @@ func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1526,7 +1537,7 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1583,21 +1594,10 @@ func (c *restClient) ListAccessPolicies(ctx context.Context, req *accesscontextm
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAccessPolicies")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1661,17 +1661,7 @@ func (c *restClient) GetAccessPolicy(ctx context.Context, req *accesscontextmana
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAccessPolicy")
 		if err != nil {
 			return err
 		}
@@ -1727,21 +1717,10 @@ func (c *restClient) CreateAccessPolicy(ctx context.Context, req *accesscontextm
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateAccessPolicy")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1782,11 +1761,11 @@ func (c *restClient) UpdateAccessPolicy(ctx context.Context, req *accesscontextm
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1810,21 +1789,10 @@ func (c *restClient) UpdateAccessPolicy(ctx context.Context, req *accesscontextm
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateAccessPolicy")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1878,21 +1846,10 @@ func (c *restClient) DeleteAccessPolicy(ctx context.Context, req *accesscontextm
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteAccessPolicy")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1960,21 +1917,10 @@ func (c *restClient) ListAccessLevels(ctx context.Context, req *accesscontextman
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAccessLevels")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2042,17 +1988,7 @@ func (c *restClient) GetAccessLevel(ctx context.Context, req *accesscontextmanag
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAccessLevel")
 		if err != nil {
 			return err
 		}
@@ -2114,21 +2050,10 @@ func (c *restClient) CreateAccessLevel(ctx context.Context, req *accesscontextma
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateAccessLevel")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2171,11 +2096,11 @@ func (c *restClient) UpdateAccessLevel(ctx context.Context, req *accesscontextma
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2199,21 +2124,10 @@ func (c *restClient) UpdateAccessLevel(ctx context.Context, req *accesscontextma
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateAccessLevel")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2268,21 +2182,10 @@ func (c *restClient) DeleteAccessLevel(ctx context.Context, req *accesscontextma
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteAccessLevel")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2354,21 +2257,10 @@ func (c *restClient) ReplaceAccessLevels(ctx context.Context, req *accesscontext
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ReplaceAccessLevels")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2433,21 +2325,10 @@ func (c *restClient) ListServicePerimeters(ctx context.Context, req *accessconte
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListServicePerimeters")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2512,17 +2393,7 @@ func (c *restClient) GetServicePerimeter(ctx context.Context, req *accesscontext
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetServicePerimeter")
 		if err != nil {
 			return err
 		}
@@ -2585,21 +2456,10 @@ func (c *restClient) CreateServicePerimeter(ctx context.Context, req *accesscont
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateServicePerimeter")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2642,11 +2502,11 @@ func (c *restClient) UpdateServicePerimeter(ctx context.Context, req *accesscont
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2670,21 +2530,10 @@ func (c *restClient) UpdateServicePerimeter(ctx context.Context, req *accesscont
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateServicePerimeter")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2739,21 +2588,10 @@ func (c *restClient) DeleteServicePerimeter(ctx context.Context, req *accesscont
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteServicePerimeter")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2821,21 +2659,10 @@ func (c *restClient) ReplaceServicePerimeters(ctx context.Context, req *accessco
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ReplaceServicePerimeters")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2905,21 +2732,10 @@ func (c *restClient) CommitServicePerimeters(ctx context.Context, req *accesscon
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CommitServicePerimeters")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2984,21 +2800,10 @@ func (c *restClient) ListGcpUserAccessBindings(ctx context.Context, req *accessc
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListGcpUserAccessBindings")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3063,17 +2868,7 @@ func (c *restClient) GetGcpUserAccessBinding(ctx context.Context, req *accesscon
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetGcpUserAccessBinding")
 		if err != nil {
 			return err
 		}
@@ -3138,21 +2933,10 @@ func (c *restClient) CreateGcpUserAccessBinding(ctx context.Context, req *access
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateGcpUserAccessBinding")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3192,11 +2976,11 @@ func (c *restClient) UpdateGcpUserAccessBinding(ctx context.Context, req *access
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3220,21 +3004,10 @@ func (c *restClient) UpdateGcpUserAccessBinding(ctx context.Context, req *access
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateGcpUserAccessBinding")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3288,21 +3061,10 @@ func (c *restClient) DeleteGcpUserAccessBinding(ctx context.Context, req *access
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteGcpUserAccessBinding")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3364,17 +3126,7 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -3431,17 +3183,7 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -3502,17 +3244,7 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
 		if err != nil {
 			return err
 		}
@@ -3562,17 +3294,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}

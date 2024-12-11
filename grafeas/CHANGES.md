@@ -1,5 +1,48 @@
 # Changes
 
+## [0.3.12](https://github.com/googleapis/google-cloud-go/compare/grafeas/v0.3.11...grafeas/v0.3.12) (2024-10-23)
+
+
+### Bug Fixes
+
+* **grafeas:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **grafeas:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
+## [0.3.11](https://github.com/googleapis/google-cloud-go/compare/grafeas/v0.3.10...grafeas/v0.3.11) (2024-09-12)
+
+
+### Bug Fixes
+
+* **grafeas:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+## [0.3.10](https://github.com/googleapis/google-cloud-go/compare/grafeas/v0.3.9...grafeas/v0.3.10) (2024-08-08)
+
+
+### Bug Fixes
+
+* **grafeas:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+## [0.3.9](https://github.com/googleapis/google-cloud-go/compare/grafeas/v0.3.8...grafeas/v0.3.9) (2024-07-24)
+
+
+### Bug Fixes
+
+* **grafeas:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+## [0.3.8](https://github.com/googleapis/google-cloud-go/compare/grafeas/v0.3.7...grafeas/v0.3.8) (2024-07-10)
+
+
+### Bug Fixes
+
+* **grafeas:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [0.3.7](https://github.com/googleapis/google-cloud-go/compare/grafeas/v0.3.6...grafeas/v0.3.7) (2024-07-01)
+
+
+### Bug Fixes
+
+* **grafeas:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
 ## [0.3.6](https://github.com/googleapis/google-cloud-go/compare/grafeas/v0.3.5...grafeas/v0.3.6) (2024-05-01)
 
 

@@ -2,6 +2,178 @@
 
 
 
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.15.0...maps/v1.16.0) (2024-12-04)
+
+
+### Features
+
+* **maps/routing:** Add API for shorter distance reference routes ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.14.1...maps/v1.15.0) (2024-11-14)
+
+
+### Features
+
+* **maps/places:** Update attributes in Places API ([f072178](https://github.com/googleapis/google-cloud-go/commit/f072178f6fd90537a5782395f4229e4c8b30af7e))
+
+## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/maps/v1.14.0...maps/v1.14.1) (2024-10-23)
+
+
+### Bug Fixes
+
+* **maps:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **maps:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.13.0...maps/v1.14.0) (2024-09-25)
+
+
+### Features
+
+* **maps/routeoptimization:** A new field `route_token` is added to message `.google.maps.routeoptimization.v1.ShipmentRoute.Transition` ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+* **maps/routeoptimization:** Add support for generating route tokens ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+
+
+### Documentation
+
+* **maps/routeoptimization:** A comment for field `code` in message `.google.maps.routeoptimization.v1.OptimizeToursValidationError` is changed ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+* **maps/routeoptimization:** A comment for field `populate_transition_polylines` in message `.google.maps.routeoptimization.v1.OptimizeToursRequest` is changed ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+* **maps/routeoptimization:** A comment for method `BatchOptimizeTours` in service `RouteOptimization` is changed ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.12.1...maps/v1.13.0) (2024-09-19)
+
+
+### Features
+
+* **maps/places:** Add `routing_parameters` to SearchNearbyRequest and SearchTextRequest ([0b3c268](https://github.com/googleapis/google-cloud-go/commit/0b3c268c564ffe0d87b0efc716f08afaf064b4cc))
+* **maps/routeoptimization:** A new field `cost_per_kilometer_below_soft_max` is added to message `.google.maps.routeoptimization.v1.DistanceLimit` ([ba22f7b](https://github.com/googleapis/google-cloud-go/commit/ba22f7b5b8f21a39685017d2d8522456ce528c4c))
+* **maps/routeoptimization:** A new field `route_modifiers` is added to message `.google.maps.routeoptimization.v1.Vehicle` ([ba22f7b](https://github.com/googleapis/google-cloud-go/commit/ba22f7b5b8f21a39685017d2d8522456ce528c4c))
+* **maps/routeoptimization:** A new message `RouteModifiers` is added ([ba22f7b](https://github.com/googleapis/google-cloud-go/commit/ba22f7b5b8f21a39685017d2d8522456ce528c4c))
+* **maps/routeoptimization:** Minor fields and documentation update ([#10861](https://github.com/googleapis/google-cloud-go/issues/10861)) ([ba22f7b](https://github.com/googleapis/google-cloud-go/commit/ba22f7b5b8f21a39685017d2d8522456ce528c4c))
+* **maps:** New clients ([#10867](https://github.com/googleapis/google-cloud-go/issues/10867)) ([338ca6e](https://github.com/googleapis/google-cloud-go/commit/338ca6e9a104c4cb9dff57d015ecb5b4dbd01bc5))
+
+
+### Documentation
+
+* **maps/routeoptimization:** A comment for enum value `CODE_UNSPECIFIED` in enum `Code` is changed ([ba22f7b](https://github.com/googleapis/google-cloud-go/commit/ba22f7b5b8f21a39685017d2d8522456ce528c4c))
+* **maps/routeoptimization:** A comment for enum value `DEFAULT_SOLVE` in enum `SolvingMode` is changed ([ba22f7b](https://github.com/googleapis/google-cloud-go/commit/ba22f7b5b8f21a39685017d2d8522456ce528c4c))
+* **maps/routeoptimization:** A comment for enum value `RELAX_VISIT_TIMES_AND_SEQUENCE_AFTER_THRESHOLD` in enum `Level` is changed ([ba22f7b](https://github.com/googleapis/google-cloud-go/commit/ba22f7b5b8f21a39685017d2d8522456ce528c4c))
+* **maps/routeoptimization:** A comment for field `code` in message `.google.maps.routeoptimization.v1.OptimizeToursValidationError` is changed ([ba22f7b](https://github.com/googleapis/google-cloud-go/commit/ba22f7b5b8f21a39685017d2d8522456ce528c4c))
+* **maps/routeoptimization:** A comment for field `reasons` in message `.google.maps.routeoptimization.v1.SkippedShipment` is changed ([ba22f7b](https://github.com/googleapis/google-cloud-go/commit/ba22f7b5b8f21a39685017d2d8522456ce528c4c))
+* **maps/routeoptimization:** A comment for field `validation_errors` in message `.google.maps.routeoptimization.v1.OptimizeToursResponse` is changed ([ba22f7b](https://github.com/googleapis/google-cloud-go/commit/ba22f7b5b8f21a39685017d2d8522456ce528c4c))
+* **maps/routeoptimization:** A comment for message `OptimizeToursValidationError` is changed ([ba22f7b](https://github.com/googleapis/google-cloud-go/commit/ba22f7b5b8f21a39685017d2d8522456ce528c4c))
+* **maps/routeoptimization:** A comment for message `TimeWindow` is changed ([ba22f7b](https://github.com/googleapis/google-cloud-go/commit/ba22f7b5b8f21a39685017d2d8522456ce528c4c))
+* **maps/routeoptimization:** A comment for method `BatchOptimizeTours` in service `RouteOptimization` is changed ([ba22f7b](https://github.com/googleapis/google-cloud-go/commit/ba22f7b5b8f21a39685017d2d8522456ce528c4c))
+
+## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/maps/v1.12.0...maps/v1.12.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **maps:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+
+### Documentation
+
+* **maps/fleetengine/delivery:** Update comment link for ListTasks filter ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.11.7...maps/v1.12.0) (2024-08-20)
+
+
+### Features
+
+* **maps:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.11.7](https://github.com/googleapis/google-cloud-go/compare/maps/v1.11.6...maps/v1.11.7) (2024-08-08)
+
+
+### Bug Fixes
+
+* **maps:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+## [1.11.6](https://github.com/googleapis/google-cloud-go/compare/maps/v1.11.5...maps/v1.11.6) (2024-08-01)
+
+
+### Documentation
+
+* **maps/fleetengine/delivery:** Document that delivery_vehicle.type can be set on CreateDeliveryVehicle ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+
+## [1.11.5](https://github.com/googleapis/google-cloud-go/compare/maps/v1.11.4...maps/v1.11.5) (2024-07-24)
+
+
+### Bug Fixes
+
+* **maps:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+
+### Documentation
+
+* **maps/fleetengine/delivery:** Clarify behavior of UpdateDeliveryVehicle ([eb63f0d](https://github.com/googleapis/google-cloud-go/commit/eb63f0d4f42a06581e1425f99c2a03d52d6cb404))
+
+## [1.11.4](https://github.com/googleapis/google-cloud-go/compare/maps/v1.11.3...maps/v1.11.4) (2024-07-10)
+
+
+### Bug Fixes
+
+* **maps:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.11.3](https://github.com/googleapis/google-cloud-go/compare/maps/v1.11.2...maps/v1.11.3) (2024-07-01)
+
+
+### Bug Fixes
+
+* **maps:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.11.2](https://github.com/googleapis/google-cloud-go/compare/maps/v1.11.1...maps/v1.11.2) (2024-06-26)
+
+
+### Bug Fixes
+
+* **maps:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
+## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/maps/v1.11.0...maps/v1.11.1) (2024-06-10)
+
+
+### Bug Fixes
+
+* **maps/places:** Update Go maps/places to unstable ([385b6ee](https://github.com/googleapis/google-cloud-go/commit/385b6ee9060f4dbfad2e12b1ab635edab7ec4466))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.10.0...maps/v1.11.0) (2024-05-29)
+
+
+### Features
+
+* **maps:** Removed mapsplatformdatasets v1alpha library ([dafecc9](https://github.com/googleapis/google-cloud-go/commit/dafecc9f28a6b028889c8cefb352e50f60563a4e))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.9.0...maps/v1.10.0) (2024-05-22)
+
+
+### Features
+
+* **maps/places:** Add `generative_summary` and `area_summary` for place summaries ([#10204](https://github.com/googleapis/google-cloud-go/issues/10204)) ([5238dbc](https://github.com/googleapis/google-cloud-go/commit/5238dbc48971a7295127be0f415280248608c6be))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.8.0...maps/v1.9.0) (2024-05-16)
+
+
+### Features
+
+* **maps:** FleetEngine and Delivery RPC turndown and removal ([e4543f8](https://github.com/googleapis/google-cloud-go/commit/e4543f87bbad42eb37f501a4571128c3a426780b))
+
+
+### Bug Fixes
+
+* **maps:** An existing message `SearchTasksRequest` is removed ([e4543f8](https://github.com/googleapis/google-cloud-go/commit/e4543f87bbad42eb37f501a4571128c3a426780b))
+* **maps:** An existing message `SearchTasksResponse` is removed ([e4543f8](https://github.com/googleapis/google-cloud-go/commit/e4543f87bbad42eb37f501a4571128c3a426780b))
+* **maps:** An existing message `UpdateVehicleLocationRequest` is removed ([e4543f8](https://github.com/googleapis/google-cloud-go/commit/e4543f87bbad42eb37f501a4571128c3a426780b))
+* **maps:** An existing method `SearchFuzzedVehicles` is removed from service `VehicleService` ([e4543f8](https://github.com/googleapis/google-cloud-go/commit/e4543f87bbad42eb37f501a4571128c3a426780b))
+* **maps:** An existing method `SearchTasks` is removed from service `DeliveryService` ([e4543f8](https://github.com/googleapis/google-cloud-go/commit/e4543f87bbad42eb37f501a4571128c3a426780b))
+* **maps:** An existing method `UpdateVehicleLocation` is removed from service `VehicleService` ([e4543f8](https://github.com/googleapis/google-cloud-go/commit/e4543f87bbad42eb37f501a4571128c3a426780b))
+
+
+### Documentation
+
+* **maps/fleetengine/delivery:** Remove comment about deleted SearchTasks method ([292e812](https://github.com/googleapis/google-cloud-go/commit/292e81231b957ae7ac243b47b8926564cee35920))
+* **maps/fleetengine:** Mark TerminalPointId as deprecated ([#10130](https://github.com/googleapis/google-cloud-go/issues/10130)) ([292e812](https://github.com/googleapis/google-cloud-go/commit/292e81231b957ae7ac243b47b8926564cee35920))
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.7.3...maps/v1.8.0) (2024-05-08)
 
 

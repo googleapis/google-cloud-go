@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	identitytoolkitpb "cloud.google.com/go/identitytoolkit/apiv2/identitytoolkitpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -55,6 +54,7 @@ func defaultAccountManagementGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://identitytoolkit.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -164,6 +164,8 @@ type accountManagementGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewAccountManagementClient creates a new account management service client based on gRPC.
@@ -190,6 +192,7 @@ func NewAccountManagementClient(ctx context.Context, opts ...option.ClientOption
 		connPool:                connPool,
 		accountManagementClient: identitytoolkitpb.NewAccountManagementServiceClient(connPool),
 		CallOptions:             &client.CallOptions,
+		logger:                  internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -212,7 +215,9 @@ func (c *accountManagementGRPCClient) Connection() *grpc.ClientConn {
 func (c *accountManagementGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -234,6 +239,8 @@ type accountManagementRESTClient struct {
 
 	// Points back to the CallOptions field of the containing AccountManagementClient
 	CallOptions **AccountManagementCallOptions
+
+	logger *slog.Logger
 }
 
 // NewAccountManagementRESTClient creates a new account management service rest client.
@@ -251,6 +258,7 @@ func NewAccountManagementRESTClient(ctx context.Context, opts ...option.ClientOp
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -265,6 +273,7 @@ func defaultAccountManagementRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://identitytoolkit.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -274,7 +283,9 @@ func defaultAccountManagementRESTClientOptions() []option.ClientOption {
 func (c *accountManagementRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -297,7 +308,7 @@ func (c *accountManagementGRPCClient) FinalizeMfaEnrollment(ctx context.Context,
 	var resp *identitytoolkitpb.FinalizeMfaEnrollmentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.accountManagementClient.FinalizeMfaEnrollment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.accountManagementClient.FinalizeMfaEnrollment, req, settings.GRPC, c.logger, "FinalizeMfaEnrollment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -312,7 +323,7 @@ func (c *accountManagementGRPCClient) StartMfaEnrollment(ctx context.Context, re
 	var resp *identitytoolkitpb.StartMfaEnrollmentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.accountManagementClient.StartMfaEnrollment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.accountManagementClient.StartMfaEnrollment, req, settings.GRPC, c.logger, "StartMfaEnrollment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -327,7 +338,7 @@ func (c *accountManagementGRPCClient) WithdrawMfa(ctx context.Context, req *iden
 	var resp *identitytoolkitpb.WithdrawMfaResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.accountManagementClient.WithdrawMfa(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.accountManagementClient.WithdrawMfa, req, settings.GRPC, c.logger, "WithdrawMfa")
 		return err
 	}, opts...)
 	if err != nil {
@@ -372,17 +383,7 @@ func (c *accountManagementRESTClient) FinalizeMfaEnrollment(ctx context.Context,
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "FinalizeMfaEnrollment")
 		if err != nil {
 			return err
 		}
@@ -436,17 +437,7 @@ func (c *accountManagementRESTClient) StartMfaEnrollment(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "StartMfaEnrollment")
 		if err != nil {
 			return err
 		}
@@ -499,17 +490,7 @@ func (c *accountManagementRESTClient) WithdrawMfa(ctx context.Context, req *iden
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "WithdrawMfa")
 		if err != nil {
 			return err
 		}

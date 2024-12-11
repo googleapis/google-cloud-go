@@ -6,6 +6,9 @@ on:
 permissions:
   contents: read
 
+env:
+  GOTOOLCHAIN: local
+
 jobs:
   scan_changes:
     runs-on: ubuntu-latest
@@ -19,7 +22,7 @@ jobs:
     - uses: actions/checkout@v4
     - uses: actions/setup-go@v5
       with:
-        go-version: '1.22.x'
+        go-version: '1.23.x'
     - name: Get changed directories
       id: changed_dirs
       # Ignore changes to the internal and root directories.
@@ -50,7 +53,7 @@ jobs:
     steps:
     - uses: actions/setup-go@v5
       with:
-        go-version: '1.22.x'
+        go-version: '1.23.x'
     - name: Install latest apidiff
       run: go install golang.org/x/exp/cmd/apidiff@latest
     - uses: actions/checkout@v4

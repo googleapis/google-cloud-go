@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	clusterpb "cloud.google.com/go/redis/cluster/apiv1/clusterpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -47,17 +46,18 @@ var newCloudRedisClusterClientHook clientHook
 
 // CloudRedisClusterCallOptions contains the retry settings for each method of CloudRedisClusterClient.
 type CloudRedisClusterCallOptions struct {
-	ListClusters    []gax.CallOption
-	GetCluster      []gax.CallOption
-	UpdateCluster   []gax.CallOption
-	DeleteCluster   []gax.CallOption
-	CreateCluster   []gax.CallOption
-	GetLocation     []gax.CallOption
-	ListLocations   []gax.CallOption
-	CancelOperation []gax.CallOption
-	DeleteOperation []gax.CallOption
-	GetOperation    []gax.CallOption
-	ListOperations  []gax.CallOption
+	ListClusters                   []gax.CallOption
+	GetCluster                     []gax.CallOption
+	UpdateCluster                  []gax.CallOption
+	DeleteCluster                  []gax.CallOption
+	CreateCluster                  []gax.CallOption
+	GetClusterCertificateAuthority []gax.CallOption
+	GetLocation                    []gax.CallOption
+	ListLocations                  []gax.CallOption
+	CancelOperation                []gax.CallOption
+	DeleteOperation                []gax.CallOption
+	GetOperation                   []gax.CallOption
+	ListOperations                 []gax.CallOption
 }
 
 func defaultCloudRedisClusterGRPCClientOptions() []option.ClientOption {
@@ -69,6 +69,7 @@ func defaultCloudRedisClusterGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://redis.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -89,6 +90,9 @@ func defaultCloudRedisClusterCallOptions() *CloudRedisClusterCallOptions {
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
 		CreateCluster: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		GetClusterCertificateAuthority: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
 		GetLocation:     []gax.CallOption{},
@@ -117,6 +121,9 @@ func defaultCloudRedisClusterRESTCallOptions() *CloudRedisClusterCallOptions {
 		CreateCluster: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		GetClusterCertificateAuthority: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -139,6 +146,7 @@ type internalCloudRedisClusterClient interface {
 	DeleteClusterOperation(name string) *DeleteClusterOperation
 	CreateCluster(context.Context, *clusterpb.CreateClusterRequest, ...gax.CallOption) (*CreateClusterOperation, error)
 	CreateClusterOperation(name string) *CreateClusterOperation
+	GetClusterCertificateAuthority(context.Context, *clusterpb.GetClusterCertificateAuthorityRequest, ...gax.CallOption) (*clusterpb.CertificateAuthority, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -279,6 +287,11 @@ func (c *CloudRedisClusterClient) CreateClusterOperation(name string) *CreateClu
 	return c.internalClient.CreateClusterOperation(name)
 }
 
+// GetClusterCertificateAuthority gets the details of certificate authority information for Redis cluster.
+func (c *CloudRedisClusterClient) GetClusterCertificateAuthority(ctx context.Context, req *clusterpb.GetClusterCertificateAuthorityRequest, opts ...gax.CallOption) (*clusterpb.CertificateAuthority, error) {
+	return c.internalClient.GetClusterCertificateAuthority(ctx, req, opts...)
+}
+
 // GetLocation gets information about a location.
 func (c *CloudRedisClusterClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
@@ -333,6 +346,8 @@ type cloudRedisClusterGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewCloudRedisClusterClient creates a new cloud redis cluster client based on gRPC.
@@ -388,6 +403,7 @@ func NewCloudRedisClusterClient(ctx context.Context, opts ...option.ClientOption
 		connPool:                connPool,
 		cloudRedisClusterClient: clusterpb.NewCloudRedisClusterClient(connPool),
 		CallOptions:             &client.CallOptions,
+		logger:                  internaloption.GetLogger(opts),
 		operationsClient:        longrunningpb.NewOperationsClient(connPool),
 		locationsClient:         locationpb.NewLocationsClient(connPool),
 	}
@@ -423,7 +439,9 @@ func (c *cloudRedisClusterGRPCClient) Connection() *grpc.ClientConn {
 func (c *cloudRedisClusterGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -450,6 +468,8 @@ type cloudRedisClusterRESTClient struct {
 
 	// Points back to the CallOptions field of the containing CloudRedisClusterClient
 	CallOptions **CloudRedisClusterCallOptions
+
+	logger *slog.Logger
 }
 
 // NewCloudRedisClusterRESTClient creates a new cloud redis cluster rest client.
@@ -496,6 +516,7 @@ func NewCloudRedisClusterRESTClient(ctx context.Context, opts ...option.ClientOp
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -520,6 +541,7 @@ func defaultCloudRedisClusterRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://redis.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -529,7 +551,9 @@ func defaultCloudRedisClusterRESTClientOptions() []option.ClientOption {
 func (c *cloudRedisClusterRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -566,7 +590,7 @@ func (c *cloudRedisClusterGRPCClient) ListClusters(ctx context.Context, req *clu
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudRedisClusterClient.ListClusters(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudRedisClusterClient.ListClusters, req, settings.GRPC, c.logger, "ListClusters")
 			return err
 		}, opts...)
 		if err != nil {
@@ -601,7 +625,7 @@ func (c *cloudRedisClusterGRPCClient) GetCluster(ctx context.Context, req *clust
 	var resp *clusterpb.Cluster
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudRedisClusterClient.GetCluster(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudRedisClusterClient.GetCluster, req, settings.GRPC, c.logger, "GetCluster")
 		return err
 	}, opts...)
 	if err != nil {
@@ -619,7 +643,7 @@ func (c *cloudRedisClusterGRPCClient) UpdateCluster(ctx context.Context, req *cl
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudRedisClusterClient.UpdateCluster(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudRedisClusterClient.UpdateCluster, req, settings.GRPC, c.logger, "UpdateCluster")
 		return err
 	}, opts...)
 	if err != nil {
@@ -639,7 +663,7 @@ func (c *cloudRedisClusterGRPCClient) DeleteCluster(ctx context.Context, req *cl
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudRedisClusterClient.DeleteCluster(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudRedisClusterClient.DeleteCluster, req, settings.GRPC, c.logger, "DeleteCluster")
 		return err
 	}, opts...)
 	if err != nil {
@@ -659,7 +683,7 @@ func (c *cloudRedisClusterGRPCClient) CreateCluster(ctx context.Context, req *cl
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudRedisClusterClient.CreateCluster(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudRedisClusterClient.CreateCluster, req, settings.GRPC, c.logger, "CreateCluster")
 		return err
 	}, opts...)
 	if err != nil {
@@ -668,6 +692,24 @@ func (c *cloudRedisClusterGRPCClient) CreateCluster(ctx context.Context, req *cl
 	return &CreateClusterOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *cloudRedisClusterGRPCClient) GetClusterCertificateAuthority(ctx context.Context, req *clusterpb.GetClusterCertificateAuthorityRequest, opts ...gax.CallOption) (*clusterpb.CertificateAuthority, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetClusterCertificateAuthority[0:len((*c.CallOptions).GetClusterCertificateAuthority):len((*c.CallOptions).GetClusterCertificateAuthority)], opts...)
+	var resp *clusterpb.CertificateAuthority
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.cloudRedisClusterClient.GetClusterCertificateAuthority, req, settings.GRPC, c.logger, "GetClusterCertificateAuthority")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *cloudRedisClusterGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -679,7 +721,7 @@ func (c *cloudRedisClusterGRPCClient) GetLocation(ctx context.Context, req *loca
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -708,7 +750,7 @@ func (c *cloudRedisClusterGRPCClient) ListLocations(ctx context.Context, req *lo
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -742,7 +784,7 @@ func (c *cloudRedisClusterGRPCClient) CancelOperation(ctx context.Context, req *
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -756,7 +798,7 @@ func (c *cloudRedisClusterGRPCClient) DeleteOperation(ctx context.Context, req *
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -771,7 +813,7 @@ func (c *cloudRedisClusterGRPCClient) GetOperation(ctx context.Context, req *lon
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -800,7 +842,7 @@ func (c *cloudRedisClusterGRPCClient) ListOperations(ctx context.Context, req *l
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -879,21 +921,10 @@ func (c *cloudRedisClusterRESTClient) ListClusters(ctx context.Context, req *clu
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListClusters")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -956,17 +987,7 @@ func (c *cloudRedisClusterRESTClient) GetCluster(ctx context.Context, req *clust
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCluster")
 		if err != nil {
 			return err
 		}
@@ -1008,11 +1029,11 @@ func (c *cloudRedisClusterRESTClient) UpdateCluster(ctx context.Context, req *cl
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1036,21 +1057,10 @@ func (c *cloudRedisClusterRESTClient) UpdateCluster(ctx context.Context, req *cl
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateCluster")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1104,21 +1114,10 @@ func (c *cloudRedisClusterRESTClient) DeleteCluster(ctx context.Context, req *cl
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteCluster")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1186,21 +1185,10 @@ func (c *cloudRedisClusterRESTClient) CreateCluster(ctx context.Context, req *cl
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateCluster")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1216,6 +1204,56 @@ func (c *cloudRedisClusterRESTClient) CreateCluster(ctx context.Context, req *cl
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
+}
+
+// GetClusterCertificateAuthority gets the details of certificate authority information for Redis cluster.
+func (c *cloudRedisClusterRESTClient) GetClusterCertificateAuthority(ctx context.Context, req *clusterpb.GetClusterCertificateAuthorityRequest, opts ...gax.CallOption) (*clusterpb.CertificateAuthority, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetClusterCertificateAuthority[0:len((*c.CallOptions).GetClusterCertificateAuthority):len((*c.CallOptions).GetClusterCertificateAuthority)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &clusterpb.CertificateAuthority{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetClusterCertificateAuthority")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // GetLocation gets information about a location.
@@ -1251,17 +1289,7 @@ func (c *cloudRedisClusterRESTClient) GetLocation(ctx context.Context, req *loca
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -1326,21 +1354,10 @@ func (c *cloudRedisClusterRESTClient) ListLocations(ctx context.Context, req *lo
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1400,15 +1417,8 @@ func (c *cloudRedisClusterRESTClient) CancelOperation(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -1442,15 +1452,8 @@ func (c *cloudRedisClusterRESTClient) DeleteOperation(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOperation")
+		return err
 	}, opts...)
 }
 
@@ -1487,17 +1490,7 @@ func (c *cloudRedisClusterRESTClient) GetOperation(ctx context.Context, req *lon
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -1562,21 +1555,10 @@ func (c *cloudRedisClusterRESTClient) ListOperations(ctx context.Context, req *l
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

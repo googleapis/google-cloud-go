@@ -32,21 +32,13 @@
 // please visit godoc.org/cloud.google.com/go.
 package containeranalysis // import "cloud.google.com/go/containeranalysis/apiv1"
 
-import (
-	"context"
+var versionClient string
 
-	"google.golang.org/grpc/metadata"
-)
-
-func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
-	out, _ := metadata.FromOutgoingContext(ctx)
-	out = out.Copy()
-	for _, md := range mds {
-		for k, v := range md {
-			out[k] = append(out[k], v...)
-		}
+func getVersionClient() string {
+	if versionClient == "" {
+		return "UNKNOWN"
 	}
-	return metadata.NewOutgoingContext(ctx, out)
+	return versionClient
 }
 
 // DefaultAuthScopes reports the default set of authentication scopes to use with this package.
@@ -55,5 +47,3 @@ func DefaultAuthScopes() []string {
 		"https://www.googleapis.com/auth/cloud-platform",
 	}
 }
-
-var versionClient = "20220222"

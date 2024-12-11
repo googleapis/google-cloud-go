@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	appenginepb "cloud.google.com/go/appengine/apiv1/appenginepb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -59,6 +58,7 @@ func defaultAuthorizedCertificatesGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://appengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -196,6 +196,8 @@ type authorizedCertificatesGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewAuthorizedCertificatesClient creates a new authorized certificates client based on gRPC.
@@ -223,6 +225,7 @@ func NewAuthorizedCertificatesClient(ctx context.Context, opts ...option.ClientO
 		connPool:                     connPool,
 		authorizedCertificatesClient: appenginepb.NewAuthorizedCertificatesClient(connPool),
 		CallOptions:                  &client.CallOptions,
+		logger:                       internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -245,7 +248,9 @@ func (c *authorizedCertificatesGRPCClient) Connection() *grpc.ClientConn {
 func (c *authorizedCertificatesGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -267,6 +272,8 @@ type authorizedCertificatesRESTClient struct {
 
 	// Points back to the CallOptions field of the containing AuthorizedCertificatesClient
 	CallOptions **AuthorizedCertificatesCallOptions
+
+	logger *slog.Logger
 }
 
 // NewAuthorizedCertificatesRESTClient creates a new authorized certificates rest client.
@@ -285,6 +292,7 @@ func NewAuthorizedCertificatesRESTClient(ctx context.Context, opts ...option.Cli
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -299,6 +307,7 @@ func defaultAuthorizedCertificatesRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://appengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -308,7 +317,9 @@ func defaultAuthorizedCertificatesRESTClientOptions() []option.ClientOption {
 func (c *authorizedCertificatesRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -345,7 +356,7 @@ func (c *authorizedCertificatesGRPCClient) ListAuthorizedCertificates(ctx contex
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.authorizedCertificatesClient.ListAuthorizedCertificates(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.authorizedCertificatesClient.ListAuthorizedCertificates, req, settings.GRPC, c.logger, "ListAuthorizedCertificates")
 			return err
 		}, opts...)
 		if err != nil {
@@ -380,7 +391,7 @@ func (c *authorizedCertificatesGRPCClient) GetAuthorizedCertificate(ctx context.
 	var resp *appenginepb.AuthorizedCertificate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.authorizedCertificatesClient.GetAuthorizedCertificate(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.authorizedCertificatesClient.GetAuthorizedCertificate, req, settings.GRPC, c.logger, "GetAuthorizedCertificate")
 		return err
 	}, opts...)
 	if err != nil {
@@ -398,7 +409,7 @@ func (c *authorizedCertificatesGRPCClient) CreateAuthorizedCertificate(ctx conte
 	var resp *appenginepb.AuthorizedCertificate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.authorizedCertificatesClient.CreateAuthorizedCertificate(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.authorizedCertificatesClient.CreateAuthorizedCertificate, req, settings.GRPC, c.logger, "CreateAuthorizedCertificate")
 		return err
 	}, opts...)
 	if err != nil {
@@ -416,7 +427,7 @@ func (c *authorizedCertificatesGRPCClient) UpdateAuthorizedCertificate(ctx conte
 	var resp *appenginepb.AuthorizedCertificate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.authorizedCertificatesClient.UpdateAuthorizedCertificate(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.authorizedCertificatesClient.UpdateAuthorizedCertificate, req, settings.GRPC, c.logger, "UpdateAuthorizedCertificate")
 		return err
 	}, opts...)
 	if err != nil {
@@ -433,7 +444,7 @@ func (c *authorizedCertificatesGRPCClient) DeleteAuthorizedCertificate(ctx conte
 	opts = append((*c.CallOptions).DeleteAuthorizedCertificate[0:len((*c.CallOptions).DeleteAuthorizedCertificate):len((*c.CallOptions).DeleteAuthorizedCertificate)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.authorizedCertificatesClient.DeleteAuthorizedCertificate(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.authorizedCertificatesClient.DeleteAuthorizedCertificate, req, settings.GRPC, c.logger, "DeleteAuthorizedCertificate")
 		return err
 	}, opts...)
 	return err
@@ -487,21 +498,10 @@ func (c *authorizedCertificatesRESTClient) ListAuthorizedCertificates(ctx contex
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAuthorizedCertificates")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -567,17 +567,7 @@ func (c *authorizedCertificatesRESTClient) GetAuthorizedCertificate(ctx context.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAuthorizedCertificate")
 		if err != nil {
 			return err
 		}
@@ -634,17 +624,7 @@ func (c *authorizedCertificatesRESTClient) CreateAuthorizedCertificate(ctx conte
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateAuthorizedCertificate")
 		if err != nil {
 			return err
 		}
@@ -683,11 +663,11 @@ func (c *authorizedCertificatesRESTClient) UpdateAuthorizedCertificate(ctx conte
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -712,17 +692,7 @@ func (c *authorizedCertificatesRESTClient) UpdateAuthorizedCertificate(ctx conte
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateAuthorizedCertificate")
 		if err != nil {
 			return err
 		}
@@ -769,14 +739,7 @@ func (c *authorizedCertificatesRESTClient) DeleteAuthorizedCertificate(ctx conte
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteAuthorizedCertificate")
+		return err
 	}, opts...)
 }

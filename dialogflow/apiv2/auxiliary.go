@@ -1263,6 +1263,70 @@ func (op *ImportDocumentsOperation) Name() string {
 	return op.lro.Name()
 }
 
+// InitializeEncryptionSpecOperation manages a long-running operation from InitializeEncryptionSpec.
+type InitializeEncryptionSpecOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *InitializeEncryptionSpecOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*dialogflowpb.InitializeEncryptionSpecResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp dialogflowpb.InitializeEncryptionSpecResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *InitializeEncryptionSpecOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*dialogflowpb.InitializeEncryptionSpecResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp dialogflowpb.InitializeEncryptionSpecResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *InitializeEncryptionSpecOperation) Metadata() (*dialogflowpb.InitializeEncryptionSpecMetadata, error) {
+	var meta dialogflowpb.InitializeEncryptionSpecMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *InitializeEncryptionSpecOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *InitializeEncryptionSpecOperation) Name() string {
+	return op.lro.Name()
+}
+
 // ReloadDocumentOperation manages a long-running operation from ReloadDocument.
 type ReloadDocumentOperation struct {
 	lro      *longrunning.Operation
@@ -1634,7 +1698,7 @@ type AgentIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.Agent, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AgentIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1681,7 +1745,7 @@ type AnswerRecordIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.AnswerRecord, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AnswerRecordIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1728,7 +1792,7 @@ type ContextIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.Context, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ContextIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1775,7 +1839,7 @@ type ConversationDatasetIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.ConversationDataset, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ConversationDatasetIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1822,7 +1886,7 @@ type ConversationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.Conversation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ConversationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1869,7 +1933,7 @@ type ConversationModelEvaluationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.ConversationModelEvaluation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ConversationModelEvaluationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1916,7 +1980,7 @@ type ConversationModelIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.ConversationModel, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ConversationModelIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1963,7 +2027,7 @@ type ConversationProfileIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.ConversationProfile, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ConversationProfileIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2010,7 +2074,7 @@ type DocumentIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.Document, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *DocumentIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2057,7 +2121,7 @@ type EntityTypeIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.EntityType, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *EntityTypeIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2104,7 +2168,7 @@ type EnvironmentHistory_EntryIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.EnvironmentHistory_Entry, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *EnvironmentHistory_EntryIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2151,7 +2215,7 @@ type EnvironmentIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.Environment, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *EnvironmentIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2178,6 +2242,53 @@ func (it *EnvironmentIterator) takeBuf() interface{} {
 	return b
 }
 
+// GeneratorIterator manages a stream of *dialogflowpb.Generator.
+type GeneratorIterator struct {
+	items    []*dialogflowpb.Generator
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.Generator, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *GeneratorIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *GeneratorIterator) Next() (*dialogflowpb.Generator, error) {
+	var item *dialogflowpb.Generator
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *GeneratorIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *GeneratorIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // IntentIterator manages a stream of *dialogflowpb.Intent.
 type IntentIterator struct {
 	items    []*dialogflowpb.Intent
@@ -2198,7 +2309,7 @@ type IntentIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.Intent, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *IntentIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2245,7 +2356,7 @@ type KnowledgeBaseIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.KnowledgeBase, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *KnowledgeBaseIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2292,7 +2403,7 @@ type LocationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *LocationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2339,7 +2450,7 @@ type MessageIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.Message, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *MessageIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2386,7 +2497,7 @@ type OperationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *OperationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2433,7 +2544,7 @@ type ParticipantIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.Participant, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ParticipantIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2480,7 +2591,7 @@ type SessionEntityTypeIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.SessionEntityType, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *SessionEntityTypeIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2527,7 +2638,7 @@ type VersionIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.Version, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *VersionIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

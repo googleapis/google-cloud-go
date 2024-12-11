@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -29,7 +29,6 @@ import (
 	containeranalysispb "cloud.google.com/go/containeranalysis/apiv1beta1/containeranalysispb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -58,6 +57,7 @@ func defaultContainerAnalysisV1Beta1GRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://containeranalysis.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -214,6 +214,8 @@ type containerAnalysisV1Beta1GRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewContainerAnalysisV1Beta1Client creates a new container analysis v1 beta1 client based on gRPC.
@@ -252,6 +254,7 @@ func NewContainerAnalysisV1Beta1Client(ctx context.Context, opts ...option.Clien
 		connPool:                       connPool,
 		containerAnalysisV1Beta1Client: containeranalysispb.NewContainerAnalysisV1Beta1Client(connPool),
 		CallOptions:                    &client.CallOptions,
+		logger:                         internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -274,7 +277,9 @@ func (c *containerAnalysisV1Beta1GRPCClient) Connection() *grpc.ClientConn {
 func (c *containerAnalysisV1Beta1GRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -296,6 +301,8 @@ type containerAnalysisV1Beta1RESTClient struct {
 
 	// Points back to the CallOptions field of the containing ContainerAnalysisV1Beta1Client
 	CallOptions **ContainerAnalysisV1Beta1CallOptions
+
+	logger *slog.Logger
 }
 
 // NewContainerAnalysisV1Beta1RESTClient creates a new container analysis v1 beta1 rest client.
@@ -325,6 +332,7 @@ func NewContainerAnalysisV1Beta1RESTClient(ctx context.Context, opts ...option.C
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -339,6 +347,7 @@ func defaultContainerAnalysisV1Beta1RESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://containeranalysis.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -348,7 +357,9 @@ func defaultContainerAnalysisV1Beta1RESTClientOptions() []option.ClientOption {
 func (c *containerAnalysisV1Beta1RESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -374,7 +385,7 @@ func (c *containerAnalysisV1Beta1GRPCClient) SetIamPolicy(ctx context.Context, r
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.containerAnalysisV1Beta1Client.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.containerAnalysisV1Beta1Client.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -392,7 +403,7 @@ func (c *containerAnalysisV1Beta1GRPCClient) GetIamPolicy(ctx context.Context, r
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.containerAnalysisV1Beta1Client.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.containerAnalysisV1Beta1Client.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -410,7 +421,7 @@ func (c *containerAnalysisV1Beta1GRPCClient) TestIamPermissions(ctx context.Cont
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.containerAnalysisV1Beta1Client.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.containerAnalysisV1Beta1Client.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -428,7 +439,7 @@ func (c *containerAnalysisV1Beta1GRPCClient) GeneratePackagesSummary(ctx context
 	var resp *containeranalysispb.PackagesSummaryResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.containerAnalysisV1Beta1Client.GeneratePackagesSummary(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.containerAnalysisV1Beta1Client.GeneratePackagesSummary, req, settings.GRPC, c.logger, "GeneratePackagesSummary")
 		return err
 	}, opts...)
 	if err != nil {
@@ -446,7 +457,7 @@ func (c *containerAnalysisV1Beta1GRPCClient) ExportSBOM(ctx context.Context, req
 	var resp *containeranalysispb.ExportSBOMResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.containerAnalysisV1Beta1Client.ExportSBOM(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.containerAnalysisV1Beta1Client.ExportSBOM, req, settings.GRPC, c.logger, "ExportSBOM")
 		return err
 	}, opts...)
 	if err != nil {
@@ -501,17 +512,7 @@ func (c *containerAnalysisV1Beta1RESTClient) SetIamPolicy(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -574,17 +575,7 @@ func (c *containerAnalysisV1Beta1RESTClient) GetIamPolicy(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -646,17 +637,7 @@ func (c *containerAnalysisV1Beta1RESTClient) TestIamPermissions(ctx context.Cont
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
 		if err != nil {
 			return err
 		}
@@ -712,17 +693,7 @@ func (c *containerAnalysisV1Beta1RESTClient) GeneratePackagesSummary(ctx context
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GeneratePackagesSummary")
 		if err != nil {
 			return err
 		}
@@ -778,17 +749,7 @@ func (c *containerAnalysisV1Beta1RESTClient) ExportSBOM(ctx context.Context, req
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExportSBOM")
 		if err != nil {
 			return err
 		}

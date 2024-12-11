@@ -21,7 +21,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	visionaipb "cloud.google.com/go/visionai/apiv1/visionaipb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -126,6 +125,7 @@ func defaultWarehouseGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://visionai.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -1976,7 +1976,8 @@ func (c *WarehouseClient) IngestAsset(ctx context.Context, opts ...gax.CallOptio
 	return c.internalClient.IngestAsset(ctx, opts...)
 }
 
-// ClipAsset generates clips for downloading. The api takes in a time range, and
+// ClipAsset supported by STREAM_VIDEO corpus type.
+// Generates clips for downloading. The api takes in a time range, and
 // generates a clip of the first content available after start_time and
 // before end_time, which may overflow beyond these bounds.
 // Returned clips are truncated if the total size of the clips are larger
@@ -2266,6 +2267,8 @@ type warehouseGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewWarehouseClient creates a new warehouse client based on gRPC.
@@ -2292,6 +2295,7 @@ func NewWarehouseClient(ctx context.Context, opts ...option.ClientOption) (*Ware
 		connPool:         connPool,
 		warehouseClient:  visionaipb.NewWarehouseClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -2326,7 +2330,9 @@ func (c *warehouseGRPCClient) Connection() *grpc.ClientConn {
 func (c *warehouseGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -2353,6 +2359,8 @@ type warehouseRESTClient struct {
 
 	// Points back to the CallOptions field of the containing WarehouseClient
 	CallOptions **WarehouseCallOptions
+
+	logger *slog.Logger
 }
 
 // NewWarehouseRESTClient creates a new warehouse rest client.
@@ -2370,6 +2378,7 @@ func NewWarehouseRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -2394,6 +2403,7 @@ func defaultWarehouseRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://visionai.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -2403,7 +2413,9 @@ func defaultWarehouseRESTClientOptions() []option.ClientOption {
 func (c *warehouseRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -2429,7 +2441,7 @@ func (c *warehouseGRPCClient) CreateAsset(ctx context.Context, req *visionaipb.C
 	var resp *visionaipb.Asset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.CreateAsset(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.CreateAsset, req, settings.GRPC, c.logger, "CreateAsset")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2447,7 +2459,7 @@ func (c *warehouseGRPCClient) UpdateAsset(ctx context.Context, req *visionaipb.U
 	var resp *visionaipb.Asset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.UpdateAsset(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.UpdateAsset, req, settings.GRPC, c.logger, "UpdateAsset")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2465,7 +2477,7 @@ func (c *warehouseGRPCClient) GetAsset(ctx context.Context, req *visionaipb.GetA
 	var resp *visionaipb.Asset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.GetAsset(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.GetAsset, req, settings.GRPC, c.logger, "GetAsset")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2494,7 +2506,7 @@ func (c *warehouseGRPCClient) ListAssets(ctx context.Context, req *visionaipb.Li
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.warehouseClient.ListAssets(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.warehouseClient.ListAssets, req, settings.GRPC, c.logger, "ListAssets")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2529,7 +2541,7 @@ func (c *warehouseGRPCClient) DeleteAsset(ctx context.Context, req *visionaipb.D
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.DeleteAsset(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.DeleteAsset, req, settings.GRPC, c.logger, "DeleteAsset")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2549,7 +2561,7 @@ func (c *warehouseGRPCClient) UploadAsset(ctx context.Context, req *visionaipb.U
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.UploadAsset(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.UploadAsset, req, settings.GRPC, c.logger, "UploadAsset")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2569,7 +2581,7 @@ func (c *warehouseGRPCClient) GenerateRetrievalUrl(ctx context.Context, req *vis
 	var resp *visionaipb.GenerateRetrievalUrlResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.GenerateRetrievalUrl(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.GenerateRetrievalUrl, req, settings.GRPC, c.logger, "GenerateRetrievalUrl")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2587,7 +2599,7 @@ func (c *warehouseGRPCClient) AnalyzeAsset(ctx context.Context, req *visionaipb.
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.AnalyzeAsset(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.AnalyzeAsset, req, settings.GRPC, c.logger, "AnalyzeAsset")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2607,7 +2619,7 @@ func (c *warehouseGRPCClient) IndexAsset(ctx context.Context, req *visionaipb.In
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.IndexAsset(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.IndexAsset, req, settings.GRPC, c.logger, "IndexAsset")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2627,7 +2639,7 @@ func (c *warehouseGRPCClient) RemoveIndexAsset(ctx context.Context, req *visiona
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.RemoveIndexAsset(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.RemoveIndexAsset, req, settings.GRPC, c.logger, "RemoveIndexAsset")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2658,7 +2670,7 @@ func (c *warehouseGRPCClient) ViewIndexedAssets(ctx context.Context, req *vision
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.warehouseClient.ViewIndexedAssets(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.warehouseClient.ViewIndexedAssets, req, settings.GRPC, c.logger, "ViewIndexedAssets")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2693,7 +2705,7 @@ func (c *warehouseGRPCClient) CreateIndex(ctx context.Context, req *visionaipb.C
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.CreateIndex(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.CreateIndex, req, settings.GRPC, c.logger, "CreateIndex")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2713,7 +2725,7 @@ func (c *warehouseGRPCClient) UpdateIndex(ctx context.Context, req *visionaipb.U
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.UpdateIndex(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.UpdateIndex, req, settings.GRPC, c.logger, "UpdateIndex")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2733,7 +2745,7 @@ func (c *warehouseGRPCClient) GetIndex(ctx context.Context, req *visionaipb.GetI
 	var resp *visionaipb.Index
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.GetIndex(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.GetIndex, req, settings.GRPC, c.logger, "GetIndex")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2762,7 +2774,7 @@ func (c *warehouseGRPCClient) ListIndexes(ctx context.Context, req *visionaipb.L
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.warehouseClient.ListIndexes(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.warehouseClient.ListIndexes, req, settings.GRPC, c.logger, "ListIndexes")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2797,7 +2809,7 @@ func (c *warehouseGRPCClient) DeleteIndex(ctx context.Context, req *visionaipb.D
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.DeleteIndex(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.DeleteIndex, req, settings.GRPC, c.logger, "DeleteIndex")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2817,7 +2829,7 @@ func (c *warehouseGRPCClient) CreateCorpus(ctx context.Context, req *visionaipb.
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.CreateCorpus(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.CreateCorpus, req, settings.GRPC, c.logger, "CreateCorpus")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2837,7 +2849,7 @@ func (c *warehouseGRPCClient) GetCorpus(ctx context.Context, req *visionaipb.Get
 	var resp *visionaipb.Corpus
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.GetCorpus(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.GetCorpus, req, settings.GRPC, c.logger, "GetCorpus")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2855,7 +2867,7 @@ func (c *warehouseGRPCClient) UpdateCorpus(ctx context.Context, req *visionaipb.
 	var resp *visionaipb.Corpus
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.UpdateCorpus(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.UpdateCorpus, req, settings.GRPC, c.logger, "UpdateCorpus")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2884,7 +2896,7 @@ func (c *warehouseGRPCClient) ListCorpora(ctx context.Context, req *visionaipb.L
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.warehouseClient.ListCorpora(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.warehouseClient.ListCorpora, req, settings.GRPC, c.logger, "ListCorpora")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2918,7 +2930,7 @@ func (c *warehouseGRPCClient) DeleteCorpus(ctx context.Context, req *visionaipb.
 	opts = append((*c.CallOptions).DeleteCorpus[0:len((*c.CallOptions).DeleteCorpus):len((*c.CallOptions).DeleteCorpus)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.warehouseClient.DeleteCorpus(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.warehouseClient.DeleteCorpus, req, settings.GRPC, c.logger, "DeleteCorpus")
 		return err
 	}, opts...)
 	return err
@@ -2933,7 +2945,7 @@ func (c *warehouseGRPCClient) AnalyzeCorpus(ctx context.Context, req *visionaipb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.AnalyzeCorpus(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.AnalyzeCorpus, req, settings.GRPC, c.logger, "AnalyzeCorpus")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2953,7 +2965,7 @@ func (c *warehouseGRPCClient) CreateDataSchema(ctx context.Context, req *visiona
 	var resp *visionaipb.DataSchema
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.CreateDataSchema(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.CreateDataSchema, req, settings.GRPC, c.logger, "CreateDataSchema")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2971,7 +2983,7 @@ func (c *warehouseGRPCClient) UpdateDataSchema(ctx context.Context, req *visiona
 	var resp *visionaipb.DataSchema
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.UpdateDataSchema(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.UpdateDataSchema, req, settings.GRPC, c.logger, "UpdateDataSchema")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2989,7 +3001,7 @@ func (c *warehouseGRPCClient) GetDataSchema(ctx context.Context, req *visionaipb
 	var resp *visionaipb.DataSchema
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.GetDataSchema(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.GetDataSchema, req, settings.GRPC, c.logger, "GetDataSchema")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3006,7 +3018,7 @@ func (c *warehouseGRPCClient) DeleteDataSchema(ctx context.Context, req *visiona
 	opts = append((*c.CallOptions).DeleteDataSchema[0:len((*c.CallOptions).DeleteDataSchema):len((*c.CallOptions).DeleteDataSchema)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.warehouseClient.DeleteDataSchema(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.warehouseClient.DeleteDataSchema, req, settings.GRPC, c.logger, "DeleteDataSchema")
 		return err
 	}, opts...)
 	return err
@@ -3032,7 +3044,7 @@ func (c *warehouseGRPCClient) ListDataSchemas(ctx context.Context, req *visionai
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.warehouseClient.ListDataSchemas(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.warehouseClient.ListDataSchemas, req, settings.GRPC, c.logger, "ListDataSchemas")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3067,7 +3079,7 @@ func (c *warehouseGRPCClient) CreateAnnotation(ctx context.Context, req *visiona
 	var resp *visionaipb.Annotation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.CreateAnnotation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.CreateAnnotation, req, settings.GRPC, c.logger, "CreateAnnotation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3085,7 +3097,7 @@ func (c *warehouseGRPCClient) GetAnnotation(ctx context.Context, req *visionaipb
 	var resp *visionaipb.Annotation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.GetAnnotation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.GetAnnotation, req, settings.GRPC, c.logger, "GetAnnotation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3114,7 +3126,7 @@ func (c *warehouseGRPCClient) ListAnnotations(ctx context.Context, req *visionai
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.warehouseClient.ListAnnotations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.warehouseClient.ListAnnotations, req, settings.GRPC, c.logger, "ListAnnotations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3149,7 +3161,7 @@ func (c *warehouseGRPCClient) UpdateAnnotation(ctx context.Context, req *visiona
 	var resp *visionaipb.Annotation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.UpdateAnnotation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.UpdateAnnotation, req, settings.GRPC, c.logger, "UpdateAnnotation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3166,7 +3178,7 @@ func (c *warehouseGRPCClient) DeleteAnnotation(ctx context.Context, req *visiona
 	opts = append((*c.CallOptions).DeleteAnnotation[0:len((*c.CallOptions).DeleteAnnotation):len((*c.CallOptions).DeleteAnnotation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.warehouseClient.DeleteAnnotation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.warehouseClient.DeleteAnnotation, req, settings.GRPC, c.logger, "DeleteAnnotation")
 		return err
 	}, opts...)
 	return err
@@ -3178,7 +3190,9 @@ func (c *warehouseGRPCClient) IngestAsset(ctx context.Context, opts ...gax.CallO
 	opts = append((*c.CallOptions).IngestAsset[0:len((*c.CallOptions).IngestAsset):len((*c.CallOptions).IngestAsset)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "IngestAsset")
 		resp, err = c.warehouseClient.IngestAsset(ctx, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "IngestAsset")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3196,7 +3210,7 @@ func (c *warehouseGRPCClient) ClipAsset(ctx context.Context, req *visionaipb.Cli
 	var resp *visionaipb.ClipAssetResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.ClipAsset(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.ClipAsset, req, settings.GRPC, c.logger, "ClipAsset")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3214,7 +3228,7 @@ func (c *warehouseGRPCClient) GenerateHlsUri(ctx context.Context, req *visionaip
 	var resp *visionaipb.GenerateHlsUriResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.GenerateHlsUri(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.GenerateHlsUri, req, settings.GRPC, c.logger, "GenerateHlsUri")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3232,7 +3246,7 @@ func (c *warehouseGRPCClient) ImportAssets(ctx context.Context, req *visionaipb.
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.ImportAssets(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.ImportAssets, req, settings.GRPC, c.logger, "ImportAssets")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3252,7 +3266,7 @@ func (c *warehouseGRPCClient) CreateSearchConfig(ctx context.Context, req *visio
 	var resp *visionaipb.SearchConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.CreateSearchConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.CreateSearchConfig, req, settings.GRPC, c.logger, "CreateSearchConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3270,7 +3284,7 @@ func (c *warehouseGRPCClient) UpdateSearchConfig(ctx context.Context, req *visio
 	var resp *visionaipb.SearchConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.UpdateSearchConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.UpdateSearchConfig, req, settings.GRPC, c.logger, "UpdateSearchConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3288,7 +3302,7 @@ func (c *warehouseGRPCClient) GetSearchConfig(ctx context.Context, req *visionai
 	var resp *visionaipb.SearchConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.GetSearchConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.GetSearchConfig, req, settings.GRPC, c.logger, "GetSearchConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3305,7 +3319,7 @@ func (c *warehouseGRPCClient) DeleteSearchConfig(ctx context.Context, req *visio
 	opts = append((*c.CallOptions).DeleteSearchConfig[0:len((*c.CallOptions).DeleteSearchConfig):len((*c.CallOptions).DeleteSearchConfig)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.warehouseClient.DeleteSearchConfig(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.warehouseClient.DeleteSearchConfig, req, settings.GRPC, c.logger, "DeleteSearchConfig")
 		return err
 	}, opts...)
 	return err
@@ -3331,7 +3345,7 @@ func (c *warehouseGRPCClient) ListSearchConfigs(ctx context.Context, req *vision
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.warehouseClient.ListSearchConfigs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.warehouseClient.ListSearchConfigs, req, settings.GRPC, c.logger, "ListSearchConfigs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3366,7 +3380,7 @@ func (c *warehouseGRPCClient) CreateSearchHypernym(ctx context.Context, req *vis
 	var resp *visionaipb.SearchHypernym
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.CreateSearchHypernym(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.CreateSearchHypernym, req, settings.GRPC, c.logger, "CreateSearchHypernym")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3384,7 +3398,7 @@ func (c *warehouseGRPCClient) UpdateSearchHypernym(ctx context.Context, req *vis
 	var resp *visionaipb.SearchHypernym
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.UpdateSearchHypernym(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.UpdateSearchHypernym, req, settings.GRPC, c.logger, "UpdateSearchHypernym")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3402,7 +3416,7 @@ func (c *warehouseGRPCClient) GetSearchHypernym(ctx context.Context, req *vision
 	var resp *visionaipb.SearchHypernym
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.GetSearchHypernym(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.GetSearchHypernym, req, settings.GRPC, c.logger, "GetSearchHypernym")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3419,7 +3433,7 @@ func (c *warehouseGRPCClient) DeleteSearchHypernym(ctx context.Context, req *vis
 	opts = append((*c.CallOptions).DeleteSearchHypernym[0:len((*c.CallOptions).DeleteSearchHypernym):len((*c.CallOptions).DeleteSearchHypernym)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.warehouseClient.DeleteSearchHypernym(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.warehouseClient.DeleteSearchHypernym, req, settings.GRPC, c.logger, "DeleteSearchHypernym")
 		return err
 	}, opts...)
 	return err
@@ -3445,7 +3459,7 @@ func (c *warehouseGRPCClient) ListSearchHypernyms(ctx context.Context, req *visi
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.warehouseClient.ListSearchHypernyms(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.warehouseClient.ListSearchHypernyms, req, settings.GRPC, c.logger, "ListSearchHypernyms")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3491,7 +3505,7 @@ func (c *warehouseGRPCClient) SearchAssets(ctx context.Context, req *visionaipb.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.warehouseClient.SearchAssets(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.warehouseClient.SearchAssets, req, settings.GRPC, c.logger, "SearchAssets")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3537,7 +3551,7 @@ func (c *warehouseGRPCClient) SearchIndexEndpoint(ctx context.Context, req *visi
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.warehouseClient.SearchIndexEndpoint(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.warehouseClient.SearchIndexEndpoint, req, settings.GRPC, c.logger, "SearchIndexEndpoint")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3572,7 +3586,7 @@ func (c *warehouseGRPCClient) CreateIndexEndpoint(ctx context.Context, req *visi
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.CreateIndexEndpoint(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.CreateIndexEndpoint, req, settings.GRPC, c.logger, "CreateIndexEndpoint")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3592,7 +3606,7 @@ func (c *warehouseGRPCClient) GetIndexEndpoint(ctx context.Context, req *visiona
 	var resp *visionaipb.IndexEndpoint
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.GetIndexEndpoint(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.GetIndexEndpoint, req, settings.GRPC, c.logger, "GetIndexEndpoint")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3621,7 +3635,7 @@ func (c *warehouseGRPCClient) ListIndexEndpoints(ctx context.Context, req *visio
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.warehouseClient.ListIndexEndpoints(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.warehouseClient.ListIndexEndpoints, req, settings.GRPC, c.logger, "ListIndexEndpoints")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3656,7 +3670,7 @@ func (c *warehouseGRPCClient) UpdateIndexEndpoint(ctx context.Context, req *visi
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.UpdateIndexEndpoint(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.UpdateIndexEndpoint, req, settings.GRPC, c.logger, "UpdateIndexEndpoint")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3676,7 +3690,7 @@ func (c *warehouseGRPCClient) DeleteIndexEndpoint(ctx context.Context, req *visi
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.DeleteIndexEndpoint(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.DeleteIndexEndpoint, req, settings.GRPC, c.logger, "DeleteIndexEndpoint")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3696,7 +3710,7 @@ func (c *warehouseGRPCClient) DeployIndex(ctx context.Context, req *visionaipb.D
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.DeployIndex(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.DeployIndex, req, settings.GRPC, c.logger, "DeployIndex")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3716,7 +3730,7 @@ func (c *warehouseGRPCClient) UndeployIndex(ctx context.Context, req *visionaipb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.UndeployIndex(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.UndeployIndex, req, settings.GRPC, c.logger, "UndeployIndex")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3736,7 +3750,7 @@ func (c *warehouseGRPCClient) CreateCollection(ctx context.Context, req *visiona
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.CreateCollection(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.CreateCollection, req, settings.GRPC, c.logger, "CreateCollection")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3756,7 +3770,7 @@ func (c *warehouseGRPCClient) DeleteCollection(ctx context.Context, req *visiona
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.DeleteCollection(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.DeleteCollection, req, settings.GRPC, c.logger, "DeleteCollection")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3776,7 +3790,7 @@ func (c *warehouseGRPCClient) GetCollection(ctx context.Context, req *visionaipb
 	var resp *visionaipb.Collection
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.GetCollection(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.GetCollection, req, settings.GRPC, c.logger, "GetCollection")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3794,7 +3808,7 @@ func (c *warehouseGRPCClient) UpdateCollection(ctx context.Context, req *visiona
 	var resp *visionaipb.Collection
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.UpdateCollection(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.UpdateCollection, req, settings.GRPC, c.logger, "UpdateCollection")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3823,7 +3837,7 @@ func (c *warehouseGRPCClient) ListCollections(ctx context.Context, req *visionai
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.warehouseClient.ListCollections(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.warehouseClient.ListCollections, req, settings.GRPC, c.logger, "ListCollections")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3858,7 +3872,7 @@ func (c *warehouseGRPCClient) AddCollectionItem(ctx context.Context, req *vision
 	var resp *visionaipb.AddCollectionItemResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.AddCollectionItem(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.AddCollectionItem, req, settings.GRPC, c.logger, "AddCollectionItem")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3876,7 +3890,7 @@ func (c *warehouseGRPCClient) RemoveCollectionItem(ctx context.Context, req *vis
 	var resp *visionaipb.RemoveCollectionItemResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.warehouseClient.RemoveCollectionItem(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.warehouseClient.RemoveCollectionItem, req, settings.GRPC, c.logger, "RemoveCollectionItem")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3905,7 +3919,7 @@ func (c *warehouseGRPCClient) ViewCollectionItems(ctx context.Context, req *visi
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.warehouseClient.ViewCollectionItems(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.warehouseClient.ViewCollectionItems, req, settings.GRPC, c.logger, "ViewCollectionItems")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3939,7 +3953,7 @@ func (c *warehouseGRPCClient) CancelOperation(ctx context.Context, req *longrunn
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -3953,7 +3967,7 @@ func (c *warehouseGRPCClient) DeleteOperation(ctx context.Context, req *longrunn
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -3968,7 +3982,7 @@ func (c *warehouseGRPCClient) GetOperation(ctx context.Context, req *longrunning
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3997,7 +4011,7 @@ func (c *warehouseGRPCClient) ListOperations(ctx context.Context, req *longrunni
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -4066,17 +4080,7 @@ func (c *warehouseRESTClient) CreateAsset(ctx context.Context, req *visionaipb.C
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateAsset")
 		if err != nil {
 			return err
 		}
@@ -4111,11 +4115,11 @@ func (c *warehouseRESTClient) UpdateAsset(ctx context.Context, req *visionaipb.U
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4140,17 +4144,7 @@ func (c *warehouseRESTClient) UpdateAsset(ctx context.Context, req *visionaipb.U
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateAsset")
 		if err != nil {
 			return err
 		}
@@ -4200,17 +4194,7 @@ func (c *warehouseRESTClient) GetAsset(ctx context.Context, req *visionaipb.GetA
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAsset")
 		if err != nil {
 			return err
 		}
@@ -4275,21 +4259,10 @@ func (c *warehouseRESTClient) ListAssets(ctx context.Context, req *visionaipb.Li
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAssets")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4351,21 +4324,10 @@ func (c *warehouseRESTClient) DeleteAsset(ctx context.Context, req *visionaipb.D
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteAsset")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4430,21 +4392,10 @@ func (c *warehouseRESTClient) UploadAsset(ctx context.Context, req *visionaipb.U
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UploadAsset")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4503,17 +4454,7 @@ func (c *warehouseRESTClient) GenerateRetrievalUrl(ctx context.Context, req *vis
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GenerateRetrievalUrl")
 		if err != nil {
 			return err
 		}
@@ -4568,21 +4509,10 @@ func (c *warehouseRESTClient) AnalyzeAsset(ctx context.Context, req *visionaipb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AnalyzeAsset")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4639,21 +4569,10 @@ func (c *warehouseRESTClient) IndexAsset(ctx context.Context, req *visionaipb.In
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "IndexAsset")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4710,21 +4629,10 @@ func (c *warehouseRESTClient) RemoveIndexAsset(ctx context.Context, req *visiona
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RemoveIndexAsset")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4790,21 +4698,10 @@ func (c *warehouseRESTClient) ViewIndexedAssets(ctx context.Context, req *vision
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ViewIndexedAssets")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4876,21 +4773,10 @@ func (c *warehouseRESTClient) CreateIndex(ctx context.Context, req *visionaipb.C
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateIndex")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4928,11 +4814,11 @@ func (c *warehouseRESTClient) UpdateIndex(ctx context.Context, req *visionaipb.U
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4956,21 +4842,10 @@ func (c *warehouseRESTClient) UpdateIndex(ctx context.Context, req *visionaipb.U
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateIndex")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5021,17 +4896,7 @@ func (c *warehouseRESTClient) GetIndex(ctx context.Context, req *visionaipb.GetI
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetIndex")
 		if err != nil {
 			return err
 		}
@@ -5093,21 +4958,10 @@ func (c *warehouseRESTClient) ListIndexes(ctx context.Context, req *visionaipb.L
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListIndexes")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -5170,21 +5024,10 @@ func (c *warehouseRESTClient) DeleteIndex(ctx context.Context, req *visionaipb.D
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteIndex")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5241,21 +5084,10 @@ func (c *warehouseRESTClient) CreateCorpus(ctx context.Context, req *visionaipb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateCorpus")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5306,17 +5138,7 @@ func (c *warehouseRESTClient) GetCorpus(ctx context.Context, req *visionaipb.Get
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCorpus")
 		if err != nil {
 			return err
 		}
@@ -5351,11 +5173,11 @@ func (c *warehouseRESTClient) UpdateCorpus(ctx context.Context, req *visionaipb.
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -5380,17 +5202,7 @@ func (c *warehouseRESTClient) UpdateCorpus(ctx context.Context, req *visionaipb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateCorpus")
 		if err != nil {
 			return err
 		}
@@ -5455,21 +5267,10 @@ func (c *warehouseRESTClient) ListCorpora(ctx context.Context, req *visionaipb.L
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListCorpora")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -5530,15 +5331,8 @@ func (c *warehouseRESTClient) DeleteCorpus(ctx context.Context, req *visionaipb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteCorpus")
+		return err
 	}, opts...)
 }
 
@@ -5580,21 +5374,10 @@ func (c *warehouseRESTClient) AnalyzeCorpus(ctx context.Context, req *visionaipb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AnalyzeCorpus")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5652,17 +5435,7 @@ func (c *warehouseRESTClient) CreateDataSchema(ctx context.Context, req *visiona
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDataSchema")
 		if err != nil {
 			return err
 		}
@@ -5697,11 +5470,11 @@ func (c *warehouseRESTClient) UpdateDataSchema(ctx context.Context, req *visiona
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -5726,17 +5499,7 @@ func (c *warehouseRESTClient) UpdateDataSchema(ctx context.Context, req *visiona
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateDataSchema")
 		if err != nil {
 			return err
 		}
@@ -5786,17 +5549,7 @@ func (c *warehouseRESTClient) GetDataSchema(ctx context.Context, req *visionaipb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDataSchema")
 		if err != nil {
 			return err
 		}
@@ -5843,15 +5596,8 @@ func (c *warehouseRESTClient) DeleteDataSchema(ctx context.Context, req *visiona
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDataSchema")
+		return err
 	}, opts...)
 }
 
@@ -5900,21 +5646,10 @@ func (c *warehouseRESTClient) ListDataSchemas(ctx context.Context, req *visionai
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDataSchemas")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -5987,17 +5722,7 @@ func (c *warehouseRESTClient) CreateAnnotation(ctx context.Context, req *visiona
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateAnnotation")
 		if err != nil {
 			return err
 		}
@@ -6047,17 +5772,7 @@ func (c *warehouseRESTClient) GetAnnotation(ctx context.Context, req *visionaipb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAnnotation")
 		if err != nil {
 			return err
 		}
@@ -6122,21 +5837,10 @@ func (c *warehouseRESTClient) ListAnnotations(ctx context.Context, req *visionai
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAnnotations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -6184,11 +5888,11 @@ func (c *warehouseRESTClient) UpdateAnnotation(ctx context.Context, req *visiona
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -6213,17 +5917,7 @@ func (c *warehouseRESTClient) UpdateAnnotation(ctx context.Context, req *visiona
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateAnnotation")
 		if err != nil {
 			return err
 		}
@@ -6270,15 +5964,8 @@ func (c *warehouseRESTClient) DeleteAnnotation(ctx context.Context, req *visiona
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteAnnotation")
+		return err
 	}, opts...)
 }
 
@@ -6292,7 +5979,8 @@ func (c *warehouseRESTClient) IngestAsset(ctx context.Context, opts ...gax.CallO
 	return nil, errors.New("IngestAsset not yet supported for REST clients")
 }
 
-// ClipAsset generates clips for downloading. The api takes in a time range, and
+// ClipAsset supported by STREAM_VIDEO corpus type.
+// Generates clips for downloading. The api takes in a time range, and
 // generates a clip of the first content available after start_time and
 // before end_time, which may overflow beyond these bounds.
 // Returned clips are truncated if the total size of the clips are larger
@@ -6335,17 +6023,7 @@ func (c *warehouseRESTClient) ClipAsset(ctx context.Context, req *visionaipb.Cli
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ClipAsset")
 		if err != nil {
 			return err
 		}
@@ -6403,17 +6081,7 @@ func (c *warehouseRESTClient) GenerateHlsUri(ctx context.Context, req *visionaip
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GenerateHlsUri")
 		if err != nil {
 			return err
 		}
@@ -6470,21 +6138,10 @@ func (c *warehouseRESTClient) ImportAssets(ctx context.Context, req *visionaipb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ImportAssets")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -6563,17 +6220,7 @@ func (c *warehouseRESTClient) CreateSearchConfig(ctx context.Context, req *visio
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateSearchConfig")
 		if err != nil {
 			return err
 		}
@@ -6627,11 +6274,11 @@ func (c *warehouseRESTClient) UpdateSearchConfig(ctx context.Context, req *visio
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -6656,17 +6303,7 @@ func (c *warehouseRESTClient) UpdateSearchConfig(ctx context.Context, req *visio
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateSearchConfig")
 		if err != nil {
 			return err
 		}
@@ -6716,17 +6353,7 @@ func (c *warehouseRESTClient) GetSearchConfig(ctx context.Context, req *visionai
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSearchConfig")
 		if err != nil {
 			return err
 		}
@@ -6776,15 +6403,8 @@ func (c *warehouseRESTClient) DeleteSearchConfig(ctx context.Context, req *visio
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteSearchConfig")
+		return err
 	}, opts...)
 }
 
@@ -6833,21 +6453,10 @@ func (c *warehouseRESTClient) ListSearchConfigs(ctx context.Context, req *vision
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSearchConfigs")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -6920,17 +6529,7 @@ func (c *warehouseRESTClient) CreateSearchHypernym(ctx context.Context, req *vis
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateSearchHypernym")
 		if err != nil {
 			return err
 		}
@@ -6965,11 +6564,11 @@ func (c *warehouseRESTClient) UpdateSearchHypernym(ctx context.Context, req *vis
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -6994,17 +6593,7 @@ func (c *warehouseRESTClient) UpdateSearchHypernym(ctx context.Context, req *vis
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateSearchHypernym")
 		if err != nil {
 			return err
 		}
@@ -7054,17 +6643,7 @@ func (c *warehouseRESTClient) GetSearchHypernym(ctx context.Context, req *vision
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSearchHypernym")
 		if err != nil {
 			return err
 		}
@@ -7111,15 +6690,8 @@ func (c *warehouseRESTClient) DeleteSearchHypernym(ctx context.Context, req *vis
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteSearchHypernym")
+		return err
 	}, opts...)
 }
 
@@ -7168,21 +6740,10 @@ func (c *warehouseRESTClient) ListSearchHypernyms(ctx context.Context, req *visi
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSearchHypernyms")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -7257,21 +6818,10 @@ func (c *warehouseRESTClient) SearchAssets(ctx context.Context, req *visionaipb.
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SearchAssets")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -7346,21 +6896,10 @@ func (c *warehouseRESTClient) SearchIndexEndpoint(ctx context.Context, req *visi
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SearchIndexEndpoint")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -7432,21 +6971,10 @@ func (c *warehouseRESTClient) CreateIndexEndpoint(ctx context.Context, req *visi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateIndexEndpoint")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -7497,17 +7025,7 @@ func (c *warehouseRESTClient) GetIndexEndpoint(ctx context.Context, req *visiona
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetIndexEndpoint")
 		if err != nil {
 			return err
 		}
@@ -7572,21 +7090,10 @@ func (c *warehouseRESTClient) ListIndexEndpoints(ctx context.Context, req *visio
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListIndexEndpoints")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -7634,11 +7141,11 @@ func (c *warehouseRESTClient) UpdateIndexEndpoint(ctx context.Context, req *visi
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -7662,21 +7169,10 @@ func (c *warehouseRESTClient) UpdateIndexEndpoint(ctx context.Context, req *visi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateIndexEndpoint")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -7726,21 +7222,10 @@ func (c *warehouseRESTClient) DeleteIndexEndpoint(ctx context.Context, req *visi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteIndexEndpoint")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -7796,21 +7281,10 @@ func (c *warehouseRESTClient) DeployIndex(ctx context.Context, req *visionaipb.D
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "DeployIndex")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -7866,21 +7340,10 @@ func (c *warehouseRESTClient) UndeployIndex(ctx context.Context, req *visionaipb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UndeployIndex")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -7940,21 +7403,10 @@ func (c *warehouseRESTClient) CreateCollection(ctx context.Context, req *visiona
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateCollection")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -8004,21 +7456,10 @@ func (c *warehouseRESTClient) DeleteCollection(ctx context.Context, req *visiona
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteCollection")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -8069,17 +7510,7 @@ func (c *warehouseRESTClient) GetCollection(ctx context.Context, req *visionaipb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCollection")
 		if err != nil {
 			return err
 		}
@@ -8114,11 +7545,11 @@ func (c *warehouseRESTClient) UpdateCollection(ctx context.Context, req *visiona
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -8143,17 +7574,7 @@ func (c *warehouseRESTClient) UpdateCollection(ctx context.Context, req *visiona
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateCollection")
 		if err != nil {
 			return err
 		}
@@ -8215,21 +7636,10 @@ func (c *warehouseRESTClient) ListCollections(ctx context.Context, req *visionai
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListCollections")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -8298,17 +7708,7 @@ func (c *warehouseRESTClient) AddCollectionItem(ctx context.Context, req *vision
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AddCollectionItem")
 		if err != nil {
 			return err
 		}
@@ -8364,17 +7764,7 @@ func (c *warehouseRESTClient) RemoveCollectionItem(ctx context.Context, req *vis
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RemoveCollectionItem")
 		if err != nil {
 			return err
 		}
@@ -8436,21 +7826,10 @@ func (c *warehouseRESTClient) ViewCollectionItems(ctx context.Context, req *visi
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ViewCollectionItems")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -8516,15 +7895,8 @@ func (c *warehouseRESTClient) CancelOperation(ctx context.Context, req *longrunn
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -8558,15 +7930,8 @@ func (c *warehouseRESTClient) DeleteOperation(ctx context.Context, req *longrunn
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOperation")
+		return err
 	}, opts...)
 }
 
@@ -8603,17 +7968,7 @@ func (c *warehouseRESTClient) GetOperation(ctx context.Context, req *longrunning
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -8678,21 +8033,10 @@ func (c *warehouseRESTClient) ListOperations(ctx context.Context, req *longrunni
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

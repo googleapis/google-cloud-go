@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	dataqnapb "cloud.google.com/go/dataqna/apiv1alpha/dataqnapb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -53,6 +52,7 @@ func defaultAutoSuggestionGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://dataqna.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -152,6 +152,8 @@ type autoSuggestionGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewAutoSuggestionClient creates a new auto suggestion service client based on gRPC.
@@ -192,6 +194,7 @@ func NewAutoSuggestionClient(ctx context.Context, opts ...option.ClientOption) (
 		connPool:             connPool,
 		autoSuggestionClient: dataqnapb.NewAutoSuggestionServiceClient(connPool),
 		CallOptions:          &client.CallOptions,
+		logger:               internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -214,7 +217,9 @@ func (c *autoSuggestionGRPCClient) Connection() *grpc.ClientConn {
 func (c *autoSuggestionGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -236,6 +241,8 @@ type autoSuggestionRESTClient struct {
 
 	// Points back to the CallOptions field of the containing AutoSuggestionClient
 	CallOptions **AutoSuggestionCallOptions
+
+	logger *slog.Logger
 }
 
 // NewAutoSuggestionRESTClient creates a new auto suggestion service rest client.
@@ -267,6 +274,7 @@ func NewAutoSuggestionRESTClient(ctx context.Context, opts ...option.ClientOptio
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -281,6 +289,7 @@ func defaultAutoSuggestionRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://dataqna.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -290,7 +299,9 @@ func defaultAutoSuggestionRESTClientOptions() []option.ClientOption {
 func (c *autoSuggestionRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -316,7 +327,7 @@ func (c *autoSuggestionGRPCClient) SuggestQueries(ctx context.Context, req *data
 	var resp *dataqnapb.SuggestQueriesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.autoSuggestionClient.SuggestQueries(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.autoSuggestionClient.SuggestQueries, req, settings.GRPC, c.logger, "SuggestQueries")
 		return err
 	}, opts...)
 	if err != nil {
@@ -360,17 +371,7 @@ func (c *autoSuggestionRESTClient) SuggestQueries(ctx context.Context, req *data
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SuggestQueries")
 		if err != nil {
 			return err
 		}

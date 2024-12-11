@@ -18,6 +18,7 @@ package apigeeconnect
 
 import (
 	"context"
+	"log/slog"
 	"math"
 
 	apigeeconnectpb "cloud.google.com/go/apigeeconnect/apiv1/apigeeconnectpb"
@@ -44,6 +45,7 @@ func defaultTetherGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://apigeeconnect.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -126,6 +128,8 @@ type tetherGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewTetherClient creates a new tether client based on gRPC.
@@ -154,6 +158,7 @@ func NewTetherClient(ctx context.Context, opts ...option.ClientOption) (*TetherC
 		connPool:     connPool,
 		tetherClient: apigeeconnectpb.NewTetherClient(connPool),
 		CallOptions:  &client.CallOptions,
+		logger:       internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -176,7 +181,9 @@ func (c *tetherGRPCClient) Connection() *grpc.ClientConn {
 func (c *tetherGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -191,7 +198,9 @@ func (c *tetherGRPCClient) Egress(ctx context.Context, opts ...gax.CallOption) (
 	opts = append((*c.CallOptions).Egress[0:len((*c.CallOptions).Egress):len((*c.CallOptions).Egress)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "Egress")
 		resp, err = c.tetherClient.Egress(ctx, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "Egress")
 		return err
 	}, opts...)
 	if err != nil {

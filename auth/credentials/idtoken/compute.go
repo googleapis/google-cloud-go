@@ -43,8 +43,8 @@ func computeCredentials(opts *Options) (*auth.Credentials, error) {
 		TokenProvider: auth.NewCachedTokenProvider(tp, &auth.CachedTokenProviderOptions{
 			ExpireEarly: 5 * time.Minute,
 		}),
-		ProjectIDProvider: auth.CredentialsPropertyFunc(func(context.Context) (string, error) {
-			return metadata.ProjectID()
+		ProjectIDProvider: auth.CredentialsPropertyFunc(func(ctx context.Context) (string, error) {
+			return metadata.ProjectIDWithContext(ctx)
 		}),
 		UniverseDomainProvider: &internal.ComputeUniverseDomainProvider{},
 	}), nil
@@ -66,7 +66,7 @@ func (c computeIDTokenProvider) Token(ctx context.Context) (*auth.Token, error) 
 		v.Set("licenses", "TRUE")
 	}
 	urlSuffix := identitySuffix + "?" + v.Encode()
-	res, err := c.client.Get(urlSuffix)
+	res, err := c.client.GetWithContext(ctx, urlSuffix)
 	if err != nil {
 		return nil, err
 	}

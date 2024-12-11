@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	inventoriespb "cloud.google.com/go/shopping/merchant/inventories/apiv1beta/inventoriespb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -58,6 +57,7 @@ func defaultRegionalInventoryGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://merchantapi.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -235,6 +235,8 @@ type regionalInventoryGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewRegionalInventoryClient creates a new regional inventory service client based on gRPC.
@@ -262,6 +264,7 @@ func NewRegionalInventoryClient(ctx context.Context, opts ...option.ClientOption
 		connPool:                connPool,
 		regionalInventoryClient: inventoriespb.NewRegionalInventoryServiceClient(connPool),
 		CallOptions:             &client.CallOptions,
+		logger:                  internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -284,7 +287,9 @@ func (c *regionalInventoryGRPCClient) Connection() *grpc.ClientConn {
 func (c *regionalInventoryGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -306,6 +311,8 @@ type regionalInventoryRESTClient struct {
 
 	// Points back to the CallOptions field of the containing RegionalInventoryClient
 	CallOptions **RegionalInventoryCallOptions
+
+	logger *slog.Logger
 }
 
 // NewRegionalInventoryRESTClient creates a new regional inventory service rest client.
@@ -324,6 +331,7 @@ func NewRegionalInventoryRESTClient(ctx context.Context, opts ...option.ClientOp
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -338,6 +346,7 @@ func defaultRegionalInventoryRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://merchantapi.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -347,7 +356,9 @@ func defaultRegionalInventoryRESTClientOptions() []option.ClientOption {
 func (c *regionalInventoryRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -384,7 +395,7 @@ func (c *regionalInventoryGRPCClient) ListRegionalInventories(ctx context.Contex
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.regionalInventoryClient.ListRegionalInventories(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.regionalInventoryClient.ListRegionalInventories, req, settings.GRPC, c.logger, "ListRegionalInventories")
 			return err
 		}, opts...)
 		if err != nil {
@@ -419,7 +430,7 @@ func (c *regionalInventoryGRPCClient) InsertRegionalInventory(ctx context.Contex
 	var resp *inventoriespb.RegionalInventory
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.regionalInventoryClient.InsertRegionalInventory(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.regionalInventoryClient.InsertRegionalInventory, req, settings.GRPC, c.logger, "InsertRegionalInventory")
 		return err
 	}, opts...)
 	if err != nil {
@@ -436,7 +447,7 @@ func (c *regionalInventoryGRPCClient) DeleteRegionalInventory(ctx context.Contex
 	opts = append((*c.CallOptions).DeleteRegionalInventory[0:len((*c.CallOptions).DeleteRegionalInventory):len((*c.CallOptions).DeleteRegionalInventory)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.regionalInventoryClient.DeleteRegionalInventory(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.regionalInventoryClient.DeleteRegionalInventory, req, settings.GRPC, c.logger, "DeleteRegionalInventory")
 		return err
 	}, opts...)
 	return err
@@ -492,21 +503,10 @@ func (c *regionalInventoryRESTClient) ListRegionalInventories(ctx context.Contex
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListRegionalInventories")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -584,17 +584,7 @@ func (c *regionalInventoryRESTClient) InsertRegionalInventory(ctx context.Contex
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "InsertRegionalInventory")
 		if err != nil {
 			return err
 		}
@@ -645,14 +635,7 @@ func (c *regionalInventoryRESTClient) DeleteRegionalInventory(ctx context.Contex
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteRegionalInventory")
+		return err
 	}, opts...)
 }

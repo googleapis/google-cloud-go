@@ -20,6 +20,16 @@
                 "BulkDeleteConversations"
               ]
             },
+            "BulkDownloadFeedbackLabels": {
+              "methods": [
+                "BulkDownloadFeedbackLabels"
+              ]
+            },
+            "BulkUploadFeedbackLabels": {
+              "methods": [
+                "BulkUploadFeedbackLabels"
+              ]
+            },
             "CalculateIssueModelStats": {
               "methods": [
                 "CalculateIssueModelStats"
@@ -40,9 +50,19 @@
                 "CreateAnalysis"
               ]
             },
+            "CreateAnalysisRule": {
+              "methods": [
+                "CreateAnalysisRule"
+              ]
+            },
             "CreateConversation": {
               "methods": [
                 "CreateConversation"
+              ]
+            },
+            "CreateFeedbackLabel": {
+              "methods": [
+                "CreateFeedbackLabel"
               ]
             },
             "CreateIssueModel": {
@@ -55,6 +75,21 @@
                 "CreatePhraseMatcher"
               ]
             },
+            "CreateQaQuestion": {
+              "methods": [
+                "CreateQaQuestion"
+              ]
+            },
+            "CreateQaScorecard": {
+              "methods": [
+                "CreateQaScorecard"
+              ]
+            },
+            "CreateQaScorecardRevision": {
+              "methods": [
+                "CreateQaScorecardRevision"
+              ]
+            },
             "CreateView": {
               "methods": [
                 "CreateView"
@@ -65,9 +100,19 @@
                 "DeleteAnalysis"
               ]
             },
+            "DeleteAnalysisRule": {
+              "methods": [
+                "DeleteAnalysisRule"
+              ]
+            },
             "DeleteConversation": {
               "methods": [
                 "DeleteConversation"
+              ]
+            },
+            "DeleteFeedbackLabel": {
+              "methods": [
+                "DeleteFeedbackLabel"
               ]
             },
             "DeleteIssue": {
@@ -85,6 +130,21 @@
                 "DeletePhraseMatcher"
               ]
             },
+            "DeleteQaQuestion": {
+              "methods": [
+                "DeleteQaQuestion"
+              ]
+            },
+            "DeleteQaScorecard": {
+              "methods": [
+                "DeleteQaScorecard"
+              ]
+            },
+            "DeleteQaScorecardRevision": {
+              "methods": [
+                "DeleteQaScorecardRevision"
+              ]
+            },
             "DeleteView": {
               "methods": [
                 "DeleteView"
@@ -95,9 +155,19 @@
                 "DeployIssueModel"
               ]
             },
+            "DeployQaScorecardRevision": {
+              "methods": [
+                "DeployQaScorecardRevision"
+              ]
+            },
             "ExportInsightsData": {
               "methods": [
                 "ExportInsightsData"
+              ]
+            },
+            "ExportIssueModel": {
+              "methods": [
+                "ExportIssueModel"
               ]
             },
             "GetAnalysis": {
@@ -105,9 +175,24 @@
                 "GetAnalysis"
               ]
             },
+            "GetAnalysisRule": {
+              "methods": [
+                "GetAnalysisRule"
+              ]
+            },
             "GetConversation": {
               "methods": [
                 "GetConversation"
+              ]
+            },
+            "GetEncryptionSpec": {
+              "methods": [
+                "GetEncryptionSpec"
+              ]
+            },
+            "GetFeedbackLabel": {
+              "methods": [
+                "GetFeedbackLabel"
               ]
             },
             "GetIssue": {
@@ -130,6 +215,21 @@
                 "GetPhraseMatcher"
               ]
             },
+            "GetQaQuestion": {
+              "methods": [
+                "GetQaQuestion"
+              ]
+            },
+            "GetQaScorecard": {
+              "methods": [
+                "GetQaScorecard"
+              ]
+            },
+            "GetQaScorecardRevision": {
+              "methods": [
+                "GetQaScorecardRevision"
+              ]
+            },
             "GetSettings": {
               "methods": [
                 "GetSettings"
@@ -140,9 +240,24 @@
                 "GetView"
               ]
             },
+            "ImportIssueModel": {
+              "methods": [
+                "ImportIssueModel"
+              ]
+            },
             "IngestConversations": {
               "methods": [
                 "IngestConversations"
+              ]
+            },
+            "InitializeEncryptionSpec": {
+              "methods": [
+                "InitializeEncryptionSpec"
+              ]
+            },
+            "ListAllFeedbackLabels": {
+              "methods": [
+                "ListAllFeedbackLabels"
               ]
             },
             "ListAnalyses": {
@@ -150,9 +265,19 @@
                 "ListAnalyses"
               ]
             },
+            "ListAnalysisRules": {
+              "methods": [
+                "ListAnalysisRules"
+              ]
+            },
             "ListConversations": {
               "methods": [
                 "ListConversations"
+              ]
+            },
+            "ListFeedbackLabels": {
+              "methods": [
+                "ListFeedbackLabels"
               ]
             },
             "ListIssueModels": {
@@ -175,9 +300,34 @@
                 "ListPhraseMatchers"
               ]
             },
+            "ListQaQuestions": {
+              "methods": [
+                "ListQaQuestions"
+              ]
+            },
+            "ListQaScorecardRevisions": {
+              "methods": [
+                "ListQaScorecardRevisions"
+              ]
+            },
+            "ListQaScorecards": {
+              "methods": [
+                "ListQaScorecards"
+              ]
+            },
             "ListViews": {
               "methods": [
                 "ListViews"
+              ]
+            },
+            "QueryMetrics": {
+              "methods": [
+                "QueryMetrics"
+              ]
+            },
+            "TuneQaScorecardRevision": {
+              "methods": [
+                "TuneQaScorecardRevision"
               ]
             },
             "UndeployIssueModel": {
@@ -185,9 +335,24 @@
                 "UndeployIssueModel"
               ]
             },
+            "UndeployQaScorecardRevision": {
+              "methods": [
+                "UndeployQaScorecardRevision"
+              ]
+            },
+            "UpdateAnalysisRule": {
+              "methods": [
+                "UpdateAnalysisRule"
+              ]
+            },
             "UpdateConversation": {
               "methods": [
                 "UpdateConversation"
+              ]
+            },
+            "UpdateFeedbackLabel": {
+              "methods": [
+                "UpdateFeedbackLabel"
               ]
             },
             "UpdateIssue": {
@@ -203,6 +368,16 @@
             "UpdatePhraseMatcher": {
               "methods": [
                 "UpdatePhraseMatcher"
+              ]
+            },
+            "UpdateQaQuestion": {
+              "methods": [
+                "UpdateQaQuestion"
+              ]
+            },
+            "UpdateQaScorecard": {
+              "methods": [
+                "UpdateQaScorecard"
               ]
             },
             "UpdateSettings": {
@@ -235,6 +410,16 @@
                 "BulkDeleteConversations"
               ]
             },
+            "BulkDownloadFeedbackLabels": {
+              "methods": [
+                "BulkDownloadFeedbackLabels"
+              ]
+            },
+            "BulkUploadFeedbackLabels": {
+              "methods": [
+                "BulkUploadFeedbackLabels"
+              ]
+            },
             "CalculateIssueModelStats": {
               "methods": [
                 "CalculateIssueModelStats"
@@ -255,9 +440,19 @@
                 "CreateAnalysis"
               ]
             },
+            "CreateAnalysisRule": {
+              "methods": [
+                "CreateAnalysisRule"
+              ]
+            },
             "CreateConversation": {
               "methods": [
                 "CreateConversation"
+              ]
+            },
+            "CreateFeedbackLabel": {
+              "methods": [
+                "CreateFeedbackLabel"
               ]
             },
             "CreateIssueModel": {
@@ -270,6 +465,21 @@
                 "CreatePhraseMatcher"
               ]
             },
+            "CreateQaQuestion": {
+              "methods": [
+                "CreateQaQuestion"
+              ]
+            },
+            "CreateQaScorecard": {
+              "methods": [
+                "CreateQaScorecard"
+              ]
+            },
+            "CreateQaScorecardRevision": {
+              "methods": [
+                "CreateQaScorecardRevision"
+              ]
+            },
             "CreateView": {
               "methods": [
                 "CreateView"
@@ -280,9 +490,19 @@
                 "DeleteAnalysis"
               ]
             },
+            "DeleteAnalysisRule": {
+              "methods": [
+                "DeleteAnalysisRule"
+              ]
+            },
             "DeleteConversation": {
               "methods": [
                 "DeleteConversation"
+              ]
+            },
+            "DeleteFeedbackLabel": {
+              "methods": [
+                "DeleteFeedbackLabel"
               ]
             },
             "DeleteIssue": {
@@ -300,6 +520,21 @@
                 "DeletePhraseMatcher"
               ]
             },
+            "DeleteQaQuestion": {
+              "methods": [
+                "DeleteQaQuestion"
+              ]
+            },
+            "DeleteQaScorecard": {
+              "methods": [
+                "DeleteQaScorecard"
+              ]
+            },
+            "DeleteQaScorecardRevision": {
+              "methods": [
+                "DeleteQaScorecardRevision"
+              ]
+            },
             "DeleteView": {
               "methods": [
                 "DeleteView"
@@ -310,9 +545,19 @@
                 "DeployIssueModel"
               ]
             },
+            "DeployQaScorecardRevision": {
+              "methods": [
+                "DeployQaScorecardRevision"
+              ]
+            },
             "ExportInsightsData": {
               "methods": [
                 "ExportInsightsData"
+              ]
+            },
+            "ExportIssueModel": {
+              "methods": [
+                "ExportIssueModel"
               ]
             },
             "GetAnalysis": {
@@ -320,9 +565,24 @@
                 "GetAnalysis"
               ]
             },
+            "GetAnalysisRule": {
+              "methods": [
+                "GetAnalysisRule"
+              ]
+            },
             "GetConversation": {
               "methods": [
                 "GetConversation"
+              ]
+            },
+            "GetEncryptionSpec": {
+              "methods": [
+                "GetEncryptionSpec"
+              ]
+            },
+            "GetFeedbackLabel": {
+              "methods": [
+                "GetFeedbackLabel"
               ]
             },
             "GetIssue": {
@@ -345,6 +605,21 @@
                 "GetPhraseMatcher"
               ]
             },
+            "GetQaQuestion": {
+              "methods": [
+                "GetQaQuestion"
+              ]
+            },
+            "GetQaScorecard": {
+              "methods": [
+                "GetQaScorecard"
+              ]
+            },
+            "GetQaScorecardRevision": {
+              "methods": [
+                "GetQaScorecardRevision"
+              ]
+            },
             "GetSettings": {
               "methods": [
                 "GetSettings"
@@ -355,9 +630,24 @@
                 "GetView"
               ]
             },
+            "ImportIssueModel": {
+              "methods": [
+                "ImportIssueModel"
+              ]
+            },
             "IngestConversations": {
               "methods": [
                 "IngestConversations"
+              ]
+            },
+            "InitializeEncryptionSpec": {
+              "methods": [
+                "InitializeEncryptionSpec"
+              ]
+            },
+            "ListAllFeedbackLabels": {
+              "methods": [
+                "ListAllFeedbackLabels"
               ]
             },
             "ListAnalyses": {
@@ -365,9 +655,19 @@
                 "ListAnalyses"
               ]
             },
+            "ListAnalysisRules": {
+              "methods": [
+                "ListAnalysisRules"
+              ]
+            },
             "ListConversations": {
               "methods": [
                 "ListConversations"
+              ]
+            },
+            "ListFeedbackLabels": {
+              "methods": [
+                "ListFeedbackLabels"
               ]
             },
             "ListIssueModels": {
@@ -390,9 +690,34 @@
                 "ListPhraseMatchers"
               ]
             },
+            "ListQaQuestions": {
+              "methods": [
+                "ListQaQuestions"
+              ]
+            },
+            "ListQaScorecardRevisions": {
+              "methods": [
+                "ListQaScorecardRevisions"
+              ]
+            },
+            "ListQaScorecards": {
+              "methods": [
+                "ListQaScorecards"
+              ]
+            },
             "ListViews": {
               "methods": [
                 "ListViews"
+              ]
+            },
+            "QueryMetrics": {
+              "methods": [
+                "QueryMetrics"
+              ]
+            },
+            "TuneQaScorecardRevision": {
+              "methods": [
+                "TuneQaScorecardRevision"
               ]
             },
             "UndeployIssueModel": {
@@ -400,9 +725,24 @@
                 "UndeployIssueModel"
               ]
             },
+            "UndeployQaScorecardRevision": {
+              "methods": [
+                "UndeployQaScorecardRevision"
+              ]
+            },
+            "UpdateAnalysisRule": {
+              "methods": [
+                "UpdateAnalysisRule"
+              ]
+            },
             "UpdateConversation": {
               "methods": [
                 "UpdateConversation"
+              ]
+            },
+            "UpdateFeedbackLabel": {
+              "methods": [
+                "UpdateFeedbackLabel"
               ]
             },
             "UpdateIssue": {
@@ -418,6 +758,16 @@
             "UpdatePhraseMatcher": {
               "methods": [
                 "UpdatePhraseMatcher"
+              ]
+            },
+            "UpdateQaQuestion": {
+              "methods": [
+                "UpdateQaQuestion"
+              ]
+            },
+            "UpdateQaScorecard": {
+              "methods": [
+                "UpdateQaScorecard"
               ]
             },
             "UpdateSettings": {

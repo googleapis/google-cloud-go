@@ -19,6 +19,7 @@ package logging
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 	"time"
@@ -60,6 +61,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://logging.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -283,6 +285,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new logging service v2 client based on gRPC.
@@ -309,6 +313,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:         connPool,
 		client:           loggingpb.NewLoggingServiceV2Client(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -332,7 +337,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -349,7 +356,7 @@ func (c *gRPCClient) DeleteLog(ctx context.Context, req *loggingpb.DeleteLogRequ
 	opts = append((*c.CallOptions).DeleteLog[0:len((*c.CallOptions).DeleteLog):len((*c.CallOptions).DeleteLog)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteLog(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteLog, req, settings.GRPC, c.logger, "DeleteLog")
 		return err
 	}, opts...)
 	return err
@@ -361,7 +368,7 @@ func (c *gRPCClient) WriteLogEntries(ctx context.Context, req *loggingpb.WriteLo
 	var resp *loggingpb.WriteLogEntriesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.WriteLogEntries(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.WriteLogEntries, req, settings.GRPC, c.logger, "WriteLogEntries")
 		return err
 	}, opts...)
 	if err != nil {
@@ -387,7 +394,7 @@ func (c *gRPCClient) ListLogEntries(ctx context.Context, req *loggingpb.ListLogE
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListLogEntries(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListLogEntries, req, settings.GRPC, c.logger, "ListLogEntries")
 			return err
 		}, opts...)
 		if err != nil {
@@ -430,7 +437,7 @@ func (c *gRPCClient) ListMonitoredResourceDescriptors(ctx context.Context, req *
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListMonitoredResourceDescriptors(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListMonitoredResourceDescriptors, req, settings.GRPC, c.logger, "ListMonitoredResourceDescriptors")
 			return err
 		}, opts...)
 		if err != nil {
@@ -476,7 +483,7 @@ func (c *gRPCClient) ListLogs(ctx context.Context, req *loggingpb.ListLogsReques
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListLogs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListLogs, req, settings.GRPC, c.logger, "ListLogs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -508,7 +515,9 @@ func (c *gRPCClient) TailLogEntries(ctx context.Context, opts ...gax.CallOption)
 	opts = append((*c.CallOptions).TailLogEntries[0:len((*c.CallOptions).TailLogEntries):len((*c.CallOptions).TailLogEntries)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "TailLogEntries")
 		resp, err = c.client.TailLogEntries(ctx, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "TailLogEntries")
 		return err
 	}, opts...)
 	if err != nil {
@@ -525,7 +534,7 @@ func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -540,7 +549,7 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -569,7 +578,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {

@@ -19,6 +19,7 @@ package logging
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 	"time"
@@ -87,6 +88,7 @@ func defaultConfigGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://logging.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -630,6 +632,8 @@ type configGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewConfigClient creates a new config service v2 client based on gRPC.
@@ -656,6 +660,7 @@ func NewConfigClient(ctx context.Context, opts ...option.ClientOption) (*ConfigC
 		connPool:         connPool,
 		configClient:     loggingpb.NewConfigServiceV2Client(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -690,7 +695,9 @@ func (c *configGRPCClient) Connection() *grpc.ClientConn {
 func (c *configGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -719,7 +726,7 @@ func (c *configGRPCClient) ListBuckets(ctx context.Context, req *loggingpb.ListB
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.configClient.ListBuckets(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.configClient.ListBuckets, req, settings.GRPC, c.logger, "ListBuckets")
 			return err
 		}, opts...)
 		if err != nil {
@@ -754,7 +761,7 @@ func (c *configGRPCClient) GetBucket(ctx context.Context, req *loggingpb.GetBuck
 	var resp *loggingpb.LogBucket
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.configClient.GetBucket(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.configClient.GetBucket, req, settings.GRPC, c.logger, "GetBucket")
 		return err
 	}, opts...)
 	if err != nil {
@@ -772,7 +779,7 @@ func (c *configGRPCClient) CreateBucketAsync(ctx context.Context, req *loggingpb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.configClient.CreateBucketAsync(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.configClient.CreateBucketAsync, req, settings.GRPC, c.logger, "CreateBucketAsync")
 		return err
 	}, opts...)
 	if err != nil {
@@ -792,7 +799,7 @@ func (c *configGRPCClient) UpdateBucketAsync(ctx context.Context, req *loggingpb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.configClient.UpdateBucketAsync(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.configClient.UpdateBucketAsync, req, settings.GRPC, c.logger, "UpdateBucketAsync")
 		return err
 	}, opts...)
 	if err != nil {
@@ -812,7 +819,7 @@ func (c *configGRPCClient) CreateBucket(ctx context.Context, req *loggingpb.Crea
 	var resp *loggingpb.LogBucket
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.configClient.CreateBucket(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.configClient.CreateBucket, req, settings.GRPC, c.logger, "CreateBucket")
 		return err
 	}, opts...)
 	if err != nil {
@@ -830,7 +837,7 @@ func (c *configGRPCClient) UpdateBucket(ctx context.Context, req *loggingpb.Upda
 	var resp *loggingpb.LogBucket
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.configClient.UpdateBucket(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.configClient.UpdateBucket, req, settings.GRPC, c.logger, "UpdateBucket")
 		return err
 	}, opts...)
 	if err != nil {
@@ -847,7 +854,7 @@ func (c *configGRPCClient) DeleteBucket(ctx context.Context, req *loggingpb.Dele
 	opts = append((*c.CallOptions).DeleteBucket[0:len((*c.CallOptions).DeleteBucket):len((*c.CallOptions).DeleteBucket)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.configClient.DeleteBucket(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.configClient.DeleteBucket, req, settings.GRPC, c.logger, "DeleteBucket")
 		return err
 	}, opts...)
 	return err
@@ -861,7 +868,7 @@ func (c *configGRPCClient) UndeleteBucket(ctx context.Context, req *loggingpb.Un
 	opts = append((*c.CallOptions).UndeleteBucket[0:len((*c.CallOptions).UndeleteBucket):len((*c.CallOptions).UndeleteBucket)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.configClient.UndeleteBucket(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.configClient.UndeleteBucket, req, settings.GRPC, c.logger, "UndeleteBucket")
 		return err
 	}, opts...)
 	return err
@@ -887,7 +894,7 @@ func (c *configGRPCClient) ListViews(ctx context.Context, req *loggingpb.ListVie
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.configClient.ListViews(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.configClient.ListViews, req, settings.GRPC, c.logger, "ListViews")
 			return err
 		}, opts...)
 		if err != nil {
@@ -922,7 +929,7 @@ func (c *configGRPCClient) GetView(ctx context.Context, req *loggingpb.GetViewRe
 	var resp *loggingpb.LogView
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.configClient.GetView(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.configClient.GetView, req, settings.GRPC, c.logger, "GetView")
 		return err
 	}, opts...)
 	if err != nil {
@@ -940,7 +947,7 @@ func (c *configGRPCClient) CreateView(ctx context.Context, req *loggingpb.Create
 	var resp *loggingpb.LogView
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.configClient.CreateView(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.configClient.CreateView, req, settings.GRPC, c.logger, "CreateView")
 		return err
 	}, opts...)
 	if err != nil {
@@ -958,7 +965,7 @@ func (c *configGRPCClient) UpdateView(ctx context.Context, req *loggingpb.Update
 	var resp *loggingpb.LogView
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.configClient.UpdateView(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.configClient.UpdateView, req, settings.GRPC, c.logger, "UpdateView")
 		return err
 	}, opts...)
 	if err != nil {
@@ -975,7 +982,7 @@ func (c *configGRPCClient) DeleteView(ctx context.Context, req *loggingpb.Delete
 	opts = append((*c.CallOptions).DeleteView[0:len((*c.CallOptions).DeleteView):len((*c.CallOptions).DeleteView)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.configClient.DeleteView(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.configClient.DeleteView, req, settings.GRPC, c.logger, "DeleteView")
 		return err
 	}, opts...)
 	return err
@@ -1001,7 +1008,7 @@ func (c *configGRPCClient) ListSinks(ctx context.Context, req *loggingpb.ListSin
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.configClient.ListSinks(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.configClient.ListSinks, req, settings.GRPC, c.logger, "ListSinks")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1036,7 +1043,7 @@ func (c *configGRPCClient) GetSink(ctx context.Context, req *loggingpb.GetSinkRe
 	var resp *loggingpb.LogSink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.configClient.GetSink(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.configClient.GetSink, req, settings.GRPC, c.logger, "GetSink")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1054,7 +1061,7 @@ func (c *configGRPCClient) CreateSink(ctx context.Context, req *loggingpb.Create
 	var resp *loggingpb.LogSink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.configClient.CreateSink(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.configClient.CreateSink, req, settings.GRPC, c.logger, "CreateSink")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1072,7 +1079,7 @@ func (c *configGRPCClient) UpdateSink(ctx context.Context, req *loggingpb.Update
 	var resp *loggingpb.LogSink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.configClient.UpdateSink(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.configClient.UpdateSink, req, settings.GRPC, c.logger, "UpdateSink")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1089,7 +1096,7 @@ func (c *configGRPCClient) DeleteSink(ctx context.Context, req *loggingpb.Delete
 	opts = append((*c.CallOptions).DeleteSink[0:len((*c.CallOptions).DeleteSink):len((*c.CallOptions).DeleteSink)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.configClient.DeleteSink(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.configClient.DeleteSink, req, settings.GRPC, c.logger, "DeleteSink")
 		return err
 	}, opts...)
 	return err
@@ -1104,7 +1111,7 @@ func (c *configGRPCClient) CreateLink(ctx context.Context, req *loggingpb.Create
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.configClient.CreateLink(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.configClient.CreateLink, req, settings.GRPC, c.logger, "CreateLink")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1124,7 +1131,7 @@ func (c *configGRPCClient) DeleteLink(ctx context.Context, req *loggingpb.Delete
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.configClient.DeleteLink(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.configClient.DeleteLink, req, settings.GRPC, c.logger, "DeleteLink")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1155,7 +1162,7 @@ func (c *configGRPCClient) ListLinks(ctx context.Context, req *loggingpb.ListLin
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.configClient.ListLinks(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.configClient.ListLinks, req, settings.GRPC, c.logger, "ListLinks")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1190,7 +1197,7 @@ func (c *configGRPCClient) GetLink(ctx context.Context, req *loggingpb.GetLinkRe
 	var resp *loggingpb.Link
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.configClient.GetLink(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.configClient.GetLink, req, settings.GRPC, c.logger, "GetLink")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1219,7 +1226,7 @@ func (c *configGRPCClient) ListExclusions(ctx context.Context, req *loggingpb.Li
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.configClient.ListExclusions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.configClient.ListExclusions, req, settings.GRPC, c.logger, "ListExclusions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1254,7 +1261,7 @@ func (c *configGRPCClient) GetExclusion(ctx context.Context, req *loggingpb.GetE
 	var resp *loggingpb.LogExclusion
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.configClient.GetExclusion(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.configClient.GetExclusion, req, settings.GRPC, c.logger, "GetExclusion")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1272,7 +1279,7 @@ func (c *configGRPCClient) CreateExclusion(ctx context.Context, req *loggingpb.C
 	var resp *loggingpb.LogExclusion
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.configClient.CreateExclusion(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.configClient.CreateExclusion, req, settings.GRPC, c.logger, "CreateExclusion")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1290,7 +1297,7 @@ func (c *configGRPCClient) UpdateExclusion(ctx context.Context, req *loggingpb.U
 	var resp *loggingpb.LogExclusion
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.configClient.UpdateExclusion(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.configClient.UpdateExclusion, req, settings.GRPC, c.logger, "UpdateExclusion")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1307,7 +1314,7 @@ func (c *configGRPCClient) DeleteExclusion(ctx context.Context, req *loggingpb.D
 	opts = append((*c.CallOptions).DeleteExclusion[0:len((*c.CallOptions).DeleteExclusion):len((*c.CallOptions).DeleteExclusion)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.configClient.DeleteExclusion(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.configClient.DeleteExclusion, req, settings.GRPC, c.logger, "DeleteExclusion")
 		return err
 	}, opts...)
 	return err
@@ -1322,7 +1329,7 @@ func (c *configGRPCClient) GetCmekSettings(ctx context.Context, req *loggingpb.G
 	var resp *loggingpb.CmekSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.configClient.GetCmekSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.configClient.GetCmekSettings, req, settings.GRPC, c.logger, "GetCmekSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1340,7 +1347,7 @@ func (c *configGRPCClient) UpdateCmekSettings(ctx context.Context, req *loggingp
 	var resp *loggingpb.CmekSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.configClient.UpdateCmekSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.configClient.UpdateCmekSettings, req, settings.GRPC, c.logger, "UpdateCmekSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1358,7 +1365,7 @@ func (c *configGRPCClient) GetSettings(ctx context.Context, req *loggingpb.GetSe
 	var resp *loggingpb.Settings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.configClient.GetSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.configClient.GetSettings, req, settings.GRPC, c.logger, "GetSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1376,7 +1383,7 @@ func (c *configGRPCClient) UpdateSettings(ctx context.Context, req *loggingpb.Up
 	var resp *loggingpb.Settings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.configClient.UpdateSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.configClient.UpdateSettings, req, settings.GRPC, c.logger, "UpdateSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1391,7 +1398,7 @@ func (c *configGRPCClient) CopyLogEntries(ctx context.Context, req *loggingpb.Co
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.configClient.CopyLogEntries(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.configClient.CopyLogEntries, req, settings.GRPC, c.logger, "CopyLogEntries")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1410,7 +1417,7 @@ func (c *configGRPCClient) CancelOperation(ctx context.Context, req *longrunning
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -1425,7 +1432,7 @@ func (c *configGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1454,7 +1461,7 @@ func (c *configGRPCClient) ListOperations(ctx context.Context, req *longrunningp
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {

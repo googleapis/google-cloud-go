@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -50,6 +49,9 @@ type CompletionCallOptions struct {
 	CompleteQuery                   []gax.CallOption
 	ImportSuggestionDenyListEntries []gax.CallOption
 	PurgeSuggestionDenyListEntries  []gax.CallOption
+	ImportCompletionSuggestions     []gax.CallOption
+	PurgeCompletionSuggestions      []gax.CallOption
+	CancelOperation                 []gax.CallOption
 	GetOperation                    []gax.CallOption
 	ListOperations                  []gax.CallOption
 }
@@ -63,6 +65,7 @@ func defaultCompletionGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://discoveryengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -102,6 +105,42 @@ func defaultCompletionCallOptions() *CompletionCallOptions {
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        5000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ImportCompletionSuggestions: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        5000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		PurgeCompletionSuggestions: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        5000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CancelOperation: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
 			}),
@@ -168,6 +207,39 @@ func defaultCompletionRESTCallOptions() *CompletionCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		ImportCompletionSuggestions: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        5000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		PurgeCompletionSuggestions: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        5000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		CancelOperation: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetOperation: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -203,6 +275,11 @@ type internalCompletionClient interface {
 	ImportSuggestionDenyListEntriesOperation(name string) *ImportSuggestionDenyListEntriesOperation
 	PurgeSuggestionDenyListEntries(context.Context, *discoveryenginepb.PurgeSuggestionDenyListEntriesRequest, ...gax.CallOption) (*PurgeSuggestionDenyListEntriesOperation, error)
 	PurgeSuggestionDenyListEntriesOperation(name string) *PurgeSuggestionDenyListEntriesOperation
+	ImportCompletionSuggestions(context.Context, *discoveryenginepb.ImportCompletionSuggestionsRequest, ...gax.CallOption) (*ImportCompletionSuggestionsOperation, error)
+	ImportCompletionSuggestionsOperation(name string) *ImportCompletionSuggestionsOperation
+	PurgeCompletionSuggestions(context.Context, *discoveryenginepb.PurgeCompletionSuggestionsRequest, ...gax.CallOption) (*PurgeCompletionSuggestionsOperation, error)
+	PurgeCompletionSuggestionsOperation(name string) *PurgeCompletionSuggestionsOperation
+	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
@@ -278,6 +355,37 @@ func (c *CompletionClient) PurgeSuggestionDenyListEntriesOperation(name string) 
 	return c.internalClient.PurgeSuggestionDenyListEntriesOperation(name)
 }
 
+// ImportCompletionSuggestions imports
+// CompletionSuggestions
+// for a DataStore.
+func (c *CompletionClient) ImportCompletionSuggestions(ctx context.Context, req *discoveryenginepb.ImportCompletionSuggestionsRequest, opts ...gax.CallOption) (*ImportCompletionSuggestionsOperation, error) {
+	return c.internalClient.ImportCompletionSuggestions(ctx, req, opts...)
+}
+
+// ImportCompletionSuggestionsOperation returns a new ImportCompletionSuggestionsOperation from a given name.
+// The name must be that of a previously created ImportCompletionSuggestionsOperation, possibly from a different process.
+func (c *CompletionClient) ImportCompletionSuggestionsOperation(name string) *ImportCompletionSuggestionsOperation {
+	return c.internalClient.ImportCompletionSuggestionsOperation(name)
+}
+
+// PurgeCompletionSuggestions permanently deletes all
+// CompletionSuggestions
+// for a DataStore.
+func (c *CompletionClient) PurgeCompletionSuggestions(ctx context.Context, req *discoveryenginepb.PurgeCompletionSuggestionsRequest, opts ...gax.CallOption) (*PurgeCompletionSuggestionsOperation, error) {
+	return c.internalClient.PurgeCompletionSuggestions(ctx, req, opts...)
+}
+
+// PurgeCompletionSuggestionsOperation returns a new PurgeCompletionSuggestionsOperation from a given name.
+// The name must be that of a previously created PurgeCompletionSuggestionsOperation, possibly from a different process.
+func (c *CompletionClient) PurgeCompletionSuggestionsOperation(name string) *PurgeCompletionSuggestionsOperation {
+	return c.internalClient.PurgeCompletionSuggestionsOperation(name)
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *CompletionClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.CancelOperation(ctx, req, opts...)
+}
+
 // GetOperation is a utility method from google.longrunning.Operations.
 func (c *CompletionClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	return c.internalClient.GetOperation(ctx, req, opts...)
@@ -310,6 +418,8 @@ type completionGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewCompletionClient creates a new completion service client based on gRPC.
@@ -336,6 +446,7 @@ func NewCompletionClient(ctx context.Context, opts ...option.ClientOption) (*Com
 		connPool:         connPool,
 		completionClient: discoveryenginepb.NewCompletionServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -370,7 +481,9 @@ func (c *completionGRPCClient) Connection() *grpc.ClientConn {
 func (c *completionGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -397,6 +510,8 @@ type completionRESTClient struct {
 
 	// Points back to the CallOptions field of the containing CompletionClient
 	CallOptions **CompletionCallOptions
+
+	logger *slog.Logger
 }
 
 // NewCompletionRESTClient creates a new completion service rest client.
@@ -414,6 +529,7 @@ func NewCompletionRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -438,6 +554,7 @@ func defaultCompletionRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://discoveryengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -447,7 +564,9 @@ func defaultCompletionRESTClientOptions() []option.ClientOption {
 func (c *completionRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -473,7 +592,7 @@ func (c *completionGRPCClient) CompleteQuery(ctx context.Context, req *discovery
 	var resp *discoveryenginepb.CompleteQueryResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.completionClient.CompleteQuery(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.completionClient.CompleteQuery, req, settings.GRPC, c.logger, "CompleteQuery")
 		return err
 	}, opts...)
 	if err != nil {
@@ -491,7 +610,7 @@ func (c *completionGRPCClient) ImportSuggestionDenyListEntries(ctx context.Conte
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.completionClient.ImportSuggestionDenyListEntries(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.completionClient.ImportSuggestionDenyListEntries, req, settings.GRPC, c.logger, "ImportSuggestionDenyListEntries")
 		return err
 	}, opts...)
 	if err != nil {
@@ -511,7 +630,7 @@ func (c *completionGRPCClient) PurgeSuggestionDenyListEntries(ctx context.Contex
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.completionClient.PurgeSuggestionDenyListEntries(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.completionClient.PurgeSuggestionDenyListEntries, req, settings.GRPC, c.logger, "PurgeSuggestionDenyListEntries")
 		return err
 	}, opts...)
 	if err != nil {
@@ -520,6 +639,60 @@ func (c *completionGRPCClient) PurgeSuggestionDenyListEntries(ctx context.Contex
 	return &PurgeSuggestionDenyListEntriesOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *completionGRPCClient) ImportCompletionSuggestions(ctx context.Context, req *discoveryenginepb.ImportCompletionSuggestionsRequest, opts ...gax.CallOption) (*ImportCompletionSuggestionsOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ImportCompletionSuggestions[0:len((*c.CallOptions).ImportCompletionSuggestions):len((*c.CallOptions).ImportCompletionSuggestions)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.completionClient.ImportCompletionSuggestions, req, settings.GRPC, c.logger, "ImportCompletionSuggestions")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ImportCompletionSuggestionsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *completionGRPCClient) PurgeCompletionSuggestions(ctx context.Context, req *discoveryenginepb.PurgeCompletionSuggestionsRequest, opts ...gax.CallOption) (*PurgeCompletionSuggestionsOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).PurgeCompletionSuggestions[0:len((*c.CallOptions).PurgeCompletionSuggestions):len((*c.CallOptions).PurgeCompletionSuggestions)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.completionClient.PurgeCompletionSuggestions, req, settings.GRPC, c.logger, "PurgeCompletionSuggestions")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &PurgeCompletionSuggestionsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *completionGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
+		return err
+	}, opts...)
+	return err
 }
 
 func (c *completionGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
@@ -531,7 +704,7 @@ func (c *completionGRPCClient) GetOperation(ctx context.Context, req *longrunnin
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -560,7 +733,7 @@ func (c *completionGRPCClient) ListOperations(ctx context.Context, req *longrunn
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -629,17 +802,7 @@ func (c *completionRESTClient) CompleteQuery(ctx context.Context, req *discovery
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "CompleteQuery")
 		if err != nil {
 			return err
 		}
@@ -696,21 +859,10 @@ func (c *completionRESTClient) ImportSuggestionDenyListEntries(ctx context.Conte
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ImportSuggestionDenyListEntries")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -768,21 +920,10 @@ func (c *completionRESTClient) PurgeSuggestionDenyListEntries(ctx context.Contex
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PurgeSuggestionDenyListEntries")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -798,6 +939,169 @@ func (c *completionRESTClient) PurgeSuggestionDenyListEntries(ctx context.Contex
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
+}
+
+// ImportCompletionSuggestions imports
+// CompletionSuggestions
+// for a DataStore.
+func (c *completionRESTClient) ImportCompletionSuggestions(ctx context.Context, req *discoveryenginepb.ImportCompletionSuggestionsRequest, opts ...gax.CallOption) (*ImportCompletionSuggestionsOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/completionSuggestions:import", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ImportCompletionSuggestions")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
+	return &ImportCompletionSuggestionsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// PurgeCompletionSuggestions permanently deletes all
+// CompletionSuggestions
+// for a DataStore.
+func (c *completionRESTClient) PurgeCompletionSuggestions(ctx context.Context, req *discoveryenginepb.PurgeCompletionSuggestionsRequest, opts ...gax.CallOption) (*PurgeCompletionSuggestionsOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/completionSuggestions:purge", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PurgeCompletionSuggestions")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
+	return &PurgeCompletionSuggestionsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *completionRESTClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:cancel", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelOperation")
+		return err
+	}, opts...)
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.
@@ -833,17 +1137,7 @@ func (c *completionRESTClient) GetOperation(ctx context.Context, req *longrunnin
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -908,21 +1202,10 @@ func (c *completionRESTClient) ListOperations(ctx context.Context, req *longrunn
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -952,6 +1235,24 @@ func (c *completionRESTClient) ListOperations(ctx context.Context, req *longrunn
 	return it
 }
 
+// ImportCompletionSuggestionsOperation returns a new ImportCompletionSuggestionsOperation from a given name.
+// The name must be that of a previously created ImportCompletionSuggestionsOperation, possibly from a different process.
+func (c *completionGRPCClient) ImportCompletionSuggestionsOperation(name string) *ImportCompletionSuggestionsOperation {
+	return &ImportCompletionSuggestionsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// ImportCompletionSuggestionsOperation returns a new ImportCompletionSuggestionsOperation from a given name.
+// The name must be that of a previously created ImportCompletionSuggestionsOperation, possibly from a different process.
+func (c *completionRESTClient) ImportCompletionSuggestionsOperation(name string) *ImportCompletionSuggestionsOperation {
+	override := fmt.Sprintf("/v1alpha/%s", name)
+	return &ImportCompletionSuggestionsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // ImportSuggestionDenyListEntriesOperation returns a new ImportSuggestionDenyListEntriesOperation from a given name.
 // The name must be that of a previously created ImportSuggestionDenyListEntriesOperation, possibly from a different process.
 func (c *completionGRPCClient) ImportSuggestionDenyListEntriesOperation(name string) *ImportSuggestionDenyListEntriesOperation {
@@ -965,6 +1266,24 @@ func (c *completionGRPCClient) ImportSuggestionDenyListEntriesOperation(name str
 func (c *completionRESTClient) ImportSuggestionDenyListEntriesOperation(name string) *ImportSuggestionDenyListEntriesOperation {
 	override := fmt.Sprintf("/v1alpha/%s", name)
 	return &ImportSuggestionDenyListEntriesOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// PurgeCompletionSuggestionsOperation returns a new PurgeCompletionSuggestionsOperation from a given name.
+// The name must be that of a previously created PurgeCompletionSuggestionsOperation, possibly from a different process.
+func (c *completionGRPCClient) PurgeCompletionSuggestionsOperation(name string) *PurgeCompletionSuggestionsOperation {
+	return &PurgeCompletionSuggestionsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// PurgeCompletionSuggestionsOperation returns a new PurgeCompletionSuggestionsOperation from a given name.
+// The name must be that of a previously created PurgeCompletionSuggestionsOperation, possibly from a different process.
+func (c *completionRESTClient) PurgeCompletionSuggestionsOperation(name string) *PurgeCompletionSuggestionsOperation {
+	override := fmt.Sprintf("/v1alpha/%s", name)
+	return &PurgeCompletionSuggestionsOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

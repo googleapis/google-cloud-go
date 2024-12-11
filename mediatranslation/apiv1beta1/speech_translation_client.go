@@ -18,6 +18,7 @@ package mediatranslation
 
 import (
 	"context"
+	"log/slog"
 	"math"
 
 	mediatranslationpb "cloud.google.com/go/mediatranslation/apiv1beta1/mediatranslationpb"
@@ -44,6 +45,7 @@ func defaultSpeechTranslationGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://mediatranslation.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -119,6 +121,8 @@ type speechTranslationGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewSpeechTranslationClient creates a new speech translation service client based on gRPC.
@@ -145,6 +149,7 @@ func NewSpeechTranslationClient(ctx context.Context, opts ...option.ClientOption
 		connPool:                connPool,
 		speechTranslationClient: mediatranslationpb.NewSpeechTranslationServiceClient(connPool),
 		CallOptions:             &client.CallOptions,
+		logger:                  internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -167,7 +172,9 @@ func (c *speechTranslationGRPCClient) Connection() *grpc.ClientConn {
 func (c *speechTranslationGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -182,7 +189,9 @@ func (c *speechTranslationGRPCClient) StreamingTranslateSpeech(ctx context.Conte
 	opts = append((*c.CallOptions).StreamingTranslateSpeech[0:len((*c.CallOptions).StreamingTranslateSpeech):len((*c.CallOptions).StreamingTranslateSpeech)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "StreamingTranslateSpeech")
 		resp, err = c.speechTranslationClient.StreamingTranslateSpeech(ctx, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "StreamingTranslateSpeech")
 		return err
 	}, opts...)
 	if err != nil {

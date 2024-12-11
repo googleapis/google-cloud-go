@@ -20,14 +20,13 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
 	"time"
 
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -70,6 +69,7 @@ func defaultGrafeasV1Beta1GRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://containeranalysis.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -511,6 +511,8 @@ type grafeasV1Beta1GRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewGrafeasV1Beta1Client creates a new grafeas v1 beta1 client based on gRPC.
@@ -550,6 +552,7 @@ func NewGrafeasV1Beta1Client(ctx context.Context, opts ...option.ClientOption) (
 		connPool:             connPool,
 		grafeasV1Beta1Client: grafeaspb.NewGrafeasV1Beta1Client(connPool),
 		CallOptions:          &client.CallOptions,
+		logger:               internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -572,7 +575,9 @@ func (c *grafeasV1Beta1GRPCClient) Connection() *grpc.ClientConn {
 func (c *grafeasV1Beta1GRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -594,6 +599,8 @@ type grafeasV1Beta1RESTClient struct {
 
 	// Points back to the CallOptions field of the containing GrafeasV1Beta1Client
 	CallOptions **GrafeasV1Beta1CallOptions
+
+	logger *slog.Logger
 }
 
 // NewGrafeasV1Beta1RESTClient creates a new grafeas v1 beta1 rest client.
@@ -624,6 +631,7 @@ func NewGrafeasV1Beta1RESTClient(ctx context.Context, opts ...option.ClientOptio
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -638,6 +646,7 @@ func defaultGrafeasV1Beta1RESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://containeranalysis.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -647,7 +656,9 @@ func defaultGrafeasV1Beta1RESTClientOptions() []option.ClientOption {
 func (c *grafeasV1Beta1RESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -673,7 +684,7 @@ func (c *grafeasV1Beta1GRPCClient) GetOccurrence(ctx context.Context, req *grafe
 	var resp *grafeaspb.Occurrence
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.grafeasV1Beta1Client.GetOccurrence(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.grafeasV1Beta1Client.GetOccurrence, req, settings.GRPC, c.logger, "GetOccurrence")
 		return err
 	}, opts...)
 	if err != nil {
@@ -702,7 +713,7 @@ func (c *grafeasV1Beta1GRPCClient) ListOccurrences(ctx context.Context, req *gra
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.grafeasV1Beta1Client.ListOccurrences(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.grafeasV1Beta1Client.ListOccurrences, req, settings.GRPC, c.logger, "ListOccurrences")
 			return err
 		}, opts...)
 		if err != nil {
@@ -736,7 +747,7 @@ func (c *grafeasV1Beta1GRPCClient) DeleteOccurrence(ctx context.Context, req *gr
 	opts = append((*c.CallOptions).DeleteOccurrence[0:len((*c.CallOptions).DeleteOccurrence):len((*c.CallOptions).DeleteOccurrence)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.grafeasV1Beta1Client.DeleteOccurrence(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.grafeasV1Beta1Client.DeleteOccurrence, req, settings.GRPC, c.logger, "DeleteOccurrence")
 		return err
 	}, opts...)
 	return err
@@ -751,7 +762,7 @@ func (c *grafeasV1Beta1GRPCClient) CreateOccurrence(ctx context.Context, req *gr
 	var resp *grafeaspb.Occurrence
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.grafeasV1Beta1Client.CreateOccurrence(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.grafeasV1Beta1Client.CreateOccurrence, req, settings.GRPC, c.logger, "CreateOccurrence")
 		return err
 	}, opts...)
 	if err != nil {
@@ -769,7 +780,7 @@ func (c *grafeasV1Beta1GRPCClient) BatchCreateOccurrences(ctx context.Context, r
 	var resp *grafeaspb.BatchCreateOccurrencesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.grafeasV1Beta1Client.BatchCreateOccurrences(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.grafeasV1Beta1Client.BatchCreateOccurrences, req, settings.GRPC, c.logger, "BatchCreateOccurrences")
 		return err
 	}, opts...)
 	if err != nil {
@@ -787,7 +798,7 @@ func (c *grafeasV1Beta1GRPCClient) UpdateOccurrence(ctx context.Context, req *gr
 	var resp *grafeaspb.Occurrence
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.grafeasV1Beta1Client.UpdateOccurrence(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.grafeasV1Beta1Client.UpdateOccurrence, req, settings.GRPC, c.logger, "UpdateOccurrence")
 		return err
 	}, opts...)
 	if err != nil {
@@ -805,7 +816,7 @@ func (c *grafeasV1Beta1GRPCClient) GetOccurrenceNote(ctx context.Context, req *g
 	var resp *grafeaspb.Note
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.grafeasV1Beta1Client.GetOccurrenceNote(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.grafeasV1Beta1Client.GetOccurrenceNote, req, settings.GRPC, c.logger, "GetOccurrenceNote")
 		return err
 	}, opts...)
 	if err != nil {
@@ -823,7 +834,7 @@ func (c *grafeasV1Beta1GRPCClient) GetNote(ctx context.Context, req *grafeaspb.G
 	var resp *grafeaspb.Note
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.grafeasV1Beta1Client.GetNote(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.grafeasV1Beta1Client.GetNote, req, settings.GRPC, c.logger, "GetNote")
 		return err
 	}, opts...)
 	if err != nil {
@@ -852,7 +863,7 @@ func (c *grafeasV1Beta1GRPCClient) ListNotes(ctx context.Context, req *grafeaspb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.grafeasV1Beta1Client.ListNotes(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.grafeasV1Beta1Client.ListNotes, req, settings.GRPC, c.logger, "ListNotes")
 			return err
 		}, opts...)
 		if err != nil {
@@ -886,7 +897,7 @@ func (c *grafeasV1Beta1GRPCClient) DeleteNote(ctx context.Context, req *grafeasp
 	opts = append((*c.CallOptions).DeleteNote[0:len((*c.CallOptions).DeleteNote):len((*c.CallOptions).DeleteNote)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.grafeasV1Beta1Client.DeleteNote(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.grafeasV1Beta1Client.DeleteNote, req, settings.GRPC, c.logger, "DeleteNote")
 		return err
 	}, opts...)
 	return err
@@ -901,7 +912,7 @@ func (c *grafeasV1Beta1GRPCClient) CreateNote(ctx context.Context, req *grafeasp
 	var resp *grafeaspb.Note
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.grafeasV1Beta1Client.CreateNote(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.grafeasV1Beta1Client.CreateNote, req, settings.GRPC, c.logger, "CreateNote")
 		return err
 	}, opts...)
 	if err != nil {
@@ -919,7 +930,7 @@ func (c *grafeasV1Beta1GRPCClient) BatchCreateNotes(ctx context.Context, req *gr
 	var resp *grafeaspb.BatchCreateNotesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.grafeasV1Beta1Client.BatchCreateNotes(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.grafeasV1Beta1Client.BatchCreateNotes, req, settings.GRPC, c.logger, "BatchCreateNotes")
 		return err
 	}, opts...)
 	if err != nil {
@@ -937,7 +948,7 @@ func (c *grafeasV1Beta1GRPCClient) UpdateNote(ctx context.Context, req *grafeasp
 	var resp *grafeaspb.Note
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.grafeasV1Beta1Client.UpdateNote(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.grafeasV1Beta1Client.UpdateNote, req, settings.GRPC, c.logger, "UpdateNote")
 		return err
 	}, opts...)
 	if err != nil {
@@ -966,7 +977,7 @@ func (c *grafeasV1Beta1GRPCClient) ListNoteOccurrences(ctx context.Context, req 
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.grafeasV1Beta1Client.ListNoteOccurrences(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.grafeasV1Beta1Client.ListNoteOccurrences, req, settings.GRPC, c.logger, "ListNoteOccurrences")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1001,7 +1012,7 @@ func (c *grafeasV1Beta1GRPCClient) GetVulnerabilityOccurrencesSummary(ctx contex
 	var resp *grafeaspb.VulnerabilityOccurrencesSummary
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.grafeasV1Beta1Client.GetVulnerabilityOccurrencesSummary(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.grafeasV1Beta1Client.GetVulnerabilityOccurrencesSummary, req, settings.GRPC, c.logger, "GetVulnerabilityOccurrencesSummary")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1043,17 +1054,7 @@ func (c *grafeasV1Beta1RESTClient) GetOccurrence(ctx context.Context, req *grafe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOccurrence")
 		if err != nil {
 			return err
 		}
@@ -1118,21 +1119,10 @@ func (c *grafeasV1Beta1RESTClient) ListOccurrences(ctx context.Context, req *gra
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOccurrences")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1194,15 +1184,8 @@ func (c *grafeasV1Beta1RESTClient) DeleteOccurrence(ctx context.Context, req *gr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOccurrence")
+		return err
 	}, opts...)
 }
 
@@ -1246,17 +1229,7 @@ func (c *grafeasV1Beta1RESTClient) CreateOccurrence(ctx context.Context, req *gr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateOccurrence")
 		if err != nil {
 			return err
 		}
@@ -1312,17 +1285,7 @@ func (c *grafeasV1Beta1RESTClient) BatchCreateOccurrences(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchCreateOccurrences")
 		if err != nil {
 			return err
 		}
@@ -1357,11 +1320,11 @@ func (c *grafeasV1Beta1RESTClient) UpdateOccurrence(ctx context.Context, req *gr
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1386,17 +1349,7 @@ func (c *grafeasV1Beta1RESTClient) UpdateOccurrence(ctx context.Context, req *gr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateOccurrence")
 		if err != nil {
 			return err
 		}
@@ -1447,17 +1400,7 @@ func (c *grafeasV1Beta1RESTClient) GetOccurrenceNote(ctx context.Context, req *g
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOccurrenceNote")
 		if err != nil {
 			return err
 		}
@@ -1507,17 +1450,7 @@ func (c *grafeasV1Beta1RESTClient) GetNote(ctx context.Context, req *grafeaspb.G
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetNote")
 		if err != nil {
 			return err
 		}
@@ -1582,21 +1515,10 @@ func (c *grafeasV1Beta1RESTClient) ListNotes(ctx context.Context, req *grafeaspb
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListNotes")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1656,15 +1578,8 @@ func (c *grafeasV1Beta1RESTClient) DeleteNote(ctx context.Context, req *grafeasp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteNote")
+		return err
 	}, opts...)
 }
 
@@ -1711,17 +1626,7 @@ func (c *grafeasV1Beta1RESTClient) CreateNote(ctx context.Context, req *grafeasp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateNote")
 		if err != nil {
 			return err
 		}
@@ -1777,17 +1682,7 @@ func (c *grafeasV1Beta1RESTClient) BatchCreateNotes(ctx context.Context, req *gr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchCreateNotes")
 		if err != nil {
 			return err
 		}
@@ -1822,11 +1717,11 @@ func (c *grafeasV1Beta1RESTClient) UpdateNote(ctx context.Context, req *grafeasp
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1851,17 +1746,7 @@ func (c *grafeasV1Beta1RESTClient) UpdateNote(ctx context.Context, req *grafeasp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateNote")
 		if err != nil {
 			return err
 		}
@@ -1928,21 +1813,10 @@ func (c *grafeasV1Beta1RESTClient) ListNoteOccurrences(ctx context.Context, req 
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListNoteOccurrences")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2008,17 +1882,7 @@ func (c *grafeasV1Beta1RESTClient) GetVulnerabilityOccurrencesSummary(ctx contex
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetVulnerabilityOccurrencesSummary")
 		if err != nil {
 			return err
 		}

@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -29,7 +29,6 @@ import (
 	datacatalogpb "cloud.google.com/go/datacatalog/apiv1beta1/datacatalogpb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -68,6 +67,7 @@ func defaultPolicyTagManagerGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://datacatalog.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -300,6 +300,8 @@ type policyTagManagerGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewPolicyTagManagerClient creates a new policy tag manager client based on gRPC.
@@ -327,6 +329,7 @@ func NewPolicyTagManagerClient(ctx context.Context, opts ...option.ClientOption)
 		connPool:               connPool,
 		policyTagManagerClient: datacatalogpb.NewPolicyTagManagerClient(connPool),
 		CallOptions:            &client.CallOptions,
+		logger:                 internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -349,7 +352,9 @@ func (c *policyTagManagerGRPCClient) Connection() *grpc.ClientConn {
 func (c *policyTagManagerGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -371,6 +376,8 @@ type policyTagManagerRESTClient struct {
 
 	// Points back to the CallOptions field of the containing PolicyTagManagerClient
 	CallOptions **PolicyTagManagerCallOptions
+
+	logger *slog.Logger
 }
 
 // NewPolicyTagManagerRESTClient creates a new policy tag manager rest client.
@@ -389,6 +396,7 @@ func NewPolicyTagManagerRESTClient(ctx context.Context, opts ...option.ClientOpt
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -403,6 +411,7 @@ func defaultPolicyTagManagerRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://datacatalog.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -412,7 +421,9 @@ func defaultPolicyTagManagerRESTClientOptions() []option.ClientOption {
 func (c *policyTagManagerRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -438,7 +449,7 @@ func (c *policyTagManagerGRPCClient) CreateTaxonomy(ctx context.Context, req *da
 	var resp *datacatalogpb.Taxonomy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.policyTagManagerClient.CreateTaxonomy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.policyTagManagerClient.CreateTaxonomy, req, settings.GRPC, c.logger, "CreateTaxonomy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -455,7 +466,7 @@ func (c *policyTagManagerGRPCClient) DeleteTaxonomy(ctx context.Context, req *da
 	opts = append((*c.CallOptions).DeleteTaxonomy[0:len((*c.CallOptions).DeleteTaxonomy):len((*c.CallOptions).DeleteTaxonomy)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.policyTagManagerClient.DeleteTaxonomy(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.policyTagManagerClient.DeleteTaxonomy, req, settings.GRPC, c.logger, "DeleteTaxonomy")
 		return err
 	}, opts...)
 	return err
@@ -470,7 +481,7 @@ func (c *policyTagManagerGRPCClient) UpdateTaxonomy(ctx context.Context, req *da
 	var resp *datacatalogpb.Taxonomy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.policyTagManagerClient.UpdateTaxonomy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.policyTagManagerClient.UpdateTaxonomy, req, settings.GRPC, c.logger, "UpdateTaxonomy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -499,7 +510,7 @@ func (c *policyTagManagerGRPCClient) ListTaxonomies(ctx context.Context, req *da
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.policyTagManagerClient.ListTaxonomies(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.policyTagManagerClient.ListTaxonomies, req, settings.GRPC, c.logger, "ListTaxonomies")
 			return err
 		}, opts...)
 		if err != nil {
@@ -534,7 +545,7 @@ func (c *policyTagManagerGRPCClient) GetTaxonomy(ctx context.Context, req *datac
 	var resp *datacatalogpb.Taxonomy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.policyTagManagerClient.GetTaxonomy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.policyTagManagerClient.GetTaxonomy, req, settings.GRPC, c.logger, "GetTaxonomy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -552,7 +563,7 @@ func (c *policyTagManagerGRPCClient) CreatePolicyTag(ctx context.Context, req *d
 	var resp *datacatalogpb.PolicyTag
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.policyTagManagerClient.CreatePolicyTag(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.policyTagManagerClient.CreatePolicyTag, req, settings.GRPC, c.logger, "CreatePolicyTag")
 		return err
 	}, opts...)
 	if err != nil {
@@ -569,7 +580,7 @@ func (c *policyTagManagerGRPCClient) DeletePolicyTag(ctx context.Context, req *d
 	opts = append((*c.CallOptions).DeletePolicyTag[0:len((*c.CallOptions).DeletePolicyTag):len((*c.CallOptions).DeletePolicyTag)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.policyTagManagerClient.DeletePolicyTag(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.policyTagManagerClient.DeletePolicyTag, req, settings.GRPC, c.logger, "DeletePolicyTag")
 		return err
 	}, opts...)
 	return err
@@ -584,7 +595,7 @@ func (c *policyTagManagerGRPCClient) UpdatePolicyTag(ctx context.Context, req *d
 	var resp *datacatalogpb.PolicyTag
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.policyTagManagerClient.UpdatePolicyTag(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.policyTagManagerClient.UpdatePolicyTag, req, settings.GRPC, c.logger, "UpdatePolicyTag")
 		return err
 	}, opts...)
 	if err != nil {
@@ -613,7 +624,7 @@ func (c *policyTagManagerGRPCClient) ListPolicyTags(ctx context.Context, req *da
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.policyTagManagerClient.ListPolicyTags(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.policyTagManagerClient.ListPolicyTags, req, settings.GRPC, c.logger, "ListPolicyTags")
 			return err
 		}, opts...)
 		if err != nil {
@@ -648,7 +659,7 @@ func (c *policyTagManagerGRPCClient) GetPolicyTag(ctx context.Context, req *data
 	var resp *datacatalogpb.PolicyTag
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.policyTagManagerClient.GetPolicyTag(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.policyTagManagerClient.GetPolicyTag, req, settings.GRPC, c.logger, "GetPolicyTag")
 		return err
 	}, opts...)
 	if err != nil {
@@ -666,7 +677,7 @@ func (c *policyTagManagerGRPCClient) GetIamPolicy(ctx context.Context, req *iamp
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.policyTagManagerClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.policyTagManagerClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -684,7 +695,7 @@ func (c *policyTagManagerGRPCClient) SetIamPolicy(ctx context.Context, req *iamp
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.policyTagManagerClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.policyTagManagerClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -702,7 +713,7 @@ func (c *policyTagManagerGRPCClient) TestIamPermissions(ctx context.Context, req
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.policyTagManagerClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.policyTagManagerClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -746,17 +757,7 @@ func (c *policyTagManagerRESTClient) CreateTaxonomy(ctx context.Context, req *da
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateTaxonomy")
 		if err != nil {
 			return err
 		}
@@ -799,15 +800,8 @@ func (c *policyTagManagerRESTClient) DeleteTaxonomy(ctx context.Context, req *da
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteTaxonomy")
+		return err
 	}, opts...)
 }
 
@@ -828,11 +822,11 @@ func (c *policyTagManagerRESTClient) UpdateTaxonomy(ctx context.Context, req *da
 
 	params := url.Values{}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -857,17 +851,7 @@ func (c *policyTagManagerRESTClient) UpdateTaxonomy(ctx context.Context, req *da
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateTaxonomy")
 		if err != nil {
 			return err
 		}
@@ -932,21 +916,10 @@ func (c *policyTagManagerRESTClient) ListTaxonomies(ctx context.Context, req *da
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListTaxonomies")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1004,17 +977,7 @@ func (c *policyTagManagerRESTClient) GetTaxonomy(ctx context.Context, req *datac
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetTaxonomy")
 		if err != nil {
 			return err
 		}
@@ -1066,17 +1029,7 @@ func (c *policyTagManagerRESTClient) CreatePolicyTag(ctx context.Context, req *d
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreatePolicyTag")
 		if err != nil {
 			return err
 		}
@@ -1118,15 +1071,8 @@ func (c *policyTagManagerRESTClient) DeletePolicyTag(ctx context.Context, req *d
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeletePolicyTag")
+		return err
 	}, opts...)
 }
 
@@ -1147,11 +1093,11 @@ func (c *policyTagManagerRESTClient) UpdatePolicyTag(ctx context.Context, req *d
 
 	params := url.Values{}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1176,17 +1122,7 @@ func (c *policyTagManagerRESTClient) UpdatePolicyTag(ctx context.Context, req *d
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdatePolicyTag")
 		if err != nil {
 			return err
 		}
@@ -1247,21 +1183,10 @@ func (c *policyTagManagerRESTClient) ListPolicyTags(ctx context.Context, req *da
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListPolicyTags")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1319,17 +1244,7 @@ func (c *policyTagManagerRESTClient) GetPolicyTag(ctx context.Context, req *data
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetPolicyTag")
 		if err != nil {
 			return err
 		}
@@ -1380,17 +1295,7 @@ func (c *policyTagManagerRESTClient) GetIamPolicy(ctx context.Context, req *iamp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -1441,17 +1346,7 @@ func (c *policyTagManagerRESTClient) SetIamPolicy(ctx context.Context, req *iamp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -1503,17 +1398,7 @@ func (c *policyTagManagerRESTClient) TestIamPermissions(ctx context.Context, req
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
 		if err != nil {
 			return err
 		}

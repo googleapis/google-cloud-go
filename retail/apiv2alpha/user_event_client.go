@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	retailpb "cloud.google.com/go/retail/apiv2alpha/retailpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -52,6 +51,7 @@ type UserEventCallOptions struct {
 	CollectUserEvent []gax.CallOption
 	PurgeUserEvents  []gax.CallOption
 	ImportUserEvents []gax.CallOption
+	ExportUserEvents []gax.CallOption
 	RejoinUserEvents []gax.CallOption
 	GetOperation     []gax.CallOption
 	ListOperations   []gax.CallOption
@@ -66,6 +66,7 @@ func defaultUserEventGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -74,7 +75,7 @@ func defaultUserEventGRPCClientOptions() []option.ClientOption {
 func defaultUserEventCallOptions() *UserEventCallOptions {
 	return &UserEventCallOptions{
 		WriteUserEvent: []gax.CallOption{
-			gax.WithTimeout(5000 * time.Millisecond),
+			gax.WithTimeout(10000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -87,7 +88,7 @@ func defaultUserEventCallOptions() *UserEventCallOptions {
 			}),
 		},
 		CollectUserEvent: []gax.CallOption{
-			gax.WithTimeout(5000 * time.Millisecond),
+			gax.WithTimeout(10000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -125,8 +126,21 @@ func defaultUserEventCallOptions() *UserEventCallOptions {
 				})
 			}),
 		},
+		ExportUserEvents: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        5000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		RejoinUserEvents: []gax.CallOption{
-			gax.WithTimeout(5000 * time.Millisecond),
+			gax.WithTimeout(10000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -158,7 +172,7 @@ func defaultUserEventCallOptions() *UserEventCallOptions {
 func defaultUserEventRESTCallOptions() *UserEventCallOptions {
 	return &UserEventCallOptions{
 		WriteUserEvent: []gax.CallOption{
-			gax.WithTimeout(5000 * time.Millisecond),
+			gax.WithTimeout(10000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -170,7 +184,7 @@ func defaultUserEventRESTCallOptions() *UserEventCallOptions {
 			}),
 		},
 		CollectUserEvent: []gax.CallOption{
-			gax.WithTimeout(5000 * time.Millisecond),
+			gax.WithTimeout(10000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -205,8 +219,20 @@ func defaultUserEventRESTCallOptions() *UserEventCallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
+		ExportUserEvents: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        5000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
 		RejoinUserEvents: []gax.CallOption{
-			gax.WithTimeout(5000 * time.Millisecond),
+			gax.WithTimeout(10000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -233,7 +259,7 @@ func defaultUserEventRESTCallOptions() *UserEventCallOptions {
 	}
 }
 
-// internalUserEventClient is an interface that defines the methods available from Retail API.
+// internalUserEventClient is an interface that defines the methods available from Vertex AI Search for Retail API.
 type internalUserEventClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -244,13 +270,15 @@ type internalUserEventClient interface {
 	PurgeUserEventsOperation(name string) *PurgeUserEventsOperation
 	ImportUserEvents(context.Context, *retailpb.ImportUserEventsRequest, ...gax.CallOption) (*ImportUserEventsOperation, error)
 	ImportUserEventsOperation(name string) *ImportUserEventsOperation
+	ExportUserEvents(context.Context, *retailpb.ExportUserEventsRequest, ...gax.CallOption) (*ExportUserEventsOperation, error)
+	ExportUserEventsOperation(name string) *ExportUserEventsOperation
 	RejoinUserEvents(context.Context, *retailpb.RejoinUserEventsRequest, ...gax.CallOption) (*RejoinUserEventsOperation, error)
 	RejoinUserEventsOperation(name string) *RejoinUserEventsOperation
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// UserEventClient is a client for interacting with Retail API.
+// UserEventClient is a client for interacting with Vertex AI Search for Retail API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Service for ingesting end user actions on the customer website.
@@ -335,6 +363,20 @@ func (c *UserEventClient) ImportUserEventsOperation(name string) *ImportUserEven
 	return c.internalClient.ImportUserEventsOperation(name)
 }
 
+// ExportUserEvents exports user events.
+//
+// Operation.response is of type ExportResponse.
+// Operation.metadata is of type ExportMetadata.
+func (c *UserEventClient) ExportUserEvents(ctx context.Context, req *retailpb.ExportUserEventsRequest, opts ...gax.CallOption) (*ExportUserEventsOperation, error) {
+	return c.internalClient.ExportUserEvents(ctx, req, opts...)
+}
+
+// ExportUserEventsOperation returns a new ExportUserEventsOperation from a given name.
+// The name must be that of a previously created ExportUserEventsOperation, possibly from a different process.
+func (c *UserEventClient) ExportUserEventsOperation(name string) *ExportUserEventsOperation {
+	return c.internalClient.ExportUserEventsOperation(name)
+}
+
 // RejoinUserEvents starts a user-event rejoin operation with latest product catalog. Events
 // are not annotated with detailed product information for products that are
 // missing from the catalog when the user event is ingested. These
@@ -363,7 +405,7 @@ func (c *UserEventClient) ListOperations(ctx context.Context, req *longrunningpb
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// userEventGRPCClient is a client for interacting with Retail API over gRPC transport.
+// userEventGRPCClient is a client for interacting with Vertex AI Search for Retail API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type userEventGRPCClient struct {
@@ -385,6 +427,8 @@ type userEventGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewUserEventClient creates a new user event service client based on gRPC.
@@ -411,6 +455,7 @@ func NewUserEventClient(ctx context.Context, opts ...option.ClientOption) (*User
 		connPool:         connPool,
 		userEventClient:  retailpb.NewUserEventServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -445,7 +490,9 @@ func (c *userEventGRPCClient) Connection() *grpc.ClientConn {
 func (c *userEventGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -472,6 +519,8 @@ type userEventRESTClient struct {
 
 	// Points back to the CallOptions field of the containing UserEventClient
 	CallOptions **UserEventCallOptions
+
+	logger *slog.Logger
 }
 
 // NewUserEventRESTClient creates a new user event service rest client.
@@ -489,6 +538,7 @@ func NewUserEventRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -513,6 +563,7 @@ func defaultUserEventRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -522,7 +573,9 @@ func defaultUserEventRESTClientOptions() []option.ClientOption {
 func (c *userEventRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -548,7 +601,7 @@ func (c *userEventGRPCClient) WriteUserEvent(ctx context.Context, req *retailpb.
 	var resp *retailpb.UserEvent
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.userEventClient.WriteUserEvent(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.userEventClient.WriteUserEvent, req, settings.GRPC, c.logger, "WriteUserEvent")
 		return err
 	}, opts...)
 	if err != nil {
@@ -566,7 +619,7 @@ func (c *userEventGRPCClient) CollectUserEvent(ctx context.Context, req *retailp
 	var resp *httpbodypb.HttpBody
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.userEventClient.CollectUserEvent(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.userEventClient.CollectUserEvent, req, settings.GRPC, c.logger, "CollectUserEvent")
 		return err
 	}, opts...)
 	if err != nil {
@@ -584,7 +637,7 @@ func (c *userEventGRPCClient) PurgeUserEvents(ctx context.Context, req *retailpb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.userEventClient.PurgeUserEvents(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.userEventClient.PurgeUserEvents, req, settings.GRPC, c.logger, "PurgeUserEvents")
 		return err
 	}, opts...)
 	if err != nil {
@@ -604,13 +657,33 @@ func (c *userEventGRPCClient) ImportUserEvents(ctx context.Context, req *retailp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.userEventClient.ImportUserEvents(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.userEventClient.ImportUserEvents, req, settings.GRPC, c.logger, "ImportUserEvents")
 		return err
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return &ImportUserEventsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *userEventGRPCClient) ExportUserEvents(ctx context.Context, req *retailpb.ExportUserEventsRequest, opts ...gax.CallOption) (*ExportUserEventsOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ExportUserEvents[0:len((*c.CallOptions).ExportUserEvents):len((*c.CallOptions).ExportUserEvents)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.userEventClient.ExportUserEvents, req, settings.GRPC, c.logger, "ExportUserEvents")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ExportUserEventsOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -624,7 +697,7 @@ func (c *userEventGRPCClient) RejoinUserEvents(ctx context.Context, req *retailp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.userEventClient.RejoinUserEvents(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.userEventClient.RejoinUserEvents, req, settings.GRPC, c.logger, "RejoinUserEvents")
 		return err
 	}, opts...)
 	if err != nil {
@@ -644,7 +717,7 @@ func (c *userEventGRPCClient) GetOperation(ctx context.Context, req *longrunning
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -673,7 +746,7 @@ func (c *userEventGRPCClient) ListOperations(ctx context.Context, req *longrunni
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -742,17 +815,7 @@ func (c *userEventRESTClient) WriteUserEvent(ctx context.Context, req *retailpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "WriteUserEvent")
 		if err != nil {
 			return err
 		}
@@ -818,17 +881,7 @@ func (c *userEventRESTClient) CollectUserEvent(ctx context.Context, req *retailp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, httpRsp, err := executeHTTPRequestWithResponse(ctx, c.httpClient, httpReq, c.logger, nil, "CollectUserEvent")
 		if err != nil {
 			return err
 		}
@@ -887,21 +940,10 @@ func (c *userEventRESTClient) PurgeUserEvents(ctx context.Context, req *retailpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PurgeUserEvents")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -963,21 +1005,10 @@ func (c *userEventRESTClient) ImportUserEvents(ctx context.Context, req *retailp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ImportUserEvents")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -990,6 +1021,68 @@ func (c *userEventRESTClient) ImportUserEvents(ctx context.Context, req *retailp
 
 	override := fmt.Sprintf("/v2alpha/%s", resp.GetName())
 	return &ImportUserEventsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ExportUserEvents exports user events.
+//
+// Operation.response is of type ExportResponse.
+// Operation.metadata is of type ExportMetadata.
+func (c *userEventRESTClient) ExportUserEvents(ctx context.Context, req *retailpb.ExportUserEventsRequest, opts ...gax.CallOption) (*ExportUserEventsOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2alpha/%v/userEvents:export", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExportUserEvents")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v2alpha/%s", resp.GetName())
+	return &ExportUserEventsOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
@@ -1040,21 +1133,10 @@ func (c *userEventRESTClient) RejoinUserEvents(ctx context.Context, req *retailp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RejoinUserEvents")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1105,17 +1187,7 @@ func (c *userEventRESTClient) GetOperation(ctx context.Context, req *longrunning
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -1180,21 +1252,10 @@ func (c *userEventRESTClient) ListOperations(ctx context.Context, req *longrunni
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1222,6 +1283,24 @@ func (c *userEventRESTClient) ListOperations(ctx context.Context, req *longrunni
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// ExportUserEventsOperation returns a new ExportUserEventsOperation from a given name.
+// The name must be that of a previously created ExportUserEventsOperation, possibly from a different process.
+func (c *userEventGRPCClient) ExportUserEventsOperation(name string) *ExportUserEventsOperation {
+	return &ExportUserEventsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// ExportUserEventsOperation returns a new ExportUserEventsOperation from a given name.
+// The name must be that of a previously created ExportUserEventsOperation, possibly from a different process.
+func (c *userEventRESTClient) ExportUserEventsOperation(name string) *ExportUserEventsOperation {
+	override := fmt.Sprintf("/v2alpha/%s", name)
+	return &ExportUserEventsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
 }
 
 // ImportUserEventsOperation returns a new ImportUserEventsOperation from a given name.

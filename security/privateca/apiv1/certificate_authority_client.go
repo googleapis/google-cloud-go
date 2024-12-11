@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	privatecapb "cloud.google.com/go/security/privateca/apiv1/privatecapb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -98,6 +97,7 @@ func defaultCertificateAuthorityGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://privateca.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -1371,6 +1371,8 @@ type certificateAuthorityGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewCertificateAuthorityClient creates a new certificate authority service client based on gRPC.
@@ -1399,6 +1401,7 @@ func NewCertificateAuthorityClient(ctx context.Context, opts ...option.ClientOpt
 		connPool:                   connPool,
 		certificateAuthorityClient: privatecapb.NewCertificateAuthorityServiceClient(connPool),
 		CallOptions:                &client.CallOptions,
+		logger:                     internaloption.GetLogger(opts),
 		operationsClient:           longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:            iampb.NewIAMPolicyClient(connPool),
 		locationsClient:            locationpb.NewLocationsClient(connPool),
@@ -1435,7 +1438,9 @@ func (c *certificateAuthorityGRPCClient) Connection() *grpc.ClientConn {
 func (c *certificateAuthorityGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1462,6 +1467,8 @@ type certificateAuthorityRESTClient struct {
 
 	// Points back to the CallOptions field of the containing CertificateAuthorityClient
 	CallOptions **CertificateAuthorityCallOptions
+
+	logger *slog.Logger
 }
 
 // NewCertificateAuthorityRESTClient creates a new certificate authority service rest client.
@@ -1481,6 +1488,7 @@ func NewCertificateAuthorityRESTClient(ctx context.Context, opts ...option.Clien
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -1505,6 +1513,7 @@ func defaultCertificateAuthorityRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://privateca.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -1514,7 +1523,9 @@ func defaultCertificateAuthorityRESTClientOptions() []option.ClientOption {
 func (c *certificateAuthorityRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1540,7 +1551,7 @@ func (c *certificateAuthorityGRPCClient) CreateCertificate(ctx context.Context, 
 	var resp *privatecapb.Certificate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.certificateAuthorityClient.CreateCertificate(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.certificateAuthorityClient.CreateCertificate, req, settings.GRPC, c.logger, "CreateCertificate")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1558,7 +1569,7 @@ func (c *certificateAuthorityGRPCClient) GetCertificate(ctx context.Context, req
 	var resp *privatecapb.Certificate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.certificateAuthorityClient.GetCertificate(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.certificateAuthorityClient.GetCertificate, req, settings.GRPC, c.logger, "GetCertificate")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1587,7 +1598,7 @@ func (c *certificateAuthorityGRPCClient) ListCertificates(ctx context.Context, r
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.certificateAuthorityClient.ListCertificates(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.certificateAuthorityClient.ListCertificates, req, settings.GRPC, c.logger, "ListCertificates")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1622,7 +1633,7 @@ func (c *certificateAuthorityGRPCClient) RevokeCertificate(ctx context.Context, 
 	var resp *privatecapb.Certificate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.certificateAuthorityClient.RevokeCertificate(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.certificateAuthorityClient.RevokeCertificate, req, settings.GRPC, c.logger, "RevokeCertificate")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1640,7 +1651,7 @@ func (c *certificateAuthorityGRPCClient) UpdateCertificate(ctx context.Context, 
 	var resp *privatecapb.Certificate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.certificateAuthorityClient.UpdateCertificate(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.certificateAuthorityClient.UpdateCertificate, req, settings.GRPC, c.logger, "UpdateCertificate")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1658,7 +1669,7 @@ func (c *certificateAuthorityGRPCClient) ActivateCertificateAuthority(ctx contex
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.certificateAuthorityClient.ActivateCertificateAuthority(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.certificateAuthorityClient.ActivateCertificateAuthority, req, settings.GRPC, c.logger, "ActivateCertificateAuthority")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1678,7 +1689,7 @@ func (c *certificateAuthorityGRPCClient) CreateCertificateAuthority(ctx context.
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.certificateAuthorityClient.CreateCertificateAuthority(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.certificateAuthorityClient.CreateCertificateAuthority, req, settings.GRPC, c.logger, "CreateCertificateAuthority")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1698,7 +1709,7 @@ func (c *certificateAuthorityGRPCClient) DisableCertificateAuthority(ctx context
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.certificateAuthorityClient.DisableCertificateAuthority(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.certificateAuthorityClient.DisableCertificateAuthority, req, settings.GRPC, c.logger, "DisableCertificateAuthority")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1718,7 +1729,7 @@ func (c *certificateAuthorityGRPCClient) EnableCertificateAuthority(ctx context.
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.certificateAuthorityClient.EnableCertificateAuthority(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.certificateAuthorityClient.EnableCertificateAuthority, req, settings.GRPC, c.logger, "EnableCertificateAuthority")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1738,7 +1749,7 @@ func (c *certificateAuthorityGRPCClient) FetchCertificateAuthorityCsr(ctx contex
 	var resp *privatecapb.FetchCertificateAuthorityCsrResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.certificateAuthorityClient.FetchCertificateAuthorityCsr(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.certificateAuthorityClient.FetchCertificateAuthorityCsr, req, settings.GRPC, c.logger, "FetchCertificateAuthorityCsr")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1756,7 +1767,7 @@ func (c *certificateAuthorityGRPCClient) GetCertificateAuthority(ctx context.Con
 	var resp *privatecapb.CertificateAuthority
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.certificateAuthorityClient.GetCertificateAuthority(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.certificateAuthorityClient.GetCertificateAuthority, req, settings.GRPC, c.logger, "GetCertificateAuthority")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1785,7 +1796,7 @@ func (c *certificateAuthorityGRPCClient) ListCertificateAuthorities(ctx context.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.certificateAuthorityClient.ListCertificateAuthorities(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.certificateAuthorityClient.ListCertificateAuthorities, req, settings.GRPC, c.logger, "ListCertificateAuthorities")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1820,7 +1831,7 @@ func (c *certificateAuthorityGRPCClient) UndeleteCertificateAuthority(ctx contex
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.certificateAuthorityClient.UndeleteCertificateAuthority(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.certificateAuthorityClient.UndeleteCertificateAuthority, req, settings.GRPC, c.logger, "UndeleteCertificateAuthority")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1840,7 +1851,7 @@ func (c *certificateAuthorityGRPCClient) DeleteCertificateAuthority(ctx context.
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.certificateAuthorityClient.DeleteCertificateAuthority(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.certificateAuthorityClient.DeleteCertificateAuthority, req, settings.GRPC, c.logger, "DeleteCertificateAuthority")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1860,7 +1871,7 @@ func (c *certificateAuthorityGRPCClient) UpdateCertificateAuthority(ctx context.
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.certificateAuthorityClient.UpdateCertificateAuthority(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.certificateAuthorityClient.UpdateCertificateAuthority, req, settings.GRPC, c.logger, "UpdateCertificateAuthority")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1880,7 +1891,7 @@ func (c *certificateAuthorityGRPCClient) CreateCaPool(ctx context.Context, req *
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.certificateAuthorityClient.CreateCaPool(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.certificateAuthorityClient.CreateCaPool, req, settings.GRPC, c.logger, "CreateCaPool")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1900,7 +1911,7 @@ func (c *certificateAuthorityGRPCClient) UpdateCaPool(ctx context.Context, req *
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.certificateAuthorityClient.UpdateCaPool(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.certificateAuthorityClient.UpdateCaPool, req, settings.GRPC, c.logger, "UpdateCaPool")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1920,7 +1931,7 @@ func (c *certificateAuthorityGRPCClient) GetCaPool(ctx context.Context, req *pri
 	var resp *privatecapb.CaPool
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.certificateAuthorityClient.GetCaPool(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.certificateAuthorityClient.GetCaPool, req, settings.GRPC, c.logger, "GetCaPool")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1949,7 +1960,7 @@ func (c *certificateAuthorityGRPCClient) ListCaPools(ctx context.Context, req *p
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.certificateAuthorityClient.ListCaPools(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.certificateAuthorityClient.ListCaPools, req, settings.GRPC, c.logger, "ListCaPools")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1984,7 +1995,7 @@ func (c *certificateAuthorityGRPCClient) DeleteCaPool(ctx context.Context, req *
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.certificateAuthorityClient.DeleteCaPool(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.certificateAuthorityClient.DeleteCaPool, req, settings.GRPC, c.logger, "DeleteCaPool")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2004,7 +2015,7 @@ func (c *certificateAuthorityGRPCClient) FetchCaCerts(ctx context.Context, req *
 	var resp *privatecapb.FetchCaCertsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.certificateAuthorityClient.FetchCaCerts(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.certificateAuthorityClient.FetchCaCerts, req, settings.GRPC, c.logger, "FetchCaCerts")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2022,7 +2033,7 @@ func (c *certificateAuthorityGRPCClient) GetCertificateRevocationList(ctx contex
 	var resp *privatecapb.CertificateRevocationList
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.certificateAuthorityClient.GetCertificateRevocationList(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.certificateAuthorityClient.GetCertificateRevocationList, req, settings.GRPC, c.logger, "GetCertificateRevocationList")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2051,7 +2062,7 @@ func (c *certificateAuthorityGRPCClient) ListCertificateRevocationLists(ctx cont
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.certificateAuthorityClient.ListCertificateRevocationLists(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.certificateAuthorityClient.ListCertificateRevocationLists, req, settings.GRPC, c.logger, "ListCertificateRevocationLists")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2086,7 +2097,7 @@ func (c *certificateAuthorityGRPCClient) UpdateCertificateRevocationList(ctx con
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.certificateAuthorityClient.UpdateCertificateRevocationList(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.certificateAuthorityClient.UpdateCertificateRevocationList, req, settings.GRPC, c.logger, "UpdateCertificateRevocationList")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2106,7 +2117,7 @@ func (c *certificateAuthorityGRPCClient) CreateCertificateTemplate(ctx context.C
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.certificateAuthorityClient.CreateCertificateTemplate(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.certificateAuthorityClient.CreateCertificateTemplate, req, settings.GRPC, c.logger, "CreateCertificateTemplate")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2126,7 +2137,7 @@ func (c *certificateAuthorityGRPCClient) DeleteCertificateTemplate(ctx context.C
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.certificateAuthorityClient.DeleteCertificateTemplate(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.certificateAuthorityClient.DeleteCertificateTemplate, req, settings.GRPC, c.logger, "DeleteCertificateTemplate")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2146,7 +2157,7 @@ func (c *certificateAuthorityGRPCClient) GetCertificateTemplate(ctx context.Cont
 	var resp *privatecapb.CertificateTemplate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.certificateAuthorityClient.GetCertificateTemplate(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.certificateAuthorityClient.GetCertificateTemplate, req, settings.GRPC, c.logger, "GetCertificateTemplate")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2175,7 +2186,7 @@ func (c *certificateAuthorityGRPCClient) ListCertificateTemplates(ctx context.Co
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.certificateAuthorityClient.ListCertificateTemplates(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.certificateAuthorityClient.ListCertificateTemplates, req, settings.GRPC, c.logger, "ListCertificateTemplates")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2210,7 +2221,7 @@ func (c *certificateAuthorityGRPCClient) UpdateCertificateTemplate(ctx context.C
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.certificateAuthorityClient.UpdateCertificateTemplate(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.certificateAuthorityClient.UpdateCertificateTemplate, req, settings.GRPC, c.logger, "UpdateCertificateTemplate")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2230,7 +2241,7 @@ func (c *certificateAuthorityGRPCClient) GetLocation(ctx context.Context, req *l
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2259,7 +2270,7 @@ func (c *certificateAuthorityGRPCClient) ListLocations(ctx context.Context, req 
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2294,7 +2305,7 @@ func (c *certificateAuthorityGRPCClient) GetIamPolicy(ctx context.Context, req *
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2312,7 +2323,7 @@ func (c *certificateAuthorityGRPCClient) SetIamPolicy(ctx context.Context, req *
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2330,7 +2341,7 @@ func (c *certificateAuthorityGRPCClient) TestIamPermissions(ctx context.Context,
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2347,7 +2358,7 @@ func (c *certificateAuthorityGRPCClient) CancelOperation(ctx context.Context, re
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -2361,7 +2372,7 @@ func (c *certificateAuthorityGRPCClient) DeleteOperation(ctx context.Context, re
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -2376,7 +2387,7 @@ func (c *certificateAuthorityGRPCClient) GetOperation(ctx context.Context, req *
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2405,7 +2416,7 @@ func (c *certificateAuthorityGRPCClient) ListOperations(ctx context.Context, req
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2485,17 +2496,7 @@ func (c *certificateAuthorityRESTClient) CreateCertificate(ctx context.Context, 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateCertificate")
 		if err != nil {
 			return err
 		}
@@ -2545,17 +2546,7 @@ func (c *certificateAuthorityRESTClient) GetCertificate(ctx context.Context, req
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCertificate")
 		if err != nil {
 			return err
 		}
@@ -2623,21 +2614,10 @@ func (c *certificateAuthorityRESTClient) ListCertificates(ctx context.Context, r
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListCertificates")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2706,17 +2686,7 @@ func (c *certificateAuthorityRESTClient) RevokeCertificate(ctx context.Context, 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RevokeCertificate")
 		if err != nil {
 			return err
 		}
@@ -2756,11 +2726,11 @@ func (c *certificateAuthorityRESTClient) UpdateCertificate(ctx context.Context, 
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2785,17 +2755,7 @@ func (c *certificateAuthorityRESTClient) UpdateCertificate(ctx context.Context, 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateCertificate")
 		if err != nil {
 			return err
 		}
@@ -2859,21 +2819,10 @@ func (c *certificateAuthorityRESTClient) ActivateCertificateAuthority(ctx contex
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ActivateCertificateAuthority")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2936,21 +2885,10 @@ func (c *certificateAuthorityRESTClient) CreateCertificateAuthority(ctx context.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateCertificateAuthority")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3007,21 +2945,10 @@ func (c *certificateAuthorityRESTClient) DisableCertificateAuthority(ctx context
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "DisableCertificateAuthority")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3078,21 +3005,10 @@ func (c *certificateAuthorityRESTClient) EnableCertificateAuthority(ctx context.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "EnableCertificateAuthority")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3153,17 +3069,7 @@ func (c *certificateAuthorityRESTClient) FetchCertificateAuthorityCsr(ctx contex
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FetchCertificateAuthorityCsr")
 		if err != nil {
 			return err
 		}
@@ -3214,17 +3120,7 @@ func (c *certificateAuthorityRESTClient) GetCertificateAuthority(ctx context.Con
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCertificateAuthority")
 		if err != nil {
 			return err
 		}
@@ -3293,21 +3189,10 @@ func (c *certificateAuthorityRESTClient) ListCertificateAuthorities(ctx context.
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListCertificateAuthorities")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3377,21 +3262,10 @@ func (c *certificateAuthorityRESTClient) UndeleteCertificateAuthority(ctx contex
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UndeleteCertificateAuthority")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3454,21 +3328,10 @@ func (c *certificateAuthorityRESTClient) DeleteCertificateAuthority(ctx context.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteCertificateAuthority")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3508,11 +3371,11 @@ func (c *certificateAuthorityRESTClient) UpdateCertificateAuthority(ctx context.
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3536,21 +3399,10 @@ func (c *certificateAuthorityRESTClient) UpdateCertificateAuthority(ctx context.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateCertificateAuthority")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3611,21 +3463,10 @@ func (c *certificateAuthorityRESTClient) CreateCaPool(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateCaPool")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3664,11 +3505,11 @@ func (c *certificateAuthorityRESTClient) UpdateCaPool(ctx context.Context, req *
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3692,21 +3533,10 @@ func (c *certificateAuthorityRESTClient) UpdateCaPool(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateCaPool")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3757,17 +3587,7 @@ func (c *certificateAuthorityRESTClient) GetCaPool(ctx context.Context, req *pri
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCaPool")
 		if err != nil {
 			return err
 		}
@@ -3835,21 +3655,10 @@ func (c *certificateAuthorityRESTClient) ListCaPools(ctx context.Context, req *p
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListCaPools")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3917,21 +3726,10 @@ func (c *certificateAuthorityRESTClient) DeleteCaPool(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteCaPool")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3991,17 +3789,7 @@ func (c *certificateAuthorityRESTClient) FetchCaCerts(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "FetchCaCerts")
 		if err != nil {
 			return err
 		}
@@ -4052,17 +3840,7 @@ func (c *certificateAuthorityRESTClient) GetCertificateRevocationList(ctx contex
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCertificateRevocationList")
 		if err != nil {
 			return err
 		}
@@ -4131,21 +3909,10 @@ func (c *certificateAuthorityRESTClient) ListCertificateRevocationLists(ctx cont
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListCertificateRevocationLists")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4197,11 +3964,11 @@ func (c *certificateAuthorityRESTClient) UpdateCertificateRevocationList(ctx con
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4225,21 +3992,10 @@ func (c *certificateAuthorityRESTClient) UpdateCertificateRevocationList(ctx con
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateCertificateRevocationList")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4302,21 +4058,10 @@ func (c *certificateAuthorityRESTClient) CreateCertificateTemplate(ctx context.C
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateCertificateTemplate")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4370,21 +4115,10 @@ func (c *certificateAuthorityRESTClient) DeleteCertificateTemplate(ctx context.C
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteCertificateTemplate")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4436,17 +4170,7 @@ func (c *certificateAuthorityRESTClient) GetCertificateTemplate(ctx context.Cont
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCertificateTemplate")
 		if err != nil {
 			return err
 		}
@@ -4515,21 +4239,10 @@ func (c *certificateAuthorityRESTClient) ListCertificateTemplates(ctx context.Co
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListCertificateTemplates")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4581,11 +4294,11 @@ func (c *certificateAuthorityRESTClient) UpdateCertificateTemplate(ctx context.C
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4609,21 +4322,10 @@ func (c *certificateAuthorityRESTClient) UpdateCertificateTemplate(ctx context.C
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateCertificateTemplate")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4674,17 +4376,7 @@ func (c *certificateAuthorityRESTClient) GetLocation(ctx context.Context, req *l
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -4749,21 +4441,10 @@ func (c *certificateAuthorityRESTClient) ListLocations(ctx context.Context, req 
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4830,17 +4511,7 @@ func (c *certificateAuthorityRESTClient) GetIamPolicy(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -4900,17 +4571,7 @@ func (c *certificateAuthorityRESTClient) SetIamPolicy(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -4972,17 +4633,7 @@ func (c *certificateAuthorityRESTClient) TestIamPermissions(ctx context.Context,
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
 		if err != nil {
 			return err
 		}
@@ -5035,15 +4686,8 @@ func (c *certificateAuthorityRESTClient) CancelOperation(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -5077,15 +4721,8 @@ func (c *certificateAuthorityRESTClient) DeleteOperation(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOperation")
+		return err
 	}, opts...)
 }
 
@@ -5122,17 +4759,7 @@ func (c *certificateAuthorityRESTClient) GetOperation(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -5197,21 +4824,10 @@ func (c *certificateAuthorityRESTClient) ListOperations(ctx context.Context, req
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

@@ -19,7 +19,7 @@ package inventory
 import (
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 	kmspb "cloud.google.com/go/kms/apiv1/kmspb"
 	inventorypb "cloud.google.com/go/kms/inventory/apiv1/inventorypb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -55,6 +54,7 @@ func defaultKeyDashboardGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://kmsinventory.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -141,6 +141,8 @@ type keyDashboardGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewKeyDashboardClient creates a new key dashboard service client based on gRPC.
@@ -167,6 +169,7 @@ func NewKeyDashboardClient(ctx context.Context, opts ...option.ClientOption) (*K
 		connPool:           connPool,
 		keyDashboardClient: inventorypb.NewKeyDashboardServiceClient(connPool),
 		CallOptions:        &client.CallOptions,
+		logger:             internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -189,7 +192,9 @@ func (c *keyDashboardGRPCClient) Connection() *grpc.ClientConn {
 func (c *keyDashboardGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -211,6 +216,8 @@ type keyDashboardRESTClient struct {
 
 	// Points back to the CallOptions field of the containing KeyDashboardClient
 	CallOptions **KeyDashboardCallOptions
+
+	logger *slog.Logger
 }
 
 // NewKeyDashboardRESTClient creates a new key dashboard service rest client.
@@ -228,6 +235,7 @@ func NewKeyDashboardRESTClient(ctx context.Context, opts ...option.ClientOption)
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -242,6 +250,7 @@ func defaultKeyDashboardRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://kmsinventory.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -251,7 +260,9 @@ func defaultKeyDashboardRESTClientOptions() []option.ClientOption {
 func (c *keyDashboardRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -288,7 +299,7 @@ func (c *keyDashboardGRPCClient) ListCryptoKeys(ctx context.Context, req *invent
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.keyDashboardClient.ListCryptoKeys(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.keyDashboardClient.ListCryptoKeys, req, settings.GRPC, c.logger, "ListCryptoKeys")
 			return err
 		}, opts...)
 		if err != nil {
@@ -361,21 +372,10 @@ func (c *keyDashboardRESTClient) ListCryptoKeys(ctx context.Context, req *invent
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListCryptoKeys")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

@@ -184,7 +184,7 @@ func TestIntegration_Admin(t *testing.T) {
 			if err == nil && s.name == snap.name {
 				return true, nil
 			}
-			if err == iterator.Done {
+			if errors.Is(err, iterator.Done) {
 				return false, fmt.Errorf("cannot find snapshot: %q", snap.name)
 			}
 			if err != nil {

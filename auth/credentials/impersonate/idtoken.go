@@ -47,13 +47,13 @@ type IDTokenOptions struct {
 	// chain. Optional.
 	Delegates []string
 
-	// Credentials used to fetch the ID token. If not provided, and a Client is
-	// also not provided, base credentials will try to be detected from the
-	// environment. Optional.
+	// Credentials used in generating the impersonated ID token. If empty, an
+	// attempt will be made to detect credentials from the environment (see
+	// [cloud.google.com/go/auth/credentials.DetectDefault]). Optional.
 	Credentials *auth.Credentials
 	// Client configures the underlying client used to make network requests
-	// when fetching tokens. If provided the client should provide it's own
-	// base credentials at call time. Optional.
+	// when fetching tokens. If provided this should be a fully-authenticated
+	// client. Optional.
 	Client *http.Client
 }
 
@@ -83,17 +83,20 @@ func NewIDTokenCredentials(opts *IDTokenOptions) (*auth.Credentials, error) {
 	if err := opts.validate(); err != nil {
 		return nil, err
 	}
-	var client *http.Client
-	var creds *auth.Credentials
-	if opts.Client == nil && opts.Credentials == nil {
+
+	client := opts.Client
+	creds := opts.Credentials
+	if client == nil {
 		var err error
-		// TODO: test not signed jwt more
-		creds, err = credentials.DetectDefault(&credentials.DetectOptions{
-			Scopes:           []string{defaultScope},
-			UseSelfSignedJWT: true,
-		})
-		if err != nil {
-			return nil, err
+		if creds == nil {
+			// TODO: test not signed jwt more
+			creds, err = credentials.DetectDefault(&credentials.DetectOptions{
+				Scopes:           []string{defaultScope},
+				UseSelfSignedJWT: true,
+			})
+			if err != nil {
+				return nil, err
+			}
 		}
 		client, err = httptransport.NewClient(&httptransport.Options{
 			Credentials: creds,
@@ -101,14 +104,6 @@ func NewIDTokenCredentials(opts *IDTokenOptions) (*auth.Credentials, error) {
 		if err != nil {
 			return nil, err
 		}
-	} else if opts.Client == nil {
-		creds = opts.Credentials
-		client = internal.CloneDefaultClient()
-		if err := httptransport.AddAuthorizationMiddleware(client, opts.Credentials); err != nil {
-			return nil, err
-		}
-	} else {
-		client = opts.Client
 	}
 
 	itp := impersonatedIDTokenProvider{
@@ -162,19 +157,14 @@ func (i impersonatedIDTokenProvider) Token(ctx context.Context) (*auth.Token, er
 	}
 
 	url := fmt.Sprintf("%s/v1/%s:generateIdToken", iamCredentialsEndpoint, formatIAMServiceAccountName(i.targetPrincipal))
-	req, err := http.NewRequest("POST", url, bytes.NewReader(bodyBytes))
+	req, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewReader(bodyBytes))
 	if err != nil {
 		return nil, fmt.Errorf("impersonate: unable to create request: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
-	resp, err := i.client.Do(req)
+	resp, body, err := internal.DoRequest(i.client, req)
 	if err != nil {
 		return nil, fmt.Errorf("impersonate: unable to generate ID token: %w", err)
-	}
-	defer resp.Body.Close()
-	body, err := internal.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("impersonate: unable to read body: %w", err)
 	}
 	if c := resp.StatusCode; c < 200 || c > 299 {
 		return nil, fmt.Errorf("impersonate: status code %d: %s", c, body)

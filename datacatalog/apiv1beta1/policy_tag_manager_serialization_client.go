@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	datacatalogpb "cloud.google.com/go/datacatalog/apiv1beta1/datacatalogpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -54,6 +53,7 @@ func defaultPolicyTagManagerSerializationGRPCClientOptions() []option.ClientOpti
 		internaloption.WithDefaultAudience("https://datacatalog.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -158,6 +158,8 @@ type policyTagManagerSerializationGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewPolicyTagManagerSerializationClient creates a new policy tag manager serialization client based on gRPC.
@@ -185,6 +187,7 @@ func NewPolicyTagManagerSerializationClient(ctx context.Context, opts ...option.
 		connPool:                            connPool,
 		policyTagManagerSerializationClient: datacatalogpb.NewPolicyTagManagerSerializationClient(connPool),
 		CallOptions:                         &client.CallOptions,
+		logger:                              internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -207,7 +210,9 @@ func (c *policyTagManagerSerializationGRPCClient) Connection() *grpc.ClientConn 
 func (c *policyTagManagerSerializationGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -229,6 +234,8 @@ type policyTagManagerSerializationRESTClient struct {
 
 	// Points back to the CallOptions field of the containing PolicyTagManagerSerializationClient
 	CallOptions **PolicyTagManagerSerializationCallOptions
+
+	logger *slog.Logger
 }
 
 // NewPolicyTagManagerSerializationRESTClient creates a new policy tag manager serialization rest client.
@@ -247,6 +254,7 @@ func NewPolicyTagManagerSerializationRESTClient(ctx context.Context, opts ...opt
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -261,6 +269,7 @@ func defaultPolicyTagManagerSerializationRESTClientOptions() []option.ClientOpti
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://datacatalog.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -270,7 +279,9 @@ func defaultPolicyTagManagerSerializationRESTClientOptions() []option.ClientOpti
 func (c *policyTagManagerSerializationRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -296,7 +307,7 @@ func (c *policyTagManagerSerializationGRPCClient) ImportTaxonomies(ctx context.C
 	var resp *datacatalogpb.ImportTaxonomiesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.policyTagManagerSerializationClient.ImportTaxonomies(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.policyTagManagerSerializationClient.ImportTaxonomies, req, settings.GRPC, c.logger, "ImportTaxonomies")
 		return err
 	}, opts...)
 	if err != nil {
@@ -314,7 +325,7 @@ func (c *policyTagManagerSerializationGRPCClient) ExportTaxonomies(ctx context.C
 	var resp *datacatalogpb.ExportTaxonomiesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.policyTagManagerSerializationClient.ExportTaxonomies(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.policyTagManagerSerializationClient.ExportTaxonomies, req, settings.GRPC, c.logger, "ExportTaxonomies")
 		return err
 	}, opts...)
 	if err != nil {
@@ -361,17 +372,7 @@ func (c *policyTagManagerSerializationRESTClient) ImportTaxonomies(ctx context.C
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ImportTaxonomies")
 		if err != nil {
 			return err
 		}
@@ -431,17 +432,7 @@ func (c *policyTagManagerSerializationRESTClient) ExportTaxonomies(ctx context.C
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ExportTaxonomies")
 		if err != nil {
 			return err
 		}

@@ -17,19 +17,30 @@ package bigquery
 import (
 	"context"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
-	"go.opencensus.io/trace"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/sdk/trace"
 )
 
 // testExporter is a testing exporter for validating captured spans.
 type testExporter struct {
-	spans []*trace.SpanData
+	mu    sync.Mutex
+	spans []trace.ReadOnlySpan
 }
 
-func (te *testExporter) ExportSpan(s *trace.SpanData) {
-	te.spans = append(te.spans, s)
+func (te *testExporter) ExportSpans(ctx context.Context, spans []trace.ReadOnlySpan) error {
+	te.mu.Lock()
+	defer te.mu.Unlock()
+	te.spans = append(te.spans, spans...)
+	return nil
+}
+
+// Satisfy the exporter contract.  This method does nothing.
+func (te *testExporter) Shutdown(ctx context.Context) error {
+	return nil
 }
 
 // hasSpans checks that the exporter has all the span names
@@ -40,7 +51,7 @@ func (te *testExporter) hasSpans(names []string) []string {
 		matches[n] = struct{}{}
 	}
 	for _, s := range te.spans {
-		delete(matches, s.Name)
+		delete(matches, s.Name())
 	}
 	var unmatched []string
 	for k := range matches {
@@ -84,16 +95,57 @@ func TestIntegration_Tracing(t *testing.T) {
 			},
 			wantSpans: []string{"bigquery.tables.get", "cloud.google.com/go/bigquery.Table.Metadata"},
 		},
+		{
+			description: "dataset and table insert/update/delete",
+			callF: func(ctx context.Context) {
+				ds := client.Dataset(datasetIDs.New())
+				if err := ds.Create(ctx, nil); err != nil {
+					t.Fatalf("creating dataset %s: %v", ds.DatasetID, err)
+				}
+				defer ds.DeleteWithContents(ctx)
+				tbl := ds.Table(tableIDs.New())
+				tm := &TableMetadata{
+					Schema: schema,
+				}
+				if err := tbl.Create(ctx, tm); err != nil {
+					t.Fatalf("creating table %s: %v", tbl.TableID, err)
+				}
+				defer tbl.Delete(ctx)
+				md := TableMetadataToUpdate{
+					Description: "new description",
+				}
+				if _, err := tbl.Update(ctx, md, ""); err != nil {
+					t.Fatalf("updating table %s: %v", tbl.TableID, err)
+				}
+			},
+			wantSpans: []string{
+				"cloud.google.com/go/bigquery.Dataset.Create",
+				"bigquery.tables.insert", "cloud.google.com/go/bigquery.Table.Create",
+				"bigquery.tables.patch", "cloud.google.com/go/bigquery.Table.Update",
+				"bigquery.datasets.delete", "cloud.google.com/go/bigquery.Dataset.Delete",
+				"bigquery.tables.delete", "cloud.google.com/go/bigquery.Table.Delete",
+			},
+		},
 	} {
-		exporter := &testExporter{}
-		trace.RegisterExporter(exporter)
-		traceCtx, span := trace.StartSpan(ctx, "testspan", trace.WithSampler(trace.AlwaysSample()))
-		tc.callF(traceCtx)
-		span.End()
-		trace.UnregisterExporter(exporter)
+		t.Run(tc.description, func(t *testing.T) {
+			exporter := &testExporter{}
+			bsp := trace.NewBatchSpanProcessor(exporter)
+			tp := trace.NewTracerProvider(
+				trace.WithSampler(trace.AlwaysSample()),
+				trace.WithSpanProcessor(bsp),
+			)
+			otel.SetTracerProvider(tp)
 
-		if unmatched := exporter.hasSpans(tc.wantSpans); len(unmatched) > 0 {
-			t.Errorf("case (%s): unmatched spans: %s", tc.description, strings.Join(unmatched, ","))
-		}
+			tracer := tp.Tracer("test-trace")
+			traceCtx, span := tracer.Start(ctx, "startspan")
+			// Invoke the func to be traced.
+			tc.callF(traceCtx)
+			span.End()
+			tp.Shutdown(traceCtx)
+
+			if unmatched := exporter.hasSpans(tc.wantSpans); len(unmatched) > 0 {
+				t.Errorf("case (%s): unmatched spans: %s", tc.description, strings.Join(unmatched, ","))
+			}
+		})
 	}
 }

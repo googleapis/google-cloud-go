@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -32,7 +32,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -90,6 +89,7 @@ func defaultFeaturestoreGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -634,6 +634,8 @@ type featurestoreGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewFeaturestoreClient creates a new featurestore service client based on gRPC.
@@ -660,6 +662,7 @@ func NewFeaturestoreClient(ctx context.Context, opts ...option.ClientOption) (*F
 		connPool:           connPool,
 		featurestoreClient: aiplatformpb.NewFeaturestoreServiceClient(connPool),
 		CallOptions:        &client.CallOptions,
+		logger:             internaloption.GetLogger(opts),
 		operationsClient:   longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:    iampb.NewIAMPolicyClient(connPool),
 		locationsClient:    locationpb.NewLocationsClient(connPool),
@@ -696,7 +699,9 @@ func (c *featurestoreGRPCClient) Connection() *grpc.ClientConn {
 func (c *featurestoreGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -723,6 +728,8 @@ type featurestoreRESTClient struct {
 
 	// Points back to the CallOptions field of the containing FeaturestoreClient
 	CallOptions **FeaturestoreCallOptions
+
+	logger *slog.Logger
 }
 
 // NewFeaturestoreRESTClient creates a new featurestore service rest client.
@@ -740,6 +747,7 @@ func NewFeaturestoreRESTClient(ctx context.Context, opts ...option.ClientOption)
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -764,6 +772,7 @@ func defaultFeaturestoreRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -773,7 +782,9 @@ func defaultFeaturestoreRESTClientOptions() []option.ClientOption {
 func (c *featurestoreRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -799,7 +810,7 @@ func (c *featurestoreGRPCClient) CreateFeaturestore(ctx context.Context, req *ai
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.CreateFeaturestore(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.CreateFeaturestore, req, settings.GRPC, c.logger, "CreateFeaturestore")
 		return err
 	}, opts...)
 	if err != nil {
@@ -819,7 +830,7 @@ func (c *featurestoreGRPCClient) GetFeaturestore(ctx context.Context, req *aipla
 	var resp *aiplatformpb.Featurestore
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.GetFeaturestore(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.GetFeaturestore, req, settings.GRPC, c.logger, "GetFeaturestore")
 		return err
 	}, opts...)
 	if err != nil {
@@ -848,7 +859,7 @@ func (c *featurestoreGRPCClient) ListFeaturestores(ctx context.Context, req *aip
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.featurestoreClient.ListFeaturestores(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.featurestoreClient.ListFeaturestores, req, settings.GRPC, c.logger, "ListFeaturestores")
 			return err
 		}, opts...)
 		if err != nil {
@@ -883,7 +894,7 @@ func (c *featurestoreGRPCClient) UpdateFeaturestore(ctx context.Context, req *ai
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.UpdateFeaturestore(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.UpdateFeaturestore, req, settings.GRPC, c.logger, "UpdateFeaturestore")
 		return err
 	}, opts...)
 	if err != nil {
@@ -903,7 +914,7 @@ func (c *featurestoreGRPCClient) DeleteFeaturestore(ctx context.Context, req *ai
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.DeleteFeaturestore(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.DeleteFeaturestore, req, settings.GRPC, c.logger, "DeleteFeaturestore")
 		return err
 	}, opts...)
 	if err != nil {
@@ -923,7 +934,7 @@ func (c *featurestoreGRPCClient) CreateEntityType(ctx context.Context, req *aipl
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.CreateEntityType(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.CreateEntityType, req, settings.GRPC, c.logger, "CreateEntityType")
 		return err
 	}, opts...)
 	if err != nil {
@@ -943,7 +954,7 @@ func (c *featurestoreGRPCClient) GetEntityType(ctx context.Context, req *aiplatf
 	var resp *aiplatformpb.EntityType
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.GetEntityType(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.GetEntityType, req, settings.GRPC, c.logger, "GetEntityType")
 		return err
 	}, opts...)
 	if err != nil {
@@ -972,7 +983,7 @@ func (c *featurestoreGRPCClient) ListEntityTypes(ctx context.Context, req *aipla
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.featurestoreClient.ListEntityTypes(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.featurestoreClient.ListEntityTypes, req, settings.GRPC, c.logger, "ListEntityTypes")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1007,7 +1018,7 @@ func (c *featurestoreGRPCClient) UpdateEntityType(ctx context.Context, req *aipl
 	var resp *aiplatformpb.EntityType
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.UpdateEntityType(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.UpdateEntityType, req, settings.GRPC, c.logger, "UpdateEntityType")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1025,7 +1036,7 @@ func (c *featurestoreGRPCClient) DeleteEntityType(ctx context.Context, req *aipl
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.DeleteEntityType(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.DeleteEntityType, req, settings.GRPC, c.logger, "DeleteEntityType")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1045,7 +1056,7 @@ func (c *featurestoreGRPCClient) CreateFeature(ctx context.Context, req *aiplatf
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.CreateFeature(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.CreateFeature, req, settings.GRPC, c.logger, "CreateFeature")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1065,7 +1076,7 @@ func (c *featurestoreGRPCClient) BatchCreateFeatures(ctx context.Context, req *a
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.BatchCreateFeatures(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.BatchCreateFeatures, req, settings.GRPC, c.logger, "BatchCreateFeatures")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1085,7 +1096,7 @@ func (c *featurestoreGRPCClient) GetFeature(ctx context.Context, req *aiplatform
 	var resp *aiplatformpb.Feature
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.GetFeature(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.GetFeature, req, settings.GRPC, c.logger, "GetFeature")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1114,7 +1125,7 @@ func (c *featurestoreGRPCClient) ListFeatures(ctx context.Context, req *aiplatfo
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.featurestoreClient.ListFeatures(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.featurestoreClient.ListFeatures, req, settings.GRPC, c.logger, "ListFeatures")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1149,7 +1160,7 @@ func (c *featurestoreGRPCClient) UpdateFeature(ctx context.Context, req *aiplatf
 	var resp *aiplatformpb.Feature
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.UpdateFeature(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.UpdateFeature, req, settings.GRPC, c.logger, "UpdateFeature")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1167,7 +1178,7 @@ func (c *featurestoreGRPCClient) DeleteFeature(ctx context.Context, req *aiplatf
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.DeleteFeature(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.DeleteFeature, req, settings.GRPC, c.logger, "DeleteFeature")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1187,7 +1198,7 @@ func (c *featurestoreGRPCClient) ImportFeatureValues(ctx context.Context, req *a
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.ImportFeatureValues(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.ImportFeatureValues, req, settings.GRPC, c.logger, "ImportFeatureValues")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1207,7 +1218,7 @@ func (c *featurestoreGRPCClient) BatchReadFeatureValues(ctx context.Context, req
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.BatchReadFeatureValues(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.BatchReadFeatureValues, req, settings.GRPC, c.logger, "BatchReadFeatureValues")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1227,7 +1238,7 @@ func (c *featurestoreGRPCClient) ExportFeatureValues(ctx context.Context, req *a
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.ExportFeatureValues(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.ExportFeatureValues, req, settings.GRPC, c.logger, "ExportFeatureValues")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1247,7 +1258,7 @@ func (c *featurestoreGRPCClient) DeleteFeatureValues(ctx context.Context, req *a
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.DeleteFeatureValues(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.DeleteFeatureValues, req, settings.GRPC, c.logger, "DeleteFeatureValues")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1278,7 +1289,7 @@ func (c *featurestoreGRPCClient) SearchFeatures(ctx context.Context, req *aiplat
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.featurestoreClient.SearchFeatures(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.featurestoreClient.SearchFeatures, req, settings.GRPC, c.logger, "SearchFeatures")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1313,7 +1324,7 @@ func (c *featurestoreGRPCClient) GetLocation(ctx context.Context, req *locationp
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1342,7 +1353,7 @@ func (c *featurestoreGRPCClient) ListLocations(ctx context.Context, req *locatio
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1377,7 +1388,7 @@ func (c *featurestoreGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1395,7 +1406,7 @@ func (c *featurestoreGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1413,7 +1424,7 @@ func (c *featurestoreGRPCClient) TestIamPermissions(ctx context.Context, req *ia
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1430,7 +1441,7 @@ func (c *featurestoreGRPCClient) CancelOperation(ctx context.Context, req *longr
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -1444,7 +1455,7 @@ func (c *featurestoreGRPCClient) DeleteOperation(ctx context.Context, req *longr
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -1459,7 +1470,7 @@ func (c *featurestoreGRPCClient) GetOperation(ctx context.Context, req *longrunn
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1488,7 +1499,7 @@ func (c *featurestoreGRPCClient) ListOperations(ctx context.Context, req *longru
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1523,7 +1534,7 @@ func (c *featurestoreGRPCClient) WaitOperation(ctx context.Context, req *longrun
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.WaitOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.WaitOperation, req, settings.GRPC, c.logger, "WaitOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1548,6 +1559,7 @@ func (c *featurestoreRESTClient) CreateFeaturestore(ctx context.Context, req *ai
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/featurestores", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("featurestoreId", fmt.Sprintf("%v", req.GetFeaturestoreId()))
 
 	baseUrl.RawQuery = params.Encode()
@@ -1571,21 +1583,10 @@ func (c *featurestoreRESTClient) CreateFeaturestore(ctx context.Context, req *ai
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateFeaturestore")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1611,6 +1612,11 @@ func (c *featurestoreRESTClient) GetFeaturestore(ctx context.Context, req *aipla
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1631,17 +1637,7 @@ func (c *featurestoreRESTClient) GetFeaturestore(ctx context.Context, req *aipla
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetFeaturestore")
 		if err != nil {
 			return err
 		}
@@ -1680,6 +1676,7 @@ func (c *featurestoreRESTClient) ListFeaturestores(ctx context.Context, req *aip
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/featurestores", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1693,11 +1690,11 @@ func (c *featurestoreRESTClient) ListFeaturestores(ctx context.Context, req *aip
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
 		if req.GetReadMask() != nil {
-			readMask, err := protojson.Marshal(req.GetReadMask())
+			field, err := protojson.Marshal(req.GetReadMask())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask[1:len(readMask)-1]))
+			params.Add("readMask", string(field[1:len(field)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -1715,21 +1712,10 @@ func (c *featurestoreRESTClient) ListFeaturestores(ctx context.Context, req *aip
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListFeaturestores")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1775,12 +1761,13 @@ func (c *featurestoreRESTClient) UpdateFeaturestore(ctx context.Context, req *ai
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetFeaturestore().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1804,21 +1791,10 @@ func (c *featurestoreRESTClient) UpdateFeaturestore(ctx context.Context, req *ai
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateFeaturestore")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1846,6 +1822,7 @@ func (c *featurestoreRESTClient) DeleteFeaturestore(ctx context.Context, req *ai
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetForce() {
 		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
 	}
@@ -1871,21 +1848,10 @@ func (c *featurestoreRESTClient) DeleteFeaturestore(ctx context.Context, req *ai
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteFeaturestore")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1919,6 +1885,7 @@ func (c *featurestoreRESTClient) CreateEntityType(ctx context.Context, req *aipl
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/entityTypes", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("entityTypeId", fmt.Sprintf("%v", req.GetEntityTypeId()))
 
 	baseUrl.RawQuery = params.Encode()
@@ -1942,21 +1909,10 @@ func (c *featurestoreRESTClient) CreateEntityType(ctx context.Context, req *aipl
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateEntityType")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1982,6 +1938,11 @@ func (c *featurestoreRESTClient) GetEntityType(ctx context.Context, req *aiplatf
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -2002,17 +1963,7 @@ func (c *featurestoreRESTClient) GetEntityType(ctx context.Context, req *aiplatf
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetEntityType")
 		if err != nil {
 			return err
 		}
@@ -2051,6 +2002,7 @@ func (c *featurestoreRESTClient) ListEntityTypes(ctx context.Context, req *aipla
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/entityTypes", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -2064,11 +2016,11 @@ func (c *featurestoreRESTClient) ListEntityTypes(ctx context.Context, req *aipla
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
 		if req.GetReadMask() != nil {
-			readMask, err := protojson.Marshal(req.GetReadMask())
+			field, err := protojson.Marshal(req.GetReadMask())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask[1:len(readMask)-1]))
+			params.Add("readMask", string(field[1:len(field)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -2086,21 +2038,10 @@ func (c *featurestoreRESTClient) ListEntityTypes(ctx context.Context, req *aipla
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListEntityTypes")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2146,12 +2087,13 @@ func (c *featurestoreRESTClient) UpdateEntityType(ctx context.Context, req *aipl
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetEntityType().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2176,17 +2118,7 @@ func (c *featurestoreRESTClient) UpdateEntityType(ctx context.Context, req *aipl
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateEntityType")
 		if err != nil {
 			return err
 		}
@@ -2213,6 +2145,7 @@ func (c *featurestoreRESTClient) DeleteEntityType(ctx context.Context, req *aipl
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetForce() {
 		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
 	}
@@ -2238,21 +2171,10 @@ func (c *featurestoreRESTClient) DeleteEntityType(ctx context.Context, req *aipl
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteEntityType")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2286,6 +2208,7 @@ func (c *featurestoreRESTClient) CreateFeature(ctx context.Context, req *aiplatf
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/features", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("featureId", fmt.Sprintf("%v", req.GetFeatureId()))
 
 	baseUrl.RawQuery = params.Encode()
@@ -2309,21 +2232,10 @@ func (c *featurestoreRESTClient) CreateFeature(ctx context.Context, req *aiplatf
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateFeature")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2355,6 +2267,11 @@ func (c *featurestoreRESTClient) BatchCreateFeatures(ctx context.Context, req *a
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/features:batchCreate", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
@@ -2374,21 +2291,10 @@ func (c *featurestoreRESTClient) BatchCreateFeatures(ctx context.Context, req *a
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchCreateFeatures")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2414,6 +2320,28 @@ func (c *featurestoreRESTClient) GetFeature(ctx context.Context, req *aiplatform
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetFeatureStatsAndAnomalySpec() != nil && req.GetFeatureStatsAndAnomalySpec().LatestStatsCount != nil {
+		params.Add("featureStatsAndAnomalySpec.latestStatsCount", fmt.Sprintf("%v", req.GetFeatureStatsAndAnomalySpec().GetLatestStatsCount()))
+	}
+	if req.GetFeatureStatsAndAnomalySpec().GetStatsTimeRange().GetEndTime() != nil {
+		field, err := protojson.Marshal(req.GetFeatureStatsAndAnomalySpec().GetStatsTimeRange().GetEndTime())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("featureStatsAndAnomalySpec.statsTimeRange.endTime", string(field[1:len(field)-1]))
+	}
+	if req.GetFeatureStatsAndAnomalySpec().GetStatsTimeRange().GetStartTime() != nil {
+		field, err := protojson.Marshal(req.GetFeatureStatsAndAnomalySpec().GetStatsTimeRange().GetStartTime())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("featureStatsAndAnomalySpec.statsTimeRange.startTime", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -2434,17 +2362,7 @@ func (c *featurestoreRESTClient) GetFeature(ctx context.Context, req *aiplatform
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetFeature")
 		if err != nil {
 			return err
 		}
@@ -2483,6 +2401,7 @@ func (c *featurestoreRESTClient) ListFeatures(ctx context.Context, req *aiplatfo
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/features", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -2499,11 +2418,11 @@ func (c *featurestoreRESTClient) ListFeatures(ctx context.Context, req *aiplatfo
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
 		if req.GetReadMask() != nil {
-			readMask, err := protojson.Marshal(req.GetReadMask())
+			field, err := protojson.Marshal(req.GetReadMask())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask[1:len(readMask)-1]))
+			params.Add("readMask", string(field[1:len(field)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -2521,21 +2440,10 @@ func (c *featurestoreRESTClient) ListFeatures(ctx context.Context, req *aiplatfo
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListFeatures")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2581,12 +2489,13 @@ func (c *featurestoreRESTClient) UpdateFeature(ctx context.Context, req *aiplatf
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetFeature().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2611,17 +2520,7 @@ func (c *featurestoreRESTClient) UpdateFeature(ctx context.Context, req *aiplatf
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateFeature")
 		if err != nil {
 			return err
 		}
@@ -2646,6 +2545,11 @@ func (c *featurestoreRESTClient) DeleteFeature(ctx context.Context, req *aiplatf
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -2665,21 +2569,10 @@ func (c *featurestoreRESTClient) DeleteFeature(ctx context.Context, req *aiplatf
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteFeature")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2732,6 +2625,11 @@ func (c *featurestoreRESTClient) ImportFeatureValues(ctx context.Context, req *a
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:importFeatureValues", req.GetEntityType())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "entity_type", url.QueryEscape(req.GetEntityType()))}
 
@@ -2751,21 +2649,10 @@ func (c *featurestoreRESTClient) ImportFeatureValues(ctx context.Context, req *a
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ImportFeatureValues")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2802,6 +2689,11 @@ func (c *featurestoreRESTClient) BatchReadFeatureValues(ctx context.Context, req
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:batchReadFeatureValues", req.GetFeaturestore())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "featurestore", url.QueryEscape(req.GetFeaturestore()))}
 
@@ -2821,21 +2713,10 @@ func (c *featurestoreRESTClient) BatchReadFeatureValues(ctx context.Context, req
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchReadFeatureValues")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2867,6 +2748,11 @@ func (c *featurestoreRESTClient) ExportFeatureValues(ctx context.Context, req *a
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:exportFeatureValues", req.GetEntityType())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "entity_type", url.QueryEscape(req.GetEntityType()))}
 
@@ -2886,21 +2772,10 @@ func (c *featurestoreRESTClient) ExportFeatureValues(ctx context.Context, req *a
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExportFeatureValues")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2941,6 +2816,11 @@ func (c *featurestoreRESTClient) DeleteFeatureValues(ctx context.Context, req *a
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:deleteFeatureValues", req.GetEntityType())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "entity_type", url.QueryEscape(req.GetEntityType()))}
 
@@ -2960,21 +2840,10 @@ func (c *featurestoreRESTClient) DeleteFeatureValues(ctx context.Context, req *a
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "DeleteFeatureValues")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3014,6 +2883,7 @@ func (c *featurestoreRESTClient) SearchFeatures(ctx context.Context, req *aiplat
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/featurestores:searchFeatures", req.GetLocation())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -3039,21 +2909,10 @@ func (c *featurestoreRESTClient) SearchFeatures(ctx context.Context, req *aiplat
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "SearchFeatures")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3091,6 +2950,11 @@ func (c *featurestoreRESTClient) GetLocation(ctx context.Context, req *locationp
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -3111,17 +2975,7 @@ func (c *featurestoreRESTClient) GetLocation(ctx context.Context, req *locationp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -3160,6 +3014,7 @@ func (c *featurestoreRESTClient) ListLocations(ctx context.Context, req *locatio
 		baseUrl.Path += fmt.Sprintf("/ui/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -3185,21 +3040,10 @@ func (c *featurestoreRESTClient) ListLocations(ctx context.Context, req *locatio
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3244,6 +3088,11 @@ func (c *featurestoreRESTClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:getIamPolicy", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -3264,17 +3113,7 @@ func (c *featurestoreRESTClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -3309,6 +3148,11 @@ func (c *featurestoreRESTClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:setIamPolicy", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -3329,17 +3173,7 @@ func (c *featurestoreRESTClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -3376,6 +3210,11 @@ func (c *featurestoreRESTClient) TestIamPermissions(ctx context.Context, req *ia
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:testIamPermissions", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -3396,17 +3235,7 @@ func (c *featurestoreRESTClient) TestIamPermissions(ctx context.Context, req *ia
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
 		if err != nil {
 			return err
 		}
@@ -3431,6 +3260,11 @@ func (c *featurestoreRESTClient) CancelOperation(ctx context.Context, req *longr
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v:cancel", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -3448,15 +3282,8 @@ func (c *featurestoreRESTClient) CancelOperation(ctx context.Context, req *longr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -3467,6 +3294,11 @@ func (c *featurestoreRESTClient) DeleteOperation(ctx context.Context, req *longr
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -3485,15 +3317,8 @@ func (c *featurestoreRESTClient) DeleteOperation(ctx context.Context, req *longr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOperation")
+		return err
 	}, opts...)
 }
 
@@ -3504,6 +3329,11 @@ func (c *featurestoreRESTClient) GetOperation(ctx context.Context, req *longrunn
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -3525,17 +3355,7 @@ func (c *featurestoreRESTClient) GetOperation(ctx context.Context, req *longrunn
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -3574,6 +3394,7 @@ func (c *featurestoreRESTClient) ListOperations(ctx context.Context, req *longru
 		baseUrl.Path += fmt.Sprintf("/ui/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -3599,21 +3420,10 @@ func (c *featurestoreRESTClient) ListOperations(ctx context.Context, req *longru
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3652,12 +3462,13 @@ func (c *featurestoreRESTClient) WaitOperation(ctx context.Context, req *longrun
 	baseUrl.Path += fmt.Sprintf("/ui/%v:wait", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetTimeout() != nil {
-		timeout, err := protojson.Marshal(req.GetTimeout())
+		field, err := protojson.Marshal(req.GetTimeout())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("timeout", string(timeout[1:len(timeout)-1]))
+		params.Add("timeout", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3682,17 +3493,7 @@ func (c *featurestoreRESTClient) WaitOperation(ctx context.Context, req *longrun
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "WaitOperation")
 		if err != nil {
 			return err
 		}

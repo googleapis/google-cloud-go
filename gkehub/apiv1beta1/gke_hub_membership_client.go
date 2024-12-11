@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -32,7 +32,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -77,6 +76,7 @@ func defaultGkeHubMembershipGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://gkehub.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -533,6 +533,8 @@ type gkeHubMembershipGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewGkeHubMembershipClient creates a new gke hub membership service client based on gRPC.
@@ -568,6 +570,7 @@ func NewGkeHubMembershipClient(ctx context.Context, opts ...option.ClientOption)
 		connPool:               connPool,
 		gkeHubMembershipClient: gkehubpb.NewGkeHubMembershipServiceClient(connPool),
 		CallOptions:            &client.CallOptions,
+		logger:                 internaloption.GetLogger(opts),
 		operationsClient:       longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:        iampb.NewIAMPolicyClient(connPool),
 		locationsClient:        locationpb.NewLocationsClient(connPool),
@@ -604,7 +607,9 @@ func (c *gkeHubMembershipGRPCClient) Connection() *grpc.ClientConn {
 func (c *gkeHubMembershipGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -631,6 +636,8 @@ type gkeHubMembershipRESTClient struct {
 
 	// Points back to the CallOptions field of the containing GkeHubMembershipClient
 	CallOptions **GkeHubMembershipCallOptions
+
+	logger *slog.Logger
 }
 
 // NewGkeHubMembershipRESTClient creates a new gke hub membership service rest client.
@@ -657,6 +664,7 @@ func NewGkeHubMembershipRESTClient(ctx context.Context, opts ...option.ClientOpt
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -681,6 +689,7 @@ func defaultGkeHubMembershipRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://gkehub.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -690,7 +699,9 @@ func defaultGkeHubMembershipRESTClientOptions() []option.ClientOption {
 func (c *gkeHubMembershipRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -727,7 +738,7 @@ func (c *gkeHubMembershipGRPCClient) ListMemberships(ctx context.Context, req *g
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.gkeHubMembershipClient.ListMemberships(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.gkeHubMembershipClient.ListMemberships, req, settings.GRPC, c.logger, "ListMemberships")
 			return err
 		}, opts...)
 		if err != nil {
@@ -762,7 +773,7 @@ func (c *gkeHubMembershipGRPCClient) GetMembership(ctx context.Context, req *gke
 	var resp *gkehubpb.Membership
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.gkeHubMembershipClient.GetMembership(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.gkeHubMembershipClient.GetMembership, req, settings.GRPC, c.logger, "GetMembership")
 		return err
 	}, opts...)
 	if err != nil {
@@ -780,7 +791,7 @@ func (c *gkeHubMembershipGRPCClient) CreateMembership(ctx context.Context, req *
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.gkeHubMembershipClient.CreateMembership(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.gkeHubMembershipClient.CreateMembership, req, settings.GRPC, c.logger, "CreateMembership")
 		return err
 	}, opts...)
 	if err != nil {
@@ -800,7 +811,7 @@ func (c *gkeHubMembershipGRPCClient) DeleteMembership(ctx context.Context, req *
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.gkeHubMembershipClient.DeleteMembership(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.gkeHubMembershipClient.DeleteMembership, req, settings.GRPC, c.logger, "DeleteMembership")
 		return err
 	}, opts...)
 	if err != nil {
@@ -820,7 +831,7 @@ func (c *gkeHubMembershipGRPCClient) UpdateMembership(ctx context.Context, req *
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.gkeHubMembershipClient.UpdateMembership(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.gkeHubMembershipClient.UpdateMembership, req, settings.GRPC, c.logger, "UpdateMembership")
 		return err
 	}, opts...)
 	if err != nil {
@@ -840,7 +851,7 @@ func (c *gkeHubMembershipGRPCClient) GenerateConnectManifest(ctx context.Context
 	var resp *gkehubpb.GenerateConnectManifestResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.gkeHubMembershipClient.GenerateConnectManifest(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.gkeHubMembershipClient.GenerateConnectManifest, req, settings.GRPC, c.logger, "GenerateConnectManifest")
 		return err
 	}, opts...)
 	if err != nil {
@@ -858,7 +869,7 @@ func (c *gkeHubMembershipGRPCClient) ValidateExclusivity(ctx context.Context, re
 	var resp *gkehubpb.ValidateExclusivityResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.gkeHubMembershipClient.ValidateExclusivity(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.gkeHubMembershipClient.ValidateExclusivity, req, settings.GRPC, c.logger, "ValidateExclusivity")
 		return err
 	}, opts...)
 	if err != nil {
@@ -876,7 +887,7 @@ func (c *gkeHubMembershipGRPCClient) GenerateExclusivityManifest(ctx context.Con
 	var resp *gkehubpb.GenerateExclusivityManifestResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.gkeHubMembershipClient.GenerateExclusivityManifest(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.gkeHubMembershipClient.GenerateExclusivityManifest, req, settings.GRPC, c.logger, "GenerateExclusivityManifest")
 		return err
 	}, opts...)
 	if err != nil {
@@ -894,7 +905,7 @@ func (c *gkeHubMembershipGRPCClient) GetLocation(ctx context.Context, req *locat
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -923,7 +934,7 @@ func (c *gkeHubMembershipGRPCClient) ListLocations(ctx context.Context, req *loc
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -958,7 +969,7 @@ func (c *gkeHubMembershipGRPCClient) GetIamPolicy(ctx context.Context, req *iamp
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -976,7 +987,7 @@ func (c *gkeHubMembershipGRPCClient) SetIamPolicy(ctx context.Context, req *iamp
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -994,7 +1005,7 @@ func (c *gkeHubMembershipGRPCClient) TestIamPermissions(ctx context.Context, req
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1011,7 +1022,7 @@ func (c *gkeHubMembershipGRPCClient) CancelOperation(ctx context.Context, req *l
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -1025,7 +1036,7 @@ func (c *gkeHubMembershipGRPCClient) DeleteOperation(ctx context.Context, req *l
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -1040,7 +1051,7 @@ func (c *gkeHubMembershipGRPCClient) GetOperation(ctx context.Context, req *long
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1069,7 +1080,7 @@ func (c *gkeHubMembershipGRPCClient) ListOperations(ctx context.Context, req *lo
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1146,21 +1157,10 @@ func (c *gkeHubMembershipRESTClient) ListMemberships(ctx context.Context, req *g
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListMemberships")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1223,17 +1223,7 @@ func (c *gkeHubMembershipRESTClient) GetMembership(ctx context.Context, req *gke
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetMembership")
 		if err != nil {
 			return err
 		}
@@ -1297,21 +1287,10 @@ func (c *gkeHubMembershipRESTClient) CreateMembership(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateMembership")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1371,21 +1350,10 @@ func (c *gkeHubMembershipRESTClient) DeleteMembership(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteMembership")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1424,11 +1392,11 @@ func (c *gkeHubMembershipRESTClient) UpdateMembership(ctx context.Context, req *
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1452,21 +1420,10 @@ func (c *gkeHubMembershipRESTClient) UpdateMembership(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateMembership")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1541,17 +1498,7 @@ func (c *gkeHubMembershipRESTClient) GenerateConnectManifest(ctx context.Context
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GenerateConnectManifest")
 		if err != nil {
 			return err
 		}
@@ -1606,17 +1553,7 @@ func (c *gkeHubMembershipRESTClient) ValidateExclusivity(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ValidateExclusivity")
 		if err != nil {
 			return err
 		}
@@ -1683,17 +1620,7 @@ func (c *gkeHubMembershipRESTClient) GenerateExclusivityManifest(ctx context.Con
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GenerateExclusivityManifest")
 		if err != nil {
 			return err
 		}
@@ -1743,17 +1670,7 @@ func (c *gkeHubMembershipRESTClient) GetLocation(ctx context.Context, req *locat
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -1818,21 +1735,10 @@ func (c *gkeHubMembershipRESTClient) ListLocations(ctx context.Context, req *loc
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1899,17 +1805,7 @@ func (c *gkeHubMembershipRESTClient) GetIamPolicy(ctx context.Context, req *iamp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -1969,17 +1865,7 @@ func (c *gkeHubMembershipRESTClient) SetIamPolicy(ctx context.Context, req *iamp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -2041,17 +1927,7 @@ func (c *gkeHubMembershipRESTClient) TestIamPermissions(ctx context.Context, req
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
 		if err != nil {
 			return err
 		}
@@ -2104,15 +1980,8 @@ func (c *gkeHubMembershipRESTClient) CancelOperation(ctx context.Context, req *l
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -2146,15 +2015,8 @@ func (c *gkeHubMembershipRESTClient) DeleteOperation(ctx context.Context, req *l
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOperation")
+		return err
 	}, opts...)
 }
 
@@ -2191,17 +2053,7 @@ func (c *gkeHubMembershipRESTClient) GetOperation(ctx context.Context, req *long
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -2266,21 +2118,10 @@ func (c *gkeHubMembershipRESTClient) ListOperations(ctx context.Context, req *lo
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

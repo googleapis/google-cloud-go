@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	retailpb "cloud.google.com/go/retail/apiv2beta/retailpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -61,6 +60,7 @@ func defaultAnalyticsGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -128,7 +128,7 @@ func defaultAnalyticsRESTCallOptions() *AnalyticsCallOptions {
 	}
 }
 
-// internalAnalyticsClient is an interface that defines the methods available from Retail API.
+// internalAnalyticsClient is an interface that defines the methods available from Vertex AI Search for Retail API.
 type internalAnalyticsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -139,7 +139,7 @@ type internalAnalyticsClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// AnalyticsClient is a client for interacting with Retail API.
+// AnalyticsClient is a client for interacting with Vertex AI Search for Retail API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Service for managing & accessing retail search business metric.
@@ -204,7 +204,7 @@ func (c *AnalyticsClient) ListOperations(ctx context.Context, req *longrunningpb
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// analyticsGRPCClient is a client for interacting with Retail API over gRPC transport.
+// analyticsGRPCClient is a client for interacting with Vertex AI Search for Retail API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type analyticsGRPCClient struct {
@@ -226,6 +226,8 @@ type analyticsGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewAnalyticsClient creates a new analytics service client based on gRPC.
@@ -253,6 +255,7 @@ func NewAnalyticsClient(ctx context.Context, opts ...option.ClientOption) (*Anal
 		connPool:         connPool,
 		analyticsClient:  retailpb.NewAnalyticsServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -287,7 +290,9 @@ func (c *analyticsGRPCClient) Connection() *grpc.ClientConn {
 func (c *analyticsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -314,6 +319,8 @@ type analyticsRESTClient struct {
 
 	// Points back to the CallOptions field of the containing AnalyticsClient
 	CallOptions **AnalyticsCallOptions
+
+	logger *slog.Logger
 }
 
 // NewAnalyticsRESTClient creates a new analytics service rest client.
@@ -332,6 +339,7 @@ func NewAnalyticsRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -356,6 +364,7 @@ func defaultAnalyticsRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -365,7 +374,9 @@ func defaultAnalyticsRESTClientOptions() []option.ClientOption {
 func (c *analyticsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -391,7 +402,7 @@ func (c *analyticsGRPCClient) ExportAnalyticsMetrics(ctx context.Context, req *r
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsClient.ExportAnalyticsMetrics(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsClient.ExportAnalyticsMetrics, req, settings.GRPC, c.logger, "ExportAnalyticsMetrics")
 		return err
 	}, opts...)
 	if err != nil {
@@ -411,7 +422,7 @@ func (c *analyticsGRPCClient) GetOperation(ctx context.Context, req *longrunning
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -440,7 +451,7 @@ func (c *analyticsGRPCClient) ListOperations(ctx context.Context, req *longrunni
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -507,21 +518,10 @@ func (c *analyticsRESTClient) ExportAnalyticsMetrics(ctx context.Context, req *r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExportAnalyticsMetrics")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -572,17 +572,7 @@ func (c *analyticsRESTClient) GetOperation(ctx context.Context, req *longrunning
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -647,21 +637,10 @@ func (c *analyticsRESTClient) ListOperations(ctx context.Context, req *longrunni
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

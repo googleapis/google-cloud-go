@@ -18,6 +18,7 @@ package spanner
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"sync"
 	"testing"
@@ -52,14 +53,14 @@ type testConsumer struct {
 	receivedAll chan struct{}
 }
 
-func (tc *testConsumer) sessionReady(s *session) {
+func (tc *testConsumer) sessionReady(_ context.Context, s *session) {
 	tc.mu.Lock()
 	defer tc.mu.Unlock()
 	tc.sessions = append(tc.sessions, s)
 	tc.checkReceivedAll()
 }
 
-func (tc *testConsumer) sessionCreationFailed(err error, num int32) {
+func (tc *testConsumer) sessionCreationFailed(_ context.Context, err error, num int32, _ bool) {
 	tc.mu.Lock()
 	defer tc.mu.Unlock()
 	tc.errors = append(tc.errors, &testSessionCreateError{
@@ -92,7 +93,8 @@ func TestNextClient(t *testing.T) {
 
 	n := 4
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		NumChannels: n,
+		DisableNativeMetrics: true,
+		NumChannels:          n,
 		SessionPoolConfig: SessionPoolConfig{
 			MinOpened: 0,
 			MaxOpened: 100,
@@ -134,6 +136,7 @@ func TestCreateAndCloseSession(t *testing.T) {
 	t.Parallel()
 
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
 		SessionPoolConfig: SessionPoolConfig{
 			MinOpened: 0,
 			MaxOpened: 100,
@@ -148,7 +151,11 @@ func TestCreateAndCloseSession(t *testing.T) {
 	if s == nil {
 		t.Fatalf("batch.next() return value mismatch\ngot: %v\nwant: any session", s)
 	}
-	if server.TestSpanner.TotalSessionsCreated() != 1 {
+	expectedCount := uint(1)
+	if isMultiplexEnabled {
+		expectedCount = 2
+	}
+	if server.TestSpanner.TotalSessionsCreated() != expectedCount {
 		t.Fatalf("number of sessions created mismatch\ngot: %v\nwant: %v", server.TestSpanner.TotalSessionsCreated(), 1)
 	}
 	s.delete(context.Background())
@@ -163,7 +170,7 @@ func TestCreateSessionWithDatabaseRole(t *testing.T) {
 		MinOpened: 0,
 		MaxOpened: 1,
 	}
-	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{SessionPoolConfig: sc, DatabaseRole: "test"})
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, SessionPoolConfig: sc, DatabaseRole: "test"})
 	defer teardown()
 	ctx := context.Background()
 
@@ -174,7 +181,11 @@ func TestCreateSessionWithDatabaseRole(t *testing.T) {
 	if s == nil {
 		t.Fatalf("batch.next() return value mismatch\ngot: %v\nwant: any session", s)
 	}
-	if g, w := server.TestSpanner.TotalSessionsCreated(), uint(1); g != w {
+	expectedCount := uint(1)
+	if isMultiplexEnabled {
+		expectedCount = 2
+	}
+	if g, w := server.TestSpanner.TotalSessionsCreated(), expectedCount; g != w {
 		t.Fatalf("number of sessions created mismatch\ngot: %v\nwant: %v", g, w)
 	}
 
@@ -216,7 +227,8 @@ func TestBatchCreateAndCloseSession(t *testing.T) {
 		prevCreated := server.TestSpanner.TotalSessionsCreated()
 		prevDeleted := server.TestSpanner.TotalSessionsDeleted()
 		config := ClientConfig{
-			NumChannels: numChannels,
+			DisableNativeMetrics: true,
+			NumChannels:          numChannels,
 			SessionPoolConfig: SessionPoolConfig{
 				MinOpened: 0,
 				MaxOpened: 400,
@@ -246,6 +258,18 @@ func TestBatchCreateAndCloseSession(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+
+		if isMultiplexEnabled {
+			waitFor(t, func() error {
+				client.idleSessions.mu.Lock()
+				defer client.idleSessions.mu.Unlock()
+				if client.idleSessions.multiplexedSession == nil {
+					return errors.New("multiplexed session not created yet")
+				}
+				return nil
+			})
+		}
+
 		consumer := newTestConsumer(numSessions)
 		client.sc.batchCreateSessions(numSessions, true, consumer)
 		<-consumer.receivedAll
@@ -253,11 +277,15 @@ func TestBatchCreateAndCloseSession(t *testing.T) {
 			t.Fatalf("returned number of sessions mismatch\ngot: %v\nwant: %v", len(consumer.sessions), numSessions)
 		}
 		created := server.TestSpanner.TotalSessionsCreated() - prevCreated
-		if created != uint(numSessions) {
-			t.Fatalf("number of sessions created mismatch\ngot: %v\nwant: %v", created, numSessions)
+		expectedNumSessions := numSessions
+		if isMultiplexEnabled {
+			expectedNumSessions++
+		}
+		if created != uint(expectedNumSessions) {
+			t.Fatalf("number of sessions created mismatch\ngot: %v\nwant: %v", created, expectedNumSessions)
 		}
 		// Check that all channels are used evenly.
-		channelCounts := make(map[*vkit.Client]int32)
+		channelCounts := make(map[spannerClient]int32)
 		for _, s := range consumer.sessions {
 			channelCounts[s.client]++
 		}
@@ -282,7 +310,15 @@ func TestBatchCreateAndCloseSession(t *testing.T) {
 		}
 		for a, c := range connCounts {
 			if c != 1 {
-				t.Fatalf("connection %q used an unexpected number of times\ngot: %v\nwant %v", a, c, 1)
+				if isMultiplexEnabled {
+					// The multiplexed session creation will use one of the connections
+					if c != 2 {
+						t.Fatalf("connection %q used an unexpected number of times\ngot: %v\nwant %v", a, c, 2)
+					}
+				} else {
+					t.Fatalf("connection %q used an unexpected number of times\ngot: %v\nwant %v", a, c, 1)
+				}
+
 			}
 		}
 		// Delete the sessions.
@@ -309,8 +345,9 @@ func TestBatchCreateSessionsWithDatabaseRole(t *testing.T) {
 		MinOpened: 0,
 		MaxOpened: 1,
 	}
-	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{SessionPoolConfig: sc, DatabaseRole: "test"})
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, SessionPoolConfig: sc, DatabaseRole: "test"})
 	defer teardown()
+
 	ctx := context.Background()
 
 	consumer := newTestConsumer(1)
@@ -319,7 +356,11 @@ func TestBatchCreateSessionsWithDatabaseRole(t *testing.T) {
 	if g, w := len(consumer.sessions), 1; g != w {
 		t.Fatalf("returned number of sessions mismatch\ngot: %v\nwant: %v", g, w)
 	}
-	if g, w := server.TestSpanner.TotalSessionsCreated(), uint(1); g != w {
+	expectedCount := uint(1)
+	if isMultiplexEnabled {
+		expectedCount = 2
+	}
+	if g, w := server.TestSpanner.TotalSessionsCreated(), expectedCount; g != w {
 		t.Fatalf("number of sessions created mismatch\ngot: %v\nwant: %v", g, w)
 	}
 	s := consumer.sessions[0]
@@ -350,7 +391,8 @@ func TestBatchCreateSessionsWithExceptions(t *testing.T) {
 		// Make sure that the error is not always the first call.
 		for firstErrorAt := numErrors - 1; firstErrorAt < numChannels-numErrors+1; firstErrorAt++ {
 			config := ClientConfig{
-				NumChannels: numChannels,
+				DisableNativeMetrics: true,
+				NumChannels:          numChannels,
 				SessionPoolConfig: SessionPoolConfig{
 					MinOpened: 0,
 					MaxOpened: 400,
@@ -395,7 +437,8 @@ func TestBatchCreateSessions_ServerReturnsLessThanRequestedSessions(t *testing.T
 
 	numChannels := 4
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		NumChannels: numChannels,
+		DisableNativeMetrics: true,
+		NumChannels:          numChannels,
 		SessionPoolConfig: SessionPoolConfig{
 			MinOpened: 0,
 			MaxOpened: 100,
@@ -428,17 +471,30 @@ func TestBatchCreateSessions_ServerExhausted(t *testing.T) {
 
 	numChannels := 4
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		NumChannels: numChannels,
+		DisableNativeMetrics: true,
+		NumChannels:          numChannels,
 		SessionPoolConfig: SessionPoolConfig{
 			MinOpened: 0,
 			MaxOpened: 100,
 		},
 	})
 	defer teardown()
+	if isMultiplexEnabled {
+		waitFor(t, func() error {
+			if client.idleSessions.multiplexedSession == nil {
+				return errors.New("multiplexed session not created yet")
+			}
+			return nil
+		})
+	}
 	numSessions := int32(100)
 	maxSessions := int32(50)
 	// Ensure that the server will never return more than 50 sessions in total.
-	server.TestSpanner.SetMaxSessionsReturnedByServerInTotal(maxSessions)
+	if isMultiplexEnabled {
+		server.TestSpanner.SetMaxSessionsReturnedByServerInTotal(maxSessions + 1)
+	} else {
+		server.TestSpanner.SetMaxSessionsReturnedByServerInTotal(maxSessions)
+	}
 	consumer := newTestConsumer(numSessions)
 	client.sc.batchCreateSessions(numSessions, true, consumer)
 	<-consumer.receivedAll
@@ -472,6 +528,7 @@ func TestBatchCreateSessions_WithTimeout(t *testing.T) {
 		MinimumExecutionTime: time.Second,
 	})
 	config := ClientConfig{
+		DisableNativeMetrics: true,
 		SessionPoolConfig: SessionPoolConfig{
 			MinOpened: 0,
 			MaxOpened: 400,

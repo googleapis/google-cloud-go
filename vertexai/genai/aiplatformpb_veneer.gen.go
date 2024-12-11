@@ -18,10 +18,13 @@ package genai
 
 import (
 	"fmt"
+	"time"
 
 	pb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
 	"cloud.google.com/go/civil"
-	"cloud.google.com/go/vertexai/internal/support"
+	"google.golang.org/genproto/googleapis/type/date"
+	"google.golang.org/protobuf/types/known/structpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Blob contains binary data like images. Use [Text] for text.
@@ -84,6 +87,77 @@ func (v BlockedReason) String() string {
 	return fmt.Sprintf("BlockedReason(%d)", v)
 }
 
+// CachedContent is a resource used in LLM queries for users to explicitly specify what to cache
+// and how to cache.
+type CachedContent struct {
+	// Expiration time of the cached content.
+	//
+	// Types that are assignable to Expiration:
+	//
+	//	*CachedContent_ExpireTime
+	//	*CachedContent_Ttl
+	Expiration ExpireTimeOrTTL
+	// Immutable. Identifier. The server-generated resource name of the cached
+	// content Format:
+	// projects/{project}/locations/{location}/cachedContents/{cached_content}
+	Name string
+	// Immutable. The name of the publisher model to use for cached content.
+	// Format:
+	// projects/{project}/locations/{location}/publishers/{publisher}/models/{model}
+	Model string
+	// Optional. Input only. Immutable. Developer set system instruction.
+	// Currently, text only
+	SystemInstruction *Content
+	// Optional. Input only. Immutable. The content to cache
+	Contents []*Content
+	// Optional. Input only. Immutable. A list of `Tools` the model may use to
+	// generate the next response
+	Tools []*Tool
+	// Optional. Input only. Immutable. Tool config. This config is shared for all
+	// tools
+	ToolConfig *ToolConfig
+	// Output only. Creatation time of the cache entry.
+	CreateTime time.Time
+	// Output only. When the cache entry was last updated in UTC time.
+	UpdateTime time.Time
+}
+
+func (v *CachedContent) toProto() *pb.CachedContent {
+	if v == nil {
+		return nil
+	}
+	p := &pb.CachedContent{
+		Name:              v.Name,
+		Model:             v.Model,
+		SystemInstruction: v.SystemInstruction.toProto(),
+		Contents:          pvTransformSlice(v.Contents, (*Content).toProto),
+		Tools:             pvTransformSlice(v.Tools, (*Tool).toProto),
+		ToolConfig:        v.ToolConfig.toProto(),
+		CreateTime:        pvTimeToProto(v.CreateTime),
+		UpdateTime:        pvTimeToProto(v.UpdateTime),
+	}
+	populateCachedContentTo(p, v)
+	return p
+}
+
+func (CachedContent) fromProto(p *pb.CachedContent) *CachedContent {
+	if p == nil {
+		return nil
+	}
+	v := &CachedContent{
+		Name:              p.Name,
+		Model:             p.Model,
+		SystemInstruction: (Content{}).fromProto(p.SystemInstruction),
+		Contents:          pvTransformSlice(p.Contents, (Content{}).fromProto),
+		Tools:             pvTransformSlice(p.Tools, (Tool{}).fromProto),
+		ToolConfig:        (ToolConfig{}).fromProto(p.ToolConfig),
+		CreateTime:        pvTimeFromProto(p.CreateTime),
+		UpdateTime:        pvTimeFromProto(p.UpdateTime),
+	}
+	populateCachedContentFrom(v, p)
+	return v
+}
+
 // Candidate is a response candidate generated from the model.
 type Candidate struct {
 	// Output only. Index of the candidate.
@@ -112,8 +186,8 @@ func (v *Candidate) toProto() *pb.Candidate {
 		Index:            v.Index,
 		Content:          v.Content.toProto(),
 		FinishReason:     pb.Candidate_FinishReason(v.FinishReason),
-		SafetyRatings:    support.TransformSlice(v.SafetyRatings, (*SafetyRating).toProto),
-		FinishMessage:    support.AddrOrNil(v.FinishMessage),
+		SafetyRatings:    pvTransformSlice(v.SafetyRatings, (*SafetyRating).toProto),
+		FinishMessage:    pvAddrOrNil(v.FinishMessage),
 		CitationMetadata: v.CitationMetadata.toProto(),
 	}
 }
@@ -126,8 +200,8 @@ func (Candidate) fromProto(p *pb.Candidate) *Candidate {
 		Index:            p.Index,
 		Content:          (Content{}).fromProto(p.Content),
 		FinishReason:     FinishReason(p.FinishReason),
-		SafetyRatings:    support.TransformSlice(p.SafetyRatings, (SafetyRating{}).fromProto),
-		FinishMessage:    support.DerefOrZero(p.FinishMessage),
+		SafetyRatings:    pvTransformSlice(p.SafetyRatings, (SafetyRating{}).fromProto),
+		FinishMessage:    pvDerefOrZero(p.FinishMessage),
 		CitationMetadata: (CitationMetadata{}).fromProto(p.CitationMetadata),
 	}
 }
@@ -158,7 +232,7 @@ func (v *Citation) toProto() *pb.Citation {
 		Uri:             v.URI,
 		Title:           v.Title,
 		License:         v.License,
-		PublicationDate: support.CivilDateToProto(v.PublicationDate),
+		PublicationDate: pvCivilDateToProto(v.PublicationDate),
 	}
 }
 
@@ -172,7 +246,7 @@ func (Citation) fromProto(p *pb.Citation) *Citation {
 		URI:             p.Uri,
 		Title:           p.Title,
 		License:         p.License,
-		PublicationDate: support.CivilDateFromProto(p.PublicationDate),
+		PublicationDate: pvCivilDateFromProto(p.PublicationDate),
 	}
 }
 
@@ -187,7 +261,7 @@ func (v *CitationMetadata) toProto() *pb.CitationMetadata {
 		return nil
 	}
 	return &pb.CitationMetadata{
-		Citations: support.TransformSlice(v.Citations, (*Citation).toProto),
+		Citations: pvTransformSlice(v.Citations, (*Citation).toProto),
 	}
 }
 
@@ -196,7 +270,7 @@ func (CitationMetadata) fromProto(p *pb.CitationMetadata) *CitationMetadata {
 		return nil
 	}
 	return &CitationMetadata{
-		Citations: support.TransformSlice(p.Citations, (Citation{}).fromProto),
+		Citations: pvTransformSlice(p.Citations, (Citation{}).fromProto),
 	}
 }
 
@@ -222,7 +296,7 @@ func (v *Content) toProto() *pb.Content {
 	}
 	return &pb.Content{
 		Role:  v.Role,
-		Parts: support.TransformSlice(v.Parts, partToProto),
+		Parts: pvTransformSlice(v.Parts, partToProto),
 	}
 }
 
@@ -232,7 +306,7 @@ func (Content) fromProto(p *pb.Content) *Content {
 	}
 	return &Content{
 		Role:  p.Role,
-		Parts: support.TransformSlice(p.Parts, partFromProto),
+		Parts: pvTransformSlice(p.Parts, partFromProto),
 	}
 }
 
@@ -323,18 +397,21 @@ const (
 	// FinishReasonSpii means the token generation was stopped as the response was flagged for
 	// Sensitive Personally Identifiable Information (SPII) contents.
 	FinishReasonSpii FinishReason = 8
+	// FinishReasonMalformedFunctionCall means the function call generated by the model is invalid.
+	FinishReasonMalformedFunctionCall FinishReason = 9
 )
 
 var namesForFinishReason = map[FinishReason]string{
-	FinishReasonUnspecified:       "FinishReasonUnspecified",
-	FinishReasonStop:              "FinishReasonStop",
-	FinishReasonMaxTokens:         "FinishReasonMaxTokens",
-	FinishReasonSafety:            "FinishReasonSafety",
-	FinishReasonRecitation:        "FinishReasonRecitation",
-	FinishReasonOther:             "FinishReasonOther",
-	FinishReasonBlocklist:         "FinishReasonBlocklist",
-	FinishReasonProhibitedContent: "FinishReasonProhibitedContent",
-	FinishReasonSpii:              "FinishReasonSpii",
+	FinishReasonUnspecified:           "FinishReasonUnspecified",
+	FinishReasonStop:                  "FinishReasonStop",
+	FinishReasonMaxTokens:             "FinishReasonMaxTokens",
+	FinishReasonSafety:                "FinishReasonSafety",
+	FinishReasonRecitation:            "FinishReasonRecitation",
+	FinishReasonOther:                 "FinishReasonOther",
+	FinishReasonBlocklist:             "FinishReasonBlocklist",
+	FinishReasonProhibitedContent:     "FinishReasonProhibitedContent",
+	FinishReasonSpii:                  "FinishReasonSpii",
+	FinishReasonMalformedFunctionCall: "FinishReasonMalformedFunctionCall",
 }
 
 func (v FinishReason) String() string {
@@ -362,7 +439,7 @@ func (v *FunctionCall) toProto() *pb.FunctionCall {
 	}
 	return &pb.FunctionCall{
 		Name: v.Name,
-		Args: support.MapToStructPB(v.Args),
+		Args: pvMapToStructPB(v.Args),
 	}
 }
 
@@ -372,7 +449,7 @@ func (FunctionCall) fromProto(p *pb.FunctionCall) *FunctionCall {
 	}
 	return &FunctionCall{
 		Name: p.Name,
-		Args: support.MapFromStructPB(p.Args),
+		Args: pvMapFromStructPB(p.Args),
 	}
 }
 
@@ -518,7 +595,7 @@ func (v *FunctionResponse) toProto() *pb.FunctionResponse {
 	}
 	return &pb.FunctionResponse{
 		Name:     v.Name,
-		Response: support.MapToStructPB(v.Response),
+		Response: pvMapToStructPB(v.Response),
 	}
 }
 
@@ -528,7 +605,7 @@ func (FunctionResponse) fromProto(p *pb.FunctionResponse) *FunctionResponse {
 	}
 	return &FunctionResponse{
 		Name:     p.Name,
-		Response: support.MapFromStructPB(p.Response),
+		Response: pvMapFromStructPB(p.Response),
 	}
 }
 
@@ -549,7 +626,7 @@ func (v *GenerateContentResponse) toProto() *pb.GenerateContentResponse {
 		return nil
 	}
 	return &pb.GenerateContentResponse{
-		Candidates:     support.TransformSlice(v.Candidates, (*Candidate).toProto),
+		Candidates:     pvTransformSlice(v.Candidates, (*Candidate).toProto),
 		PromptFeedback: v.PromptFeedback.toProto(),
 		UsageMetadata:  v.UsageMetadata.toProto(),
 	}
@@ -560,7 +637,7 @@ func (GenerateContentResponse) fromProto(p *pb.GenerateContentResponse) *Generat
 		return nil
 	}
 	return &GenerateContentResponse{
-		Candidates:     support.TransformSlice(p.Candidates, (Candidate{}).fromProto),
+		Candidates:     pvTransformSlice(p.Candidates, (Candidate{}).fromProto),
 		PromptFeedback: (PromptFeedback{}).fromProto(p.PromptFeedback),
 		UsageMetadata:  (UsageMetadata{}).fromProto(p.UsageMetadata),
 	}
@@ -592,6 +669,14 @@ type GenerationConfig struct {
 	// otherwise the behavior is undefined.
 	// This is a preview feature.
 	ResponseMIMEType string
+	// Optional. The `Schema` object allows the definition of input and output
+	// data types. These types can be objects, but also primitives and arrays.
+	// Represents a select subset of an [OpenAPI 3.0 schema
+	// object](https://spec.openapis.org/oas/v3.0.3#schema).
+	// If set, a compatible response_mime_type must also be set.
+	// Compatible mimetypes:
+	// `application/json`: Schema for JSON response.
+	ResponseSchema *Schema
 }
 
 func (v *GenerationConfig) toProto() *pb.GenerationConfig {
@@ -608,6 +693,7 @@ func (v *GenerationConfig) toProto() *pb.GenerationConfig {
 		PresencePenalty:  v.PresencePenalty,
 		FrequencyPenalty: v.FrequencyPenalty,
 		ResponseMimeType: v.ResponseMIMEType,
+		ResponseSchema:   v.ResponseSchema.toProto(),
 	}
 }
 
@@ -625,6 +711,7 @@ func (GenerationConfig) fromProto(p *pb.GenerationConfig) *GenerationConfig {
 		PresencePenalty:  p.PresencePenalty,
 		FrequencyPenalty: p.FrequencyPenalty,
 		ResponseMIMEType: p.ResponseMimeType,
+		ResponseSchema:   (Schema{}).fromProto(p.ResponseSchema),
 	}
 }
 
@@ -793,7 +880,7 @@ func (v *PromptFeedback) toProto() *pb.GenerateContentResponse_PromptFeedback {
 	}
 	return &pb.GenerateContentResponse_PromptFeedback{
 		BlockReason:        pb.GenerateContentResponse_PromptFeedback_BlockedReason(v.BlockReason),
-		SafetyRatings:      support.TransformSlice(v.SafetyRatings, (*SafetyRating).toProto),
+		SafetyRatings:      pvTransformSlice(v.SafetyRatings, (*SafetyRating).toProto),
 		BlockReasonMessage: v.BlockReasonMessage,
 	}
 }
@@ -804,7 +891,7 @@ func (PromptFeedback) fromProto(p *pb.GenerateContentResponse_PromptFeedback) *P
 	}
 	return &PromptFeedback{
 		BlockReason:        BlockedReason(p.BlockReason),
-		SafetyRatings:      support.TransformSlice(p.SafetyRatings, (SafetyRating{}).fromProto),
+		SafetyRatings:      pvTransformSlice(p.SafetyRatings, (SafetyRating{}).fromProto),
 		BlockReasonMessage: p.BlockReasonMessage,
 	}
 }
@@ -956,7 +1043,7 @@ func (v *Schema) toProto() *pb.Schema {
 		MinItems:      v.MinItems,
 		MaxItems:      v.MaxItems,
 		Enum:          v.Enum,
-		Properties:    support.TransformMapValues(v.Properties, (*Schema).toProto),
+		Properties:    pvTransformMapValues(v.Properties, (*Schema).toProto),
 		Required:      v.Required,
 		MinProperties: v.MinProperties,
 		MaxProperties: v.MaxProperties,
@@ -982,7 +1069,7 @@ func (Schema) fromProto(p *pb.Schema) *Schema {
 		MinItems:      p.MinItems,
 		MaxItems:      p.MaxItems,
 		Enum:          p.Enum,
-		Properties:    support.TransformMapValues(p.Properties, (Schema{}).fromProto),
+		Properties:    pvTransformMapValues(p.Properties, (Schema{}).fromProto),
 		Required:      p.Required,
 		MinProperties: p.MinProperties,
 		MaxProperties: p.MaxProperties,
@@ -1018,7 +1105,7 @@ func (v *Tool) toProto() *pb.Tool {
 		return nil
 	}
 	return &pb.Tool{
-		FunctionDeclarations: support.TransformSlice(v.FunctionDeclarations, (*FunctionDeclaration).toProto),
+		FunctionDeclarations: pvTransformSlice(v.FunctionDeclarations, (*FunctionDeclaration).toProto),
 	}
 }
 
@@ -1027,7 +1114,7 @@ func (Tool) fromProto(p *pb.Tool) *Tool {
 		return nil
 	}
 	return &Tool{
-		FunctionDeclarations: support.TransformSlice(p.FunctionDeclarations, (FunctionDeclaration{}).fromProto),
+		FunctionDeclarations: pvTransformSlice(p.FunctionDeclarations, (FunctionDeclaration{}).fromProto),
 	}
 }
 
@@ -1123,3 +1210,94 @@ func (UsageMetadata) fromProto(p *pb.GenerateContentResponse_UsageMetadata) *Usa
 		TotalTokenCount:      p.TotalTokenCount,
 	}
 }
+
+func pvTransformSlice[From, To any](from []From, f func(From) To) []To {
+	if from == nil {
+		return nil
+	}
+	to := make([]To, len(from))
+	for i, e := range from {
+		to[i] = f(e)
+	}
+	return to
+}
+
+func pvTransformMapValues[K comparable, VFrom, VTo any](from map[K]VFrom, f func(VFrom) VTo) map[K]VTo {
+	if from == nil {
+		return nil
+	}
+	to := map[K]VTo{}
+	for k, v := range from {
+		to[k] = f(v)
+	}
+	return to
+}
+
+func pvAddrOrNil[T comparable](x T) *T {
+	var z T
+	if x == z {
+		return nil
+	}
+	return &x
+}
+
+func pvDerefOrZero[T any](x *T) T {
+	if x == nil {
+		var z T
+		return z
+	}
+	return *x
+}
+
+func pvCivilDateToProto(d civil.Date) *date.Date {
+	return &date.Date{
+		Year:  int32(d.Year),
+		Month: int32(d.Month),
+		Day:   int32(d.Day),
+	}
+}
+
+func pvCivilDateFromProto(p *date.Date) civil.Date {
+	if p == nil {
+		return civil.Date{}
+	}
+	return civil.Date{
+		Year:  int(p.Year),
+		Month: time.Month(p.Month),
+		Day:   int(p.Day),
+	}
+}
+
+func pvMapToStructPB(m map[string]any) *structpb.Struct {
+	if m == nil {
+		return nil
+	}
+	s, err := structpb.NewStruct(m)
+	if err != nil {
+		panic(pvPanic(fmt.Errorf("pvMapToStructPB: %w", err)))
+	}
+	return s
+}
+
+func pvMapFromStructPB(p *structpb.Struct) map[string]any {
+	if p == nil {
+		return nil
+	}
+	return p.AsMap()
+}
+
+func pvTimeToProto(t time.Time) *timestamppb.Timestamp {
+	if t.IsZero() {
+		return nil
+	}
+	return timestamppb.New(t)
+}
+
+func pvTimeFromProto(ts *timestamppb.Timestamp) time.Time {
+	if ts == nil {
+		return time.Time{}
+	}
+	return ts.AsTime()
+}
+
+type pvPanic error

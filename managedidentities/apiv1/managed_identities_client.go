@@ -19,6 +19,7 @@ package managedidentities
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 	"time"
@@ -61,6 +62,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://managedidentities.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -316,6 +318,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new managed identities service client based on gRPC.
@@ -380,6 +384,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      managedidentitiespb.NewManagedIdentitiesServiceClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -413,7 +418,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -431,7 +438,7 @@ func (c *gRPCClient) CreateMicrosoftAdDomain(ctx context.Context, req *managedid
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateMicrosoftAdDomain(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateMicrosoftAdDomain, req, settings.GRPC, c.logger, "CreateMicrosoftAdDomain")
 		return err
 	}, opts...)
 	if err != nil {
@@ -451,7 +458,7 @@ func (c *gRPCClient) ResetAdminPassword(ctx context.Context, req *managedidentit
 	var resp *managedidentitiespb.ResetAdminPasswordResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ResetAdminPassword(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ResetAdminPassword, req, settings.GRPC, c.logger, "ResetAdminPassword")
 		return err
 	}, opts...)
 	if err != nil {
@@ -480,7 +487,7 @@ func (c *gRPCClient) ListDomains(ctx context.Context, req *managedidentitiespb.L
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListDomains(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListDomains, req, settings.GRPC, c.logger, "ListDomains")
 			return err
 		}, opts...)
 		if err != nil {
@@ -515,7 +522,7 @@ func (c *gRPCClient) GetDomain(ctx context.Context, req *managedidentitiespb.Get
 	var resp *managedidentitiespb.Domain
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetDomain(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetDomain, req, settings.GRPC, c.logger, "GetDomain")
 		return err
 	}, opts...)
 	if err != nil {
@@ -533,7 +540,7 @@ func (c *gRPCClient) UpdateDomain(ctx context.Context, req *managedidentitiespb.
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateDomain(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateDomain, req, settings.GRPC, c.logger, "UpdateDomain")
 		return err
 	}, opts...)
 	if err != nil {
@@ -553,7 +560,7 @@ func (c *gRPCClient) DeleteDomain(ctx context.Context, req *managedidentitiespb.
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteDomain(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteDomain, req, settings.GRPC, c.logger, "DeleteDomain")
 		return err
 	}, opts...)
 	if err != nil {
@@ -573,7 +580,7 @@ func (c *gRPCClient) AttachTrust(ctx context.Context, req *managedidentitiespb.A
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.AttachTrust(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.AttachTrust, req, settings.GRPC, c.logger, "AttachTrust")
 		return err
 	}, opts...)
 	if err != nil {
@@ -593,7 +600,7 @@ func (c *gRPCClient) ReconfigureTrust(ctx context.Context, req *managedidentitie
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ReconfigureTrust(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ReconfigureTrust, req, settings.GRPC, c.logger, "ReconfigureTrust")
 		return err
 	}, opts...)
 	if err != nil {
@@ -613,7 +620,7 @@ func (c *gRPCClient) DetachTrust(ctx context.Context, req *managedidentitiespb.D
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DetachTrust(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DetachTrust, req, settings.GRPC, c.logger, "DetachTrust")
 		return err
 	}, opts...)
 	if err != nil {
@@ -633,7 +640,7 @@ func (c *gRPCClient) ValidateTrust(ctx context.Context, req *managedidentitiespb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ValidateTrust(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ValidateTrust, req, settings.GRPC, c.logger, "ValidateTrust")
 		return err
 	}, opts...)
 	if err != nil {

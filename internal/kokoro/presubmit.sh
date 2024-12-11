@@ -23,6 +23,7 @@ set -x
 
 # cd to project dir on Kokoro instance
 cd github/google-cloud-go
+git config --global --add safe.directory "$(pwd)/./.git"
 
 go version
 
@@ -92,6 +93,13 @@ CHANGED_DIRS=$(echo "$SIGNIFICANT_CHANGES" | tr ' ' '\n' | cut -d/ -f1 | sort -u
 
 echo "Running tests only in changed submodules: $CHANGED_DIRS"
 for d in $CHANGED_DIRS; do
+  # Check if "." is in the list of changed directories, which means the root
+  if [ "$d" = "." ]; then
+    pushd $(dirname $d)
+    runPresubmitTests
+    popd
+    continue
+  fi
   for i in $(find "$d" -name go.mod); do
     pushd $(dirname $i)
     runPresubmitTests

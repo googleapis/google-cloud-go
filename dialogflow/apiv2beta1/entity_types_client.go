@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -74,6 +73,7 @@ func defaultEntityTypesGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -610,6 +610,8 @@ type entityTypesGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewEntityTypesClient creates a new entity types client based on gRPC.
@@ -637,6 +639,7 @@ func NewEntityTypesClient(ctx context.Context, opts ...option.ClientOption) (*En
 		connPool:          connPool,
 		entityTypesClient: dialogflowpb.NewEntityTypesClient(connPool),
 		CallOptions:       &client.CallOptions,
+		logger:            internaloption.GetLogger(opts),
 		operationsClient:  longrunningpb.NewOperationsClient(connPool),
 		locationsClient:   locationpb.NewLocationsClient(connPool),
 	}
@@ -672,7 +675,9 @@ func (c *entityTypesGRPCClient) Connection() *grpc.ClientConn {
 func (c *entityTypesGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -699,6 +704,8 @@ type entityTypesRESTClient struct {
 
 	// Points back to the CallOptions field of the containing EntityTypesClient
 	CallOptions **EntityTypesCallOptions
+
+	logger *slog.Logger
 }
 
 // NewEntityTypesRESTClient creates a new entity types rest client.
@@ -717,6 +724,7 @@ func NewEntityTypesRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -741,6 +749,7 @@ func defaultEntityTypesRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -750,7 +759,9 @@ func defaultEntityTypesRESTClientOptions() []option.ClientOption {
 func (c *entityTypesRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -787,7 +798,7 @@ func (c *entityTypesGRPCClient) ListEntityTypes(ctx context.Context, req *dialog
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.entityTypesClient.ListEntityTypes(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.entityTypesClient.ListEntityTypes, req, settings.GRPC, c.logger, "ListEntityTypes")
 			return err
 		}, opts...)
 		if err != nil {
@@ -822,7 +833,7 @@ func (c *entityTypesGRPCClient) GetEntityType(ctx context.Context, req *dialogfl
 	var resp *dialogflowpb.EntityType
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.entityTypesClient.GetEntityType(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.entityTypesClient.GetEntityType, req, settings.GRPC, c.logger, "GetEntityType")
 		return err
 	}, opts...)
 	if err != nil {
@@ -840,7 +851,7 @@ func (c *entityTypesGRPCClient) CreateEntityType(ctx context.Context, req *dialo
 	var resp *dialogflowpb.EntityType
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.entityTypesClient.CreateEntityType(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.entityTypesClient.CreateEntityType, req, settings.GRPC, c.logger, "CreateEntityType")
 		return err
 	}, opts...)
 	if err != nil {
@@ -858,7 +869,7 @@ func (c *entityTypesGRPCClient) UpdateEntityType(ctx context.Context, req *dialo
 	var resp *dialogflowpb.EntityType
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.entityTypesClient.UpdateEntityType(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.entityTypesClient.UpdateEntityType, req, settings.GRPC, c.logger, "UpdateEntityType")
 		return err
 	}, opts...)
 	if err != nil {
@@ -875,7 +886,7 @@ func (c *entityTypesGRPCClient) DeleteEntityType(ctx context.Context, req *dialo
 	opts = append((*c.CallOptions).DeleteEntityType[0:len((*c.CallOptions).DeleteEntityType):len((*c.CallOptions).DeleteEntityType)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.entityTypesClient.DeleteEntityType(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.entityTypesClient.DeleteEntityType, req, settings.GRPC, c.logger, "DeleteEntityType")
 		return err
 	}, opts...)
 	return err
@@ -890,7 +901,7 @@ func (c *entityTypesGRPCClient) BatchUpdateEntityTypes(ctx context.Context, req 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.entityTypesClient.BatchUpdateEntityTypes(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.entityTypesClient.BatchUpdateEntityTypes, req, settings.GRPC, c.logger, "BatchUpdateEntityTypes")
 		return err
 	}, opts...)
 	if err != nil {
@@ -910,7 +921,7 @@ func (c *entityTypesGRPCClient) BatchDeleteEntityTypes(ctx context.Context, req 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.entityTypesClient.BatchDeleteEntityTypes(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.entityTypesClient.BatchDeleteEntityTypes, req, settings.GRPC, c.logger, "BatchDeleteEntityTypes")
 		return err
 	}, opts...)
 	if err != nil {
@@ -930,7 +941,7 @@ func (c *entityTypesGRPCClient) BatchCreateEntities(ctx context.Context, req *di
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.entityTypesClient.BatchCreateEntities(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.entityTypesClient.BatchCreateEntities, req, settings.GRPC, c.logger, "BatchCreateEntities")
 		return err
 	}, opts...)
 	if err != nil {
@@ -950,7 +961,7 @@ func (c *entityTypesGRPCClient) BatchUpdateEntities(ctx context.Context, req *di
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.entityTypesClient.BatchUpdateEntities(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.entityTypesClient.BatchUpdateEntities, req, settings.GRPC, c.logger, "BatchUpdateEntities")
 		return err
 	}, opts...)
 	if err != nil {
@@ -970,7 +981,7 @@ func (c *entityTypesGRPCClient) BatchDeleteEntities(ctx context.Context, req *di
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.entityTypesClient.BatchDeleteEntities(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.entityTypesClient.BatchDeleteEntities, req, settings.GRPC, c.logger, "BatchDeleteEntities")
 		return err
 	}, opts...)
 	if err != nil {
@@ -990,7 +1001,7 @@ func (c *entityTypesGRPCClient) GetLocation(ctx context.Context, req *locationpb
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1019,7 +1030,7 @@ func (c *entityTypesGRPCClient) ListLocations(ctx context.Context, req *location
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1053,7 +1064,7 @@ func (c *entityTypesGRPCClient) CancelOperation(ctx context.Context, req *longru
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -1068,7 +1079,7 @@ func (c *entityTypesGRPCClient) GetOperation(ctx context.Context, req *longrunni
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1097,7 +1108,7 @@ func (c *entityTypesGRPCClient) ListOperations(ctx context.Context, req *longrun
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1171,21 +1182,10 @@ func (c *entityTypesRESTClient) ListEntityTypes(ctx context.Context, req *dialog
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListEntityTypes")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1251,17 +1251,7 @@ func (c *entityTypesRESTClient) GetEntityType(ctx context.Context, req *dialogfl
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetEntityType")
 		if err != nil {
 			return err
 		}
@@ -1325,17 +1315,7 @@ func (c *entityTypesRESTClient) CreateEntityType(ctx context.Context, req *dialo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateEntityType")
 		if err != nil {
 			return err
 		}
@@ -1377,11 +1357,11 @@ func (c *entityTypesRESTClient) UpdateEntityType(ctx context.Context, req *dialo
 		params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1406,17 +1386,7 @@ func (c *entityTypesRESTClient) UpdateEntityType(ctx context.Context, req *dialo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateEntityType")
 		if err != nil {
 			return err
 		}
@@ -1467,15 +1437,8 @@ func (c *entityTypesRESTClient) DeleteEntityType(ctx context.Context, req *dialo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteEntityType")
+		return err
 	}, opts...)
 }
 
@@ -1531,21 +1494,10 @@ func (c *entityTypesRESTClient) BatchUpdateEntityTypes(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchUpdateEntityTypes")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1615,21 +1567,10 @@ func (c *entityTypesRESTClient) BatchDeleteEntityTypes(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchDeleteEntityTypes")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1699,21 +1640,10 @@ func (c *entityTypesRESTClient) BatchCreateEntities(ctx context.Context, req *di
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchCreateEntities")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1785,21 +1715,10 @@ func (c *entityTypesRESTClient) BatchUpdateEntities(ctx context.Context, req *di
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchUpdateEntities")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1869,21 +1788,10 @@ func (c *entityTypesRESTClient) BatchDeleteEntities(ctx context.Context, req *di
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchDeleteEntities")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1934,17 +1842,7 @@ func (c *entityTypesRESTClient) GetLocation(ctx context.Context, req *locationpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -2009,21 +1907,10 @@ func (c *entityTypesRESTClient) ListLocations(ctx context.Context, req *location
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2083,15 +1970,8 @@ func (c *entityTypesRESTClient) CancelOperation(ctx context.Context, req *longru
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -2128,17 +2008,7 @@ func (c *entityTypesRESTClient) GetOperation(ctx context.Context, req *longrunni
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -2203,21 +2073,10 @@ func (c *entityTypesRESTClient) ListOperations(ctx context.Context, req *longrun
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

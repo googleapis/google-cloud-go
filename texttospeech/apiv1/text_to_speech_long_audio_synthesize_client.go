@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	texttospeechpb "cloud.google.com/go/texttospeech/apiv1/texttospeechpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -60,6 +59,7 @@ func defaultTextToSpeechLongAudioSynthesizeGRPCClientOptions() []option.ClientOp
 		internaloption.WithDefaultAudience("https://texttospeech.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -179,6 +179,8 @@ type textToSpeechLongAudioSynthesizeGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewTextToSpeechLongAudioSynthesizeClient creates a new text to speech long audio synthesize client based on gRPC.
@@ -205,6 +207,7 @@ func NewTextToSpeechLongAudioSynthesizeClient(ctx context.Context, opts ...optio
 		connPool:                              connPool,
 		textToSpeechLongAudioSynthesizeClient: texttospeechpb.NewTextToSpeechLongAudioSynthesizeClient(connPool),
 		CallOptions:                           &client.CallOptions,
+		logger:                                internaloption.GetLogger(opts),
 		operationsClient:                      longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -239,7 +242,9 @@ func (c *textToSpeechLongAudioSynthesizeGRPCClient) Connection() *grpc.ClientCon
 func (c *textToSpeechLongAudioSynthesizeGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -266,6 +271,8 @@ type textToSpeechLongAudioSynthesizeRESTClient struct {
 
 	// Points back to the CallOptions field of the containing TextToSpeechLongAudioSynthesizeClient
 	CallOptions **TextToSpeechLongAudioSynthesizeCallOptions
+
+	logger *slog.Logger
 }
 
 // NewTextToSpeechLongAudioSynthesizeRESTClient creates a new text to speech long audio synthesize rest client.
@@ -283,6 +290,7 @@ func NewTextToSpeechLongAudioSynthesizeRESTClient(ctx context.Context, opts ...o
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -307,6 +315,7 @@ func defaultTextToSpeechLongAudioSynthesizeRESTClientOptions() []option.ClientOp
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://texttospeech.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -316,7 +325,9 @@ func defaultTextToSpeechLongAudioSynthesizeRESTClientOptions() []option.ClientOp
 func (c *textToSpeechLongAudioSynthesizeRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -342,7 +353,7 @@ func (c *textToSpeechLongAudioSynthesizeGRPCClient) SynthesizeLongAudio(ctx cont
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.textToSpeechLongAudioSynthesizeClient.SynthesizeLongAudio(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.textToSpeechLongAudioSynthesizeClient.SynthesizeLongAudio, req, settings.GRPC, c.logger, "SynthesizeLongAudio")
 		return err
 	}, opts...)
 	if err != nil {
@@ -362,7 +373,7 @@ func (c *textToSpeechLongAudioSynthesizeGRPCClient) GetOperation(ctx context.Con
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -391,7 +402,7 @@ func (c *textToSpeechLongAudioSynthesizeGRPCClient) ListOperations(ctx context.C
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -455,21 +466,10 @@ func (c *textToSpeechLongAudioSynthesizeRESTClient) SynthesizeLongAudio(ctx cont
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SynthesizeLongAudio")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -520,17 +520,7 @@ func (c *textToSpeechLongAudioSynthesizeRESTClient) GetOperation(ctx context.Con
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -595,21 +585,10 @@ func (c *textToSpeechLongAudioSynthesizeRESTClient) ListOperations(ctx context.C
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

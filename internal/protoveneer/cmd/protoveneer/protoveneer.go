@@ -34,14 +34,7 @@
 // See the config type in config.go and the config.yaml files in the testdata
 // subdirectories to understand how to write configuration.
 //
-// # Support functions
-//
-// protoveneer generates code that relies on a few support functions. These live
-// in the support subdirectory. You should copy the contents of this directory
-// to a location of your choice, and add "supportImportPath" to your config to
-// refer to that directory's import path.
-//
-// # Unhandled features
+// # Unsupported features
 //
 // There is no support for oneofs. Omit the oneof type and write custom code.
 // However, the types of the individual oneof cases can be generated.
@@ -56,6 +49,7 @@ package main
 import (
 	"bytes"
 	"context"
+	_ "embed"
 	"errors"
 	"flag"
 	"fmt"
@@ -68,9 +62,10 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
-	"text/template"
+	"text/template" // NOLINT
 	"unicode"
 )
 
@@ -114,7 +109,7 @@ func run(ctx context.Context, configFile, pbDir, outDir string) error {
 	if !*noFormat {
 		src, err = format.Source(src)
 		if err != nil {
-			return err
+			return fmt.Errorf("formatting: %v", err)
 		}
 	}
 
@@ -220,7 +215,7 @@ func generate(conf *config, pkg *ast.Package, fset *token.FileSet) (src []byte, 
 	// Use the converters map to give every field a converter.
 	for _, ti := range toWrite {
 		for _, f := range ti.fields {
-			if f.converter != nil {
+			if f.converter != nil || f.noConvert {
 				continue
 			}
 			f.converter, err = makeConverter(f.af.Type, f.protoType, converters)
@@ -263,8 +258,10 @@ func buildConverterMap(typeInfos []*typeInfo, conf *config) (map[string]converte
 
 	// Add converters for used external types to the map.
 	for _, et := range externalTypes {
-		if et.used {
+		if et.used && et.convertTo != "" {
 			converters[et.qualifiedName] = customConverter{et.convertTo, et.convertFrom}
+			needSupport(et.convertTo)
+			needSupport(et.convertFrom)
 		}
 	}
 
@@ -284,13 +281,17 @@ func buildConverterMap(typeInfos []*typeInfo, conf *config) (map[string]converte
 }
 
 func parseCustomConverter(name, value string) (converter, error) {
-	toFunc, fromFunc, ok := strings.Cut(value, ",")
-	toFunc = strings.TrimSpace(toFunc)
-	fromFunc = strings.TrimSpace(fromFunc)
-	if !ok || toFunc == "" || fromFunc == "" {
+	toFunc, fromFunc := parseCommaPair(value)
+	if toFunc == "" || fromFunc == "" {
 		return nil, fmt.Errorf(`%s: ConvertToFrom = %q, want "toFunc, fromFunc"`, name, value)
 	}
 	return customConverter{toFunc, fromFunc}, nil
+}
+
+// parseCommaPair parses a string like "foo, bar" into "foo" and "bar".
+func parseCommaPair(s string) (string, string) {
+	a, b, _ := strings.Cut(s, ",")
+	return strings.TrimSpace(a), strings.TrimSpace(b)
 }
 
 // makeConverter constructs a converter for the given type. Not every type is in the map: this
@@ -340,9 +341,11 @@ type typeInfo struct {
 	values    *ast.GenDecl  // the list of values for an enum
 
 	// These fields are added later.
-	veneerName string       // may be provided by config; else same as protoName
-	fields     []*fieldInfo // for structs
-	valueNames []string     // to generate String functions
+	veneerName   string       // may be provided by config; else same as protoName
+	fields       []*fieldInfo // for structs
+	valueNames   []string     // to generate String functions
+	populateFrom string       // name of function doing additional work converting from proto
+	populateTo   string       // name of function doing additional work converting to proto
 }
 
 // A fieldInfo holds information about a struct field.
@@ -351,6 +354,7 @@ type fieldInfo struct {
 	af                    *ast.Field
 	protoName, veneerName string
 	converter             converter
+	noConvert             bool
 }
 
 // collectDecls collects declaration information from a package.
@@ -415,7 +419,7 @@ func processType(ti *typeInfo, tconf *typeConfig, typeInfos map[string]*typeInfo
 	ti.spec.Name.Name = ti.veneerName
 	switch t := ti.spec.Type.(type) {
 	case *ast.StructType:
-		// Check that all configured fields are present.
+		// Check that all configured fields are present, and added fields are not.
 		exportedFields := map[string]bool{}
 		for _, f := range t.Fields.List {
 			if len(f.Names) > 1 {
@@ -426,13 +430,16 @@ func processType(ti *typeInfo, tconf *typeConfig, typeInfos map[string]*typeInfo
 			}
 		}
 		if tconf != nil {
-			for name := range tconf.Fields {
-				if !exportedFields[name] {
+			for name, fconfig := range tconf.Fields {
+				if !exportedFields[name] && !fconfig.Add {
 					return fmt.Errorf("%s: configured field %s is not present", ti.protoName, name)
+				}
+				if exportedFields[name] && fconfig.Add {
+					return fmt.Errorf("%s: added field %s is already present", ti.protoName, name)
 				}
 			}
 		}
-		// Process the fields.
+		// Process the existing fields.
 		fs := t.Fields.List
 		t.Fields.List = t.Fields.List[:0]
 		for _, f := range fs {
@@ -444,6 +451,25 @@ func processType(ti *typeInfo, tconf *typeConfig, typeInfos map[string]*typeInfo
 				t.Fields.List = append(t.Fields.List, f)
 				ti.fields = append(ti.fields, fi)
 			}
+		}
+		// Add additional fields.
+		if tconf != nil {
+			for name, fconfig := range tconf.Fields {
+				if fconfig.Add {
+					if err := addField(name, fconfig, t, ti); err != nil {
+						return err
+					}
+				}
+			}
+		}
+		// Other processing.
+		if tconf != nil && tconf.PopulateToFrom != "" {
+			toFunc, fromFunc := parseCommaPair(tconf.PopulateToFrom)
+			if toFunc == "" || fromFunc == "" {
+				return fmt.Errorf(`%s: PopulateToFrom = %q, want "toFunc, fromFunc"`, ti.protoName, tconf.PopulateToFrom)
+			}
+			ti.populateTo = toFunc
+			ti.populateFrom = fromFunc
 		}
 	case *ast.Ident:
 		// Enum type. Nothing else to do with the type itself; but see processEnumValues.
@@ -485,6 +511,17 @@ func processField(af *ast.Field, tc *typeConfig, typeInfos map[string]*typeInfo)
 				}
 				af.Type = expr
 			}
+			if fc.Doc != "" {
+				cg := &ast.CommentGroup{}
+				for i, line := range strings.Split(strings.TrimSpace(fc.Doc), "\n") {
+					c := &ast.Comment{Text: "// " + line}
+					if i == 0 {
+						c.Slash = af.Pos() - 1
+					}
+					cg.List = append(cg.List, c)
+				}
+				af.Doc = cg
+			}
 			if fc.ConvertToFrom != "" {
 				c, err := parseCustomConverter(id.Name, fc.ConvertToFrom)
 				if err != nil {
@@ -492,6 +529,7 @@ func processField(af *ast.Field, tc *typeConfig, typeInfos map[string]*typeInfo)
 				}
 				fi.converter = c
 			}
+			fi.noConvert = fc.NoConvert
 		}
 	}
 	af.Type = veneerType(af.Type, typeInfos)
@@ -533,6 +571,25 @@ func veneerType(protoType ast.Expr, typeInfos map[string]*typeInfo) ast.Expr {
 	}
 
 	return wtype(protoType)
+}
+
+func addField(name string, fconfig fieldConfig, t *ast.StructType, ti *typeInfo) error {
+	expr, err := parser.ParseExpr(fconfig.Type)
+	if err != nil {
+		return err
+	}
+	af := &ast.Field{
+		Names: []*ast.Ident{{Name: name}},
+		Type:  expr,
+	}
+	t.Fields.List = append(t.Fields.List, af)
+	ti.fields = append(ti.fields, &fieldInfo{
+		af:         af,
+		protoName:  "",
+		veneerName: name,
+		noConvert:  true,
+	})
+	return nil
 }
 
 // processEnumValues processes enum values.
@@ -668,17 +725,37 @@ func write(typeInfos []*typeInfo, conf *config, fset *token.FileSet) ([]byte, er
 	}
 	pr("// This file was generated by protoveneer. DO NOT EDIT.\n\n")
 	pr("package %s\n\n", conf.Package)
+
+	// Imports.
+	// format.Source  will sort paths within a group, but will not regroup.
+	// So ensure stdlib imports are together.
+	stdImportPaths := map[string]bool{}
+	otherImportPaths := map[string]bool{}
+	for _, et := range externalTypes {
+		if et.used {
+			for _, ip := range et.importPaths {
+				if inStdLib(ip) {
+					stdImportPaths[ip] = true
+				} else {
+					otherImportPaths[ip] = true
+				}
+			}
+		}
+	}
 	prn("import (")
 	prn(`    "fmt"`)
+	for ip := range stdImportPaths {
+		prn(`    "%s"`, ip)
+	}
 	pr("\n")
 	prn(`    pb "%s"`, conf.ProtoImportPath)
-	if conf.SupportImportPath == "" {
-		return nil, errors.New("missing supportImportPath in config")
-	}
-	prn(`    "%s"`, conf.SupportImportPath)
-	for _, et := range externalTypes {
-		if et.used && et.importPath != "" {
-			prn(`    "%s"`, et.importPath)
+	for ip := range otherImportPaths {
+		// May be just a path, or "id path".
+		id, path, found := strings.Cut(ip, " ")
+		if !found {
+			prn(`    "%s"`, ip)
+		} else {
+			prn(`  %s "%s"`, id, path)
 		}
 	}
 	pr(")\n\n")
@@ -704,7 +781,9 @@ func write(typeInfos []*typeInfo, conf *config, fset *token.FileSet) ([]byte, er
 			ti.generateConversionMethods(pr)
 		}
 	}
-
+	if err := generateSupportFunctions(&buf, neededSupportFunctions); err != nil {
+		return nil, err
+	}
 	return buf.Bytes(), nil
 }
 
@@ -750,22 +829,44 @@ func (ti *typeInfo) generateConversionMethods(pr func(string, ...any)) {
 func (ti *typeInfo) generateToProto(pr func(string, ...any)) {
 	pr("func (v *%s) toProto() *pb.%s {\n", ti.veneerName, ti.protoName)
 	pr("  if v == nil { return nil }\n")
-	pr("  return &pb.%s{\n", ti.protoName)
+	if ti.populateTo == "" {
+		pr("  return &pb.%s{\n", ti.protoName)
+	} else {
+		pr("  p := &pb.%s{\n", ti.protoName)
+	}
 	for _, f := range ti.fields {
+		if f.noConvert {
+			continue
+		}
 		pr("        %s: %s,\n", f.protoName, f.converter.genTo("v."+f.veneerName))
 	}
 	pr("    }\n")
+	if ti.populateTo != "" {
+		pr("  %s(p, v)\n", ti.populateTo)
+		pr("  return p\n")
+	}
 	pr("}\n")
 }
 
 func (ti *typeInfo) generateFromProto(pr func(string, ...any)) {
 	pr("func (%s) fromProto(p *pb.%s) *%[1]s {\n", ti.veneerName, ti.protoName)
 	pr("  if p == nil { return nil }\n")
-	pr("  return &%s{\n", ti.veneerName)
+	if ti.populateFrom == "" {
+		pr("  return &%s{\n", ti.veneerName)
+	} else {
+		pr("  v := &%s{\n", ti.veneerName)
+	}
 	for _, f := range ti.fields {
+		if f.noConvert {
+			continue
+		}
 		pr("        %s: %s,\n", f.veneerName, f.converter.genFrom("p."+f.protoName))
 	}
 	pr("    }\n")
+	if ti.populateFrom != "" {
+		pr("  %s(v, p)\n", ti.populateFrom)
+		pr("  return v\n")
+	}
 	pr("}\n")
 }
 
@@ -775,7 +876,7 @@ func (ti *typeInfo) generateFromProto(pr func(string, ...any)) {
 type externalType struct {
 	qualifiedName string
 	replaces      string
-	importPath    string
+	importPaths   []string
 	convertTo     string
 	convertFrom   string
 
@@ -787,15 +888,41 @@ var externalTypes = []*externalType{
 	{
 		qualifiedName: "civil.Date",
 		replaces:      "*date.Date",
-		importPath:    "cloud.google.com/go/civil",
-		convertTo:     "support.CivilDateToProto",
-		convertFrom:   "support.CivilDateFromProto",
+		importPaths:   []string{"cloud.google.com/go/civil", "google.golang.org/genproto/googleapis/type/date"},
+		convertTo:     "pvCivilDateToProto",
+		convertFrom:   "pvCivilDateFromProto",
 	},
 	{
 		qualifiedName: "map[string]any",
 		replaces:      "*structpb.Struct",
-		convertTo:     "support.MapToStructPB",
-		convertFrom:   "support.MapFromStructPB",
+		importPaths:   []string{"google.golang.org/protobuf/types/known/structpb"},
+		convertTo:     "pvMapToStructPB",
+		convertFrom:   "pvMapFromStructPB",
+	},
+	{
+		qualifiedName: "time.Time",
+		replaces:      "*timestamppb.Timestamp",
+		importPaths:   []string{"time", "google.golang.org/protobuf/types/known/timestamppb"},
+		convertTo:     "pvTimeToProto",
+		convertFrom:   "pvTimeFromProto",
+	},
+	{
+		qualifiedName: "time.Duration",
+		replaces:      "*durationpb.Duration",
+		importPaths:   []string{"time", "google.golang.org/protobuf/types/known/durationpb"},
+		convertTo:     "durationpb.New",
+		convertFrom:   "pvDurationFromProto",
+	},
+	{
+		qualifiedName: "*apierror.APIError",
+		replaces:      "*status.Status",
+		importPaths: []string{
+			"github.com/googleapis/gax-go/v2/apierror",
+			"spb google.golang.org/genproto/googleapis/rpc/status",
+			"gstatus google.golang.org/grpc/status",
+		},
+		convertTo:   "pvAPIErrorToProto",
+		convertFrom: "pvAPIErrorFromProto",
 	},
 }
 
@@ -804,12 +931,106 @@ var protoTypeToExternalType = map[string]*externalType{}
 func init() {
 	var err error
 	for _, et := range externalTypes {
+		if et.replaces == "" {
+			continue
+		}
 		et.typeExpr, err = parser.ParseExpr(et.qualifiedName)
 		if err != nil {
 			panic(err)
 		}
 		protoTypeToExternalType[et.replaces] = et
 	}
+}
+
+////////////////////////////////////////////////////////////////
+
+//go:embed internal/support/support.go
+var supportCode string
+
+var neededSupportFunctions = map[string]bool{}
+
+// needSupport should be called whenever a support function is needed by the generated code.
+// It is OK to call it for functions that are not in the support package.
+func needSupport(name string) { neededSupportFunctions[name] = true }
+
+var (
+	// Regexps to match the start and end of top-level functions.
+	// These assume the file is gofmt'd.
+	// The "m" flag means that ^ and $ match line starts and ends, respectively.
+	startFuncRegexp = regexp.MustCompile(`(?m:^func ([A-Za-z0-9_]+))`)
+	endFuncRegexp   = regexp.MustCompile(`(?m:^}$)`)
+)
+
+// generateSupportFunctions writes the support functions needed by the
+// generated code to w.
+func generateSupportFunctions(w io.Writer, need map[string]bool) error {
+	// Walk through the file of support functions,
+	// writing the ones whose names are in need.
+	code := supportCode
+	for {
+		starts := startFuncRegexp.FindStringSubmatchIndex(code)
+		if starts == nil {
+			break
+		}
+		end := endFuncRegexp.FindStringIndex(code)
+		if end == nil {
+			return errors.New("generateSupportFunctions: missing function end")
+		}
+		// starts[0] to starts[1]: entire start regexp
+		// starts[2] to starts[3]: function name
+		// end[1]: index of newline after '}'.
+		name := code[starts[2]:starts[3]]
+		if need[name] {
+			comment, err := extractFunctionComment(code, starts[0])
+			if err != nil {
+				return err
+			}
+			if _, err := fmt.Fprintf(w, "\n%s%s\n", comment, code[starts[0]:end[1]]); err != nil {
+				return err
+			}
+		}
+		// Move past match.
+		code = code[end[1]:]
+	}
+
+	// Keep in sync with the type in internal/support/support.go
+	_, err := fmt.Fprintf(w, `
+// pvPanic wraps panics from support functions.
+// User-provided functions in the same package can also use it.
+// It allows callers to distinguish conversion function panics from other panics.
+type pvPanic error
+
+// pvCatchPanic recovers from panics of type pvPanic and
+// returns an error instead.
+func pvCatchPanic[T any](f func() T) (_ T, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			if _, ok := r.(pvPanic); ok {
+				err = r.(error)
+			} else {
+				panic(r)
+			}
+		}
+	}()
+	return f(), nil
+}
+`)
+	return err
+}
+
+// extractFunctionComment returns the top-level comment for the function
+// beginning at code[funcStart].
+func extractFunctionComment(code string, funcStart int) (string, error) {
+	// Take advantage of the facts that every support function has a doc comment,
+	// and all functions are separated by at least one empty line.
+
+	// Search backwards for a blank line.
+	for i := funcStart; i > 0; i-- {
+		if code[i] == '\n' && code[i-1] == '\n' {
+			return code[i+1 : funcStart], nil
+		}
+	}
+	return "", fmt.Errorf("could not find comment before function at %d", funcStart)
 }
 
 ////////////////////////////////////////////////////////////////
@@ -868,4 +1089,11 @@ func sliceAnyError[T any](s []T, f func(T) (bool, error)) (bool, error) {
 		}
 	}
 	return false, nil
+}
+
+// inStdLib reports whether the given import path could be part of the Go standard library,
+// by reporting whether the first component lacks a '.'.
+func inStdLib(path string) bool {
+	first, _, _ := strings.Cut(path, "/")
+	return !strings.Contains(first, ".")
 }

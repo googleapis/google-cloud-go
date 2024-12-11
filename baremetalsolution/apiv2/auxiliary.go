@@ -1038,7 +1038,7 @@ type InstanceIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*baremetalsolutionpb.Instance, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *InstanceIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1085,7 +1085,7 @@ type LocationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *LocationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1132,7 +1132,7 @@ type LunIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*baremetalsolutionpb.Lun, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *LunIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1179,7 +1179,7 @@ type NetworkIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*baremetalsolutionpb.Network, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *NetworkIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1226,7 +1226,7 @@ type NfsShareIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*baremetalsolutionpb.NfsShare, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *NfsShareIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1273,7 +1273,7 @@ type OSImageIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*baremetalsolutionpb.OSImage, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *OSImageIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1320,7 +1320,7 @@ type ProvisioningQuotaIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*baremetalsolutionpb.ProvisioningQuota, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ProvisioningQuotaIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1367,7 +1367,7 @@ type SSHKeyIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*baremetalsolutionpb.SSHKey, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *SSHKeyIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1414,7 +1414,7 @@ type VolumeIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*baremetalsolutionpb.Volume, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *VolumeIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1461,7 +1461,7 @@ type VolumeSnapshotIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*baremetalsolutionpb.VolumeSnapshot, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *VolumeSnapshotIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

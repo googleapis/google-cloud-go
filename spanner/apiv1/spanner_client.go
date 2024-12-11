@@ -21,7 +21,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -29,7 +29,6 @@ import (
 
 	spannerpb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -73,6 +72,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://spanner.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -713,6 +713,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new spanner client based on gRPC.
@@ -742,6 +744,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      spannerpb.NewSpannerClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -764,7 +767,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -786,6 +791,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new spanner rest client.
@@ -806,6 +813,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -820,6 +828,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://spanner.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -829,7 +838,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -855,7 +866,7 @@ func (c *gRPCClient) CreateSession(ctx context.Context, req *spannerpb.CreateSes
 	var resp *spannerpb.Session
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateSession(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateSession, req, settings.GRPC, c.logger, "CreateSession")
 		return err
 	}, opts...)
 	if err != nil {
@@ -873,7 +884,7 @@ func (c *gRPCClient) BatchCreateSessions(ctx context.Context, req *spannerpb.Bat
 	var resp *spannerpb.BatchCreateSessionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.BatchCreateSessions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.BatchCreateSessions, req, settings.GRPC, c.logger, "BatchCreateSessions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -891,7 +902,7 @@ func (c *gRPCClient) GetSession(ctx context.Context, req *spannerpb.GetSessionRe
 	var resp *spannerpb.Session
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetSession(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetSession, req, settings.GRPC, c.logger, "GetSession")
 		return err
 	}, opts...)
 	if err != nil {
@@ -920,7 +931,7 @@ func (c *gRPCClient) ListSessions(ctx context.Context, req *spannerpb.ListSessio
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListSessions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListSessions, req, settings.GRPC, c.logger, "ListSessions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -954,7 +965,7 @@ func (c *gRPCClient) DeleteSession(ctx context.Context, req *spannerpb.DeleteSes
 	opts = append((*c.CallOptions).DeleteSession[0:len((*c.CallOptions).DeleteSession):len((*c.CallOptions).DeleteSession)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteSession(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteSession, req, settings.GRPC, c.logger, "DeleteSession")
 		return err
 	}, opts...)
 	return err
@@ -969,7 +980,7 @@ func (c *gRPCClient) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRe
 	var resp *spannerpb.ResultSet
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ExecuteSql(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ExecuteSql, req, settings.GRPC, c.logger, "ExecuteSql")
 		return err
 	}, opts...)
 	if err != nil {
@@ -987,7 +998,9 @@ func (c *gRPCClient) ExecuteStreamingSql(ctx context.Context, req *spannerpb.Exe
 	var resp spannerpb.Spanner_ExecuteStreamingSqlClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "ExecuteStreamingSql")
 		resp, err = c.client.ExecuteStreamingSql(ctx, req, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "ExecuteStreamingSql")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1005,7 +1018,7 @@ func (c *gRPCClient) ExecuteBatchDml(ctx context.Context, req *spannerpb.Execute
 	var resp *spannerpb.ExecuteBatchDmlResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ExecuteBatchDml(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ExecuteBatchDml, req, settings.GRPC, c.logger, "ExecuteBatchDml")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1023,7 +1036,7 @@ func (c *gRPCClient) Read(ctx context.Context, req *spannerpb.ReadRequest, opts 
 	var resp *spannerpb.ResultSet
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.Read(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.Read, req, settings.GRPC, c.logger, "Read")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1041,7 +1054,9 @@ func (c *gRPCClient) StreamingRead(ctx context.Context, req *spannerpb.ReadReque
 	var resp spannerpb.Spanner_StreamingReadClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "StreamingRead")
 		resp, err = c.client.StreamingRead(ctx, req, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "StreamingRead")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1059,7 +1074,7 @@ func (c *gRPCClient) BeginTransaction(ctx context.Context, req *spannerpb.BeginT
 	var resp *spannerpb.Transaction
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.BeginTransaction(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.BeginTransaction, req, settings.GRPC, c.logger, "BeginTransaction")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1077,7 +1092,7 @@ func (c *gRPCClient) Commit(ctx context.Context, req *spannerpb.CommitRequest, o
 	var resp *spannerpb.CommitResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.Commit(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.Commit, req, settings.GRPC, c.logger, "Commit")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1094,7 +1109,7 @@ func (c *gRPCClient) Rollback(ctx context.Context, req *spannerpb.RollbackReques
 	opts = append((*c.CallOptions).Rollback[0:len((*c.CallOptions).Rollback):len((*c.CallOptions).Rollback)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.Rollback(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.Rollback, req, settings.GRPC, c.logger, "Rollback")
 		return err
 	}, opts...)
 	return err
@@ -1109,7 +1124,7 @@ func (c *gRPCClient) PartitionQuery(ctx context.Context, req *spannerpb.Partitio
 	var resp *spannerpb.PartitionResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.PartitionQuery(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.PartitionQuery, req, settings.GRPC, c.logger, "PartitionQuery")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1127,7 +1142,7 @@ func (c *gRPCClient) PartitionRead(ctx context.Context, req *spannerpb.Partition
 	var resp *spannerpb.PartitionResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.PartitionRead(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.PartitionRead, req, settings.GRPC, c.logger, "PartitionRead")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1145,7 +1160,9 @@ func (c *gRPCClient) BatchWrite(ctx context.Context, req *spannerpb.BatchWriteRe
 	var resp spannerpb.Spanner_BatchWriteClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "BatchWrite")
 		resp, err = c.client.BatchWrite(ctx, req, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "BatchWrite")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1211,17 +1228,7 @@ func (c *restClient) CreateSession(ctx context.Context, req *spannerpb.CreateSes
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateSession")
 		if err != nil {
 			return err
 		}
@@ -1280,17 +1287,7 @@ func (c *restClient) BatchCreateSessions(ctx context.Context, req *spannerpb.Bat
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchCreateSessions")
 		if err != nil {
 			return err
 		}
@@ -1342,17 +1339,7 @@ func (c *restClient) GetSession(ctx context.Context, req *spannerpb.GetSessionRe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSession")
 		if err != nil {
 			return err
 		}
@@ -1417,21 +1404,10 @@ func (c *restClient) ListSessions(ctx context.Context, req *spannerpb.ListSessio
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSessions")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1493,15 +1469,8 @@ func (c *restClient) DeleteSession(ctx context.Context, req *spannerpb.DeleteSes
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteSession")
+		return err
 	}, opts...)
 }
 
@@ -1556,17 +1525,7 @@ func (c *restClient) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExecuteSql")
 		if err != nil {
 			return err
 		}
@@ -1624,12 +1583,8 @@ func (c *restClient) ExecuteStreamingSql(ctx context.Context, req *spannerpb.Exe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		httpRsp, err := executeStreamingHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExecuteStreamingSql")
 		if err != nil {
-			return err
-		}
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
 			return err
 		}
 
@@ -1743,17 +1698,7 @@ func (c *restClient) ExecuteBatchDml(ctx context.Context, req *spannerpb.Execute
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExecuteBatchDml")
 		if err != nil {
 			return err
 		}
@@ -1822,17 +1767,7 @@ func (c *restClient) Read(ctx context.Context, req *spannerpb.ReadRequest, opts 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "Read")
 		if err != nil {
 			return err
 		}
@@ -1890,12 +1825,8 @@ func (c *restClient) StreamingRead(ctx context.Context, req *spannerpb.ReadReque
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		httpRsp, err := executeStreamingHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "StreamingRead")
 		if err != nil {
-			return err
-		}
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
 			return err
 		}
 
@@ -2002,17 +1933,7 @@ func (c *restClient) BeginTransaction(ctx context.Context, req *spannerpb.BeginT
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BeginTransaction")
 		if err != nil {
 			return err
 		}
@@ -2081,17 +2002,7 @@ func (c *restClient) Commit(ctx context.Context, req *spannerpb.CommitRequest, o
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "Commit")
 		if err != nil {
 			return err
 		}
@@ -2152,15 +2063,8 @@ func (c *restClient) Rollback(ctx context.Context, req *spannerpb.RollbackReques
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "Rollback")
+		return err
 	}, opts...)
 }
 
@@ -2214,17 +2118,7 @@ func (c *restClient) PartitionQuery(ctx context.Context, req *spannerpb.Partitio
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PartitionQuery")
 		if err != nil {
 			return err
 		}
@@ -2293,17 +2187,7 @@ func (c *restClient) PartitionRead(ctx context.Context, req *spannerpb.Partition
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PartitionRead")
 		if err != nil {
 			return err
 		}
@@ -2371,12 +2255,8 @@ func (c *restClient) BatchWrite(ctx context.Context, req *spannerpb.BatchWriteRe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		httpRsp, err := executeStreamingHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchWrite")
 		if err != nil {
-			return err
-		}
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
 			return err
 		}
 

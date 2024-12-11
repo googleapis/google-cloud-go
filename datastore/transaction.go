@@ -20,12 +20,15 @@ import (
 	"sync"
 	"time"
 
+	pb "cloud.google.com/go/datastore/apiv1/datastorepb"
 	"cloud.google.com/go/internal/trace"
-	pb "google.golang.org/genproto/googleapis/datastore/v1"
+	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
+
+const maxIndividualReqTxnRetry = 5
 
 // ErrConcurrentTransaction is returned when a transaction is rolled back due
 // to a conflict with a concurrent transaction.
@@ -34,6 +37,20 @@ var ErrConcurrentTransaction = errors.New("datastore: concurrent transaction")
 var (
 	errExpiredTransaction             = errors.New("datastore: transaction expired")
 	errEventualConsistencyTransaction = errors.New("datastore: cannot use EventualConsistency query in a transaction")
+
+	txnBackoff = gax.Backoff{
+		Initial:    20 * time.Millisecond,
+		Max:        32 * time.Second,
+		Multiplier: 1.3,
+	}
+
+	// Do not include codes.Unavailable here since client already retries for Unavailable error
+	beginTxnRetryCodes = []codes.Code{codes.DeadlineExceeded, codes.Internal}
+	rollbackRetryCodes = []codes.Code{codes.DeadlineExceeded, codes.Internal}
+	txnRetryCodes      = []codes.Code{codes.Aborted, codes.Canceled, codes.Unknown, codes.DeadlineExceeded,
+		codes.Internal, codes.Unauthenticated}
+
+	gaxSleep = gax.Sleep
 )
 
 type transactionSettings struct {
@@ -263,6 +280,40 @@ func (t *Transaction) setToInProgress(id []byte) {
 	t.state = transactionStateInProgress
 }
 
+// backoffBeforeRetry returns:
+// - original error if error shouldn't be retried
+// - sleep error if sleep fails
+// - nil if successfully backed off
+func backoffBeforeRetry(ctx context.Context, retryer gax.Retryer, err error) error {
+	delay, shouldRetry := retryer.Retry(err)
+	if !shouldRetry {
+		return err
+	}
+	if sleepErr := gaxSleep(ctx, delay); sleepErr != nil {
+		return sleepErr
+	}
+	return nil
+}
+
+// Retries BeginTransaction 5 times. returns last seen error if not successful
+func (c *Client) newTransactionWithRetry(ctx context.Context, s *transactionSettings) (*Transaction, error) {
+	var t *Transaction
+	var newTxnErr error
+	retryer := gax.OnCodes(beginTxnRetryCodes, txnBackoff)
+	for attempt := 0; attempt < maxIndividualReqTxnRetry; attempt++ {
+		t, newTxnErr = c.newTransaction(ctx, s)
+		if newTxnErr == nil {
+			return t, newTxnErr
+		}
+		// Check if BeginTransaction should be retried
+		if backoffErr := backoffBeforeRetry(ctx, retryer, newTxnErr); backoffErr != nil {
+			return nil, backoffErr
+		}
+	}
+	return t, newTxnErr
+}
+
+// returns any error seen on BeginTransaction RPC call
 func (c *Client) newTransaction(ctx context.Context, s *transactionSettings) (_ *Transaction, err error) {
 	t := &Transaction{
 		id:        nil,
@@ -291,13 +342,15 @@ func (c *Client) newTransaction(ctx context.Context, s *transactionSettings) (_ 
 // f must not call Commit or Rollback on the provided Transaction.
 //
 // If f returns nil, RunInTransaction commits the transaction,
-// returning the Commit and a nil error if it succeeds. If the commit fails due
-// to a conflicting transaction, RunInTransaction retries f with a new
-// Transaction. It gives up and returns ErrConcurrentTransaction after three
-// failed attempts (or as configured with MaxAttempts).
+// returning the Commit and a nil error if it succeeds. If the commit fails,
+// transaction is rolled back. If commit error is retryable, RunInTransaction
+// retries f with a new Transaction. It gives up and returns last seen commit
+// error or f error after three failed attempts (or as configured with MaxAttempts).
 //
-// If f returns non-nil, then the transaction will be rolled back and
-// RunInTransaction will return the same error. The function f is not retried.
+// If f returns non-nil, then the transaction will be rolled back. If f error
+// is retryable, RunInTransaction retries f with a new Transaction. It gives up
+// and returns last seen commit or f error after three failed attempts (or as
+// configured with MaxAttempts).
 //
 // Note that when f returns, the transaction is not committed. Calling code
 // must not assume that any of f's changes have been committed until
@@ -311,18 +364,65 @@ func (c *Client) RunInTransaction(ctx context.Context, f func(tx *Transaction) e
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.RunInTransaction")
 	defer func() { trace.EndSpan(ctx, err) }()
 
+	var tx *Transaction
 	settings := newTransactionSettings(opts)
+	retryer := gax.OnCodes(txnRetryCodes, txnBackoff)
 	for n := 0; n < settings.attempts; n++ {
-		tx, err := c.newTransaction(ctx, settings)
+		tx, err = c.newTransactionWithRetry(ctx, settings)
 		if err != nil {
 			return nil, err
 		}
-		if err := f(tx); err != nil {
-			_ = tx.Rollback()
+
+		var retryErr error
+		fRunErr := f(tx)
+		if fRunErr == nil {
+			// Commit transaction
+			cmt, commitErr := tx.Commit()
+			if commitErr == nil {
+				// Commit successful
+				return cmt, nil
+			}
+
+			// Commit failed
+			retryErr = commitErr
+			err = commitErr
+
+			// Commit() returns 'ErrConcurrentTransaction' when Aborted.
+			// Convert 'ErrConcurrentTransaction' back to Aborted to check retryable error code
+			if retryErr == ErrConcurrentTransaction {
+				retryErr = status.Error(codes.Aborted, commitErr.Error())
+			}
+		} else {
+			// Failure while running user provided function f
+			retryErr = fRunErr
+			err = fRunErr
+		}
+
+		// Rollback the transaction on commit failure or f failure
+		rollbackErr := tx.rollbackWithRetry()
+		if rollbackErr != nil {
+			// Do not restart transaction if rollback failed
 			return nil, err
 		}
-		if cmt, err := tx.Commit(); err != ErrConcurrentTransaction {
-			return cmt, err
+
+		// If this is the last attempt, exit without delaying.
+		if n+1 == settings.attempts {
+			return nil, err
+		}
+
+		// Check if error should be retried
+		code, errConvert := grpcStatusCode(retryErr)
+		if errConvert != nil && code == codes.ResourceExhausted {
+			// ResourceExhausted error should be retried with max backoff
+			if sleepErr := gaxSleep(ctx, txnBackoff.Max); sleepErr != nil {
+				return nil, err
+			}
+		} else {
+			// Check whether error other than ResourceExhausted should be retried
+			backoffErr := backoffBeforeRetry(ctx, retryer, retryErr)
+			if backoffErr != nil {
+				return nil, err
+			}
 		}
 		// Pass this transaction's ID to the retry transaction to preserve
 		// transaction priority.
@@ -330,7 +430,16 @@ func (c *Client) RunInTransaction(ctx context.Context, f func(tx *Transaction) e
 			settings.prevID = tx.id
 		}
 	}
-	return nil, ErrConcurrentTransaction
+	return nil, err
+}
+
+// grpcStatusCodeCode extracts the canonical error code from a GRPC status error.
+func grpcStatusCode(err error) (codes.Code, error) {
+	s, ok := status.FromError(err)
+	if !ok {
+		return codes.Unknown, errors.New("Not a status error")
+	}
+	return s.Code(), nil
 }
 
 // Commit applies the enqueued operations atomically.
@@ -381,6 +490,25 @@ func (t *Transaction) Commit() (c *Commit, err error) {
 	return c, nil
 }
 
+// rollbackWithRetry runs rollback with retries
+// Returns last attempt rollback error if rollback fails even after retries
+func (t *Transaction) rollbackWithRetry() error {
+	var rollbackErr error
+	retryer := gax.OnCodes(rollbackRetryCodes, txnBackoff)
+	for rollbackAttempt := 0; rollbackAttempt < maxIndividualReqTxnRetry; rollbackAttempt++ {
+		rollbackErr = t.Rollback()
+		if rollbackErr == nil {
+			return nil
+		}
+
+		// Check if Rollback should be retried
+		if backoffErr := backoffBeforeRetry(t.ctx, retryer, rollbackErr); backoffErr != nil {
+			return backoffErr
+		}
+	}
+	return rollbackErr
+}
+
 // Rollback abandons a pending transaction.
 func (t *Transaction) Rollback() (err error) {
 	t.ctx = trace.StartSpan(t.ctx, "cloud.google.com/go/datastore.Transaction.Rollback")
@@ -388,6 +516,11 @@ func (t *Transaction) Rollback() (err error) {
 
 	if t.state == transactionStateExpired {
 		return errExpiredTransaction
+	}
+
+	if t.id == nil && t.state == transactionStateNotStarted {
+		// no transaction to rollback
+		return nil
 	}
 
 	err = t.beginLaterTransaction()
@@ -446,7 +579,7 @@ func (t *Transaction) get(spanName string, keys []*Key, dst interface{}) (err er
 	if txnID != nil && err == nil {
 		t.setToInProgress(txnID)
 	}
-	return err
+	return t.client.processFieldMismatchError(err)
 }
 
 // Get is the transaction-specific version of the package function Get.
@@ -457,9 +590,9 @@ func (t *Transaction) get(spanName string, keys []*Key, dst interface{}) (err er
 func (t *Transaction) Get(key *Key, dst interface{}) (err error) {
 	err = t.get("cloud.google.com/go/datastore.Transaction.Get", []*Key{key}, []interface{}{dst})
 	if me, ok := err.(MultiError); ok {
-		return me[0]
+		return t.client.processFieldMismatchError(me[0])
 	}
-	return err
+	return t.client.processFieldMismatchError(err)
 }
 
 // GetMulti is a batch version of Get.

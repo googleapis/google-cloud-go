@@ -19,6 +19,7 @@ package monitoring
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 	"time"
@@ -60,6 +61,7 @@ func defaultMetricGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://monitoring.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -282,6 +284,8 @@ type metricGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewMetricClient creates a new metric service client based on gRPC.
@@ -309,6 +313,7 @@ func NewMetricClient(ctx context.Context, opts ...option.ClientOption) (*MetricC
 		connPool:     connPool,
 		metricClient: monitoringpb.NewMetricServiceClient(connPool),
 		CallOptions:  &client.CallOptions,
+		logger:       internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -331,7 +336,9 @@ func (c *metricGRPCClient) Connection() *grpc.ClientConn {
 func (c *metricGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -360,7 +367,7 @@ func (c *metricGRPCClient) ListMonitoredResourceDescriptors(ctx context.Context,
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.metricClient.ListMonitoredResourceDescriptors(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.metricClient.ListMonitoredResourceDescriptors, req, settings.GRPC, c.logger, "ListMonitoredResourceDescriptors")
 			return err
 		}, opts...)
 		if err != nil {
@@ -395,7 +402,7 @@ func (c *metricGRPCClient) GetMonitoredResourceDescriptor(ctx context.Context, r
 	var resp *monitoredrespb.MonitoredResourceDescriptor
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metricClient.GetMonitoredResourceDescriptor(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metricClient.GetMonitoredResourceDescriptor, req, settings.GRPC, c.logger, "GetMonitoredResourceDescriptor")
 		return err
 	}, opts...)
 	if err != nil {
@@ -424,7 +431,7 @@ func (c *metricGRPCClient) ListMetricDescriptors(ctx context.Context, req *monit
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.metricClient.ListMetricDescriptors(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.metricClient.ListMetricDescriptors, req, settings.GRPC, c.logger, "ListMetricDescriptors")
 			return err
 		}, opts...)
 		if err != nil {
@@ -459,7 +466,7 @@ func (c *metricGRPCClient) GetMetricDescriptor(ctx context.Context, req *monitor
 	var resp *metricpb.MetricDescriptor
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metricClient.GetMetricDescriptor(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metricClient.GetMetricDescriptor, req, settings.GRPC, c.logger, "GetMetricDescriptor")
 		return err
 	}, opts...)
 	if err != nil {
@@ -477,7 +484,7 @@ func (c *metricGRPCClient) CreateMetricDescriptor(ctx context.Context, req *moni
 	var resp *metricpb.MetricDescriptor
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metricClient.CreateMetricDescriptor(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metricClient.CreateMetricDescriptor, req, settings.GRPC, c.logger, "CreateMetricDescriptor")
 		return err
 	}, opts...)
 	if err != nil {
@@ -494,7 +501,7 @@ func (c *metricGRPCClient) DeleteMetricDescriptor(ctx context.Context, req *moni
 	opts = append((*c.CallOptions).DeleteMetricDescriptor[0:len((*c.CallOptions).DeleteMetricDescriptor):len((*c.CallOptions).DeleteMetricDescriptor)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.metricClient.DeleteMetricDescriptor(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.metricClient.DeleteMetricDescriptor, req, settings.GRPC, c.logger, "DeleteMetricDescriptor")
 		return err
 	}, opts...)
 	return err
@@ -520,7 +527,7 @@ func (c *metricGRPCClient) ListTimeSeries(ctx context.Context, req *monitoringpb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.metricClient.ListTimeSeries(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.metricClient.ListTimeSeries, req, settings.GRPC, c.logger, "ListTimeSeries")
 			return err
 		}, opts...)
 		if err != nil {
@@ -554,7 +561,7 @@ func (c *metricGRPCClient) CreateTimeSeries(ctx context.Context, req *monitoring
 	opts = append((*c.CallOptions).CreateTimeSeries[0:len((*c.CallOptions).CreateTimeSeries):len((*c.CallOptions).CreateTimeSeries)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.metricClient.CreateTimeSeries(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.metricClient.CreateTimeSeries, req, settings.GRPC, c.logger, "CreateTimeSeries")
 		return err
 	}, opts...)
 	return err
@@ -568,7 +575,7 @@ func (c *metricGRPCClient) CreateServiceTimeSeries(ctx context.Context, req *mon
 	opts = append((*c.CallOptions).CreateServiceTimeSeries[0:len((*c.CallOptions).CreateServiceTimeSeries):len((*c.CallOptions).CreateServiceTimeSeries)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.metricClient.CreateServiceTimeSeries(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.metricClient.CreateServiceTimeSeries, req, settings.GRPC, c.logger, "CreateServiceTimeSeries")
 		return err
 	}, opts...)
 	return err

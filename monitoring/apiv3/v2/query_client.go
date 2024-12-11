@@ -19,6 +19,7 @@ package monitoring
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 
@@ -48,6 +49,7 @@ func defaultQueryGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://monitoring.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -124,6 +126,8 @@ type queryGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewQueryClient creates a new query service client based on gRPC.
@@ -152,6 +156,7 @@ func NewQueryClient(ctx context.Context, opts ...option.ClientOption) (*QueryCli
 		connPool:    connPool,
 		queryClient: monitoringpb.NewQueryServiceClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -174,7 +179,9 @@ func (c *queryGRPCClient) Connection() *grpc.ClientConn {
 func (c *queryGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -203,7 +210,7 @@ func (c *queryGRPCClient) QueryTimeSeries(ctx context.Context, req *monitoringpb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.queryClient.QueryTimeSeries(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.queryClient.QueryTimeSeries, req, settings.GRPC, c.logger, "QueryTimeSeries")
 			return err
 		}, opts...)
 		if err != nil {

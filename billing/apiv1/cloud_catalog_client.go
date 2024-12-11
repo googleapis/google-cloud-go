@@ -19,7 +19,7 @@ package billing
 import (
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -27,7 +27,6 @@ import (
 
 	billingpb "cloud.google.com/go/billing/apiv1/billingpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -55,6 +54,7 @@ func defaultCloudCatalogGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://cloudbilling.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -153,6 +153,8 @@ type cloudCatalogGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewCloudCatalogClient creates a new cloud catalog client based on gRPC.
@@ -181,6 +183,7 @@ func NewCloudCatalogClient(ctx context.Context, opts ...option.ClientOption) (*C
 		connPool:           connPool,
 		cloudCatalogClient: billingpb.NewCloudCatalogClient(connPool),
 		CallOptions:        &client.CallOptions,
+		logger:             internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -203,7 +206,9 @@ func (c *cloudCatalogGRPCClient) Connection() *grpc.ClientConn {
 func (c *cloudCatalogGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -225,6 +230,8 @@ type cloudCatalogRESTClient struct {
 
 	// Points back to the CallOptions field of the containing CloudCatalogClient
 	CallOptions **CloudCatalogCallOptions
+
+	logger *slog.Logger
 }
 
 // NewCloudCatalogRESTClient creates a new cloud catalog rest client.
@@ -244,6 +251,7 @@ func NewCloudCatalogRESTClient(ctx context.Context, opts ...option.ClientOption)
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -258,6 +266,7 @@ func defaultCloudCatalogRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudbilling.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -267,7 +276,9 @@ func defaultCloudCatalogRESTClientOptions() []option.ClientOption {
 func (c *cloudCatalogRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -301,7 +312,7 @@ func (c *cloudCatalogGRPCClient) ListServices(ctx context.Context, req *billingp
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudCatalogClient.ListServices(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudCatalogClient.ListServices, req, settings.GRPC, c.logger, "ListServices")
 			return err
 		}, opts...)
 		if err != nil {
@@ -347,7 +358,7 @@ func (c *cloudCatalogGRPCClient) ListSkus(ctx context.Context, req *billingpb.Li
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudCatalogClient.ListSkus(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudCatalogClient.ListSkus, req, settings.GRPC, c.logger, "ListSkus")
 			return err
 		}, opts...)
 		if err != nil {
@@ -418,21 +429,10 @@ func (c *cloudCatalogRESTClient) ListServices(ctx context.Context, req *billingp
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListServices")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -489,11 +489,11 @@ func (c *cloudCatalogRESTClient) ListSkus(ctx context.Context, req *billingpb.Li
 			params.Add("currencyCode", fmt.Sprintf("%v", req.GetCurrencyCode()))
 		}
 		if req.GetEndTime() != nil {
-			endTime, err := protojson.Marshal(req.GetEndTime())
+			field, err := protojson.Marshal(req.GetEndTime())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("endTime", string(endTime[1:len(endTime)-1]))
+			params.Add("endTime", string(field[1:len(field)-1]))
 		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
@@ -502,11 +502,11 @@ func (c *cloudCatalogRESTClient) ListSkus(ctx context.Context, req *billingpb.Li
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
 		if req.GetStartTime() != nil {
-			startTime, err := protojson.Marshal(req.GetStartTime())
+			field, err := protojson.Marshal(req.GetStartTime())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("startTime", string(startTime[1:len(startTime)-1]))
+			params.Add("startTime", string(field[1:len(field)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -524,21 +524,10 @@ func (c *cloudCatalogRESTClient) ListSkus(ctx context.Context, req *billingpb.Li
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSkus")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

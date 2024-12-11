@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -30,7 +30,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	telcoautomationpb "cloud.google.com/go/telcoautomation/apiv1/telcoautomationpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -99,6 +98,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://telcoautomation.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -560,6 +560,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new telco automation client based on gRPC.
@@ -590,6 +592,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:         connPool,
 		client:           telcoautomationpb.NewTelcoAutomationClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
@@ -625,7 +628,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -652,6 +657,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new telco automation rest client.
@@ -673,6 +680,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -697,6 +705,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://telcoautomation.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -706,7 +715,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -743,7 +754,7 @@ func (c *gRPCClient) ListOrchestrationClusters(ctx context.Context, req *telcoau
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListOrchestrationClusters(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListOrchestrationClusters, req, settings.GRPC, c.logger, "ListOrchestrationClusters")
 			return err
 		}, opts...)
 		if err != nil {
@@ -778,7 +789,7 @@ func (c *gRPCClient) GetOrchestrationCluster(ctx context.Context, req *telcoauto
 	var resp *telcoautomationpb.OrchestrationCluster
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetOrchestrationCluster(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetOrchestrationCluster, req, settings.GRPC, c.logger, "GetOrchestrationCluster")
 		return err
 	}, opts...)
 	if err != nil {
@@ -796,7 +807,7 @@ func (c *gRPCClient) CreateOrchestrationCluster(ctx context.Context, req *telcoa
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateOrchestrationCluster(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateOrchestrationCluster, req, settings.GRPC, c.logger, "CreateOrchestrationCluster")
 		return err
 	}, opts...)
 	if err != nil {
@@ -816,7 +827,7 @@ func (c *gRPCClient) DeleteOrchestrationCluster(ctx context.Context, req *telcoa
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteOrchestrationCluster(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteOrchestrationCluster, req, settings.GRPC, c.logger, "DeleteOrchestrationCluster")
 		return err
 	}, opts...)
 	if err != nil {
@@ -847,7 +858,7 @@ func (c *gRPCClient) ListEdgeSlms(ctx context.Context, req *telcoautomationpb.Li
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListEdgeSlms(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListEdgeSlms, req, settings.GRPC, c.logger, "ListEdgeSlms")
 			return err
 		}, opts...)
 		if err != nil {
@@ -882,7 +893,7 @@ func (c *gRPCClient) GetEdgeSlm(ctx context.Context, req *telcoautomationpb.GetE
 	var resp *telcoautomationpb.EdgeSlm
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetEdgeSlm(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetEdgeSlm, req, settings.GRPC, c.logger, "GetEdgeSlm")
 		return err
 	}, opts...)
 	if err != nil {
@@ -900,7 +911,7 @@ func (c *gRPCClient) CreateEdgeSlm(ctx context.Context, req *telcoautomationpb.C
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateEdgeSlm(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateEdgeSlm, req, settings.GRPC, c.logger, "CreateEdgeSlm")
 		return err
 	}, opts...)
 	if err != nil {
@@ -920,7 +931,7 @@ func (c *gRPCClient) DeleteEdgeSlm(ctx context.Context, req *telcoautomationpb.D
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteEdgeSlm(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteEdgeSlm, req, settings.GRPC, c.logger, "DeleteEdgeSlm")
 		return err
 	}, opts...)
 	if err != nil {
@@ -940,7 +951,7 @@ func (c *gRPCClient) CreateBlueprint(ctx context.Context, req *telcoautomationpb
 	var resp *telcoautomationpb.Blueprint
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateBlueprint(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateBlueprint, req, settings.GRPC, c.logger, "CreateBlueprint")
 		return err
 	}, opts...)
 	if err != nil {
@@ -958,7 +969,7 @@ func (c *gRPCClient) UpdateBlueprint(ctx context.Context, req *telcoautomationpb
 	var resp *telcoautomationpb.Blueprint
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateBlueprint(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateBlueprint, req, settings.GRPC, c.logger, "UpdateBlueprint")
 		return err
 	}, opts...)
 	if err != nil {
@@ -976,7 +987,7 @@ func (c *gRPCClient) GetBlueprint(ctx context.Context, req *telcoautomationpb.Ge
 	var resp *telcoautomationpb.Blueprint
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetBlueprint(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetBlueprint, req, settings.GRPC, c.logger, "GetBlueprint")
 		return err
 	}, opts...)
 	if err != nil {
@@ -993,7 +1004,7 @@ func (c *gRPCClient) DeleteBlueprint(ctx context.Context, req *telcoautomationpb
 	opts = append((*c.CallOptions).DeleteBlueprint[0:len((*c.CallOptions).DeleteBlueprint):len((*c.CallOptions).DeleteBlueprint)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteBlueprint(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteBlueprint, req, settings.GRPC, c.logger, "DeleteBlueprint")
 		return err
 	}, opts...)
 	return err
@@ -1019,7 +1030,7 @@ func (c *gRPCClient) ListBlueprints(ctx context.Context, req *telcoautomationpb.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListBlueprints(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListBlueprints, req, settings.GRPC, c.logger, "ListBlueprints")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1054,7 +1065,7 @@ func (c *gRPCClient) ApproveBlueprint(ctx context.Context, req *telcoautomationp
 	var resp *telcoautomationpb.Blueprint
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ApproveBlueprint(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ApproveBlueprint, req, settings.GRPC, c.logger, "ApproveBlueprint")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1072,7 +1083,7 @@ func (c *gRPCClient) ProposeBlueprint(ctx context.Context, req *telcoautomationp
 	var resp *telcoautomationpb.Blueprint
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ProposeBlueprint(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ProposeBlueprint, req, settings.GRPC, c.logger, "ProposeBlueprint")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1090,7 +1101,7 @@ func (c *gRPCClient) RejectBlueprint(ctx context.Context, req *telcoautomationpb
 	var resp *telcoautomationpb.Blueprint
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.RejectBlueprint(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.RejectBlueprint, req, settings.GRPC, c.logger, "RejectBlueprint")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1119,7 +1130,7 @@ func (c *gRPCClient) ListBlueprintRevisions(ctx context.Context, req *telcoautom
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListBlueprintRevisions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListBlueprintRevisions, req, settings.GRPC, c.logger, "ListBlueprintRevisions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1165,7 +1176,7 @@ func (c *gRPCClient) SearchBlueprintRevisions(ctx context.Context, req *telcoaut
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.SearchBlueprintRevisions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.SearchBlueprintRevisions, req, settings.GRPC, c.logger, "SearchBlueprintRevisions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1211,7 +1222,7 @@ func (c *gRPCClient) SearchDeploymentRevisions(ctx context.Context, req *telcoau
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.SearchDeploymentRevisions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.SearchDeploymentRevisions, req, settings.GRPC, c.logger, "SearchDeploymentRevisions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1246,7 +1257,7 @@ func (c *gRPCClient) DiscardBlueprintChanges(ctx context.Context, req *telcoauto
 	var resp *telcoautomationpb.DiscardBlueprintChangesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DiscardBlueprintChanges(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DiscardBlueprintChanges, req, settings.GRPC, c.logger, "DiscardBlueprintChanges")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1275,7 +1286,7 @@ func (c *gRPCClient) ListPublicBlueprints(ctx context.Context, req *telcoautomat
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListPublicBlueprints(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListPublicBlueprints, req, settings.GRPC, c.logger, "ListPublicBlueprints")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1310,7 +1321,7 @@ func (c *gRPCClient) GetPublicBlueprint(ctx context.Context, req *telcoautomatio
 	var resp *telcoautomationpb.PublicBlueprint
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetPublicBlueprint(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetPublicBlueprint, req, settings.GRPC, c.logger, "GetPublicBlueprint")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1328,7 +1339,7 @@ func (c *gRPCClient) CreateDeployment(ctx context.Context, req *telcoautomationp
 	var resp *telcoautomationpb.Deployment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateDeployment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateDeployment, req, settings.GRPC, c.logger, "CreateDeployment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1346,7 +1357,7 @@ func (c *gRPCClient) UpdateDeployment(ctx context.Context, req *telcoautomationp
 	var resp *telcoautomationpb.Deployment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateDeployment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateDeployment, req, settings.GRPC, c.logger, "UpdateDeployment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1364,7 +1375,7 @@ func (c *gRPCClient) GetDeployment(ctx context.Context, req *telcoautomationpb.G
 	var resp *telcoautomationpb.Deployment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetDeployment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetDeployment, req, settings.GRPC, c.logger, "GetDeployment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1381,7 +1392,7 @@ func (c *gRPCClient) RemoveDeployment(ctx context.Context, req *telcoautomationp
 	opts = append((*c.CallOptions).RemoveDeployment[0:len((*c.CallOptions).RemoveDeployment):len((*c.CallOptions).RemoveDeployment)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.RemoveDeployment(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.RemoveDeployment, req, settings.GRPC, c.logger, "RemoveDeployment")
 		return err
 	}, opts...)
 	return err
@@ -1407,7 +1418,7 @@ func (c *gRPCClient) ListDeployments(ctx context.Context, req *telcoautomationpb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListDeployments(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListDeployments, req, settings.GRPC, c.logger, "ListDeployments")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1453,7 +1464,7 @@ func (c *gRPCClient) ListDeploymentRevisions(ctx context.Context, req *telcoauto
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListDeploymentRevisions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListDeploymentRevisions, req, settings.GRPC, c.logger, "ListDeploymentRevisions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1488,7 +1499,7 @@ func (c *gRPCClient) DiscardDeploymentChanges(ctx context.Context, req *telcoaut
 	var resp *telcoautomationpb.DiscardDeploymentChangesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DiscardDeploymentChanges(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DiscardDeploymentChanges, req, settings.GRPC, c.logger, "DiscardDeploymentChanges")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1506,7 +1517,7 @@ func (c *gRPCClient) ApplyDeployment(ctx context.Context, req *telcoautomationpb
 	var resp *telcoautomationpb.Deployment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ApplyDeployment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ApplyDeployment, req, settings.GRPC, c.logger, "ApplyDeployment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1524,7 +1535,7 @@ func (c *gRPCClient) ComputeDeploymentStatus(ctx context.Context, req *telcoauto
 	var resp *telcoautomationpb.ComputeDeploymentStatusResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ComputeDeploymentStatus(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ComputeDeploymentStatus, req, settings.GRPC, c.logger, "ComputeDeploymentStatus")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1542,7 +1553,7 @@ func (c *gRPCClient) RollbackDeployment(ctx context.Context, req *telcoautomatio
 	var resp *telcoautomationpb.Deployment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.RollbackDeployment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.RollbackDeployment, req, settings.GRPC, c.logger, "RollbackDeployment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1560,7 +1571,7 @@ func (c *gRPCClient) GetHydratedDeployment(ctx context.Context, req *telcoautoma
 	var resp *telcoautomationpb.HydratedDeployment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetHydratedDeployment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetHydratedDeployment, req, settings.GRPC, c.logger, "GetHydratedDeployment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1589,7 +1600,7 @@ func (c *gRPCClient) ListHydratedDeployments(ctx context.Context, req *telcoauto
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListHydratedDeployments(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListHydratedDeployments, req, settings.GRPC, c.logger, "ListHydratedDeployments")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1624,7 +1635,7 @@ func (c *gRPCClient) UpdateHydratedDeployment(ctx context.Context, req *telcoaut
 	var resp *telcoautomationpb.HydratedDeployment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateHydratedDeployment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateHydratedDeployment, req, settings.GRPC, c.logger, "UpdateHydratedDeployment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1642,7 +1653,7 @@ func (c *gRPCClient) ApplyHydratedDeployment(ctx context.Context, req *telcoauto
 	var resp *telcoautomationpb.HydratedDeployment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ApplyHydratedDeployment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ApplyHydratedDeployment, req, settings.GRPC, c.logger, "ApplyHydratedDeployment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1660,7 +1671,7 @@ func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1689,7 +1700,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1723,7 +1734,7 @@ func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -1737,7 +1748,7 @@ func (c *gRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -1752,7 +1763,7 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1781,7 +1792,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1858,21 +1869,10 @@ func (c *restClient) ListOrchestrationClusters(ctx context.Context, req *telcoau
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOrchestrationClusters")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1935,17 +1935,7 @@ func (c *restClient) GetOrchestrationCluster(ctx context.Context, req *telcoauto
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOrchestrationCluster")
 		if err != nil {
 			return err
 		}
@@ -2005,21 +1995,10 @@ func (c *restClient) CreateOrchestrationCluster(ctx context.Context, req *telcoa
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateOrchestrationCluster")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2072,21 +2051,10 @@ func (c *restClient) DeleteOrchestrationCluster(ctx context.Context, req *telcoa
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOrchestrationCluster")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2155,21 +2123,10 @@ func (c *restClient) ListEdgeSlms(ctx context.Context, req *telcoautomationpb.Li
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListEdgeSlms")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2232,17 +2189,7 @@ func (c *restClient) GetEdgeSlm(ctx context.Context, req *telcoautomationpb.GetE
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetEdgeSlm")
 		if err != nil {
 			return err
 		}
@@ -2302,21 +2249,10 @@ func (c *restClient) CreateEdgeSlm(ctx context.Context, req *telcoautomationpb.C
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateEdgeSlm")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2369,21 +2305,10 @@ func (c *restClient) DeleteEdgeSlm(ctx context.Context, req *telcoautomationpb.D
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteEdgeSlm")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2444,17 +2369,7 @@ func (c *restClient) CreateBlueprint(ctx context.Context, req *telcoautomationpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateBlueprint")
 		if err != nil {
 			return err
 		}
@@ -2489,11 +2404,11 @@ func (c *restClient) UpdateBlueprint(ctx context.Context, req *telcoautomationpb
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2518,17 +2433,7 @@ func (c *restClient) UpdateBlueprint(ctx context.Context, req *telcoautomationpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateBlueprint")
 		if err != nil {
 			return err
 		}
@@ -2581,17 +2486,7 @@ func (c *restClient) GetBlueprint(ctx context.Context, req *telcoautomationpb.Ge
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetBlueprint")
 		if err != nil {
 			return err
 		}
@@ -2638,15 +2533,8 @@ func (c *restClient) DeleteBlueprint(ctx context.Context, req *telcoautomationpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteBlueprint")
+		return err
 	}, opts...)
 }
 
@@ -2698,21 +2586,10 @@ func (c *restClient) ListBlueprints(ctx context.Context, req *telcoautomationpb.
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListBlueprints")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2781,17 +2658,7 @@ func (c *restClient) ApproveBlueprint(ctx context.Context, req *telcoautomationp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ApproveBlueprint")
 		if err != nil {
 			return err
 		}
@@ -2847,17 +2714,7 @@ func (c *restClient) ProposeBlueprint(ctx context.Context, req *telcoautomationp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ProposeBlueprint")
 		if err != nil {
 			return err
 		}
@@ -2913,17 +2770,7 @@ func (c *restClient) RejectBlueprint(ctx context.Context, req *telcoautomationpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RejectBlueprint")
 		if err != nil {
 			return err
 		}
@@ -2985,21 +2832,10 @@ func (c *restClient) ListBlueprintRevisions(ctx context.Context, req *telcoautom
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListBlueprintRevisions")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3075,21 +2911,10 @@ func (c *restClient) SearchBlueprintRevisions(ctx context.Context, req *telcoaut
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "SearchBlueprintRevisions")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3165,21 +2990,10 @@ func (c *restClient) SearchDeploymentRevisions(ctx context.Context, req *telcoau
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "SearchDeploymentRevisions")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3250,17 +3064,7 @@ func (c *restClient) DiscardBlueprintChanges(ctx context.Context, req *telcoauto
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "DiscardBlueprintChanges")
 		if err != nil {
 			return err
 		}
@@ -3323,21 +3127,10 @@ func (c *restClient) ListPublicBlueprints(ctx context.Context, req *telcoautomat
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListPublicBlueprints")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3400,17 +3193,7 @@ func (c *restClient) GetPublicBlueprint(ctx context.Context, req *telcoautomatio
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetPublicBlueprint")
 		if err != nil {
 			return err
 		}
@@ -3470,17 +3253,7 @@ func (c *restClient) CreateDeployment(ctx context.Context, req *telcoautomationp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDeployment")
 		if err != nil {
 			return err
 		}
@@ -3515,11 +3288,11 @@ func (c *restClient) UpdateDeployment(ctx context.Context, req *telcoautomationp
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3544,17 +3317,7 @@ func (c *restClient) UpdateDeployment(ctx context.Context, req *telcoautomationp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateDeployment")
 		if err != nil {
 			return err
 		}
@@ -3607,17 +3370,7 @@ func (c *restClient) GetDeployment(ctx context.Context, req *telcoautomationpb.G
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDeployment")
 		if err != nil {
 			return err
 		}
@@ -3671,15 +3424,8 @@ func (c *restClient) RemoveDeployment(ctx context.Context, req *telcoautomationp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RemoveDeployment")
+		return err
 	}, opts...)
 }
 
@@ -3731,21 +3477,10 @@ func (c *restClient) ListDeployments(ctx context.Context, req *telcoautomationpb
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDeployments")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3820,21 +3555,10 @@ func (c *restClient) ListDeploymentRevisions(ctx context.Context, req *telcoauto
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDeploymentRevisions")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3905,17 +3629,7 @@ func (c *restClient) DiscardDeploymentChanges(ctx context.Context, req *telcoaut
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "DiscardDeploymentChanges")
 		if err != nil {
 			return err
 		}
@@ -3971,17 +3685,7 @@ func (c *restClient) ApplyDeployment(ctx context.Context, req *telcoautomationpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ApplyDeployment")
 		if err != nil {
 			return err
 		}
@@ -4031,17 +3735,7 @@ func (c *restClient) ComputeDeploymentStatus(ctx context.Context, req *telcoauto
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ComputeDeploymentStatus")
 		if err != nil {
 			return err
 		}
@@ -4098,17 +3792,7 @@ func (c *restClient) RollbackDeployment(ctx context.Context, req *telcoautomatio
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RollbackDeployment")
 		if err != nil {
 			return err
 		}
@@ -4158,17 +3842,7 @@ func (c *restClient) GetHydratedDeployment(ctx context.Context, req *telcoautoma
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetHydratedDeployment")
 		if err != nil {
 			return err
 		}
@@ -4230,21 +3904,10 @@ func (c *restClient) ListHydratedDeployments(ctx context.Context, req *telcoauto
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListHydratedDeployments")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4292,11 +3955,11 @@ func (c *restClient) UpdateHydratedDeployment(ctx context.Context, req *telcoaut
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4321,17 +3984,7 @@ func (c *restClient) UpdateHydratedDeployment(ctx context.Context, req *telcoaut
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateHydratedDeployment")
 		if err != nil {
 			return err
 		}
@@ -4387,17 +4040,7 @@ func (c *restClient) ApplyHydratedDeployment(ctx context.Context, req *telcoauto
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ApplyHydratedDeployment")
 		if err != nil {
 			return err
 		}
@@ -4447,17 +4090,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -4522,21 +4155,10 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4602,15 +4224,8 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -4644,15 +4259,8 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOperation")
+		return err
 	}, opts...)
 }
 
@@ -4689,17 +4297,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -4764,21 +4362,10 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
