@@ -201,6 +201,11 @@ var (
 		"Received Rst stream",
 		"RST_STREAM closed stream",
 		"Received RST_STREAM",
+
+		// https://github.com/googleapis/google-cloud-go/issues/10207#issuecomment-2604859656
+		// https://github.com/googleapis/google-cloud-go/issues/10909
+		// https://github.com/googleapis/google-cloud-go/pull/11276
+		"unexpected EOF",
 	}
 	defaultBackoff = gax.Backoff{
 		Initial:    100 * time.Millisecond,
