@@ -44,7 +44,7 @@ func ExampleRoutersClient_AggregatedList_all() {
 	}
 	for resp, err := range c.AggregatedList(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -70,7 +70,7 @@ func ExampleRoutersClient_GetNatMappingInfo_all() {
 	}
 	for resp, err := range c.GetNatMappingInfo(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -96,7 +96,7 @@ func ExampleRoutersClient_List_all() {
 	}
 	for resp, err := range c.List(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp

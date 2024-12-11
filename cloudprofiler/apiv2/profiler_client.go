@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	cloudprofilerpb "cloud.google.com/go/cloudprofiler/apiv2/cloudprofilerpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -200,6 +199,8 @@ type profilerGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewProfilerClient creates a new profiler service client based on gRPC.
@@ -230,6 +231,7 @@ func NewProfilerClient(ctx context.Context, opts ...option.ClientOption) (*Profi
 		connPool:       connPool,
 		profilerClient: cloudprofilerpb.NewProfilerServiceClient(connPool),
 		CallOptions:    &client.CallOptions,
+		logger:         internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -276,6 +278,8 @@ type profilerRESTClient struct {
 
 	// Points back to the CallOptions field of the containing ProfilerClient
 	CallOptions **ProfilerCallOptions
+
+	logger *slog.Logger
 }
 
 // NewProfilerRESTClient creates a new profiler service rest client.
@@ -297,6 +301,7 @@ func NewProfilerRESTClient(ctx context.Context, opts ...option.ClientOption) (*P
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -349,7 +354,7 @@ func (c *profilerGRPCClient) CreateProfile(ctx context.Context, req *cloudprofil
 	var resp *cloudprofilerpb.Profile
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.profilerClient.CreateProfile(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.profilerClient.CreateProfile, req, settings.GRPC, c.logger, "CreateProfile")
 		return err
 	}, opts...)
 	if err != nil {
@@ -367,7 +372,7 @@ func (c *profilerGRPCClient) CreateOfflineProfile(ctx context.Context, req *clou
 	var resp *cloudprofilerpb.Profile
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.profilerClient.CreateOfflineProfile(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.profilerClient.CreateOfflineProfile, req, settings.GRPC, c.logger, "CreateOfflineProfile")
 		return err
 	}, opts...)
 	if err != nil {
@@ -385,7 +390,7 @@ func (c *profilerGRPCClient) UpdateProfile(ctx context.Context, req *cloudprofil
 	var resp *cloudprofilerpb.Profile
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.profilerClient.UpdateProfile(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.profilerClient.UpdateProfile, req, settings.GRPC, c.logger, "UpdateProfile")
 		return err
 	}, opts...)
 	if err != nil {
@@ -450,17 +455,7 @@ func (c *profilerRESTClient) CreateProfile(ctx context.Context, req *cloudprofil
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateProfile")
 		if err != nil {
 			return err
 		}
@@ -524,17 +519,7 @@ func (c *profilerRESTClient) CreateOfflineProfile(ctx context.Context, req *clou
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateOfflineProfile")
 		if err != nil {
 			return err
 		}
@@ -606,17 +591,7 @@ func (c *profilerRESTClient) UpdateProfile(ctx context.Context, req *cloudprofil
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateProfile")
 		if err != nil {
 			return err
 		}

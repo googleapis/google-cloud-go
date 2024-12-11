@@ -46,7 +46,7 @@ func ExampleModelMonitoringClient_ListModelMonitoringJobs_all() {
 	}
 	for resp, err := range c.ListModelMonitoringJobs(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -72,7 +72,7 @@ func ExampleModelMonitoringClient_ListModelMonitors_all() {
 	}
 	for resp, err := range c.ListModelMonitors(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -98,7 +98,7 @@ func ExampleModelMonitoringClient_SearchModelMonitoringAlerts_all() {
 	}
 	for resp, err := range c.SearchModelMonitoringAlerts(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -124,7 +124,7 @@ func ExampleModelMonitoringClient_SearchModelMonitoringStats_all() {
 	}
 	for resp, err := range c.SearchModelMonitoringStats(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -150,7 +150,7 @@ func ExampleModelMonitoringClient_ListLocations_all() {
 	}
 	for resp, err := range c.ListLocations(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -176,7 +176,7 @@ func ExampleModelMonitoringClient_ListOperations_all() {
 	}
 	for resp, err := range c.ListOperations(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp

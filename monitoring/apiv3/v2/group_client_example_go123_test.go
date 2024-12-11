@@ -44,7 +44,7 @@ func ExampleGroupClient_ListGroupMembers_all() {
 	}
 	for resp, err := range c.ListGroupMembers(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -70,7 +70,7 @@ func ExampleGroupClient_ListGroups_all() {
 	}
 	for resp, err := range c.ListGroups(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp

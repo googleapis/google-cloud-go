@@ -44,7 +44,7 @@ func ExampleJobsV1Beta3Client_AggregatedListJobs_all() {
 	}
 	for resp, err := range c.AggregatedListJobs(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -70,7 +70,7 @@ func ExampleJobsV1Beta3Client_ListJobs_all() {
 	}
 	for resp, err := range c.ListJobs(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp

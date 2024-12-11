@@ -44,7 +44,7 @@ func ExampleCaseClient_ListCases_all() {
 	}
 	for resp, err := range c.ListCases(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -70,7 +70,7 @@ func ExampleCaseClient_SearchCaseClassifications_all() {
 	}
 	for resp, err := range c.SearchCaseClassifications(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -96,7 +96,7 @@ func ExampleCaseClient_SearchCases_all() {
 	}
 	for resp, err := range c.SearchCases(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp

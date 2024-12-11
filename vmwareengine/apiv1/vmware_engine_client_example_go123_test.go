@@ -46,7 +46,7 @@ func ExampleClient_FetchNetworkPolicyExternalAddresses_all() {
 	}
 	for resp, err := range c.FetchNetworkPolicyExternalAddresses(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -72,7 +72,7 @@ func ExampleClient_ListClusters_all() {
 	}
 	for resp, err := range c.ListClusters(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -98,7 +98,7 @@ func ExampleClient_ListExternalAccessRules_all() {
 	}
 	for resp, err := range c.ListExternalAccessRules(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -124,7 +124,7 @@ func ExampleClient_ListExternalAddresses_all() {
 	}
 	for resp, err := range c.ListExternalAddresses(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -150,7 +150,7 @@ func ExampleClient_ListHcxActivationKeys_all() {
 	}
 	for resp, err := range c.ListHcxActivationKeys(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -176,7 +176,7 @@ func ExampleClient_ListLoggingServers_all() {
 	}
 	for resp, err := range c.ListLoggingServers(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -202,7 +202,7 @@ func ExampleClient_ListManagementDnsZoneBindings_all() {
 	}
 	for resp, err := range c.ListManagementDnsZoneBindings(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -228,7 +228,7 @@ func ExampleClient_ListNetworkPeerings_all() {
 	}
 	for resp, err := range c.ListNetworkPeerings(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -254,7 +254,7 @@ func ExampleClient_ListNetworkPolicies_all() {
 	}
 	for resp, err := range c.ListNetworkPolicies(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -280,7 +280,7 @@ func ExampleClient_ListNodeTypes_all() {
 	}
 	for resp, err := range c.ListNodeTypes(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -306,7 +306,7 @@ func ExampleClient_ListNodes_all() {
 	}
 	for resp, err := range c.ListNodes(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -332,7 +332,7 @@ func ExampleClient_ListPeeringRoutes_all() {
 	}
 	for resp, err := range c.ListPeeringRoutes(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -358,7 +358,7 @@ func ExampleClient_ListPrivateClouds_all() {
 	}
 	for resp, err := range c.ListPrivateClouds(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -384,7 +384,7 @@ func ExampleClient_ListPrivateConnectionPeeringRoutes_all() {
 	}
 	for resp, err := range c.ListPrivateConnectionPeeringRoutes(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -410,7 +410,7 @@ func ExampleClient_ListPrivateConnections_all() {
 	}
 	for resp, err := range c.ListPrivateConnections(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -436,7 +436,7 @@ func ExampleClient_ListSubnets_all() {
 	}
 	for resp, err := range c.ListSubnets(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -462,7 +462,7 @@ func ExampleClient_ListVmwareEngineNetworks_all() {
 	}
 	for resp, err := range c.ListVmwareEngineNetworks(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -488,7 +488,7 @@ func ExampleClient_ListLocations_all() {
 	}
 	for resp, err := range c.ListLocations(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -514,7 +514,7 @@ func ExampleClient_ListOperations_all() {
 	}
 	for resp, err := range c.ListOperations(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp

@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	gsuiteaddonspb "cloud.google.com/go/gsuiteaddons/apiv1/gsuiteaddonspb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -390,6 +389,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new g suite add ons client based on gRPC.
@@ -443,6 +444,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      gsuiteaddonspb.NewGSuiteAddOnsClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -489,6 +491,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new g suite add ons rest client.
@@ -533,6 +537,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -585,7 +590,7 @@ func (c *gRPCClient) GetAuthorization(ctx context.Context, req *gsuiteaddonspb.G
 	var resp *gsuiteaddonspb.Authorization
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetAuthorization(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetAuthorization, req, settings.GRPC, c.logger, "GetAuthorization")
 		return err
 	}, opts...)
 	if err != nil {
@@ -603,7 +608,7 @@ func (c *gRPCClient) CreateDeployment(ctx context.Context, req *gsuiteaddonspb.C
 	var resp *gsuiteaddonspb.Deployment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateDeployment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateDeployment, req, settings.GRPC, c.logger, "CreateDeployment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -621,7 +626,7 @@ func (c *gRPCClient) ReplaceDeployment(ctx context.Context, req *gsuiteaddonspb.
 	var resp *gsuiteaddonspb.Deployment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ReplaceDeployment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ReplaceDeployment, req, settings.GRPC, c.logger, "ReplaceDeployment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -639,7 +644,7 @@ func (c *gRPCClient) GetDeployment(ctx context.Context, req *gsuiteaddonspb.GetD
 	var resp *gsuiteaddonspb.Deployment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetDeployment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetDeployment, req, settings.GRPC, c.logger, "GetDeployment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -668,7 +673,7 @@ func (c *gRPCClient) ListDeployments(ctx context.Context, req *gsuiteaddonspb.Li
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListDeployments(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListDeployments, req, settings.GRPC, c.logger, "ListDeployments")
 			return err
 		}, opts...)
 		if err != nil {
@@ -702,7 +707,7 @@ func (c *gRPCClient) DeleteDeployment(ctx context.Context, req *gsuiteaddonspb.D
 	opts = append((*c.CallOptions).DeleteDeployment[0:len((*c.CallOptions).DeleteDeployment):len((*c.CallOptions).DeleteDeployment)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteDeployment(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteDeployment, req, settings.GRPC, c.logger, "DeleteDeployment")
 		return err
 	}, opts...)
 	return err
@@ -716,7 +721,7 @@ func (c *gRPCClient) InstallDeployment(ctx context.Context, req *gsuiteaddonspb.
 	opts = append((*c.CallOptions).InstallDeployment[0:len((*c.CallOptions).InstallDeployment):len((*c.CallOptions).InstallDeployment)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.InstallDeployment(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.InstallDeployment, req, settings.GRPC, c.logger, "InstallDeployment")
 		return err
 	}, opts...)
 	return err
@@ -730,7 +735,7 @@ func (c *gRPCClient) UninstallDeployment(ctx context.Context, req *gsuiteaddonsp
 	opts = append((*c.CallOptions).UninstallDeployment[0:len((*c.CallOptions).UninstallDeployment):len((*c.CallOptions).UninstallDeployment)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.UninstallDeployment(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.UninstallDeployment, req, settings.GRPC, c.logger, "UninstallDeployment")
 		return err
 	}, opts...)
 	return err
@@ -745,7 +750,7 @@ func (c *gRPCClient) GetInstallStatus(ctx context.Context, req *gsuiteaddonspb.G
 	var resp *gsuiteaddonspb.InstallStatus
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetInstallStatus(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetInstallStatus, req, settings.GRPC, c.logger, "GetInstallStatus")
 		return err
 	}, opts...)
 	if err != nil {
@@ -787,17 +792,7 @@ func (c *restClient) GetAuthorization(ctx context.Context, req *gsuiteaddonspb.G
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAuthorization")
 		if err != nil {
 			return err
 		}
@@ -855,17 +850,7 @@ func (c *restClient) CreateDeployment(ctx context.Context, req *gsuiteaddonspb.C
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDeployment")
 		if err != nil {
 			return err
 		}
@@ -922,17 +907,7 @@ func (c *restClient) ReplaceDeployment(ctx context.Context, req *gsuiteaddonspb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ReplaceDeployment")
 		if err != nil {
 			return err
 		}
@@ -982,17 +957,7 @@ func (c *restClient) GetDeployment(ctx context.Context, req *gsuiteaddonspb.GetD
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDeployment")
 		if err != nil {
 			return err
 		}
@@ -1054,21 +1019,10 @@ func (c *restClient) ListDeployments(ctx context.Context, req *gsuiteaddonspb.Li
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDeployments")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1131,15 +1085,8 @@ func (c *restClient) DeleteDeployment(ctx context.Context, req *gsuiteaddonspb.D
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDeployment")
+		return err
 	}, opts...)
 }
 
@@ -1181,15 +1128,8 @@ func (c *restClient) InstallDeployment(ctx context.Context, req *gsuiteaddonspb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "InstallDeployment")
+		return err
 	}, opts...)
 }
 
@@ -1231,15 +1171,8 @@ func (c *restClient) UninstallDeployment(ctx context.Context, req *gsuiteaddonsp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UninstallDeployment")
+		return err
 	}, opts...)
 }
 
@@ -1276,17 +1209,7 @@ func (c *restClient) GetInstallStatus(ctx context.Context, req *gsuiteaddonspb.G
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetInstallStatus")
 		if err != nil {
 			return err
 		}

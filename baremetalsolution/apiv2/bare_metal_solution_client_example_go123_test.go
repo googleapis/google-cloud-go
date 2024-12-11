@@ -45,7 +45,7 @@ func ExampleClient_ListInstances_all() {
 	}
 	for resp, err := range c.ListInstances(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -71,7 +71,7 @@ func ExampleClient_ListLuns_all() {
 	}
 	for resp, err := range c.ListLuns(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -97,7 +97,7 @@ func ExampleClient_ListNetworks_all() {
 	}
 	for resp, err := range c.ListNetworks(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -123,7 +123,7 @@ func ExampleClient_ListNfsShares_all() {
 	}
 	for resp, err := range c.ListNfsShares(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -149,7 +149,7 @@ func ExampleClient_ListOSImages_all() {
 	}
 	for resp, err := range c.ListOSImages(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -175,7 +175,7 @@ func ExampleClient_ListProvisioningQuotas_all() {
 	}
 	for resp, err := range c.ListProvisioningQuotas(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -201,7 +201,7 @@ func ExampleClient_ListSSHKeys_all() {
 	}
 	for resp, err := range c.ListSSHKeys(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -227,7 +227,7 @@ func ExampleClient_ListVolumeSnapshots_all() {
 	}
 	for resp, err := range c.ListVolumeSnapshots(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -253,7 +253,7 @@ func ExampleClient_ListVolumes_all() {
 	}
 	for resp, err := range c.ListVolumes(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -279,7 +279,7 @@ func ExampleClient_ListLocations_all() {
 	}
 	for resp, err := range c.ListLocations(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp

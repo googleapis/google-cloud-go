@@ -45,7 +45,7 @@ func ExampleClient_ListDescendantEventThreatDetectionCustomModules_all() {
 	}
 	for resp, err := range c.ListDescendantEventThreatDetectionCustomModules(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -71,7 +71,7 @@ func ExampleClient_ListDescendantSecurityHealthAnalyticsCustomModules_all() {
 	}
 	for resp, err := range c.ListDescendantSecurityHealthAnalyticsCustomModules(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -97,7 +97,7 @@ func ExampleClient_ListEffectiveEventThreatDetectionCustomModules_all() {
 	}
 	for resp, err := range c.ListEffectiveEventThreatDetectionCustomModules(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -123,7 +123,7 @@ func ExampleClient_ListEffectiveSecurityHealthAnalyticsCustomModules_all() {
 	}
 	for resp, err := range c.ListEffectiveSecurityHealthAnalyticsCustomModules(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -149,7 +149,7 @@ func ExampleClient_ListEventThreatDetectionCustomModules_all() {
 	}
 	for resp, err := range c.ListEventThreatDetectionCustomModules(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -175,7 +175,7 @@ func ExampleClient_ListSecurityCenterServices_all() {
 	}
 	for resp, err := range c.ListSecurityCenterServices(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -201,7 +201,7 @@ func ExampleClient_ListSecurityHealthAnalyticsCustomModules_all() {
 	}
 	for resp, err := range c.ListSecurityHealthAnalyticsCustomModules(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -227,7 +227,7 @@ func ExampleClient_ListLocations_all() {
 	}
 	for resp, err := range c.ListLocations(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp

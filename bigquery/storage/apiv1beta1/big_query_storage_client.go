@@ -21,7 +21,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -29,7 +29,6 @@ import (
 
 	storagepb "cloud.google.com/go/bigquery/storage/apiv1beta1/storagepb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -338,6 +337,8 @@ type bigQueryStorageGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewBigQueryStorageClient creates a new big query storage client based on gRPC.
@@ -371,6 +372,7 @@ func NewBigQueryStorageClient(ctx context.Context, opts ...option.ClientOption) 
 		connPool:              connPool,
 		bigQueryStorageClient: storagepb.NewBigQueryStorageClient(connPool),
 		CallOptions:           &client.CallOptions,
+		logger:                internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -417,6 +419,8 @@ type bigQueryStorageRESTClient struct {
 
 	// Points back to the CallOptions field of the containing BigQueryStorageClient
 	CallOptions **BigQueryStorageCallOptions
+
+	logger *slog.Logger
 }
 
 // NewBigQueryStorageRESTClient creates a new big query storage rest client.
@@ -441,6 +445,7 @@ func NewBigQueryStorageRESTClient(ctx context.Context, opts ...option.ClientOpti
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -493,7 +498,7 @@ func (c *bigQueryStorageGRPCClient) CreateReadSession(ctx context.Context, req *
 	var resp *storagepb.ReadSession
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.bigQueryStorageClient.CreateReadSession(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.bigQueryStorageClient.CreateReadSession, req, settings.GRPC, c.logger, "CreateReadSession")
 		return err
 	}, opts...)
 	if err != nil {
@@ -511,7 +516,9 @@ func (c *bigQueryStorageGRPCClient) ReadRows(ctx context.Context, req *storagepb
 	var resp storagepb.BigQueryStorage_ReadRowsClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "ReadRows")
 		resp, err = c.bigQueryStorageClient.ReadRows(ctx, req, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "ReadRows")
 		return err
 	}, opts...)
 	if err != nil {
@@ -529,7 +536,7 @@ func (c *bigQueryStorageGRPCClient) BatchCreateReadSessionStreams(ctx context.Co
 	var resp *storagepb.BatchCreateReadSessionStreamsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.bigQueryStorageClient.BatchCreateReadSessionStreams(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.bigQueryStorageClient.BatchCreateReadSessionStreams, req, settings.GRPC, c.logger, "BatchCreateReadSessionStreams")
 		return err
 	}, opts...)
 	if err != nil {
@@ -546,7 +553,7 @@ func (c *bigQueryStorageGRPCClient) FinalizeStream(ctx context.Context, req *sto
 	opts = append((*c.CallOptions).FinalizeStream[0:len((*c.CallOptions).FinalizeStream):len((*c.CallOptions).FinalizeStream)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.bigQueryStorageClient.FinalizeStream(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.bigQueryStorageClient.FinalizeStream, req, settings.GRPC, c.logger, "FinalizeStream")
 		return err
 	}, opts...)
 	return err
@@ -561,7 +568,7 @@ func (c *bigQueryStorageGRPCClient) SplitReadStream(ctx context.Context, req *st
 	var resp *storagepb.SplitReadStreamResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.bigQueryStorageClient.SplitReadStream(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.bigQueryStorageClient.SplitReadStream, req, settings.GRPC, c.logger, "SplitReadStream")
 		return err
 	}, opts...)
 	if err != nil {
@@ -615,17 +622,7 @@ func (c *bigQueryStorageRESTClient) CreateReadSession(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateReadSession")
 		if err != nil {
 			return err
 		}
@@ -683,12 +680,8 @@ func (c *bigQueryStorageRESTClient) ReadRows(ctx context.Context, req *storagepb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		httpRsp, err := executeStreamingHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ReadRows")
 		if err != nil {
-			return err
-		}
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
 			return err
 		}
 
@@ -788,17 +781,7 @@ func (c *bigQueryStorageRESTClient) BatchCreateReadSessionStreams(ctx context.Co
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchCreateReadSessionStreams")
 		if err != nil {
 			return err
 		}
@@ -859,15 +842,8 @@ func (c *bigQueryStorageRESTClient) FinalizeStream(ctx context.Context, req *sto
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "FinalizeStream")
+		return err
 	}, opts...)
 }
 
@@ -918,17 +894,7 @@ func (c *bigQueryStorageRESTClient) SplitReadStream(ctx context.Context, req *st
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "SplitReadStream")
 		if err != nil {
 			return err
 		}

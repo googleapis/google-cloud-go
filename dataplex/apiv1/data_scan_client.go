@@ -19,6 +19,7 @@ package dataplex
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 
@@ -279,6 +280,8 @@ type dataScanGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewDataScanClient creates a new data scan service client based on gRPC.
@@ -307,6 +310,7 @@ func NewDataScanClient(ctx context.Context, opts ...option.ClientOption) (*DataS
 		connPool:         connPool,
 		dataScanClient:   dataplexpb.NewDataScanServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
@@ -362,7 +366,7 @@ func (c *dataScanGRPCClient) CreateDataScan(ctx context.Context, req *dataplexpb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataScanClient.CreateDataScan(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataScanClient.CreateDataScan, req, settings.GRPC, c.logger, "CreateDataScan")
 		return err
 	}, opts...)
 	if err != nil {
@@ -382,7 +386,7 @@ func (c *dataScanGRPCClient) UpdateDataScan(ctx context.Context, req *dataplexpb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataScanClient.UpdateDataScan(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataScanClient.UpdateDataScan, req, settings.GRPC, c.logger, "UpdateDataScan")
 		return err
 	}, opts...)
 	if err != nil {
@@ -402,7 +406,7 @@ func (c *dataScanGRPCClient) DeleteDataScan(ctx context.Context, req *dataplexpb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataScanClient.DeleteDataScan(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataScanClient.DeleteDataScan, req, settings.GRPC, c.logger, "DeleteDataScan")
 		return err
 	}, opts...)
 	if err != nil {
@@ -422,7 +426,7 @@ func (c *dataScanGRPCClient) GetDataScan(ctx context.Context, req *dataplexpb.Ge
 	var resp *dataplexpb.DataScan
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataScanClient.GetDataScan(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataScanClient.GetDataScan, req, settings.GRPC, c.logger, "GetDataScan")
 		return err
 	}, opts...)
 	if err != nil {
@@ -451,7 +455,7 @@ func (c *dataScanGRPCClient) ListDataScans(ctx context.Context, req *dataplexpb.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.dataScanClient.ListDataScans(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.dataScanClient.ListDataScans, req, settings.GRPC, c.logger, "ListDataScans")
 			return err
 		}, opts...)
 		if err != nil {
@@ -486,7 +490,7 @@ func (c *dataScanGRPCClient) RunDataScan(ctx context.Context, req *dataplexpb.Ru
 	var resp *dataplexpb.RunDataScanResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataScanClient.RunDataScan(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataScanClient.RunDataScan, req, settings.GRPC, c.logger, "RunDataScan")
 		return err
 	}, opts...)
 	if err != nil {
@@ -504,7 +508,7 @@ func (c *dataScanGRPCClient) GetDataScanJob(ctx context.Context, req *dataplexpb
 	var resp *dataplexpb.DataScanJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataScanClient.GetDataScanJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataScanClient.GetDataScanJob, req, settings.GRPC, c.logger, "GetDataScanJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -533,7 +537,7 @@ func (c *dataScanGRPCClient) ListDataScanJobs(ctx context.Context, req *dataplex
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.dataScanClient.ListDataScanJobs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.dataScanClient.ListDataScanJobs, req, settings.GRPC, c.logger, "ListDataScanJobs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -568,7 +572,7 @@ func (c *dataScanGRPCClient) GenerateDataQualityRules(ctx context.Context, req *
 	var resp *dataplexpb.GenerateDataQualityRulesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataScanClient.GenerateDataQualityRules(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataScanClient.GenerateDataQualityRules, req, settings.GRPC, c.logger, "GenerateDataQualityRules")
 		return err
 	}, opts...)
 	if err != nil {
@@ -586,7 +590,7 @@ func (c *dataScanGRPCClient) GetLocation(ctx context.Context, req *locationpb.Ge
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -615,7 +619,7 @@ func (c *dataScanGRPCClient) ListLocations(ctx context.Context, req *locationpb.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -649,7 +653,7 @@ func (c *dataScanGRPCClient) CancelOperation(ctx context.Context, req *longrunni
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -663,7 +667,7 @@ func (c *dataScanGRPCClient) DeleteOperation(ctx context.Context, req *longrunni
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -678,7 +682,7 @@ func (c *dataScanGRPCClient) GetOperation(ctx context.Context, req *longrunningp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -707,7 +711,7 @@ func (c *dataScanGRPCClient) ListOperations(ctx context.Context, req *longrunnin
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {

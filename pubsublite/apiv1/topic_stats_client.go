@@ -19,6 +19,7 @@ package pubsublite
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 	"time"
@@ -258,6 +259,8 @@ type topicStatsGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewTopicStatsClient creates a new topic stats service client based on gRPC.
@@ -284,6 +287,7 @@ func NewTopicStatsClient(ctx context.Context, opts ...option.ClientOption) (*Top
 		connPool:         connPool,
 		topicStatsClient: pubsublitepb.NewTopicStatsServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -327,7 +331,7 @@ func (c *topicStatsGRPCClient) ComputeMessageStats(ctx context.Context, req *pub
 	var resp *pubsublitepb.ComputeMessageStatsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.topicStatsClient.ComputeMessageStats(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.topicStatsClient.ComputeMessageStats, req, settings.GRPC, c.logger, "ComputeMessageStats")
 		return err
 	}, opts...)
 	if err != nil {
@@ -345,7 +349,7 @@ func (c *topicStatsGRPCClient) ComputeHeadCursor(ctx context.Context, req *pubsu
 	var resp *pubsublitepb.ComputeHeadCursorResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.topicStatsClient.ComputeHeadCursor(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.topicStatsClient.ComputeHeadCursor, req, settings.GRPC, c.logger, "ComputeHeadCursor")
 		return err
 	}, opts...)
 	if err != nil {
@@ -363,7 +367,7 @@ func (c *topicStatsGRPCClient) ComputeTimeCursor(ctx context.Context, req *pubsu
 	var resp *pubsublitepb.ComputeTimeCursorResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.topicStatsClient.ComputeTimeCursor(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.topicStatsClient.ComputeTimeCursor, req, settings.GRPC, c.logger, "ComputeTimeCursor")
 		return err
 	}, opts...)
 	if err != nil {
@@ -380,7 +384,7 @@ func (c *topicStatsGRPCClient) CancelOperation(ctx context.Context, req *longrun
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -394,7 +398,7 @@ func (c *topicStatsGRPCClient) DeleteOperation(ctx context.Context, req *longrun
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -409,7 +413,7 @@ func (c *topicStatsGRPCClient) GetOperation(ctx context.Context, req *longrunnin
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -438,7 +442,7 @@ func (c *topicStatsGRPCClient) ListOperations(ctx context.Context, req *longrunn
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {

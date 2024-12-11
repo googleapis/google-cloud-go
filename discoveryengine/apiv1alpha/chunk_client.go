@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -29,7 +29,6 @@ import (
 	discoveryenginepb "cloud.google.com/go/discoveryengine/apiv1alpha/discoveryenginepb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -241,6 +240,8 @@ type chunkGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewChunkClient creates a new chunk service client based on gRPC.
@@ -269,6 +270,7 @@ func NewChunkClient(ctx context.Context, opts ...option.ClientOption) (*ChunkCli
 		connPool:         connPool,
 		chunkClient:      discoveryenginepb.NewChunkServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -316,6 +318,8 @@ type chunkRESTClient struct {
 
 	// Points back to the CallOptions field of the containing ChunkClient
 	CallOptions **ChunkCallOptions
+
+	logger *slog.Logger
 }
 
 // NewChunkRESTClient creates a new chunk service rest client.
@@ -335,6 +339,7 @@ func NewChunkRESTClient(ctx context.Context, opts ...option.ClientOption) (*Chun
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -387,7 +392,7 @@ func (c *chunkGRPCClient) GetChunk(ctx context.Context, req *discoveryenginepb.G
 	var resp *discoveryenginepb.Chunk
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.chunkClient.GetChunk(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.chunkClient.GetChunk, req, settings.GRPC, c.logger, "GetChunk")
 		return err
 	}, opts...)
 	if err != nil {
@@ -416,7 +421,7 @@ func (c *chunkGRPCClient) ListChunks(ctx context.Context, req *discoveryenginepb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.chunkClient.ListChunks(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.chunkClient.ListChunks, req, settings.GRPC, c.logger, "ListChunks")
 			return err
 		}, opts...)
 		if err != nil {
@@ -450,7 +455,7 @@ func (c *chunkGRPCClient) CancelOperation(ctx context.Context, req *longrunningp
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -465,7 +470,7 @@ func (c *chunkGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.G
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -494,7 +499,7 @@ func (c *chunkGRPCClient) ListOperations(ctx context.Context, req *longrunningpb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -553,17 +558,7 @@ func (c *chunkRESTClient) GetChunk(ctx context.Context, req *discoveryenginepb.G
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetChunk")
 		if err != nil {
 			return err
 		}
@@ -625,21 +620,10 @@ func (c *chunkRESTClient) ListChunks(ctx context.Context, req *discoveryenginepb
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListChunks")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -705,15 +689,8 @@ func (c *chunkRESTClient) CancelOperation(ctx context.Context, req *longrunningp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -750,17 +727,7 @@ func (c *chunkRESTClient) GetOperation(ctx context.Context, req *longrunningpb.G
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -825,21 +792,10 @@ func (c *chunkRESTClient) ListOperations(ctx context.Context, req *longrunningpb
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

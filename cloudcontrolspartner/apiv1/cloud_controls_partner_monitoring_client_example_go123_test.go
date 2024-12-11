@@ -44,7 +44,7 @@ func ExampleCloudControlsPartnerMonitoringClient_ListViolations_all() {
 	}
 	for resp, err := range c.ListViolations(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp

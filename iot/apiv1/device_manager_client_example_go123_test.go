@@ -44,7 +44,7 @@ func ExampleDeviceManagerClient_ListDeviceRegistries_all() {
 	}
 	for resp, err := range c.ListDeviceRegistries(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -70,7 +70,7 @@ func ExampleDeviceManagerClient_ListDevices_all() {
 	}
 	for resp, err := range c.ListDevices(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
