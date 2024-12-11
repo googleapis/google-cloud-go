@@ -17,6 +17,7 @@ package spanner
 import (
 	"context"
 	"crypto/rand"
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -27,7 +28,9 @@ import (
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 )
 
 // randIDForProcess is a strongly randomly generated value derived
@@ -96,11 +99,15 @@ func (r requestID) augmentErrorWithRequestID(err error) error {
 	}
 
 	switch err {
-	case iterator.Done, io.EOF, context.Canceled, context.DeadlineExceeded:
+	case iterator.Done, io.EOF, context.Canceled:
 		return err
 
 	default:
-		sErr := ToSpannerError(err)
+		potentialCommit := errors.Is(err, context.DeadlineExceeded)
+		if code := status.Code(err); code == codes.DeadlineExceeded {
+			potentialCommit = true
+		}
+		sErr := toSpannerErrorWithCommitInfo(err, potentialCommit)
 		if sErr == nil {
 			return err
 		}
