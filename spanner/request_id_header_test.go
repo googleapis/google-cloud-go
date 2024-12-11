@@ -1499,7 +1499,7 @@ func TestRequestIDHeader_SingleUseReadOnly_ExecuteStreamingSql_Unavailable(t *te
 		}
 	}
 
-	if _, err := shouldHaveReceived(server.TestSpanner, []interface{}{
+	if _, err := shouldHaveReceived(server.TestSpanner, []any{
 		&sppb.BatchCreateSessionsRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.ExecuteSqlRequest{},

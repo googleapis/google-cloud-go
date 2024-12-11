@@ -214,9 +214,13 @@ func (wr *retryerWithRequestID) Resolve(cs *gax.CallSettings) {
 }
 
 func (wr *retryerWithRequestID) generateAndInsertRequestID(md *metadata.MD, nthRequest, attempt uint32) {
+	wr.gsc.generateAndInsertRequestID(md, nthRequest, attempt)
+}
+
+func (gsc *grpcSpannerClient) generateAndInsertRequestID(md *metadata.MD, nthRequest, attempt uint32) {
 	// Google Engineering has requested that each value be added in Decimal unpadded.
 	// Should we have a standardized endianness: Little Endian or Big Endian?
-	reqID := fmt.Sprintf("%d.%s.%d.%d.%d.%d", xSpannerRequestIDVersion, randIDForProcess, wr.gsc.id, wr.gsc.channelID, nthRequest, attempt)
+	reqID := fmt.Sprintf("%d.%s.%d.%d.%d.%d", xSpannerRequestIDVersion, randIDForProcess, gsc.id, gsc.channelID, nthRequest, attempt)
 	if *md == nil {
 		*md = metadata.MD{}
 	}
@@ -233,4 +237,22 @@ func (fn wrapRetryFn) Retry(err error) (time.Duration, bool) {
 
 func (g *grpcSpannerClient) nextNthRequest() uint32 {
 	return g.nthRequest.Add(1)
+}
+
+type requestIDWrap struct {
+	md         *metadata.MD
+	nthRequest uint32
+	gsc        *grpcSpannerClient
+}
+
+func (gsc *grpcSpannerClient) generateRequestIDHeaderInjector() *requestIDWrap {
+	// Setup and track x-goog-request-id.
+	md := new(metadata.MD)
+	return &requestIDWrap{md: md, nthRequest: gsc.nextNthRequest(), gsc: gsc}
+}
+
+func (riw *requestIDWrap) withNextRetryAttempt(attempt uint32) gax.CallOption {
+	riw.gsc.generateAndInsertRequestID(riw.md, riw.nthRequest, attempt)
+	// If no gRPC stream is available, try to initiate one.
+	return gax.WithGRPCOptions(grpc.Header(riw.md))
 }
