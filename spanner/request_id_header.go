@@ -27,9 +27,7 @@ import (
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
-	"google.golang.org/grpc/status"
 )
 
 // randIDForProcess is a strongly randomly generated value derived
@@ -95,11 +93,6 @@ type requestID string
 func (r requestID) augmentErrorWithRequestID(err error) error {
 	if err == nil {
 		return nil
-	}
-
-	switch code := status.Code(err); code {
-	case codes.DeadlineExceeded, codes.Canceled:
-		return err
 	}
 
 	switch err {
