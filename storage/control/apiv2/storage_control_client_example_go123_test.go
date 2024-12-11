@@ -44,7 +44,7 @@ func ExampleStorageControlClient_ListFolders_all() {
 	}
 	for resp, err := range c.ListFolders(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
+			// TODO: Handle error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -70,7 +70,7 @@ func ExampleStorageControlClient_ListManagedFolders_all() {
 	}
 	for resp, err := range c.ListManagedFolders(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
+			// TODO: Handle error.
 		}
 		// TODO: Use resp.
 		_ = resp
