@@ -165,6 +165,7 @@ var (
 	}
 	retryableInternalErrMsgs = []string{
 		"stream terminated by RST_STREAM", // Retry similar to spanner client. Special case due to https://github.com/googleapis/google-cloud-go/issues/6476
+		"unexpected EOF",
 	}
 )
 
