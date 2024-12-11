@@ -60,11 +60,11 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	req := &controlpb.CreateFolderRequest{
+//	req := &controlpb.ComposeObjectRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/storage/control/apiv2/controlpb#CreateFolderRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/storage/control/apiv2/controlpb#ComposeObjectRequest.
 //	}
-//	resp, err := c.CreateFolder(ctx, req)
+//	resp, err := c.ComposeObject(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

@@ -19,12 +19,14 @@ package control
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 	"regexp"
 	"strings"
 	"time"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
@@ -44,16 +46,33 @@ var newStorageControlClientHook clientHook
 
 // StorageControlCallOptions contains the retry settings for each method of StorageControlClient.
 type StorageControlCallOptions struct {
-	CreateFolder        []gax.CallOption
-	DeleteFolder        []gax.CallOption
-	GetFolder           []gax.CallOption
-	ListFolders         []gax.CallOption
-	RenameFolder        []gax.CallOption
-	GetStorageLayout    []gax.CallOption
-	CreateManagedFolder []gax.CallOption
-	DeleteManagedFolder []gax.CallOption
-	GetManagedFolder    []gax.CallOption
-	ListManagedFolders  []gax.CallOption
+	CreateFolder              []gax.CallOption
+	DeleteFolder              []gax.CallOption
+	GetFolder                 []gax.CallOption
+	ListFolders               []gax.CallOption
+	RenameFolder              []gax.CallOption
+	GetStorageLayout          []gax.CallOption
+	CreateManagedFolder       []gax.CallOption
+	DeleteManagedFolder       []gax.CallOption
+	GetManagedFolder          []gax.CallOption
+	ListManagedFolders        []gax.CallOption
+	DeleteBucket              []gax.CallOption
+	GetBucket                 []gax.CallOption
+	CreateBucket              []gax.CallOption
+	ListBuckets               []gax.CallOption
+	LockBucketRetentionPolicy []gax.CallOption
+	GetIamPolicy              []gax.CallOption
+	SetIamPolicy              []gax.CallOption
+	TestIamPermissions        []gax.CallOption
+	UpdateBucket              []gax.CallOption
+	ComposeObject             []gax.CallOption
+	DeleteObject              []gax.CallOption
+	RestoreObject             []gax.CallOption
+	GetObject                 []gax.CallOption
+	UpdateObject              []gax.CallOption
+	ListObjects               []gax.CallOption
+	RewriteObject             []gax.CallOption
+	MoveObject                []gax.CallOption
 }
 
 func defaultStorageControlGRPCClientOptions() []option.ClientOption {
@@ -181,6 +200,57 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 				})
 			}),
 		},
+		DeleteBucket: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetBucket: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateBucket: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListBuckets: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		LockBucketRetentionPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateBucket: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ComposeObject: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteObject: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RestoreObject: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetObject: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateObject: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListObjects: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RewriteObject: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		MoveObject: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
@@ -200,6 +270,23 @@ type internalStorageControlClient interface {
 	DeleteManagedFolder(context.Context, *controlpb.DeleteManagedFolderRequest, ...gax.CallOption) error
 	GetManagedFolder(context.Context, *controlpb.GetManagedFolderRequest, ...gax.CallOption) (*controlpb.ManagedFolder, error)
 	ListManagedFolders(context.Context, *controlpb.ListManagedFoldersRequest, ...gax.CallOption) *ManagedFolderIterator
+	DeleteBucket(context.Context, *controlpb.DeleteBucketRequest, ...gax.CallOption) error
+	GetBucket(context.Context, *controlpb.GetBucketRequest, ...gax.CallOption) (*controlpb.Bucket, error)
+	CreateBucket(context.Context, *controlpb.CreateBucketRequest, ...gax.CallOption) (*controlpb.Bucket, error)
+	ListBuckets(context.Context, *controlpb.ListBucketsRequest, ...gax.CallOption) *BucketIterator
+	LockBucketRetentionPolicy(context.Context, *controlpb.LockBucketRetentionPolicyRequest, ...gax.CallOption) (*controlpb.Bucket, error)
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
+	UpdateBucket(context.Context, *controlpb.UpdateBucketRequest, ...gax.CallOption) (*controlpb.Bucket, error)
+	ComposeObject(context.Context, *controlpb.ComposeObjectRequest, ...gax.CallOption) (*controlpb.Object, error)
+	DeleteObject(context.Context, *controlpb.DeleteObjectRequest, ...gax.CallOption) error
+	RestoreObject(context.Context, *controlpb.RestoreObjectRequest, ...gax.CallOption) (*controlpb.Object, error)
+	GetObject(context.Context, *controlpb.GetObjectRequest, ...gax.CallOption) (*controlpb.Object, error)
+	UpdateObject(context.Context, *controlpb.UpdateObjectRequest, ...gax.CallOption) (*controlpb.Object, error)
+	ListObjects(context.Context, *controlpb.ListObjectsRequest, ...gax.CallOption) *ObjectIterator
+	RewriteObject(context.Context, *controlpb.RewriteObjectRequest, ...gax.CallOption) (*controlpb.RewriteResponse, error)
+	MoveObject(context.Context, *controlpb.MoveObjectRequest, ...gax.CallOption) (*controlpb.Object, error)
 }
 
 // StorageControlClient is a client for interacting with Storage Control API.
@@ -305,6 +392,109 @@ func (c *StorageControlClient) ListManagedFolders(ctx context.Context, req *cont
 	return c.internalClient.ListManagedFolders(ctx, req, opts...)
 }
 
+// DeleteBucket permanently deletes an empty bucket.
+func (c *StorageControlClient) DeleteBucket(ctx context.Context, req *controlpb.DeleteBucketRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteBucket(ctx, req, opts...)
+}
+
+// GetBucket returns metadata for the specified bucket.
+func (c *StorageControlClient) GetBucket(ctx context.Context, req *controlpb.GetBucketRequest, opts ...gax.CallOption) (*controlpb.Bucket, error) {
+	return c.internalClient.GetBucket(ctx, req, opts...)
+}
+
+// CreateBucket creates a new bucket.
+func (c *StorageControlClient) CreateBucket(ctx context.Context, req *controlpb.CreateBucketRequest, opts ...gax.CallOption) (*controlpb.Bucket, error) {
+	return c.internalClient.CreateBucket(ctx, req, opts...)
+}
+
+// ListBuckets retrieves a list of buckets for a given project.
+func (c *StorageControlClient) ListBuckets(ctx context.Context, req *controlpb.ListBucketsRequest, opts ...gax.CallOption) *BucketIterator {
+	return c.internalClient.ListBuckets(ctx, req, opts...)
+}
+
+// LockBucketRetentionPolicy locks retention policy on a bucket.
+func (c *StorageControlClient) LockBucketRetentionPolicy(ctx context.Context, req *controlpb.LockBucketRetentionPolicyRequest, opts ...gax.CallOption) (*controlpb.Bucket, error) {
+	return c.internalClient.LockBucketRetentionPolicy(ctx, req, opts...)
+}
+
+// GetIamPolicy gets the IAM policy for a specified bucket.
+// The resource field in the request should be
+// projects/_/buckets/{bucket}.
+func (c *StorageControlClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.GetIamPolicy(ctx, req, opts...)
+}
+
+// SetIamPolicy updates an IAM policy for the specified bucket.
+// The resource field in the request should be
+// projects/_/buckets/{bucket}.
+func (c *StorageControlClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.SetIamPolicy(ctx, req, opts...)
+}
+
+// TestIamPermissions tests a set of permissions on the given bucket, object, or managed folder
+// to see which, if any, are held by the caller.
+// The resource field in the request should be
+// projects/_/buckets/{bucket} for a bucket,
+// projects/_/buckets/{bucket}/objects/{object} for an object, or
+// projects/_/buckets/{bucket}/managedFolders/{managedFolder}
+// for a managed folder.
+func (c *StorageControlClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	return c.internalClient.TestIamPermissions(ctx, req, opts...)
+}
+
+// UpdateBucket updates a bucket. Equivalent to JSON API’s storage.buckets.patch method.
+func (c *StorageControlClient) UpdateBucket(ctx context.Context, req *controlpb.UpdateBucketRequest, opts ...gax.CallOption) (*controlpb.Bucket, error) {
+	return c.internalClient.UpdateBucket(ctx, req, opts...)
+}
+
+// ComposeObject concatenates a list of existing objects into a new object in the same
+// bucket.
+func (c *StorageControlClient) ComposeObject(ctx context.Context, req *controlpb.ComposeObjectRequest, opts ...gax.CallOption) (*controlpb.Object, error) {
+	return c.internalClient.ComposeObject(ctx, req, opts...)
+}
+
+// DeleteObject deletes an object and its metadata.
+//
+// Deletions are normally permanent when versioning is disabled or whenever
+// the generation parameter is used. However, if soft delete is enabled for
+// the bucket, deleted objects can be restored using RestoreObject until the
+// soft delete retention period has passed.
+func (c *StorageControlClient) DeleteObject(ctx context.Context, req *controlpb.DeleteObjectRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteObject(ctx, req, opts...)
+}
+
+// RestoreObject restores a soft-deleted object.
+func (c *StorageControlClient) RestoreObject(ctx context.Context, req *controlpb.RestoreObjectRequest, opts ...gax.CallOption) (*controlpb.Object, error) {
+	return c.internalClient.RestoreObject(ctx, req, opts...)
+}
+
+// GetObject retrieves an object’s metadata.
+func (c *StorageControlClient) GetObject(ctx context.Context, req *controlpb.GetObjectRequest, opts ...gax.CallOption) (*controlpb.Object, error) {
+	return c.internalClient.GetObject(ctx, req, opts...)
+}
+
+// UpdateObject updates an object’s metadata.
+// Equivalent to JSON API’s storage.objects.patch.
+func (c *StorageControlClient) UpdateObject(ctx context.Context, req *controlpb.UpdateObjectRequest, opts ...gax.CallOption) (*controlpb.Object, error) {
+	return c.internalClient.UpdateObject(ctx, req, opts...)
+}
+
+// ListObjects retrieves a list of objects matching the criteria.
+func (c *StorageControlClient) ListObjects(ctx context.Context, req *controlpb.ListObjectsRequest, opts ...gax.CallOption) *ObjectIterator {
+	return c.internalClient.ListObjects(ctx, req, opts...)
+}
+
+// RewriteObject rewrites a source object to a destination object. Optionally overrides
+// metadata.
+func (c *StorageControlClient) RewriteObject(ctx context.Context, req *controlpb.RewriteObjectRequest, opts ...gax.CallOption) (*controlpb.RewriteResponse, error) {
+	return c.internalClient.RewriteObject(ctx, req, opts...)
+}
+
+// MoveObject moves the source object to the destination object in the same bucket.
+func (c *StorageControlClient) MoveObject(ctx context.Context, req *controlpb.MoveObjectRequest, opts ...gax.CallOption) (*controlpb.Object, error) {
+	return c.internalClient.MoveObject(ctx, req, opts...)
+}
+
 // storageControlGRPCClient is a client for interacting with Storage Control API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -325,6 +515,8 @@ type storageControlGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewStorageControlClient creates a new storage control client based on gRPC.
@@ -351,6 +543,7 @@ func NewStorageControlClient(ctx context.Context, opts ...option.ClientOption) (
 		connPool:             connPool,
 		storageControlClient: controlpb.NewStorageControlClient(connPool),
 		CallOptions:          &client.CallOptions,
+		logger:               internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -416,7 +609,7 @@ func (c *storageControlGRPCClient) CreateFolder(ctx context.Context, req *contro
 	var resp *controlpb.Folder
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.storageControlClient.CreateFolder(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.storageControlClient.CreateFolder, req, settings.GRPC, c.logger, "CreateFolder")
 		return err
 	}, opts...)
 	if err != nil {
@@ -445,7 +638,7 @@ func (c *storageControlGRPCClient) DeleteFolder(ctx context.Context, req *contro
 	opts = append((*c.CallOptions).DeleteFolder[0:len((*c.CallOptions).DeleteFolder):len((*c.CallOptions).DeleteFolder)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.storageControlClient.DeleteFolder(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.storageControlClient.DeleteFolder, req, settings.GRPC, c.logger, "DeleteFolder")
 		return err
 	}, opts...)
 	return err
@@ -472,7 +665,7 @@ func (c *storageControlGRPCClient) GetFolder(ctx context.Context, req *controlpb
 	var resp *controlpb.Folder
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.storageControlClient.GetFolder(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.storageControlClient.GetFolder, req, settings.GRPC, c.logger, "GetFolder")
 		return err
 	}, opts...)
 	if err != nil {
@@ -510,7 +703,7 @@ func (c *storageControlGRPCClient) ListFolders(ctx context.Context, req *control
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.storageControlClient.ListFolders(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.storageControlClient.ListFolders, req, settings.GRPC, c.logger, "ListFolders")
 			return err
 		}, opts...)
 		if err != nil {
@@ -554,7 +747,7 @@ func (c *storageControlGRPCClient) RenameFolder(ctx context.Context, req *contro
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.storageControlClient.RenameFolder(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.storageControlClient.RenameFolder, req, settings.GRPC, c.logger, "RenameFolder")
 		return err
 	}, opts...)
 	if err != nil {
@@ -586,7 +779,7 @@ func (c *storageControlGRPCClient) GetStorageLayout(ctx context.Context, req *co
 	var resp *controlpb.StorageLayout
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.storageControlClient.GetStorageLayout(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.storageControlClient.GetStorageLayout, req, settings.GRPC, c.logger, "GetStorageLayout")
 		return err
 	}, opts...)
 	if err != nil {
@@ -616,7 +809,7 @@ func (c *storageControlGRPCClient) CreateManagedFolder(ctx context.Context, req 
 	var resp *controlpb.ManagedFolder
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.storageControlClient.CreateManagedFolder(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.storageControlClient.CreateManagedFolder, req, settings.GRPC, c.logger, "CreateManagedFolder")
 		return err
 	}, opts...)
 	if err != nil {
@@ -645,7 +838,7 @@ func (c *storageControlGRPCClient) DeleteManagedFolder(ctx context.Context, req 
 	opts = append((*c.CallOptions).DeleteManagedFolder[0:len((*c.CallOptions).DeleteManagedFolder):len((*c.CallOptions).DeleteManagedFolder)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.storageControlClient.DeleteManagedFolder(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.storageControlClient.DeleteManagedFolder, req, settings.GRPC, c.logger, "DeleteManagedFolder")
 		return err
 	}, opts...)
 	return err
@@ -672,7 +865,7 @@ func (c *storageControlGRPCClient) GetManagedFolder(ctx context.Context, req *co
 	var resp *controlpb.ManagedFolder
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.storageControlClient.GetManagedFolder(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.storageControlClient.GetManagedFolder, req, settings.GRPC, c.logger, "GetManagedFolder")
 		return err
 	}, opts...)
 	if err != nil {
@@ -710,7 +903,7 @@ func (c *storageControlGRPCClient) ListManagedFolders(ctx context.Context, req *
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.storageControlClient.ListManagedFolders(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.storageControlClient.ListManagedFolders, req, settings.GRPC, c.logger, "ListManagedFolders")
 			return err
 		}, opts...)
 		if err != nil {
@@ -734,6 +927,525 @@ func (c *storageControlGRPCClient) ListManagedFolders(ctx context.Context, req *
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *storageControlGRPCClient) DeleteBucket(ctx context.Context, req *controlpb.DeleteBucketRequest, opts ...gax.CallOption) error {
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
+		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteBucket[0:len((*c.CallOptions).DeleteBucket):len((*c.CallOptions).DeleteBucket)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.storageControlClient.DeleteBucket, req, settings.GRPC, c.logger, "DeleteBucket")
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *storageControlGRPCClient) GetBucket(ctx context.Context, req *controlpb.GetBucketRequest, opts ...gax.CallOption) (*controlpb.Bucket, error) {
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
+		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetBucket[0:len((*c.CallOptions).GetBucket):len((*c.CallOptions).GetBucket)], opts...)
+	var resp *controlpb.Bucket
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.storageControlClient.GetBucket, req, settings.GRPC, c.logger, "GetBucket")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *storageControlGRPCClient) CreateBucket(ctx context.Context, req *controlpb.CreateBucketRequest, opts ...gax.CallOption) (*controlpb.Bucket, error) {
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<project>.*)"); reg.MatchString(req.GetParent()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])) > 0 {
+		routingHeadersMap["project"] = url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])
+	}
+	if reg := regexp.MustCompile("(?P<project>.*)"); reg.MatchString(req.GetBucket().GetProject()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetBucket().GetProject())[1])) > 0 {
+		routingHeadersMap["project"] = url.QueryEscape(reg.FindStringSubmatch(req.GetBucket().GetProject())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateBucket[0:len((*c.CallOptions).CreateBucket):len((*c.CallOptions).CreateBucket)], opts...)
+	var resp *controlpb.Bucket
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.storageControlClient.CreateBucket, req, settings.GRPC, c.logger, "CreateBucket")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *storageControlGRPCClient) ListBuckets(ctx context.Context, req *controlpb.ListBucketsRequest, opts ...gax.CallOption) *BucketIterator {
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<project>.*)"); reg.MatchString(req.GetParent()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])) > 0 {
+		routingHeadersMap["project"] = url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListBuckets[0:len((*c.CallOptions).ListBuckets):len((*c.CallOptions).ListBuckets)], opts...)
+	it := &BucketIterator{}
+	req = proto.Clone(req).(*controlpb.ListBucketsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*controlpb.Bucket, string, error) {
+		resp := &controlpb.ListBucketsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.storageControlClient.ListBuckets, req, settings.GRPC, c.logger, "ListBuckets")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetBuckets(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *storageControlGRPCClient) LockBucketRetentionPolicy(ctx context.Context, req *controlpb.LockBucketRetentionPolicyRequest, opts ...gax.CallOption) (*controlpb.Bucket, error) {
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetBucket()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetBucket())[1])) > 0 {
+		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetBucket())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).LockBucketRetentionPolicy[0:len((*c.CallOptions).LockBucketRetentionPolicy):len((*c.CallOptions).LockBucketRetentionPolicy)], opts...)
+	var resp *controlpb.Bucket
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.storageControlClient.LockBucketRetentionPolicy, req, settings.GRPC, c.logger, "LockBucketRetentionPolicy")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *storageControlGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetResource()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])) > 0 {
+		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
+	var resp *iampb.Policy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.storageControlClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *storageControlGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetResource()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])) > 0 {
+		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
+	var resp *iampb.Policy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.storageControlClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *storageControlGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetResource()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])) > 0 {
+		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])
+	}
+	if reg := regexp.MustCompile("(?P<bucket>projects/[^/]+/buckets/[^/]+)/objects(?:/.*)?"); reg.MatchString(req.GetResource()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])) > 0 {
+		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])
+	}
+	if reg := regexp.MustCompile("(?P<bucket>projects/[^/]+/buckets/[^/]+)/managedFolders(?:/.*)?"); reg.MatchString(req.GetResource()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])) > 0 {
+		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
+	var resp *iampb.TestIamPermissionsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.storageControlClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *storageControlGRPCClient) UpdateBucket(ctx context.Context, req *controlpb.UpdateBucketRequest, opts ...gax.CallOption) (*controlpb.Bucket, error) {
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetBucket().GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetBucket().GetName())[1])) > 0 {
+		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetBucket().GetName())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateBucket[0:len((*c.CallOptions).UpdateBucket):len((*c.CallOptions).UpdateBucket)], opts...)
+	var resp *controlpb.Bucket
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.storageControlClient.UpdateBucket, req, settings.GRPC, c.logger, "UpdateBucket")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *storageControlGRPCClient) ComposeObject(ctx context.Context, req *controlpb.ComposeObjectRequest, opts ...gax.CallOption) (*controlpb.Object, error) {
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetDestination().GetBucket()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetDestination().GetBucket())[1])) > 0 {
+		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetDestination().GetBucket())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ComposeObject[0:len((*c.CallOptions).ComposeObject):len((*c.CallOptions).ComposeObject)], opts...)
+	var resp *controlpb.Object
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.storageControlClient.ComposeObject, req, settings.GRPC, c.logger, "ComposeObject")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *storageControlGRPCClient) DeleteObject(ctx context.Context, req *controlpb.DeleteObjectRequest, opts ...gax.CallOption) error {
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetBucket()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetBucket())[1])) > 0 {
+		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetBucket())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteObject[0:len((*c.CallOptions).DeleteObject):len((*c.CallOptions).DeleteObject)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.storageControlClient.DeleteObject, req, settings.GRPC, c.logger, "DeleteObject")
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *storageControlGRPCClient) RestoreObject(ctx context.Context, req *controlpb.RestoreObjectRequest, opts ...gax.CallOption) (*controlpb.Object, error) {
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetBucket()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetBucket())[1])) > 0 {
+		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetBucket())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).RestoreObject[0:len((*c.CallOptions).RestoreObject):len((*c.CallOptions).RestoreObject)], opts...)
+	var resp *controlpb.Object
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.storageControlClient.RestoreObject, req, settings.GRPC, c.logger, "RestoreObject")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *storageControlGRPCClient) GetObject(ctx context.Context, req *controlpb.GetObjectRequest, opts ...gax.CallOption) (*controlpb.Object, error) {
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetBucket()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetBucket())[1])) > 0 {
+		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetBucket())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetObject[0:len((*c.CallOptions).GetObject):len((*c.CallOptions).GetObject)], opts...)
+	var resp *controlpb.Object
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.storageControlClient.GetObject, req, settings.GRPC, c.logger, "GetObject")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *storageControlGRPCClient) UpdateObject(ctx context.Context, req *controlpb.UpdateObjectRequest, opts ...gax.CallOption) (*controlpb.Object, error) {
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetObject().GetBucket()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetObject().GetBucket())[1])) > 0 {
+		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetObject().GetBucket())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateObject[0:len((*c.CallOptions).UpdateObject):len((*c.CallOptions).UpdateObject)], opts...)
+	var resp *controlpb.Object
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.storageControlClient.UpdateObject, req, settings.GRPC, c.logger, "UpdateObject")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *storageControlGRPCClient) ListObjects(ctx context.Context, req *controlpb.ListObjectsRequest, opts ...gax.CallOption) *ObjectIterator {
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetParent()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])) > 0 {
+		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListObjects[0:len((*c.CallOptions).ListObjects):len((*c.CallOptions).ListObjects)], opts...)
+	it := &ObjectIterator{}
+	req = proto.Clone(req).(*controlpb.ListObjectsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*controlpb.Object, string, error) {
+		resp := &controlpb.ListObjectsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.storageControlClient.ListObjects, req, settings.GRPC, c.logger, "ListObjects")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetObjects(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *storageControlGRPCClient) RewriteObject(ctx context.Context, req *controlpb.RewriteObjectRequest, opts ...gax.CallOption) (*controlpb.RewriteResponse, error) {
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(.*)"); reg.MatchString(req.GetSourceBucket()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetSourceBucket())[1])) > 0 {
+		routingHeadersMap["source_bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetSourceBucket())[1])
+	}
+	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetDestinationBucket()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetDestinationBucket())[1])) > 0 {
+		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetDestinationBucket())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).RewriteObject[0:len((*c.CallOptions).RewriteObject):len((*c.CallOptions).RewriteObject)], opts...)
+	var resp *controlpb.RewriteResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.storageControlClient.RewriteObject, req, settings.GRPC, c.logger, "RewriteObject")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *storageControlGRPCClient) MoveObject(ctx context.Context, req *controlpb.MoveObjectRequest, opts ...gax.CallOption) (*controlpb.Object, error) {
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetBucket()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetBucket())[1])) > 0 {
+		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetBucket())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).MoveObject[0:len((*c.CallOptions).MoveObject):len((*c.CallOptions).MoveObject)], opts...)
+	var resp *controlpb.Object
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.storageControlClient.MoveObject, req, settings.GRPC, c.logger, "MoveObject")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 // RenameFolderOperation returns a new RenameFolderOperation from a given name.

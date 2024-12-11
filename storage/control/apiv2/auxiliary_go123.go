@@ -27,6 +27,12 @@ import (
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *BucketIterator) All() iter.Seq2[*controlpb.Bucket, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *FolderIterator) All() iter.Seq2[*controlpb.Folder, error] {
 	return iterator.RangeAdapter(it.Next)
 }
@@ -34,5 +40,11 @@ func (it *FolderIterator) All() iter.Seq2[*controlpb.Folder, error] {
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *ManagedFolderIterator) All() iter.Seq2[*controlpb.ManagedFolder, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ObjectIterator) All() iter.Seq2[*controlpb.Object, error] {
 	return iterator.RangeAdapter(it.Next)
 }

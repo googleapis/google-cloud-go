@@ -10,6 +10,16 @@
         "grpc": {
           "libraryClient": "StorageControlClient",
           "rpcs": {
+            "ComposeObject": {
+              "methods": [
+                "ComposeObject"
+              ]
+            },
+            "CreateBucket": {
+              "methods": [
+                "CreateBucket"
+              ]
+            },
             "CreateFolder": {
               "methods": [
                 "CreateFolder"
@@ -18,6 +28,11 @@
             "CreateManagedFolder": {
               "methods": [
                 "CreateManagedFolder"
+              ]
+            },
+            "DeleteBucket": {
+              "methods": [
+                "DeleteBucket"
               ]
             },
             "DeleteFolder": {
@@ -30,9 +45,24 @@
                 "DeleteManagedFolder"
               ]
             },
+            "DeleteObject": {
+              "methods": [
+                "DeleteObject"
+              ]
+            },
+            "GetBucket": {
+              "methods": [
+                "GetBucket"
+              ]
+            },
             "GetFolder": {
               "methods": [
                 "GetFolder"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
               ]
             },
             "GetManagedFolder": {
@@ -40,9 +70,19 @@
                 "GetManagedFolder"
               ]
             },
+            "GetObject": {
+              "methods": [
+                "GetObject"
+              ]
+            },
             "GetStorageLayout": {
               "methods": [
                 "GetStorageLayout"
+              ]
+            },
+            "ListBuckets": {
+              "methods": [
+                "ListBuckets"
               ]
             },
             "ListFolders": {
@@ -55,9 +95,54 @@
                 "ListManagedFolders"
               ]
             },
+            "ListObjects": {
+              "methods": [
+                "ListObjects"
+              ]
+            },
+            "LockBucketRetentionPolicy": {
+              "methods": [
+                "LockBucketRetentionPolicy"
+              ]
+            },
+            "MoveObject": {
+              "methods": [
+                "MoveObject"
+              ]
+            },
             "RenameFolder": {
               "methods": [
                 "RenameFolder"
+              ]
+            },
+            "RestoreObject": {
+              "methods": [
+                "RestoreObject"
+              ]
+            },
+            "RewriteObject": {
+              "methods": [
+                "RewriteObject"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateBucket": {
+              "methods": [
+                "UpdateBucket"
+              ]
+            },
+            "UpdateObject": {
+              "methods": [
+                "UpdateObject"
               ]
             }
           }
