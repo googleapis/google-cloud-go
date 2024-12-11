@@ -16,7 +16,7 @@ package internal
 
 import (
 	"context"
-	"crypto/rsa"
+	"crypto"
 	"crypto/x509"
 	"encoding/json"
 	"encoding/pem"
@@ -72,25 +72,27 @@ func DefaultClient() *http.Client {
 }
 
 // ParseKey converts the binary contents of a private key file
-// to an *rsa.PrivateKey. It detects whether the private key is in a
+// to an crypto.Signer. It detects whether the private key is in a
 // PEM container or not. If so, it extracts the the private key
 // from PEM container before conversion. It only supports PEM
 // containers with no passphrase.
-func ParseKey(key []byte) (*rsa.PrivateKey, error) {
+func ParseKey(key []byte) (crypto.Signer, error) {
 	block, _ := pem.Decode(key)
 	if block != nil {
 		key = block.Bytes
 	}
-	parsedKey, err := x509.ParsePKCS8PrivateKey(key)
+	var parsedKey crypto.PrivateKey
+	var err error
+	parsedKey, err = x509.ParsePKCS8PrivateKey(key)
 	if err != nil {
 		parsedKey, err = x509.ParsePKCS1PrivateKey(key)
 		if err != nil {
 			return nil, fmt.Errorf("private key should be a PEM or plain PKCS1 or PKCS8: %w", err)
 		}
 	}
-	parsed, ok := parsedKey.(*rsa.PrivateKey)
+	parsed, ok := parsedKey.(crypto.Signer)
 	if !ok {
-		return nil, errors.New("private key is invalid")
+		return nil, errors.New("private key is not a signer")
 	}
 	return parsed, nil
 }

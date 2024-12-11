@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	accountspb "cloud.google.com/go/shopping/merchant/accounts/apiv1beta/accountspb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -187,6 +186,8 @@ type autofeedSettingsGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewAutofeedSettingsClient creates a new autofeed settings service client based on gRPC.
@@ -214,6 +215,7 @@ func NewAutofeedSettingsClient(ctx context.Context, opts ...option.ClientOption)
 		connPool:               connPool,
 		autofeedSettingsClient: accountspb.NewAutofeedSettingsServiceClient(connPool),
 		CallOptions:            &client.CallOptions,
+		logger:                 internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -260,6 +262,8 @@ type autofeedSettingsRESTClient struct {
 
 	// Points back to the CallOptions field of the containing AutofeedSettingsClient
 	CallOptions **AutofeedSettingsCallOptions
+
+	logger *slog.Logger
 }
 
 // NewAutofeedSettingsRESTClient creates a new autofeed settings service rest client.
@@ -278,6 +282,7 @@ func NewAutofeedSettingsRESTClient(ctx context.Context, opts ...option.ClientOpt
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -330,7 +335,7 @@ func (c *autofeedSettingsGRPCClient) GetAutofeedSettings(ctx context.Context, re
 	var resp *accountspb.AutofeedSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.autofeedSettingsClient.GetAutofeedSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.autofeedSettingsClient.GetAutofeedSettings, req, settings.GRPC, c.logger, "GetAutofeedSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -348,7 +353,7 @@ func (c *autofeedSettingsGRPCClient) UpdateAutofeedSettings(ctx context.Context,
 	var resp *accountspb.AutofeedSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.autofeedSettingsClient.UpdateAutofeedSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.autofeedSettingsClient.UpdateAutofeedSettings, req, settings.GRPC, c.logger, "UpdateAutofeedSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -390,17 +395,7 @@ func (c *autofeedSettingsRESTClient) GetAutofeedSettings(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAutofeedSettings")
 		if err != nil {
 			return err
 		}
@@ -464,17 +459,7 @@ func (c *autofeedSettingsRESTClient) UpdateAutofeedSettings(ctx context.Context,
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateAutofeedSettings")
 		if err != nil {
 			return err
 		}

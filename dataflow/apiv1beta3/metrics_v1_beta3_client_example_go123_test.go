@@ -44,7 +44,7 @@ func ExampleMetricsV1Beta3Client_GetJobExecutionDetails_all() {
 	}
 	for resp, err := range c.GetJobExecutionDetails(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -70,7 +70,7 @@ func ExampleMetricsV1Beta3Client_GetStageExecutionDetails_all() {
 	}
 	for resp, err := range c.GetStageExecutionDetails(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp

@@ -16,7 +16,7 @@ package gdch
 
 import (
 	"context"
-	"crypto/rsa"
+	"crypto"
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/json"
@@ -62,7 +62,7 @@ func NewTokenProvider(f *credsfile.GDCHServiceAccountFile, o *Options) (auth.Tok
 	if o.STSAudience == "" {
 		return nil, errors.New("credentials: STSAudience must be set for the GDCH auth flows")
 	}
-	pk, err := internal.ParseKey([]byte(f.PrivateKey))
+	signer, err := internal.ParseKey([]byte(f.PrivateKey))
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +75,7 @@ func NewTokenProvider(f *credsfile.GDCHServiceAccountFile, o *Options) (auth.Tok
 		serviceIdentity: fmt.Sprintf("system:serviceaccount:%s:%s", f.Project, f.Name),
 		tokenURL:        f.TokenURL,
 		aud:             o.STSAudience,
-		pk:              pk,
+		signer:          signer,
 		pkID:            f.PrivateKeyID,
 		certPool:        certPool,
 		client:          o.Client,
@@ -97,7 +97,7 @@ type gdchProvider struct {
 	serviceIdentity string
 	tokenURL        string
 	aud             string
-	pk              *rsa.PrivateKey
+	signer          crypto.Signer
 	pkID            string
 	certPool        *x509.CertPool
 
@@ -120,7 +120,7 @@ func (g gdchProvider) Token(ctx context.Context) (*auth.Token, error) {
 		Type:      jwt.HeaderType,
 		KeyID:     string(g.pkID),
 	}
-	payload, err := jwt.EncodeJWS(&h, &claims, g.pk)
+	payload, err := jwt.EncodeJWS(&h, &claims, g.signer)
 	if err != nil {
 		return nil, err
 	}

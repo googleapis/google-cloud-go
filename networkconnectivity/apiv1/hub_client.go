@@ -19,6 +19,7 @@ package networkconnectivity
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 	"time"
@@ -640,6 +641,8 @@ type hubGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewHubClient creates a new hub service client based on gRPC.
@@ -668,6 +671,7 @@ func NewHubClient(ctx context.Context, opts ...option.ClientOption) (*HubClient,
 		connPool:         connPool,
 		hubClient:        networkconnectivitypb.NewHubServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:  iampb.NewIAMPolicyClient(connPool),
 		locationsClient:  locationpb.NewLocationsClient(connPool),
@@ -735,7 +739,7 @@ func (c *hubGRPCClient) ListHubs(ctx context.Context, req *networkconnectivitypb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.hubClient.ListHubs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.hubClient.ListHubs, req, settings.GRPC, c.logger, "ListHubs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -770,7 +774,7 @@ func (c *hubGRPCClient) GetHub(ctx context.Context, req *networkconnectivitypb.G
 	var resp *networkconnectivitypb.Hub
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.GetHub(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.GetHub, req, settings.GRPC, c.logger, "GetHub")
 		return err
 	}, opts...)
 	if err != nil {
@@ -788,7 +792,7 @@ func (c *hubGRPCClient) CreateHub(ctx context.Context, req *networkconnectivityp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.CreateHub(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.CreateHub, req, settings.GRPC, c.logger, "CreateHub")
 		return err
 	}, opts...)
 	if err != nil {
@@ -808,7 +812,7 @@ func (c *hubGRPCClient) UpdateHub(ctx context.Context, req *networkconnectivityp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.UpdateHub(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.UpdateHub, req, settings.GRPC, c.logger, "UpdateHub")
 		return err
 	}, opts...)
 	if err != nil {
@@ -828,7 +832,7 @@ func (c *hubGRPCClient) DeleteHub(ctx context.Context, req *networkconnectivityp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.DeleteHub(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.DeleteHub, req, settings.GRPC, c.logger, "DeleteHub")
 		return err
 	}, opts...)
 	if err != nil {
@@ -859,7 +863,7 @@ func (c *hubGRPCClient) ListHubSpokes(ctx context.Context, req *networkconnectiv
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.hubClient.ListHubSpokes(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.hubClient.ListHubSpokes, req, settings.GRPC, c.logger, "ListHubSpokes")
 			return err
 		}, opts...)
 		if err != nil {
@@ -905,7 +909,7 @@ func (c *hubGRPCClient) QueryHubStatus(ctx context.Context, req *networkconnecti
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.hubClient.QueryHubStatus(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.hubClient.QueryHubStatus, req, settings.GRPC, c.logger, "QueryHubStatus")
 			return err
 		}, opts...)
 		if err != nil {
@@ -951,7 +955,7 @@ func (c *hubGRPCClient) ListSpokes(ctx context.Context, req *networkconnectivity
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.hubClient.ListSpokes(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.hubClient.ListSpokes, req, settings.GRPC, c.logger, "ListSpokes")
 			return err
 		}, opts...)
 		if err != nil {
@@ -986,7 +990,7 @@ func (c *hubGRPCClient) GetSpoke(ctx context.Context, req *networkconnectivitypb
 	var resp *networkconnectivitypb.Spoke
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.GetSpoke(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.GetSpoke, req, settings.GRPC, c.logger, "GetSpoke")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1004,7 +1008,7 @@ func (c *hubGRPCClient) CreateSpoke(ctx context.Context, req *networkconnectivit
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.CreateSpoke(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.CreateSpoke, req, settings.GRPC, c.logger, "CreateSpoke")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1024,7 +1028,7 @@ func (c *hubGRPCClient) UpdateSpoke(ctx context.Context, req *networkconnectivit
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.UpdateSpoke(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.UpdateSpoke, req, settings.GRPC, c.logger, "UpdateSpoke")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1044,7 +1048,7 @@ func (c *hubGRPCClient) RejectHubSpoke(ctx context.Context, req *networkconnecti
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.RejectHubSpoke(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.RejectHubSpoke, req, settings.GRPC, c.logger, "RejectHubSpoke")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1064,7 +1068,7 @@ func (c *hubGRPCClient) AcceptHubSpoke(ctx context.Context, req *networkconnecti
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.AcceptHubSpoke(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.AcceptHubSpoke, req, settings.GRPC, c.logger, "AcceptHubSpoke")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1084,7 +1088,7 @@ func (c *hubGRPCClient) DeleteSpoke(ctx context.Context, req *networkconnectivit
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.DeleteSpoke(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.DeleteSpoke, req, settings.GRPC, c.logger, "DeleteSpoke")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1104,7 +1108,7 @@ func (c *hubGRPCClient) GetRouteTable(ctx context.Context, req *networkconnectiv
 	var resp *networkconnectivitypb.RouteTable
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.GetRouteTable(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.GetRouteTable, req, settings.GRPC, c.logger, "GetRouteTable")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1122,7 +1126,7 @@ func (c *hubGRPCClient) GetRoute(ctx context.Context, req *networkconnectivitypb
 	var resp *networkconnectivitypb.Route
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.GetRoute(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.GetRoute, req, settings.GRPC, c.logger, "GetRoute")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1151,7 +1155,7 @@ func (c *hubGRPCClient) ListRoutes(ctx context.Context, req *networkconnectivity
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.hubClient.ListRoutes(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.hubClient.ListRoutes, req, settings.GRPC, c.logger, "ListRoutes")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1197,7 +1201,7 @@ func (c *hubGRPCClient) ListRouteTables(ctx context.Context, req *networkconnect
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.hubClient.ListRouteTables(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.hubClient.ListRouteTables, req, settings.GRPC, c.logger, "ListRouteTables")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1232,7 +1236,7 @@ func (c *hubGRPCClient) GetGroup(ctx context.Context, req *networkconnectivitypb
 	var resp *networkconnectivitypb.Group
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.GetGroup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.GetGroup, req, settings.GRPC, c.logger, "GetGroup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1261,7 +1265,7 @@ func (c *hubGRPCClient) ListGroups(ctx context.Context, req *networkconnectivity
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.hubClient.ListGroups(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.hubClient.ListGroups, req, settings.GRPC, c.logger, "ListGroups")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1296,7 +1300,7 @@ func (c *hubGRPCClient) UpdateGroup(ctx context.Context, req *networkconnectivit
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.UpdateGroup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.UpdateGroup, req, settings.GRPC, c.logger, "UpdateGroup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1316,7 +1320,7 @@ func (c *hubGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLoca
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1345,7 +1349,7 @@ func (c *hubGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListL
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1380,7 +1384,7 @@ func (c *hubGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolic
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1398,7 +1402,7 @@ func (c *hubGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolic
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1416,7 +1420,7 @@ func (c *hubGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestI
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1433,7 +1437,7 @@ func (c *hubGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -1447,7 +1451,7 @@ func (c *hubGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -1462,7 +1466,7 @@ func (c *hubGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.Get
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1491,7 +1495,7 @@ func (c *hubGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.L
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {

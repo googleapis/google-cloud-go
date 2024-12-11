@@ -70,7 +70,7 @@ const (
 // These are effectively constant, but for testing purposes they are mutable
 var (
 	// duration between two metric exports
-	defaultSamplePeriod = 5 * time.Minute
+	defaultSamplePeriod = time.Minute
 
 	metricsErrorPrefix = "bigtable-metrics: "
 

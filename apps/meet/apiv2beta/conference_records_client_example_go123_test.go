@@ -44,7 +44,7 @@ func ExampleConferenceRecordsClient_ListConferenceRecords_all() {
 	}
 	for resp, err := range c.ListConferenceRecords(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -70,7 +70,7 @@ func ExampleConferenceRecordsClient_ListParticipantSessions_all() {
 	}
 	for resp, err := range c.ListParticipantSessions(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -96,7 +96,7 @@ func ExampleConferenceRecordsClient_ListParticipants_all() {
 	}
 	for resp, err := range c.ListParticipants(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -122,7 +122,7 @@ func ExampleConferenceRecordsClient_ListRecordings_all() {
 	}
 	for resp, err := range c.ListRecordings(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -148,7 +148,7 @@ func ExampleConferenceRecordsClient_ListTranscriptEntries_all() {
 	}
 	for resp, err := range c.ListTranscriptEntries(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -174,7 +174,7 @@ func ExampleConferenceRecordsClient_ListTranscripts_all() {
 	}
 	for resp, err := range c.ListTranscripts(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp

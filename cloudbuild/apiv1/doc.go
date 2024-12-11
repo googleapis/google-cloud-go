@@ -27,6 +27,8 @@
 //
 // For information about setting deadlines, reusing contexts, and more
 // please visit godoc.org/cloud.google.com/go.
+//
+// Deprecated: Please use cloud.google.com/go/cloudbuild/apiv1/v2.
 package cloudbuild // import "cloud.google.com/go/cloudbuild/apiv1"
 
 import (
