@@ -87,7 +87,10 @@ func ParseKey(key []byte) (crypto.Signer, error) {
 	if err != nil {
 		parsedKey, err = x509.ParsePKCS1PrivateKey(key)
 		if err != nil {
-			return nil, fmt.Errorf("private key should be a PEM or plain PKCS1 or PKCS8: %w", err)
+			parsedKey, err = x509.ParseECPrivateKey(key)
+			if err != nil {
+				return nil, fmt.Errorf("private key should be in a PKCS8, plain PKCS1, or EC format: %w", err)
+			}
 		}
 	}
 	parsed, ok := parsedKey.(crypto.Signer)

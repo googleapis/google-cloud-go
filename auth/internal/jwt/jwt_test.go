@@ -17,7 +17,11 @@ package jwt
 import (
 	"crypto/rand"
 	"crypto/rsa"
+	"crypto/x509"
+	"encoding/pem"
+	"os"
 	"testing"
+	"time"
 )
 
 func TestSignAndVerifyDecode(t *testing.T) {
@@ -75,5 +79,42 @@ func TestVerifyFailsOnMalformedClaim(t *testing.T) {
 	err := VerifyJWS("abc.def", nil)
 	if err == nil {
 		t.Error("got no errors; want improperly formed JWT not to be verified")
+	}
+}
+
+func TestSignandVerifyForEC(t *testing.T) {
+	key, err := os.ReadFile("../testdata/eckey.pem")
+	if err != nil {
+		t.Fatal(err)
+	}
+	block, _ := pem.Decode(key)
+	if block != nil {
+		key = block.Bytes
+	}
+	parsedKey, err := x509.ParseECPrivateKey(key)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	iat := time.Now()
+	exp := iat.Add(time.Hour)
+	claims := Claims{
+		Iss: "iss",
+		Sub: "sub",
+		Aud: "audience",
+		Iat: iat.Unix(),
+		Exp: exp.Unix(),
+	}
+	h := Header{
+		Algorithm: HeaderAlgES256,
+		Type:      HeaderType,
+		KeyID:     "keyid",
+	}
+	token, err := EncodeJWS(&h, &claims, parsedKey)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := VerifyJWSWithEC(token, &parsedKey.PublicKey); err != nil {
+		t.Fatal(err)
 	}
 }
