@@ -65,6 +65,7 @@ func (cs computeProvider) Token(ctx context.Context) (*auth.Token, error) {
 		v.Set("scopes", strings.Join(cs.scopes, ","))
 		tokenURI.RawQuery = v.Encode()
 	}
+	// TODO(codyoss): create a metadata client and plumb through logger
 	tokenJSON, err := metadata.GetWithContext(ctx, tokenURI.String())
 	if err != nil {
 		return nil, fmt.Errorf("credentials: cannot fetch token: %w", err)

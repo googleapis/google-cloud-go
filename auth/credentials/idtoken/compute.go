@@ -37,7 +37,9 @@ func computeCredentials(opts *Options) (*auth.Credentials, error) {
 	tp := computeIDTokenProvider{
 		audience: opts.Audience,
 		format:   opts.ComputeTokenFormat,
-		client:   *metadata.NewClient(opts.client()),
+		// TODO(codyoss): connect logger here after metadata options are
+		// available.
+		client: *metadata.NewClient(opts.client()),
 	}
 	return auth.NewCredentials(&auth.CredentialsOptions{
 		TokenProvider: auth.NewCachedTokenProvider(tp, &auth.CachedTokenProviderOptions{
