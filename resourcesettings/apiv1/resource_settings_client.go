@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	resourcesettingspb "cloud.google.com/go/resourcesettings/apiv1/resourcesettingspb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -258,6 +257,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new resource settings service client based on gRPC.
@@ -300,6 +301,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      resourcesettingspb.NewResourceSettingsServiceClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -346,6 +348,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new resource settings service rest client.
@@ -379,6 +383,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -442,7 +447,7 @@ func (c *gRPCClient) ListSettings(ctx context.Context, req *resourcesettingspb.L
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListSettings(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListSettings, req, settings.GRPC, c.logger, "ListSettings")
 			return err
 		}, opts...)
 		if err != nil {
@@ -477,7 +482,7 @@ func (c *gRPCClient) GetSetting(ctx context.Context, req *resourcesettingspb.Get
 	var resp *resourcesettingspb.Setting
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetSetting(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetSetting, req, settings.GRPC, c.logger, "GetSetting")
 		return err
 	}, opts...)
 	if err != nil {
@@ -495,7 +500,7 @@ func (c *gRPCClient) UpdateSetting(ctx context.Context, req *resourcesettingspb.
 	var resp *resourcesettingspb.Setting
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateSetting(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateSetting, req, settings.GRPC, c.logger, "UpdateSetting")
 		return err
 	}, opts...)
 	if err != nil {
@@ -552,21 +557,10 @@ func (c *restClient) ListSettings(ctx context.Context, req *resourcesettingspb.L
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSettings")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -635,17 +629,7 @@ func (c *restClient) GetSetting(ctx context.Context, req *resourcesettingspb.Get
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSetting")
 		if err != nil {
 			return err
 		}
@@ -717,17 +701,7 @@ func (c *restClient) UpdateSetting(ctx context.Context, req *resourcesettingspb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateSetting")
 		if err != nil {
 			return err
 		}

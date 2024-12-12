@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	shellpb "cloud.google.com/go/shell/apiv1/shellpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -270,6 +269,8 @@ type cloudShellGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewCloudShellClient creates a new cloud shell service client based on gRPC.
@@ -302,6 +303,7 @@ func NewCloudShellClient(ctx context.Context, opts ...option.ClientOption) (*Clo
 		connPool:         connPool,
 		cloudShellClient: shellpb.NewCloudShellServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -364,6 +366,8 @@ type cloudShellRESTClient struct {
 
 	// Points back to the CallOptions field of the containing CloudShellClient
 	CallOptions **CloudShellCallOptions
+
+	logger *slog.Logger
 }
 
 // NewCloudShellRESTClient creates a new cloud shell service rest client.
@@ -387,6 +391,7 @@ func NewCloudShellRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -449,7 +454,7 @@ func (c *cloudShellGRPCClient) GetEnvironment(ctx context.Context, req *shellpb.
 	var resp *shellpb.Environment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudShellClient.GetEnvironment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudShellClient.GetEnvironment, req, settings.GRPC, c.logger, "GetEnvironment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -467,7 +472,7 @@ func (c *cloudShellGRPCClient) StartEnvironment(ctx context.Context, req *shellp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudShellClient.StartEnvironment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudShellClient.StartEnvironment, req, settings.GRPC, c.logger, "StartEnvironment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -487,7 +492,7 @@ func (c *cloudShellGRPCClient) AuthorizeEnvironment(ctx context.Context, req *sh
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudShellClient.AuthorizeEnvironment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudShellClient.AuthorizeEnvironment, req, settings.GRPC, c.logger, "AuthorizeEnvironment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -507,7 +512,7 @@ func (c *cloudShellGRPCClient) AddPublicKey(ctx context.Context, req *shellpb.Ad
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudShellClient.AddPublicKey(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudShellClient.AddPublicKey, req, settings.GRPC, c.logger, "AddPublicKey")
 		return err
 	}, opts...)
 	if err != nil {
@@ -527,7 +532,7 @@ func (c *cloudShellGRPCClient) RemovePublicKey(ctx context.Context, req *shellpb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudShellClient.RemovePublicKey(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudShellClient.RemovePublicKey, req, settings.GRPC, c.logger, "RemovePublicKey")
 		return err
 	}, opts...)
 	if err != nil {
@@ -571,17 +576,7 @@ func (c *cloudShellRESTClient) GetEnvironment(ctx context.Context, req *shellpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetEnvironment")
 		if err != nil {
 			return err
 		}
@@ -641,21 +636,10 @@ func (c *cloudShellRESTClient) StartEnvironment(ctx context.Context, req *shellp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "StartEnvironment")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -714,21 +698,10 @@ func (c *cloudShellRESTClient) AuthorizeEnvironment(ctx context.Context, req *sh
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AuthorizeEnvironment")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -786,21 +759,10 @@ func (c *cloudShellRESTClient) AddPublicKey(ctx context.Context, req *shellpb.Ad
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AddPublicKey")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -859,21 +821,10 @@ func (c *cloudShellRESTClient) RemovePublicKey(ctx context.Context, req *shellpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RemovePublicKey")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}

@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -390,6 +389,8 @@ type modelGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewModelClient creates a new model service client based on gRPC.
@@ -416,6 +417,7 @@ func NewModelClient(ctx context.Context, opts ...option.ClientOption) (*ModelCli
 		connPool:         connPool,
 		modelClient:      generativelanguagepb.NewModelServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -479,6 +481,8 @@ type modelRESTClient struct {
 
 	// Points back to the CallOptions field of the containing ModelClient
 	CallOptions **ModelCallOptions
+
+	logger *slog.Logger
 }
 
 // NewModelRESTClient creates a new model service rest client.
@@ -496,6 +500,7 @@ func NewModelRESTClient(ctx context.Context, opts ...option.ClientOption) (*Mode
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -558,7 +563,7 @@ func (c *modelGRPCClient) GetModel(ctx context.Context, req *generativelanguagep
 	var resp *generativelanguagepb.Model
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.modelClient.GetModel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.modelClient.GetModel, req, settings.GRPC, c.logger, "GetModel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -584,7 +589,7 @@ func (c *modelGRPCClient) ListModels(ctx context.Context, req *generativelanguag
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.modelClient.ListModels(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.modelClient.ListModels, req, settings.GRPC, c.logger, "ListModels")
 			return err
 		}, opts...)
 		if err != nil {
@@ -619,7 +624,7 @@ func (c *modelGRPCClient) GetTunedModel(ctx context.Context, req *generativelang
 	var resp *generativelanguagepb.TunedModel
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.modelClient.GetTunedModel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.modelClient.GetTunedModel, req, settings.GRPC, c.logger, "GetTunedModel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -645,7 +650,7 @@ func (c *modelGRPCClient) ListTunedModels(ctx context.Context, req *generativela
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.modelClient.ListTunedModels(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.modelClient.ListTunedModels, req, settings.GRPC, c.logger, "ListTunedModels")
 			return err
 		}, opts...)
 		if err != nil {
@@ -677,7 +682,7 @@ func (c *modelGRPCClient) CreateTunedModel(ctx context.Context, req *generativel
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.modelClient.CreateTunedModel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.modelClient.CreateTunedModel, req, settings.GRPC, c.logger, "CreateTunedModel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -697,7 +702,7 @@ func (c *modelGRPCClient) UpdateTunedModel(ctx context.Context, req *generativel
 	var resp *generativelanguagepb.TunedModel
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.modelClient.UpdateTunedModel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.modelClient.UpdateTunedModel, req, settings.GRPC, c.logger, "UpdateTunedModel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -714,7 +719,7 @@ func (c *modelGRPCClient) DeleteTunedModel(ctx context.Context, req *generativel
 	opts = append((*c.CallOptions).DeleteTunedModel[0:len((*c.CallOptions).DeleteTunedModel):len((*c.CallOptions).DeleteTunedModel)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.modelClient.DeleteTunedModel(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.modelClient.DeleteTunedModel, req, settings.GRPC, c.logger, "DeleteTunedModel")
 		return err
 	}, opts...)
 	return err
@@ -729,7 +734,7 @@ func (c *modelGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.G
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -758,7 +763,7 @@ func (c *modelGRPCClient) ListOperations(ctx context.Context, req *longrunningpb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -822,17 +827,7 @@ func (c *modelRESTClient) GetModel(ctx context.Context, req *generativelanguagep
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetModel")
 		if err != nil {
 			return err
 		}
@@ -895,21 +890,10 @@ func (c *modelRESTClient) ListModels(ctx context.Context, req *generativelanguag
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListModels")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -972,17 +956,7 @@ func (c *modelRESTClient) GetTunedModel(ctx context.Context, req *generativelang
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetTunedModel")
 		if err != nil {
 			return err
 		}
@@ -1047,21 +1021,10 @@ func (c *modelRESTClient) ListTunedModels(ctx context.Context, req *generativela
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListTunedModels")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1136,21 +1099,10 @@ func (c *modelRESTClient) CreateTunedModel(ctx context.Context, req *generativel
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateTunedModel")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1215,17 +1167,7 @@ func (c *modelRESTClient) UpdateTunedModel(ctx context.Context, req *generativel
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateTunedModel")
 		if err != nil {
 			return err
 		}
@@ -1272,15 +1214,8 @@ func (c *modelRESTClient) DeleteTunedModel(ctx context.Context, req *generativel
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteTunedModel")
+		return err
 	}, opts...)
 }
 
@@ -1317,17 +1252,7 @@ func (c *modelRESTClient) GetOperation(ctx context.Context, req *longrunningpb.G
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -1392,21 +1317,10 @@ func (c *modelRESTClient) ListOperations(ctx context.Context, req *longrunningpb
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

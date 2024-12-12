@@ -44,7 +44,7 @@ func ExamplePublisherClient_ListTopicSnapshots_all() {
 	}
 	for resp, err := range c.ListTopicSnapshots(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -70,7 +70,7 @@ func ExamplePublisherClient_ListTopicSubscriptions_all() {
 	}
 	for resp, err := range c.ListTopicSubscriptions(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -96,7 +96,7 @@ func ExamplePublisherClient_ListTopics_all() {
 	}
 	for resp, err := range c.ListTopics(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp

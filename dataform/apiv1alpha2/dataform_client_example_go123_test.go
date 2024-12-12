@@ -45,7 +45,7 @@ func ExampleClient_ListCompilationResults_all() {
 	}
 	for resp, err := range c.ListCompilationResults(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -71,7 +71,7 @@ func ExampleClient_ListRepositories_all() {
 	}
 	for resp, err := range c.ListRepositories(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -97,7 +97,7 @@ func ExampleClient_ListWorkflowInvocations_all() {
 	}
 	for resp, err := range c.ListWorkflowInvocations(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -123,7 +123,7 @@ func ExampleClient_ListWorkspaces_all() {
 	}
 	for resp, err := range c.ListWorkspaces(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -149,7 +149,7 @@ func ExampleClient_QueryCompilationResultActions_all() {
 	}
 	for resp, err := range c.QueryCompilationResultActions(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -175,7 +175,7 @@ func ExampleClient_QueryDirectoryContents_all() {
 	}
 	for resp, err := range c.QueryDirectoryContents(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -201,7 +201,7 @@ func ExampleClient_QueryWorkflowInvocationActions_all() {
 	}
 	for resp, err := range c.QueryWorkflowInvocationActions(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -227,7 +227,7 @@ func ExampleClient_ListLocations_all() {
 	}
 	for resp, err := range c.ListLocations(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp

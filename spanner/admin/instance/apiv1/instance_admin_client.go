@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	instancepb "cloud.google.com/go/spanner/admin/instance/apiv1/instancepb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -943,6 +942,8 @@ type instanceAdminGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewInstanceAdminClient creates a new instance admin client based on gRPC.
@@ -989,6 +990,7 @@ func NewInstanceAdminClient(ctx context.Context, opts ...option.ClientOption) (*
 		connPool:            connPool,
 		instanceAdminClient: instancepb.NewInstanceAdminClient(connPool),
 		CallOptions:         &client.CallOptions,
+		logger:              internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -1051,6 +1053,8 @@ type instanceAdminRESTClient struct {
 
 	// Points back to the CallOptions field of the containing InstanceAdminClient
 	CallOptions **InstanceAdminCallOptions
+
+	logger *slog.Logger
 }
 
 // NewInstanceAdminRESTClient creates a new instance admin rest client.
@@ -1088,6 +1092,7 @@ func NewInstanceAdminRESTClient(ctx context.Context, opts ...option.ClientOption
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -1161,7 +1166,7 @@ func (c *instanceAdminGRPCClient) ListInstanceConfigs(ctx context.Context, req *
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.instanceAdminClient.ListInstanceConfigs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.instanceAdminClient.ListInstanceConfigs, req, settings.GRPC, c.logger, "ListInstanceConfigs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1196,7 +1201,7 @@ func (c *instanceAdminGRPCClient) GetInstanceConfig(ctx context.Context, req *in
 	var resp *instancepb.InstanceConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.instanceAdminClient.GetInstanceConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.instanceAdminClient.GetInstanceConfig, req, settings.GRPC, c.logger, "GetInstanceConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1214,7 +1219,7 @@ func (c *instanceAdminGRPCClient) CreateInstanceConfig(ctx context.Context, req 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.instanceAdminClient.CreateInstanceConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.instanceAdminClient.CreateInstanceConfig, req, settings.GRPC, c.logger, "CreateInstanceConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1234,7 +1239,7 @@ func (c *instanceAdminGRPCClient) UpdateInstanceConfig(ctx context.Context, req 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.instanceAdminClient.UpdateInstanceConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.instanceAdminClient.UpdateInstanceConfig, req, settings.GRPC, c.logger, "UpdateInstanceConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1253,7 +1258,7 @@ func (c *instanceAdminGRPCClient) DeleteInstanceConfig(ctx context.Context, req 
 	opts = append((*c.CallOptions).DeleteInstanceConfig[0:len((*c.CallOptions).DeleteInstanceConfig):len((*c.CallOptions).DeleteInstanceConfig)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.instanceAdminClient.DeleteInstanceConfig(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.instanceAdminClient.DeleteInstanceConfig, req, settings.GRPC, c.logger, "DeleteInstanceConfig")
 		return err
 	}, opts...)
 	return err
@@ -1279,7 +1284,7 @@ func (c *instanceAdminGRPCClient) ListInstanceConfigOperations(ctx context.Conte
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.instanceAdminClient.ListInstanceConfigOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.instanceAdminClient.ListInstanceConfigOperations, req, settings.GRPC, c.logger, "ListInstanceConfigOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1325,7 +1330,7 @@ func (c *instanceAdminGRPCClient) ListInstances(ctx context.Context, req *instan
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.instanceAdminClient.ListInstances(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.instanceAdminClient.ListInstances, req, settings.GRPC, c.logger, "ListInstances")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1371,7 +1376,7 @@ func (c *instanceAdminGRPCClient) ListInstancePartitions(ctx context.Context, re
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.instanceAdminClient.ListInstancePartitions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.instanceAdminClient.ListInstancePartitions, req, settings.GRPC, c.logger, "ListInstancePartitions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1406,7 +1411,7 @@ func (c *instanceAdminGRPCClient) GetInstance(ctx context.Context, req *instance
 	var resp *instancepb.Instance
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.instanceAdminClient.GetInstance(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.instanceAdminClient.GetInstance, req, settings.GRPC, c.logger, "GetInstance")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1424,7 +1429,7 @@ func (c *instanceAdminGRPCClient) CreateInstance(ctx context.Context, req *insta
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.instanceAdminClient.CreateInstance(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.instanceAdminClient.CreateInstance, req, settings.GRPC, c.logger, "CreateInstance")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1444,7 +1449,7 @@ func (c *instanceAdminGRPCClient) UpdateInstance(ctx context.Context, req *insta
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.instanceAdminClient.UpdateInstance(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.instanceAdminClient.UpdateInstance, req, settings.GRPC, c.logger, "UpdateInstance")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1463,7 +1468,7 @@ func (c *instanceAdminGRPCClient) DeleteInstance(ctx context.Context, req *insta
 	opts = append((*c.CallOptions).DeleteInstance[0:len((*c.CallOptions).DeleteInstance):len((*c.CallOptions).DeleteInstance)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.instanceAdminClient.DeleteInstance(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.instanceAdminClient.DeleteInstance, req, settings.GRPC, c.logger, "DeleteInstance")
 		return err
 	}, opts...)
 	return err
@@ -1478,7 +1483,7 @@ func (c *instanceAdminGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.S
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.instanceAdminClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.instanceAdminClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1496,7 +1501,7 @@ func (c *instanceAdminGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.G
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.instanceAdminClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.instanceAdminClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1514,7 +1519,7 @@ func (c *instanceAdminGRPCClient) TestIamPermissions(ctx context.Context, req *i
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.instanceAdminClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.instanceAdminClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1532,7 +1537,7 @@ func (c *instanceAdminGRPCClient) GetInstancePartition(ctx context.Context, req 
 	var resp *instancepb.InstancePartition
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.instanceAdminClient.GetInstancePartition(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.instanceAdminClient.GetInstancePartition, req, settings.GRPC, c.logger, "GetInstancePartition")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1550,7 +1555,7 @@ func (c *instanceAdminGRPCClient) CreateInstancePartition(ctx context.Context, r
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.instanceAdminClient.CreateInstancePartition(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.instanceAdminClient.CreateInstancePartition, req, settings.GRPC, c.logger, "CreateInstancePartition")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1569,7 +1574,7 @@ func (c *instanceAdminGRPCClient) DeleteInstancePartition(ctx context.Context, r
 	opts = append((*c.CallOptions).DeleteInstancePartition[0:len((*c.CallOptions).DeleteInstancePartition):len((*c.CallOptions).DeleteInstancePartition)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.instanceAdminClient.DeleteInstancePartition(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.instanceAdminClient.DeleteInstancePartition, req, settings.GRPC, c.logger, "DeleteInstancePartition")
 		return err
 	}, opts...)
 	return err
@@ -1584,7 +1589,7 @@ func (c *instanceAdminGRPCClient) UpdateInstancePartition(ctx context.Context, r
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.instanceAdminClient.UpdateInstancePartition(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.instanceAdminClient.UpdateInstancePartition, req, settings.GRPC, c.logger, "UpdateInstancePartition")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1615,7 +1620,7 @@ func (c *instanceAdminGRPCClient) ListInstancePartitionOperations(ctx context.Co
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.instanceAdminClient.ListInstancePartitionOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.instanceAdminClient.ListInstancePartitionOperations, req, settings.GRPC, c.logger, "ListInstancePartitionOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1650,7 +1655,7 @@ func (c *instanceAdminGRPCClient) MoveInstance(ctx context.Context, req *instanc
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.instanceAdminClient.MoveInstance(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.instanceAdminClient.MoveInstance, req, settings.GRPC, c.logger, "MoveInstance")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1706,21 +1711,10 @@ func (c *instanceAdminRESTClient) ListInstanceConfigs(ctx context.Context, req *
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListInstanceConfigs")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1783,17 +1777,7 @@ func (c *instanceAdminRESTClient) GetInstanceConfig(ctx context.Context, req *in
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetInstanceConfig")
 		if err != nil {
 			return err
 		}
@@ -1890,21 +1874,10 @@ func (c *instanceAdminRESTClient) CreateInstanceConfig(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateInstanceConfig")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2007,21 +1980,10 @@ func (c *instanceAdminRESTClient) UpdateInstanceConfig(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateInstanceConfig")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2082,15 +2044,8 @@ func (c *instanceAdminRESTClient) DeleteInstanceConfig(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteInstanceConfig")
+		return err
 	}, opts...)
 }
 
@@ -2152,21 +2107,10 @@ func (c *instanceAdminRESTClient) ListInstanceConfigOperations(ctx context.Conte
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListInstanceConfigOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2251,21 +2195,10 @@ func (c *instanceAdminRESTClient) ListInstances(ctx context.Context, req *instan
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListInstances")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2347,21 +2280,10 @@ func (c *instanceAdminRESTClient) ListInstancePartitions(ctx context.Context, re
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListInstancePartitions")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2431,17 +2353,7 @@ func (c *instanceAdminRESTClient) GetInstance(ctx context.Context, req *instance
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetInstance")
 		if err != nil {
 			return err
 		}
@@ -2534,21 +2446,10 @@ func (c *instanceAdminRESTClient) CreateInstance(ctx context.Context, req *insta
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateInstance")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2647,21 +2548,10 @@ func (c *instanceAdminRESTClient) UpdateInstance(ctx context.Context, req *insta
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateInstance")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2719,15 +2609,8 @@ func (c *instanceAdminRESTClient) DeleteInstance(ctx context.Context, req *insta
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteInstance")
+		return err
 	}, opts...)
 }
 
@@ -2774,17 +2657,7 @@ func (c *instanceAdminRESTClient) SetIamPolicy(ctx context.Context, req *iampb.S
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -2844,17 +2717,7 @@ func (c *instanceAdminRESTClient) GetIamPolicy(ctx context.Context, req *iampb.G
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -2915,17 +2778,7 @@ func (c *instanceAdminRESTClient) TestIamPermissions(ctx context.Context, req *i
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
 		if err != nil {
 			return err
 		}
@@ -2975,17 +2828,7 @@ func (c *instanceAdminRESTClient) GetInstancePartition(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetInstancePartition")
 		if err != nil {
 			return err
 		}
@@ -3081,21 +2924,10 @@ func (c *instanceAdminRESTClient) CreateInstancePartition(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateInstancePartition")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3152,15 +2984,8 @@ func (c *instanceAdminRESTClient) DeleteInstancePartition(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteInstancePartition")
+		return err
 	}, opts...)
 }
 
@@ -3249,21 +3074,10 @@ func (c *instanceAdminRESTClient) UpdateInstancePartition(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateInstancePartition")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3350,21 +3164,10 @@ func (c *instanceAdminRESTClient) ListInstancePartitionOperations(ctx context.Co
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListInstancePartitionOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3503,21 +3306,10 @@ func (c *instanceAdminRESTClient) MoveInstance(ctx context.Context, req *instanc
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "MoveInstance")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}

@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -29,7 +29,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	retailpb "cloud.google.com/go/retail/apiv2beta/retailpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -229,6 +228,8 @@ type controlGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewControlClient creates a new control service client based on gRPC.
@@ -255,6 +256,7 @@ func NewControlClient(ctx context.Context, opts ...option.ClientOption) (*Contro
 		connPool:         connPool,
 		controlClient:    retailpb.NewControlServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -302,6 +304,8 @@ type controlRESTClient struct {
 
 	// Points back to the CallOptions field of the containing ControlClient
 	CallOptions **ControlCallOptions
+
+	logger *slog.Logger
 }
 
 // NewControlRESTClient creates a new control service rest client.
@@ -319,6 +323,7 @@ func NewControlRESTClient(ctx context.Context, opts ...option.ClientOption) (*Co
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -371,7 +376,7 @@ func (c *controlGRPCClient) CreateControl(ctx context.Context, req *retailpb.Cre
 	var resp *retailpb.Control
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.controlClient.CreateControl(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.controlClient.CreateControl, req, settings.GRPC, c.logger, "CreateControl")
 		return err
 	}, opts...)
 	if err != nil {
@@ -388,7 +393,7 @@ func (c *controlGRPCClient) DeleteControl(ctx context.Context, req *retailpb.Del
 	opts = append((*c.CallOptions).DeleteControl[0:len((*c.CallOptions).DeleteControl):len((*c.CallOptions).DeleteControl)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.controlClient.DeleteControl(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.controlClient.DeleteControl, req, settings.GRPC, c.logger, "DeleteControl")
 		return err
 	}, opts...)
 	return err
@@ -403,7 +408,7 @@ func (c *controlGRPCClient) UpdateControl(ctx context.Context, req *retailpb.Upd
 	var resp *retailpb.Control
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.controlClient.UpdateControl(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.controlClient.UpdateControl, req, settings.GRPC, c.logger, "UpdateControl")
 		return err
 	}, opts...)
 	if err != nil {
@@ -421,7 +426,7 @@ func (c *controlGRPCClient) GetControl(ctx context.Context, req *retailpb.GetCon
 	var resp *retailpb.Control
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.controlClient.GetControl(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.controlClient.GetControl, req, settings.GRPC, c.logger, "GetControl")
 		return err
 	}, opts...)
 	if err != nil {
@@ -450,7 +455,7 @@ func (c *controlGRPCClient) ListControls(ctx context.Context, req *retailpb.List
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.controlClient.ListControls(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.controlClient.ListControls, req, settings.GRPC, c.logger, "ListControls")
 			return err
 		}, opts...)
 		if err != nil {
@@ -485,7 +490,7 @@ func (c *controlGRPCClient) GetOperation(ctx context.Context, req *longrunningpb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -514,7 +519,7 @@ func (c *controlGRPCClient) ListOperations(ctx context.Context, req *longrunning
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -584,17 +589,7 @@ func (c *controlRESTClient) CreateControl(ctx context.Context, req *retailpb.Cre
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateControl")
 		if err != nil {
 			return err
 		}
@@ -644,15 +639,8 @@ func (c *controlRESTClient) DeleteControl(ctx context.Context, req *retailpb.Del
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteControl")
+		return err
 	}, opts...)
 }
 
@@ -708,17 +696,7 @@ func (c *controlRESTClient) UpdateControl(ctx context.Context, req *retailpb.Upd
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateControl")
 		if err != nil {
 			return err
 		}
@@ -768,17 +746,7 @@ func (c *controlRESTClient) GetControl(ctx context.Context, req *retailpb.GetCon
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetControl")
 		if err != nil {
 			return err
 		}
@@ -844,21 +812,10 @@ func (c *controlRESTClient) ListControls(ctx context.Context, req *retailpb.List
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListControls")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -921,17 +878,7 @@ func (c *controlRESTClient) GetOperation(ctx context.Context, req *longrunningpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -996,21 +943,10 @@ func (c *controlRESTClient) ListOperations(ctx context.Context, req *longrunning
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

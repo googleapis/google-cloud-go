@@ -44,7 +44,7 @@ func ExampleClient_ListGuestPolicies_all() {
 	}
 	for resp, err := range c.ListGuestPolicies(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -70,7 +70,7 @@ func ExampleClient_ListPatchDeployments_all() {
 	}
 	for resp, err := range c.ListPatchDeployments(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -96,7 +96,7 @@ func ExampleClient_ListPatchJobInstanceDetails_all() {
 	}
 	for resp, err := range c.ListPatchJobInstanceDetails(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -122,7 +122,7 @@ func ExampleClient_ListPatchJobs_all() {
 	}
 	for resp, err := range c.ListPatchJobs(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp

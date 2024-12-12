@@ -19,6 +19,7 @@ package dataplex
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 	"time"
@@ -635,6 +636,8 @@ type catalogGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewCatalogClient creates a new catalog service client based on gRPC.
@@ -665,6 +668,7 @@ func NewCatalogClient(ctx context.Context, opts ...option.ClientOption) (*Catalo
 		connPool:         connPool,
 		catalogClient:    dataplexpb.NewCatalogServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
@@ -720,7 +724,7 @@ func (c *catalogGRPCClient) CreateEntryType(ctx context.Context, req *dataplexpb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.catalogClient.CreateEntryType(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.catalogClient.CreateEntryType, req, settings.GRPC, c.logger, "CreateEntryType")
 		return err
 	}, opts...)
 	if err != nil {
@@ -740,7 +744,7 @@ func (c *catalogGRPCClient) UpdateEntryType(ctx context.Context, req *dataplexpb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.catalogClient.UpdateEntryType(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.catalogClient.UpdateEntryType, req, settings.GRPC, c.logger, "UpdateEntryType")
 		return err
 	}, opts...)
 	if err != nil {
@@ -760,7 +764,7 @@ func (c *catalogGRPCClient) DeleteEntryType(ctx context.Context, req *dataplexpb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.catalogClient.DeleteEntryType(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.catalogClient.DeleteEntryType, req, settings.GRPC, c.logger, "DeleteEntryType")
 		return err
 	}, opts...)
 	if err != nil {
@@ -791,7 +795,7 @@ func (c *catalogGRPCClient) ListEntryTypes(ctx context.Context, req *dataplexpb.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.catalogClient.ListEntryTypes(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.catalogClient.ListEntryTypes, req, settings.GRPC, c.logger, "ListEntryTypes")
 			return err
 		}, opts...)
 		if err != nil {
@@ -826,7 +830,7 @@ func (c *catalogGRPCClient) GetEntryType(ctx context.Context, req *dataplexpb.Ge
 	var resp *dataplexpb.EntryType
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.catalogClient.GetEntryType(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.catalogClient.GetEntryType, req, settings.GRPC, c.logger, "GetEntryType")
 		return err
 	}, opts...)
 	if err != nil {
@@ -844,7 +848,7 @@ func (c *catalogGRPCClient) CreateAspectType(ctx context.Context, req *dataplexp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.catalogClient.CreateAspectType(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.catalogClient.CreateAspectType, req, settings.GRPC, c.logger, "CreateAspectType")
 		return err
 	}, opts...)
 	if err != nil {
@@ -864,7 +868,7 @@ func (c *catalogGRPCClient) UpdateAspectType(ctx context.Context, req *dataplexp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.catalogClient.UpdateAspectType(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.catalogClient.UpdateAspectType, req, settings.GRPC, c.logger, "UpdateAspectType")
 		return err
 	}, opts...)
 	if err != nil {
@@ -884,7 +888,7 @@ func (c *catalogGRPCClient) DeleteAspectType(ctx context.Context, req *dataplexp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.catalogClient.DeleteAspectType(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.catalogClient.DeleteAspectType, req, settings.GRPC, c.logger, "DeleteAspectType")
 		return err
 	}, opts...)
 	if err != nil {
@@ -915,7 +919,7 @@ func (c *catalogGRPCClient) ListAspectTypes(ctx context.Context, req *dataplexpb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.catalogClient.ListAspectTypes(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.catalogClient.ListAspectTypes, req, settings.GRPC, c.logger, "ListAspectTypes")
 			return err
 		}, opts...)
 		if err != nil {
@@ -950,7 +954,7 @@ func (c *catalogGRPCClient) GetAspectType(ctx context.Context, req *dataplexpb.G
 	var resp *dataplexpb.AspectType
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.catalogClient.GetAspectType(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.catalogClient.GetAspectType, req, settings.GRPC, c.logger, "GetAspectType")
 		return err
 	}, opts...)
 	if err != nil {
@@ -968,7 +972,7 @@ func (c *catalogGRPCClient) CreateEntryGroup(ctx context.Context, req *dataplexp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.catalogClient.CreateEntryGroup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.catalogClient.CreateEntryGroup, req, settings.GRPC, c.logger, "CreateEntryGroup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -988,7 +992,7 @@ func (c *catalogGRPCClient) UpdateEntryGroup(ctx context.Context, req *dataplexp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.catalogClient.UpdateEntryGroup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.catalogClient.UpdateEntryGroup, req, settings.GRPC, c.logger, "UpdateEntryGroup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1008,7 +1012,7 @@ func (c *catalogGRPCClient) DeleteEntryGroup(ctx context.Context, req *dataplexp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.catalogClient.DeleteEntryGroup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.catalogClient.DeleteEntryGroup, req, settings.GRPC, c.logger, "DeleteEntryGroup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1039,7 +1043,7 @@ func (c *catalogGRPCClient) ListEntryGroups(ctx context.Context, req *dataplexpb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.catalogClient.ListEntryGroups(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.catalogClient.ListEntryGroups, req, settings.GRPC, c.logger, "ListEntryGroups")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1074,7 +1078,7 @@ func (c *catalogGRPCClient) GetEntryGroup(ctx context.Context, req *dataplexpb.G
 	var resp *dataplexpb.EntryGroup
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.catalogClient.GetEntryGroup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.catalogClient.GetEntryGroup, req, settings.GRPC, c.logger, "GetEntryGroup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1092,7 +1096,7 @@ func (c *catalogGRPCClient) CreateEntry(ctx context.Context, req *dataplexpb.Cre
 	var resp *dataplexpb.Entry
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.catalogClient.CreateEntry(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.catalogClient.CreateEntry, req, settings.GRPC, c.logger, "CreateEntry")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1110,7 +1114,7 @@ func (c *catalogGRPCClient) UpdateEntry(ctx context.Context, req *dataplexpb.Upd
 	var resp *dataplexpb.Entry
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.catalogClient.UpdateEntry(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.catalogClient.UpdateEntry, req, settings.GRPC, c.logger, "UpdateEntry")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1128,7 +1132,7 @@ func (c *catalogGRPCClient) DeleteEntry(ctx context.Context, req *dataplexpb.Del
 	var resp *dataplexpb.Entry
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.catalogClient.DeleteEntry(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.catalogClient.DeleteEntry, req, settings.GRPC, c.logger, "DeleteEntry")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1157,7 +1161,7 @@ func (c *catalogGRPCClient) ListEntries(ctx context.Context, req *dataplexpb.Lis
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.catalogClient.ListEntries(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.catalogClient.ListEntries, req, settings.GRPC, c.logger, "ListEntries")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1192,7 +1196,7 @@ func (c *catalogGRPCClient) GetEntry(ctx context.Context, req *dataplexpb.GetEnt
 	var resp *dataplexpb.Entry
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.catalogClient.GetEntry(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.catalogClient.GetEntry, req, settings.GRPC, c.logger, "GetEntry")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1210,7 +1214,7 @@ func (c *catalogGRPCClient) LookupEntry(ctx context.Context, req *dataplexpb.Loo
 	var resp *dataplexpb.Entry
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.catalogClient.LookupEntry(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.catalogClient.LookupEntry, req, settings.GRPC, c.logger, "LookupEntry")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1239,7 +1243,7 @@ func (c *catalogGRPCClient) SearchEntries(ctx context.Context, req *dataplexpb.S
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.catalogClient.SearchEntries(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.catalogClient.SearchEntries, req, settings.GRPC, c.logger, "SearchEntries")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1274,7 +1278,7 @@ func (c *catalogGRPCClient) CreateMetadataJob(ctx context.Context, req *dataplex
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.catalogClient.CreateMetadataJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.catalogClient.CreateMetadataJob, req, settings.GRPC, c.logger, "CreateMetadataJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1294,7 +1298,7 @@ func (c *catalogGRPCClient) GetMetadataJob(ctx context.Context, req *dataplexpb.
 	var resp *dataplexpb.MetadataJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.catalogClient.GetMetadataJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.catalogClient.GetMetadataJob, req, settings.GRPC, c.logger, "GetMetadataJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1323,7 +1327,7 @@ func (c *catalogGRPCClient) ListMetadataJobs(ctx context.Context, req *dataplexp
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.catalogClient.ListMetadataJobs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.catalogClient.ListMetadataJobs, req, settings.GRPC, c.logger, "ListMetadataJobs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1357,7 +1361,7 @@ func (c *catalogGRPCClient) CancelMetadataJob(ctx context.Context, req *dataplex
 	opts = append((*c.CallOptions).CancelMetadataJob[0:len((*c.CallOptions).CancelMetadataJob):len((*c.CallOptions).CancelMetadataJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.catalogClient.CancelMetadataJob(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.catalogClient.CancelMetadataJob, req, settings.GRPC, c.logger, "CancelMetadataJob")
 		return err
 	}, opts...)
 	return err
@@ -1372,7 +1376,7 @@ func (c *catalogGRPCClient) GetLocation(ctx context.Context, req *locationpb.Get
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1401,7 +1405,7 @@ func (c *catalogGRPCClient) ListLocations(ctx context.Context, req *locationpb.L
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1435,7 +1439,7 @@ func (c *catalogGRPCClient) CancelOperation(ctx context.Context, req *longrunnin
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -1449,7 +1453,7 @@ func (c *catalogGRPCClient) DeleteOperation(ctx context.Context, req *longrunnin
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -1464,7 +1468,7 @@ func (c *catalogGRPCClient) GetOperation(ctx context.Context, req *longrunningpb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1493,7 +1497,7 @@ func (c *catalogGRPCClient) ListOperations(ctx context.Context, req *longrunning
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {

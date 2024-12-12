@@ -1,5 +1,12 @@
 # Changes
 
+## [1.19.1](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.19.0...cloudbuild/v1.19.1) (2024-12-11)
+
+
+### Bug Fixes
+
+* **cloudbuild:** Deprecate apiv1 client ([#11225](https://github.com/googleapis/google-cloud-go/issues/11225)) ([ba9412a](https://github.com/googleapis/google-cloud-go/commit/ba9412a07cc3b31278c204759c343c5e0c60663f))
+
 ## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.18.1...cloudbuild/v1.19.0) (2024-11-06)
 
 

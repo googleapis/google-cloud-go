@@ -45,7 +45,7 @@ func ExampleCloudChannelClient_ListChannelPartnerLinks_all() {
 	}
 	for resp, err := range c.ListChannelPartnerLinks(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -71,7 +71,7 @@ func ExampleCloudChannelClient_ListChannelPartnerRepricingConfigs_all() {
 	}
 	for resp, err := range c.ListChannelPartnerRepricingConfigs(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -97,7 +97,7 @@ func ExampleCloudChannelClient_ListCustomerRepricingConfigs_all() {
 	}
 	for resp, err := range c.ListCustomerRepricingConfigs(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -123,7 +123,7 @@ func ExampleCloudChannelClient_ListCustomers_all() {
 	}
 	for resp, err := range c.ListCustomers(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -149,7 +149,7 @@ func ExampleCloudChannelClient_ListEntitlementChanges_all() {
 	}
 	for resp, err := range c.ListEntitlementChanges(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -175,7 +175,7 @@ func ExampleCloudChannelClient_ListEntitlements_all() {
 	}
 	for resp, err := range c.ListEntitlements(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -201,7 +201,7 @@ func ExampleCloudChannelClient_ListOffers_all() {
 	}
 	for resp, err := range c.ListOffers(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -227,7 +227,7 @@ func ExampleCloudChannelClient_ListProducts_all() {
 	}
 	for resp, err := range c.ListProducts(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -253,7 +253,7 @@ func ExampleCloudChannelClient_ListPurchasableOffers_all() {
 	}
 	for resp, err := range c.ListPurchasableOffers(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -279,7 +279,7 @@ func ExampleCloudChannelClient_ListPurchasableSkus_all() {
 	}
 	for resp, err := range c.ListPurchasableSkus(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -305,7 +305,7 @@ func ExampleCloudChannelClient_ListSkuGroupBillableSkus_all() {
 	}
 	for resp, err := range c.ListSkuGroupBillableSkus(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -331,7 +331,7 @@ func ExampleCloudChannelClient_ListSkuGroups_all() {
 	}
 	for resp, err := range c.ListSkuGroups(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -357,7 +357,7 @@ func ExampleCloudChannelClient_ListSkus_all() {
 	}
 	for resp, err := range c.ListSkus(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -383,7 +383,7 @@ func ExampleCloudChannelClient_ListSubscribers_all() {
 	}
 	for resp, err := range c.ListSubscribers(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -409,7 +409,7 @@ func ExampleCloudChannelClient_ListTransferableOffers_all() {
 	}
 	for resp, err := range c.ListTransferableOffers(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -435,7 +435,7 @@ func ExampleCloudChannelClient_ListTransferableSkus_all() {
 	}
 	for resp, err := range c.ListTransferableSkus(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -461,7 +461,7 @@ func ExampleCloudChannelClient_ListOperations_all() {
 	}
 	for resp, err := range c.ListOperations(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp

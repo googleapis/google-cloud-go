@@ -44,7 +44,7 @@ func ExampleGrafeasV1Beta1Client_ListNoteOccurrences_all() {
 	}
 	for resp, err := range c.ListNoteOccurrences(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -70,7 +70,7 @@ func ExampleGrafeasV1Beta1Client_ListNotes_all() {
 	}
 	for resp, err := range c.ListNotes(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -96,7 +96,7 @@ func ExampleGrafeasV1Beta1Client_ListOccurrences_all() {
 	}
 	for resp, err := range c.ListOccurrences(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp

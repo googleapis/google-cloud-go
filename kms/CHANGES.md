@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.20.2](https://github.com/googleapis/google-cloud-go/compare/kms/v1.20.1...kms/v1.20.2) (2024-12-04)
+
+
+### Documentation
+
+* **kms:** A comment for enum `CryptoKeyVersionAlgorithm` is changed ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+
 ## [1.20.1](https://github.com/googleapis/google-cloud-go/compare/kms/v1.20.0...kms/v1.20.1) (2024-10-23)
 
 

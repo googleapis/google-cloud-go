@@ -19,7 +19,7 @@ package accounts
 import (
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -27,7 +27,6 @@ import (
 
 	accountspb "cloud.google.com/go/shopping/merchant/accounts/apiv1beta/accountspb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -216,6 +215,8 @@ type termsOfServiceGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewTermsOfServiceClient creates a new terms of service service client based on gRPC.
@@ -242,6 +243,7 @@ func NewTermsOfServiceClient(ctx context.Context, opts ...option.ClientOption) (
 		connPool:             connPool,
 		termsOfServiceClient: accountspb.NewTermsOfServiceServiceClient(connPool),
 		CallOptions:          &client.CallOptions,
+		logger:               internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -288,6 +290,8 @@ type termsOfServiceRESTClient struct {
 
 	// Points back to the CallOptions field of the containing TermsOfServiceClient
 	CallOptions **TermsOfServiceCallOptions
+
+	logger *slog.Logger
 }
 
 // NewTermsOfServiceRESTClient creates a new terms of service service rest client.
@@ -305,6 +309,7 @@ func NewTermsOfServiceRESTClient(ctx context.Context, opts ...option.ClientOptio
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -357,7 +362,7 @@ func (c *termsOfServiceGRPCClient) GetTermsOfService(ctx context.Context, req *a
 	var resp *accountspb.TermsOfService
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.termsOfServiceClient.GetTermsOfService(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.termsOfServiceClient.GetTermsOfService, req, settings.GRPC, c.logger, "GetTermsOfService")
 		return err
 	}, opts...)
 	if err != nil {
@@ -372,7 +377,7 @@ func (c *termsOfServiceGRPCClient) RetrieveLatestTermsOfService(ctx context.Cont
 	var resp *accountspb.TermsOfService
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.termsOfServiceClient.RetrieveLatestTermsOfService(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.termsOfServiceClient.RetrieveLatestTermsOfService, req, settings.GRPC, c.logger, "RetrieveLatestTermsOfService")
 		return err
 	}, opts...)
 	if err != nil {
@@ -389,7 +394,7 @@ func (c *termsOfServiceGRPCClient) AcceptTermsOfService(ctx context.Context, req
 	opts = append((*c.CallOptions).AcceptTermsOfService[0:len((*c.CallOptions).AcceptTermsOfService):len((*c.CallOptions).AcceptTermsOfService)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.termsOfServiceClient.AcceptTermsOfService(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.termsOfServiceClient.AcceptTermsOfService, req, settings.GRPC, c.logger, "AcceptTermsOfService")
 		return err
 	}, opts...)
 	return err
@@ -428,17 +433,7 @@ func (c *termsOfServiceRESTClient) GetTermsOfService(ctx context.Context, req *a
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetTermsOfService")
 		if err != nil {
 			return err
 		}
@@ -488,17 +483,7 @@ func (c *termsOfServiceRESTClient) RetrieveLatestTermsOfService(ctx context.Cont
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "RetrieveLatestTermsOfService")
 		if err != nil {
 			return err
 		}
@@ -547,14 +532,7 @@ func (c *termsOfServiceRESTClient) AcceptTermsOfService(ctx context.Context, req
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "AcceptTermsOfService")
+		return err
 	}, opts...)
 }

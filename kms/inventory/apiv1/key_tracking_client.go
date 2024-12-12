@@ -19,7 +19,7 @@ package inventory
 import (
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -27,7 +27,6 @@ import (
 
 	inventorypb "cloud.google.com/go/kms/inventory/apiv1/inventorypb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -158,6 +157,8 @@ type keyTrackingGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewKeyTrackingClient creates a new key tracking service client based on gRPC.
@@ -185,6 +186,7 @@ func NewKeyTrackingClient(ctx context.Context, opts ...option.ClientOption) (*Ke
 		connPool:          connPool,
 		keyTrackingClient: inventorypb.NewKeyTrackingServiceClient(connPool),
 		CallOptions:       &client.CallOptions,
+		logger:            internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -231,6 +233,8 @@ type keyTrackingRESTClient struct {
 
 	// Points back to the CallOptions field of the containing KeyTrackingClient
 	CallOptions **KeyTrackingCallOptions
+
+	logger *slog.Logger
 }
 
 // NewKeyTrackingRESTClient creates a new key tracking service rest client.
@@ -249,6 +253,7 @@ func NewKeyTrackingRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -301,7 +306,7 @@ func (c *keyTrackingGRPCClient) GetProtectedResourcesSummary(ctx context.Context
 	var resp *inventorypb.ProtectedResourcesSummary
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.keyTrackingClient.GetProtectedResourcesSummary(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.keyTrackingClient.GetProtectedResourcesSummary, req, settings.GRPC, c.logger, "GetProtectedResourcesSummary")
 		return err
 	}, opts...)
 	if err != nil {
@@ -330,7 +335,7 @@ func (c *keyTrackingGRPCClient) SearchProtectedResources(ctx context.Context, re
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.keyTrackingClient.SearchProtectedResources(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.keyTrackingClient.SearchProtectedResources, req, settings.GRPC, c.logger, "SearchProtectedResources")
 			return err
 		}, opts...)
 		if err != nil {
@@ -393,17 +398,7 @@ func (c *keyTrackingRESTClient) GetProtectedResourcesSummary(ctx context.Context
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetProtectedResourcesSummary")
 		if err != nil {
 			return err
 		}
@@ -472,21 +467,10 @@ func (c *keyTrackingRESTClient) SearchProtectedResources(ctx context.Context, re
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "SearchProtectedResources")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

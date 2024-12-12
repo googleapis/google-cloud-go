@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -29,7 +29,6 @@ import (
 	generativelanguagepb "cloud.google.com/go/ai/generativelanguage/apiv1beta/generativelanguagepb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -212,6 +211,8 @@ type discussGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewDiscussClient creates a new discuss service client based on gRPC.
@@ -241,6 +242,7 @@ func NewDiscussClient(ctx context.Context, opts ...option.ClientOption) (*Discus
 		connPool:         connPool,
 		discussClient:    generativelanguagepb.NewDiscussServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -288,6 +290,8 @@ type discussRESTClient struct {
 
 	// Points back to the CallOptions field of the containing DiscussClient
 	CallOptions **DiscussCallOptions
+
+	logger *slog.Logger
 }
 
 // NewDiscussRESTClient creates a new discuss service rest client.
@@ -308,6 +312,7 @@ func NewDiscussRESTClient(ctx context.Context, opts ...option.ClientOption) (*Di
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -360,7 +365,7 @@ func (c *discussGRPCClient) GenerateMessage(ctx context.Context, req *generative
 	var resp *generativelanguagepb.GenerateMessageResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.discussClient.GenerateMessage(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.discussClient.GenerateMessage, req, settings.GRPC, c.logger, "GenerateMessage")
 		return err
 	}, opts...)
 	if err != nil {
@@ -378,7 +383,7 @@ func (c *discussGRPCClient) CountMessageTokens(ctx context.Context, req *generat
 	var resp *generativelanguagepb.CountMessageTokensResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.discussClient.CountMessageTokens(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.discussClient.CountMessageTokens, req, settings.GRPC, c.logger, "CountMessageTokens")
 		return err
 	}, opts...)
 	if err != nil {
@@ -396,7 +401,7 @@ func (c *discussGRPCClient) GetOperation(ctx context.Context, req *longrunningpb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -425,7 +430,7 @@ func (c *discussGRPCClient) ListOperations(ctx context.Context, req *longrunning
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -490,17 +495,7 @@ func (c *discussRESTClient) GenerateMessage(ctx context.Context, req *generative
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GenerateMessage")
 		if err != nil {
 			return err
 		}
@@ -556,17 +551,7 @@ func (c *discussRESTClient) CountMessageTokens(ctx context.Context, req *generat
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CountMessageTokens")
 		if err != nil {
 			return err
 		}
@@ -616,17 +601,7 @@ func (c *discussRESTClient) GetOperation(ctx context.Context, req *longrunningpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -691,21 +666,10 @@ func (c *discussRESTClient) ListOperations(ctx context.Context, req *longrunning
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

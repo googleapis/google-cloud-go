@@ -44,7 +44,7 @@ func ExampleCloudControlsPartnerCoreClient_ListAccessApprovalRequests_all() {
 	}
 	for resp, err := range c.ListAccessApprovalRequests(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -70,7 +70,7 @@ func ExampleCloudControlsPartnerCoreClient_ListCustomers_all() {
 	}
 	for resp, err := range c.ListCustomers(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -96,7 +96,7 @@ func ExampleCloudControlsPartnerCoreClient_ListWorkloads_all() {
 	}
 	for resp, err := range c.ListWorkloads(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp

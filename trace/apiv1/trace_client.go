@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	tracepb "cloud.google.com/go/trace/apiv1/tracepb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -232,6 +231,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new trace service client based on gRPC.
@@ -262,6 +263,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      tracepb.NewTraceServiceClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -308,6 +310,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new trace service rest client.
@@ -329,6 +333,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -392,7 +397,7 @@ func (c *gRPCClient) ListTraces(ctx context.Context, req *tracepb.ListTracesRequ
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListTraces(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListTraces, req, settings.GRPC, c.logger, "ListTraces")
 			return err
 		}, opts...)
 		if err != nil {
@@ -427,7 +432,7 @@ func (c *gRPCClient) GetTrace(ctx context.Context, req *tracepb.GetTraceRequest,
 	var resp *tracepb.Trace
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetTrace(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetTrace, req, settings.GRPC, c.logger, "GetTrace")
 		return err
 	}, opts...)
 	if err != nil {
@@ -444,7 +449,7 @@ func (c *gRPCClient) PatchTraces(ctx context.Context, req *tracepb.PatchTracesRe
 	opts = append((*c.CallOptions).PatchTraces[0:len((*c.CallOptions).PatchTraces):len((*c.CallOptions).PatchTraces)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.PatchTraces(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.PatchTraces, req, settings.GRPC, c.logger, "PatchTraces")
 		return err
 	}, opts...)
 	return err
@@ -518,21 +523,10 @@ func (c *restClient) ListTraces(ctx context.Context, req *tracepb.ListTracesRequ
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListTraces")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -595,17 +589,7 @@ func (c *restClient) GetTrace(ctx context.Context, req *tracepb.GetTraceRequest,
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetTrace")
 		if err != nil {
 			return err
 		}
@@ -663,14 +647,7 @@ func (c *restClient) PatchTraces(ctx context.Context, req *tracepb.PatchTracesRe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PatchTraces")
+		return err
 	}, opts...)
 }
