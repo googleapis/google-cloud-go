@@ -1943,6 +1943,26 @@ func TestParseDDL(t *testing.T) {
 			},
 		},
 		{
+			"CREATE TABLE IF NOT EXISTS tname (id INT64, name `foo.bar.baz.ProtoName` NOT NULL) PRIMARY KEY (id)",
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&CreateTable{
+						Name:        "tname",
+						IfNotExists: true,
+						Columns: []ColumnDef{
+							{Name: "id", Type: Type{Base: Int64}, Position: line(1)},
+							{Name: "name", NotNull: true, Type: Type{Base: Proto, ProtoRef: "foo.bar.baz.ProtoName"}, Position: line(1)},
+						},
+						PrimaryKey: []KeyPart{
+							{Column: "id"},
+						},
+						Position: line(1),
+					},
+				},
+			},
+		},
+		{
 			`CREATE INDEX IF NOT EXISTS iname ON tname (cname)`,
 			&DDL{
 				Filename: "filename",
