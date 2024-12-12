@@ -22,6 +22,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"os"
@@ -32,6 +33,7 @@ import (
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/credsfile"
 	"cloud.google.com/go/auth/internal/jwt"
+	"github.com/googleapis/gax-go/v2/internallog"
 )
 
 const (
@@ -51,6 +53,7 @@ var (
 type Options struct {
 	STSAudience string
 	Client      *http.Client
+	Logger      *slog.Logger
 }
 
 // NewTokenProvider returns a [cloud.google.com/go/auth.TokenProvider] from a
@@ -79,6 +82,7 @@ func NewTokenProvider(f *credsfile.GDCHServiceAccountFile, o *Options) (auth.Tok
 		pkID:            f.PrivateKeyID,
 		certPool:        certPool,
 		client:          o.Client,
+		logger:          internallog.New(o.Logger),
 	}
 	return tp, nil
 }
@@ -102,6 +106,7 @@ type gdchProvider struct {
 	certPool        *x509.CertPool
 
 	client *http.Client
+	logger *slog.Logger
 }
 
 func (g gdchProvider) Token(ctx context.Context) (*auth.Token, error) {
@@ -136,10 +141,12 @@ func (g gdchProvider) Token(ctx context.Context) (*auth.Token, error) {
 		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	g.logger.DebugContext(ctx, "gdch token request", "request", internallog.HTTPRequest(req, []byte(v.Encode())))
 	resp, body, err := internal.DoRequest(g.client, req)
 	if err != nil {
 		return nil, fmt.Errorf("credentials: cannot fetch token: %w", err)
 	}
+	g.logger.DebugContext(ctx, "gdch token response", "response", internallog.HTTPResponse(resp, body))
 	if c := resp.StatusCode; c < http.StatusOK || c > http.StatusMultipleChoices {
 		return nil, &auth.Error{
 			Response: resp,
