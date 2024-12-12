@@ -263,7 +263,7 @@ func (i impersonatedTokenProvider) Token(ctx context.Context) (*auth.Token, erro
 		return nil, fmt.Errorf("impersonate: unable to create request: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
-	i.logger.DebugContext(ctx, "impersonated token fetch", "request", internallog.HTTPRequest(req, b))
+	i.logger.DebugContext(ctx, "impersonated token request", "request", internallog.HTTPRequest(req, b))
 	resp, body, err := internal.DoRequest(i.client, req)
 	if err != nil {
 		return nil, fmt.Errorf("impersonate: unable to generate access token: %w", err)

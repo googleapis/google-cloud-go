@@ -196,7 +196,7 @@ func (dts *downscopedTokenProvider) Token(ctx context.Context) (*auth.Token, err
 		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	dts.logger.DebugContext(ctx, "downscoped token fetch", "request", internallog.HTTPRequest(req, []byte(form.Encode())))
+	dts.logger.DebugContext(ctx, "downscoped token request", "request", internallog.HTTPRequest(req, []byte(form.Encode())))
 	resp, body, err := internal.DoRequest(dts.Client, req)
 	if err != nil {
 		return nil, err

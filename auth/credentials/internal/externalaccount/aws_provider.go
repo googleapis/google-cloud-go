@@ -195,7 +195,7 @@ func (sp *awsSubjectProvider) getAWSSessionToken(ctx context.Context) (string, e
 	}
 	req.Header.Set(awsIMDSv2SessionTTLHeader, awsIMDSv2SessionTTL)
 
-	sp.logger.DebugContext(ctx, "aws session token fetch", "request", internallog.HTTPRequest(req, nil))
+	sp.logger.DebugContext(ctx, "aws session token request", "request", internallog.HTTPRequest(req, nil))
 	resp, body, err := internal.DoRequest(sp.Client, req)
 	if err != nil {
 		return "", err
@@ -230,7 +230,7 @@ func (sp *awsSubjectProvider) getRegion(ctx context.Context, headers map[string]
 	for name, value := range headers {
 		req.Header.Add(name, value)
 	}
-	sp.logger.DebugContext(ctx, "aws region fetch", "request", internallog.HTTPRequest(req, nil))
+	sp.logger.DebugContext(ctx, "aws region request", "request", internallog.HTTPRequest(req, nil))
 	resp, body, err := internal.DoRequest(sp.Client, req)
 	if err != nil {
 		return "", err
@@ -290,7 +290,7 @@ func (sp *awsSubjectProvider) getMetadataSecurityCredentials(ctx context.Context
 	for name, value := range headers {
 		req.Header.Add(name, value)
 	}
-	sp.logger.DebugContext(ctx, "aws security credential fetch", "request", internallog.HTTPRequest(req, nil))
+	sp.logger.DebugContext(ctx, "aws security credential request", "request", internallog.HTTPRequest(req, nil))
 	resp, body, err := internal.DoRequest(sp.Client, req)
 	if err != nil {
 		return result, err
@@ -317,7 +317,7 @@ func (sp *awsSubjectProvider) getMetadataRoleName(ctx context.Context, headers m
 		req.Header.Add(name, value)
 	}
 
-	sp.logger.DebugContext(ctx, "aws metadata role fetch", "request", internallog.HTTPRequest(req, nil))
+	sp.logger.DebugContext(ctx, "aws metadata role request", "request", internallog.HTTPRequest(req, nil))
 	resp, body, err := internal.DoRequest(sp.Client, req)
 	if err != nil {
 		return "", err

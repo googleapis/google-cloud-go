@@ -568,7 +568,7 @@ func (tp tokenProvider2LO) Token(ctx context.Context) (*Token, error) {
 		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	tp.logger.DebugContext(ctx, "2LO token fetch", "request", internallog.HTTPRequest(req, []byte(v.Encode())))
+	tp.logger.DebugContext(ctx, "2LO token request", "request", internallog.HTTPRequest(req, []byte(v.Encode())))
 	resp, body, err := internal.DoRequest(tp.Client, req)
 	if err != nil {
 		return nil, fmt.Errorf("auth: cannot fetch token: %w", err)

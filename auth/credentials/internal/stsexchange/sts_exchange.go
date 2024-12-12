@@ -97,7 +97,7 @@ func doRequest(ctx context.Context, opts *Options, data url.Values) (*TokenRespo
 	}
 	req.Header.Set("Content-Length", strconv.Itoa(len(encodedData)))
 
-	logger.DebugContext(ctx, "sts token fetch", "request", internallog.HTTPRequest(req, []byte(encodedData)))
+	logger.DebugContext(ctx, "sts token request", "request", internallog.HTTPRequest(req, []byte(encodedData)))
 	resp, body, err := internal.DoRequest(opts.Client, req)
 	if err != nil {
 		return nil, fmt.Errorf("credentials: invalid response from Secure Token Server: %w", err)

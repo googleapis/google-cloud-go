@@ -96,18 +96,20 @@ func NewIDTokenCredentials(opts *IDTokenOptions) (*auth.Credentials, error) {
 	logger := internallog.New(opts.Logger)
 	if client == nil {
 		var err error
-		// TODO: test not signed jwt more
-		creds, err = credentials.DetectDefault(&credentials.DetectOptions{
-			Scopes:           []string{defaultScope},
-			UseSelfSignedJWT: true,
-			Logger:           logger,
-		})
-		if err != nil {
-			return nil, err
+		if creds == nil {
+			// TODO: test not signed jwt more
+			creds, err = credentials.DetectDefault(&credentials.DetectOptions{
+				Scopes:           []string{defaultScope},
+				UseSelfSignedJWT: true,
+				Logger:           logger,
+			})
+			if err != nil {
+				return nil, err
+			}
 		}
 		client, err = httptransport.NewClient(&httptransport.Options{
 			Credentials: creds,
-			Logger:      opts.Logger,
+			Logger:      logger,
 		})
 		if err != nil {
 			return nil, err
@@ -172,7 +174,7 @@ func (i impersonatedIDTokenProvider) Token(ctx context.Context) (*auth.Token, er
 		return nil, fmt.Errorf("impersonate: unable to create request: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
-	i.logger.DebugContext(ctx, "impersonated idtoken fetch", "request", internallog.HTTPRequest(req, bodyBytes))
+	i.logger.DebugContext(ctx, "impersonated idtoken request", "request", internallog.HTTPRequest(req, bodyBytes))
 	resp, body, err := internal.DoRequest(i.client, req)
 	if err != nil {
 		return nil, fmt.Errorf("impersonate: unable to generate ID token: %w", err)

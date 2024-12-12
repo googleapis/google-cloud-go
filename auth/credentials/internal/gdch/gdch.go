@@ -141,7 +141,7 @@ func (g gdchProvider) Token(ctx context.Context) (*auth.Token, error) {
 		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	g.logger.DebugContext(ctx, "gdch token fetch", "request", internallog.HTTPRequest(req, []byte(v.Encode())))
+	g.logger.DebugContext(ctx, "gdch token request", "request", internallog.HTTPRequest(req, []byte(v.Encode())))
 	resp, body, err := internal.DoRequest(g.client, req)
 	if err != nil {
 		return nil, fmt.Errorf("credentials: cannot fetch token: %w", err)

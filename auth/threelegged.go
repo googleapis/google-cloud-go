@@ -306,7 +306,7 @@ func fetchToken(ctx context.Context, o *Options3LO, v url.Values) (*Token, strin
 	}
 	logger := o.logger()
 
-	logger.DebugContext(ctx, "3LO token fetch", "request", internallog.HTTPRequest(req, []byte(v.Encode())))
+	logger.DebugContext(ctx, "3LO token request", "request", internallog.HTTPRequest(req, []byte(v.Encode())))
 	// Make request
 	resp, body, err := internal.DoRequest(o.client(), req)
 	if err != nil {

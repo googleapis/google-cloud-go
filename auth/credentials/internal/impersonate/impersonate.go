@@ -117,7 +117,7 @@ func (o *Options) Token(ctx context.Context) (*auth.Token, error) {
 	if err := setAuthHeader(ctx, o.Tp, req); err != nil {
 		return nil, err
 	}
-	logger.DebugContext(ctx, "impersonated token fetch", "request", internallog.HTTPRequest(req, b))
+	logger.DebugContext(ctx, "impersonated token request", "request", internallog.HTTPRequest(req, b))
 	resp, body, err := internal.DoRequest(o.Client, req)
 	if err != nil {
 		return nil, fmt.Errorf("credentials: unable to generate access token: %w", err)

@@ -52,7 +52,7 @@ func (sp *urlSubjectProvider) subjectToken(ctx context.Context) (string, error) 
 	for key, val := range sp.Headers {
 		req.Header.Add(key, val)
 	}
-	sp.Logger.DebugContext(ctx, "url subject token fetch", "request", internallog.HTTPRequest(req, nil))
+	sp.Logger.DebugContext(ctx, "url subject token request", "request", internallog.HTTPRequest(req, nil))
 	resp, body, err := internal.DoRequest(sp.Client, req)
 	if err != nil {
 		return "", fmt.Errorf("credentials: invalid response when retrieving subject token: %w", err)

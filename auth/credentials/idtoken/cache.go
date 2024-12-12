@@ -62,7 +62,7 @@ func (c *cachingClient) getCert(ctx context.Context, url string) (*certResponse,
 	if err != nil {
 		return nil, err
 	}
-	c.logger.DebugContext(ctx, "cert fetch", "request", internallog.HTTPRequest(req, nil))
+	c.logger.DebugContext(ctx, "cert request", "request", internallog.HTTPRequest(req, nil))
 	resp, body, err := internal.DoRequest(c.client, req)
 	if err != nil {
 		return nil, err
