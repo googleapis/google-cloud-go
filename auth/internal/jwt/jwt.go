@@ -17,6 +17,7 @@ package jwt
 import (
 	"bytes"
 	"crypto"
+	"crypto/ecdsa"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/sha256"
@@ -168,4 +169,22 @@ func VerifyJWS(token string, key *rsa.PublicKey) error {
 	h := sha256.New()
 	h.Write([]byte(signedContent))
 	return rsa.VerifyPKCS1v15(key, crypto.SHA256, h.Sum(nil), signatureString)
+}
+
+func VerifyJWSWithEC(token string, key *ecdsa.PublicKey) error {
+	parts := strings.Split(token, ".")
+	if len(parts) != 3 {
+		return errors.New("jwt: invalid token received, token must have 3 parts")
+	}
+	sig, err := base64.RawURLEncoding.DecodeString(parts[2])
+	if err != nil {
+		return err
+	}
+	signedContent := parts[0] + "." + parts[1]
+	h := sha256.New()
+	h.Write([]byte(signedContent))
+	if valid := ecdsa.VerifyASN1(key, h.Sum(nil), sig); !valid {
+		return fmt.Errorf("jwt: the ASN.1 encoded signature is invalid")
+	}
+	return nil
 }
