@@ -64,6 +64,7 @@ type CallOptions struct {
 	RewriteObject             []gax.CallOption
 	StartResumableWrite       []gax.CallOption
 	QueryWriteStatus          []gax.CallOption
+	MoveObject                []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -366,6 +367,19 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		MoveObject: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
 	}
 }
 
@@ -396,6 +410,7 @@ type internalClient interface {
 	RewriteObject(context.Context, *storagepb.RewriteObjectRequest, ...gax.CallOption) (*storagepb.RewriteResponse, error)
 	StartResumableWrite(context.Context, *storagepb.StartResumableWriteRequest, ...gax.CallOption) (*storagepb.StartResumableWriteResponse, error)
 	QueryWriteStatus(context.Context, *storagepb.QueryWriteStatusRequest, ...gax.CallOption) (*storagepb.QueryWriteStatusResponse, error)
+	MoveObject(context.Context, *storagepb.MoveObjectRequest, ...gax.CallOption) (*storagepb.Object, error)
 }
 
 // Client is a client for interacting with Cloud Storage API.
@@ -677,6 +692,11 @@ func (c *Client) StartResumableWrite(ctx context.Context, req *storagepb.StartRe
 // non-decreasing.
 func (c *Client) QueryWriteStatus(ctx context.Context, req *storagepb.QueryWriteStatusRequest, opts ...gax.CallOption) (*storagepb.QueryWriteStatusResponse, error) {
 	return c.internalClient.QueryWriteStatus(ctx, req, opts...)
+}
+
+// MoveObject moves the source object to the destination object in the same bucket.
+func (c *Client) MoveObject(ctx context.Context, req *storagepb.MoveObjectRequest, opts ...gax.CallOption) (*storagepb.Object, error) {
+	return c.internalClient.MoveObject(ctx, req, opts...)
 }
 
 // gRPCClient is a client for interacting with Cloud Storage API over gRPC transport.
@@ -1405,6 +1425,33 @@ func (c *gRPCClient) QueryWriteStatus(ctx context.Context, req *storagepb.QueryW
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = executeRPC(ctx, c.client.QueryWriteStatus, req, settings.GRPC, c.logger, "QueryWriteStatus")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) MoveObject(ctx context.Context, req *storagepb.MoveObjectRequest, opts ...gax.CallOption) (*storagepb.Object, error) {
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetBucket()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetBucket())[1])) > 0 {
+		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetBucket())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).MoveObject[0:len((*c.CallOptions).MoveObject):len((*c.CallOptions).MoveObject)], opts...)
+	var resp *storagepb.Object
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.MoveObject, req, settings.GRPC, c.logger, "MoveObject")
 		return err
 	}, opts...)
 	if err != nil {
