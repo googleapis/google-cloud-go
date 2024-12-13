@@ -30,6 +30,7 @@ import (
 	"cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/transport"
+	"github.com/googleapis/gax-go/v2/internallog"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
 	grpccreds "google.golang.org/grpc/credentials"
@@ -137,6 +138,10 @@ func (o *Options) client() *http.Client {
 	return nil
 }
 
+func (o *Options) logger() *slog.Logger {
+	return internallog.New(o.Logger)
+}
+
 func (o *Options) validate() error {
 	if o == nil {
 		return errors.New("grpctransport: opts required to be non-nil")
@@ -177,6 +182,9 @@ func (o *Options) resolveDetectOptions() *credentials.DetectOptions {
 		}
 		do.Client = transport.DefaultHTTPClientWithTLS(tlsConfig)
 		do.TokenURL = credentials.GoogleMTLSTokenURL
+	}
+	if do.Logger == nil {
+		do.Logger = o.logger()
 	}
 	return do
 }
@@ -246,6 +254,7 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 		ClientCertProvider: opts.ClientCertProvider,
 		Client:             opts.client(),
 		UniverseDomain:     opts.UniverseDomain,
+		Logger:             opts.logger(),
 	}
 	if io := opts.InternalOptions; io != nil {
 		tOpts.DefaultEndpointTemplate = io.DefaultEndpointTemplate
