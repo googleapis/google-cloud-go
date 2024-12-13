@@ -418,9 +418,10 @@ type Client struct {
 
 // Options for configuring a [Client].
 type Options struct {
-	// Client is the HTTP used to make requests. Optional.
+	// Client is the HTTP client used to make requests. Optional.
 	Client *http.Client
-	// Logger is used to log information about outgoing requests. Optional.
+	// Logger is used to log information about HTTP request and responses.
+	// If not provided, nothing will be logged. Optional.
 	Logger *slog.Logger
 }
 
