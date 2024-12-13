@@ -1,6 +1,6 @@
 module cloud.google.com/go/internal/examples/mock
 
-go 1.21
+go 1.22
 
 require (
 	cloud.google.com/go/translate v1.12.2
@@ -15,6 +15,6 @@ require (
 	google.golang.org/api v0.211.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20241118233622-e639e219e697 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20241206012308-a4fef0638583 // indirect
-	google.golang.org/grpc v1.67.1 // indirect
+	google.golang.org/grpc v1.69.0 // indirect
 	google.golang.org/protobuf v1.35.2 // indirect
 )

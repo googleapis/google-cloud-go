@@ -53,7 +53,7 @@ import (
 	raw "google.golang.org/api/storage/v1"
 	"google.golang.org/api/transport"
 	htransport "google.golang.org/api/transport/http"
-	"google.golang.org/grpc/experimental/stats"
+	"google.golang.org/grpc/stats"
 	"google.golang.org/grpc/stats/opentelemetry"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -261,7 +261,7 @@ func CheckDirectConnectivitySupported(ctx context.Context, bucket string, opts .
 	defer provider.Shutdown(ctx)
 	mo := opentelemetry.MetricsOptions{
 		MeterProvider:  provider,
-		Metrics:        stats.NewMetrics("grpc.client.attempt.duration"),
+		Metrics:        stats.NewMetricSet("grpc.client.attempt.duration"),
 		OptionalLabels: []string{"grpc.lb.locality"},
 	}
 	combinedOpts := append(opts, WithDisabledClientMetrics(), option.WithGRPCDialOption(opentelemetry.DialOption(opentelemetry.Options{MetricsOptions: mo})))
