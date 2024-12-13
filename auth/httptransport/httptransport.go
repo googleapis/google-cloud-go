@@ -27,6 +27,7 @@ import (
 	detect "cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/transport"
+	"github.com/googleapis/gax-go/v2/internallog"
 )
 
 // ClientCertProvider is a function that returns a TLS client certificate to be
@@ -107,6 +108,10 @@ func (o *Options) client() *http.Client {
 	return nil
 }
 
+func (o *Options) logger() *slog.Logger {
+	return internallog.New(o.Logger)
+}
+
 func (o *Options) resolveDetectOptions() *detect.DetectOptions {
 	io := o.InternalOptions
 	// soft-clone these so we are not updating a ref the user holds and may reuse
@@ -130,6 +135,9 @@ func (o *Options) resolveDetectOptions() *detect.DetectOptions {
 		}
 		do.Client = transport.DefaultHTTPClientWithTLS(tlsConfig)
 		do.TokenURL = detect.GoogleMTLSTokenURL
+	}
+	if do.Logger == nil {
+		do.Logger = o.logger()
 	}
 	return do
 }
@@ -203,6 +211,7 @@ func NewClient(opts *Options) (*http.Client, error) {
 		ClientCertProvider: opts.ClientCertProvider,
 		Client:             opts.client(),
 		UniverseDomain:     opts.UniverseDomain,
+		Logger:             opts.logger(),
 	}
 	if io := opts.InternalOptions; io != nil {
 		tOpts.DefaultEndpointTemplate = io.DefaultEndpointTemplate
