@@ -24,9 +24,8 @@ import (
 	"sync"
 	"time"
 
-	ipubsub "cloud.google.com/go/internal/pubsub"
-	"cloud.google.com/go/pubsub/internal/scheduler"
 	pb "cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
+	"cloud.google.com/go/pubsub/v2/internal/scheduler"
 	gax "github.com/googleapis/gax-go/v2"
 	"go.opencensus.io/stats"
 	"go.opencensus.io/tag"
@@ -59,10 +58,10 @@ const (
 // ErrOversizedMessage indicates that a message's size exceeds MaxPublishRequestBytes.
 var ErrOversizedMessage = bundler.ErrOversizedItem
 
-// Topic is a reference to a PubSub topic.
+// Publisher is a reference to a PubSub topic.
 //
-// The methods of Topic are safe for use by multiple goroutines.
-type Topic struct {
+// The methods of Publisher are safe for use by multiple goroutines.
+type Publisher struct {
 	c *Client
 	// The fully qualified identifier for the topic, in the format "projects/<projid>/topics/<name>"
 	name string
@@ -88,6 +87,7 @@ type Topic struct {
 
 // PublishSettings control the bundling of published messages.
 type PublishSettings struct {
+
 	// Publish a non-empty batch after this delay has passed.
 	DelayThreshold time.Duration
 
@@ -152,28 +152,26 @@ var DefaultPublishSettings = PublishSettings{
 	CompressionBytesThreshold: 240,
 }
 
-// Topic creates a reference to a topic in the client's project.
+// Publisher constructs a publisher client from either a topicID or a topic name, otherwise known as a full path.
+
+// The client created is a reference and does not return any errors if the topic does not exist.
+// Errors will be returned when attempting to Publish instead.
+// If a Publisher's Publish method is called, it has background goroutines
+// associated with it. Clean them up by calling Publisher.Stop.
 //
-// If a Topic's Publish method is called, it has background goroutines
-// associated with it. Clean them up by calling Topic.Stop.
-//
-// Avoid creating many Topic instances if you use them to publish.
-func (c *Client) Topic(id string) *Topic {
-	return c.TopicInProject(id, c.projectID)
+// It is best practice to reuse the Publisher when publishing to the same topic.
+func (c *Client) Publisher(topicNameOrID string) *Publisher {
+	s := strings.Split(topicNameOrID, "/")
+	// The string looks like a properly formatted topic name, use it directly.
+	if len(s) == 4 {
+		return newPublisher(c, topicNameOrID)
+	}
+	// In all other cases, treat the string as the topicID, even if misformatted.
+	return newPublisher(c, fmt.Sprintf("projects/%s/topics/%s", c.projectID, topicNameOrID))
 }
 
-// TopicInProject creates a reference to a topic in the given project.
-//
-// If a Topic's Publish method is called, it has background goroutines
-// associated with it. Clean them up by calling Topic.Stop.
-//
-// Avoid creating many Topic instances if you use them to publish.
-func (c *Client) TopicInProject(id, projectID string) *Topic {
-	return newTopic(c, fmt.Sprintf("projects/%s/topics/%s", projectID, id))
-}
-
-func newTopic(c *Client, name string) *Topic {
-	return &Topic{
+func newPublisher(c *Client, name string) *Publisher {
+	return &Publisher{
 		c:               c,
 		name:            name,
 		PublishSettings: DefaultPublishSettings,
@@ -181,8 +179,8 @@ func newTopic(c *Client, name string) *Topic {
 	}
 }
 
-// ID returns the unique identifier of the topic within its project.
-func (t *Topic) ID() string {
+// ID returns the unique identifier of the topic for this publisher.
+func (t *Publisher) ID() string {
 	slash := strings.LastIndex(t.name, "/")
 	if slash == -1 {
 		// name is not a fully-qualified name.
@@ -191,8 +189,8 @@ func (t *Topic) ID() string {
 	return t.name[slash+1:]
 }
 
-// String returns the printable globally unique name for the topic.
-func (t *Topic) String() string {
+// String returns the globally unique printable name of the topic for this publisher.
+func (t *Publisher) String() string {
 	return t.name
 }
 
@@ -208,7 +206,47 @@ var ErrTopicStopped = errors.New("pubsub: Stop has been called for this topic")
 //	if err != nil {
 //	    // TODO: Handle error.
 //	}
-type PublishResult = ipubsub.PublishResult
+//
+// A PublishResult holds the result from a call to Publish.
+type PublishResult struct {
+	ready    chan struct{}
+	serverID string
+	err      error
+}
+
+// Ready returns a channel that is closed when the result is ready.
+// When the Ready channel is closed, Get is guaranteed not to block.
+func (r *PublishResult) Ready() <-chan struct{} { return r.ready }
+
+// Get returns the server-generated message ID and/or error result of a Publish call.
+// Get blocks until the Publish call completes or the context is done.
+func (r *PublishResult) Get(ctx context.Context) (serverID string, err error) {
+	// If the result is already ready, return it even if the context is done.
+	select {
+	case <-r.Ready():
+		return r.serverID, r.err
+	default:
+	}
+	select {
+	case <-ctx.Done():
+		return "", ctx.Err()
+	case <-r.Ready():
+		return r.serverID, r.err
+	}
+}
+
+// NewPublishResult creates a PublishResult.
+func NewPublishResult() *PublishResult {
+	return &PublishResult{ready: make(chan struct{})}
+}
+
+// SetPublishResult sets the server ID and error for a publish result and closes
+// the Ready channel.
+func SetPublishResult(r *PublishResult, sid string, err error) {
+	r.serverID = sid
+	r.err = err
+	close(r.ready)
+}
 
 var errTopicOrderingNotEnabled = errors.New("Topic.EnableMessageOrdering=false, but an OrderingKey was set in Message. Please remove the OrderingKey or turn on Topic.EnableMessageOrdering")
 
@@ -221,21 +259,21 @@ var errTopicOrderingNotEnabled = errors.New("Topic.EnableMessageOrdering=false, 
 // Publish creates goroutines for batching and sending messages. These goroutines
 // need to be stopped by calling t.Stop(). Once stopped, future calls to Publish
 // will immediately return a PublishResult with an error.
-func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
+func (t *Publisher) Publish(ctx context.Context, msg *Message) *PublishResult {
 	var createSpan trace.Span
 	if t.enableTracing {
 		opts := getPublishSpanAttributes(t.c.projectID, t.ID(), msg)
-		opts = append(opts, trace.WithAttributes(semconv.CodeFunction("Publish")))
 		ctx, createSpan = startSpan(ctx, createSpanName, t.ID(), opts...)
+		createSpan.SetAttributes(semconv.CodeFunction("Publish"))
 	}
 	ctx, err := tag.New(ctx, tag.Insert(keyStatus, "OK"), tag.Upsert(keyTopic, t.name))
 	if err != nil {
 		log.Printf("pubsub: cannot create context with tag in Publish: %v", err)
 	}
 
-	r := ipubsub.NewPublishResult()
+	r := NewPublishResult()
 	if !t.EnableMessageOrdering && msg.OrderingKey != "" {
-		ipubsub.SetPublishResult(r, "", errTopicOrderingNotEnabled)
+		SetPublishResult(r, "", errTopicOrderingNotEnabled)
 		spanRecordError(createSpan, errTopicOrderingNotEnabled)
 		return r
 	}
@@ -255,7 +293,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	t.mu.RLock()
 	defer t.mu.RUnlock()
 	if t.stopped {
-		ipubsub.SetPublishResult(r, "", ErrTopicStopped)
+		SetPublishResult(r, "", ErrTopicStopped)
 		spanRecordError(createSpan, ErrTopicStopped)
 		return r
 	}
@@ -268,7 +306,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	}
 	if err := t.flowController.acquire(ctx, msgSize); err != nil {
 		t.scheduler.Pause(msg.OrderingKey)
-		ipubsub.SetPublishResult(r, "", err)
+		SetPublishResult(r, "", err)
 		spanRecordError(fcSpan, err)
 		return r
 	}
@@ -284,7 +322,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	}
 
 	if t.enableTracing {
-		_, batcherSpan = startSpan(ctx, batcherSpanName, "")
+	_, batcherSpan = startSpan(ctx, batcherSpanName, "")
 		bmsg.batcherSpan = batcherSpan
 
 		// Inject the context from the first publish span rather than from flow control / batching.
@@ -293,7 +331,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 
 	if err := t.scheduler.Add(msg.OrderingKey, bmsg, msgSize); err != nil {
 		t.scheduler.Pause(msg.OrderingKey)
-		ipubsub.SetPublishResult(r, "", err)
+		SetPublishResult(r, "", err)
 		spanRecordError(createSpan, err)
 	}
 
@@ -303,7 +341,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 // Stop sends all remaining published messages and stop goroutines created for handling
 // publishing. Returns once all outstanding messages have been sent or have
 // failed to be sent.
-func (t *Topic) Stop() {
+func (t *Publisher) Stop() {
 	t.mu.Lock()
 	noop := t.stopped || t.scheduler == nil
 	t.stopped = true
@@ -315,7 +353,7 @@ func (t *Topic) Stop() {
 }
 
 // Flush blocks until all remaining messages are sent.
-func (t *Topic) Flush() {
+func (t *Publisher) Flush() {
 	if t.stopped || t.scheduler == nil {
 		return
 	}
@@ -332,7 +370,7 @@ type bundledMessage struct {
 	batcherSpan trace.Span
 }
 
-func (t *Topic) initBundler() {
+func (t *Publisher) initBundler() {
 	t.mu.RLock()
 	noop := t.stopped || t.scheduler != nil
 	t.mu.RUnlock()
@@ -421,11 +459,11 @@ type ErrPublishingPaused struct {
 }
 
 func (e ErrPublishingPaused) Error() string {
-	return fmt.Sprintf("pubsub: Publishing for ordering key, %s, paused due to previous error. Call topic.ResumePublish(orderingKey) before resuming publishing", e.OrderingKey)
+	return fmt.Sprintf("pubsub: Publishing for ordering key, %s, paused due to previous error. Call publisher.ResumePublish(orderingKey) before resuming publishing", e.OrderingKey)
 
 }
 
-func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage) {
+func (t *Publisher) publishMessageBundle(ctx context.Context, bms []*bundledMessage) {
 	ctx, err := tag.New(ctx, tag.Insert(keyStatus, "OK"), tag.Upsert(keyTopic, t.name))
 	if err != nil {
 		log.Printf("pubsub: cannot create context with tag in publishMessageBundle: %v", err)
@@ -453,14 +491,8 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 		opts := getCommonOptions(projectID, topicID)
 		// Add link to publish RPC span of createSpan(s).
 		opts = append(opts, trace.WithLinks(links...))
-		opts = append(
-			opts,
-			trace.WithAttributes(
-				semconv.MessagingBatchMessageCount(numMsgs),
-				semconv.CodeFunction("publishMessageBundle"),
-			),
-		)
 		ctx, pSpan = startSpan(ctx, publishRPCSpanName, topicID, opts...)
+		pSpan.SetAttributes(semconv.MessagingBatchMessageCount(numMsgs), semconv.CodeFunction("publishMessageBundle"))
 		defer pSpan.End()
 
 		// Add the reverse link to createSpan(s) of publish RPC span.
@@ -493,7 +525,7 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 	} else {
 		// Apply custom publish retryer on top of user specified retryer and
 		// default retryer.
-		opts := t.c.pubc.CallOptions.Publish
+		opts := t.c.TopicAdminClient.CallOptions.Publish
 		var settings gax.CallSettings
 		for _, opt := range opts {
 			opt.Resolve(&settings)
@@ -506,7 +538,7 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 		if t.PublishSettings.shouldCompress(batchSize) {
 			gaxOpts = append(gaxOpts, gax.WithGRPCOptions(grpc.UseCompressor(gzip.Name)))
 		}
-		res, err = t.c.pubc.Publish(ctx, &pb.PublishRequest{
+		res, err = t.c.TopicAdminClient.Publish(ctx, &pb.PublishRequest{
 			Topic:    t.name,
 			Messages: pbMsgs,
 		}, gaxOpts...)
@@ -525,10 +557,10 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 	for i, bm := range bms {
 		t.flowController.release(ctx, bm.size)
 		if err != nil {
-			ipubsub.SetPublishResult(bm.res, "", err)
+			SetPublishResult(bm.res, "", err)
 			spanRecordError(bm.createSpan, err)
 		} else {
-			ipubsub.SetPublishResult(bm.res, res.MessageIds[i], nil)
+			SetPublishResult(bm.res, res.MessageIds[i], nil)
 			if t.enableTracing {
 				bm.createSpan.SetAttributes(semconv.MessagingMessageIDKey.String(res.MessageIds[i]))
 			}
@@ -540,7 +572,7 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 // Publishing using an ordering key might be paused if an error is
 // encountered while publishing, to prevent messages from being published
 // out of order.
-func (t *Topic) ResumePublish(orderingKey string) {
+func (t *Publisher) ResumePublish(orderingKey string) {
 	t.mu.RLock()
 	noop := t.scheduler == nil
 	t.mu.RUnlock()

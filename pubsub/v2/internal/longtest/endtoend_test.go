@@ -27,14 +27,16 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
-	"cloud.google.com/go/pubsub"
+	"cloud.google.com/go/pubsub/v2"
+	pb "cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 )
 
 const (
 	timeout                 = time.Minute * 10
-	ackDeadline             = time.Second * 10
+	ackDeadline             = 10 * time.Second
+	ackDeadlineSec          = 10
 	nMessages               = 1e4
 	acceptableDupPercentage = 1
 	numAcceptableDups       = int(nMessages * acceptableDupPercentage / 100)
@@ -55,16 +57,20 @@ func TestEndToEnd_Dupes(t *testing.T) {
 
 	// Two subscriptions to the same topic.
 	var err error
-	var subs [2]*pubsub.Subscription
+	var subs [2]*pubsub.Subscriber
 	for i := 0; i < len(subs); i++ {
-		subs[i], err = client.CreateSubscription(ctx, fmt.Sprintf("%s-%d", subPrefix, i), pubsub.SubscriptionConfig{
-			Topic:       topic,
-			AckDeadline: ackDeadline,
+		subscription, err := client.SubscriptionAdminClient.CreateSubscription(ctx, &pb.Subscription{
+			Name:               fmt.Sprintf("%s-%d", subPrefix, i),
+			Topic:              topic.String(),
+			AckDeadlineSeconds: ackDeadlineSec,
 		})
+		subs[i] = client.Subscriber(subscription.Name)
 		if err != nil {
 			t.Fatalf("CreateSub error: %v", err)
 		}
-		defer subs[i].Delete(ctx)
+		defer client.SubscriptionAdminClient.DeleteSubscription(ctx, &pb.DeleteSubscriptionRequest{
+			Subscription: subs[i].Name(),
+		})
 	}
 
 	err = publish(ctx, topic, nMessages)
@@ -170,18 +176,22 @@ func TestEndToEnd_LongProcessingTime(t *testing.T) {
 	subPrefix := fmt.Sprintf("%s-%d", resourcePrefix, time.Now().UnixNano())
 
 	// Two subscriptions to the same topic.
-	sub, err := client.CreateSubscription(ctx, subPrefix+"-00", pubsub.SubscriptionConfig{
-		Topic:       topic,
-		AckDeadline: ackDeadline,
+	sub, err := client.SubscriptionAdminClient.CreateSubscription(ctx, &pb.Subscription{
+		Name:               subPrefix + "-00",
+		Topic:              topic.String(),
+		AckDeadlineSeconds: ackDeadlineSec,
 	})
 	if err != nil {
 		t.Fatalf("CreateSub error: %v", err)
 	}
-	defer sub.Delete(ctx)
+	defer client.SubscriptionAdminClient.DeleteSubscription(ctx, &pb.DeleteSubscriptionRequest{
+		Subscription: sub.Name,
+	})
 
+	subscriber := client.Subscriber(sub.Name)
 	// Tests the issue found in https://github.com/googleapis/google-cloud-go/issues/1247.
-	sub.ReceiveSettings.Synchronous = true
-	sub.ReceiveSettings.MaxOutstandingMessages = 500
+	subscriber.ReceiveSettings.Synchronous = true
+	subscriber.ReceiveSettings.MaxOutstandingMessages = 500
 
 	err = publish(ctx, topic, 500)
 	topic.Stop()
@@ -200,7 +210,7 @@ func TestEndToEnd_LongProcessingTime(t *testing.T) {
 		},
 		done: make(chan struct{}),
 	}
-	go consumer.consume(ctx, t, sub)
+	go consumer.consume(ctx, t, subscriber)
 	// Wait for a while after the last message before declaring quiescence.
 	// We wait a multiple of the ack deadline, for two reasons:
 	// 1. To detect if messages are redelivered after having their ack
@@ -254,11 +264,11 @@ loop:
 }
 
 // publish publishes n messages to topic.
-func publish(ctx context.Context, topic *pubsub.Topic, n int) error {
+func publish(ctx context.Context, publisher *pubsub.Publisher, n int) error {
 	var rs []*pubsub.PublishResult
 	for i := 0; i < n; i++ {
 		m := &pubsub.Message{Data: []byte(fmt.Sprintf("msg %d", i))}
-		rs = append(rs, topic.Publish(ctx, m))
+		rs = append(rs, publisher.Publish(ctx, m))
 	}
 	for _, r := range rs {
 		_, err := r.Get(ctx)
@@ -292,12 +302,12 @@ type consumer struct {
 
 // consume reads messages from a subscription, and keeps track of what it receives in mc.
 // After consume returns, the caller should wait on wg to ensure that no more updates to mc will be made.
-func (c *consumer) consume(ctx context.Context, t *testing.T, sub *pubsub.Subscription) {
+func (c *consumer) consume(ctx context.Context, t *testing.T, sub *pubsub.Subscriber) {
 	defer close(c.done)
 	for _, dur := range c.durations {
 		ctx2, cancel := context.WithTimeout(ctx, dur)
 		defer cancel()
-		id := sub.String()[len(sub.String())-1:]
+		id := sub.ID()
 		t.Logf("%s: start receive", id)
 		prev := c.totalRecvd
 		err := sub.Receive(ctx2, c.process)
@@ -336,7 +346,7 @@ func (c *consumer) process(_ context.Context, m *pubsub.Message) {
 }
 
 // Remember to call cleanup!
-func prepareEndToEndTest(ctx context.Context, t *testing.T) (*pubsub.Client, *pubsub.Topic, func()) {
+func prepareEndToEndTest(ctx context.Context, t *testing.T) (*pubsub.Client, *pubsub.Publisher, func()) {
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
@@ -361,13 +371,18 @@ func prepareEndToEndTest(ctx context.Context, t *testing.T) (*pubsub.Client, *pu
 		t.Logf("Pre-test topic cleanup failed: %v", err)
 	}
 
-	var topic *pubsub.Topic
-	if topic, err = client.CreateTopic(ctx, topicName); err != nil {
+	var topic *pb.Topic
+	if topic, err = client.TopicAdminClient.CreateTopic(ctx, &pb.Topic{
+		Name: topicName,
+	}); err != nil {
 		t.Fatalf("CreateTopic error: %v", err)
 	}
+	publisher := client.Publisher(topic.Name)
 
-	return client, topic, func() {
-		topic.Delete(ctx)
+	return client, publisher, func() {
+		client.TopicAdminClient.DeleteTopic(ctx, &pb.DeleteTopicRequest{
+			Topic: topicName,
+		})
 		client.Close()
 	}
 }
@@ -380,17 +395,19 @@ func cleanupTopic(ctx context.Context, client *pubsub.Client) error {
 	// Delete topics which were	created a while ago.
 	const expireAge = 24 * time.Hour
 
-	it := client.Topics(ctx)
+	it := client.TopicAdminClient.ListTopics(ctx, &pb.ListTopicsRequest{
+		Project: client.Project(),
+	})
 	for {
 		t, err := it.Next()
-		if errors.Is(err, iterator.Done) {
+		if err == iterator.Done {
 			break
 		}
 		if err != nil {
 			return err
 		}
 		// Take timestamp from id.
-		tID := t.ID()
+		tID := strings.Split(t.Name, "/")[3]
 		p := strings.Split(tID, "-")
 
 		// Only delete resources created from the endtoend test.
@@ -404,8 +421,8 @@ func cleanupTopic(ctx context.Context, client *pubsub.Client) error {
 			timeTCreated := time.Unix(0, timestamp)
 			if time.Since(timeTCreated) > expireAge {
 				log.Printf("deleting topic %q", tID)
-				if err := t.Delete(ctx); err != nil {
-					return fmt.Errorf("Delete topic: %v: %v", t.String(), err)
+				if err := client.TopicAdminClient.DeleteTopic(ctx, &pb.DeleteTopicRequest{Topic: t.Name}); err != nil {
+					return fmt.Errorf("Delete topic: %v: %v", t.Name, err)
 				}
 			}
 		}
@@ -421,16 +438,18 @@ func cleanupSubscription(ctx context.Context, client *pubsub.Client) error {
 	// Delete subscriptions which were created a while ago.
 	const expireAge = 24 * time.Hour
 
-	it := client.Subscriptions(ctx)
+	it := client.SubscriptionAdminClient.ListSubscriptions(ctx, &pb.ListSubscriptionsRequest{
+		Project: client.Project(),
+	})
 	for {
 		s, err := it.Next()
-		if errors.Is(err, iterator.Done) {
+		if err == iterator.Done {
 			break
 		}
 		if err != nil {
 			return err
 		}
-		sID := s.ID()
+		sID := strings.Split(s.Name, "/")[3]
 		p := strings.Split(sID, "-")
 
 		// Only delete resources created from the endtoend test.
@@ -444,7 +463,9 @@ func cleanupSubscription(ctx context.Context, client *pubsub.Client) error {
 			timeSCreated := time.Unix(0, timestamp)
 			if time.Since(timeSCreated) > expireAge {
 				log.Printf("deleting subscription %q", sID)
-				if err := s.Delete(ctx); err != nil {
+				err := client.SubscriptionAdminClient.DeleteSubscription(ctx,
+					&pb.DeleteSubscriptionRequest{Subscription: s.Name})
+				if err != nil {
 					return fmt.Errorf("Delete subscription: %v: %v", s.String(), err)
 				}
 			}

@@ -17,7 +17,7 @@ package testutil_test
 import (
 	"testing"
 
-	"cloud.google.com/go/pubsub/internal/testutil"
+	"cloud.google.com/go/pubsub/v2/internal/testutil"
 )
 
 func TestVerifyKeyOrdering(t *testing.T) {

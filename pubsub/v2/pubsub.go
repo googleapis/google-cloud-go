@@ -25,8 +25,8 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/detect"
-	"cloud.google.com/go/pubsub/internal"
 	vkit "cloud.google.com/go/pubsub/v2/apiv1"
+	"cloud.google.com/go/pubsub/v2/internal"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -49,16 +49,16 @@ const (
 // Clients should be reused rather than being created as needed.
 // A Client may be shared by multiple goroutines.
 type Client struct {
-	projectID     string
-	pubc          *vkit.TopicAdminClient
-	subc          *vkit.SubscriptionAdminClient
-	enableTracing bool
+	projectID               string
+	TopicAdminClient        *vkit.TopicAdminClient
+	SubscriptionAdminClient *vkit.SubscriptionAdminClient
+	enableTracing           bool
 }
 
 // ClientConfig has configurations for the client.
 type ClientConfig struct {
-	PublisherCallOptions  *vkit.TopicAdminCallOptions
-	SubscriberCallOptions *vkit.SubscriptionAdminCallOptions
+	TopicAdminCallOptions        *vkit.TopicAdminCallOptions
+	SubscriptionAdminCallOptions *vkit.SubscriptionAdminCallOptions
 
 	// EnableOpenTelemetryTracing enables tracing for this client.
 	// This option allows selectively disabling Pub/Sub traces.
@@ -69,9 +69,9 @@ type ClientConfig struct {
 	EnableOpenTelemetryTracing bool
 }
 
-// mergePublisherCallOptions merges two PublisherCallOptions into one and the first argument has
+// mergeTopicAdminCallOptions merges two TopicAdminCallOptions into one and the first argument has
 // a lower order of precedence than the second one. If either is nil, return the other.
-func mergePublisherCallOptions(a *vkit.TopicAdminCallOptions, b *vkit.TopicAdminCallOptions) *vkit.TopicAdminCallOptions {
+func mergeTopicAdminCallOptions(a *vkit.TopicAdminCallOptions, b *vkit.TopicAdminCallOptions) *vkit.TopicAdminCallOptions {
 	if a == nil {
 		return b
 	}
@@ -97,9 +97,9 @@ func mergePublisherCallOptions(a *vkit.TopicAdminCallOptions, b *vkit.TopicAdmin
 	return res
 }
 
-// mergeSubscribercallOptions merges two SubscriberCallOptions into one and the first argument has
+// mergeSubscribercallOptions merges two SubscriptionAdminCallOptions into one and the first argument has
 // a lower order of precedence than the second one. If either is nil, the other is used.
-func mergeSubscriberCallOptions(a *vkit.SubscriptionAdminCallOptions, b *vkit.SubscriptionAdminCallOptions) *vkit.SubscriptionAdminCallOptions {
+func mergeSubscriptionAdminCallOptions(a *vkit.SubscriptionAdminCallOptions, b *vkit.SubscriptionAdminCallOptions) *vkit.SubscriptionAdminCallOptions {
 	if a == nil {
 		return b
 	}
@@ -175,20 +175,20 @@ func NewClientWithConfig(ctx context.Context, projectID string, config *ClientCo
 		}
 	}
 	o = append(o, opts...)
-	pubc, err := vkit.NewTopicAdminClient(ctx, o...)
+	topicClient, err := vkit.NewTopicAdminClient(ctx, o...)
 	if err != nil {
 		return nil, fmt.Errorf("pubsub(publisher): %w", err)
 	}
-	subc, err := vkit.NewSubscriptionAdminClient(ctx, o...)
+	subClient, err := vkit.NewSubscriptionAdminClient(ctx, o...)
 	if err != nil {
 		return nil, fmt.Errorf("pubsub(subscriber): %w", err)
 	}
 	if config != nil {
-		pubc.CallOptions = mergePublisherCallOptions(pubc.CallOptions, config.PublisherCallOptions)
-		subc.CallOptions = mergeSubscriberCallOptions(subc.CallOptions, config.SubscriberCallOptions)
+		topicClient.CallOptions = mergeTopicAdminCallOptions(topicClient.CallOptions, config.TopicAdminCallOptions)
+		subClient.CallOptions = mergeSubscriptionAdminCallOptions(subClient.CallOptions, config.SubscriptionAdminCallOptions)
 	}
-	pubc.SetGoogleClientInfo("gccl", internal.Version)
-	subc.SetGoogleClientInfo("gccl", internal.Version)
+	topicClient.SetGoogleClientInfo("gccl", internal.Version)
+	subClient.SetGoogleClientInfo("gccl", internal.Version)
 
 	// Handle project autodetection.
 	projectID, err = detect.ProjectID(ctx, projectID, "", opts...)
@@ -197,9 +197,9 @@ func NewClientWithConfig(ctx context.Context, projectID string, config *ClientCo
 	}
 
 	c := &Client{
-		projectID: projectID,
-		pubc:      pubc,
-		subc:      subc,
+		projectID:               projectID,
+		TopicAdminClient:        topicClient,
+		SubscriptionAdminClient: subClient,
 	}
 	if config != nil {
 		c.enableTracing = config.EnableOpenTelemetryTracing
@@ -219,8 +219,8 @@ func (c *Client) Project() string {
 // If the client is available for the lifetime of the program, then Close need not be
 // called at exit.
 func (c *Client) Close() error {
-	pubErr := c.pubc.Close()
-	subErr := c.subc.Close()
+	pubErr := c.TopicAdminClient.Close()
+	subErr := c.SubscriptionAdminClient.Close()
 	if pubErr != nil {
 		return fmt.Errorf("pubsub publisher closing error: %w", pubErr)
 	}
@@ -235,8 +235,4 @@ func (c *Client) Close() error {
 		return fmt.Errorf("pubsub subscriber closing error: %w", subErr)
 	}
 	return nil
-}
-
-func (c *Client) fullyQualifiedProjectName() string {
-	return fmt.Sprintf("projects/%s", c.projectID)
 }

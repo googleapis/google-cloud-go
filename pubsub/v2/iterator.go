@@ -24,9 +24,9 @@ import (
 	"time"
 
 	ipubsub "cloud.google.com/go/internal/pubsub"
-	"cloud.google.com/go/pubsub/internal/distribution"
 	vkit "cloud.google.com/go/pubsub/v2/apiv1"
 	pb "cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
+	"cloud.google.com/go/pubsub/v2/internal/distribution"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/apierror"
 	"go.opentelemetry.io/otel/attribute"
@@ -36,7 +36,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/encoding/protowire"
 )
 
 // Between message receipt and ack (that is, the time spent processing a message) we want to extend the message
@@ -335,17 +334,14 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 			if m.Attributes != nil {
 				ctx = propagation.TraceContext{}.Extract(ctx, newMessageCarrier(m))
 			}
-			opts := getSubscriberOpts(it.projectID, it.subID, m)
-			opts = append(
-				opts,
-				trace.WithAttributes(
-					attribute.Bool(eosAttribute, it.enableExactlyOnceDelivery),
-					semconv.MessagingGCPPubsubMessageAckID(ackID),
-					semconv.MessagingBatchMessageCount(len(msgs)),
-					semconv.CodeFunction("receive"),
-				),
+			attr := getSubscriberOpts(it.projectID, it.subID, m)
+			_, span := startSpan(ctx, subscribeSpanName, it.subID, attr...)
+			span.SetAttributes(
+				attribute.Bool(eosAttribute, it.enableExactlyOnceDelivery),
+				semconv.MessagingGCPPubsubMessageAckID(ackID),
+				semconv.MessagingBatchMessageCount(len(msgs)),
+				semconv.CodeFunction("receive"),
 			)
-			_, span := startSpan(ctx, subscribeSpanName, it.subID, opts...)
 			// Always store the subscribe span, even if sampling isn't enabled.
 			// This is useful since we need to propagate the sampling flag
 			// to the callback in Receive, so traces have an unbroken sampling decision.
@@ -661,16 +657,11 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 			// Create the single ack span for this request, and for each
 			// message, add Subscribe<->Ack links.
 			opts := getCommonOptions(it.projectID, it.subID)
-			opts = append(
-				opts,
-				trace.WithLinks(links...),
-				trace.WithAttributes(
-					semconv.MessagingBatchMessageCount(len(ackIDs)),
-					semconv.CodeFunction("sendAck"),
-				),
-			)
+			opts = append(opts, trace.WithLinks(links...))
 			_, ackSpan := startSpan(context.Background(), ackSpanName, it.subID, opts...)
 			defer ackSpan.End()
+			ackSpan.SetAttributes(semconv.MessagingBatchMessageCount(len(ackIDs)),
+				semconv.CodeFunction("sendAck"))
 			if ackSpan.SpanContext().IsSampled() {
 				for _, s := range subscribeSpans {
 					s.AddLink(trace.Link{
@@ -748,25 +739,16 @@ func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Dur
 			// Create the single modack/nack span for this request, and for each
 			// message, add Subscribe<->Modack links.
 			opts := getCommonOptions(it.projectID, it.subID)
-			opts = append(
-				opts,
-				trace.WithLinks(links...),
-				trace.WithAttributes(
-					semconv.MessagingBatchMessageCount(len(ackIDs)),
-					semconv.CodeFunction("sendModAck"),
-				),
-			)
-			if !isNack {
-				opts = append(
-					opts,
-					trace.WithAttributes(
-						semconv.MessagingGCPPubsubMessageAckDeadline(int(deadlineSec)),
-						attribute.Bool(receiptModackAttribute, isReceipt),
-					),
-				)
-			}
+			opts = append(opts, trace.WithLinks(links...))
 			_, mSpan := startSpan(context.Background(), spanName, it.subID, opts...)
 			defer mSpan.End()
+			if !isNack {
+				mSpan.SetAttributes(
+					semconv.MessagingGCPPubsubMessageAckDeadline(int(deadlineSec)),
+					attribute.Bool(receiptModackAttribute, isReceipt))
+			}
+			mSpan.SetAttributes(semconv.MessagingBatchMessageCount(len(ackIDs)),
+				semconv.CodeFunction("sendModAck"))
 			if mSpan.SpanContext().IsSampled() {
 				for _, s := range subscribeSpans {
 					s.AddLink(trace.Link{
@@ -898,26 +880,6 @@ func (it *messageIterator) pingStream() {
 	}
 	it.eoMu.RUnlock()
 	it.ps.Send(spr)
-}
-
-// calcFieldSizeString returns the number of bytes string fields
-// will take up in an encoded proto message.
-func calcFieldSizeString(fields ...string) int {
-	overhead := 0
-	for _, field := range fields {
-		overhead += 1 + len(field) + protowire.SizeVarint(uint64(len(field)))
-	}
-	return overhead
-}
-
-// calcFieldSizeInt returns the number of bytes int fields
-// will take up in an encoded proto message.
-func calcFieldSizeInt(fields ...int) int {
-	overhead := 0
-	for _, field := range fields {
-		overhead += 1 + protowire.SizeVarint(uint64(field))
-	}
-	return overhead
 }
 
 // makeBatches takes a slice of ackIDs and returns a slice of ackID batches.

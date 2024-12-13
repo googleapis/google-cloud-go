@@ -101,17 +101,20 @@ func TestPullStreamGet_ResourceUnavailable(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer client.Close()
-	topic, err := client.CreateTopic(ctx, "foo")
+
+	topic, err := client.TopicAdminClient.CreateTopic(ctx, &pb.Topic{Name: "foo"})
 	if err != nil {
 		t.Fatal(err)
 	}
-	sub, err := client.CreateSubscription(ctx, "foo", SubscriptionConfig{
-		Topic: topic,
+	pbs, err := client.SubscriptionAdminClient.CreateSubscription(ctx, &pb.Subscription{
+		Name:  "bar",
+		Topic: topic.Name,
 	})
 	if err != nil {
 		t.Fatal(err)
 	}
 
+	sub := client.Subscriber(pbs.Name)
 	errc := make(chan error)
 	go func() {
 		errc <- sub.Receive(ctx, func(context.Context, *Message) {

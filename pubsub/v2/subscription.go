@@ -24,7 +24,7 @@ import (
 	"time"
 
 	ipubsub "cloud.google.com/go/internal/pubsub"
-	"cloud.google.com/go/pubsub/internal/scheduler"
+	"cloud.google.com/go/pubsub/v2/internal/scheduler"
 	"github.com/google/uuid"
 	gax "github.com/googleapis/gax-go/v2"
 	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
@@ -32,8 +32,8 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-// Subscription is a reference to a PubSub subscription.
-type Subscription struct {
+// Subscriber is a subscriber client which references a PubSub subscription.
+type Subscriber struct {
 	c *Client
 
 	// The fully qualified identifier for the subscription, in the format "projects/<projid>/subscriptions/<name>"
@@ -55,18 +55,19 @@ type Subscription struct {
 	enableTracing bool
 }
 
-// Subscription creates a reference to a subscription.
-func (c *Client) Subscription(id string) *Subscription {
-	return c.SubscriptionInProject(id, c.projectID)
+// Subscriber creates a subscriber client which references a single subscription.
+func (c *Client) Subscriber(nameOrID string) *Subscriber {
+	s := strings.Split(nameOrID, "/")
+	// The string looks like a properly formatted topic name, use it directly.
+	if len(s) == 4 {
+		return newSubscription(c, nameOrID)
+	}
+	// In all other cases, treat the arg as the topicID, even if misformatted.
+	return newSubscription(c, fmt.Sprintf("projects/%s/subscriptions/%s", c.projectID, nameOrID))
 }
 
-// SubscriptionInProject creates a reference to a subscription in a given project.
-func (c *Client) SubscriptionInProject(id, projectID string) *Subscription {
-	return newSubscription(c, fmt.Sprintf("projects/%s/subscriptions/%s", projectID, id))
-}
-
-func newSubscription(c *Client, name string) *Subscription {
-	return &Subscription{
+func newSubscription(c *Client, name string) *Subscriber {
+	return &Subscriber{
 		c:               c,
 		name:            name,
 		clientID:        uuid.NewString(),
@@ -75,13 +76,13 @@ func newSubscription(c *Client, name string) *Subscription {
 	}
 }
 
-// String returns the globally unique printable name of the subscription.
-func (s *Subscription) String() string {
+// Name returns the globally unique printable name of the subscription for this subscriber client.
+func (s *Subscriber) Name() string {
 	return s.name
 }
 
 // ID returns the unique identifier of the subscription within its project.
-func (s *Subscription) ID() string {
+func (s *Subscriber) ID() string {
 	slash := strings.LastIndex(s.name, "/")
 	if slash == -1 {
 		// name is not a fully-qualified name.
@@ -228,8 +229,8 @@ var errReceiveInProgress = errors.New("pubsub: Receive already in progress for t
 // automatically extend the ack deadline of all fetched Messages up to the
 // period specified by s.ReceiveSettings.MaxExtension.
 //
-// Each Subscription may have only one invocation of Receive active at a time.
-func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Message)) error {
+// Each Subscriber may have only one invocation of Receive active at a time.
+func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Message)) error {
 	s.mu.Lock()
 	if s.receiveActive {
 		s.mu.Unlock()
@@ -314,7 +315,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 		// The iterator does not use the context passed to Receive. If it did,
 		// canceling that context would immediately stop the iterator without
 		// waiting for unacked messages.
-		iter := newMessageIterator(s.c.subc, s.name, po)
+		iter := newMessageIterator(s.c.SubscriptionAdminClient, s.name, po)
 		iter.enableTracing = s.enableTracing
 
 		// We cannot use errgroup from Receive here. Receive might already be

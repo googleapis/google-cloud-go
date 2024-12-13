@@ -25,8 +25,8 @@ import (
 	"os"
 	"strings"
 
-	"cloud.google.com/go/pubsub"
-	pb "cloud.google.com/go/pubsub/internal/benchwrapper/proto"
+	"cloud.google.com/go/pubsub/v2"
+	pb "cloud.google.com/go/pubsub/v2/internal/benchwrapper/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/status"
 )
@@ -67,7 +67,7 @@ type server struct {
 }
 
 func (s *server) Recv(ctx context.Context, req *pb.PubsubRecv) (*pb.EmptyResponse, error) {
-	sub := s.c.Subscription(req.SubName)
+	sub := s.c.Subscriber(req.SubName)
 	sub.ReceiveSettings.NumGoroutines = 1
 	err := sub.Receive(ctx, func(ctx context.Context, msg *pubsub.Message) {
 		msg.Ack()

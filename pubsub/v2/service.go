@@ -22,6 +22,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/encoding/protowire"
 )
 
 // maxPayload is the maximum number of bytes to devote to the
@@ -140,4 +141,24 @@ func parseResourceName(fqn string) (string, string) {
 		return "", ""
 	}
 	return s[1], s[len(s)-1]
+}
+
+// calcFieldSizeString returns the number of bytes string fields
+// will take up in an encoded proto message.
+func calcFieldSizeString(fields ...string) int {
+	overhead := 0
+	for _, field := range fields {
+		overhead += 1 + len(field) + protowire.SizeVarint(uint64(len(field)))
+	}
+	return overhead
+}
+
+// calcFieldSizeInt returns the number of bytes int fields
+// will take up in an encoded proto message.
+func calcFieldSizeInt(fields ...int) int {
+	overhead := 0
+	for _, field := range fields {
+		overhead += 1 + protowire.SizeVarint(uint64(field))
+	}
+	return overhead
 }

@@ -45,7 +45,7 @@ type PublishScheduler struct {
 	keysMu sync.RWMutex
 	// keysWithErrors tracks ordering keys that cannot accept new messages.
 	// A bundler might not accept new messages if publishing has failed
-	// for a specific ordering key, and can be resumed with topic.ResumePublish().
+	// for a specific ordering key, and can be resumed with publisher.ResumePublish().
 	keysWithErrors map[string]struct{}
 
 	// workers is a channel that represents workers. Rather than a pool, where

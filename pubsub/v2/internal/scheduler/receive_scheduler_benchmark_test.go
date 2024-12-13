@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"testing"
 
-	"cloud.google.com/go/pubsub/internal/scheduler"
+	"cloud.google.com/go/pubsub/v2/internal/scheduler"
 )
 
 const recSchedulerWorkers = 100

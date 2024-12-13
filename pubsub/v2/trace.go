@@ -20,8 +20,8 @@ import (
 	"log"
 	"sync"
 
-	"cloud.google.com/go/pubsub/internal"
 	pb "cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
+	"cloud.google.com/go/pubsub/v2/internal"
 	"go.opencensus.io/stats"
 	"go.opencensus.io/stats/view"
 	"go.opencensus.io/tag"
@@ -45,7 +45,7 @@ var (
 	keyError  = tag.MustNewKey("error")
 )
 
-const statsPrefix = "cloud.google.com/go/pubsub/"
+const statsPrefix = "cloud.google.com/go/pubsub/v2"
 
 // The following are measures recorded in publish/subscribe flows.
 var (

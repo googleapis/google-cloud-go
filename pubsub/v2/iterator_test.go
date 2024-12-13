@@ -34,14 +34,15 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/fieldmaskpb"
 )
 
 var (
 	projName                = "P"
-	topicName               = "some-topic"
-	subName                 = "some-sub"
-	fullyQualifiedTopicName = fmt.Sprintf("projects/%s/topics/%s", projName, topicName)
-	fullyQualifiedSubName   = fmt.Sprintf("projects/%s/subscriptions/%s", projName, subName)
+	topicID                 = "some-topic"
+	subID                   = "some-sub"
+	fullyQualifiedTopicName = fmt.Sprintf("projects/%s/topics/%s", projName, topicID)
+	fullyQualifiedSubName   = fmt.Sprintf("projects/%s/subscriptions/%s", projName, subID)
 )
 
 func TestMakeBatches(t *testing.T) {
@@ -121,7 +122,7 @@ func TestMaxExtensionPeriod(t *testing.T) {
 		t.Fatal(err)
 	}
 	want := 15 * time.Second
-	iter := newMessageIterator(client.subc, fullyQualifiedTopicName, &pullOptions{
+	iter := newMessageIterator(client.SubscriptionAdminClient, fullyQualifiedTopicName, &pullOptions{
 		maxExtensionPeriod: want,
 	})
 
@@ -231,7 +232,7 @@ func setsAreEqual(haystack, needles []int32) bool {
 
 // startReceiving pretends to be a client. It calls s.Receive and acks messages after some random delay. It also
 // looks out for dupes - any message that arrives twice will cause a failure.
-func startReceiving(ctx context.Context, t *testing.T, s *Subscription, recvdWg *sync.WaitGroup, processTimeSecs *int32) {
+func startReceiving(ctx context.Context, t *testing.T, s *Subscriber, recvdWg *sync.WaitGroup, processTimeSecs *int32) {
 	t.Log("Receiving..")
 
 	var recvdMu sync.Mutex
@@ -329,7 +330,7 @@ func toSet(arr []int32) []int32 {
 
 }
 
-func initConn(ctx context.Context, addr string) (*Subscription, *Client, error) {
+func initConn(ctx context.Context, addr string) (*Subscriber, *Client, error) {
 	conn, err := grpc.Dial(addr, grpc.WithInsecure())
 	if err != nil {
 		return nil, nil, err
@@ -341,21 +342,17 @@ func initConn(ctx context.Context, addr string) (*Subscription, *Client, error) 
 		return nil, nil, err
 	}
 
-	topic := client.Topic(topicName)
-	s, err := client.CreateSubscription(ctx, fmt.Sprintf("sub-%d", time.Now().UnixNano()), SubscriptionConfig{Topic: topic})
+	fullyQualifiedSubName := fmt.Sprintf("projects/p/subscriptions/sub-%d", time.Now().UnixNano())
+	s, err := client.SubscriptionAdminClient.CreateSubscription(ctx, &pb.Subscription{
+		Name:  fullyQualifiedSubName,
+		Topic: fullyQualifiedTopicName,
+	})
 	if err != nil {
 		return nil, nil, err
 	}
+	sub := client.Subscriber(s.Name)
 
-	exists, err := s.Exists(ctx)
-	if !exists {
-		return nil, nil, errors.New("Subscription does not exist")
-	}
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return s, client, nil
+	return sub, client, nil
 }
 
 // modackDeadlines takes a map of time => Modack, gathers all the Modack.AckDeadlines,
@@ -413,7 +410,7 @@ func TestIterator_SynchronousPullCancel(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	iter := newMessageIterator(client.subc, fullyQualifiedTopicName, &pullOptions{})
+	iter := newMessageIterator(client.SubscriptionAdminClient, fullyQualifiedTopicName, &pullOptions{})
 
 	// Cancelling the iterator and pulling should not result in any errors.
 	iter.cancel()
@@ -514,13 +511,13 @@ func TestIterator_StreamingPullExactlyOnce(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	topic := client.Topic(topicName)
-	sc := SubscriptionConfig{
-		Topic:                     topic,
+	pbs := &pb.Subscription{
+		Name:                      fullyQualifiedSubName,
+		Topic:                     fullyQualifiedTopicName,
 		EnableMessageOrdering:     true,
 		EnableExactlyOnceDelivery: true,
 	}
-	_, err = client.CreateSubscription(ctx, subName, sc)
+	_, err = client.SubscriptionAdminClient.CreateSubscription(ctx, pbs)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -528,7 +525,7 @@ func TestIterator_StreamingPullExactlyOnce(t *testing.T) {
 	// Make sure to call publish before constructing the iterator.
 	srv.Publish(fullyQualifiedTopicName, []byte("msg"), nil)
 
-	iter := newMessageIterator(client.subc, fullyQualifiedSubName, &pullOptions{
+	iter := newMessageIterator(client.SubscriptionAdminClient, fullyQualifiedSubName, &pullOptions{
 		synchronous:            false,
 		maxOutstandingMessages: 100,
 		maxOutstandingBytes:    1e6,
@@ -549,7 +546,7 @@ func TestIterator_StreamingPullExactlyOnce(t *testing.T) {
 func TestAddToDistribution(t *testing.T) {
 	c, _ := newFake(t)
 
-	iter := newMessageIterator(c.subc, "projects/p/subscriptions/some-sub", &pullOptions{})
+	iter := newMessageIterator(c.SubscriptionAdminClient, "projects/p/subscriptions/some-sub", &pullOptions{})
 
 	// Start with a datapoint that's too small that should be bounded to 10s.
 	receiveTime := time.Now().Add(time.Duration(-1) * time.Second)
@@ -585,13 +582,15 @@ func TestPingStreamAckDeadline(t *testing.T) {
 	defer cancel()
 
 	srv.Publish(fullyQualifiedTopicName, []byte("creating a topic"), nil)
-	topic := c.Topic(topicName)
-	s, err := c.CreateSubscription(ctx, subName, SubscriptionConfig{Topic: topic})
+	s, err := c.SubscriptionAdminClient.CreateSubscription(ctx, &pb.Subscription{
+		Name:  fullyQualifiedSubName,
+		Topic: fullyQualifiedTopicName,
+	})
 	if err != nil {
 		t.Errorf("failed to create subscription: %v", err)
 	}
 
-	iter := newMessageIterator(c.subc, fullyQualifiedSubName, &pullOptions{})
+	iter := newMessageIterator(c.SubscriptionAdminClient, fullyQualifiedSubName, &pullOptions{})
 	defer iter.stop()
 
 	iter.eoMu.RLock()
@@ -600,8 +599,10 @@ func TestPingStreamAckDeadline(t *testing.T) {
 	}
 	iter.eoMu.RUnlock()
 
-	_, err = s.Update(ctx, SubscriptionConfigToUpdate{
-		EnableExactlyOnceDelivery: true,
+	s.EnableExactlyOnceDelivery = true
+	_, err = c.SubscriptionAdminClient.UpdateSubscription(ctx, &pb.UpdateSubscriptionRequest{
+		Subscription: s,
+		UpdateMask:   &fieldmaskpb.FieldMask{Paths: []string{"enable_exactly_once_delivery"}},
 	})
 	if err != nil {
 		t.Error(err)
