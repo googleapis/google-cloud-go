@@ -20,8 +20,8 @@ import (
 	"context"
 
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
-	pubsub "cloud.google.com/go/pubsub/apiv1"
-	pubsubpb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
+	pubsub "cloud.google.com/go/pubsub/v2/apiv1"
+	pubsubpb "cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
 	"google.golang.org/api/iterator"
 )
 
@@ -74,7 +74,7 @@ func ExampleTopicAdminClient_CreateTopic() {
 
 	req := &pubsubpb.Topic{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#Topic.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/v2/apiv1/pubsubpb#Topic.
 	}
 	resp, err := c.CreateTopic(ctx, req)
 	if err != nil {
@@ -99,7 +99,7 @@ func ExampleTopicAdminClient_DeleteTopic() {
 
 	req := &pubsubpb.DeleteTopicRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#DeleteTopicRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/v2/apiv1/pubsubpb#DeleteTopicRequest.
 	}
 	err = c.DeleteTopic(ctx, req)
 	if err != nil {
@@ -122,7 +122,7 @@ func ExampleTopicAdminClient_DetachSubscription() {
 
 	req := &pubsubpb.DetachSubscriptionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#DetachSubscriptionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/v2/apiv1/pubsubpb#DetachSubscriptionRequest.
 	}
 	resp, err := c.DetachSubscription(ctx, req)
 	if err != nil {
@@ -147,7 +147,7 @@ func ExampleTopicAdminClient_GetTopic() {
 
 	req := &pubsubpb.GetTopicRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#GetTopicRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/v2/apiv1/pubsubpb#GetTopicRequest.
 	}
 	resp, err := c.GetTopic(ctx, req)
 	if err != nil {
@@ -172,7 +172,7 @@ func ExampleTopicAdminClient_ListTopicSnapshots() {
 
 	req := &pubsubpb.ListTopicSnapshotsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#ListTopicSnapshotsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/v2/apiv1/pubsubpb#ListTopicSnapshotsRequest.
 	}
 	it := c.ListTopicSnapshots(ctx, req)
 	for {
@@ -209,7 +209,7 @@ func ExampleTopicAdminClient_ListTopicSubscriptions() {
 
 	req := &pubsubpb.ListTopicSubscriptionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#ListTopicSubscriptionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/v2/apiv1/pubsubpb#ListTopicSubscriptionsRequest.
 	}
 	it := c.ListTopicSubscriptions(ctx, req)
 	for {
@@ -246,7 +246,7 @@ func ExampleTopicAdminClient_ListTopics() {
 
 	req := &pubsubpb.ListTopicsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#ListTopicsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/v2/apiv1/pubsubpb#ListTopicsRequest.
 	}
 	it := c.ListTopics(ctx, req)
 	for {
@@ -283,7 +283,7 @@ func ExampleTopicAdminClient_Publish() {
 
 	req := &pubsubpb.PublishRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#PublishRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/v2/apiv1/pubsubpb#PublishRequest.
 	}
 	resp, err := c.Publish(ctx, req)
 	if err != nil {
@@ -308,7 +308,7 @@ func ExampleTopicAdminClient_UpdateTopic() {
 
 	req := &pubsubpb.UpdateTopicRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#UpdateTopicRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/v2/apiv1/pubsubpb#UpdateTopicRequest.
 	}
 	resp, err := c.UpdateTopic(ctx, req)
 	if err != nil {

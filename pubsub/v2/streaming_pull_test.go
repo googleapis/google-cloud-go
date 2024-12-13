@@ -29,7 +29,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
-	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
+	pb "cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/api/option"

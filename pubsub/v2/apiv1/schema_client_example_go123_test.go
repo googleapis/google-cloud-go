@@ -21,8 +21,8 @@ package pubsub_test
 import (
 	"context"
 
-	pubsub "cloud.google.com/go/pubsub/apiv1"
-	pubsubpb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
+	pubsub "cloud.google.com/go/pubsub/v2/apiv1"
+	pubsubpb "cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
 )
 
 func ExampleSchemaClient_ListSchemaRevisions_all() {
@@ -40,7 +40,7 @@ func ExampleSchemaClient_ListSchemaRevisions_all() {
 
 	req := &pubsubpb.ListSchemaRevisionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#ListSchemaRevisionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/v2/apiv1/pubsubpb#ListSchemaRevisionsRequest.
 	}
 	for resp, err := range c.ListSchemaRevisions(ctx, req).All() {
 		if err != nil {
@@ -66,7 +66,7 @@ func ExampleSchemaClient_ListSchemas_all() {
 
 	req := &pubsubpb.ListSchemasRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#ListSchemasRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/v2/apiv1/pubsubpb#ListSchemasRequest.
 	}
 	for resp, err := range c.ListSchemas(ctx, req).All() {
 		if err != nil {

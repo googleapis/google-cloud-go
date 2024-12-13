@@ -169,4 +169,4 @@ and use a client as usual:
 	}
 	defer client.Close()
 */
-package pubsub // import "cloud.google.com/go/pubsub"
+package pubsub // import "cloud.google.com/go/pubsub/v2"

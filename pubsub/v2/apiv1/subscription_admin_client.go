@@ -28,7 +28,7 @@ import (
 	"time"
 
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
-	pubsubpb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
+	pubsubpb "cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"

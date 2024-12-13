@@ -21,8 +21,8 @@ package pubsub_test
 import (
 	"context"
 
-	pubsub "cloud.google.com/go/pubsub/apiv1"
-	pubsubpb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
+	pubsub "cloud.google.com/go/pubsub/v2/apiv1"
+	pubsubpb "cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
 )
 
 func ExampleTopicAdminClient_ListTopicSnapshots_all() {
@@ -40,7 +40,7 @@ func ExampleTopicAdminClient_ListTopicSnapshots_all() {
 
 	req := &pubsubpb.ListTopicSnapshotsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#ListTopicSnapshotsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/v2/apiv1/pubsubpb#ListTopicSnapshotsRequest.
 	}
 	for resp, err := range c.ListTopicSnapshots(ctx, req).All() {
 		if err != nil {
@@ -66,7 +66,7 @@ func ExampleTopicAdminClient_ListTopicSubscriptions_all() {
 
 	req := &pubsubpb.ListTopicSubscriptionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#ListTopicSubscriptionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/v2/apiv1/pubsubpb#ListTopicSubscriptionsRequest.
 	}
 	for resp, err := range c.ListTopicSubscriptions(ctx, req).All() {
 		if err != nil {
@@ -92,7 +92,7 @@ func ExampleTopicAdminClient_ListTopics_all() {
 
 	req := &pubsubpb.ListTopicsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#ListTopicsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/v2/apiv1/pubsubpb#ListTopicsRequest.
 	}
 	for resp, err := range c.ListTopics(ctx, req).All() {
 		if err != nil {

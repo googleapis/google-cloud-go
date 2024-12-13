@@ -26,8 +26,8 @@ import (
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal/optional"
 	ipubsub "cloud.google.com/go/internal/pubsub"
-	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	"cloud.google.com/go/pubsub/internal/scheduler"
+	pb "cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
 	"github.com/google/uuid"
 	gax "github.com/googleapis/gax-go/v2"
 	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
@@ -39,7 +39,7 @@ import (
 	durpb "google.golang.org/protobuf/types/known/durationpb"
 	fmpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 
-	vkit "cloud.google.com/go/pubsub/apiv1"
+	vkit "cloud.google.com/go/pubsub/v2/apiv1"
 )
 
 // Subscription is a reference to a PubSub subscription.
