@@ -36,8 +36,8 @@ export GOOGLE_APPLICATION_CREDENTIALS="${KOKORO_KEYSTORE_DIR}/72935_cloud-profil
 export GCLOUD_TESTS_GOLANG_PROJECT_ID="cloud-profiler-e2e"
 
 # Ensure a newer version of Go is used so it is compatible with newer libraries.
-# Here we install v1.21.3 which is the current version as of October 2023.
-GOVERSION="1.21.3"
+# Here we install v1.22.10 which is the current version as of December 2024.
+GOVERSION="1.22.10"
 retry curl -LO https://go.dev/dl/go${GOVERSION}.linux-amd64.tar.gz
 sudo rm -rf /usr/local/go && tar -C /usr/local -xzf go${GOVERSION}.linux-amd64.tar.gz
 export PATH=$PATH:/usr/local/go/bin
