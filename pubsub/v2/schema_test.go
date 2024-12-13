@@ -27,7 +27,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"cloud.google.com/go/pubsub/pstest"
+	"cloud.google.com/go/pubsub/v2/pstest"
 )
 
 func newSchemaFake(t *testing.T) (*SchemaClient, *pstest.Server) {

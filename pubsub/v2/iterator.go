@@ -24,9 +24,9 @@ import (
 	"time"
 
 	ipubsub "cloud.google.com/go/internal/pubsub"
-	vkit "cloud.google.com/go/pubsub/apiv1"
-	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	"cloud.google.com/go/pubsub/internal/distribution"
+	vkit "cloud.google.com/go/pubsub/v2/apiv1"
+	pb "cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/apierror"
 	"go.opentelemetry.io/otel/attribute"
@@ -70,7 +70,7 @@ type messageIterator struct {
 	cancel        func() // the function that will cancel ctx; called in stop
 	po            *pullOptions
 	ps            *pullStream
-	subc          *vkit.SubscriberClient
+	subc          *vkit.SubscriptionAdminClient
 	projectID     string
 	subID         string
 	subName       string
@@ -125,7 +125,7 @@ type messageIterator struct {
 // subName is the full name of the subscription to pull messages from.
 // Stop must be called on the messageIterator when it is no longer needed.
 // The iterator always uses the background context for acking messages and extending message deadlines.
-func newMessageIterator(subc *vkit.SubscriberClient, subName string, po *pullOptions) *messageIterator {
+func newMessageIterator(subc *vkit.SubscriptionAdminClient, subName string, po *pullOptions) *messageIterator {
 	var ps *pullStream
 	if !po.synchronous {
 		maxMessages := po.maxOutstandingMessages

@@ -20,8 +20,8 @@ import (
 	"log"
 	"sync"
 
-	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	"cloud.google.com/go/pubsub/internal"
+	pb "cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
 	"go.opencensus.io/stats"
 	"go.opencensus.io/stats/view"
 	"go.opencensus.io/tag"
@@ -266,7 +266,7 @@ func recordStat(ctx context.Context, m *stats.Int64Measure, n int64) {
 	stats.Record(ctx, m.M(n))
 }
 
-const defaultTracerName = "cloud.google.com/go/pubsub"
+const defaultTracerName = "cloud.google.com/go/pubsub/v2"
 
 func tracer() trace.Tracer {
 	return otel.Tracer(defaultTracerName, trace.WithInstrumentationVersion(internal.Version))

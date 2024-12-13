@@ -17,7 +17,7 @@
 package pubsub
 
 import (
-	pubsubpb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
+	pubsubpb "cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
 	"google.golang.org/api/iterator"
 )
 
