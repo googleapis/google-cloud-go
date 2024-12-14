@@ -22,9 +22,6 @@ package monitoringpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -855,7 +854,7 @@ type UptimeCheckServiceClient interface {
 	// if the Uptime check configuration is referenced by an alert policy or
 	// other dependent configs that would be rendered invalid by the deletion.
 	DeleteUptimeCheckConfig(ctx context.Context, in *DeleteUptimeCheckConfigRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// Returns the list of IP addresses that checkers run from
+	// Returns the list of IP addresses that checkers run from.
 	ListUptimeCheckIps(ctx context.Context, in *ListUptimeCheckIpsRequest, opts ...grpc.CallOption) (*ListUptimeCheckIpsResponse, error)
 }
 
@@ -939,7 +938,7 @@ type UptimeCheckServiceServer interface {
 	// if the Uptime check configuration is referenced by an alert policy or
 	// other dependent configs that would be rendered invalid by the deletion.
 	DeleteUptimeCheckConfig(context.Context, *DeleteUptimeCheckConfigRequest) (*emptypb.Empty, error)
-	// Returns the list of IP addresses that checkers run from
+	// Returns the list of IP addresses that checkers run from.
 	ListUptimeCheckIps(context.Context, *ListUptimeCheckIpsRequest) (*ListUptimeCheckIpsResponse, error)
 }
 
