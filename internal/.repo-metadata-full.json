@@ -1756,7 +1756,7 @@
     "language": "go",
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/monitoring/latest/apiv3/v2",
-    "release_level": "stable",
+    "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/monitoring/dashboard/apiv1": {
