@@ -443,10 +443,12 @@ type resumableStreamDecoder struct {
 
 	gsc *grpcSpannerClient
 
-	// reqIDInjector is generated once per stream, unless the stream gets
-	// broken and this case we generate a new request_number.
+	// reqIDInjector is generated once per stream, unless the stream
+	// gets broken and in that case a fresh one is generated.
 	reqIDInjector *requestIDWrap
-	retryAttempt  uint32
+	// retryAttempt is is incremented whenever a retry happens, and it is
+	// reset whenever a new reqIDInjector is created afresh.
+	retryAttempt uint32
 }
 
 // newResumableStreamDecoder creates a new resumeableStreamDecoder instance.
@@ -615,7 +617,6 @@ func (d *resumableStreamDecoder) next(mt *builtinMetricsTracer) bool {
 					d.resumeToken = d.np.ResumeToken
 					d.changeState(queueingRetryable)
 				}
-				// In this case the stream was connected and we can increment retryAttempt.
 				return true
 			}
 			if d.bytesBetweenResumeTokens >= d.maxBytesBetweenResumeTokens && d.state == queueingRetryable {

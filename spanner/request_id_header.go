@@ -256,10 +256,6 @@ func (gsc *grpcSpannerClient) generateRequestIDHeaderInjector() *requestIDWrap {
 	return &requestIDWrap{md: md, nthRequest: gsc.nextNthRequest(), gsc: gsc}
 }
 
-func (riw *requestIDWrap) incrementNthRequest() {
-	riw.nthRequest = riw.gsc.nextNthRequest()
-}
-
 func (riw *requestIDWrap) withNextRetryAttempt(attempt uint32) gax.CallOption {
 	riw.gsc.generateAndInsertRequestID(riw.md, riw.nthRequest, attempt)
 	// If no gRPC stream is available, try to initiate one.
