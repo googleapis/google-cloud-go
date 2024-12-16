@@ -19,7 +19,7 @@ package support
 import (
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -27,7 +27,6 @@ import (
 
 	supportpb "cloud.google.com/go/support/apiv2/supportpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -157,6 +156,8 @@ type caseAttachmentGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewCaseAttachmentClient creates a new case attachment service client based on gRPC.
@@ -183,6 +184,7 @@ func NewCaseAttachmentClient(ctx context.Context, opts ...option.ClientOption) (
 		connPool:             connPool,
 		caseAttachmentClient: supportpb.NewCaseAttachmentServiceClient(connPool),
 		CallOptions:          &client.CallOptions,
+		logger:               internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -229,6 +231,8 @@ type caseAttachmentRESTClient struct {
 
 	// Points back to the CallOptions field of the containing CaseAttachmentClient
 	CallOptions **CaseAttachmentCallOptions
+
+	logger *slog.Logger
 }
 
 // NewCaseAttachmentRESTClient creates a new case attachment service rest client.
@@ -246,6 +250,7 @@ func NewCaseAttachmentRESTClient(ctx context.Context, opts ...option.ClientOptio
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -309,7 +314,7 @@ func (c *caseAttachmentGRPCClient) ListAttachments(ctx context.Context, req *sup
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.caseAttachmentClient.ListAttachments(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.caseAttachmentClient.ListAttachments, req, settings.GRPC, c.logger, "ListAttachments")
 			return err
 		}, opts...)
 		if err != nil {
@@ -380,21 +385,10 @@ func (c *caseAttachmentRESTClient) ListAttachments(ctx context.Context, req *sup
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAttachments")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

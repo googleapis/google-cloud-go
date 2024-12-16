@@ -19,6 +19,7 @@ package monitoring
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 
@@ -125,6 +126,8 @@ type queryGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewQueryClient creates a new query service client based on gRPC.
@@ -153,6 +156,7 @@ func NewQueryClient(ctx context.Context, opts ...option.ClientOption) (*QueryCli
 		connPool:    connPool,
 		queryClient: monitoringpb.NewQueryServiceClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -206,7 +210,7 @@ func (c *queryGRPCClient) QueryTimeSeries(ctx context.Context, req *monitoringpb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.queryClient.QueryTimeSeries(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.queryClient.QueryTimeSeries, req, settings.GRPC, c.logger, "QueryTimeSeries")
 			return err
 		}, opts...)
 		if err != nil {

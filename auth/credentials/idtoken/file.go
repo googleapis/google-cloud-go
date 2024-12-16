@@ -24,6 +24,7 @@ import (
 	"cloud.google.com/go/auth/credentials/impersonate"
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/credsfile"
+	"github.com/googleapis/gax-go/v2/internallog"
 )
 
 const (
@@ -49,6 +50,7 @@ func credsFromDefault(creds *auth.Credentials, opts *Options) (*auth.Credentials
 			PrivateKeyID: f.PrivateKeyID,
 			TokenURL:     f.TokenURL,
 			UseIDToken:   true,
+			Logger:       internallog.New(opts.Logger),
 		}
 		if opts2LO.TokenURL == "" {
 			opts2LO.TokenURL = jwtTokenURL
@@ -85,13 +87,13 @@ func credsFromDefault(creds *auth.Credentials, opts *Options) (*auth.Credentials
 		}
 		account := filepath.Base(accountURL.ServiceAccountImpersonationURL)
 		account = strings.Split(account, ":")[0]
-
 		config := impersonate.IDTokenOptions{
 			Audience:        opts.Audience,
 			TargetPrincipal: account,
 			IncludeEmail:    true,
 			Client:          opts.client(),
 			Credentials:     creds,
+			Logger:          internallog.New(opts.Logger),
 		}
 		idTokenCreds, err := impersonate.NewIDTokenCredentials(&config)
 		if err != nil {

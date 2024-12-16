@@ -18,6 +18,7 @@ package executor
 
 import (
 	"context"
+	"log/slog"
 	"math"
 
 	executorpb "cloud.google.com/go/spanner/executor/apiv1/executorpb"
@@ -127,6 +128,8 @@ type spannerExecutorProxyGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewSpannerExecutorProxyClient creates a new spanner executor proxy client based on gRPC.
@@ -153,6 +156,7 @@ func NewSpannerExecutorProxyClient(ctx context.Context, opts ...option.ClientOpt
 		connPool:                   connPool,
 		spannerExecutorProxyClient: executorpb.NewSpannerExecutorProxyClient(connPool),
 		CallOptions:                &client.CallOptions,
+		logger:                     internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -192,7 +196,9 @@ func (c *spannerExecutorProxyGRPCClient) ExecuteActionAsync(ctx context.Context,
 	opts = append((*c.CallOptions).ExecuteActionAsync[0:len((*c.CallOptions).ExecuteActionAsync):len((*c.CallOptions).ExecuteActionAsync)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "ExecuteActionAsync")
 		resp, err = c.spannerExecutorProxyClient.ExecuteActionAsync(ctx, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "ExecuteActionAsync")
 		return err
 	}, opts...)
 	if err != nil {

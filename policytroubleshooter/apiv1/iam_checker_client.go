@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	policytroubleshooterpb "cloud.google.com/go/policytroubleshooter/apiv1/policytroubleshooterpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -142,6 +141,8 @@ type iamCheckerGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewIamCheckerClient creates a new iam checker client based on gRPC.
@@ -170,6 +171,7 @@ func NewIamCheckerClient(ctx context.Context, opts ...option.ClientOption) (*Iam
 		connPool:         connPool,
 		iamCheckerClient: policytroubleshooterpb.NewIamCheckerClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -216,6 +218,8 @@ type iamCheckerRESTClient struct {
 
 	// Points back to the CallOptions field of the containing IamCheckerClient
 	CallOptions **IamCheckerCallOptions
+
+	logger *slog.Logger
 }
 
 // NewIamCheckerRESTClient creates a new iam checker rest client.
@@ -235,6 +239,7 @@ func NewIamCheckerRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -284,7 +289,7 @@ func (c *iamCheckerGRPCClient) TroubleshootIamPolicy(ctx context.Context, req *p
 	var resp *policytroubleshooterpb.TroubleshootIamPolicyResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamCheckerClient.TroubleshootIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamCheckerClient.TroubleshootIamPolicy, req, settings.GRPC, c.logger, "TroubleshootIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -331,17 +336,7 @@ func (c *iamCheckerRESTClient) TroubleshootIamPolicy(ctx context.Context, req *p
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TroubleshootIamPolicy")
 		if err != nil {
 			return err
 		}

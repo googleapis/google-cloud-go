@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	translatepb "cloud.google.com/go/translate/apiv3/translatepb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -764,6 +763,8 @@ type translationGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewTranslationClient creates a new translation service client based on gRPC.
@@ -790,6 +791,7 @@ func NewTranslationClient(ctx context.Context, opts ...option.ClientOption) (*Tr
 		connPool:          connPool,
 		translationClient: translatepb.NewTranslationServiceClient(connPool),
 		CallOptions:       &client.CallOptions,
+		logger:            internaloption.GetLogger(opts),
 		operationsClient:  longrunningpb.NewOperationsClient(connPool),
 		locationsClient:   locationpb.NewLocationsClient(connPool),
 	}
@@ -854,6 +856,8 @@ type translationRESTClient struct {
 
 	// Points back to the CallOptions field of the containing TranslationClient
 	CallOptions **TranslationCallOptions
+
+	logger *slog.Logger
 }
 
 // NewTranslationRESTClient creates a new translation service rest client.
@@ -871,6 +875,7 @@ func NewTranslationRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -933,7 +938,7 @@ func (c *translationGRPCClient) TranslateText(ctx context.Context, req *translat
 	var resp *translatepb.TranslateTextResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.translationClient.TranslateText(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.translationClient.TranslateText, req, settings.GRPC, c.logger, "TranslateText")
 		return err
 	}, opts...)
 	if err != nil {
@@ -951,7 +956,7 @@ func (c *translationGRPCClient) RomanizeText(ctx context.Context, req *translate
 	var resp *translatepb.RomanizeTextResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.translationClient.RomanizeText(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.translationClient.RomanizeText, req, settings.GRPC, c.logger, "RomanizeText")
 		return err
 	}, opts...)
 	if err != nil {
@@ -969,7 +974,7 @@ func (c *translationGRPCClient) DetectLanguage(ctx context.Context, req *transla
 	var resp *translatepb.DetectLanguageResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.translationClient.DetectLanguage(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.translationClient.DetectLanguage, req, settings.GRPC, c.logger, "DetectLanguage")
 		return err
 	}, opts...)
 	if err != nil {
@@ -987,7 +992,7 @@ func (c *translationGRPCClient) GetSupportedLanguages(ctx context.Context, req *
 	var resp *translatepb.SupportedLanguages
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.translationClient.GetSupportedLanguages(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.translationClient.GetSupportedLanguages, req, settings.GRPC, c.logger, "GetSupportedLanguages")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1005,7 +1010,7 @@ func (c *translationGRPCClient) TranslateDocument(ctx context.Context, req *tran
 	var resp *translatepb.TranslateDocumentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.translationClient.TranslateDocument(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.translationClient.TranslateDocument, req, settings.GRPC, c.logger, "TranslateDocument")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1023,7 +1028,7 @@ func (c *translationGRPCClient) BatchTranslateText(ctx context.Context, req *tra
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.translationClient.BatchTranslateText(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.translationClient.BatchTranslateText, req, settings.GRPC, c.logger, "BatchTranslateText")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1043,7 +1048,7 @@ func (c *translationGRPCClient) BatchTranslateDocument(ctx context.Context, req 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.translationClient.BatchTranslateDocument(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.translationClient.BatchTranslateDocument, req, settings.GRPC, c.logger, "BatchTranslateDocument")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1063,7 +1068,7 @@ func (c *translationGRPCClient) CreateGlossary(ctx context.Context, req *transla
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.translationClient.CreateGlossary(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.translationClient.CreateGlossary, req, settings.GRPC, c.logger, "CreateGlossary")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1083,7 +1088,7 @@ func (c *translationGRPCClient) UpdateGlossary(ctx context.Context, req *transla
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.translationClient.UpdateGlossary(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.translationClient.UpdateGlossary, req, settings.GRPC, c.logger, "UpdateGlossary")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1114,7 +1119,7 @@ func (c *translationGRPCClient) ListGlossaries(ctx context.Context, req *transla
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.translationClient.ListGlossaries(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.translationClient.ListGlossaries, req, settings.GRPC, c.logger, "ListGlossaries")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1149,7 +1154,7 @@ func (c *translationGRPCClient) GetGlossary(ctx context.Context, req *translatep
 	var resp *translatepb.Glossary
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.translationClient.GetGlossary(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.translationClient.GetGlossary, req, settings.GRPC, c.logger, "GetGlossary")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1167,7 +1172,7 @@ func (c *translationGRPCClient) DeleteGlossary(ctx context.Context, req *transla
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.translationClient.DeleteGlossary(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.translationClient.DeleteGlossary, req, settings.GRPC, c.logger, "DeleteGlossary")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1187,7 +1192,7 @@ func (c *translationGRPCClient) GetGlossaryEntry(ctx context.Context, req *trans
 	var resp *translatepb.GlossaryEntry
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.translationClient.GetGlossaryEntry(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.translationClient.GetGlossaryEntry, req, settings.GRPC, c.logger, "GetGlossaryEntry")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1216,7 +1221,7 @@ func (c *translationGRPCClient) ListGlossaryEntries(ctx context.Context, req *tr
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.translationClient.ListGlossaryEntries(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.translationClient.ListGlossaryEntries, req, settings.GRPC, c.logger, "ListGlossaryEntries")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1251,7 +1256,7 @@ func (c *translationGRPCClient) CreateGlossaryEntry(ctx context.Context, req *tr
 	var resp *translatepb.GlossaryEntry
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.translationClient.CreateGlossaryEntry(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.translationClient.CreateGlossaryEntry, req, settings.GRPC, c.logger, "CreateGlossaryEntry")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1269,7 +1274,7 @@ func (c *translationGRPCClient) UpdateGlossaryEntry(ctx context.Context, req *tr
 	var resp *translatepb.GlossaryEntry
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.translationClient.UpdateGlossaryEntry(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.translationClient.UpdateGlossaryEntry, req, settings.GRPC, c.logger, "UpdateGlossaryEntry")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1286,7 +1291,7 @@ func (c *translationGRPCClient) DeleteGlossaryEntry(ctx context.Context, req *tr
 	opts = append((*c.CallOptions).DeleteGlossaryEntry[0:len((*c.CallOptions).DeleteGlossaryEntry):len((*c.CallOptions).DeleteGlossaryEntry)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.translationClient.DeleteGlossaryEntry(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.translationClient.DeleteGlossaryEntry, req, settings.GRPC, c.logger, "DeleteGlossaryEntry")
 		return err
 	}, opts...)
 	return err
@@ -1301,7 +1306,7 @@ func (c *translationGRPCClient) CreateDataset(ctx context.Context, req *translat
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.translationClient.CreateDataset(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.translationClient.CreateDataset, req, settings.GRPC, c.logger, "CreateDataset")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1321,7 +1326,7 @@ func (c *translationGRPCClient) GetDataset(ctx context.Context, req *translatepb
 	var resp *translatepb.Dataset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.translationClient.GetDataset(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.translationClient.GetDataset, req, settings.GRPC, c.logger, "GetDataset")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1350,7 +1355,7 @@ func (c *translationGRPCClient) ListDatasets(ctx context.Context, req *translate
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.translationClient.ListDatasets(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.translationClient.ListDatasets, req, settings.GRPC, c.logger, "ListDatasets")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1385,7 +1390,7 @@ func (c *translationGRPCClient) DeleteDataset(ctx context.Context, req *translat
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.translationClient.DeleteDataset(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.translationClient.DeleteDataset, req, settings.GRPC, c.logger, "DeleteDataset")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1405,7 +1410,7 @@ func (c *translationGRPCClient) CreateAdaptiveMtDataset(ctx context.Context, req
 	var resp *translatepb.AdaptiveMtDataset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.translationClient.CreateAdaptiveMtDataset(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.translationClient.CreateAdaptiveMtDataset, req, settings.GRPC, c.logger, "CreateAdaptiveMtDataset")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1422,7 +1427,7 @@ func (c *translationGRPCClient) DeleteAdaptiveMtDataset(ctx context.Context, req
 	opts = append((*c.CallOptions).DeleteAdaptiveMtDataset[0:len((*c.CallOptions).DeleteAdaptiveMtDataset):len((*c.CallOptions).DeleteAdaptiveMtDataset)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.translationClient.DeleteAdaptiveMtDataset(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.translationClient.DeleteAdaptiveMtDataset, req, settings.GRPC, c.logger, "DeleteAdaptiveMtDataset")
 		return err
 	}, opts...)
 	return err
@@ -1437,7 +1442,7 @@ func (c *translationGRPCClient) GetAdaptiveMtDataset(ctx context.Context, req *t
 	var resp *translatepb.AdaptiveMtDataset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.translationClient.GetAdaptiveMtDataset(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.translationClient.GetAdaptiveMtDataset, req, settings.GRPC, c.logger, "GetAdaptiveMtDataset")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1466,7 +1471,7 @@ func (c *translationGRPCClient) ListAdaptiveMtDatasets(ctx context.Context, req 
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.translationClient.ListAdaptiveMtDatasets(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.translationClient.ListAdaptiveMtDatasets, req, settings.GRPC, c.logger, "ListAdaptiveMtDatasets")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1501,7 +1506,7 @@ func (c *translationGRPCClient) AdaptiveMtTranslate(ctx context.Context, req *tr
 	var resp *translatepb.AdaptiveMtTranslateResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.translationClient.AdaptiveMtTranslate(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.translationClient.AdaptiveMtTranslate, req, settings.GRPC, c.logger, "AdaptiveMtTranslate")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1519,7 +1524,7 @@ func (c *translationGRPCClient) GetAdaptiveMtFile(ctx context.Context, req *tran
 	var resp *translatepb.AdaptiveMtFile
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.translationClient.GetAdaptiveMtFile(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.translationClient.GetAdaptiveMtFile, req, settings.GRPC, c.logger, "GetAdaptiveMtFile")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1536,7 +1541,7 @@ func (c *translationGRPCClient) DeleteAdaptiveMtFile(ctx context.Context, req *t
 	opts = append((*c.CallOptions).DeleteAdaptiveMtFile[0:len((*c.CallOptions).DeleteAdaptiveMtFile):len((*c.CallOptions).DeleteAdaptiveMtFile)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.translationClient.DeleteAdaptiveMtFile(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.translationClient.DeleteAdaptiveMtFile, req, settings.GRPC, c.logger, "DeleteAdaptiveMtFile")
 		return err
 	}, opts...)
 	return err
@@ -1551,7 +1556,7 @@ func (c *translationGRPCClient) ImportAdaptiveMtFile(ctx context.Context, req *t
 	var resp *translatepb.ImportAdaptiveMtFileResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.translationClient.ImportAdaptiveMtFile(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.translationClient.ImportAdaptiveMtFile, req, settings.GRPC, c.logger, "ImportAdaptiveMtFile")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1580,7 +1585,7 @@ func (c *translationGRPCClient) ListAdaptiveMtFiles(ctx context.Context, req *tr
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.translationClient.ListAdaptiveMtFiles(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.translationClient.ListAdaptiveMtFiles, req, settings.GRPC, c.logger, "ListAdaptiveMtFiles")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1626,7 +1631,7 @@ func (c *translationGRPCClient) ListAdaptiveMtSentences(ctx context.Context, req
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.translationClient.ListAdaptiveMtSentences(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.translationClient.ListAdaptiveMtSentences, req, settings.GRPC, c.logger, "ListAdaptiveMtSentences")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1661,7 +1666,7 @@ func (c *translationGRPCClient) ImportData(ctx context.Context, req *translatepb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.translationClient.ImportData(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.translationClient.ImportData, req, settings.GRPC, c.logger, "ImportData")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1681,7 +1686,7 @@ func (c *translationGRPCClient) ExportData(ctx context.Context, req *translatepb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.translationClient.ExportData(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.translationClient.ExportData, req, settings.GRPC, c.logger, "ExportData")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1712,7 +1717,7 @@ func (c *translationGRPCClient) ListExamples(ctx context.Context, req *translate
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.translationClient.ListExamples(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.translationClient.ListExamples, req, settings.GRPC, c.logger, "ListExamples")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1747,7 +1752,7 @@ func (c *translationGRPCClient) CreateModel(ctx context.Context, req *translatep
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.translationClient.CreateModel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.translationClient.CreateModel, req, settings.GRPC, c.logger, "CreateModel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1778,7 +1783,7 @@ func (c *translationGRPCClient) ListModels(ctx context.Context, req *translatepb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.translationClient.ListModels(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.translationClient.ListModels, req, settings.GRPC, c.logger, "ListModels")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1813,7 +1818,7 @@ func (c *translationGRPCClient) GetModel(ctx context.Context, req *translatepb.G
 	var resp *translatepb.Model
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.translationClient.GetModel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.translationClient.GetModel, req, settings.GRPC, c.logger, "GetModel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1831,7 +1836,7 @@ func (c *translationGRPCClient) DeleteModel(ctx context.Context, req *translatep
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.translationClient.DeleteModel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.translationClient.DeleteModel, req, settings.GRPC, c.logger, "DeleteModel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1851,7 +1856,7 @@ func (c *translationGRPCClient) GetLocation(ctx context.Context, req *locationpb
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1880,7 +1885,7 @@ func (c *translationGRPCClient) ListLocations(ctx context.Context, req *location
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1914,7 +1919,7 @@ func (c *translationGRPCClient) CancelOperation(ctx context.Context, req *longru
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -1928,7 +1933,7 @@ func (c *translationGRPCClient) DeleteOperation(ctx context.Context, req *longru
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -1943,7 +1948,7 @@ func (c *translationGRPCClient) GetOperation(ctx context.Context, req *longrunni
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1972,7 +1977,7 @@ func (c *translationGRPCClient) ListOperations(ctx context.Context, req *longrun
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2007,7 +2012,7 @@ func (c *translationGRPCClient) WaitOperation(ctx context.Context, req *longrunn
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.WaitOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.WaitOperation, req, settings.GRPC, c.logger, "WaitOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2055,17 +2060,7 @@ func (c *translationRESTClient) TranslateText(ctx context.Context, req *translat
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TranslateText")
 		if err != nil {
 			return err
 		}
@@ -2121,17 +2116,7 @@ func (c *translationRESTClient) RomanizeText(ctx context.Context, req *translate
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RomanizeText")
 		if err != nil {
 			return err
 		}
@@ -2187,17 +2172,7 @@ func (c *translationRESTClient) DetectLanguage(ctx context.Context, req *transla
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "DetectLanguage")
 		if err != nil {
 			return err
 		}
@@ -2253,17 +2228,7 @@ func (c *translationRESTClient) GetSupportedLanguages(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSupportedLanguages")
 		if err != nil {
 			return err
 		}
@@ -2319,17 +2284,7 @@ func (c *translationRESTClient) TranslateDocument(ctx context.Context, req *tran
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TranslateDocument")
 		if err != nil {
 			return err
 		}
@@ -2390,21 +2345,10 @@ func (c *translationRESTClient) BatchTranslateText(ctx context.Context, req *tra
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchTranslateText")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2466,21 +2410,10 @@ func (c *translationRESTClient) BatchTranslateDocument(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchTranslateDocument")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2538,21 +2471,10 @@ func (c *translationRESTClient) CreateGlossary(ctx context.Context, req *transla
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateGlossary")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2617,21 +2539,10 @@ func (c *translationRESTClient) UpdateGlossary(ctx context.Context, req *transla
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateGlossary")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2698,21 +2609,10 @@ func (c *translationRESTClient) ListGlossaries(ctx context.Context, req *transla
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListGlossaries")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2776,17 +2676,7 @@ func (c *translationRESTClient) GetGlossary(ctx context.Context, req *translatep
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetGlossary")
 		if err != nil {
 			return err
 		}
@@ -2837,21 +2727,10 @@ func (c *translationRESTClient) DeleteGlossary(ctx context.Context, req *transla
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteGlossary")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2902,17 +2781,7 @@ func (c *translationRESTClient) GetGlossaryEntry(ctx context.Context, req *trans
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetGlossaryEntry")
 		if err != nil {
 			return err
 		}
@@ -2974,21 +2843,10 @@ func (c *translationRESTClient) ListGlossaryEntries(ctx context.Context, req *tr
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListGlossaryEntries")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3058,17 +2916,7 @@ func (c *translationRESTClient) CreateGlossaryEntry(ctx context.Context, req *tr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateGlossaryEntry")
 		if err != nil {
 			return err
 		}
@@ -3125,17 +2973,7 @@ func (c *translationRESTClient) UpdateGlossaryEntry(ctx context.Context, req *tr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateGlossaryEntry")
 		if err != nil {
 			return err
 		}
@@ -3182,15 +3020,8 @@ func (c *translationRESTClient) DeleteGlossaryEntry(ctx context.Context, req *tr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteGlossaryEntry")
+		return err
 	}, opts...)
 }
 
@@ -3233,21 +3064,10 @@ func (c *translationRESTClient) CreateDataset(ctx context.Context, req *translat
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDataset")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3298,17 +3118,7 @@ func (c *translationRESTClient) GetDataset(ctx context.Context, req *translatepb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDataset")
 		if err != nil {
 			return err
 		}
@@ -3370,21 +3180,10 @@ func (c *translationRESTClient) ListDatasets(ctx context.Context, req *translate
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDatasets")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3446,21 +3245,10 @@ func (c *translationRESTClient) DeleteDataset(ctx context.Context, req *translat
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDataset")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3518,17 +3306,7 @@ func (c *translationRESTClient) CreateAdaptiveMtDataset(ctx context.Context, req
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateAdaptiveMtDataset")
 		if err != nil {
 			return err
 		}
@@ -3576,15 +3354,8 @@ func (c *translationRESTClient) DeleteAdaptiveMtDataset(ctx context.Context, req
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteAdaptiveMtDataset")
+		return err
 	}, opts...)
 }
 
@@ -3621,17 +3392,7 @@ func (c *translationRESTClient) GetAdaptiveMtDataset(ctx context.Context, req *t
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAdaptiveMtDataset")
 		if err != nil {
 			return err
 		}
@@ -3696,21 +3457,10 @@ func (c *translationRESTClient) ListAdaptiveMtDatasets(ctx context.Context, req 
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAdaptiveMtDatasets")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3779,17 +3529,7 @@ func (c *translationRESTClient) AdaptiveMtTranslate(ctx context.Context, req *tr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AdaptiveMtTranslate")
 		if err != nil {
 			return err
 		}
@@ -3839,17 +3579,7 @@ func (c *translationRESTClient) GetAdaptiveMtFile(ctx context.Context, req *tran
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAdaptiveMtFile")
 		if err != nil {
 			return err
 		}
@@ -3896,15 +3626,8 @@ func (c *translationRESTClient) DeleteAdaptiveMtFile(ctx context.Context, req *t
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteAdaptiveMtFile")
+		return err
 	}, opts...)
 }
 
@@ -3948,17 +3671,7 @@ func (c *translationRESTClient) ImportAdaptiveMtFile(ctx context.Context, req *t
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ImportAdaptiveMtFile")
 		if err != nil {
 			return err
 		}
@@ -4020,21 +3733,10 @@ func (c *translationRESTClient) ListAdaptiveMtFiles(ctx context.Context, req *tr
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAdaptiveMtFiles")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4109,21 +3811,10 @@ func (c *translationRESTClient) ListAdaptiveMtSentences(ctx context.Context, req
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAdaptiveMtSentences")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4191,21 +3882,10 @@ func (c *translationRESTClient) ImportData(ctx context.Context, req *translatepb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ImportData")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4261,21 +3941,10 @@ func (c *translationRESTClient) ExportData(ctx context.Context, req *translatepb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExportData")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4341,21 +4010,10 @@ func (c *translationRESTClient) ListExamples(ctx context.Context, req *translate
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListExamples")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4424,21 +4082,10 @@ func (c *translationRESTClient) CreateModel(ctx context.Context, req *translatep
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateModel")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4504,21 +4151,10 @@ func (c *translationRESTClient) ListModels(ctx context.Context, req *translatepb
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListModels")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4581,17 +4217,7 @@ func (c *translationRESTClient) GetModel(ctx context.Context, req *translatepb.G
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetModel")
 		if err != nil {
 			return err
 		}
@@ -4640,21 +4266,10 @@ func (c *translationRESTClient) DeleteModel(ctx context.Context, req *translatep
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteModel")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4705,17 +4320,7 @@ func (c *translationRESTClient) GetLocation(ctx context.Context, req *locationpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -4780,21 +4385,10 @@ func (c *translationRESTClient) ListLocations(ctx context.Context, req *location
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4860,15 +4454,8 @@ func (c *translationRESTClient) CancelOperation(ctx context.Context, req *longru
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -4902,15 +4489,8 @@ func (c *translationRESTClient) DeleteOperation(ctx context.Context, req *longru
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOperation")
+		return err
 	}, opts...)
 }
 
@@ -4947,17 +4527,7 @@ func (c *translationRESTClient) GetOperation(ctx context.Context, req *longrunni
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -5022,21 +4592,10 @@ func (c *translationRESTClient) ListOperations(ctx context.Context, req *longrun
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -5105,17 +4664,7 @@ func (c *translationRESTClient) WaitOperation(ctx context.Context, req *longrunn
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "WaitOperation")
 		if err != nil {
 			return err
 		}

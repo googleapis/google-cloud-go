@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -32,7 +32,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1268,6 +1267,8 @@ type cloudDeployGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewCloudDeployClient creates a new cloud deploy client based on gRPC.
@@ -1295,6 +1296,7 @@ func NewCloudDeployClient(ctx context.Context, opts ...option.ClientOption) (*Cl
 		connPool:          connPool,
 		cloudDeployClient: deploypb.NewCloudDeployClient(connPool),
 		CallOptions:       &client.CallOptions,
+		logger:            internaloption.GetLogger(opts),
 		operationsClient:  longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:   iampb.NewIAMPolicyClient(connPool),
 		locationsClient:   locationpb.NewLocationsClient(connPool),
@@ -1360,6 +1362,8 @@ type cloudDeployRESTClient struct {
 
 	// Points back to the CallOptions field of the containing CloudDeployClient
 	CallOptions **CloudDeployCallOptions
+
+	logger *slog.Logger
 }
 
 // NewCloudDeployRESTClient creates a new cloud deploy rest client.
@@ -1378,6 +1382,7 @@ func NewCloudDeployRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -1451,7 +1456,7 @@ func (c *cloudDeployGRPCClient) ListDeliveryPipelines(ctx context.Context, req *
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudDeployClient.ListDeliveryPipelines(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudDeployClient.ListDeliveryPipelines, req, settings.GRPC, c.logger, "ListDeliveryPipelines")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1486,7 +1491,7 @@ func (c *cloudDeployGRPCClient) GetDeliveryPipeline(ctx context.Context, req *de
 	var resp *deploypb.DeliveryPipeline
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.GetDeliveryPipeline(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.GetDeliveryPipeline, req, settings.GRPC, c.logger, "GetDeliveryPipeline")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1504,7 +1509,7 @@ func (c *cloudDeployGRPCClient) CreateDeliveryPipeline(ctx context.Context, req 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.CreateDeliveryPipeline(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.CreateDeliveryPipeline, req, settings.GRPC, c.logger, "CreateDeliveryPipeline")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1524,7 +1529,7 @@ func (c *cloudDeployGRPCClient) UpdateDeliveryPipeline(ctx context.Context, req 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.UpdateDeliveryPipeline(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.UpdateDeliveryPipeline, req, settings.GRPC, c.logger, "UpdateDeliveryPipeline")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1544,7 +1549,7 @@ func (c *cloudDeployGRPCClient) DeleteDeliveryPipeline(ctx context.Context, req 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.DeleteDeliveryPipeline(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.DeleteDeliveryPipeline, req, settings.GRPC, c.logger, "DeleteDeliveryPipeline")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1575,7 +1580,7 @@ func (c *cloudDeployGRPCClient) ListTargets(ctx context.Context, req *deploypb.L
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudDeployClient.ListTargets(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudDeployClient.ListTargets, req, settings.GRPC, c.logger, "ListTargets")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1610,7 +1615,7 @@ func (c *cloudDeployGRPCClient) RollbackTarget(ctx context.Context, req *deployp
 	var resp *deploypb.RollbackTargetResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.RollbackTarget(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.RollbackTarget, req, settings.GRPC, c.logger, "RollbackTarget")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1628,7 +1633,7 @@ func (c *cloudDeployGRPCClient) GetTarget(ctx context.Context, req *deploypb.Get
 	var resp *deploypb.Target
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.GetTarget(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.GetTarget, req, settings.GRPC, c.logger, "GetTarget")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1646,7 +1651,7 @@ func (c *cloudDeployGRPCClient) CreateTarget(ctx context.Context, req *deploypb.
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.CreateTarget(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.CreateTarget, req, settings.GRPC, c.logger, "CreateTarget")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1666,7 +1671,7 @@ func (c *cloudDeployGRPCClient) UpdateTarget(ctx context.Context, req *deploypb.
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.UpdateTarget(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.UpdateTarget, req, settings.GRPC, c.logger, "UpdateTarget")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1686,7 +1691,7 @@ func (c *cloudDeployGRPCClient) DeleteTarget(ctx context.Context, req *deploypb.
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.DeleteTarget(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.DeleteTarget, req, settings.GRPC, c.logger, "DeleteTarget")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1717,7 +1722,7 @@ func (c *cloudDeployGRPCClient) ListCustomTargetTypes(ctx context.Context, req *
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudDeployClient.ListCustomTargetTypes(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudDeployClient.ListCustomTargetTypes, req, settings.GRPC, c.logger, "ListCustomTargetTypes")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1752,7 +1757,7 @@ func (c *cloudDeployGRPCClient) GetCustomTargetType(ctx context.Context, req *de
 	var resp *deploypb.CustomTargetType
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.GetCustomTargetType(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.GetCustomTargetType, req, settings.GRPC, c.logger, "GetCustomTargetType")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1770,7 +1775,7 @@ func (c *cloudDeployGRPCClient) CreateCustomTargetType(ctx context.Context, req 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.CreateCustomTargetType(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.CreateCustomTargetType, req, settings.GRPC, c.logger, "CreateCustomTargetType")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1790,7 +1795,7 @@ func (c *cloudDeployGRPCClient) UpdateCustomTargetType(ctx context.Context, req 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.UpdateCustomTargetType(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.UpdateCustomTargetType, req, settings.GRPC, c.logger, "UpdateCustomTargetType")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1810,7 +1815,7 @@ func (c *cloudDeployGRPCClient) DeleteCustomTargetType(ctx context.Context, req 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.DeleteCustomTargetType(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.DeleteCustomTargetType, req, settings.GRPC, c.logger, "DeleteCustomTargetType")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1841,7 +1846,7 @@ func (c *cloudDeployGRPCClient) ListReleases(ctx context.Context, req *deploypb.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudDeployClient.ListReleases(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudDeployClient.ListReleases, req, settings.GRPC, c.logger, "ListReleases")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1876,7 +1881,7 @@ func (c *cloudDeployGRPCClient) GetRelease(ctx context.Context, req *deploypb.Ge
 	var resp *deploypb.Release
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.GetRelease(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.GetRelease, req, settings.GRPC, c.logger, "GetRelease")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1894,7 +1899,7 @@ func (c *cloudDeployGRPCClient) CreateRelease(ctx context.Context, req *deploypb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.CreateRelease(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.CreateRelease, req, settings.GRPC, c.logger, "CreateRelease")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1914,7 +1919,7 @@ func (c *cloudDeployGRPCClient) AbandonRelease(ctx context.Context, req *deployp
 	var resp *deploypb.AbandonReleaseResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.AbandonRelease(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.AbandonRelease, req, settings.GRPC, c.logger, "AbandonRelease")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1932,7 +1937,7 @@ func (c *cloudDeployGRPCClient) CreateDeployPolicy(ctx context.Context, req *dep
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.CreateDeployPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.CreateDeployPolicy, req, settings.GRPC, c.logger, "CreateDeployPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1952,7 +1957,7 @@ func (c *cloudDeployGRPCClient) UpdateDeployPolicy(ctx context.Context, req *dep
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.UpdateDeployPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.UpdateDeployPolicy, req, settings.GRPC, c.logger, "UpdateDeployPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1972,7 +1977,7 @@ func (c *cloudDeployGRPCClient) DeleteDeployPolicy(ctx context.Context, req *dep
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.DeleteDeployPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.DeleteDeployPolicy, req, settings.GRPC, c.logger, "DeleteDeployPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2003,7 +2008,7 @@ func (c *cloudDeployGRPCClient) ListDeployPolicies(ctx context.Context, req *dep
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudDeployClient.ListDeployPolicies(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudDeployClient.ListDeployPolicies, req, settings.GRPC, c.logger, "ListDeployPolicies")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2038,7 +2043,7 @@ func (c *cloudDeployGRPCClient) GetDeployPolicy(ctx context.Context, req *deploy
 	var resp *deploypb.DeployPolicy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.GetDeployPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.GetDeployPolicy, req, settings.GRPC, c.logger, "GetDeployPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2056,7 +2061,7 @@ func (c *cloudDeployGRPCClient) ApproveRollout(ctx context.Context, req *deployp
 	var resp *deploypb.ApproveRolloutResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.ApproveRollout(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.ApproveRollout, req, settings.GRPC, c.logger, "ApproveRollout")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2074,7 +2079,7 @@ func (c *cloudDeployGRPCClient) AdvanceRollout(ctx context.Context, req *deployp
 	var resp *deploypb.AdvanceRolloutResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.AdvanceRollout(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.AdvanceRollout, req, settings.GRPC, c.logger, "AdvanceRollout")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2092,7 +2097,7 @@ func (c *cloudDeployGRPCClient) CancelRollout(ctx context.Context, req *deploypb
 	var resp *deploypb.CancelRolloutResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.CancelRollout(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.CancelRollout, req, settings.GRPC, c.logger, "CancelRollout")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2121,7 +2126,7 @@ func (c *cloudDeployGRPCClient) ListRollouts(ctx context.Context, req *deploypb.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudDeployClient.ListRollouts(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudDeployClient.ListRollouts, req, settings.GRPC, c.logger, "ListRollouts")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2156,7 +2161,7 @@ func (c *cloudDeployGRPCClient) GetRollout(ctx context.Context, req *deploypb.Ge
 	var resp *deploypb.Rollout
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.GetRollout(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.GetRollout, req, settings.GRPC, c.logger, "GetRollout")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2174,7 +2179,7 @@ func (c *cloudDeployGRPCClient) CreateRollout(ctx context.Context, req *deploypb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.CreateRollout(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.CreateRollout, req, settings.GRPC, c.logger, "CreateRollout")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2194,7 +2199,7 @@ func (c *cloudDeployGRPCClient) IgnoreJob(ctx context.Context, req *deploypb.Ign
 	var resp *deploypb.IgnoreJobResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.IgnoreJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.IgnoreJob, req, settings.GRPC, c.logger, "IgnoreJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2212,7 +2217,7 @@ func (c *cloudDeployGRPCClient) RetryJob(ctx context.Context, req *deploypb.Retr
 	var resp *deploypb.RetryJobResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.RetryJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.RetryJob, req, settings.GRPC, c.logger, "RetryJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2241,7 +2246,7 @@ func (c *cloudDeployGRPCClient) ListJobRuns(ctx context.Context, req *deploypb.L
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudDeployClient.ListJobRuns(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudDeployClient.ListJobRuns, req, settings.GRPC, c.logger, "ListJobRuns")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2276,7 +2281,7 @@ func (c *cloudDeployGRPCClient) GetJobRun(ctx context.Context, req *deploypb.Get
 	var resp *deploypb.JobRun
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.GetJobRun(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.GetJobRun, req, settings.GRPC, c.logger, "GetJobRun")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2294,7 +2299,7 @@ func (c *cloudDeployGRPCClient) TerminateJobRun(ctx context.Context, req *deploy
 	var resp *deploypb.TerminateJobRunResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.TerminateJobRun(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.TerminateJobRun, req, settings.GRPC, c.logger, "TerminateJobRun")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2312,7 +2317,7 @@ func (c *cloudDeployGRPCClient) GetConfig(ctx context.Context, req *deploypb.Get
 	var resp *deploypb.Config
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.GetConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.GetConfig, req, settings.GRPC, c.logger, "GetConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2330,7 +2335,7 @@ func (c *cloudDeployGRPCClient) CreateAutomation(ctx context.Context, req *deplo
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.CreateAutomation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.CreateAutomation, req, settings.GRPC, c.logger, "CreateAutomation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2350,7 +2355,7 @@ func (c *cloudDeployGRPCClient) UpdateAutomation(ctx context.Context, req *deplo
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.UpdateAutomation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.UpdateAutomation, req, settings.GRPC, c.logger, "UpdateAutomation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2370,7 +2375,7 @@ func (c *cloudDeployGRPCClient) DeleteAutomation(ctx context.Context, req *deplo
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.DeleteAutomation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.DeleteAutomation, req, settings.GRPC, c.logger, "DeleteAutomation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2390,7 +2395,7 @@ func (c *cloudDeployGRPCClient) GetAutomation(ctx context.Context, req *deploypb
 	var resp *deploypb.Automation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.GetAutomation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.GetAutomation, req, settings.GRPC, c.logger, "GetAutomation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2419,7 +2424,7 @@ func (c *cloudDeployGRPCClient) ListAutomations(ctx context.Context, req *deploy
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudDeployClient.ListAutomations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudDeployClient.ListAutomations, req, settings.GRPC, c.logger, "ListAutomations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2454,7 +2459,7 @@ func (c *cloudDeployGRPCClient) GetAutomationRun(ctx context.Context, req *deplo
 	var resp *deploypb.AutomationRun
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.GetAutomationRun(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.GetAutomationRun, req, settings.GRPC, c.logger, "GetAutomationRun")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2483,7 +2488,7 @@ func (c *cloudDeployGRPCClient) ListAutomationRuns(ctx context.Context, req *dep
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudDeployClient.ListAutomationRuns(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudDeployClient.ListAutomationRuns, req, settings.GRPC, c.logger, "ListAutomationRuns")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2518,7 +2523,7 @@ func (c *cloudDeployGRPCClient) CancelAutomationRun(ctx context.Context, req *de
 	var resp *deploypb.CancelAutomationRunResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudDeployClient.CancelAutomationRun(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudDeployClient.CancelAutomationRun, req, settings.GRPC, c.logger, "CancelAutomationRun")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2536,7 +2541,7 @@ func (c *cloudDeployGRPCClient) GetLocation(ctx context.Context, req *locationpb
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2565,7 +2570,7 @@ func (c *cloudDeployGRPCClient) ListLocations(ctx context.Context, req *location
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2600,7 +2605,7 @@ func (c *cloudDeployGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.Get
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2618,7 +2623,7 @@ func (c *cloudDeployGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.Set
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2636,7 +2641,7 @@ func (c *cloudDeployGRPCClient) TestIamPermissions(ctx context.Context, req *iam
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2653,7 +2658,7 @@ func (c *cloudDeployGRPCClient) CancelOperation(ctx context.Context, req *longru
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -2667,7 +2672,7 @@ func (c *cloudDeployGRPCClient) DeleteOperation(ctx context.Context, req *longru
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -2682,7 +2687,7 @@ func (c *cloudDeployGRPCClient) GetOperation(ctx context.Context, req *longrunni
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2711,7 +2716,7 @@ func (c *cloudDeployGRPCClient) ListOperations(ctx context.Context, req *longrun
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2788,21 +2793,10 @@ func (c *cloudDeployRESTClient) ListDeliveryPipelines(ctx context.Context, req *
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDeliveryPipelines")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2865,17 +2859,7 @@ func (c *cloudDeployRESTClient) GetDeliveryPipeline(ctx context.Context, req *de
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDeliveryPipeline")
 		if err != nil {
 			return err
 		}
@@ -2938,21 +2922,10 @@ func (c *cloudDeployRESTClient) CreateDeliveryPipeline(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDeliveryPipeline")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3025,21 +2998,10 @@ func (c *cloudDeployRESTClient) UpdateDeliveryPipeline(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateDeliveryPipeline")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3104,21 +3066,10 @@ func (c *cloudDeployRESTClient) DeleteDeliveryPipeline(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDeliveryPipeline")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3187,21 +3138,10 @@ func (c *cloudDeployRESTClient) ListTargets(ctx context.Context, req *deploypb.L
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListTargets")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3270,17 +3210,7 @@ func (c *cloudDeployRESTClient) RollbackTarget(ctx context.Context, req *deployp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RollbackTarget")
 		if err != nil {
 			return err
 		}
@@ -3330,17 +3260,7 @@ func (c *cloudDeployRESTClient) GetTarget(ctx context.Context, req *deploypb.Get
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetTarget")
 		if err != nil {
 			return err
 		}
@@ -3403,21 +3323,10 @@ func (c *cloudDeployRESTClient) CreateTarget(ctx context.Context, req *deploypb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateTarget")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3490,21 +3399,10 @@ func (c *cloudDeployRESTClient) UpdateTarget(ctx context.Context, req *deploypb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateTarget")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3566,21 +3464,10 @@ func (c *cloudDeployRESTClient) DeleteTarget(ctx context.Context, req *deploypb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteTarget")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3649,21 +3536,10 @@ func (c *cloudDeployRESTClient) ListCustomTargetTypes(ctx context.Context, req *
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListCustomTargetTypes")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3726,17 +3602,7 @@ func (c *cloudDeployRESTClient) GetCustomTargetType(ctx context.Context, req *de
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCustomTargetType")
 		if err != nil {
 			return err
 		}
@@ -3799,21 +3665,10 @@ func (c *cloudDeployRESTClient) CreateCustomTargetType(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateCustomTargetType")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3886,21 +3741,10 @@ func (c *cloudDeployRESTClient) UpdateCustomTargetType(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateCustomTargetType")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3962,21 +3806,10 @@ func (c *cloudDeployRESTClient) DeleteCustomTargetType(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteCustomTargetType")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4045,21 +3878,10 @@ func (c *cloudDeployRESTClient) ListReleases(ctx context.Context, req *deploypb.
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListReleases")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4122,17 +3944,7 @@ func (c *cloudDeployRESTClient) GetRelease(ctx context.Context, req *deploypb.Ge
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetRelease")
 		if err != nil {
 			return err
 		}
@@ -4200,21 +4012,10 @@ func (c *cloudDeployRESTClient) CreateRelease(ctx context.Context, req *deploypb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateRelease")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4271,17 +4072,7 @@ func (c *cloudDeployRESTClient) AbandonRelease(ctx context.Context, req *deployp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AbandonRelease")
 		if err != nil {
 			return err
 		}
@@ -4344,21 +4135,10 @@ func (c *cloudDeployRESTClient) CreateDeployPolicy(ctx context.Context, req *dep
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDeployPolicy")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4431,21 +4211,10 @@ func (c *cloudDeployRESTClient) UpdateDeployPolicy(ctx context.Context, req *dep
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateDeployPolicy")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4507,21 +4276,10 @@ func (c *cloudDeployRESTClient) DeleteDeployPolicy(ctx context.Context, req *dep
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDeployPolicy")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4590,21 +4348,10 @@ func (c *cloudDeployRESTClient) ListDeployPolicies(ctx context.Context, req *dep
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDeployPolicies")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4667,17 +4414,7 @@ func (c *cloudDeployRESTClient) GetDeployPolicy(ctx context.Context, req *deploy
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDeployPolicy")
 		if err != nil {
 			return err
 		}
@@ -4733,17 +4470,7 @@ func (c *cloudDeployRESTClient) ApproveRollout(ctx context.Context, req *deployp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ApproveRollout")
 		if err != nil {
 			return err
 		}
@@ -4799,17 +4526,7 @@ func (c *cloudDeployRESTClient) AdvanceRollout(ctx context.Context, req *deployp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AdvanceRollout")
 		if err != nil {
 			return err
 		}
@@ -4865,17 +4582,7 @@ func (c *cloudDeployRESTClient) CancelRollout(ctx context.Context, req *deploypb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelRollout")
 		if err != nil {
 			return err
 		}
@@ -4943,21 +4650,10 @@ func (c *cloudDeployRESTClient) ListRollouts(ctx context.Context, req *deploypb.
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListRollouts")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -5020,17 +4716,7 @@ func (c *cloudDeployRESTClient) GetRollout(ctx context.Context, req *deploypb.Ge
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetRollout")
 		if err != nil {
 			return err
 		}
@@ -5101,21 +4787,10 @@ func (c *cloudDeployRESTClient) CreateRollout(ctx context.Context, req *deploypb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateRollout")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5172,17 +4847,7 @@ func (c *cloudDeployRESTClient) IgnoreJob(ctx context.Context, req *deploypb.Ign
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "IgnoreJob")
 		if err != nil {
 			return err
 		}
@@ -5238,17 +4903,7 @@ func (c *cloudDeployRESTClient) RetryJob(ctx context.Context, req *deploypb.Retr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RetryJob")
 		if err != nil {
 			return err
 		}
@@ -5316,21 +4971,10 @@ func (c *cloudDeployRESTClient) ListJobRuns(ctx context.Context, req *deploypb.L
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListJobRuns")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -5393,17 +5037,7 @@ func (c *cloudDeployRESTClient) GetJobRun(ctx context.Context, req *deploypb.Get
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetJobRun")
 		if err != nil {
 			return err
 		}
@@ -5459,17 +5093,7 @@ func (c *cloudDeployRESTClient) TerminateJobRun(ctx context.Context, req *deploy
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TerminateJobRun")
 		if err != nil {
 			return err
 		}
@@ -5519,17 +5143,7 @@ func (c *cloudDeployRESTClient) GetConfig(ctx context.Context, req *deploypb.Get
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetConfig")
 		if err != nil {
 			return err
 		}
@@ -5592,21 +5206,10 @@ func (c *cloudDeployRESTClient) CreateAutomation(ctx context.Context, req *deplo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateAutomation")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5679,21 +5282,10 @@ func (c *cloudDeployRESTClient) UpdateAutomation(ctx context.Context, req *deplo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateAutomation")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5755,21 +5347,10 @@ func (c *cloudDeployRESTClient) DeleteAutomation(ctx context.Context, req *deplo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteAutomation")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5820,17 +5401,7 @@ func (c *cloudDeployRESTClient) GetAutomation(ctx context.Context, req *deploypb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAutomation")
 		if err != nil {
 			return err
 		}
@@ -5898,21 +5469,10 @@ func (c *cloudDeployRESTClient) ListAutomations(ctx context.Context, req *deploy
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAutomations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -5975,17 +5535,7 @@ func (c *cloudDeployRESTClient) GetAutomationRun(ctx context.Context, req *deplo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAutomationRun")
 		if err != nil {
 			return err
 		}
@@ -6053,21 +5603,10 @@ func (c *cloudDeployRESTClient) ListAutomationRuns(ctx context.Context, req *dep
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAutomationRuns")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -6139,17 +5678,7 @@ func (c *cloudDeployRESTClient) CancelAutomationRun(ctx context.Context, req *de
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelAutomationRun")
 		if err != nil {
 			return err
 		}
@@ -6199,17 +5728,7 @@ func (c *cloudDeployRESTClient) GetLocation(ctx context.Context, req *locationpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -6274,21 +5793,10 @@ func (c *cloudDeployRESTClient) ListLocations(ctx context.Context, req *location
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -6355,17 +5863,7 @@ func (c *cloudDeployRESTClient) GetIamPolicy(ctx context.Context, req *iampb.Get
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -6425,17 +5923,7 @@ func (c *cloudDeployRESTClient) SetIamPolicy(ctx context.Context, req *iampb.Set
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -6497,17 +5985,7 @@ func (c *cloudDeployRESTClient) TestIamPermissions(ctx context.Context, req *iam
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
 		if err != nil {
 			return err
 		}
@@ -6560,15 +6038,8 @@ func (c *cloudDeployRESTClient) CancelOperation(ctx context.Context, req *longru
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -6602,15 +6073,8 @@ func (c *cloudDeployRESTClient) DeleteOperation(ctx context.Context, req *longru
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOperation")
+		return err
 	}, opts...)
 }
 
@@ -6647,17 +6111,7 @@ func (c *cloudDeployRESTClient) GetOperation(ctx context.Context, req *longrunni
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -6722,21 +6176,10 @@ func (c *cloudDeployRESTClient) ListOperations(ctx context.Context, req *longrun
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

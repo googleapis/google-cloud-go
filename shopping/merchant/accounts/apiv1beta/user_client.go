@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	accountspb "cloud.google.com/go/shopping/merchant/accounts/apiv1beta/accountspb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -281,6 +280,8 @@ type userGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewUserClient creates a new user service client based on gRPC.
@@ -307,6 +308,7 @@ func NewUserClient(ctx context.Context, opts ...option.ClientOption) (*UserClien
 		connPool:    connPool,
 		userClient:  accountspb.NewUserServiceClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -353,6 +355,8 @@ type userRESTClient struct {
 
 	// Points back to the CallOptions field of the containing UserClient
 	CallOptions **UserCallOptions
+
+	logger *slog.Logger
 }
 
 // NewUserRESTClient creates a new user service rest client.
@@ -370,6 +374,7 @@ func NewUserRESTClient(ctx context.Context, opts ...option.ClientOption) (*UserC
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -422,7 +427,7 @@ func (c *userGRPCClient) GetUser(ctx context.Context, req *accountspb.GetUserReq
 	var resp *accountspb.User
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.userClient.GetUser(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.userClient.GetUser, req, settings.GRPC, c.logger, "GetUser")
 		return err
 	}, opts...)
 	if err != nil {
@@ -440,7 +445,7 @@ func (c *userGRPCClient) CreateUser(ctx context.Context, req *accountspb.CreateU
 	var resp *accountspb.User
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.userClient.CreateUser(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.userClient.CreateUser, req, settings.GRPC, c.logger, "CreateUser")
 		return err
 	}, opts...)
 	if err != nil {
@@ -457,7 +462,7 @@ func (c *userGRPCClient) DeleteUser(ctx context.Context, req *accountspb.DeleteU
 	opts = append((*c.CallOptions).DeleteUser[0:len((*c.CallOptions).DeleteUser):len((*c.CallOptions).DeleteUser)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.userClient.DeleteUser(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.userClient.DeleteUser, req, settings.GRPC, c.logger, "DeleteUser")
 		return err
 	}, opts...)
 	return err
@@ -472,7 +477,7 @@ func (c *userGRPCClient) UpdateUser(ctx context.Context, req *accountspb.UpdateU
 	var resp *accountspb.User
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.userClient.UpdateUser(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.userClient.UpdateUser, req, settings.GRPC, c.logger, "UpdateUser")
 		return err
 	}, opts...)
 	if err != nil {
@@ -501,7 +506,7 @@ func (c *userGRPCClient) ListUsers(ctx context.Context, req *accountspb.ListUser
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.userClient.ListUsers(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.userClient.ListUsers, req, settings.GRPC, c.logger, "ListUsers")
 			return err
 		}, opts...)
 		if err != nil {
@@ -560,17 +565,7 @@ func (c *userRESTClient) GetUser(ctx context.Context, req *accountspb.GetUserReq
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetUser")
 		if err != nil {
 			return err
 		}
@@ -629,17 +624,7 @@ func (c *userRESTClient) CreateUser(ctx context.Context, req *accountspb.CreateU
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateUser")
 		if err != nil {
 			return err
 		}
@@ -687,15 +672,8 @@ func (c *userRESTClient) DeleteUser(ctx context.Context, req *accountspb.DeleteU
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteUser")
+		return err
 	}, opts...)
 }
 
@@ -747,17 +725,7 @@ func (c *userRESTClient) UpdateUser(ctx context.Context, req *accountspb.UpdateU
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateUser")
 		if err != nil {
 			return err
 		}
@@ -819,21 +787,10 @@ func (c *userRESTClient) ListUsers(ctx context.Context, req *accountspb.ListUser
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListUsers")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

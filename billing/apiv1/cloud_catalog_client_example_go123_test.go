@@ -44,7 +44,7 @@ func ExampleCloudCatalogClient_ListServices_all() {
 	}
 	for resp, err := range c.ListServices(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -70,7 +70,7 @@ func ExampleCloudCatalogClient_ListSkus_all() {
 	}
 	for resp, err := range c.ListSkus(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp

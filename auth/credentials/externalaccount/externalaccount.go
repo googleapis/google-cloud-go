@@ -17,12 +17,14 @@ package externalaccount
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"cloud.google.com/go/auth"
 	iexacc "cloud.google.com/go/auth/credentials/internal/externalaccount"
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/credsfile"
+	"github.com/googleapis/gax-go/v2/internallog"
 )
 
 // Options for creating a [cloud.google.com/go/auth.Credentials].
@@ -95,6 +97,11 @@ type Options struct {
 	// Client configures the underlying client used to make network requests
 	// when fetching tokens. Optional.
 	Client *http.Client
+	// Logger is used for debug logging. If provided, logging will be enabled
+	// at the loggers configured level. By default logging is disabled unless
+	// enabled by setting GOOGLE_SDK_GO_LOGGING_LEVEL in which case a default
+	// logger will be used. Optional.
+	Logger *slog.Logger
 }
 
 // CredentialSource stores the information necessary to retrieve the credentials for the STS exchange.
@@ -243,6 +250,7 @@ func (o *Options) toInternalOpts() *iexacc.Options {
 		AwsSecurityCredentialsProvider: toInternalAwsSecurityCredentialsProvider(o.AwsSecurityCredentialsProvider),
 		Client:                         o.client(),
 		IsDefaultClient:                o.Client == nil,
+		Logger:                         internallog.New(o.Logger),
 	}
 	if o.CredentialSource != nil {
 		cs := o.CredentialSource

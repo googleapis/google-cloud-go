@@ -20,14 +20,13 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
 
 	servicecontrolpb "cloud.google.com/go/servicecontrol/apiv1/servicecontrolpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -146,6 +145,8 @@ type quotaControllerGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewQuotaControllerClient creates a new quota controller client based on gRPC.
@@ -175,6 +176,7 @@ func NewQuotaControllerClient(ctx context.Context, opts ...option.ClientOption) 
 		connPool:              connPool,
 		quotaControllerClient: servicecontrolpb.NewQuotaControllerClient(connPool),
 		CallOptions:           &client.CallOptions,
+		logger:                internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -221,6 +223,8 @@ type quotaControllerRESTClient struct {
 
 	// Points back to the CallOptions field of the containing QuotaControllerClient
 	CallOptions **QuotaControllerCallOptions
+
+	logger *slog.Logger
 }
 
 // NewQuotaControllerRESTClient creates a new quota controller rest client.
@@ -241,6 +245,7 @@ func NewQuotaControllerRESTClient(ctx context.Context, opts ...option.ClientOpti
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -293,7 +298,7 @@ func (c *quotaControllerGRPCClient) AllocateQuota(ctx context.Context, req *serv
 	var resp *servicecontrolpb.AllocateQuotaResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.quotaControllerClient.AllocateQuota(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.quotaControllerClient.AllocateQuota, req, settings.GRPC, c.logger, "AllocateQuota")
 		return err
 	}, opts...)
 	if err != nil {
@@ -351,17 +356,7 @@ func (c *quotaControllerRESTClient) AllocateQuota(ctx context.Context, req *serv
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AllocateQuota")
 		if err != nil {
 			return err
 		}
