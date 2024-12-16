@@ -204,9 +204,6 @@ func toSpannerErrorWithCommitInfo(err error, errorDuringCommit bool) error {
 
 // ErrCode extracts the canonical error code from a Go error.
 func ErrCode(err error) codes.Code {
-	if err == nil {
-		return codes.OK
-	}
 	s, ok := status.FromError(err)
 	if !ok {
 		return codes.Unknown

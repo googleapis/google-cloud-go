@@ -75,8 +75,7 @@ type retryerWithRequestID struct {
 var _ gax.CallOption = (*retryerWithRequestID)(nil)
 
 func (g *grpcSpannerClient) appendRequestIDToGRPCOptions(priors []grpc.CallOption, nthRequest, attempt uint32) []grpc.CallOption {
-	// Google Engineering has requested that each value be added in Decimal unpadded.
-	// Should we have a standardized endianness: Little Endian or Big Endian?
+	// Each value should be added in Decimal, unpadded.
 	requestID := fmt.Sprintf("%d.%s.%d.%d.%d.%d", xSpannerRequestIDVersion, randIDForProcess, g.id, g.channelID, nthRequest, attempt)
 	md := metadata.MD{xSpannerRequestIDHeader: []string{requestID}}
 	return append(priors, grpc.Header(&md))
@@ -88,10 +87,9 @@ type requestID string
 // attaching the subject requestID, unless it is one of the following:
 // * nil
 // * context.Canceled
-// * context.DeadlineExceeded
 // * io.EOF
 // * iterator.Done
-// of which in this case, the original error will be attached as it, since those
+// of which in this case, the original error will be attached as is, since those
 // are sentinel errors used to break sensitive conditions like ending iterations.
 func (r requestID) augmentErrorWithRequestID(err error) error {
 	if err == nil {

@@ -75,7 +75,7 @@ type grpcSpannerClient struct {
 	channelID uint64
 	// id is derived from the SpannerClient.
 	id int
-	// nthRequest shall always be incremented on every fresh request.
+	// nthRequest is incremented for each new request (but not for retries of requests).
 	nthRequest *atomic.Uint32
 }
 
@@ -182,8 +182,8 @@ func (g *grpcSpannerClient) ExecuteSql(ctx context.Context, req *spannerpb.Execu
 }
 
 func (g *grpcSpannerClient) ExecuteStreamingSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (spannerpb.Spanner_ExecuteStreamingSqlClient, error) {
-	// Note: Please don't add g.optsWithNextRequestID to inject x-goog-spanner-request-id
-	//as it is already manually added in when creating Stream iterators for ExecuteStreamingSql.
+	// Note: This method does not add g.optsWithNextRequestID to inject x-goog-spanner-request-id
+	// as it is already manually added when creating Stream iterators for ExecuteStreamingSql.
 	return g.raw.ExecuteStreamingSql(peer.NewContext(ctx, &peer.Peer{}), req, opts...)
 }
 
@@ -208,8 +208,8 @@ func (g *grpcSpannerClient) Read(ctx context.Context, req *spannerpb.ReadRequest
 }
 
 func (g *grpcSpannerClient) StreamingRead(ctx context.Context, req *spannerpb.ReadRequest, opts ...gax.CallOption) (spannerpb.Spanner_StreamingReadClient, error) {
-	// Note: Please don't add g.optsWithNextRequestID as it is already manually
-	// added in when creating Stream iterators for ExecuteStreamingSql.
+	// Note: This method does not add g.optsWithNextRequestID, as it is already
+	// manually added when creating Stream iterators for StreamingRead.
 	return g.raw.StreamingRead(peer.NewContext(ctx, &peer.Peer{}), req, opts...)
 }
 
