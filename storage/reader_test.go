@@ -25,11 +25,11 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"reflect"
 	"strconv"
 	"strings"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
 	"google.golang.org/api/option"
 )
 
@@ -417,8 +417,8 @@ func TestContentEncodingGzipWithReader(t *testing.T) {
 	}{
 		{
 			"NewReader", func(cxt context.Context, obj *ObjectHandle) (*Reader, error) {
-				return obj.NewReader(ctx)
-			},
+			return obj.NewReader(ctx)
+		},
 		},
 		{
 			"NewRangeReader(0, -1)",
@@ -524,8 +524,8 @@ func TestMetadataParsingWithReader(t *testing.T) {
 		expectedMetadata := map[string]string{
 			"Custom-Metadata-Key": "custom-metadata-value",
 		}
-		if !reflect.DeepEqual(rd.Attrs.Metadata, expectedMetadata) {
-			t.Fatalf("metadata mismatch\nGot:\n%v\n\nWant:\n%v", rd.Attrs.Metadata, expectedMetadata)
+		if diff := cmp.Diff(rd.Attrs.Metadata, expectedMetadata); diff != "" {
+			t.Fatalf("metadata mismatch diff got vs want: %v", diff)
 		}
 
 		got, err := ioutil.ReadAll(rd)
