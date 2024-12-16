@@ -1540,6 +1540,96 @@ func TestRequestIDHeader_SingleUseReadOnly_ExecuteStreamingSql_Unavailable(t *te
 	}
 }
 
+func TestRequestIDHeader_SingleUseReadOnly_ExecuteStreamingSql_UnavailableDuringStream(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	interceptorTracker := newInterceptorTracker()
+	clientOpts := []option.ClientOption{
+		option.WithGRPCDialOption(grpc.WithUnaryInterceptor(interceptorTracker.unaryClientInterceptor)),
+		option.WithGRPCDialOption(grpc.WithStreamInterceptor(interceptorTracker.streamClientInterceptor)),
+	}
+	clientConfig := ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened:     2,
+			MaxOpened:     10,
+			WriteSessions: 0.2,
+			incStep:       2,
+		},
+	}
+
+	server, sc, tearDown := setupMockedTestServerWithConfigAndClientOptions(t, clientConfig, clientOpts)
+	t.Cleanup(tearDown)
+	defer sc.Close()
+
+	// A stream of PartialResultSets can break halfway and be retried from that point.
+	server.TestSpanner.AddPartialResultSetError(
+		testutil.SelectSingerIDAlbumIDAlbumTitleFromAlbums,
+		testutil.PartialResultSetExecutionTime{
+			ResumeToken: testutil.EncodeResumeToken(2),
+			Err:         status.Errorf(codes.Internal, "stream terminated by RST_STREAM"),
+		},
+	)
+	server.TestSpanner.AddPartialResultSetError(
+		testutil.SelectSingerIDAlbumIDAlbumTitleFromAlbums,
+		testutil.PartialResultSetExecutionTime{
+			ResumeToken: testutil.EncodeResumeToken(3),
+			Err:         status.Errorf(codes.Unavailable, "server is unavailable"),
+		},
+	)
+	iter := sc.Single().Query(ctx, Statement{SQL: testutil.SelectSingerIDAlbumIDAlbumTitleFromAlbums})
+	defer iter.Stop()
+	for {
+		_, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	if _, err := shouldHaveReceived(server.TestSpanner, []any{
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.ExecuteSqlRequest{},
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	if g, w := interceptorTracker.unaryCallCount(), uint64(1); g != w {
+		t.Errorf("unaryClientCall is incorrect; got=%d want=%d", g, w)
+	}
+
+	if g, w := interceptorTracker.streamCallCount(), uint64(3); g != w {
+		t.Errorf("streamClientCall is incorrect; got=%d want=%d", g, w)
+	}
+
+	if err := interceptorTracker.validateRequestIDsMonotonicity(); err != nil {
+		t.Fatal(err)
+	}
+
+	clientID := uint32(sc.sc.nthClient)
+	procID := randIDForProcess
+	version := xSpannerRequestIDVersion
+	wantUnarySegments := []*requestIDSegments{
+		{Version: version, ProcessID: procID, ClientID: clientID, ChannelID: 1, RequestNo: 1, RPCNo: 1}, // BatchCreateSession
+	}
+	wantStreamingSegments := []*requestIDSegments{
+		{Version: version, ProcessID: procID, ClientID: clientID, ChannelID: 1, RequestNo: 2, RPCNo: 1}, // ExecuteStreamingSql (initial attempt)
+		{Version: version, ProcessID: procID, ClientID: clientID, ChannelID: 1, RequestNo: 2, RPCNo: 2}, // ExecuteStreamingSql (retry)
+		{Version: version, ProcessID: procID, ClientID: clientID, ChannelID: 1, RequestNo: 2, RPCNo: 3}, // ExecuteStreamingSql (retry)
+	}
+
+	if diff := cmp.Diff(interceptorTracker.unaryClientRequestIDSegments, wantUnarySegments); diff != "" {
+		t.Fatalf("RequestID unary segments mismatch: got - want +\n%s", diff)
+	}
+	if diff := cmp.Diff(interceptorTracker.streamClientRequestIDSegments, wantStreamingSegments); diff != "" {
+		t.Fatalf("RequestID streaming segments mismatch: got - want +\n%s", diff)
+	}
+}
+
 func TestRequestIDHeader_SingleUseReadOnly_ExecuteStreamingSql_InvalidArgument(t *testing.T) {
 	t.Parallel()
 
