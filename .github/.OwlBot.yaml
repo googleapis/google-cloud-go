@@ -298,6 +298,7 @@ deep-remove-regex:
   - /internal/generated/snippets/mediatranslation/apiv1beta1/
   - /internal/generated/snippets/memcache/apiv1/
   - /internal/generated/snippets/memcache/apiv1beta2/
+  - /internal/generated/snippets/memorystore/apiv1/
   - /internal/generated/snippets/metastore/apiv1/
   - /internal/generated/snippets/metastore/apiv1alpha/
   - /internal/generated/snippets/metastore/apiv1beta/
@@ -447,6 +448,7 @@ deep-remove-regex:
   - /mediatranslation/apiv1beta1/
   - /memcache/apiv1/
   - /memcache/apiv1beta2/
+  - /memorystore/apiv1/
   - /metastore/apiv1/
   - /metastore/apiv1alpha/
   - /metastore/apiv1beta/
@@ -945,6 +947,8 @@ deep-copy-regex:
   - source: /google/cloud/memcache/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/memcache/v1beta2/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/memorystore/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/metastore/v1/cloud.google.com/go
     dest: /

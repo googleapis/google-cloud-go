@@ -89,6 +89,7 @@ modules:
   - maps
   - mediatranslation
   - memcache
+  - memorystore
   - metastore
   - migrationcenter
   - monitoring
@@ -675,6 +676,9 @@ service-configs:
   - input-directory: google/cloud/memcache/v1beta2
     service-config: memcache_v1beta2.yaml
     import-path: cloud.google.com/go/memcache/apiv1beta2
+  - input-directory: google/cloud/memorystore/v1
+    service-config: memorystore_v1.yaml
+    import-path: cloud.google.com/go/memorystore/apiv1
   - input-directory: google/cloud/metastore/v1
     service-config: metastore_v1.yaml
     import-path: cloud.google.com/go/metastore/apiv1
