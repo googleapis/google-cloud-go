@@ -679,6 +679,9 @@ service-configs:
   - input-directory: google/cloud/memorystore/v1
     service-config: memorystore_v1.yaml
     import-path: cloud.google.com/go/memorystore/apiv1
+  - input-directory: google/cloud/memorystore/v1beta
+    service-config: memorystore_v1beta.yaml
+    import-path: cloud.google.com/go/memorystore/apiv1beta
   - input-directory: google/cloud/metastore/v1
     service-config: metastore_v1.yaml
     import-path: cloud.google.com/go/metastore/apiv1
