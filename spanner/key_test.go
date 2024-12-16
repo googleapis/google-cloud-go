@@ -25,6 +25,7 @@ import (
 	"cloud.google.com/go/civil"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	pb "cloud.google.com/go/spanner/testdata/protos"
+	"github.com/google/uuid"
 	proto3 "google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -138,6 +139,11 @@ func TestKey(t *testing.T) {
 			k:         Key{*big.NewRat(1, 1)},
 			wantProto: listValueProto(stringProto("1.000000000")),
 			wantStr:   `(1.000000000)`,
+		},
+		{
+			k:         Key{uuid.MustParse("b7f2188b-fa4c-4243-8ec4-5e02b77e95df")},
+			wantProto: listValueProto(uuidProto(uuid.MustParse("b7f2188b-fa4c-4243-8ec4-5e02b77e95df"))),
+			wantStr:   `(b7f2188b-fa4c-4243-8ec4-5e02b77e95df)`,
 		},
 		{
 			k:         Key{[]byte("value")},

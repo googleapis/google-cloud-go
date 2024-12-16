@@ -34,6 +34,7 @@ import (
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/fields"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
+	"github.com/google/uuid"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/protoadapt"
@@ -1054,6 +1055,85 @@ func (n *NullProtoEnum) UnmarshalJSON(payload []byte) error {
 	reflect.ValueOf(n.ProtoEnumVal).Elem().SetInt(num)
 	n.Valid = true
 	return nil
+}
+
+type SpannerNullUUID struct {
+	Uuid  uuid.UUID
+	Valid bool
+}
+
+// IsNull implements NullableValue.IsNull for NullFloat32.
+func (n SpannerNullUUID) IsNull() bool {
+	return !n.Valid
+}
+
+// String implements Stringer.String for NullFloat32
+func (n SpannerNullUUID) String() string {
+	if !n.Valid {
+		return ""
+	}
+	return n.Uuid.String()
+}
+
+// MarshalJSON SpannerNullUUID json.Marshaler.MarshalJSON for NullFloat32.
+func (n SpannerNullUUID) MarshalJSON() ([]byte, error) {
+	return nulljson(n.Valid, n.Uuid)
+}
+
+// MarshalJSON SpannerNullUUID json.Marshaler.MarshalJSON for NullFloat32.
+func (n *SpannerNullUUID) UnmarshalJSON(payload []byte) error {
+	if payload == nil {
+		return fmt.Errorf("payload should not be nil")
+	}
+	if jsonIsNull(payload) {
+		n.Valid = false
+		return nil
+	}
+	parsed_uuid, err := uuid.ParseBytes(payload)
+	if err != nil {
+		return fmt.Errorf("payload cannot be converted to uuid: got %v", string(payload))
+	}
+	n.Uuid = parsed_uuid
+	n.Valid = true
+	return nil
+}
+
+// Value implements the driver.Valuer interface.
+func (n SpannerNullUUID) Value() (driver.Value, error) {
+	if n.IsNull() {
+		return nil, nil
+	}
+	return n.Uuid, nil
+}
+
+// Scan implements the sql.Scanner interface.
+func (n *SpannerNullUUID) Scan(value interface{}) error {
+	if value == nil {
+		// n.Uuid, n.Valid = 0, false
+		n.Valid = false
+		return nil
+	}
+	n.Valid = true
+	switch p := value.(type) {
+	default:
+		return spannerErrorf(codes.InvalidArgument, "invalid type for SpannerNullUUID: %v", p)
+	case *uuid.UUID:
+		n.Uuid = *p
+	case uuid.UUID:
+		n.Uuid = p
+	case *SpannerNullUUID:
+		n.Uuid = p.Uuid
+		n.Valid = p.Valid
+	case SpannerNullUUID:
+		n.Uuid = p.Uuid
+		n.Valid = p.Valid
+	}
+	return nil
+}
+
+// GormDataType is used by gorm to determine the default data type for fields with this type.
+func (n SpannerNullUUID) GormDataType() string {
+	return "UUID"
 }
 
 // NullRow represents a Cloud Spanner STRUCT that may be NULL.
@@ -2345,6 +2425,48 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...DecodeO
 			return err
 		}
 		p.Valid = true
+	case *uuid.UUID:
+		if p == nil {
+			return errNilDst(p)
+		}
+		if code != sppb.TypeCode_UUID {
+			return errTypeMismatch(code, acode, ptr)
+		}
+		if isNull {
+			return errDstNotForNull(ptr)
+		}
+		x, err := getUuidValue(v)
+		if err != nil {
+			return err
+		}
+		*p = x
+	case *SpannerNullUUID, **uuid.UUID:
+		if p == nil {
+			return errNilDst(p)
+		}
+		if code != sppb.TypeCode_UUID {
+			return errTypeMismatch(code, acode, ptr)
+		}
+		if isNull {
+			switch sp := ptr.(type) {
+			case *SpannerNullUUID:
+				*sp = SpannerNullUUID{}
+			case **uuid.UUID:
+				*sp = nil
+			}
+			break
+		}
+		x, err := getUuidValue(v)
+		if err != nil {
+			return err
+		}
+		switch sp := ptr.(type) {
+		case *SpannerNullUUID:
+			sp.Valid = true
+			sp.Uuid = x
+		case **uuid.UUID:
+			*sp = &x
+		}
 	default:
 		// Check if the pointer is a custom type that implements spanner.Decoder
 		// interface.
@@ -2457,6 +2579,7 @@ const (
 	spannerTypeNonNullNumeric
 	spannerTypeNonNullTime
 	spannerTypeNonNullDate
+	spannerTypeNonNullUuid
 	spannerTypeNullString
 	spannerTypeNullInt64
 	spannerTypeNullBool
@@ -2466,6 +2589,7 @@ const (
 	spannerTypeNullDate
 	spannerTypeNullNumeric
 	spannerTypeNullJSON
+	spannerTypeNullUuid
 	spannerTypePGNumeric
 	spannerTypePGJsonB
 	spannerTypeArrayOfNonNullString
@@ -2494,7 +2618,7 @@ const (
 // Spanner.
 func (d decodableSpannerType) supportsNull() bool {
 	switch d {
-	case spannerTypeNonNullString, spannerTypeNonNullInt64, spannerTypeNonNullBool, spannerTypeNonNullFloat64, spannerTypeNonNullFloat32, spannerTypeNonNullTime, spannerTypeNonNullDate, spannerTypeNonNullNumeric:
+	case spannerTypeNonNullString, spannerTypeNonNullInt64, spannerTypeNonNullBool, spannerTypeNonNullFloat64, spannerTypeNonNullFloat32, spannerTypeNonNullTime, spannerTypeNonNullDate, spannerTypeNonNullNumeric, spannerTypeNonNullUuid:
 		return false
 	default:
 		return true
@@ -2520,6 +2644,7 @@ var typeOfNullTime = reflect.TypeOf(NullTime{})
 var typeOfNullDate = reflect.TypeOf(NullDate{})
 var typeOfNullNumeric = reflect.TypeOf(NullNumeric{})
 var typeOfNullJSON = reflect.TypeOf(NullJSON{})
+var typeOfNullUuid = reflect.TypeOf(SpannerNullUUID{})
 var typeOfPGNumeric = reflect.TypeOf(PGNumeric{})
 var typeOfPGJsonB = reflect.TypeOf(PGJsonB{})
 
@@ -2598,6 +2723,9 @@ func getDecodableSpannerType(ptr interface{}, isPtr bool) decodableSpannerType {
 		}
 		if t.ConvertibleTo(typeOfNullJSON) {
 			return spannerTypeNullJSON
+		}
+		if t.ConvertibleTo(typeOfNullUuid) {
+			return spannerTypeNullUuid
 		}
 		if t.ConvertibleTo(typeOfPGNumeric) {
 			return spannerTypePGNumeric
@@ -2680,6 +2808,8 @@ func getDecodableSpannerType(ptr interface{}, isPtr bool) decodableSpannerType {
 			}
 		}
 	}
+
+	// reflect.TypeOf(v)
 	// Not convertible to a known base type.
 	return spannerTypeUnknown
 }
@@ -2894,6 +3024,23 @@ func (dsc decodableSpannerType) decodeValueToCustomType(v *proto3.Value, t *sppb
 			result = &y
 		} else {
 			result = &NullDate{y, !isNull}
+		}
+	case spannerTypeNonNullUuid, spannerTypeNullUuid:
+		if code != sppb.TypeCode_UUID {
+			return errTypeMismatch(code, acode, ptr)
+		}
+		if isNull {
+			result = &SpannerNullUUID{}
+			break
+		}
+		x, err := getUuidValue(v)
+		if err != nil {
+			return err
+		}
+		if dsc == spannerTypeNonNullUuid {
+			result = &x
+		} else {
+			result = &SpannerNullUUID{x, !isNull}
 		}
 	case spannerTypeArrayOfNonNullString, spannerTypeArrayOfNullString:
 		if acode != sppb.TypeCode_STRING {
@@ -3274,6 +3421,14 @@ func getFloat32Value(v *proto3.Value) (float32, error) {
 		}
 	}
 	return 0, errSrcVal(v, "Number")
+}
+
+// getFloat32Value returns the float32 value encoded in proto3.Value v whose
+// kind is proto3.Value_NumberValue / proto3.Value_StringValue.
+// Cloud Spanner uses string to encode NaN, Infinity and -Infinity.
+func getUuidValue(v *proto3.Value) (uuid.UUID, error) {
+	str := v.GetStringValue()
+	return uuid.Parse(str)
 }
 
 // errNilListValue returns error for unexpected nil ListValue in decoding Cloud Spanner ARRAYs.
@@ -4441,6 +4596,19 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 			}
 		}
 		pt = listType(dateType())
+	case uuid.UUID:
+		pb.Kind = stringKind(v.String())
+		pt = uuidType()
+	case SpannerNullUUID:
+		if v.Valid {
+			return encodeValue(v.Uuid)
+		}
+		pt = uuidType()
+	case *uuid.UUID:
+		if v != nil {
+			return encodeValue(*v)
+		}
+		pt = uuidType()
 	case GenericColumnValue:
 		// Deep clone to ensure subsequent changes to v before
 		// transmission don't affect our encoded value.
@@ -4598,6 +4766,10 @@ func convertCustomTypeValue(sourceType decodableSpannerType, v interface{}) (int
 		destination = reflect.Indirect(reflect.New(reflect.TypeOf(PGJsonB{})))
 	case spannerTypePGNumeric:
 		destination = reflect.Indirect(reflect.New(reflect.TypeOf(PGNumeric{})))
+	case spannerTypeNonNullUuid:
+		destination = reflect.Indirect(reflect.New(reflect.TypeOf(uuid.UUID{})))
+	case spannerTypeNullUuid:
+		destination = reflect.Indirect(reflect.New(reflect.TypeOf(SpannerNullUUID{})))
 	case spannerTypeArrayOfNonNullString:
 		if reflect.ValueOf(v).IsNil() {
 			return []string(nil), nil
@@ -4882,7 +5054,7 @@ func isSupportedMutationType(v interface{}) bool {
 		float32, *float32, []float32, []*float32, NullFloat32, []NullFloat32,
 		time.Time, *time.Time, []time.Time, []*time.Time, NullTime, []NullTime,
 		civil.Date, *civil.Date, []civil.Date, []*civil.Date, NullDate, []NullDate,
-		big.Rat, *big.Rat, []big.Rat, []*big.Rat, NullNumeric, []NullNumeric,
+		big.Rat, *big.Rat, []big.Rat, []*big.Rat, NullNumeric, []NullNumeric, uuid.UUID, *uuid.UUID, SpannerNullUUID,
 		GenericColumnValue, proto.Message, protoreflect.Enum, NullProtoMessage, NullProtoEnum:
 		return true
 	default:
