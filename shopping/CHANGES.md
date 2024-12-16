@@ -1,5 +1,36 @@
 # Changelog
 
+## [0.13.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.12.1...shopping/v0.13.0) (2024-12-11)
+
+
+### Features
+
+* **shopping/merchant/products:** A new field `member_price_effective_date` is added to message `.google.shopping.merchant.products.v1beta.LoyaltyProgram` ([279350e](https://github.com/googleapis/google-cloud-go/commit/279350e1703dd7f251603408bf0381d47b87ba60))
+* **shopping/merchant/products:** A new field `shipping_label` is added to message `.google.shopping.merchant.products.v1beta.LoyaltyProgram` ([279350e](https://github.com/googleapis/google-cloud-go/commit/279350e1703dd7f251603408bf0381d47b87ba60))
+
+
+### Bug Fixes
+
+* **shopping/merchant/products:** An existing field `gtin` is moved out of oneof in message `.google.shopping.merchant.products.v1beta.Attributes` ([279350e](https://github.com/googleapis/google-cloud-go/commit/279350e1703dd7f251603408bf0381d47b87ba60))
+* **shopping/merchant/products:** Changed repeated flag of an existing field `gtin` in message `.google.shopping.merchant.products.v1beta.Attributes` ([#11247](https://github.com/googleapis/google-cloud-go/issues/11247)) ([279350e](https://github.com/googleapis/google-cloud-go/commit/279350e1703dd7f251603408bf0381d47b87ba60))
+
+
+### Documentation
+
+* **shopping/merchant/products:** A comment for field `gtin` in message `.google.shopping.merchant.products.v1beta.Attributes` is changed ([279350e](https://github.com/googleapis/google-cloud-go/commit/279350e1703dd7f251603408bf0381d47b87ba60))
+* **shopping/merchant/products:** A comment for field `max_handling_time` in message `.google.shopping.merchant.products.v1beta.Shipping` is changed ([279350e](https://github.com/googleapis/google-cloud-go/commit/279350e1703dd7f251603408bf0381d47b87ba60))
+* **shopping/merchant/products:** A comment for field `max_transit_time` in message `.google.shopping.merchant.products.v1beta.Shipping` is changed ([279350e](https://github.com/googleapis/google-cloud-go/commit/279350e1703dd7f251603408bf0381d47b87ba60))
+* **shopping/merchant/products:** A comment for field `min_handling_time` in message `.google.shopping.merchant.products.v1beta.Shipping` is changed ([279350e](https://github.com/googleapis/google-cloud-go/commit/279350e1703dd7f251603408bf0381d47b87ba60))
+* **shopping/merchant/products:** A comment for field `min_transit_time` in message `.google.shopping.merchant.products.v1beta.Shipping` is changed ([279350e](https://github.com/googleapis/google-cloud-go/commit/279350e1703dd7f251603408bf0381d47b87ba60))
+* **shopping/merchant/products:** A comment for field `name` in message `.google.shopping.merchant.products.v1beta.DeleteProductInputRequest` is changed ([279350e](https://github.com/googleapis/google-cloud-go/commit/279350e1703dd7f251603408bf0381d47b87ba60))
+* **shopping/merchant/products:** A comment for field `name` in message `.google.shopping.merchant.products.v1beta.GetProductRequest` is changed ([279350e](https://github.com/googleapis/google-cloud-go/commit/279350e1703dd7f251603408bf0381d47b87ba60))
+* **shopping/merchant/products:** A comment for field `name` in message `.google.shopping.merchant.products.v1beta.Product` is changed ([279350e](https://github.com/googleapis/google-cloud-go/commit/279350e1703dd7f251603408bf0381d47b87ba60))
+* **shopping/merchant/products:** A comment for field `name` in message `.google.shopping.merchant.products.v1beta.ProductInput` is changed ([279350e](https://github.com/googleapis/google-cloud-go/commit/279350e1703dd7f251603408bf0381d47b87ba60))
+* **shopping/merchant/products:** A comment for field `page_size` in message `.google.shopping.merchant.products.v1beta.ListProductsRequest` is changed ([279350e](https://github.com/googleapis/google-cloud-go/commit/279350e1703dd7f251603408bf0381d47b87ba60))
+* **shopping/merchant/products:** A comment for field `tax_category` in message `.google.shopping.merchant.products.v1beta.Attributes` is changed ([279350e](https://github.com/googleapis/google-cloud-go/commit/279350e1703dd7f251603408bf0381d47b87ba60))
+* **shopping/merchant/products:** A comment for message `Product` is changed ([279350e](https://github.com/googleapis/google-cloud-go/commit/279350e1703dd7f251603408bf0381d47b87ba60))
+* **shopping/merchant/products:** A comment for message `ProductInput` is changed ([279350e](https://github.com/googleapis/google-cloud-go/commit/279350e1703dd7f251603408bf0381d47b87ba60))
+
 ## [0.12.1](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.12.0...shopping/v0.12.1) (2024-12-04)
 
 
