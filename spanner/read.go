@@ -442,6 +442,11 @@ type resumableStreamDecoder struct {
 	backoff gax.Backoff
 
 	gsc *grpcSpannerClient
+
+	// reqIDInjector is generated once per stream, unless the stream gets
+	// broken and this case we generate a new request_number.
+	reqIDInjector *requestIDWrap
+	retryAttempt  uint32
 }
 
 // newResumableStreamDecoder creates a new resumeableStreamDecoder instance.
@@ -457,6 +462,14 @@ func newResumableStreamDecoder(ctx context.Context, logger *log.Logger, rpc func
 		backoff:                     DefaultRetryBackoff,
 		gsc:                         gsc,
 	}
+}
+
+func (d *resumableStreamDecoder) reqIDInjectorOrNew() *requestIDWrap {
+	if d.reqIDInjector == nil {
+		d.reqIDInjector = d.gsc.generateRequestIDHeaderInjector()
+		d.retryAttempt = 0
+	}
+	return d.reqIDInjector
 }
 
 // changeState fulfills state transition for resumableStateDecoder.
@@ -541,15 +554,14 @@ func (d *resumableStreamDecoder) next(mt *builtinMetricsTracer) bool {
 	retryer := onCodes(d.backoff, codes.Unavailable, codes.ResourceExhausted, codes.Internal)
 
 	// Setup and track x-goog-request-id in the manual retries for ExecuteStreamingSql.
-	attempt := uint32(0)
-	riw := d.gsc.generateRequestIDHeaderInjector()
+	riw := d.reqIDInjectorOrNew()
 
 	for {
 		switch d.state {
 		case unConnected:
-			attempt++
+			d.retryAttempt++
 			// If no gRPC stream is available, try to initiate one.
-			d.stream, d.err = d.rpc(context.WithValue(d.ctx, metricsTracerKey, mt), d.resumeToken, riw.withNextRetryAttempt(attempt))
+			d.stream, d.err = d.rpc(context.WithValue(d.ctx, metricsTracerKey, mt), d.resumeToken, riw.withNextRetryAttempt(d.retryAttempt))
 			if d.err == nil {
 				d.changeState(queueingRetryable)
 				continue
@@ -603,6 +615,7 @@ func (d *resumableStreamDecoder) next(mt *builtinMetricsTracer) bool {
 					d.resumeToken = d.np.ResumeToken
 					d.changeState(queueingRetryable)
 				}
+				// In this case the stream was connected and we can increment retryAttempt.
 				return true
 			}
 			if d.bytesBetweenResumeTokens >= d.maxBytesBetweenResumeTokens && d.state == queueingRetryable {
@@ -627,6 +640,7 @@ func (d *resumableStreamDecoder) next(mt *builtinMetricsTracer) bool {
 			return false
 		case finished:
 			// If query has finished, check if there are still buffered messages.
+			d.reqIDInjector = nil
 			if d.q.empty() {
 				// No buffered PartialResultSet.
 				return false
