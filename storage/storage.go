@@ -2080,8 +2080,10 @@ func applyConds(method string, gen int64, conds *Conditions, call interface{}) e
 	return nil
 }
 
-// applyConds modifies the provided call using the conditions in conds.
+// applySourceConds modifies the provided call using the conditions in conds.
 // call is something that quacks like a *raw.WhateverCall.
+// This is specifically for calls like Rewrite and Move which have a source and destination
+// object.
 func applySourceConds(method string, gen int64, conds *Conditions, call interface{}) error {
 	cval := reflect.ValueOf(call)
 	if gen >= 0 {
