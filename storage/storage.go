@@ -1159,6 +1159,10 @@ func (o *ObjectHandle) Restore(ctx context.Context, opts *RestoreOptions) (*Obje
 // Move changes the name of the object to the destination name.
 // It can only be used to rename an object within the same bucket.
 //
+// Any preconditions set on the ObjectHandle will be applied for the source
+// object. Set preconditions on the destination object using
+// [MoveObjectDestination.Conditions].
+//
 // This API is in preview and is not yet publicly available.
 func (o *ObjectHandle) Move(ctx context.Context, destination MoveObjectDestination) (*ObjectAttrs, error) {
 	if err := o.validate(); err != nil {
@@ -1176,6 +1180,8 @@ func (o *ObjectHandle) Move(ctx context.Context, destination MoveObjectDestinati
 	}, sOpts...)
 }
 
+// MoveObjectDestination provides the destination object name and (optional) preconditions
+// for [ObjectHandle.Move].
 type MoveObjectDestination struct {
 	Object     string
 	Conditions *Conditions
