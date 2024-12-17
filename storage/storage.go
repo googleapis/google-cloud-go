@@ -1157,7 +1157,8 @@ func (o *ObjectHandle) Restore(ctx context.Context, opts *RestoreOptions) (*Obje
 }
 
 // Move changes the name of the object to the destination name.
-// It can only be used to rename an object within the same bucket.
+// It can only be used to rename an object within the same bucket. The
+// bucket must have [HierarchicalNamespace] enabled to use this method.
 //
 // Any preconditions set on the ObjectHandle will be applied for the source
 // object. Set preconditions on the destination object using
