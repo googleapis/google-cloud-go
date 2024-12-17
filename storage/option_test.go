@@ -146,7 +146,8 @@ func TestApplyStorageOpt(t *testing.T) {
 				}
 			}
 			if !cmp.Equal(got, test.want, cmp.AllowUnexported(storageConfig{}, experimental.ReadStallTimeoutConfig{})) {
-				t.Errorf(cmp.Diff(got, test.want, cmp.AllowUnexported(storageConfig{}, experimental.ReadStallTimeoutConfig{})))
+				diff := cmp.Diff(got, test.want, cmp.AllowUnexported(storageConfig{}, experimental.ReadStallTimeoutConfig{}))
+				t.Errorf("options: diff got, want: %v", diff)
 			}
 		})
 	}
