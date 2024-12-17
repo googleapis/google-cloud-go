@@ -21,15 +21,14 @@
 package kmspb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1081,7 +1080,7 @@ type CryptoKey struct {
 	// where all related cryptographic operations are performed. Only applicable
 	// if [CryptoKeyVersions][google.cloud.kms.v1.CryptoKeyVersion] have a
 	// [ProtectionLevel][google.cloud.kms.v1.ProtectionLevel] of
-	// [EXTERNAL_VPC][CryptoKeyVersion.ProtectionLevel.EXTERNAL_VPC], with the
+	// [EXTERNAL_VPC][google.cloud.kms.v1.ProtectionLevel.EXTERNAL_VPC], with the
 	// resource name in the format `projects/*/locations/*/ekmConnections/*`.
 	// Note, this list is non-exhaustive and may apply to additional
 	// [ProtectionLevels][google.cloud.kms.v1.ProtectionLevel] in the future.

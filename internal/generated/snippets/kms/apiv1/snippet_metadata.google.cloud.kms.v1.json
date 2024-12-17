@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/kms/apiv1",
-    "version": "1.20.2",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "cloudkms_v1_generated_Autokey_CreateKeyHandle_sync",
       "title": "cloudkms CreateKeyHandle Sample",
-      "description": "CreateKeyHandle creates a new [KeyHandle][google.cloud.kms.v1.KeyHandle], triggering the\nprovisioning of a new [CryptoKey][google.cloud.kms.v1.CryptoKey] for CMEK\nuse with the given resource type in the configured key project and the same\nlocation. [GetOperation][Operations.GetOperation] should be used to resolve\nthe resulting long-running operation and get the resulting\n[KeyHandle][google.cloud.kms.v1.KeyHandle] and\n[CryptoKey][google.cloud.kms.v1.CryptoKey].",
+      "description": "CreateKeyHandle creates a new [KeyHandle][google.cloud.kms.v1.KeyHandle], triggering the\nprovisioning of a new [CryptoKey][google.cloud.kms.v1.CryptoKey] for CMEK\nuse with the given resource type in the configured key project and the same\nlocation. [GetOperation][google.longrunning.Operations.GetOperation] should\nbe used to resolve the resulting long-running operation and get the\nresulting [KeyHandle][google.cloud.kms.v1.KeyHandle] and\n[CryptoKey][google.cloud.kms.v1.CryptoKey].",
       "file": "AutokeyClient/CreateKeyHandle/main.go",
       "language": "GO",
       "clientMethod": {

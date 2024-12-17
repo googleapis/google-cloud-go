@@ -21,17 +21,16 @@
 package kmspb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -630,9 +629,9 @@ type AutokeyClient interface {
 	// Creates a new [KeyHandle][google.cloud.kms.v1.KeyHandle], triggering the
 	// provisioning of a new [CryptoKey][google.cloud.kms.v1.CryptoKey] for CMEK
 	// use with the given resource type in the configured key project and the same
-	// location. [GetOperation][Operations.GetOperation] should be used to resolve
-	// the resulting long-running operation and get the resulting
-	// [KeyHandle][google.cloud.kms.v1.KeyHandle] and
+	// location. [GetOperation][google.longrunning.Operations.GetOperation] should
+	// be used to resolve the resulting long-running operation and get the
+	// resulting [KeyHandle][google.cloud.kms.v1.KeyHandle] and
 	// [CryptoKey][google.cloud.kms.v1.CryptoKey].
 	CreateKeyHandle(ctx context.Context, in *CreateKeyHandleRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Returns the [KeyHandle][google.cloud.kms.v1.KeyHandle].
@@ -681,9 +680,9 @@ type AutokeyServer interface {
 	// Creates a new [KeyHandle][google.cloud.kms.v1.KeyHandle], triggering the
 	// provisioning of a new [CryptoKey][google.cloud.kms.v1.CryptoKey] for CMEK
 	// use with the given resource type in the configured key project and the same
-	// location. [GetOperation][Operations.GetOperation] should be used to resolve
-	// the resulting long-running operation and get the resulting
-	// [KeyHandle][google.cloud.kms.v1.KeyHandle] and
+	// location. [GetOperation][google.longrunning.Operations.GetOperation] should
+	// be used to resolve the resulting long-running operation and get the
+	// resulting [KeyHandle][google.cloud.kms.v1.KeyHandle] and
 	// [CryptoKey][google.cloud.kms.v1.CryptoKey].
 	CreateKeyHandle(context.Context, *CreateKeyHandleRequest) (*longrunningpb.Operation, error)
 	// Returns the [KeyHandle][google.cloud.kms.v1.KeyHandle].
