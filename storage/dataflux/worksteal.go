@@ -130,9 +130,13 @@ func (w *worker) doWorkstealListing(ctx context.Context) error {
 				time.Sleep(sleepDurationWhenIdle)
 				continue
 			} else {
-				newRange := <-w.lister.ranges
-				<-w.idleChannel
-				w.updateWorker(newRange.startRange, newRange.endRange, active)
+				select {
+				case newRange := <-w.lister.ranges:
+					<-w.idleChannel
+					w.updateWorker(newRange.startRange, newRange.endRange, active)
+				case <-time.After(sleepDurationWhenIdle):
+					continue
+				}
 			}
 		}
 		// Active worker to list next page of objects within the range
@@ -191,7 +195,6 @@ func (w *worker) shutDownSignal() bool {
 	w.result.mu.Unlock()
 
 	alreadyListedBatchSizeObjects := w.lister.batchSize > 0 && lenResult >= w.lister.batchSize
-
 	return noMoreObjects || alreadyListedBatchSizeObjects
 }
 
