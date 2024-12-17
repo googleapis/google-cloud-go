@@ -77,7 +77,6 @@ func (c *Lister) workstealListing(ctx context.Context) ([]*storage.ObjectAttrs, 
 	if err != nil {
 		return nil, fmt.Errorf("creating new range splitter: %w", err)
 	}
-
 	g, ctx := errgroup.WithContext(ctx)
 	// Initialize all workers as idle.
 	for i := 0; i < c.parallelism; i++ {
@@ -126,17 +125,12 @@ func (w *worker) doWorkstealListing(ctx context.Context) error {
 		// If a worker is idle, sleep for a while before checking the next update.
 		// Worker status is changed to active when it finds work in range channel.
 		if w.status == idle {
-			if len(w.lister.ranges) == 0 {
-				time.Sleep(sleepDurationWhenIdle)
+			select {
+			case newRange := <-w.lister.ranges:
+				<-w.idleChannel
+				w.updateWorker(newRange.startRange, newRange.endRange, active)
+			case <-time.After(sleepDurationWhenIdle):
 				continue
-			} else {
-				select {
-				case newRange := <-w.lister.ranges:
-					<-w.idleChannel
-					w.updateWorker(newRange.startRange, newRange.endRange, active)
-				case <-time.After(sleepDurationWhenIdle):
-					continue
-				}
 			}
 		}
 		// Active worker to list next page of objects within the range
@@ -157,7 +151,7 @@ func (w *worker) doWorkstealListing(ctx context.Context) error {
 
 		// If listing not complete and idle workers are available, split the range
 		// and give half of work to idle worker.
-		for len(w.idleChannel)-len(w.lister.ranges) > 0 && ctx.Err() == nil {
+		if len(w.idleChannel)-len(w.lister.ranges) > 0 && ctx.Err() == nil {
 			// Split range and upload half of work for idle worker.
 			splitPoint, err := w.rangesplitter.splitRange(w.startRange, w.endRange, 1)
 			if err != nil {

@@ -70,7 +70,6 @@ func TestMain(m *testing.M) {
 
 // Lists the all the objects in the bucket.
 func TestIntegration_NextBatch_All(t *testing.T) {
-	t.Skip("#11198")
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
@@ -97,7 +96,6 @@ func TestIntegration_NextBatch_All(t *testing.T) {
 }
 
 func TestIntegration_NextBatch(t *testing.T) {
-	t.Skip("#11196")
 	// Accessing public bucket to list large number of files in batches.
 	// See https://cloud.google.com/storage/docs/public-datasets/landsat
 	if testing.Short() {
