@@ -84,6 +84,7 @@
     "maps": "1.17.0",
     "mediatranslation": "0.9.2",
     "memcache": "1.11.2",
+    "memorystore": "0.0.0",
     "metastore": "1.14.2",
     "migrationcenter": "1.1.2",
     "monitoring": "1.22.0",
