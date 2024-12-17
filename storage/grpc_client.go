@@ -662,6 +662,36 @@ func (c *grpcStorageClient) RestoreObject(ctx context.Context, params *restoreOb
 	return attrs, err
 }
 
+func (c *grpcStorageClient) MoveObject(ctx context.Context, params *moveObjectParams, opts ...storageOption) (*ObjectAttrs, error) {
+	s := callSettings(c.settings, opts...)
+	req := &storagepb.MoveObjectRequest{
+		Bucket:            bucketResourceName(globalProjectAlias, params.bucket),
+		SourceObject:      params.srcObject,
+		DestinationObject: params.dstObject,
+	}
+	if err := applyCondsProto("MoveObjectDestination", defaultGen, params.dstConds, req); err != nil {
+		return nil, err
+	}
+	if err := applySourceCondsProto("MoveObjectSource", defaultGen, params.srcConds, req); err != nil {
+		return nil, err
+	}
+
+	if s.userProject != "" {
+		ctx = setUserProjectMetadata(ctx, s.userProject)
+	}
+
+	var attrs *ObjectAttrs
+	err := run(ctx, func(ctx context.Context) error {
+		res, err := c.raw.MoveObject(ctx, req, s.gax...)
+		attrs = newObjectFromProto(res)
+		return err
+	}, s.retry, s.idempotent)
+	if s, ok := status.FromError(err); ok && s.Code() == codes.NotFound {
+		return nil, ErrObjectNotExist
+	}
+	return attrs, err
+}
+
 // Default Object ACL methods.
 
 func (c *grpcStorageClient) DeleteDefaultObjectACL(ctx context.Context, bucket string, entity ACLEntity, opts ...storageOption) error {
@@ -926,7 +956,7 @@ func (c *grpcStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 	if err := applyCondsProto("Copy destination", defaultGen, req.dstObject.conds, call); err != nil {
 		return nil, err
 	}
-	if err := applySourceCondsProto(req.srcObject.gen, req.srcObject.conds, call); err != nil {
+	if err := applySourceCondsProto("Copy source", req.srcObject.gen, req.srcObject.conds, call); err != nil {
 		return nil, err
 	}
 
