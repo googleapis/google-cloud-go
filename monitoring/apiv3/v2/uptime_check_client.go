@@ -207,7 +207,7 @@ func (c *UptimeCheckClient) DeleteUptimeCheckConfig(ctx context.Context, req *mo
 	return c.internalClient.DeleteUptimeCheckConfig(ctx, req, opts...)
 }
 
-// ListUptimeCheckIps returns the list of IP addresses that checkers run from
+// ListUptimeCheckIps returns the list of IP addresses that checkers run from.
 func (c *UptimeCheckClient) ListUptimeCheckIps(ctx context.Context, req *monitoringpb.ListUptimeCheckIpsRequest, opts ...gax.CallOption) *UptimeCheckIpIterator {
 	return c.internalClient.ListUptimeCheckIps(ctx, req, opts...)
 }
