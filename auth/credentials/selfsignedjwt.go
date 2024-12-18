@@ -19,6 +19,7 @@ import (
 	"crypto"
 	"errors"
 	"fmt"
+	"log/slog"
 	"strings"
 	"time"
 
@@ -49,6 +50,7 @@ func configureSelfSignedJWT(f *credsfile.ServiceAccountFile, opts *DetectOptions
 		scopes:   opts.scopes(),
 		signer:   signer,
 		pkID:     f.PrivateKeyID,
+		logger:   opts.logger(),
 	}, nil
 }
 
@@ -58,6 +60,7 @@ type selfSignedTokenProvider struct {
 	scopes   []string
 	signer   crypto.Signer
 	pkID     string
+	logger   *slog.Logger
 }
 
 func (tp *selfSignedTokenProvider) Token(context.Context) (*auth.Token, error) {
@@ -77,9 +80,10 @@ func (tp *selfSignedTokenProvider) Token(context.Context) (*auth.Token, error) {
 		Type:      jwt.HeaderType,
 		KeyID:     string(tp.pkID),
 	}
-	msg, err := jwt.EncodeJWS(h, c, tp.signer)
+	tok, err := jwt.EncodeJWS(h, c, tp.signer)
 	if err != nil {
 		return nil, fmt.Errorf("credentials: could not encode JWT: %w", err)
 	}
-	return &auth.Token{Value: msg, Type: internal.TokenTypeBearer, Expiry: exp}, nil
+	tp.logger.Debug("created self-signed JWT", "token", tok)
+	return &auth.Token{Value: tok, Type: internal.TokenTypeBearer, Expiry: exp}, nil
 }

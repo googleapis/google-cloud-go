@@ -305,9 +305,15 @@ func TestReadWriteTransaction_ErrorReturned(t *testing.T) {
 func TestReadWriteTransaction_PrecommitToken(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	server, client, teardown := setupMockedTestServer(t)
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened:                   1,
+			MaxOpened:                   1,
+			enableMultiplexSessionForRW: true,
+		},
+	})
 	defer teardown()
-	client.enableMultiplexSessionForRW = true
 
 	type testCase struct {
 		name                   string

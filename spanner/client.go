@@ -434,6 +434,14 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	} else {
 		// Create gtransport ConnPool as usual if MultiEndpoint is not used.
 		// gRPC options.
+
+		// Add a unaryClientInterceptor and streamClientInterceptor.
+		reqIDInjector := new(requestIDHeaderInjector)
+		opts = append(opts,
+			option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(reqIDInjector.interceptStream)),
+			option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(reqIDInjector.interceptUnary)),
+		)
+
 		allOpts := allClientOpts(config.NumChannels, config.Compression, opts...)
 		pool, err = gtransport.DialPool(ctx, allOpts...)
 		if err != nil {

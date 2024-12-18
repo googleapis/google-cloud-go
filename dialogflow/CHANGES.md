@@ -1,5 +1,17 @@
 # Changes
 
+## [1.63.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.62.0...dialogflow/v1.63.0) (2024-12-11)
+
+
+### Features
+
+* **dialogflow:** Properly mark TrainingPhrase name field output-only ([57fdec7](https://github.com/googleapis/google-cloud-go/commit/57fdec7ce3792753c419298b9e526c4889f4101d))
+
+
+### Documentation
+
+* **dialogflow:** Fixed the references to proto method / fields ([57fdec7](https://github.com/googleapis/google-cloud-go/commit/57fdec7ce3792753c419298b9e526c4889f4101d))
+
 ## [1.62.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.61.0...dialogflow/v1.62.0) (2024-12-04)
 
 

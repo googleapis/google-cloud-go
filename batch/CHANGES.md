@@ -1,6 +1,14 @@
 # Changelog
 
 
+## [1.11.4](https://github.com/googleapis/google-cloud-go/compare/batch/v1.11.3...batch/v1.11.4) (2024-12-11)
+
+
+### Documentation
+
+* **batch:** Clarify options for logs ([38385d4](https://github.com/googleapis/google-cloud-go/commit/38385d441ba43e7bf6166ee5507a70e77c0b01f5))
+* **batch:** Clarify the custom instance template needs to be in the same project ([38385d4](https://github.com/googleapis/google-cloud-go/commit/38385d441ba43e7bf6166ee5507a70e77c0b01f5))
+
 ## [1.11.3](https://github.com/googleapis/google-cloud-go/compare/batch/v1.11.2...batch/v1.11.3) (2024-12-04)
 
 

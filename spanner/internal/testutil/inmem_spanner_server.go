@@ -91,6 +91,7 @@ const (
 	MethodExecuteBatchDml     string = "EXECUTE_BATCH_DML"
 	MethodStreamingRead       string = "EXECUTE_STREAMING_READ"
 	MethodBatchWrite          string = "BATCH_WRITE"
+	MethodPartitionQuery      string = "PARTITION_QUERY"
 )
 
 // StatementResult represents a mocked result on the test server. The result is
@@ -360,6 +361,8 @@ type inMemSpannerServer struct {
 	freezed chan struct{}
 }
 
+// Transaction is a wrapper around a spannerpb.Transaction that also contains
+// a sequence number that is used to generate precommit tokens.
 type Transaction struct {
 	sequence    *atomic.Int32
 	transaction *spannerpb.Transaction
@@ -888,9 +891,15 @@ func (s *inMemSpannerServer) ExecuteSql(ctx context.Context, req *spannerpb.Exec
 	case StatementResultError:
 		return nil, statementResult.Err
 	case StatementResultResultSet:
+
 		// if request's session is multiplexed and transaction is Read/Write then add Pre-commit Token in Metadata
 		if statementResult.ResultSet != nil {
-			statementResult.ResultSet.PrecommitToken = s.multiplexedSessionTransactions[string(id)].getPreCommitToken("ResultSetPrecommitToken")
+			s.mu.Lock()
+			txn, ok := s.multiplexedSessionTransactions[string(id)]
+			s.mu.Unlock()
+			if ok {
+				statementResult.ResultSet.PrecommitToken = txn.getPreCommitToken("ResultSetPrecommitToken")
+			}
 		}
 		return statementResult.ResultSet, nil
 	case StatementResultUpdateCount:
@@ -1150,6 +1159,9 @@ func (s *inMemSpannerServer) Rollback(ctx context.Context, req *spannerpb.Rollba
 }
 
 func (s *inMemSpannerServer) PartitionQuery(ctx context.Context, req *spannerpb.PartitionQueryRequest) (*spannerpb.PartitionResponse, error) {
+	if err := s.simulateExecutionTime(MethodPartitionQuery, req); err != nil {
+		return nil, err
+	}
 	s.mu.Lock()
 	if s.stopped {
 		s.mu.Unlock()

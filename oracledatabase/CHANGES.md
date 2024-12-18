@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.1.2](https://github.com/googleapis/google-cloud-go/compare/oracledatabase/v0.1.1...oracledatabase/v0.1.2) (2024-12-11)
+
+
+### Documentation
+
+* **oracledatabase:** A comment for field `cpu_count` in message `.google.cloud.oracledatabase.v1.CloudExadataInfrastructureProperties` is changed ([d448fbb](https://github.com/googleapis/google-cloud-go/commit/d448fbb8ff228b1081ebbc98ee13e2a49e2b373c))
+* **oracledatabase:** A comment for field `db_node_storage_size_gb` in message `.google.cloud.oracledatabase.v1.CloudExadataInfrastructureProperties` is changed ([d448fbb](https://github.com/googleapis/google-cloud-go/commit/d448fbb8ff228b1081ebbc98ee13e2a49e2b373c))
+* **oracledatabase:** A comment for field `memory_size_gb` in message `.google.cloud.oracledatabase.v1.CloudExadataInfrastructureProperties` is changed ([d448fbb](https://github.com/googleapis/google-cloud-go/commit/d448fbb8ff228b1081ebbc98ee13e2a49e2b373c))
+
 ## [0.1.1](https://github.com/googleapis/google-cloud-go/compare/oracledatabase/v0.1.0...oracledatabase/v0.1.1) (2024-10-23)
 
 
