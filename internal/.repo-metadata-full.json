@@ -1715,7 +1715,7 @@
     "description": "Memorystore API",
     "language": "go",
     "client_library_type": "generated",
-    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/memorystore/apiv1",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/memorystore/latest/apiv1",
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
@@ -1725,7 +1725,7 @@
     "description": "Memorystore API",
     "language": "go",
     "client_library_type": "generated",
-    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/memorystore/apiv1beta",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/memorystore/latest/apiv1beta",
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
