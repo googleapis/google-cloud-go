@@ -475,7 +475,7 @@ type SignedURLOptions struct {
 
 	// ContentType is the content type header the client must provide
 	// to use the generated signed URL.
-	// Optional.
+	// Required.
 	ContentType string
 
 	// Headers is a list of extension headers the client must provide
