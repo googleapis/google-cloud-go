@@ -132,7 +132,7 @@ require (
 	cloud.google.com/go/websecurityscanner v1.7.2
 	cloud.google.com/go/workflows v1.13.2
 	cloud.google.com/go/workstations v0.0.0-00010101000000-000000000000
-	google.golang.org/api v0.211.0
+	google.golang.org/api v0.213.0
 	google.golang.org/genproto v0.0.0-20241118233622-e639e219e697
 )
 
@@ -152,6 +152,7 @@ require (
 	cloud.google.com/go/edgenetwork v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/identitytoolkit v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/managedkafka v0.0.0-00010101000000-000000000000
+	cloud.google.com/go/memorystore v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/migrationcenter v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/netapp v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/networkservices v0.0.0-00010101000000-000000000000
@@ -173,9 +174,9 @@ require (
 )
 
 require (
-	cloud.google.com/go/auth v0.12.1 // indirect
+	cloud.google.com/go/auth v0.13.0 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.6 // indirect
-	cloud.google.com/go/compute/metadata v0.5.2 // indirect
+	cloud.google.com/go/compute/metadata v0.6.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
@@ -196,7 +197,7 @@ require (
 	golang.org/x/text v0.21.0 // indirect
 	golang.org/x/time v0.8.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20241118233622-e639e219e697 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20241206012308-a4fef0638583 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20241209162323-e6fa225c2576 // indirect
 	google.golang.org/grpc v1.67.3 // indirect
 )
 
