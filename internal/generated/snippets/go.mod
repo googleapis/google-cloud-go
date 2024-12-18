@@ -525,3 +525,5 @@ replace cloud.google.com/go/privilegedaccessmanager => ../../../privilegedaccess
 replace cloud.google.com/go/apihub => ../../../apihub
 
 replace cloud.google.com/go/oracledatabase => ../../../oracledatabase
+
+replace cloud.google.com/go/memorystore => ../../../memorystore
