@@ -1,5 +1,13 @@
 # Changes
 
+## [1.64.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.63.0...dialogflow/v1.64.0) (2024-12-18)
+
+
+### Features
+
+* **dialogflow:** Add new fields for delivering intermediate transcriptions through PubSub ([4254053](https://github.com/googleapis/google-cloud-go/commit/42540530e44e5f331e66e0777c4aabf449f5fd90))
+* **dialogflow:** Add new fields for delivering intermediate transcriptions through PubSub ([4254053](https://github.com/googleapis/google-cloud-go/commit/42540530e44e5f331e66e0777c4aabf449f5fd90))
+
 ## [1.63.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.62.0...dialogflow/v1.63.0) (2024-12-11)
 
 
