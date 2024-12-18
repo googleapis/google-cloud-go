@@ -44,7 +44,7 @@ func ExampleMetricClient_ListMetricDescriptors_all() {
 	}
 	for resp, err := range c.ListMetricDescriptors(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -70,7 +70,7 @@ func ExampleMetricClient_ListMonitoredResourceDescriptors_all() {
 	}
 	for resp, err := range c.ListMonitoredResourceDescriptors(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -96,7 +96,7 @@ func ExampleMetricClient_ListTimeSeries_all() {
 	}
 	for resp, err := range c.ListTimeSeries(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp

@@ -44,7 +44,7 @@ func ExampleFoldersClient_ListFolders_all() {
 	}
 	for resp, err := range c.ListFolders(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -70,7 +70,7 @@ func ExampleFoldersClient_SearchFolders_all() {
 	}
 	for resp, err := range c.SearchFolders(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp

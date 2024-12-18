@@ -68,7 +68,7 @@ func TestClose(t *testing.T) {
 
 	pool := &roundRobinConnPool{}
 	for i := 0; i < 4; i++ {
-		conn, err := grpc.NewClient(l.Addr().String(), grpc.WithTransportCredentials(insecure.NewCredentials()))
+		conn, err := grpc.Dial(l.Addr().String(), grpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			t.Fatal(err)
 		}

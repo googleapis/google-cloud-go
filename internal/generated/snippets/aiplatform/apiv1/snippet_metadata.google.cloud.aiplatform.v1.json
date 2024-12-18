@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1",
-    "version": "1.68.0",
+    "version": "1.69.0",
     "language": "GO",
     "apis": [
       {
@@ -702,7 +702,7 @@
     {
       "regionTag": "aiplatform_v1_generated_DatasetService_ListAnnotations_sync",
       "title": "aiplatform ListAnnotations Sample",
-      "description": "ListAnnotations lists Annotations belongs to a dataitem",
+      "description": "ListAnnotations lists Annotations belongs to a dataitem\nThis RPC is only available in InternalDatasetService. It is only used for\nexporting conversation data to CCAI Insights.",
       "file": "DatasetClient/ListAnnotations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2853,6 +2853,52 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_EndpointService_UpdateEndpointLongRunning_sync",
+      "title": "aiplatform UpdateEndpointLongRunning Sample",
+      "description": "UpdateEndpointLongRunning updates an Endpoint with a long running operation.",
+      "file": "EndpointClient/UpdateEndpointLongRunning/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateEndpointLongRunning",
+        "fullName": "google.cloud.aiplatform.v1.EndpointClient.UpdateEndpointLongRunning",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.UpdateEndpointLongRunningRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateEndpointLongRunningOperation",
+        "client": {
+          "shortName": "EndpointClient",
+          "fullName": "google.cloud.aiplatform.v1.EndpointClient"
+        },
+        "method": {
+          "shortName": "UpdateEndpointLongRunning",
+          "fullName": "google.cloud.aiplatform.v1.EndpointService.UpdateEndpointLongRunning",
+          "service": {
+            "shortName": "EndpointService",
+            "fullName": "google.cloud.aiplatform.v1.EndpointService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -5009,6 +5055,52 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_FeatureRegistryService_BatchCreateFeatures_sync",
+      "title": "aiplatform BatchCreateFeatures Sample",
+      "description": "BatchCreateFeatures creates a batch of Features in a given FeatureGroup.",
+      "file": "FeatureRegistryClient/BatchCreateFeatures/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchCreateFeatures",
+        "fullName": "google.cloud.aiplatform.v1.FeatureRegistryClient.BatchCreateFeatures",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.BatchCreateFeaturesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BatchCreateFeaturesOperation",
+        "client": {
+          "shortName": "FeatureRegistryClient",
+          "fullName": "google.cloud.aiplatform.v1.FeatureRegistryClient"
+        },
+        "method": {
+          "shortName": "BatchCreateFeatures",
+          "fullName": "google.cloud.aiplatform.v1.FeatureRegistryService.BatchCreateFeatures",
+          "service": {
+            "shortName": "FeatureRegistryService",
+            "fullName": "google.cloud.aiplatform.v1.FeatureRegistryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -8411,7 +8503,7 @@
     {
       "regionTag": "aiplatform_v1_generated_GenAiTuningService_RebaseTunedModel_sync",
       "title": "aiplatform RebaseTunedModel Sample",
-      "description": "RebaseTunedModel rebase a TunedModel.\nCreates a LongRunningOperation that takes a legacy Tuned GenAI model\nReference and creates a TuningJob based on newly available model.",
+      "description": "RebaseTunedModel rebase a TunedModel.",
       "file": "GenAiTuningClient/RebaseTunedModel/main.go",
       "language": "GO",
       "clientMethod": {
@@ -18594,6 +18686,52 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1_generated_NotebookService_StopNotebookRuntime_sync",
+      "title": "aiplatform StopNotebookRuntime Sample",
+      "description": "StopNotebookRuntime stops a NotebookRuntime.",
+      "file": "NotebookClient/StopNotebookRuntime/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StopNotebookRuntime",
+        "fullName": "google.cloud.aiplatform.v1.NotebookClient.StopNotebookRuntime",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.StopNotebookRuntimeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StopNotebookRuntimeOperation",
+        "client": {
+          "shortName": "NotebookClient",
+          "fullName": "google.cloud.aiplatform.v1.NotebookClient"
+        },
+        "method": {
+          "shortName": "StopNotebookRuntime",
+          "fullName": "google.cloud.aiplatform.v1.NotebookService.StopNotebookRuntime",
+          "service": {
+            "shortName": "NotebookService",
+            "fullName": "google.cloud.aiplatform.v1.NotebookService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1_generated_NotebookService_TestIamPermissions_sync",
       "title": "aiplatform TestIamPermissions Sample",
       "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
@@ -21973,7 +22111,7 @@
     {
       "regionTag": "aiplatform_v1_generated_ScheduleService_ResumeSchedule_sync",
       "title": "aiplatform ResumeSchedule Sample",
-      "description": "ResumeSchedule resumes a paused Schedule to start scheduling new runs. Will mark\n[Schedule.state][google.cloud.aiplatform.v1.Schedule.state] to 'ACTIVE'.\nOnly paused Schedule can be resumed.\n\nWhen the Schedule is resumed, new runs will be scheduled starting from the\nnext execution time after the current time based on the time_specification\nin the Schedule. If [Schedule.catchUp][] is set up true, all\nmissed runs will be scheduled for backfill first.",
+      "description": "ResumeSchedule resumes a paused Schedule to start scheduling new runs. Will mark\n[Schedule.state][google.cloud.aiplatform.v1.Schedule.state] to 'ACTIVE'.\nOnly paused Schedule can be resumed.\n\nWhen the Schedule is resumed, new runs will be scheduled starting from the\nnext execution time after the current time based on the time_specification\nin the Schedule. If\n[Schedule.catch_up][google.cloud.aiplatform.v1.Schedule.catch_up] is set up\ntrue, all missed runs will be scheduled for backfill first.",
       "file": "ScheduleClient/ResumeSchedule/main.go",
       "language": "GO",
       "clientMethod": {
@@ -24667,6 +24805,1520 @@
           "service": {
             "shortName": "TensorboardService",
             "fullName": "google.cloud.aiplatform.v1.TensorboardService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_CancelOperation_sync",
+      "title": "aiplatform CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "VertexRagDataClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_CreateRagCorpus_sync",
+      "title": "aiplatform CreateRagCorpus Sample",
+      "description": "CreateRagCorpus creates a RagCorpus.",
+      "file": "VertexRagDataClient/CreateRagCorpus/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateRagCorpus",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.CreateRagCorpus",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.CreateRagCorpusRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateRagCorpusOperation",
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "CreateRagCorpus",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataService.CreateRagCorpus",
+          "service": {
+            "shortName": "VertexRagDataService",
+            "fullName": "google.cloud.aiplatform.v1.VertexRagDataService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_DeleteOperation_sync",
+      "title": "aiplatform DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "VertexRagDataClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_DeleteRagCorpus_sync",
+      "title": "aiplatform DeleteRagCorpus Sample",
+      "description": "DeleteRagCorpus deletes a RagCorpus.",
+      "file": "VertexRagDataClient/DeleteRagCorpus/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteRagCorpus",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.DeleteRagCorpus",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.DeleteRagCorpusRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteRagCorpusOperation",
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "DeleteRagCorpus",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataService.DeleteRagCorpus",
+          "service": {
+            "shortName": "VertexRagDataService",
+            "fullName": "google.cloud.aiplatform.v1.VertexRagDataService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_DeleteRagFile_sync",
+      "title": "aiplatform DeleteRagFile Sample",
+      "description": "DeleteRagFile deletes a RagFile.",
+      "file": "VertexRagDataClient/DeleteRagFile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteRagFile",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.DeleteRagFile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.DeleteRagFileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteRagFileOperation",
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "DeleteRagFile",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataService.DeleteRagFile",
+          "service": {
+            "shortName": "VertexRagDataService",
+            "fullName": "google.cloud.aiplatform.v1.VertexRagDataService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_GetIamPolicy_sync",
+      "title": "aiplatform GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "VertexRagDataClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_GetLocation_sync",
+      "title": "aiplatform GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "VertexRagDataClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_GetOperation_sync",
+      "title": "aiplatform GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "VertexRagDataClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_GetRagCorpus_sync",
+      "title": "aiplatform GetRagCorpus Sample",
+      "description": "GetRagCorpus gets a RagCorpus.",
+      "file": "VertexRagDataClient/GetRagCorpus/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetRagCorpus",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.GetRagCorpus",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.GetRagCorpusRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.RagCorpus",
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "GetRagCorpus",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataService.GetRagCorpus",
+          "service": {
+            "shortName": "VertexRagDataService",
+            "fullName": "google.cloud.aiplatform.v1.VertexRagDataService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_GetRagFile_sync",
+      "title": "aiplatform GetRagFile Sample",
+      "description": "GetRagFile gets a RagFile.",
+      "file": "VertexRagDataClient/GetRagFile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetRagFile",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.GetRagFile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.GetRagFileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.RagFile",
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "GetRagFile",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataService.GetRagFile",
+          "service": {
+            "shortName": "VertexRagDataService",
+            "fullName": "google.cloud.aiplatform.v1.VertexRagDataService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_ImportRagFiles_sync",
+      "title": "aiplatform ImportRagFiles Sample",
+      "description": "ImportRagFiles import files from Google Cloud Storage or Google Drive into a RagCorpus.",
+      "file": "VertexRagDataClient/ImportRagFiles/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ImportRagFiles",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.ImportRagFiles",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.ImportRagFilesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ImportRagFilesOperation",
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "ImportRagFiles",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataService.ImportRagFiles",
+          "service": {
+            "shortName": "VertexRagDataService",
+            "fullName": "google.cloud.aiplatform.v1.VertexRagDataService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_ListLocations_sync",
+      "title": "aiplatform ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "VertexRagDataClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_ListOperations_sync",
+      "title": "aiplatform ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "VertexRagDataClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_ListRagCorpora_sync",
+      "title": "aiplatform ListRagCorpora Sample",
+      "description": "ListRagCorpora lists RagCorpora in a Location.",
+      "file": "VertexRagDataClient/ListRagCorpora/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRagCorpora",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.ListRagCorpora",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.ListRagCorporaRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RagCorpusIterator",
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "ListRagCorpora",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataService.ListRagCorpora",
+          "service": {
+            "shortName": "VertexRagDataService",
+            "fullName": "google.cloud.aiplatform.v1.VertexRagDataService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_ListRagFiles_sync",
+      "title": "aiplatform ListRagFiles Sample",
+      "description": "ListRagFiles lists RagFiles in a RagCorpus.",
+      "file": "VertexRagDataClient/ListRagFiles/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRagFiles",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.ListRagFiles",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.ListRagFilesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RagFileIterator",
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "ListRagFiles",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataService.ListRagFiles",
+          "service": {
+            "shortName": "VertexRagDataService",
+            "fullName": "google.cloud.aiplatform.v1.VertexRagDataService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_SetIamPolicy_sync",
+      "title": "aiplatform SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "VertexRagDataClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_TestIamPermissions_sync",
+      "title": "aiplatform TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "VertexRagDataClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_UpdateRagCorpus_sync",
+      "title": "aiplatform UpdateRagCorpus Sample",
+      "description": "UpdateRagCorpus updates a RagCorpus.",
+      "file": "VertexRagDataClient/UpdateRagCorpus/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateRagCorpus",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.UpdateRagCorpus",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.UpdateRagCorpusRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateRagCorpusOperation",
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "UpdateRagCorpus",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataService.UpdateRagCorpus",
+          "service": {
+            "shortName": "VertexRagDataService",
+            "fullName": "google.cloud.aiplatform.v1.VertexRagDataService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_UploadRagFile_sync",
+      "title": "aiplatform UploadRagFile Sample",
+      "description": "UploadRagFile upload a file into a RagCorpus.",
+      "file": "VertexRagDataClient/UploadRagFile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UploadRagFile",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.UploadRagFile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.UploadRagFileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.UploadRagFileResponse",
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "UploadRagFile",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataService.UploadRagFile",
+          "service": {
+            "shortName": "VertexRagDataService",
+            "fullName": "google.cloud.aiplatform.v1.VertexRagDataService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_WaitOperation_sync",
+      "title": "aiplatform WaitOperation Sample",
+      "description": "WaitOperation is a utility method from google.longrunning.Operations.",
+      "file": "VertexRagDataClient/WaitOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "WaitOperation",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.WaitOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.WaitOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "WaitOperation",
+          "fullName": "google.longrunning.Operations.WaitOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagService_AugmentPrompt_sync",
+      "title": "aiplatform AugmentPrompt Sample",
+      "description": "AugmentPrompt given an input prompt, it returns augmented prompt from vertex rag store\nto guide LLM towards generating grounded responses.",
+      "file": "VertexRagClient/AugmentPrompt/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AugmentPrompt",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagClient.AugmentPrompt",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.AugmentPromptRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.AugmentPromptResponse",
+        "client": {
+          "shortName": "VertexRagClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagClient"
+        },
+        "method": {
+          "shortName": "AugmentPrompt",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagService.AugmentPrompt",
+          "service": {
+            "shortName": "VertexRagService",
+            "fullName": "google.cloud.aiplatform.v1.VertexRagService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagService_CancelOperation_sync",
+      "title": "aiplatform CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "VertexRagClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "VertexRagClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagService_CorroborateContent_sync",
+      "title": "aiplatform CorroborateContent Sample",
+      "description": "CorroborateContent given an input text, it returns a score that evaluates the factuality of\nthe text. It also extracts and returns claims from the text and provides\nsupporting facts.",
+      "file": "VertexRagClient/CorroborateContent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CorroborateContent",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagClient.CorroborateContent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.CorroborateContentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.CorroborateContentResponse",
+        "client": {
+          "shortName": "VertexRagClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagClient"
+        },
+        "method": {
+          "shortName": "CorroborateContent",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagService.CorroborateContent",
+          "service": {
+            "shortName": "VertexRagService",
+            "fullName": "google.cloud.aiplatform.v1.VertexRagService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagService_DeleteOperation_sync",
+      "title": "aiplatform DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "VertexRagClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "VertexRagClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagService_GetIamPolicy_sync",
+      "title": "aiplatform GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "VertexRagClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "VertexRagClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagService_GetLocation_sync",
+      "title": "aiplatform GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "VertexRagClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "VertexRagClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagService_GetOperation_sync",
+      "title": "aiplatform GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "VertexRagClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "VertexRagClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagService_ListLocations_sync",
+      "title": "aiplatform ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "VertexRagClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "VertexRagClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagService_ListOperations_sync",
+      "title": "aiplatform ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "VertexRagClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "VertexRagClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagService_RetrieveContexts_sync",
+      "title": "aiplatform RetrieveContexts Sample",
+      "description": "RetrieveContexts retrieves relevant contexts for a query.",
+      "file": "VertexRagClient/RetrieveContexts/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RetrieveContexts",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagClient.RetrieveContexts",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.RetrieveContextsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.RetrieveContextsResponse",
+        "client": {
+          "shortName": "VertexRagClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagClient"
+        },
+        "method": {
+          "shortName": "RetrieveContexts",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagService.RetrieveContexts",
+          "service": {
+            "shortName": "VertexRagService",
+            "fullName": "google.cloud.aiplatform.v1.VertexRagService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagService_SetIamPolicy_sync",
+      "title": "aiplatform SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "VertexRagClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "VertexRagClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagService_TestIamPermissions_sync",
+      "title": "aiplatform TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "VertexRagClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "VertexRagClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagService_WaitOperation_sync",
+      "title": "aiplatform WaitOperation Sample",
+      "description": "WaitOperation is a utility method from google.longrunning.Operations.",
+      "file": "VertexRagClient/WaitOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "WaitOperation",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagClient.WaitOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.WaitOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "VertexRagClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagClient"
+        },
+        "method": {
+          "shortName": "WaitOperation",
+          "fullName": "google.longrunning.Operations.WaitOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },

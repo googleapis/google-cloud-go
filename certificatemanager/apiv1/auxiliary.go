@@ -1070,7 +1070,7 @@ type CertificateIssuanceConfigIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*certificatemanagerpb.CertificateIssuanceConfig, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *CertificateIssuanceConfigIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1117,7 +1117,7 @@ type CertificateIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*certificatemanagerpb.Certificate, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *CertificateIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1164,7 +1164,7 @@ type CertificateMapEntryIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*certificatemanagerpb.CertificateMapEntry, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *CertificateMapEntryIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1211,7 +1211,7 @@ type CertificateMapIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*certificatemanagerpb.CertificateMap, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *CertificateMapIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1258,7 +1258,7 @@ type DnsAuthorizationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*certificatemanagerpb.DnsAuthorization, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *DnsAuthorizationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1305,7 +1305,7 @@ type LocationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *LocationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1352,7 +1352,7 @@ type OperationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *OperationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1399,7 +1399,7 @@ type TrustConfigIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*certificatemanagerpb.TrustConfig, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TrustConfigIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

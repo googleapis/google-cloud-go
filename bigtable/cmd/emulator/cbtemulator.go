@@ -65,6 +65,7 @@ func main() {
 	fmt.Printf("Cloud Bigtable emulator running on %s\n", srv.Addr)
 	select {
 	case <-ctx.Done():
+		fmt.Printf("Cloud Bigtable emulator running on %s is now shutting down\n", srv.Addr)
 		srv.Close()
 		stop()
 	}

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/contactcenterinsights/apiv1",
-    "version": "1.15.0",
+    "version": "1.16.0",
     "language": "GO",
     "apis": [
       {
@@ -88,6 +88,98 @@
         "method": {
           "shortName": "BulkDeleteConversations",
           "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.BulkDeleteConversations",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_BulkDownloadFeedbackLabels_sync",
+      "title": "contactcenterinsights BulkDownloadFeedbackLabels Sample",
+      "description": "BulkDownloadFeedbackLabels download feedback labels in bulk.",
+      "file": "Client/BulkDownloadFeedbackLabels/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BulkDownloadFeedbackLabels",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.BulkDownloadFeedbackLabels",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.BulkDownloadFeedbackLabelsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BulkDownloadFeedbackLabelsOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "BulkDownloadFeedbackLabels",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.BulkDownloadFeedbackLabels",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_BulkUploadFeedbackLabels_sync",
+      "title": "contactcenterinsights BulkUploadFeedbackLabels Sample",
+      "description": "BulkUploadFeedbackLabels upload feedback labels in bulk.",
+      "file": "Client/BulkUploadFeedbackLabels/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BulkUploadFeedbackLabels",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.BulkUploadFeedbackLabels",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.BulkUploadFeedbackLabelsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BulkUploadFeedbackLabelsOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "BulkUploadFeedbackLabels",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.BulkUploadFeedbackLabels",
           "service": {
             "shortName": "ContactCenterInsights",
             "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
@@ -287,6 +379,52 @@
       ]
     },
     {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_CreateAnalysisRule_sync",
+      "title": "contactcenterinsights CreateAnalysisRule Sample",
+      "description": "CreateAnalysisRule creates a analysis rule.",
+      "file": "Client/CreateAnalysisRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateAnalysisRule",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.CreateAnalysisRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.CreateAnalysisRuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*contactcenterinsightspb.AnalysisRule",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateAnalysisRule",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.CreateAnalysisRule",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_CreateConversation_sync",
       "title": "contactcenterinsights CreateConversation Sample",
       "description": "CreateConversation creates a conversation.\nNote that this method does not support audio transcription or redaction.\nUse `conversations.upload` instead.",
@@ -317,6 +455,52 @@
         "method": {
           "shortName": "CreateConversation",
           "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.CreateConversation",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_CreateFeedbackLabel_sync",
+      "title": "contactcenterinsights CreateFeedbackLabel Sample",
+      "description": "CreateFeedbackLabel create feedback label.",
+      "file": "Client/CreateFeedbackLabel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateFeedbackLabel",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.CreateFeedbackLabel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.CreateFeedbackLabelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*contactcenterinsightspb.FeedbackLabel",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateFeedbackLabel",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.CreateFeedbackLabel",
           "service": {
             "shortName": "ContactCenterInsights",
             "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
@@ -425,6 +609,144 @@
       ]
     },
     {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_CreateQaQuestion_sync",
+      "title": "contactcenterinsights CreateQaQuestion Sample",
+      "description": "CreateQaQuestion create a QaQuestion.",
+      "file": "Client/CreateQaQuestion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateQaQuestion",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.CreateQaQuestion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.CreateQaQuestionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*contactcenterinsightspb.QaQuestion",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateQaQuestion",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.CreateQaQuestion",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_CreateQaScorecard_sync",
+      "title": "contactcenterinsights CreateQaScorecard Sample",
+      "description": "CreateQaScorecard create a QaScorecard.",
+      "file": "Client/CreateQaScorecard/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateQaScorecard",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.CreateQaScorecard",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.CreateQaScorecardRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*contactcenterinsightspb.QaScorecard",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateQaScorecard",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.CreateQaScorecard",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_CreateQaScorecardRevision_sync",
+      "title": "contactcenterinsights CreateQaScorecardRevision Sample",
+      "description": "CreateQaScorecardRevision creates a QaScorecardRevision.",
+      "file": "Client/CreateQaScorecardRevision/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateQaScorecardRevision",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.CreateQaScorecardRevision",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.CreateQaScorecardRevisionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*contactcenterinsightspb.QaScorecardRevision",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateQaScorecardRevision",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.CreateQaScorecardRevision",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_CreateView_sync",
       "title": "contactcenterinsights CreateView Sample",
       "description": "CreateView creates a view.",
@@ -516,6 +838,51 @@
       ]
     },
     {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_DeleteAnalysisRule_sync",
+      "title": "contactcenterinsights DeleteAnalysisRule Sample",
+      "description": "DeleteAnalysisRule deletes a analysis rule.",
+      "file": "Client/DeleteAnalysisRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteAnalysisRule",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.DeleteAnalysisRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.DeleteAnalysisRuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteAnalysisRule",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.DeleteAnalysisRule",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_DeleteConversation_sync",
       "title": "contactcenterinsights DeleteConversation Sample",
       "description": "DeleteConversation deletes a conversation.",
@@ -545,6 +912,51 @@
         "method": {
           "shortName": "DeleteConversation",
           "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.DeleteConversation",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_DeleteFeedbackLabel_sync",
+      "title": "contactcenterinsights DeleteFeedbackLabel Sample",
+      "description": "DeleteFeedbackLabel delete feedback label.",
+      "file": "Client/DeleteFeedbackLabel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteFeedbackLabel",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.DeleteFeedbackLabel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.DeleteFeedbackLabelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteFeedbackLabel",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.DeleteFeedbackLabel",
           "service": {
             "shortName": "ContactCenterInsights",
             "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
@@ -697,6 +1109,141 @@
       ]
     },
     {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_DeleteQaQuestion_sync",
+      "title": "contactcenterinsights DeleteQaQuestion Sample",
+      "description": "DeleteQaQuestion deletes a QaQuestion.",
+      "file": "Client/DeleteQaQuestion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteQaQuestion",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.DeleteQaQuestion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.DeleteQaQuestionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteQaQuestion",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.DeleteQaQuestion",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_DeleteQaScorecard_sync",
+      "title": "contactcenterinsights DeleteQaScorecard Sample",
+      "description": "DeleteQaScorecard deletes a QaScorecard.",
+      "file": "Client/DeleteQaScorecard/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteQaScorecard",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.DeleteQaScorecard",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.DeleteQaScorecardRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteQaScorecard",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.DeleteQaScorecard",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_DeleteQaScorecardRevision_sync",
+      "title": "contactcenterinsights DeleteQaScorecardRevision Sample",
+      "description": "DeleteQaScorecardRevision deletes a QaScorecardRevision.",
+      "file": "Client/DeleteQaScorecardRevision/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteQaScorecardRevision",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.DeleteQaScorecardRevision",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.DeleteQaScorecardRevisionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteQaScorecardRevision",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.DeleteQaScorecardRevision",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_DeleteView_sync",
       "title": "contactcenterinsights DeleteView Sample",
       "description": "DeleteView deletes a view.",
@@ -783,6 +1330,52 @@
         {
           "start": 18,
           "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_DeployQaScorecardRevision_sync",
+      "title": "contactcenterinsights DeployQaScorecardRevision Sample",
+      "description": "DeployQaScorecardRevision deploy a QaScorecardRevision.",
+      "file": "Client/DeployQaScorecardRevision/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeployQaScorecardRevision",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.DeployQaScorecardRevision",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.DeployQaScorecardRevisionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*contactcenterinsightspb.QaScorecardRevision",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "DeployQaScorecardRevision",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.DeployQaScorecardRevision",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -926,6 +1519,52 @@
       ]
     },
     {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_GetAnalysisRule_sync",
+      "title": "contactcenterinsights GetAnalysisRule Sample",
+      "description": "GetAnalysisRule get a analysis rule.",
+      "file": "Client/GetAnalysisRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAnalysisRule",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.GetAnalysisRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.GetAnalysisRuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*contactcenterinsightspb.AnalysisRule",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "GetAnalysisRule",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.GetAnalysisRule",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_GetConversation_sync",
       "title": "contactcenterinsights GetConversation Sample",
       "description": "GetConversation gets a conversation.",
@@ -1002,6 +1641,52 @@
         "method": {
           "shortName": "GetEncryptionSpec",
           "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.GetEncryptionSpec",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_GetFeedbackLabel_sync",
+      "title": "contactcenterinsights GetFeedbackLabel Sample",
+      "description": "GetFeedbackLabel get feedback label.",
+      "file": "Client/GetFeedbackLabel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetFeedbackLabel",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.GetFeedbackLabel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.GetFeedbackLabelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*contactcenterinsightspb.FeedbackLabel",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "GetFeedbackLabel",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.GetFeedbackLabel",
           "service": {
             "shortName": "ContactCenterInsights",
             "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
@@ -1186,6 +1871,144 @@
         "method": {
           "shortName": "GetPhraseMatcher",
           "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.GetPhraseMatcher",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_GetQaQuestion_sync",
+      "title": "contactcenterinsights GetQaQuestion Sample",
+      "description": "GetQaQuestion gets a QaQuestion.",
+      "file": "Client/GetQaQuestion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetQaQuestion",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.GetQaQuestion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.GetQaQuestionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*contactcenterinsightspb.QaQuestion",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "GetQaQuestion",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.GetQaQuestion",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_GetQaScorecard_sync",
+      "title": "contactcenterinsights GetQaScorecard Sample",
+      "description": "GetQaScorecard gets a QaScorecard.",
+      "file": "Client/GetQaScorecard/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetQaScorecard",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.GetQaScorecard",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.GetQaScorecardRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*contactcenterinsightspb.QaScorecard",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "GetQaScorecard",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.GetQaScorecard",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_GetQaScorecardRevision_sync",
+      "title": "contactcenterinsights GetQaScorecardRevision Sample",
+      "description": "GetQaScorecardRevision gets a QaScorecardRevision.",
+      "file": "Client/GetQaScorecardRevision/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetQaScorecardRevision",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.GetQaScorecardRevision",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.GetQaScorecardRevisionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*contactcenterinsightspb.QaScorecardRevision",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "GetQaScorecardRevision",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.GetQaScorecardRevision",
           "service": {
             "shortName": "ContactCenterInsights",
             "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
@@ -1388,7 +2211,7 @@
     {
       "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_InitializeEncryptionSpec_sync",
       "title": "contactcenterinsights InitializeEncryptionSpec Sample",
-      "description": "InitializeEncryptionSpec initializes a location-level encryption key specification.  An error will\nbe thrown if the location has resources already created before the\ninitialization. Once the encryption specification is initialized at a\nlocation, it is immutable and all newly created resources under the\nlocation will be encrypted with the existing specification.",
+      "description": "InitializeEncryptionSpec initializes a location-level encryption key specification. An error will\nresult if the location has resources already created before the\ninitialization. After the encryption specification is initialized at a\nlocation, it is immutable and all newly created resources under the\nlocation will be encrypted with the existing specification.",
       "file": "Client/InitializeEncryptionSpec/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1427,6 +2250,52 @@
         {
           "start": 18,
           "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_ListAllFeedbackLabels_sync",
+      "title": "contactcenterinsights ListAllFeedbackLabels Sample",
+      "description": "ListAllFeedbackLabels list all feedback labels by project number.",
+      "file": "Client/ListAllFeedbackLabels/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAllFeedbackLabels",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.ListAllFeedbackLabels",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.ListAllFeedbackLabelsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "FeedbackLabelIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "ListAllFeedbackLabels",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.ListAllFeedbackLabels",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1478,6 +2347,52 @@
       ]
     },
     {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_ListAnalysisRules_sync",
+      "title": "contactcenterinsights ListAnalysisRules Sample",
+      "description": "ListAnalysisRules lists analysis rules.",
+      "file": "Client/ListAnalysisRules/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAnalysisRules",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.ListAnalysisRules",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.ListAnalysisRulesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AnalysisRuleIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "ListAnalysisRules",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.ListAnalysisRules",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_ListConversations_sync",
       "title": "contactcenterinsights ListConversations Sample",
       "description": "ListConversations lists conversations.",
@@ -1508,6 +2423,52 @@
         "method": {
           "shortName": "ListConversations",
           "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.ListConversations",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_ListFeedbackLabels_sync",
+      "title": "contactcenterinsights ListFeedbackLabels Sample",
+      "description": "ListFeedbackLabels list feedback labels.",
+      "file": "Client/ListFeedbackLabels/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListFeedbackLabels",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.ListFeedbackLabels",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.ListFeedbackLabelsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "FeedbackLabelIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "ListFeedbackLabels",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.ListFeedbackLabels",
           "service": {
             "shortName": "ContactCenterInsights",
             "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
@@ -1708,6 +2669,144 @@
       ]
     },
     {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_ListQaQuestions_sync",
+      "title": "contactcenterinsights ListQaQuestions Sample",
+      "description": "ListQaQuestions lists QaQuestions.",
+      "file": "Client/ListQaQuestions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListQaQuestions",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.ListQaQuestions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.ListQaQuestionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "QaQuestionIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "ListQaQuestions",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.ListQaQuestions",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_ListQaScorecardRevisions_sync",
+      "title": "contactcenterinsights ListQaScorecardRevisions Sample",
+      "description": "ListQaScorecardRevisions lists all revisions under the parent QaScorecard.",
+      "file": "Client/ListQaScorecardRevisions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListQaScorecardRevisions",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.ListQaScorecardRevisions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.ListQaScorecardRevisionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "QaScorecardRevisionIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "ListQaScorecardRevisions",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.ListQaScorecardRevisions",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_ListQaScorecards_sync",
+      "title": "contactcenterinsights ListQaScorecards Sample",
+      "description": "ListQaScorecards lists QaScorecards.",
+      "file": "Client/ListQaScorecards/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListQaScorecards",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.ListQaScorecards",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.ListQaScorecardsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "QaScorecardIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "ListQaScorecards",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.ListQaScorecards",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_ListViews_sync",
       "title": "contactcenterinsights ListViews Sample",
       "description": "ListViews lists views.",
@@ -1749,6 +2848,98 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_QueryMetrics_sync",
+      "title": "contactcenterinsights QueryMetrics Sample",
+      "description": "QueryMetrics query metrics.",
+      "file": "Client/QueryMetrics/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "QueryMetrics",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.QueryMetrics",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.QueryMetricsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "QueryMetricsOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "QueryMetrics",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.QueryMetrics",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_TuneQaScorecardRevision_sync",
+      "title": "contactcenterinsights TuneQaScorecardRevision Sample",
+      "description": "TuneQaScorecardRevision fine tune one or more QaModels.",
+      "file": "Client/TuneQaScorecardRevision/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TuneQaScorecardRevision",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.TuneQaScorecardRevision",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.TuneQaScorecardRevisionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TuneQaScorecardRevisionOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "TuneQaScorecardRevision",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.TuneQaScorecardRevision",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -1800,6 +2991,98 @@
       ]
     },
     {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_UndeployQaScorecardRevision_sync",
+      "title": "contactcenterinsights UndeployQaScorecardRevision Sample",
+      "description": "UndeployQaScorecardRevision undeploy a QaScorecardRevision.",
+      "file": "Client/UndeployQaScorecardRevision/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UndeployQaScorecardRevision",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.UndeployQaScorecardRevision",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.UndeployQaScorecardRevisionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*contactcenterinsightspb.QaScorecardRevision",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "UndeployQaScorecardRevision",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.UndeployQaScorecardRevision",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_UpdateAnalysisRule_sync",
+      "title": "contactcenterinsights UpdateAnalysisRule Sample",
+      "description": "UpdateAnalysisRule updates a analysis rule.",
+      "file": "Client/UpdateAnalysisRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateAnalysisRule",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.UpdateAnalysisRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.UpdateAnalysisRuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*contactcenterinsightspb.AnalysisRule",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateAnalysisRule",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.UpdateAnalysisRule",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_UpdateConversation_sync",
       "title": "contactcenterinsights UpdateConversation Sample",
       "description": "UpdateConversation updates a conversation.",
@@ -1830,6 +3113,52 @@
         "method": {
           "shortName": "UpdateConversation",
           "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.UpdateConversation",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_UpdateFeedbackLabel_sync",
+      "title": "contactcenterinsights UpdateFeedbackLabel Sample",
+      "description": "UpdateFeedbackLabel update feedback label.",
+      "file": "Client/UpdateFeedbackLabel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateFeedbackLabel",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.UpdateFeedbackLabel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.UpdateFeedbackLabelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*contactcenterinsightspb.FeedbackLabel",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateFeedbackLabel",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.UpdateFeedbackLabel",
           "service": {
             "shortName": "ContactCenterInsights",
             "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
@@ -1968,6 +3297,98 @@
         "method": {
           "shortName": "UpdatePhraseMatcher",
           "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.UpdatePhraseMatcher",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_UpdateQaQuestion_sync",
+      "title": "contactcenterinsights UpdateQaQuestion Sample",
+      "description": "UpdateQaQuestion updates a QaQuestion.",
+      "file": "Client/UpdateQaQuestion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateQaQuestion",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.UpdateQaQuestion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.UpdateQaQuestionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*contactcenterinsightspb.QaQuestion",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateQaQuestion",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.UpdateQaQuestion",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_UpdateQaScorecard_sync",
+      "title": "contactcenterinsights UpdateQaScorecard Sample",
+      "description": "UpdateQaScorecard updates a QaScorecard.",
+      "file": "Client/UpdateQaScorecard/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateQaScorecard",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.UpdateQaScorecard",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.UpdateQaScorecardRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*contactcenterinsightspb.QaScorecard",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateQaScorecard",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.UpdateQaScorecard",
           "service": {
             "shortName": "ContactCenterInsights",
             "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"

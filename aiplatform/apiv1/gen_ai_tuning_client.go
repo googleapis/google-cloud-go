@@ -19,6 +19,7 @@ package aiplatform
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 
@@ -189,8 +190,6 @@ func (c *GenAiTuningClient) CancelTuningJob(ctx context.Context, req *aiplatform
 }
 
 // RebaseTunedModel rebase a TunedModel.
-// Creates a LongRunningOperation that takes a legacy Tuned GenAI model
-// Reference and creates a TuningJob based on newly available model.
 func (c *GenAiTuningClient) RebaseTunedModel(ctx context.Context, req *aiplatformpb.RebaseTunedModelRequest, opts ...gax.CallOption) (*RebaseTunedModelOperation, error) {
 	return c.internalClient.RebaseTunedModel(ctx, req, opts...)
 }
@@ -288,6 +287,8 @@ type genAiTuningGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewGenAiTuningClient creates a new gen ai tuning service client based on gRPC.
@@ -314,6 +315,7 @@ func NewGenAiTuningClient(ctx context.Context, opts ...option.ClientOption) (*Ge
 		connPool:          connPool,
 		genAiTuningClient: aiplatformpb.NewGenAiTuningServiceClient(connPool),
 		CallOptions:       &client.CallOptions,
+		logger:            internaloption.GetLogger(opts),
 		operationsClient:  longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:   iampb.NewIAMPolicyClient(connPool),
 		locationsClient:   locationpb.NewLocationsClient(connPool),
@@ -370,7 +372,7 @@ func (c *genAiTuningGRPCClient) CreateTuningJob(ctx context.Context, req *aiplat
 	var resp *aiplatformpb.TuningJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.genAiTuningClient.CreateTuningJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.genAiTuningClient.CreateTuningJob, req, settings.GRPC, c.logger, "CreateTuningJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -388,7 +390,7 @@ func (c *genAiTuningGRPCClient) GetTuningJob(ctx context.Context, req *aiplatfor
 	var resp *aiplatformpb.TuningJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.genAiTuningClient.GetTuningJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.genAiTuningClient.GetTuningJob, req, settings.GRPC, c.logger, "GetTuningJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -417,7 +419,7 @@ func (c *genAiTuningGRPCClient) ListTuningJobs(ctx context.Context, req *aiplatf
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.genAiTuningClient.ListTuningJobs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.genAiTuningClient.ListTuningJobs, req, settings.GRPC, c.logger, "ListTuningJobs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -451,7 +453,7 @@ func (c *genAiTuningGRPCClient) CancelTuningJob(ctx context.Context, req *aiplat
 	opts = append((*c.CallOptions).CancelTuningJob[0:len((*c.CallOptions).CancelTuningJob):len((*c.CallOptions).CancelTuningJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.genAiTuningClient.CancelTuningJob(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.genAiTuningClient.CancelTuningJob, req, settings.GRPC, c.logger, "CancelTuningJob")
 		return err
 	}, opts...)
 	return err
@@ -466,7 +468,7 @@ func (c *genAiTuningGRPCClient) RebaseTunedModel(ctx context.Context, req *aipla
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.genAiTuningClient.RebaseTunedModel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.genAiTuningClient.RebaseTunedModel, req, settings.GRPC, c.logger, "RebaseTunedModel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -486,7 +488,7 @@ func (c *genAiTuningGRPCClient) GetLocation(ctx context.Context, req *locationpb
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -515,7 +517,7 @@ func (c *genAiTuningGRPCClient) ListLocations(ctx context.Context, req *location
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -550,7 +552,7 @@ func (c *genAiTuningGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.Get
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -568,7 +570,7 @@ func (c *genAiTuningGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.Set
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -586,7 +588,7 @@ func (c *genAiTuningGRPCClient) TestIamPermissions(ctx context.Context, req *iam
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -603,7 +605,7 @@ func (c *genAiTuningGRPCClient) CancelOperation(ctx context.Context, req *longru
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -617,7 +619,7 @@ func (c *genAiTuningGRPCClient) DeleteOperation(ctx context.Context, req *longru
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -632,7 +634,7 @@ func (c *genAiTuningGRPCClient) GetOperation(ctx context.Context, req *longrunni
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -661,7 +663,7 @@ func (c *genAiTuningGRPCClient) ListOperations(ctx context.Context, req *longrun
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -696,7 +698,7 @@ func (c *genAiTuningGRPCClient) WaitOperation(ctx context.Context, req *longrunn
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.WaitOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.WaitOperation, req, settings.GRPC, c.logger, "WaitOperation")
 		return err
 	}, opts...)
 	if err != nil {

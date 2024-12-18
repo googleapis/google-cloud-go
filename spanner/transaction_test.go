@@ -470,8 +470,106 @@ func TestReadWriteStmtBasedTransaction_CommitAborted(t *testing.T) {
 	}
 }
 
+func TestReadWriteStmtBasedTransaction_QueryAborted(t *testing.T) {
+	t.Parallel()
+	rowCount, attempts, err := testReadWriteStmtBasedTransaction(t, map[string]SimulatedExecutionTime{
+		MethodExecuteStreamingSql: {Errors: []error{status.Error(codes.Aborted, "Transaction aborted")}},
+	})
+	if err != nil {
+		t.Fatalf("transaction failed to commit: %v", err)
+	}
+	if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
+		t.Fatalf("Row count mismatch, got %v, expected %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
+	}
+	if g, w := attempts, 2; g != w {
+		t.Fatalf("number of attempts mismatch:\nGot%d\nWant:%d", g, w)
+	}
+}
+
+func TestReadWriteStmtBasedTransaction_UpdateAborted(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
+		SessionPoolConfig: SessionPoolConfig{
+			// Use a session pool with size 1 to ensure that there are no session leaks.
+			MinOpened: 1,
+			MaxOpened: 1,
+		},
+	})
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(
+		MethodExecuteSql,
+		SimulatedExecutionTime{Errors: []error{status.Error(codes.Aborted, "Transaction aborted")}})
+
+	ctx := context.Background()
+	tx, err := NewReadWriteStmtBasedTransaction(ctx, client)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = tx.Update(ctx, Statement{SQL: UpdateBarSetFoo})
+	if g, w := ErrCode(err), codes.Aborted; g != w {
+		t.Fatalf("error code mismatch\n Got: %v\nWant: %v", g, w)
+	}
+	tx, err = tx.ResetForRetry(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	c, err := tx.Update(ctx, Statement{SQL: UpdateBarSetFoo})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g, w := c, int64(UpdateBarSetFooRowCount); g != w {
+		t.Fatalf("update count mismatch\n Got: %v\nWant: %v", g, w)
+	}
+}
+
+func TestReadWriteStmtBasedTransaction_BatchUpdateAborted(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
+		SessionPoolConfig: SessionPoolConfig{
+			// Use a session pool with size 1 to ensure that there are no session leaks.
+			MinOpened: 1,
+			MaxOpened: 1,
+		},
+	})
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(
+		MethodExecuteBatchDml,
+		SimulatedExecutionTime{Errors: []error{status.Error(codes.Aborted, "Transaction aborted")}})
+
+	ctx := context.Background()
+	tx, err := NewReadWriteStmtBasedTransaction(ctx, client)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = tx.BatchUpdate(ctx, []Statement{{SQL: UpdateBarSetFoo}})
+	if g, w := ErrCode(err), codes.Aborted; g != w {
+		t.Fatalf("error code mismatch\n Got: %v\nWant: %v", g, w)
+	}
+	tx, err = tx.ResetForRetry(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	c, err := tx.BatchUpdate(ctx, []Statement{{SQL: UpdateBarSetFoo}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g, w := c, []int64{UpdateBarSetFooRowCount}; !reflect.DeepEqual(g, w) {
+		t.Fatalf("update count mismatch\n Got: %v\nWant: %v", g, w)
+	}
+}
+
 func testReadWriteStmtBasedTransaction(t *testing.T, executionTimes map[string]SimulatedExecutionTime) (rowCount int64, attempts int, err error) {
-	server, client, teardown := setupMockedTestServer(t)
+	// server, client, teardown := setupMockedTestServer(t)
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
+		SessionPoolConfig: SessionPoolConfig{
+			// Use a session pool with size 1 to ensure that there are no session leaks.
+			MinOpened: 1,
+			MaxOpened: 1,
+		},
+	})
 	defer teardown()
 	for method, exec := range executionTimes {
 		server.TestSpanner.PutExecutionTime(method, exec)
@@ -500,9 +598,14 @@ func testReadWriteStmtBasedTransaction(t *testing.T, executionTimes map[string]S
 		return rowCount, nil
 	}
 
+	var tx *ReadWriteStmtBasedTransaction
 	for {
 		attempts++
-		tx, err := NewReadWriteStmtBasedTransaction(ctx, client)
+		if attempts > 1 {
+			tx, err = tx.ResetForRetry(ctx)
+		} else {
+			tx, err = NewReadWriteStmtBasedTransaction(ctx, client)
+		}
 		if err != nil {
 			return 0, attempts, fmt.Errorf("failed to begin a transaction: %v", err)
 		}
@@ -658,7 +761,7 @@ func TestPriorityInQueryOptions(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	server, client, teardown := setupMockedTestServerWithConfigAndClientOptions(
-		t, ClientConfig{QueryOptions: QueryOptions{Priority: sppb.RequestOptions_PRIORITY_LOW}},
+		t, ClientConfig{DisableNativeMetrics: true, QueryOptions: QueryOptions{Priority: sppb.RequestOptions_PRIORITY_LOW}},
 		[]option.ClientOption{},
 	)
 	defer teardown()

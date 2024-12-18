@@ -44,7 +44,7 @@ func ExampleOsConfigZonalClient_ListInventories_all() {
 	}
 	for resp, err := range c.ListInventories(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -70,7 +70,7 @@ func ExampleOsConfigZonalClient_ListOSPolicyAssignmentReports_all() {
 	}
 	for resp, err := range c.ListOSPolicyAssignmentReports(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -96,7 +96,7 @@ func ExampleOsConfigZonalClient_ListOSPolicyAssignmentRevisions_all() {
 	}
 	for resp, err := range c.ListOSPolicyAssignmentRevisions(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -122,7 +122,7 @@ func ExampleOsConfigZonalClient_ListOSPolicyAssignments_all() {
 	}
 	for resp, err := range c.ListOSPolicyAssignments(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -148,7 +148,7 @@ func ExampleOsConfigZonalClient_ListVulnerabilityReports_all() {
 	}
 	for resp, err := range c.ListVulnerabilityReports(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp

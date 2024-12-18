@@ -3,6 +3,49 @@
 
 
 
+## [1.65.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.64.0...bigquery/v1.65.0) (2024-12-05)
+
+
+### Features
+
+* **bigquery/reservation:** Add a new field `is_flat_rate` to `.google.cloud.bigquery.reservation.v1.CapacityCommitment` to distinguish between flat rate and edition commitments ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+* **bigquery/reservation:** Add the managed disaster recovery API(https ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+* **bigquery:** Expose IsCaseInsensitive for dataset metadata ([#11216](https://github.com/googleapis/google-cloud-go/issues/11216)) ([364b639](https://github.com/googleapis/google-cloud-go/commit/364b63900f5a219d17a33807e6a500eae798b17a))
+* **bigquery:** Support IAM conditions in datasets ([#11123](https://github.com/googleapis/google-cloud-go/issues/11123)) ([d93c2d9](https://github.com/googleapis/google-cloud-go/commit/d93c2d9ad0f28336c03ffdd407fd05f5391233df))
+
+
+### Bug Fixes
+
+* **bigquery:** Do not override ctx within inner span creation ([#11119](https://github.com/googleapis/google-cloud-go/issues/11119)) ([627c69a](https://github.com/googleapis/google-cloud-go/commit/627c69ac46e0585afff2ba71ced6edf984e59857)), refs [#10961](https://github.com/googleapis/google-cloud-go/issues/10961)
+
+
+### Documentation
+
+* **bigquery/reservation:** Clarify that `Autoscale.current_slots` in message `.google.cloud.bigquery.reservation.v1.Reservation` can temporarily be larger than `Autoscale.max_slots` if users reduce `Autoscale.max_slots` ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+* **bigquery/reservation:** Update comment for `slot_capacity` in message `.google.cloud.bigquery.reservation.v1.Reservation` to provide more clarity about reservation baselines, committed slots and autoscaler SKU charges when the baseline exceeds committed slots ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+* **bigquery/reservation:** Update comments for `commitment_start_time` and `commitment_end_time` in message `.google.cloud.bigquery.reservation.v1.CapacityCommitment` to provide details on how these values are affected by commitment renewal ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+
+## [1.64.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.63.1...bigquery/v1.64.0) (2024-10-30)
+
+
+### Features
+
+* **bigquery/datatransfer:** Add scheduleOptionsV2 and Error fields for TransferConfig ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **bigquery/storage:** Add experimental ArrowData type and arrow_data field within AppendRowsRequest ([f0b05e2](https://github.com/googleapis/google-cloud-go/commit/f0b05e260435d5e8889b9a0ca0ab215fcde169ab))
+
+
+### Bug Fixes
+
+* **bigquery:** Handle null RANGE ([#11058](https://github.com/googleapis/google-cloud-go/issues/11058)) ([9979e72](https://github.com/googleapis/google-cloud-go/commit/9979e72b57947ec1e11d3e0c4a7e1ec335a490cf)), refs [#11047](https://github.com/googleapis/google-cloud-go/issues/11047)
+* **bigquery:** Parse negative NUMERIC from arrow ([#11052](https://github.com/googleapis/google-cloud-go/issues/11052)) ([83352c4](https://github.com/googleapis/google-cloud-go/commit/83352c475681f596e0f1e811f8c2056aef6179b2))
+* **bigquery:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **bigquery:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
+
+### Documentation
+
+* **bigquery:** Link types on package docs ([#11036](https://github.com/googleapis/google-cloud-go/issues/11036)) ([c4af6fe](https://github.com/googleapis/google-cloud-go/commit/c4af6fe0962e0e96223744a09fd7b5a638cd92fd))
+
 ## [1.63.1](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.63.0...bigquery/v1.63.1) (2024-10-01)
 
 
@@ -974,4 +1017,3 @@ cloud.google.com/go.
 
 This is the first tag to carve out bigquery as its own module. See:
 https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository.
-

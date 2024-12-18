@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/oslogin/apiv1beta",
-    "version": "1.14.1",
+    "version": "1.14.2",
     "language": "GO",
     "apis": [
       {

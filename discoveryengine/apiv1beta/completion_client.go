@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -48,6 +47,7 @@ var newCompletionClientHook clientHook
 // CompletionCallOptions contains the retry settings for each method of CompletionClient.
 type CompletionCallOptions struct {
 	CompleteQuery                   []gax.CallOption
+	AdvancedCompleteQuery           []gax.CallOption
 	ImportSuggestionDenyListEntries []gax.CallOption
 	PurgeSuggestionDenyListEntries  []gax.CallOption
 	ImportCompletionSuggestions     []gax.CallOption
@@ -75,6 +75,18 @@ func defaultCompletionGRPCClientOptions() []option.ClientOption {
 func defaultCompletionCallOptions() *CompletionCallOptions {
 	return &CompletionCallOptions{
 		CompleteQuery: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        5000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		AdvancedCompleteQuery: []gax.CallOption{
 			gax.WithTimeout(5000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -186,6 +198,17 @@ func defaultCompletionRESTCallOptions() *CompletionCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		AdvancedCompleteQuery: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        5000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		ImportSuggestionDenyListEntries: []gax.CallOption{
 			gax.WithTimeout(5000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -272,6 +295,7 @@ type internalCompletionClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	CompleteQuery(context.Context, *discoveryenginepb.CompleteQueryRequest, ...gax.CallOption) (*discoveryenginepb.CompleteQueryResponse, error)
+	AdvancedCompleteQuery(context.Context, *discoveryenginepb.AdvancedCompleteQueryRequest, ...gax.CallOption) (*discoveryenginepb.AdvancedCompleteQueryResponse, error)
 	ImportSuggestionDenyListEntries(context.Context, *discoveryenginepb.ImportSuggestionDenyListEntriesRequest, ...gax.CallOption) (*ImportSuggestionDenyListEntriesOperation, error)
 	ImportSuggestionDenyListEntriesOperation(name string) *ImportSuggestionDenyListEntriesOperation
 	PurgeSuggestionDenyListEntries(context.Context, *discoveryenginepb.PurgeSuggestionDenyListEntriesRequest, ...gax.CallOption) (*PurgeSuggestionDenyListEntriesOperation, error)
@@ -328,6 +352,11 @@ func (c *CompletionClient) Connection() *grpc.ClientConn {
 // CompleteQuery completes the specified user input with keyword suggestions.
 func (c *CompletionClient) CompleteQuery(ctx context.Context, req *discoveryenginepb.CompleteQueryRequest, opts ...gax.CallOption) (*discoveryenginepb.CompleteQueryResponse, error) {
 	return c.internalClient.CompleteQuery(ctx, req, opts...)
+}
+
+// AdvancedCompleteQuery completes the user input with advanced keyword suggestions.
+func (c *CompletionClient) AdvancedCompleteQuery(ctx context.Context, req *discoveryenginepb.AdvancedCompleteQueryRequest, opts ...gax.CallOption) (*discoveryenginepb.AdvancedCompleteQueryResponse, error) {
+	return c.internalClient.AdvancedCompleteQuery(ctx, req, opts...)
 }
 
 // ImportSuggestionDenyListEntries imports all
@@ -419,6 +448,8 @@ type completionGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewCompletionClient creates a new completion service client based on gRPC.
@@ -445,6 +476,7 @@ func NewCompletionClient(ctx context.Context, opts ...option.ClientOption) (*Com
 		connPool:         connPool,
 		completionClient: discoveryenginepb.NewCompletionServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -508,6 +540,8 @@ type completionRESTClient struct {
 
 	// Points back to the CallOptions field of the containing CompletionClient
 	CallOptions **CompletionCallOptions
+
+	logger *slog.Logger
 }
 
 // NewCompletionRESTClient creates a new completion service rest client.
@@ -525,6 +559,7 @@ func NewCompletionRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -587,7 +622,25 @@ func (c *completionGRPCClient) CompleteQuery(ctx context.Context, req *discovery
 	var resp *discoveryenginepb.CompleteQueryResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.completionClient.CompleteQuery(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.completionClient.CompleteQuery, req, settings.GRPC, c.logger, "CompleteQuery")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *completionGRPCClient) AdvancedCompleteQuery(ctx context.Context, req *discoveryenginepb.AdvancedCompleteQueryRequest, opts ...gax.CallOption) (*discoveryenginepb.AdvancedCompleteQueryResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "completion_config", url.QueryEscape(req.GetCompletionConfig()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).AdvancedCompleteQuery[0:len((*c.CallOptions).AdvancedCompleteQuery):len((*c.CallOptions).AdvancedCompleteQuery)], opts...)
+	var resp *discoveryenginepb.AdvancedCompleteQueryResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.completionClient.AdvancedCompleteQuery, req, settings.GRPC, c.logger, "AdvancedCompleteQuery")
 		return err
 	}, opts...)
 	if err != nil {
@@ -605,7 +658,7 @@ func (c *completionGRPCClient) ImportSuggestionDenyListEntries(ctx context.Conte
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.completionClient.ImportSuggestionDenyListEntries(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.completionClient.ImportSuggestionDenyListEntries, req, settings.GRPC, c.logger, "ImportSuggestionDenyListEntries")
 		return err
 	}, opts...)
 	if err != nil {
@@ -625,7 +678,7 @@ func (c *completionGRPCClient) PurgeSuggestionDenyListEntries(ctx context.Contex
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.completionClient.PurgeSuggestionDenyListEntries(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.completionClient.PurgeSuggestionDenyListEntries, req, settings.GRPC, c.logger, "PurgeSuggestionDenyListEntries")
 		return err
 	}, opts...)
 	if err != nil {
@@ -645,7 +698,7 @@ func (c *completionGRPCClient) ImportCompletionSuggestions(ctx context.Context, 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.completionClient.ImportCompletionSuggestions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.completionClient.ImportCompletionSuggestions, req, settings.GRPC, c.logger, "ImportCompletionSuggestions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -665,7 +718,7 @@ func (c *completionGRPCClient) PurgeCompletionSuggestions(ctx context.Context, r
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.completionClient.PurgeCompletionSuggestions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.completionClient.PurgeCompletionSuggestions, req, settings.GRPC, c.logger, "PurgeCompletionSuggestions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -684,7 +737,7 @@ func (c *completionGRPCClient) CancelOperation(ctx context.Context, req *longrun
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -699,7 +752,7 @@ func (c *completionGRPCClient) GetOperation(ctx context.Context, req *longrunnin
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -728,7 +781,7 @@ func (c *completionGRPCClient) ListOperations(ctx context.Context, req *longrunn
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -797,17 +850,63 @@ func (c *completionRESTClient) CompleteQuery(ctx context.Context, req *discovery
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "CompleteQuery")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
 
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
+		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
 
-		buf, err := io.ReadAll(httpRsp.Body)
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// AdvancedCompleteQuery completes the user input with advanced keyword suggestions.
+func (c *completionRESTClient) AdvancedCompleteQuery(ctx context.Context, req *discoveryenginepb.AdvancedCompleteQueryRequest, opts ...gax.CallOption) (*discoveryenginepb.AdvancedCompleteQueryResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v:completeQuery", req.GetCompletionConfig())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "completion_config", url.QueryEscape(req.GetCompletionConfig()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).AdvancedCompleteQuery[0:len((*c.CallOptions).AdvancedCompleteQuery):len((*c.CallOptions).AdvancedCompleteQuery)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &discoveryenginepb.AdvancedCompleteQueryResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AdvancedCompleteQuery")
 		if err != nil {
 			return err
 		}
@@ -864,21 +963,10 @@ func (c *completionRESTClient) ImportSuggestionDenyListEntries(ctx context.Conte
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ImportSuggestionDenyListEntries")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -936,21 +1024,10 @@ func (c *completionRESTClient) PurgeSuggestionDenyListEntries(ctx context.Contex
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PurgeSuggestionDenyListEntries")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1008,21 +1085,10 @@ func (c *completionRESTClient) ImportCompletionSuggestions(ctx context.Context, 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ImportCompletionSuggestions")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1080,21 +1146,10 @@ func (c *completionRESTClient) PurgeCompletionSuggestions(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PurgeCompletionSuggestions")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1148,15 +1203,8 @@ func (c *completionRESTClient) CancelOperation(ctx context.Context, req *longrun
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -1193,17 +1241,7 @@ func (c *completionRESTClient) GetOperation(ctx context.Context, req *longrunnin
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -1268,21 +1306,10 @@ func (c *completionRESTClient) ListOperations(ctx context.Context, req *longrunn
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

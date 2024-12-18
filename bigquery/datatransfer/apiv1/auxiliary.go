@@ -42,7 +42,7 @@ type DataSourceIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*datatransferpb.DataSource, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *DataSourceIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -89,7 +89,7 @@ type LocationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *LocationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -136,7 +136,7 @@ type TransferConfigIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*datatransferpb.TransferConfig, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TransferConfigIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -183,7 +183,7 @@ type TransferMessageIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*datatransferpb.TransferMessage, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TransferMessageIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -230,7 +230,7 @@ type TransferRunIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*datatransferpb.TransferRun, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TransferRunIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

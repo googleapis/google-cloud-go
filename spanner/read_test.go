@@ -28,6 +28,7 @@ import (
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	. "cloud.google.com/go/spanner/internal/testutil"
 	"github.com/googleapis/gax-go/v2"
+	"go.opentelemetry.io/otel/metric/noop"
 	"google.golang.org/api/iterator"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -639,7 +640,7 @@ func TestRsdNonblockingStates(t *testing.T) {
 		name         string
 		resumeTokens [][]byte
 		prsErrors    []PartialResultSetExecutionTime
-		rpc          func(ct context.Context, resumeToken []byte) (streamingReceiver, error)
+		rpc          func(ct context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error)
 		sql          string
 		// Expected values
 		want         []*sppb.PartialResultSet      // PartialResultSets that should be returned to caller
@@ -712,7 +713,7 @@ func TestRsdNonblockingStates(t *testing.T) {
 				queueingRetryable, // got foo-02
 				aborted,           // got error
 			},
-			wantErr: status.Errorf(codes.Unknown, "I quit"),
+			wantErr: ToSpannerError(status.Errorf(codes.Unknown, "I quit")),
 		},
 		{
 			// unConnected->queueingRetryable->queueingUnretryable->queueingUnretryable
@@ -777,7 +778,7 @@ func TestRsdNonblockingStates(t *testing.T) {
 				s = append(s, aborted)             // Error happens
 				return s
 			}(),
-			wantErr: status.Errorf(codes.Unknown, "Just Abort It"),
+			wantErr: ToSpannerError(status.Errorf(codes.Unknown, "Just Abort It")),
 		},
 	}
 	for _, test := range tests {
@@ -795,22 +796,23 @@ func TestRsdNonblockingStates(t *testing.T) {
 			}
 
 			if test.rpc == nil {
-				test.rpc = func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
+				test.rpc = func(ct context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
 					return mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
 						Session:     session.Name,
 						Sql:         test.sql,
 						ResumeToken: resumeToken,
-					})
+					}, opts...)
 				}
 			}
 			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 			defer cancel()
+			mt := c.metricsTracerFactory.createBuiltinMetricsTracer(ctx)
 			r := newResumableStreamDecoder(
 				ctx,
 				nil,
-				c.metricsTracerFactory,
 				test.rpc,
 				nil,
+				mc.(*grpcSpannerClient),
 			)
 			st := []resumableStreamDecoderState{}
 			var lastErr error
@@ -878,12 +880,16 @@ func TestRsdNonblockingStates(t *testing.T) {
 					}
 					// Verify error message.
 					if !testEqual(lastErr, test.wantErr) {
-						t.Fatalf("got error %v, want %v", lastErr, test.wantErr)
+						t.Fatalf("Error mismatch\n\tGot:  %v\n\tWant: %v", lastErr, test.wantErr)
 					}
 					return
 				}
+				mt.currOp.incrementAttemptCount()
+				mt.currOp.currAttempt = &attemptTracer{
+					startTime: time.Now(),
+				}
 				// Receive next decoded item.
-				if r.next() {
+				if r.next(&mt) {
 					rs = append(rs, r.get())
 				}
 			}
@@ -900,7 +906,7 @@ func TestRsdBlockingStates(t *testing.T) {
 	for _, test := range []struct {
 		name         string
 		resumeTokens [][]byte
-		rpc          func(ct context.Context, resumeToken []byte) (streamingReceiver, error)
+		rpc          func(ct context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error)
 		sql          string
 		// Expected values
 		want         []*sppb.PartialResultSet      // PartialResultSets that should be returned to caller
@@ -912,7 +918,7 @@ func TestRsdBlockingStates(t *testing.T) {
 		{
 			// unConnected -> unConnected
 			name: "unConnected -> unConnected",
-			rpc: func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
+			rpc: func(ct context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
 				return nil, status.Errorf(codes.Unavailable, "trust me: server is unavailable")
 			},
 			sql:          "SELECT * from t_whatever",
@@ -1089,22 +1095,23 @@ func TestRsdBlockingStates(t *testing.T) {
 				// Avoid using test.sql directly in closure because for loop changes
 				// test.
 				sql := test.sql
-				test.rpc = func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
+				test.rpc = func(ct context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
 					return mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
 						Session:     session.Name,
 						Sql:         sql,
 						ResumeToken: resumeToken,
-					})
+					}, opts...)
 				}
 			}
 			ctx, cancel := context.WithCancel(context.Background())
 			defer cancel()
+			mt := c.metricsTracerFactory.createBuiltinMetricsTracer(ctx)
 			r := newResumableStreamDecoder(
 				ctx,
 				nil,
-				c.metricsTracerFactory,
 				test.rpc,
 				nil,
+				mc.(*grpcSpannerClient),
 			)
 			// Override backoff to make the test run faster.
 			r.backoff = gax.Backoff{
@@ -1146,8 +1153,12 @@ func TestRsdBlockingStates(t *testing.T) {
 			var rs []*sppb.PartialResultSet
 			rowsFetched := make(chan int)
 			go func() {
+				mt.currOp.incrementAttemptCount()
+				mt.currOp.currAttempt = &attemptTracer{
+					startTime: time.Now(),
+				}
 				for {
-					if !r.next() {
+					if !r.next(&mt) {
 						// Note that r.Next also exits on context cancel/timeout.
 						close(rowsFetched)
 						return
@@ -1261,20 +1272,21 @@ func TestQueueBytes(t *testing.T) {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+	mt := c.metricsTracerFactory.createBuiltinMetricsTracer(ctx)
 	decoder := newResumableStreamDecoder(
 		ctx,
 		nil,
-		c.metricsTracerFactory,
-		func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
+		func(ct context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
 			r, err := mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
 				Session:     session.Name,
 				Sql:         "SELECT t.key key, t.value value FROM t_mock t",
 				ResumeToken: resumeToken,
-			})
+			}, opts...)
 			sr.rpcReceiver = r
 			return sr, err
 		},
 		nil,
+		mc.(*grpcSpannerClient),
 	)
 
 	sizeOfPRS := proto.Size(&sppb.PartialResultSet{
@@ -1286,24 +1298,24 @@ func TestQueueBytes(t *testing.T) {
 		ResumeToken: rt1,
 	})
 
-	decoder.next()
-	decoder.next()
-	decoder.next()
+	decoder.next(&mt)
+	decoder.next(&mt)
+	decoder.next(&mt)
 	if got, want := decoder.bytesBetweenResumeTokens, int32(2*sizeOfPRS); got != want {
 		t.Errorf("r.bytesBetweenResumeTokens = %v, want %v", got, want)
 	}
 
-	decoder.next()
+	decoder.next(&mt)
 	if decoder.bytesBetweenResumeTokens != 0 {
 		t.Errorf("r.bytesBetweenResumeTokens = %v, want 0", decoder.bytesBetweenResumeTokens)
 	}
 
-	decoder.next()
+	decoder.next(&mt)
 	if got, want := decoder.bytesBetweenResumeTokens, int32(sizeOfPRS); got != want {
 		t.Errorf("r.bytesBetweenResumeTokens = %v, want %v", got, want)
 	}
 
-	decoder.next()
+	decoder.next(&mt)
 	if decoder.bytesBetweenResumeTokens != 0 {
 		t.Errorf("r.bytesBetweenResumeTokens = %v, want 0", decoder.bytesBetweenResumeTokens)
 	}
@@ -1363,17 +1375,17 @@ func TestResumeToken(t *testing.T) {
 	streaming := func() *RowIterator {
 		return stream(context.Background(), nil,
 			c.metricsTracerFactory,
-			func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
+			func(ct context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
 				r, err := mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
 					Session:     session.Name,
 					Sql:         query,
 					ResumeToken: resumeToken,
-				})
+				}, opts...)
 				sr.rpcReceiver = r
 				return sr, err
 			},
 			nil,
-			func(error) {})
+			func(error) {}, mc.(*grpcSpannerClient))
 	}
 
 	// Establish a stream to mock cloud spanner server.
@@ -1508,17 +1520,17 @@ func TestGrpcReconnect(t *testing.T) {
 	r := -1
 	// Establish a stream to mock cloud spanner server.
 	iter := stream(context.Background(), nil, c.metricsTracerFactory,
-		func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
+		func(ct context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
 			r++
 			return mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
 				Session:     session.Name,
 				Sql:         SelectSingerIDAlbumIDAlbumTitleFromAlbums,
 				ResumeToken: resumeToken,
-			})
+			}, opts...)
 
 		},
 		nil,
-		func(error) {})
+		func(error) {}, mc.(*grpcSpannerClient))
 	defer iter.Stop()
 	for {
 		_, err := iter.Next()
@@ -1561,15 +1573,15 @@ func TestCancelTimeout(t *testing.T) {
 	go func() {
 		// Establish a stream to mock cloud spanner server.
 		iter := stream(ctx, nil, c.metricsTracerFactory,
-			func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
+			func(ct context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
 				return mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
 					Session:     session.Name,
 					Sql:         SelectSingerIDAlbumIDAlbumTitleFromAlbums,
 					ResumeToken: resumeToken,
-				})
+				}, opts...)
 			},
 			nil,
-			func(error) {})
+			func(error) {}, mc.(*grpcSpannerClient))
 		defer iter.Stop()
 		for {
 			_, err = iter.Next()
@@ -1598,15 +1610,15 @@ func TestCancelTimeout(t *testing.T) {
 	go func() {
 		// Establish a stream to mock cloud spanner server.
 		iter := stream(ctx, nil, c.metricsTracerFactory,
-			func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
+			func(ct context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
 				return mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
 					Session:     session.Name,
 					Sql:         SelectSingerIDAlbumIDAlbumTitleFromAlbums,
 					ResumeToken: resumeToken,
-				})
+				}, opts...)
 			},
 			nil,
-			func(error) {})
+			func(error) {}, mc.(*grpcSpannerClient))
 		defer iter.Stop()
 		for {
 			_, err = iter.Next()
@@ -1678,15 +1690,15 @@ func TestRowIteratorDo(t *testing.T) {
 
 	nRows := 0
 	iter := stream(context.Background(), nil, c.metricsTracerFactory,
-		func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
+		func(ct context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
 			return mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
 				Session:     session.Name,
 				Sql:         SelectSingerIDAlbumIDAlbumTitleFromAlbums,
 				ResumeToken: resumeToken,
-			})
+			}, opts...)
 		},
 		nil,
-		func(error) {})
+		func(error) {}, mc.(*grpcSpannerClient))
 	err = iter.Do(func(r *Row) error { nRows++; return nil })
 	if err != nil {
 		t.Errorf("Using Do: %v", err)
@@ -1713,15 +1725,15 @@ func TestRowIteratorDoWithError(t *testing.T) {
 	}
 
 	iter := stream(context.Background(), nil, c.metricsTracerFactory,
-		func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
+		func(ct context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
 			return mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
 				Session:     session.Name,
 				Sql:         SelectSingerIDAlbumIDAlbumTitleFromAlbums,
 				ResumeToken: resumeToken,
-			})
+			}, opts...)
 		},
 		nil,
-		func(error) {})
+		func(error) {}, mc.(*grpcSpannerClient))
 	injected := errors.New("Failed iterator")
 	err = iter.Do(func(r *Row) error { return injected })
 	if err != injected {
@@ -1747,15 +1759,15 @@ func TestIteratorStopEarly(t *testing.T) {
 	}
 
 	iter := stream(ctx, nil, c.metricsTracerFactory,
-		func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
+		func(ct context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
 			return mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
 				Session:     session.Name,
 				Sql:         SelectSingerIDAlbumIDAlbumTitleFromAlbums,
 				ResumeToken: resumeToken,
-			})
+			}, opts...)
 		},
 		nil,
-		func(error) {})
+		func(error) {}, mc.(*grpcSpannerClient))
 	_, err = iter.Next()
 	if err != nil {
 		t.Fatalf("before Stop: %v", err)
@@ -1769,8 +1781,12 @@ func TestIteratorStopEarly(t *testing.T) {
 }
 
 func TestIteratorWithError(t *testing.T) {
+	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(context.Background(), "projects/my-project/instances/my-instance/databases/my-database", noop.NewMeterProvider(), "identity")
+	if err != nil {
+		t.Fatalf("failed to create metrics tracer factory: %v", err)
+	}
 	injected := errors.New("Failed iterator")
-	iter := RowIterator{err: injected}
+	iter := RowIterator{meterTracerFactory: metricsTracerFactory, err: injected}
 	defer iter.Stop()
 	if _, err := iter.Next(); err != injected {
 		t.Fatalf("Expected error: %v, got %v", injected, err)

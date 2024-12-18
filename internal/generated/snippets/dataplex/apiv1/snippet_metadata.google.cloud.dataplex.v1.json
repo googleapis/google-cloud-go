@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dataplex/apiv1",
-    "version": "1.19.1",
+    "version": "1.20.0",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,51 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "dataplex_v1_generated_CatalogService_CancelMetadataJob_sync",
+      "title": "dataplex CancelMetadataJob Sample",
+      "description": "CancelMetadataJob cancels a metadata job.\n\nIf you cancel a metadata import job that is in progress, the changes in the\njob might be partially applied. We recommend that you reset the state of\nthe entry groups in your project by running another metadata job that\nreverts the changes from the canceled job.",
+      "file": "CatalogClient/CancelMetadataJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelMetadataJob",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.CancelMetadataJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.CancelMetadataJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "CancelMetadataJob",
+          "fullName": "google.cloud.dataplex.v1.CatalogService.CancelMetadataJob",
+          "service": {
+            "shortName": "CatalogService",
+            "fullName": "google.cloud.dataplex.v1.CatalogService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "dataplex_v1_generated_CatalogService_CancelOperation_sync",
       "title": "dataplex CancelOperation Sample",
@@ -59,7 +104,7 @@
     {
       "regionTag": "dataplex_v1_generated_CatalogService_CreateAspectType_sync",
       "title": "dataplex CreateAspectType Sample",
-      "description": "CreateAspectType creates an AspectType",
+      "description": "CreateAspectType creates an AspectType.",
       "file": "CatalogClient/CreateAspectType/main.go",
       "language": "GO",
       "clientMethod": {
@@ -151,7 +196,7 @@
     {
       "regionTag": "dataplex_v1_generated_CatalogService_CreateEntryGroup_sync",
       "title": "dataplex CreateEntryGroup Sample",
-      "description": "CreateEntryGroup creates an EntryGroup",
+      "description": "CreateEntryGroup creates an EntryGroup.",
       "file": "CatalogClient/CreateEntryGroup/main.go",
       "language": "GO",
       "clientMethod": {
@@ -197,7 +242,7 @@
     {
       "regionTag": "dataplex_v1_generated_CatalogService_CreateEntryType_sync",
       "title": "dataplex CreateEntryType Sample",
-      "description": "CreateEntryType creates an EntryType",
+      "description": "CreateEntryType creates an EntryType.",
       "file": "CatalogClient/CreateEntryType/main.go",
       "language": "GO",
       "clientMethod": {
@@ -241,9 +286,55 @@
       ]
     },
     {
+      "regionTag": "dataplex_v1_generated_CatalogService_CreateMetadataJob_sync",
+      "title": "dataplex CreateMetadataJob Sample",
+      "description": "CreateMetadataJob creates a metadata job. For example, use a metadata job to import Dataplex\nCatalog entries and aspects from a third-party system into Dataplex.",
+      "file": "CatalogClient/CreateMetadataJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateMetadataJob",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.CreateMetadataJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.CreateMetadataJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateMetadataJobOperation",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "CreateMetadataJob",
+          "fullName": "google.cloud.dataplex.v1.CatalogService.CreateMetadataJob",
+          "service": {
+            "shortName": "CatalogService",
+            "fullName": "google.cloud.dataplex.v1.CatalogService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dataplex_v1_generated_CatalogService_DeleteAspectType_sync",
       "title": "dataplex DeleteAspectType Sample",
-      "description": "DeleteAspectType deletes a AspectType resource.",
+      "description": "DeleteAspectType deletes an AspectType.",
       "file": "CatalogClient/DeleteAspectType/main.go",
       "language": "GO",
       "clientMethod": {
@@ -335,7 +426,7 @@
     {
       "regionTag": "dataplex_v1_generated_CatalogService_DeleteEntryGroup_sync",
       "title": "dataplex DeleteEntryGroup Sample",
-      "description": "DeleteEntryGroup deletes a EntryGroup resource.",
+      "description": "DeleteEntryGroup deletes an EntryGroup.",
       "file": "CatalogClient/DeleteEntryGroup/main.go",
       "language": "GO",
       "clientMethod": {
@@ -381,7 +472,7 @@
     {
       "regionTag": "dataplex_v1_generated_CatalogService_DeleteEntryType_sync",
       "title": "dataplex DeleteEntryType Sample",
-      "description": "DeleteEntryType deletes a EntryType resource.",
+      "description": "DeleteEntryType deletes an EntryType.",
       "file": "CatalogClient/DeleteEntryType/main.go",
       "language": "GO",
       "clientMethod": {
@@ -472,7 +563,7 @@
     {
       "regionTag": "dataplex_v1_generated_CatalogService_GetAspectType_sync",
       "title": "dataplex GetAspectType Sample",
-      "description": "GetAspectType retrieves a AspectType resource.",
+      "description": "GetAspectType gets an AspectType.",
       "file": "CatalogClient/GetAspectType/main.go",
       "language": "GO",
       "clientMethod": {
@@ -518,7 +609,7 @@
     {
       "regionTag": "dataplex_v1_generated_CatalogService_GetEntry_sync",
       "title": "dataplex GetEntry Sample",
-      "description": "GetEntry gets a single entry.",
+      "description": "GetEntry gets an Entry.\n\n**Caution**: The BigQuery metadata that is stored in Dataplex Catalog is\nchanging. For more information, see [Changes to BigQuery metadata stored in\nDataplex\nCatalog](https: //cloud.google.com/dataplex/docs/biqquery-metadata-changes).",
       "file": "CatalogClient/GetEntry/main.go",
       "language": "GO",
       "clientMethod": {
@@ -564,7 +655,7 @@
     {
       "regionTag": "dataplex_v1_generated_CatalogService_GetEntryGroup_sync",
       "title": "dataplex GetEntryGroup Sample",
-      "description": "GetEntryGroup retrieves a EntryGroup resource.",
+      "description": "GetEntryGroup gets an EntryGroup.",
       "file": "CatalogClient/GetEntryGroup/main.go",
       "language": "GO",
       "clientMethod": {
@@ -610,7 +701,7 @@
     {
       "regionTag": "dataplex_v1_generated_CatalogService_GetEntryType_sync",
       "title": "dataplex GetEntryType Sample",
-      "description": "GetEntryType retrieves a EntryType resource.",
+      "description": "GetEntryType gets an EntryType.",
       "file": "CatalogClient/GetEntryType/main.go",
       "language": "GO",
       "clientMethod": {
@@ -687,6 +778,52 @@
           "service": {
             "shortName": "Locations",
             "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CatalogService_GetMetadataJob_sync",
+      "title": "dataplex GetMetadataJob Sample",
+      "description": "GetMetadataJob gets a metadata job.",
+      "file": "CatalogClient/GetMetadataJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetMetadataJob",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.GetMetadataJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.GetMetadataJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.MetadataJob",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "GetMetadataJob",
+          "fullName": "google.cloud.dataplex.v1.CatalogService.GetMetadataJob",
+          "service": {
+            "shortName": "CatalogService",
+            "fullName": "google.cloud.dataplex.v1.CatalogService"
           }
         }
       },
@@ -794,7 +931,7 @@
     {
       "regionTag": "dataplex_v1_generated_CatalogService_ListEntries_sync",
       "title": "dataplex ListEntries Sample",
-      "description": "ListEntries lists entries within an entry group.",
+      "description": "ListEntries lists Entries within an EntryGroup.",
       "file": "CatalogClient/ListEntries/main.go",
       "language": "GO",
       "clientMethod": {
@@ -976,6 +1113,52 @@
       ]
     },
     {
+      "regionTag": "dataplex_v1_generated_CatalogService_ListMetadataJobs_sync",
+      "title": "dataplex ListMetadataJobs Sample",
+      "description": "ListMetadataJobs lists metadata jobs.",
+      "file": "CatalogClient/ListMetadataJobs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListMetadataJobs",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.ListMetadataJobs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.ListMetadataJobsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "MetadataJobIterator",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "ListMetadataJobs",
+          "fullName": "google.cloud.dataplex.v1.CatalogService.ListMetadataJobs",
+          "service": {
+            "shortName": "CatalogService",
+            "fullName": "google.cloud.dataplex.v1.CatalogService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dataplex_v1_generated_CatalogService_ListOperations_sync",
       "title": "dataplex ListOperations Sample",
       "description": "ListOperations is a utility method from google.longrunning.Operations.",
@@ -1024,7 +1207,7 @@
     {
       "regionTag": "dataplex_v1_generated_CatalogService_LookupEntry_sync",
       "title": "dataplex LookupEntry Sample",
-      "description": "LookupEntry looks up a single entry.",
+      "description": "LookupEntry looks up a single Entry by name using the permission on the source system.\n\n**Caution**: The BigQuery metadata that is stored in Dataplex Catalog is\nchanging. For more information, see [Changes to BigQuery metadata stored in\nDataplex\nCatalog](https: //cloud.google.com/dataplex/docs/biqquery-metadata-changes).",
       "file": "CatalogClient/LookupEntry/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1070,7 +1253,7 @@
     {
       "regionTag": "dataplex_v1_generated_CatalogService_SearchEntries_sync",
       "title": "dataplex SearchEntries Sample",
-      "description": "SearchEntries searches for entries matching given query and scope.",
+      "description": "SearchEntries searches for Entries matching the given query and scope.",
       "file": "CatalogClient/SearchEntries/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1116,7 +1299,7 @@
     {
       "regionTag": "dataplex_v1_generated_CatalogService_UpdateAspectType_sync",
       "title": "dataplex UpdateAspectType Sample",
-      "description": "UpdateAspectType updates a AspectType resource.",
+      "description": "UpdateAspectType updates an AspectType.",
       "file": "CatalogClient/UpdateAspectType/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1208,7 +1391,7 @@
     {
       "regionTag": "dataplex_v1_generated_CatalogService_UpdateEntryGroup_sync",
       "title": "dataplex UpdateEntryGroup Sample",
-      "description": "UpdateEntryGroup updates a EntryGroup resource.",
+      "description": "UpdateEntryGroup updates an EntryGroup.",
       "file": "CatalogClient/UpdateEntryGroup/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1254,7 +1437,7 @@
     {
       "regionTag": "dataplex_v1_generated_CatalogService_UpdateEntryType_sync",
       "title": "dataplex UpdateEntryType Sample",
-      "description": "UpdateEntryType updates a EntryType resource.",
+      "description": "UpdateEntryType updates an EntryType.",
       "file": "CatalogClient/UpdateEntryType/main.go",
       "language": "GO",
       "clientMethod": {

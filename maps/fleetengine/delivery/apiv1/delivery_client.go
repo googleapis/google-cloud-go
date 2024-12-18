@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -30,7 +30,6 @@ import (
 
 	deliverypb "cloud.google.com/go/maps/fleetengine/delivery/apiv1/deliverypb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -436,6 +435,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new delivery service client based on gRPC.
@@ -462,6 +463,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      deliverypb.NewDeliveryServiceClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -508,6 +510,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new delivery service rest client.
@@ -525,6 +529,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -586,7 +591,7 @@ func (c *gRPCClient) CreateDeliveryVehicle(ctx context.Context, req *deliverypb.
 	var resp *deliverypb.DeliveryVehicle
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateDeliveryVehicle(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateDeliveryVehicle, req, settings.GRPC, c.logger, "CreateDeliveryVehicle")
 		return err
 	}, opts...)
 	if err != nil {
@@ -613,7 +618,7 @@ func (c *gRPCClient) GetDeliveryVehicle(ctx context.Context, req *deliverypb.Get
 	var resp *deliverypb.DeliveryVehicle
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetDeliveryVehicle(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetDeliveryVehicle, req, settings.GRPC, c.logger, "GetDeliveryVehicle")
 		return err
 	}, opts...)
 	if err != nil {
@@ -640,7 +645,7 @@ func (c *gRPCClient) UpdateDeliveryVehicle(ctx context.Context, req *deliverypb.
 	var resp *deliverypb.DeliveryVehicle
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateDeliveryVehicle(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateDeliveryVehicle, req, settings.GRPC, c.logger, "UpdateDeliveryVehicle")
 		return err
 	}, opts...)
 	if err != nil {
@@ -667,7 +672,7 @@ func (c *gRPCClient) BatchCreateTasks(ctx context.Context, req *deliverypb.Batch
 	var resp *deliverypb.BatchCreateTasksResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.BatchCreateTasks(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.BatchCreateTasks, req, settings.GRPC, c.logger, "BatchCreateTasks")
 		return err
 	}, opts...)
 	if err != nil {
@@ -694,7 +699,7 @@ func (c *gRPCClient) CreateTask(ctx context.Context, req *deliverypb.CreateTaskR
 	var resp *deliverypb.Task
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateTask(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateTask, req, settings.GRPC, c.logger, "CreateTask")
 		return err
 	}, opts...)
 	if err != nil {
@@ -721,7 +726,7 @@ func (c *gRPCClient) GetTask(ctx context.Context, req *deliverypb.GetTaskRequest
 	var resp *deliverypb.Task
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetTask(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetTask, req, settings.GRPC, c.logger, "GetTask")
 		return err
 	}, opts...)
 	if err != nil {
@@ -748,7 +753,7 @@ func (c *gRPCClient) UpdateTask(ctx context.Context, req *deliverypb.UpdateTaskR
 	var resp *deliverypb.Task
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateTask(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateTask, req, settings.GRPC, c.logger, "UpdateTask")
 		return err
 	}, opts...)
 	if err != nil {
@@ -786,7 +791,7 @@ func (c *gRPCClient) ListTasks(ctx context.Context, req *deliverypb.ListTasksReq
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListTasks(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListTasks, req, settings.GRPC, c.logger, "ListTasks")
 			return err
 		}, opts...)
 		if err != nil {
@@ -830,7 +835,7 @@ func (c *gRPCClient) GetTaskTrackingInfo(ctx context.Context, req *deliverypb.Ge
 	var resp *deliverypb.TaskTrackingInfo
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetTaskTrackingInfo(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetTaskTrackingInfo, req, settings.GRPC, c.logger, "GetTaskTrackingInfo")
 		return err
 	}, opts...)
 	if err != nil {
@@ -868,7 +873,7 @@ func (c *gRPCClient) ListDeliveryVehicles(ctx context.Context, req *deliverypb.L
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListDeliveryVehicles(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListDeliveryVehicles, req, settings.GRPC, c.logger, "ListDeliveryVehicles")
 			return err
 		}, opts...)
 		if err != nil {
@@ -978,17 +983,7 @@ func (c *restClient) CreateDeliveryVehicle(ctx context.Context, req *deliverypb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDeliveryVehicle")
 		if err != nil {
 			return err
 		}
@@ -1081,17 +1076,7 @@ func (c *restClient) GetDeliveryVehicle(ctx context.Context, req *deliverypb.Get
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDeliveryVehicle")
 		if err != nil {
 			return err
 		}
@@ -1204,17 +1189,7 @@ func (c *restClient) UpdateDeliveryVehicle(ctx context.Context, req *deliverypb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateDeliveryVehicle")
 		if err != nil {
 			return err
 		}
@@ -1279,17 +1254,7 @@ func (c *restClient) BatchCreateTasks(ctx context.Context, req *deliverypb.Batch
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchCreateTasks")
 		if err != nil {
 			return err
 		}
@@ -1390,17 +1355,7 @@ func (c *restClient) CreateTask(ctx context.Context, req *deliverypb.CreateTaskR
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateTask")
 		if err != nil {
 			return err
 		}
@@ -1493,17 +1448,7 @@ func (c *restClient) GetTask(ctx context.Context, req *deliverypb.GetTaskRequest
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetTask")
 		if err != nil {
 			return err
 		}
@@ -1610,17 +1555,7 @@ func (c *restClient) UpdateTask(ctx context.Context, req *deliverypb.UpdateTaskR
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateTask")
 		if err != nil {
 			return err
 		}
@@ -1719,21 +1654,10 @@ func (c *restClient) ListTasks(ctx context.Context, req *deliverypb.ListTasksReq
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListTasks")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1839,17 +1763,7 @@ func (c *restClient) GetTaskTrackingInfo(ctx context.Context, req *deliverypb.Ge
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetTaskTrackingInfo")
 		if err != nil {
 			return err
 		}
@@ -1960,21 +1874,10 @@ func (c *restClient) ListDeliveryVehicles(ctx context.Context, req *deliverypb.L
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDeliveryVehicles")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

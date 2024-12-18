@@ -155,6 +155,134 @@ func (op *BulkDeleteConversationsOperation) Name() string {
 	return op.lro.Name()
 }
 
+// BulkDownloadFeedbackLabelsOperation manages a long-running operation from BulkDownloadFeedbackLabels.
+type BulkDownloadFeedbackLabelsOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *BulkDownloadFeedbackLabelsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*contactcenterinsightspb.BulkDownloadFeedbackLabelsResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp contactcenterinsightspb.BulkDownloadFeedbackLabelsResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *BulkDownloadFeedbackLabelsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*contactcenterinsightspb.BulkDownloadFeedbackLabelsResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp contactcenterinsightspb.BulkDownloadFeedbackLabelsResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *BulkDownloadFeedbackLabelsOperation) Metadata() (*contactcenterinsightspb.BulkDownloadFeedbackLabelsMetadata, error) {
+	var meta contactcenterinsightspb.BulkDownloadFeedbackLabelsMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *BulkDownloadFeedbackLabelsOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *BulkDownloadFeedbackLabelsOperation) Name() string {
+	return op.lro.Name()
+}
+
+// BulkUploadFeedbackLabelsOperation manages a long-running operation from BulkUploadFeedbackLabels.
+type BulkUploadFeedbackLabelsOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *BulkUploadFeedbackLabelsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*contactcenterinsightspb.BulkUploadFeedbackLabelsResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp contactcenterinsightspb.BulkUploadFeedbackLabelsResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *BulkUploadFeedbackLabelsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*contactcenterinsightspb.BulkUploadFeedbackLabelsResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp contactcenterinsightspb.BulkUploadFeedbackLabelsResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *BulkUploadFeedbackLabelsOperation) Metadata() (*contactcenterinsightspb.BulkUploadFeedbackLabelsMetadata, error) {
+	var meta contactcenterinsightspb.BulkUploadFeedbackLabelsMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *BulkUploadFeedbackLabelsOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *BulkUploadFeedbackLabelsOperation) Name() string {
+	return op.lro.Name()
+}
+
 // CreateAnalysisOperation manages a long-running operation from CreateAnalysis.
 type CreateAnalysisOperation struct {
 	lro      *longrunning.Operation
@@ -720,6 +848,134 @@ func (op *InitializeEncryptionSpecOperation) Name() string {
 	return op.lro.Name()
 }
 
+// QueryMetricsOperation manages a long-running operation from QueryMetrics.
+type QueryMetricsOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *QueryMetricsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*contactcenterinsightspb.QueryMetricsResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp contactcenterinsightspb.QueryMetricsResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *QueryMetricsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*contactcenterinsightspb.QueryMetricsResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp contactcenterinsightspb.QueryMetricsResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *QueryMetricsOperation) Metadata() (*contactcenterinsightspb.QueryMetricsMetadata, error) {
+	var meta contactcenterinsightspb.QueryMetricsMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *QueryMetricsOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *QueryMetricsOperation) Name() string {
+	return op.lro.Name()
+}
+
+// TuneQaScorecardRevisionOperation manages a long-running operation from TuneQaScorecardRevision.
+type TuneQaScorecardRevisionOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *TuneQaScorecardRevisionOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*contactcenterinsightspb.TuneQaScorecardRevisionResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp contactcenterinsightspb.TuneQaScorecardRevisionResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *TuneQaScorecardRevisionOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*contactcenterinsightspb.TuneQaScorecardRevisionResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp contactcenterinsightspb.TuneQaScorecardRevisionResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *TuneQaScorecardRevisionOperation) Metadata() (*contactcenterinsightspb.TuneQaScorecardRevisionMetadata, error) {
+	var meta contactcenterinsightspb.TuneQaScorecardRevisionMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *TuneQaScorecardRevisionOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *TuneQaScorecardRevisionOperation) Name() string {
+	return op.lro.Name()
+}
+
 // UndeployIssueModelOperation manages a long-running operation from UndeployIssueModel.
 type UndeployIssueModelOperation struct {
 	lro      *longrunning.Operation
@@ -868,7 +1124,7 @@ type AnalysisIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*contactcenterinsightspb.Analysis, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AnalysisIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -895,6 +1151,53 @@ func (it *AnalysisIterator) takeBuf() interface{} {
 	return b
 }
 
+// AnalysisRuleIterator manages a stream of *contactcenterinsightspb.AnalysisRule.
+type AnalysisRuleIterator struct {
+	items    []*contactcenterinsightspb.AnalysisRule
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*contactcenterinsightspb.AnalysisRule, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *AnalysisRuleIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *AnalysisRuleIterator) Next() (*contactcenterinsightspb.AnalysisRule, error) {
+	var item *contactcenterinsightspb.AnalysisRule
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *AnalysisRuleIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *AnalysisRuleIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // ConversationIterator manages a stream of *contactcenterinsightspb.Conversation.
 type ConversationIterator struct {
 	items    []*contactcenterinsightspb.Conversation
@@ -915,7 +1218,7 @@ type ConversationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*contactcenterinsightspb.Conversation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ConversationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -942,6 +1245,53 @@ func (it *ConversationIterator) takeBuf() interface{} {
 	return b
 }
 
+// FeedbackLabelIterator manages a stream of *contactcenterinsightspb.FeedbackLabel.
+type FeedbackLabelIterator struct {
+	items    []*contactcenterinsightspb.FeedbackLabel
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*contactcenterinsightspb.FeedbackLabel, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *FeedbackLabelIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *FeedbackLabelIterator) Next() (*contactcenterinsightspb.FeedbackLabel, error) {
+	var item *contactcenterinsightspb.FeedbackLabel
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *FeedbackLabelIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *FeedbackLabelIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -962,7 +1312,7 @@ type OperationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *OperationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1009,7 +1359,7 @@ type PhraseMatcherIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*contactcenterinsightspb.PhraseMatcher, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *PhraseMatcherIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1036,6 +1386,147 @@ func (it *PhraseMatcherIterator) takeBuf() interface{} {
 	return b
 }
 
+// QaQuestionIterator manages a stream of *contactcenterinsightspb.QaQuestion.
+type QaQuestionIterator struct {
+	items    []*contactcenterinsightspb.QaQuestion
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*contactcenterinsightspb.QaQuestion, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *QaQuestionIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *QaQuestionIterator) Next() (*contactcenterinsightspb.QaQuestion, error) {
+	var item *contactcenterinsightspb.QaQuestion
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *QaQuestionIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *QaQuestionIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// QaScorecardIterator manages a stream of *contactcenterinsightspb.QaScorecard.
+type QaScorecardIterator struct {
+	items    []*contactcenterinsightspb.QaScorecard
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*contactcenterinsightspb.QaScorecard, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *QaScorecardIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *QaScorecardIterator) Next() (*contactcenterinsightspb.QaScorecard, error) {
+	var item *contactcenterinsightspb.QaScorecard
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *QaScorecardIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *QaScorecardIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// QaScorecardRevisionIterator manages a stream of *contactcenterinsightspb.QaScorecardRevision.
+type QaScorecardRevisionIterator struct {
+	items    []*contactcenterinsightspb.QaScorecardRevision
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*contactcenterinsightspb.QaScorecardRevision, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *QaScorecardRevisionIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *QaScorecardRevisionIterator) Next() (*contactcenterinsightspb.QaScorecardRevision, error) {
+	var item *contactcenterinsightspb.QaScorecardRevision
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *QaScorecardRevisionIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *QaScorecardRevisionIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // ViewIterator manages a stream of *contactcenterinsightspb.View.
 type ViewIterator struct {
 	items    []*contactcenterinsightspb.View
@@ -1056,7 +1547,7 @@ type ViewIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*contactcenterinsightspb.View, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ViewIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

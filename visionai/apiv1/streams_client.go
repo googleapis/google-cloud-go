@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -30,7 +30,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	visionaipb "cloud.google.com/go/visionai/apiv1/visionaipb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -485,6 +484,8 @@ type streamsGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewStreamsClient creates a new streams service client based on gRPC.
@@ -514,6 +515,7 @@ func NewStreamsClient(ctx context.Context, opts ...option.ClientOption) (*Stream
 		connPool:         connPool,
 		streamsClient:    visionaipb.NewStreamsServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -577,6 +579,8 @@ type streamsRESTClient struct {
 
 	// Points back to the CallOptions field of the containing StreamsClient
 	CallOptions **StreamsCallOptions
+
+	logger *slog.Logger
 }
 
 // NewStreamsRESTClient creates a new streams service rest client.
@@ -597,6 +601,7 @@ func NewStreamsRESTClient(ctx context.Context, opts ...option.ClientOption) (*St
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -670,7 +675,7 @@ func (c *streamsGRPCClient) ListClusters(ctx context.Context, req *visionaipb.Li
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.streamsClient.ListClusters(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.streamsClient.ListClusters, req, settings.GRPC, c.logger, "ListClusters")
 			return err
 		}, opts...)
 		if err != nil {
@@ -705,7 +710,7 @@ func (c *streamsGRPCClient) GetCluster(ctx context.Context, req *visionaipb.GetC
 	var resp *visionaipb.Cluster
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.streamsClient.GetCluster(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.streamsClient.GetCluster, req, settings.GRPC, c.logger, "GetCluster")
 		return err
 	}, opts...)
 	if err != nil {
@@ -723,7 +728,7 @@ func (c *streamsGRPCClient) CreateCluster(ctx context.Context, req *visionaipb.C
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.streamsClient.CreateCluster(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.streamsClient.CreateCluster, req, settings.GRPC, c.logger, "CreateCluster")
 		return err
 	}, opts...)
 	if err != nil {
@@ -743,7 +748,7 @@ func (c *streamsGRPCClient) UpdateCluster(ctx context.Context, req *visionaipb.U
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.streamsClient.UpdateCluster(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.streamsClient.UpdateCluster, req, settings.GRPC, c.logger, "UpdateCluster")
 		return err
 	}, opts...)
 	if err != nil {
@@ -763,7 +768,7 @@ func (c *streamsGRPCClient) DeleteCluster(ctx context.Context, req *visionaipb.D
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.streamsClient.DeleteCluster(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.streamsClient.DeleteCluster, req, settings.GRPC, c.logger, "DeleteCluster")
 		return err
 	}, opts...)
 	if err != nil {
@@ -794,7 +799,7 @@ func (c *streamsGRPCClient) ListStreams(ctx context.Context, req *visionaipb.Lis
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.streamsClient.ListStreams(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.streamsClient.ListStreams, req, settings.GRPC, c.logger, "ListStreams")
 			return err
 		}, opts...)
 		if err != nil {
@@ -829,7 +834,7 @@ func (c *streamsGRPCClient) GetStream(ctx context.Context, req *visionaipb.GetSt
 	var resp *visionaipb.Stream
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.streamsClient.GetStream(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.streamsClient.GetStream, req, settings.GRPC, c.logger, "GetStream")
 		return err
 	}, opts...)
 	if err != nil {
@@ -847,7 +852,7 @@ func (c *streamsGRPCClient) CreateStream(ctx context.Context, req *visionaipb.Cr
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.streamsClient.CreateStream(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.streamsClient.CreateStream, req, settings.GRPC, c.logger, "CreateStream")
 		return err
 	}, opts...)
 	if err != nil {
@@ -867,7 +872,7 @@ func (c *streamsGRPCClient) UpdateStream(ctx context.Context, req *visionaipb.Up
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.streamsClient.UpdateStream(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.streamsClient.UpdateStream, req, settings.GRPC, c.logger, "UpdateStream")
 		return err
 	}, opts...)
 	if err != nil {
@@ -887,7 +892,7 @@ func (c *streamsGRPCClient) DeleteStream(ctx context.Context, req *visionaipb.De
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.streamsClient.DeleteStream(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.streamsClient.DeleteStream, req, settings.GRPC, c.logger, "DeleteStream")
 		return err
 	}, opts...)
 	if err != nil {
@@ -907,7 +912,7 @@ func (c *streamsGRPCClient) GetStreamThumbnail(ctx context.Context, req *visiona
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.streamsClient.GetStreamThumbnail(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.streamsClient.GetStreamThumbnail, req, settings.GRPC, c.logger, "GetStreamThumbnail")
 		return err
 	}, opts...)
 	if err != nil {
@@ -927,7 +932,7 @@ func (c *streamsGRPCClient) GenerateStreamHlsToken(ctx context.Context, req *vis
 	var resp *visionaipb.GenerateStreamHlsTokenResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.streamsClient.GenerateStreamHlsToken(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.streamsClient.GenerateStreamHlsToken, req, settings.GRPC, c.logger, "GenerateStreamHlsToken")
 		return err
 	}, opts...)
 	if err != nil {
@@ -956,7 +961,7 @@ func (c *streamsGRPCClient) ListEvents(ctx context.Context, req *visionaipb.List
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.streamsClient.ListEvents(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.streamsClient.ListEvents, req, settings.GRPC, c.logger, "ListEvents")
 			return err
 		}, opts...)
 		if err != nil {
@@ -991,7 +996,7 @@ func (c *streamsGRPCClient) GetEvent(ctx context.Context, req *visionaipb.GetEve
 	var resp *visionaipb.Event
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.streamsClient.GetEvent(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.streamsClient.GetEvent, req, settings.GRPC, c.logger, "GetEvent")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1009,7 +1014,7 @@ func (c *streamsGRPCClient) CreateEvent(ctx context.Context, req *visionaipb.Cre
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.streamsClient.CreateEvent(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.streamsClient.CreateEvent, req, settings.GRPC, c.logger, "CreateEvent")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1029,7 +1034,7 @@ func (c *streamsGRPCClient) UpdateEvent(ctx context.Context, req *visionaipb.Upd
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.streamsClient.UpdateEvent(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.streamsClient.UpdateEvent, req, settings.GRPC, c.logger, "UpdateEvent")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1049,7 +1054,7 @@ func (c *streamsGRPCClient) DeleteEvent(ctx context.Context, req *visionaipb.Del
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.streamsClient.DeleteEvent(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.streamsClient.DeleteEvent, req, settings.GRPC, c.logger, "DeleteEvent")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1080,7 +1085,7 @@ func (c *streamsGRPCClient) ListSeries(ctx context.Context, req *visionaipb.List
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.streamsClient.ListSeries(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.streamsClient.ListSeries, req, settings.GRPC, c.logger, "ListSeries")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1115,7 +1120,7 @@ func (c *streamsGRPCClient) GetSeries(ctx context.Context, req *visionaipb.GetSe
 	var resp *visionaipb.Series
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.streamsClient.GetSeries(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.streamsClient.GetSeries, req, settings.GRPC, c.logger, "GetSeries")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1133,7 +1138,7 @@ func (c *streamsGRPCClient) CreateSeries(ctx context.Context, req *visionaipb.Cr
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.streamsClient.CreateSeries(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.streamsClient.CreateSeries, req, settings.GRPC, c.logger, "CreateSeries")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1153,7 +1158,7 @@ func (c *streamsGRPCClient) UpdateSeries(ctx context.Context, req *visionaipb.Up
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.streamsClient.UpdateSeries(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.streamsClient.UpdateSeries, req, settings.GRPC, c.logger, "UpdateSeries")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1173,7 +1178,7 @@ func (c *streamsGRPCClient) DeleteSeries(ctx context.Context, req *visionaipb.De
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.streamsClient.DeleteSeries(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.streamsClient.DeleteSeries, req, settings.GRPC, c.logger, "DeleteSeries")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1193,7 +1198,7 @@ func (c *streamsGRPCClient) MaterializeChannel(ctx context.Context, req *visiona
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.streamsClient.MaterializeChannel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.streamsClient.MaterializeChannel, req, settings.GRPC, c.logger, "MaterializeChannel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1212,7 +1217,7 @@ func (c *streamsGRPCClient) CancelOperation(ctx context.Context, req *longrunnin
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -1226,7 +1231,7 @@ func (c *streamsGRPCClient) DeleteOperation(ctx context.Context, req *longrunnin
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -1241,7 +1246,7 @@ func (c *streamsGRPCClient) GetOperation(ctx context.Context, req *longrunningpb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1270,7 +1275,7 @@ func (c *streamsGRPCClient) ListOperations(ctx context.Context, req *longrunning
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1347,21 +1352,10 @@ func (c *streamsRESTClient) ListClusters(ctx context.Context, req *visionaipb.Li
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListClusters")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1424,17 +1418,7 @@ func (c *streamsRESTClient) GetCluster(ctx context.Context, req *visionaipb.GetC
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCluster")
 		if err != nil {
 			return err
 		}
@@ -1494,21 +1478,10 @@ func (c *streamsRESTClient) CreateCluster(ctx context.Context, req *visionaipb.C
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateCluster")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1575,21 +1548,10 @@ func (c *streamsRESTClient) UpdateCluster(ctx context.Context, req *visionaipb.U
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateCluster")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1642,21 +1604,10 @@ func (c *streamsRESTClient) DeleteCluster(ctx context.Context, req *visionaipb.D
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteCluster")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1725,21 +1676,10 @@ func (c *streamsRESTClient) ListStreams(ctx context.Context, req *visionaipb.Lis
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListStreams")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1802,17 +1742,7 @@ func (c *streamsRESTClient) GetStream(ctx context.Context, req *visionaipb.GetSt
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetStream")
 		if err != nil {
 			return err
 		}
@@ -1872,21 +1802,10 @@ func (c *streamsRESTClient) CreateStream(ctx context.Context, req *visionaipb.Cr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateStream")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1953,21 +1872,10 @@ func (c *streamsRESTClient) UpdateStream(ctx context.Context, req *visionaipb.Up
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateStream")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2020,21 +1928,10 @@ func (c *streamsRESTClient) DeleteStream(ctx context.Context, req *visionaipb.De
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteStream")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2090,21 +1987,10 @@ func (c *streamsRESTClient) GetStreamThumbnail(ctx context.Context, req *visiona
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GetStreamThumbnail")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2161,17 +2047,7 @@ func (c *streamsRESTClient) GenerateStreamHlsToken(ctx context.Context, req *vis
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GenerateStreamHlsToken")
 		if err != nil {
 			return err
 		}
@@ -2239,21 +2115,10 @@ func (c *streamsRESTClient) ListEvents(ctx context.Context, req *visionaipb.List
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListEvents")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2316,17 +2181,7 @@ func (c *streamsRESTClient) GetEvent(ctx context.Context, req *visionaipb.GetEve
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetEvent")
 		if err != nil {
 			return err
 		}
@@ -2386,21 +2241,10 @@ func (c *streamsRESTClient) CreateEvent(ctx context.Context, req *visionaipb.Cre
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateEvent")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2467,21 +2311,10 @@ func (c *streamsRESTClient) UpdateEvent(ctx context.Context, req *visionaipb.Upd
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateEvent")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2534,21 +2367,10 @@ func (c *streamsRESTClient) DeleteEvent(ctx context.Context, req *visionaipb.Del
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteEvent")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2617,21 +2439,10 @@ func (c *streamsRESTClient) ListSeries(ctx context.Context, req *visionaipb.List
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSeries")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2694,17 +2505,7 @@ func (c *streamsRESTClient) GetSeries(ctx context.Context, req *visionaipb.GetSe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSeries")
 		if err != nil {
 			return err
 		}
@@ -2764,21 +2565,10 @@ func (c *streamsRESTClient) CreateSeries(ctx context.Context, req *visionaipb.Cr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateSeries")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2845,21 +2635,10 @@ func (c *streamsRESTClient) UpdateSeries(ctx context.Context, req *visionaipb.Up
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateSeries")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2912,21 +2691,10 @@ func (c *streamsRESTClient) DeleteSeries(ctx context.Context, req *visionaipb.De
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteSeries")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2987,21 +2755,10 @@ func (c *streamsRESTClient) MaterializeChannel(ctx context.Context, req *visiona
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "MaterializeChannel")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3055,15 +2812,8 @@ func (c *streamsRESTClient) CancelOperation(ctx context.Context, req *longrunnin
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -3097,15 +2847,8 @@ func (c *streamsRESTClient) DeleteOperation(ctx context.Context, req *longrunnin
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOperation")
+		return err
 	}, opts...)
 }
 
@@ -3142,17 +2885,7 @@ func (c *streamsRESTClient) GetOperation(ctx context.Context, req *longrunningpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -3217,21 +2950,10 @@ func (c *streamsRESTClient) ListOperations(ctx context.Context, req *longrunning
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

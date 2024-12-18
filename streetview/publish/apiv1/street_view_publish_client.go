@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	publishpb "cloud.google.com/go/streetview/publish/apiv1/publishpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -645,6 +644,8 @@ type streetViewPublishGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewStreetViewPublishClient creates a new street view publish service client based on gRPC.
@@ -671,6 +672,7 @@ func NewStreetViewPublishClient(ctx context.Context, opts ...option.ClientOption
 		connPool:                connPool,
 		streetViewPublishClient: publishpb.NewStreetViewPublishServiceClient(connPool),
 		CallOptions:             &client.CallOptions,
+		logger:                  internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -733,6 +735,8 @@ type streetViewPublishRESTClient struct {
 
 	// Points back to the CallOptions field of the containing StreetViewPublishClient
 	CallOptions **StreetViewPublishCallOptions
+
+	logger *slog.Logger
 }
 
 // NewStreetViewPublishRESTClient creates a new street view publish service rest client.
@@ -750,6 +754,7 @@ func NewStreetViewPublishRESTClient(ctx context.Context, opts ...option.ClientOp
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -809,7 +814,7 @@ func (c *streetViewPublishGRPCClient) StartUpload(ctx context.Context, req *empt
 	var resp *publishpb.UploadRef
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.streetViewPublishClient.StartUpload(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.streetViewPublishClient.StartUpload, req, settings.GRPC, c.logger, "StartUpload")
 		return err
 	}, opts...)
 	if err != nil {
@@ -824,7 +829,7 @@ func (c *streetViewPublishGRPCClient) CreatePhoto(ctx context.Context, req *publ
 	var resp *publishpb.Photo
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.streetViewPublishClient.CreatePhoto(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.streetViewPublishClient.CreatePhoto, req, settings.GRPC, c.logger, "CreatePhoto")
 		return err
 	}, opts...)
 	if err != nil {
@@ -842,7 +847,7 @@ func (c *streetViewPublishGRPCClient) GetPhoto(ctx context.Context, req *publish
 	var resp *publishpb.Photo
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.streetViewPublishClient.GetPhoto(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.streetViewPublishClient.GetPhoto, req, settings.GRPC, c.logger, "GetPhoto")
 		return err
 	}, opts...)
 	if err != nil {
@@ -857,7 +862,7 @@ func (c *streetViewPublishGRPCClient) BatchGetPhotos(ctx context.Context, req *p
 	var resp *publishpb.BatchGetPhotosResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.streetViewPublishClient.BatchGetPhotos(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.streetViewPublishClient.BatchGetPhotos, req, settings.GRPC, c.logger, "BatchGetPhotos")
 		return err
 	}, opts...)
 	if err != nil {
@@ -883,7 +888,7 @@ func (c *streetViewPublishGRPCClient) ListPhotos(ctx context.Context, req *publi
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.streetViewPublishClient.ListPhotos(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.streetViewPublishClient.ListPhotos, req, settings.GRPC, c.logger, "ListPhotos")
 			return err
 		}, opts...)
 		if err != nil {
@@ -918,7 +923,7 @@ func (c *streetViewPublishGRPCClient) UpdatePhoto(ctx context.Context, req *publ
 	var resp *publishpb.Photo
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.streetViewPublishClient.UpdatePhoto(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.streetViewPublishClient.UpdatePhoto, req, settings.GRPC, c.logger, "UpdatePhoto")
 		return err
 	}, opts...)
 	if err != nil {
@@ -933,7 +938,7 @@ func (c *streetViewPublishGRPCClient) BatchUpdatePhotos(ctx context.Context, req
 	var resp *publishpb.BatchUpdatePhotosResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.streetViewPublishClient.BatchUpdatePhotos(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.streetViewPublishClient.BatchUpdatePhotos, req, settings.GRPC, c.logger, "BatchUpdatePhotos")
 		return err
 	}, opts...)
 	if err != nil {
@@ -950,7 +955,7 @@ func (c *streetViewPublishGRPCClient) DeletePhoto(ctx context.Context, req *publ
 	opts = append((*c.CallOptions).DeletePhoto[0:len((*c.CallOptions).DeletePhoto):len((*c.CallOptions).DeletePhoto)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.streetViewPublishClient.DeletePhoto(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.streetViewPublishClient.DeletePhoto, req, settings.GRPC, c.logger, "DeletePhoto")
 		return err
 	}, opts...)
 	return err
@@ -962,7 +967,7 @@ func (c *streetViewPublishGRPCClient) BatchDeletePhotos(ctx context.Context, req
 	var resp *publishpb.BatchDeletePhotosResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.streetViewPublishClient.BatchDeletePhotos(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.streetViewPublishClient.BatchDeletePhotos, req, settings.GRPC, c.logger, "BatchDeletePhotos")
 		return err
 	}, opts...)
 	if err != nil {
@@ -977,7 +982,7 @@ func (c *streetViewPublishGRPCClient) StartPhotoSequenceUpload(ctx context.Conte
 	var resp *publishpb.UploadRef
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.streetViewPublishClient.StartPhotoSequenceUpload(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.streetViewPublishClient.StartPhotoSequenceUpload, req, settings.GRPC, c.logger, "StartPhotoSequenceUpload")
 		return err
 	}, opts...)
 	if err != nil {
@@ -992,7 +997,7 @@ func (c *streetViewPublishGRPCClient) CreatePhotoSequence(ctx context.Context, r
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.streetViewPublishClient.CreatePhotoSequence(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.streetViewPublishClient.CreatePhotoSequence, req, settings.GRPC, c.logger, "CreatePhotoSequence")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1012,7 +1017,7 @@ func (c *streetViewPublishGRPCClient) GetPhotoSequence(ctx context.Context, req 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.streetViewPublishClient.GetPhotoSequence(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.streetViewPublishClient.GetPhotoSequence, req, settings.GRPC, c.logger, "GetPhotoSequence")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1040,7 +1045,7 @@ func (c *streetViewPublishGRPCClient) ListPhotoSequences(ctx context.Context, re
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.streetViewPublishClient.ListPhotoSequences(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.streetViewPublishClient.ListPhotoSequences, req, settings.GRPC, c.logger, "ListPhotoSequences")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1074,7 +1079,7 @@ func (c *streetViewPublishGRPCClient) DeletePhotoSequence(ctx context.Context, r
 	opts = append((*c.CallOptions).DeletePhotoSequence[0:len((*c.CallOptions).DeletePhotoSequence):len((*c.CallOptions).DeletePhotoSequence)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.streetViewPublishClient.DeletePhotoSequence(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.streetViewPublishClient.DeletePhotoSequence, req, settings.GRPC, c.logger, "DeletePhotoSequence")
 		return err
 	}, opts...)
 	return err
@@ -1136,17 +1141,7 @@ func (c *streetViewPublishRESTClient) StartUpload(ctx context.Context, req *empt
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "StartUpload")
 		if err != nil {
 			return err
 		}
@@ -1221,17 +1216,7 @@ func (c *streetViewPublishRESTClient) CreatePhoto(ctx context.Context, req *publ
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreatePhoto")
 		if err != nil {
 			return err
 		}
@@ -1299,17 +1284,7 @@ func (c *streetViewPublishRESTClient) GetPhoto(ctx context.Context, req *publish
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetPhoto")
 		if err != nil {
 			return err
 		}
@@ -1380,17 +1355,7 @@ func (c *streetViewPublishRESTClient) BatchGetPhotos(ctx context.Context, req *p
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "BatchGetPhotos")
 		if err != nil {
 			return err
 		}
@@ -1463,21 +1428,10 @@ func (c *streetViewPublishRESTClient) ListPhotos(ctx context.Context, req *publi
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListPhotos")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1576,17 +1530,7 @@ func (c *streetViewPublishRESTClient) UpdatePhoto(ctx context.Context, req *publ
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdatePhoto")
 		if err != nil {
 			return err
 		}
@@ -1671,17 +1615,7 @@ func (c *streetViewPublishRESTClient) BatchUpdatePhotos(ctx context.Context, req
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchUpdatePhotos")
 		if err != nil {
 			return err
 		}
@@ -1736,15 +1670,8 @@ func (c *streetViewPublishRESTClient) DeletePhoto(ctx context.Context, req *publ
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeletePhoto")
+		return err
 	}, opts...)
 }
 
@@ -1799,17 +1726,7 @@ func (c *streetViewPublishRESTClient) BatchDeletePhotos(ctx context.Context, req
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchDeletePhotos")
 		if err != nil {
 			return err
 		}
@@ -1871,17 +1788,7 @@ func (c *streetViewPublishRESTClient) StartPhotoSequenceUpload(ctx context.Conte
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "StartPhotoSequenceUpload")
 		if err != nil {
 			return err
 		}
@@ -1953,21 +1860,10 @@ func (c *streetViewPublishRESTClient) CreatePhotoSequence(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreatePhotoSequence")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2047,21 +1943,10 @@ func (c *streetViewPublishRESTClient) GetPhotoSequence(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetPhotoSequence")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2128,21 +2013,10 @@ func (c *streetViewPublishRESTClient) ListPhotoSequences(ctx context.Context, re
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListPhotoSequences")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2214,15 +2088,8 @@ func (c *streetViewPublishRESTClient) DeletePhotoSequence(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeletePhotoSequence")
+		return err
 	}, opts...)
 }
 

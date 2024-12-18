@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/alloydb/apiv1alpha",
-    "version": "1.12.1",
+    "version": "1.14.0",
     "language": "GO",
     "apis": [
       {
@@ -602,6 +602,52 @@
         {
           "start": 18,
           "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "alloydb_v1alpha_generated_AlloyDBAdmin_ExecuteSql_sync",
+      "title": "alloydb ExecuteSql Sample",
+      "description": "ExecuteSql executes a SQL statement in a database inside an AlloyDB instance.",
+      "file": "AlloyDBAdminClient/ExecuteSql/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExecuteSql",
+        "fullName": "google.cloud.alloydb.v1alpha.AlloyDBAdminClient.ExecuteSql",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "alloydbpb.ExecuteSqlRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*alloydbpb.ExecuteSqlResponse",
+        "client": {
+          "shortName": "AlloyDBAdminClient",
+          "fullName": "google.cloud.alloydb.v1alpha.AlloyDBAdminClient"
+        },
+        "method": {
+          "shortName": "ExecuteSql",
+          "fullName": "google.cloud.alloydb.v1alpha.AlloyDBAdmin.ExecuteSql",
+          "service": {
+            "shortName": "AlloyDBAdmin",
+            "fullName": "google.cloud.alloydb.v1alpha.AlloyDBAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1573,6 +1619,52 @@
       ]
     },
     {
+      "regionTag": "alloydb_v1alpha_generated_AlloyDBAdmin_SwitchoverCluster_sync",
+      "title": "alloydb SwitchoverCluster Sample",
+      "description": "SwitchoverCluster switches the roles of PRIMARY and SECONDARY clusters without any data loss.\nThis promotes the SECONDARY cluster to PRIMARY and sets up the original\nPRIMARY cluster to replicate from this newly promoted cluster.",
+      "file": "AlloyDBAdminClient/SwitchoverCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SwitchoverCluster",
+        "fullName": "google.cloud.alloydb.v1alpha.AlloyDBAdminClient.SwitchoverCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "alloydbpb.SwitchoverClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SwitchoverClusterOperation",
+        "client": {
+          "shortName": "AlloyDBAdminClient",
+          "fullName": "google.cloud.alloydb.v1alpha.AlloyDBAdminClient"
+        },
+        "method": {
+          "shortName": "SwitchoverCluster",
+          "fullName": "google.cloud.alloydb.v1alpha.AlloyDBAdmin.SwitchoverCluster",
+          "service": {
+            "shortName": "AlloyDBAdmin",
+            "fullName": "google.cloud.alloydb.v1alpha.AlloyDBAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "alloydb_v1alpha_generated_AlloyDBAdmin_UpdateBackup_sync",
       "title": "alloydb UpdateBackup Sample",
       "description": "UpdateBackup updates the parameters of a single Backup.",
@@ -1752,6 +1844,52 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "alloydb_v1alpha_generated_AlloyDBAdmin_UpgradeCluster_sync",
+      "title": "alloydb UpgradeCluster Sample",
+      "description": "UpgradeCluster upgrades a single Cluster.\nImperative only.",
+      "file": "AlloyDBAdminClient/UpgradeCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpgradeCluster",
+        "fullName": "google.cloud.alloydb.v1alpha.AlloyDBAdminClient.UpgradeCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "alloydbpb.UpgradeClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpgradeClusterOperation",
+        "client": {
+          "shortName": "AlloyDBAdminClient",
+          "fullName": "google.cloud.alloydb.v1alpha.AlloyDBAdminClient"
+        },
+        "method": {
+          "shortName": "UpgradeCluster",
+          "fullName": "google.cloud.alloydb.v1alpha.AlloyDBAdmin.UpgradeCluster",
+          "service": {
+            "shortName": "AlloyDBAdmin",
+            "fullName": "google.cloud.alloydb.v1alpha.AlloyDBAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]

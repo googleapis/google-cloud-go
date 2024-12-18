@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -428,6 +427,8 @@ type sampleQueryGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewSampleQueryClient creates a new sample query service client based on gRPC.
@@ -455,6 +456,7 @@ func NewSampleQueryClient(ctx context.Context, opts ...option.ClientOption) (*Sa
 		connPool:          connPool,
 		sampleQueryClient: discoveryenginepb.NewSampleQueryServiceClient(connPool),
 		CallOptions:       &client.CallOptions,
+		logger:            internaloption.GetLogger(opts),
 		operationsClient:  longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -518,6 +520,8 @@ type sampleQueryRESTClient struct {
 
 	// Points back to the CallOptions field of the containing SampleQueryClient
 	CallOptions **SampleQueryCallOptions
+
+	logger *slog.Logger
 }
 
 // NewSampleQueryRESTClient creates a new sample query service rest client.
@@ -536,6 +540,7 @@ func NewSampleQueryRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -598,7 +603,7 @@ func (c *sampleQueryGRPCClient) GetSampleQuery(ctx context.Context, req *discove
 	var resp *discoveryenginepb.SampleQuery
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.sampleQueryClient.GetSampleQuery(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.sampleQueryClient.GetSampleQuery, req, settings.GRPC, c.logger, "GetSampleQuery")
 		return err
 	}, opts...)
 	if err != nil {
@@ -627,7 +632,7 @@ func (c *sampleQueryGRPCClient) ListSampleQueries(ctx context.Context, req *disc
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.sampleQueryClient.ListSampleQueries(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.sampleQueryClient.ListSampleQueries, req, settings.GRPC, c.logger, "ListSampleQueries")
 			return err
 		}, opts...)
 		if err != nil {
@@ -662,7 +667,7 @@ func (c *sampleQueryGRPCClient) CreateSampleQuery(ctx context.Context, req *disc
 	var resp *discoveryenginepb.SampleQuery
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.sampleQueryClient.CreateSampleQuery(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.sampleQueryClient.CreateSampleQuery, req, settings.GRPC, c.logger, "CreateSampleQuery")
 		return err
 	}, opts...)
 	if err != nil {
@@ -680,7 +685,7 @@ func (c *sampleQueryGRPCClient) UpdateSampleQuery(ctx context.Context, req *disc
 	var resp *discoveryenginepb.SampleQuery
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.sampleQueryClient.UpdateSampleQuery(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.sampleQueryClient.UpdateSampleQuery, req, settings.GRPC, c.logger, "UpdateSampleQuery")
 		return err
 	}, opts...)
 	if err != nil {
@@ -697,7 +702,7 @@ func (c *sampleQueryGRPCClient) DeleteSampleQuery(ctx context.Context, req *disc
 	opts = append((*c.CallOptions).DeleteSampleQuery[0:len((*c.CallOptions).DeleteSampleQuery):len((*c.CallOptions).DeleteSampleQuery)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.sampleQueryClient.DeleteSampleQuery(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.sampleQueryClient.DeleteSampleQuery, req, settings.GRPC, c.logger, "DeleteSampleQuery")
 		return err
 	}, opts...)
 	return err
@@ -712,7 +717,7 @@ func (c *sampleQueryGRPCClient) ImportSampleQueries(ctx context.Context, req *di
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.sampleQueryClient.ImportSampleQueries(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.sampleQueryClient.ImportSampleQueries, req, settings.GRPC, c.logger, "ImportSampleQueries")
 		return err
 	}, opts...)
 	if err != nil {
@@ -731,7 +736,7 @@ func (c *sampleQueryGRPCClient) CancelOperation(ctx context.Context, req *longru
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -746,7 +751,7 @@ func (c *sampleQueryGRPCClient) GetOperation(ctx context.Context, req *longrunni
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -775,7 +780,7 @@ func (c *sampleQueryGRPCClient) ListOperations(ctx context.Context, req *longrun
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -834,17 +839,7 @@ func (c *sampleQueryRESTClient) GetSampleQuery(ctx context.Context, req *discove
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSampleQuery")
 		if err != nil {
 			return err
 		}
@@ -907,21 +902,10 @@ func (c *sampleQueryRESTClient) ListSampleQueries(ctx context.Context, req *disc
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSampleQueries")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -992,17 +976,7 @@ func (c *sampleQueryRESTClient) CreateSampleQuery(ctx context.Context, req *disc
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateSampleQuery")
 		if err != nil {
 			return err
 		}
@@ -1066,17 +1040,7 @@ func (c *sampleQueryRESTClient) UpdateSampleQuery(ctx context.Context, req *disc
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateSampleQuery")
 		if err != nil {
 			return err
 		}
@@ -1123,15 +1087,8 @@ func (c *sampleQueryRESTClient) DeleteSampleQuery(ctx context.Context, req *disc
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteSampleQuery")
+		return err
 	}, opts...)
 }
 
@@ -1179,21 +1136,10 @@ func (c *sampleQueryRESTClient) ImportSampleQueries(ctx context.Context, req *di
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ImportSampleQueries")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1247,15 +1193,8 @@ func (c *sampleQueryRESTClient) CancelOperation(ctx context.Context, req *longru
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -1292,17 +1231,7 @@ func (c *sampleQueryRESTClient) GetOperation(ctx context.Context, req *longrunni
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -1367,21 +1296,10 @@ func (c *sampleQueryRESTClient) ListOperations(ctx context.Context, req *longrun
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

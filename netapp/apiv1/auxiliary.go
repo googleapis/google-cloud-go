@@ -1145,6 +1145,70 @@ func (op *EncryptVolumesOperation) Name() string {
 	return op.lro.Name()
 }
 
+// EstablishPeeringOperation manages a long-running operation from EstablishPeering.
+type EstablishPeeringOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *EstablishPeeringOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*netapppb.Replication, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp netapppb.Replication
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *EstablishPeeringOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*netapppb.Replication, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp netapppb.Replication
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *EstablishPeeringOperation) Metadata() (*netapppb.OperationMetadata, error) {
+	var meta netapppb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *EstablishPeeringOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *EstablishPeeringOperation) Name() string {
+	return op.lro.Name()
+}
+
 // ResumeReplicationOperation manages a long-running operation from ResumeReplication.
 type ResumeReplicationOperation struct {
 	lro      *longrunning.Operation
@@ -1462,6 +1526,70 @@ func (op *SwitchActiveReplicaZoneOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *SwitchActiveReplicaZoneOperation) Name() string {
+	return op.lro.Name()
+}
+
+// SyncReplicationOperation manages a long-running operation from SyncReplication.
+type SyncReplicationOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *SyncReplicationOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*netapppb.Replication, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp netapppb.Replication
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *SyncReplicationOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*netapppb.Replication, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp netapppb.Replication
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *SyncReplicationOperation) Metadata() (*netapppb.OperationMetadata, error) {
+	var meta netapppb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *SyncReplicationOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *SyncReplicationOperation) Name() string {
 	return op.lro.Name()
 }
 
@@ -2061,7 +2189,7 @@ type ActiveDirectoryIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*netapppb.ActiveDirectory, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ActiveDirectoryIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2108,7 +2236,7 @@ type BackupIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*netapppb.Backup, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *BackupIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2155,7 +2283,7 @@ type BackupPolicyIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*netapppb.BackupPolicy, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *BackupPolicyIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2202,7 +2330,7 @@ type BackupVaultIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*netapppb.BackupVault, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *BackupVaultIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2249,7 +2377,7 @@ type KmsConfigIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*netapppb.KmsConfig, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *KmsConfigIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2296,7 +2424,7 @@ type LocationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *LocationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2343,7 +2471,7 @@ type OperationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *OperationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2390,7 +2518,7 @@ type ReplicationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*netapppb.Replication, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ReplicationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2437,7 +2565,7 @@ type SnapshotIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*netapppb.Snapshot, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *SnapshotIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2484,7 +2612,7 @@ type StoragePoolIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*netapppb.StoragePool, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *StoragePoolIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2531,7 +2659,7 @@ type VolumeIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*netapppb.Volume, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *VolumeIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

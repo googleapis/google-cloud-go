@@ -19,7 +19,7 @@ package dataflow
 import (
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -27,7 +27,6 @@ import (
 
 	dataflowpb "cloud.google.com/go/dataflow/apiv1beta3/dataflowpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -177,6 +176,8 @@ type metricsV1Beta3GRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewMetricsV1Beta3Client creates a new metrics v1 beta3 client based on gRPC.
@@ -204,6 +205,7 @@ func NewMetricsV1Beta3Client(ctx context.Context, opts ...option.ClientOption) (
 		connPool:             connPool,
 		metricsV1Beta3Client: dataflowpb.NewMetricsV1Beta3Client(connPool),
 		CallOptions:          &client.CallOptions,
+		logger:               internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -250,6 +252,8 @@ type metricsV1Beta3RESTClient struct {
 
 	// Points back to the CallOptions field of the containing MetricsV1Beta3Client
 	CallOptions **MetricsV1Beta3CallOptions
+
+	logger *slog.Logger
 }
 
 // NewMetricsV1Beta3RESTClient creates a new metrics v1 beta3 rest client.
@@ -268,6 +272,7 @@ func NewMetricsV1Beta3RESTClient(ctx context.Context, opts ...option.ClientOptio
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -320,7 +325,7 @@ func (c *metricsV1Beta3GRPCClient) GetJobMetrics(ctx context.Context, req *dataf
 	var resp *dataflowpb.JobMetrics
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metricsV1Beta3Client.GetJobMetrics(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metricsV1Beta3Client.GetJobMetrics, req, settings.GRPC, c.logger, "GetJobMetrics")
 		return err
 	}, opts...)
 	if err != nil {
@@ -349,7 +354,7 @@ func (c *metricsV1Beta3GRPCClient) GetJobExecutionDetails(ctx context.Context, r
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.metricsV1Beta3Client.GetJobExecutionDetails(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.metricsV1Beta3Client.GetJobExecutionDetails, req, settings.GRPC, c.logger, "GetJobExecutionDetails")
 			return err
 		}, opts...)
 		if err != nil {
@@ -395,7 +400,7 @@ func (c *metricsV1Beta3GRPCClient) GetStageExecutionDetails(ctx context.Context,
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.metricsV1Beta3Client.GetStageExecutionDetails(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.metricsV1Beta3Client.GetStageExecutionDetails, req, settings.GRPC, c.logger, "GetStageExecutionDetails")
 			return err
 		}, opts...)
 		if err != nil {
@@ -467,17 +472,7 @@ func (c *metricsV1Beta3RESTClient) GetJobMetrics(ctx context.Context, req *dataf
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetJobMetrics")
 		if err != nil {
 			return err
 		}
@@ -541,21 +536,10 @@ func (c *metricsV1Beta3RESTClient) GetJobExecutionDetails(ctx context.Context, r
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetJobExecutionDetails")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -647,21 +631,10 @@ func (c *metricsV1Beta3RESTClient) GetStageExecutionDetails(ctx context.Context,
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetStageExecutionDetails")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

@@ -721,9 +721,9 @@ func (t *Table) Create(ctx context.Context, tm *TableMetadata) (err error) {
 	req := t.c.bqs.Tables.Insert(t.ProjectID, t.DatasetID, table).Context(ctx)
 	setClientHeader(req.Header())
 	return runWithRetry(ctx, func() (err error) {
-		ctx = trace.StartSpan(ctx, "bigquery.tables.insert")
+		sCtx := trace.StartSpan(ctx, "bigquery.tables.insert")
 		_, err = req.Do()
-		trace.EndSpan(ctx, err)
+		trace.EndSpan(sCtx, err)
 		return err
 	})
 }
@@ -960,9 +960,9 @@ func (t *Table) Delete(ctx context.Context) (err error) {
 	setClientHeader(call.Header())
 
 	return runWithRetry(ctx, func() (err error) {
-		ctx = trace.StartSpan(ctx, "bigquery.tables.delete")
+		sCtx := trace.StartSpan(ctx, "bigquery.tables.delete")
 		err = call.Do()
-		trace.EndSpan(ctx, err)
+		trace.EndSpan(sCtx, err)
 		return err
 	})
 }
@@ -1026,9 +1026,9 @@ func (t *Table) Update(ctx context.Context, tm TableMetadataToUpdate, etag strin
 	}
 	var res *bq.Table
 	if err := runWithRetry(ctx, func() (err error) {
-		ctx = trace.StartSpan(ctx, "bigquery.tables.patch")
+		sCtx := trace.StartSpan(ctx, "bigquery.tables.patch")
 		res, err = tpc.call.Do()
-		trace.EndSpan(ctx, err)
+		trace.EndSpan(sCtx, err)
 		return err
 	}); err != nil {
 		return nil, err
