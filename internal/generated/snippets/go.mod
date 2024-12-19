@@ -152,6 +152,7 @@ require (
 	cloud.google.com/go/edgenetwork v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/identitytoolkit v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/managedkafka v0.0.0-00010101000000-000000000000
+	cloud.google.com/go/memorystore v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/migrationcenter v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/netapp v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/networkservices v0.0.0-00010101000000-000000000000
