@@ -1488,43 +1488,43 @@ func newTable(ctr *btapb.CreateTableRequest) *table {
 
 	// Hard code the partitions for testing purpose.
 	rowRanges := []*btpb.RowRange{
-		&btpb.RowRange{
+		{
 			StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("a")},
 			EndKey:   &btpb.RowRange_EndKeyClosed{EndKeyClosed: []byte("b")},
 		},
-		&btpb.RowRange{
+		{
 			StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("c")},
 			EndKey:   &btpb.RowRange_EndKeyClosed{EndKeyClosed: []byte("d")},
 		},
-		&btpb.RowRange{
+		{
 			StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("e")},
 			EndKey:   &btpb.RowRange_EndKeyClosed{EndKeyClosed: []byte("f")},
 		},
-		&btpb.RowRange{
+		{
 			StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("g")},
 			EndKey:   &btpb.RowRange_EndKeyClosed{EndKeyClosed: []byte("h")},
 		},
-		&btpb.RowRange{
+		{
 			StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("i")},
 			EndKey:   &btpb.RowRange_EndKeyClosed{EndKeyClosed: []byte("j")},
 		},
-		&btpb.RowRange{
+		{
 			StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("k")},
 			EndKey:   &btpb.RowRange_EndKeyClosed{EndKeyClosed: []byte("l")},
 		},
-		&btpb.RowRange{
+		{
 			StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("m")},
 			EndKey:   &btpb.RowRange_EndKeyClosed{EndKeyClosed: []byte("n")},
 		},
-		&btpb.RowRange{
+		{
 			StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("o")},
 			EndKey:   &btpb.RowRange_EndKeyClosed{EndKeyClosed: []byte("p")},
 		},
-		&btpb.RowRange{
+		{
 			StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("q")},
 			EndKey:   &btpb.RowRange_EndKeyClosed{EndKeyClosed: []byte("r")},
 		},
-		&btpb.RowRange{
+		{
 			StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("s")},
 			EndKey:   &btpb.RowRange_EndKeyClosed{EndKeyClosed: []byte("z")},
 		},
