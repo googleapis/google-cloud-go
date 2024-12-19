@@ -4400,6 +4400,10 @@ func createTableWithRetry(ctx context.Context, t *testing.T, adminClient *AdminC
 }
 
 func retry(t *testing.T, f func() error, onExists func() error) error {
+	if f == nil || onExists == nil {
+		return nil
+	}
+
 	// Error seen on last  attempt
 	var lastErr error
 
