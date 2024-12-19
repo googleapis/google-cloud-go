@@ -45,6 +45,7 @@ import (
 	"os"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -1096,6 +1097,9 @@ func (s *server) PingAndWarm(ctx context.Context, req *btpb.PingAndWarmRequest) 
 // fam should be a snapshot of the keys of tbl.families.
 // It assumes r.mu is locked.
 func applyMutations(tbl *table, r *row, muts []*btpb.Mutation, fs map[string]*columnFamily) error {
+	// Generate one server timestamp for all mutations in this sequence.
+	serverTime := newTimestamp()
+
 	if len(r.key) == 0 {
 		return status.Errorf(
 			codes.InvalidArgument,
@@ -1115,7 +1119,7 @@ func applyMutations(tbl *table, r *row, muts []*btpb.Mutation, fs map[string]*co
 			}
 			ts := set.TimestampMicros
 			if ts == -1 { // bigtable.ServerTime
-				ts = newTimestamp()
+				ts = serverTime
 			}
 			if !tbl.validTimestamp(ts) {
 				return fmt.Errorf("invalid timestamp %d", ts)
@@ -1243,6 +1247,28 @@ func applyMutations(tbl *table, r *row, muts []*btpb.Mutation, fs map[string]*co
 			delete(r.families, fampre)
 		}
 	}
+
+	if tbl.changeRetention != 0 {
+		mutsCopy := make([]*btpb.Mutation, len(muts))
+		for i := range muts {
+			m := proto.Clone(muts[i]).(*btpb.Mutation)
+			if sc := m.GetSetCell(); sc != nil {
+				if sc.TimestampMicros == -1 {
+					sc.TimestampMicros = serverTime
+				}
+			}
+			mutsCopy[i] = m
+		}
+		tbl.changeMu.Lock()
+		tbl.changes = append(tbl.changes, &changeStreamEntry{
+			rowKey: r.key,
+			commit: time.Unix(0, serverTime*1e3),
+			muts:   mutsCopy,
+		})
+		tbl.changeCond.Broadcast()
+		tbl.changeMu.Unlock()
+	}
+
 	return nil
 }
 
@@ -1418,6 +1444,132 @@ func (s *server) SampleRowKeys(req *btpb.SampleRowKeysRequest, stream btpb.Bigta
 	return err
 }
 
+func (s *server) GenerateInitialChangeStreamPartitions(req *btpb.GenerateInitialChangeStreamPartitionsRequest, srv btpb.Bigtable_GenerateInitialChangeStreamPartitionsServer) error {
+	return srv.Send(&btpb.GenerateInitialChangeStreamPartitionsResponse{
+		Partition: initialStreamPartition(),
+	})
+}
+
+// Always use a single stream partition that covers the entire keyspace.
+func initialStreamPartition() *btpb.StreamPartition {
+	return &btpb.StreamPartition{
+		RowRange: &btpb.RowRange{
+			StartKey: &btpb.RowRange_StartKeyClosed{},
+			EndKey:   &btpb.RowRange_EndKeyOpen{},
+		},
+	}
+}
+
+const continuationTokenPrefix = "changesIdx="
+
+func (s *server) ReadChangeStream(req *btpb.ReadChangeStreamRequest, srv btpb.Bigtable_ReadChangeStreamServer) error {
+	// TODO: send heartbeats
+	// TODO: honor retention period
+
+	s.mu.Lock()
+	tbl, ok := s.tables[req.TableName]
+	s.mu.Unlock()
+	if !ok {
+		return status.Errorf(codes.NotFound, "table %q not found", req.TableName)
+	}
+	if tbl.changeRetention == 0 {
+		return status.Errorf(codes.InvalidArgument, "table %q does not have change streams enabled", req.TableName)
+	}
+	if !proto.Equal(req.Partition, initialStreamPartition()) {
+		return status.Errorf(codes.InvalidArgument, "unexpected partition")
+	}
+
+	changesIdx := 0 // Index into tbl.changes.
+
+	switch st := req.StartFrom.(type) {
+	case *btpb.ReadChangeStreamRequest_StartTime:
+		// Advance changesIdx to the first entry in tbl.changes that is
+		// not before the requested start time.
+		start := st.StartTime.AsTime()
+		tbl.changeMu.Lock()
+		for changesIdx < len(tbl.changes) {
+			if !tbl.changes[changesIdx].commit.Before(start) {
+				break
+			}
+			changesIdx++
+		}
+		tbl.changeMu.Unlock()
+	case *btpb.ReadChangeStreamRequest_ContinuationTokens:
+		// Parse and validate the continuation token.
+		toks := st.ContinuationTokens.GetTokens()
+		if len(toks) != 1 {
+			return status.Errorf(codes.InvalidArgument, "expected exactly one continuation token, got %d", len(toks))
+		}
+		tok := toks[0]
+		if !proto.Equal(tok.Partition, initialStreamPartition()) {
+			return status.Errorf(codes.InvalidArgument, "continuation token has unexpected partition")
+		}
+		idxStr, ok := strings.CutPrefix(tok.Token, continuationTokenPrefix)
+		if !ok {
+			return status.Errorf(codes.InvalidArgument, "malformed continuation token")
+		}
+		idx, err := strconv.ParseInt(idxStr, 10, 64)
+		if err != nil {
+			return status.Errorf(codes.InvalidArgument, "malformed continuation token: %v", err)
+		}
+		changesIdx = int(idx)
+		tbl.changeMu.Lock()
+		n := len(tbl.changes)
+		tbl.changeMu.Unlock()
+		if 0 > changesIdx || changesIdx >= n {
+			return status.Errorf(codes.InvalidArgument, "malformed continuation token: out of range")
+		}
+	}
+
+	ctx := srv.Context()
+	// When the client goes away, broadcast on the condition
+	// to unblock the wait loop below.
+	go func() {
+		<-ctx.Done()
+		tbl.changeCond.Broadcast()
+	}()
+	for {
+		// Get, or wait for, the latest change to send to the caller.
+		tbl.changeMu.Lock()
+		for changesIdx >= len(tbl.changes) && ctx.Err() == nil {
+			tbl.changeCond.Wait()
+		}
+		if ctx.Err() != nil {
+			tbl.changeMu.Unlock()
+			return ctx.Err()
+		}
+		ch := tbl.changes[changesIdx]
+		tbl.changeMu.Unlock()
+		changesIdx++
+
+		if req.EndTime != nil && ch.commit.After(req.EndTime.AsTime()) {
+			// The stream has ended; send CloseStream.
+			return srv.Send(&btpb.ReadChangeStreamResponse{
+				StreamRecord: &btpb.ReadChangeStreamResponse_CloseStream_{
+					CloseStream: &btpb.ReadChangeStreamResponse_CloseStream{},
+				},
+			})
+		}
+
+		dc := &btpb.ReadChangeStreamResponse_DataChange{
+			Type:                  btpb.ReadChangeStreamResponse_DataChange_USER,
+			RowKey:                []byte(ch.rowKey),
+			CommitTimestamp:       timestamppb.New(ch.commit),
+			Done:                  true,
+			Token:                 fmt.Sprintf(continuationTokenPrefix+"%d", changesIdx),
+			EstimatedLowWatermark: timestamppb.New(ch.commit),
+		}
+		for _, m := range ch.muts {
+			dc.Chunks = append(dc.Chunks, &btpb.ReadChangeStreamResponse_MutationChunk{Mutation: m})
+		}
+		if err := srv.Send(&btpb.ReadChangeStreamResponse{
+			StreamRecord: &btpb.ReadChangeStreamResponse_DataChange_{DataChange: dc},
+		}); err != nil {
+			return err
+		}
+	}
+}
+
 // needGC is invoked whenever the server needs gcloop running.
 func (s *server) needGC() {
 	s.mu.Lock()
@@ -1462,6 +1614,17 @@ type table struct {
 	families    map[string]*columnFamily // keyed by plain family name
 	rows        *btree.BTree             // indexed by row key
 	isProtected bool                     // whether this table has deletion protection
+
+	changeRetention time.Duration // If non-zero, change streams are enabled.
+	changeMu        sync.Mutex    // Guards the fields below.
+	changeCond      *sync.Cond    // Signalled when changes is mutated.
+	changes         []*changeStreamEntry
+}
+
+type changeStreamEntry struct {
+	rowKey string
+	commit time.Time
+	muts   []*btpb.Mutation
 }
 
 const btreeDegree = 16
@@ -1475,12 +1638,17 @@ func newTable(ctr *btapb.CreateTableRequest) *table {
 			c++
 		}
 	}
-	return &table{
+	tbl := &table{
 		families:    fams,
 		counter:     c,
 		rows:        btree.New(btreeDegree),
 		isProtected: ctr.GetTable().GetDeletionProtection(),
 	}
+	if csc := ctr.GetTable().GetChangeStreamConfig(); csc != nil {
+		tbl.changeRetention = csc.RetentionPeriod.AsDuration()
+		tbl.changeCond = sync.NewCond(&tbl.changeMu)
+	}
+	return tbl
 }
 
 func (t *table) validTimestamp(ts int64) bool {

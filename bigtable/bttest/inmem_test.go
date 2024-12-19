@@ -42,6 +42,7 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/testing/protocmp"
 	"google.golang.org/protobuf/types/known/durationpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
@@ -2624,6 +2625,261 @@ func TestFilterRowCellsPerRowLimitFilterTruthiness(t *testing.T) {
 		}
 	}
 }
+
+func TestChangeStreams(t *testing.T) {
+	ctx := context.Background()
+	srv := &server{tables: make(map[string]*table)}
+
+	// Create a table with change streams enabled.
+	tblReq := &btapb.CreateTableRequest{
+		Parent:  "instance",
+		TableId: "table",
+		Table: &btapb.Table{
+			ColumnFamilies: map[string]*btapb.ColumnFamily{
+				"cf": {},
+			},
+			ChangeStreamConfig: &btapb.ChangeStreamConfig{
+				RetentionPeriod: durationpb.New(24 * time.Hour),
+			},
+		},
+	}
+	tbl, err := srv.CreateTable(ctx, tblReq)
+	if err != nil {
+		t.Fatalf("CreateTable: %v", err)
+	}
+
+	// Generate initial change stream partitions.
+	initReq := &btpb.GenerateInitialChangeStreamPartitionsRequest{
+		TableName: tbl.Name,
+	}
+	initResp := &fakeGenerateInitialChangeStreamPartitionsServer{}
+	if err := srv.GenerateInitialChangeStreamPartitions(initReq, initResp); err != nil {
+		t.Fatalf("GenerateInitialChangeStreamPartitions: %v", err)
+	}
+	if got := len(initResp.responses); got != 1 {
+		t.Fatalf("GenerateInitialChangeStreamPartitions: got %d responses, want 1", got)
+	}
+	initPart := initResp.responses[0].Partition
+
+	write := func(row, value string) {
+		t.Helper()
+		req := &btpb.MutateRowRequest{
+			TableName: tbl.Name,
+			RowKey:    []byte(row),
+			Mutations: []*btpb.Mutation{{
+				Mutation: &btpb.Mutation_SetCell_{SetCell: &btpb.Mutation_SetCell{
+					FamilyName:      "cf",
+					ColumnQualifier: []byte("cq"),
+					TimestampMicros: -1,
+					Value:           []byte(value),
+				}},
+			}},
+		}
+		if _, err := srv.MutateRow(ctx, req); err != nil {
+			t.Fatalf("Writing row %q: %v", row, err)
+		}
+		// Make sure that all mutations have a unique commit time.
+		time.Sleep(1 * time.Millisecond)
+	}
+
+	// Add some data, start a reader with no StartFrom, and verify that it
+	// sees all those reads.
+	write("a", "1")
+	write("b", "2")
+	r1 := readChangeStream(t, srv, &btpb.ReadChangeStreamRequest{
+		TableName: tbl.Name,
+		Partition: initPart,
+	})
+	r1.want("a", "1")
+	r1.want("b", "2")
+
+	// Note the start time and continuation token for readers that are
+	// started below.
+	startTime := r1.lastCommit.Add(1 * time.Microsecond)
+	token := r1.lastToken
+
+	// Write some more data, verify the reader sees it.
+	write("a", "3")
+	write("b", "4")
+	r1.want("a", "3")
+	r1.want("b", "4")
+
+	// Start two readers, one using the start time and another using the
+	// continuation token, and check that they see the new writes.
+	r2 := readChangeStream(t, srv, &btpb.ReadChangeStreamRequest{
+		TableName: tbl.Name,
+		Partition: initPart,
+		StartFrom: &btpb.ReadChangeStreamRequest_StartTime{
+			StartTime: timestamppb.New(startTime),
+		},
+	})
+	r3 := readChangeStream(t, srv, &btpb.ReadChangeStreamRequest{
+		TableName: tbl.Name,
+		Partition: initPart,
+		StartFrom: &btpb.ReadChangeStreamRequest_ContinuationTokens{
+			ContinuationTokens: &btpb.StreamContinuationTokens{
+				Tokens: []*btpb.StreamContinuationToken{{
+					Partition: initPart,
+					Token:     token,
+				}},
+			},
+		},
+	})
+	r2.want("a", "3")
+	r3.want("a", "3")
+	r2.want("b", "4")
+	r3.want("b", "4")
+
+	// Write another row and make sure all readers see it.
+	write("c", "5")
+	r3.want("c", "5")
+	r2.want("c", "5")
+	r1.want("c", "5")
+
+	// Stop all readers, making sure they exit cleanly.
+	r1.stop()
+	r2.stop()
+	r3.stop()
+
+	// Start another reader with a start and end time and expect it to close
+	// after sending the specified records.
+	r4 := readChangeStream(t, srv, &btpb.ReadChangeStreamRequest{
+		TableName: tbl.Name,
+		Partition: initPart,
+		StartFrom: &btpb.ReadChangeStreamRequest_StartTime{
+			StartTime: timestamppb.New(startTime),
+		},
+		// Stop just before the last mutation.
+		EndTime: timestamppb.New(r1.lastCommit.Add(-1 * time.Microsecond)),
+	})
+	r4.want("a", "3")
+	r4.want("b", "4")
+	r4.wantClose()
+}
+
+type fakeGenerateInitialChangeStreamPartitionsServer struct {
+	grpc.ServerStream
+	responses []*btpb.GenerateInitialChangeStreamPartitionsResponse
+}
+
+func (s *fakeGenerateInitialChangeStreamPartitionsServer) Send(resp *btpb.GenerateInitialChangeStreamPartitionsResponse) error {
+	s.responses = append(s.responses, resp)
+	return nil
+}
+
+func readChangeStream(t *testing.T, srv btpb.BigtableServer, req *btpb.ReadChangeStreamRequest) *changeStreamReader {
+	var (
+		ctx, cancel = context.WithCancel(context.Background())
+		responses   = make(chan *btpb.ReadChangeStreamResponse)
+		errc        = make(chan error, 1)
+	)
+	go func() {
+		defer cancel()
+		errc <- srv.ReadChangeStream(req, fakeReadChangeStreamServer{ctx: ctx, responses: responses})
+	}()
+	return &changeStreamReader{
+		t:         t,
+		ctx:       ctx,
+		cancel:    cancel,
+		responses: responses,
+		errc:      errc,
+	}
+}
+
+type changeStreamReader struct {
+	t         *testing.T
+	ctx       context.Context
+	cancel    context.CancelFunc
+	responses <-chan *btpb.ReadChangeStreamResponse
+	errc      <-chan error
+
+	lastCommit time.Time
+	lastToken  string
+}
+
+func (r *changeStreamReader) want(row, value string) {
+	r.t.Helper()
+	select {
+	case got := <-r.responses:
+		dc := got.GetDataChange()
+		if dc == nil {
+			r.cancel()
+			r.t.Fatalf("unexpected ReadChangeStreamResponse: %+v", got)
+		}
+		r.lastCommit = dc.CommitTimestamp.AsTime()
+		r.lastToken = dc.Token
+		if got := string(dc.RowKey); got != row {
+			r.cancel()
+			r.t.Fatalf("got change for row %q, want %q", got, row)
+		}
+		if got := len(dc.Chunks); got != 1 {
+			r.cancel()
+			r.t.Fatalf("got %d chunks, want 1", got)
+		}
+		m := dc.Chunks[0].GetMutation()
+		sc := m.GetSetCell()
+		if sc == nil {
+			r.cancel()
+			r.t.Fatalf("unexpected Mutation: %+v", m)
+		}
+		if got := string(sc.Value); got != value {
+			r.cancel()
+			r.t.Fatalf("got value %q for row %q, want %q", got, row, value)
+		}
+	case err := <-r.errc:
+		if err != nil {
+			r.cancel()
+			r.t.Fatalf("ReadChangeStream: %v", err)
+		} else {
+			r.cancel()
+			r.t.Fatalf("ReadChangeStream returned while waiting for response")
+		}
+	}
+}
+
+func (r *changeStreamReader) wantClose() {
+	r.t.Helper()
+	select {
+	case got := <-r.responses:
+		cs := got.GetCloseStream()
+		if cs == nil {
+			r.cancel()
+			r.t.Fatalf("unexpected ReadChangeStreamResponse: %+v", got)
+		}
+	case err := <-r.errc:
+		if err != nil {
+			r.cancel()
+			r.t.Fatalf("ReadChangeStream: %v", err)
+		} else {
+			r.cancel()
+			r.t.Fatalf("ReadChangeStream returned while waiting for response")
+		}
+	}
+}
+
+func (r *changeStreamReader) stop() {
+	r.cancel()
+	if err := <-r.errc; err != r.ctx.Err() {
+		r.t.Helper()
+		r.t.Fatalf("unexpected error from ReadChangeStream: %v", err)
+	}
+}
+
+type fakeReadChangeStreamServer struct {
+	grpc.ServerStream
+
+	ctx       context.Context
+	responses chan<- *btpb.ReadChangeStreamResponse
+}
+
+func (s fakeReadChangeStreamServer) Context() context.Context { return s.ctx }
+
+func (s fakeReadChangeStreamServer) Send(resp *btpb.ReadChangeStreamResponse) error {
+	select {
+	case <-s.ctx.Done():
+		return s.ctx.Err()
+	case s.responses <- resp:
+		return nil
 
 func TestAuthorizedViewApis(t *testing.T) {
 	s := &server{
