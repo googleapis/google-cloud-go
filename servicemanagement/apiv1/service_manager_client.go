@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	servicemanagementpb "cloud.google.com/go/servicemanagement/apiv1/servicemanagementpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -471,6 +470,8 @@ type serviceManagerGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewServiceManagerClient creates a new service manager client based on gRPC.
@@ -498,6 +499,7 @@ func NewServiceManagerClient(ctx context.Context, opts ...option.ClientOption) (
 		connPool:             connPool,
 		serviceManagerClient: servicemanagementpb.NewServiceManagerClient(connPool),
 		CallOptions:          &client.CallOptions,
+		logger:               internaloption.GetLogger(opts),
 		operationsClient:     longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:      iampb.NewIAMPolicyClient(connPool),
 	}
@@ -562,6 +564,8 @@ type serviceManagerRESTClient struct {
 
 	// Points back to the CallOptions field of the containing ServiceManagerClient
 	CallOptions **ServiceManagerCallOptions
+
+	logger *slog.Logger
 }
 
 // NewServiceManagerRESTClient creates a new service manager rest client.
@@ -580,6 +584,7 @@ func NewServiceManagerRESTClient(ctx context.Context, opts ...option.ClientOptio
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -650,7 +655,7 @@ func (c *serviceManagerGRPCClient) ListServices(ctx context.Context, req *servic
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.serviceManagerClient.ListServices(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.serviceManagerClient.ListServices, req, settings.GRPC, c.logger, "ListServices")
 			return err
 		}, opts...)
 		if err != nil {
@@ -685,7 +690,7 @@ func (c *serviceManagerGRPCClient) GetService(ctx context.Context, req *servicem
 	var resp *servicemanagementpb.ManagedService
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.serviceManagerClient.GetService(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.serviceManagerClient.GetService, req, settings.GRPC, c.logger, "GetService")
 		return err
 	}, opts...)
 	if err != nil {
@@ -700,7 +705,7 @@ func (c *serviceManagerGRPCClient) CreateService(ctx context.Context, req *servi
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.serviceManagerClient.CreateService(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.serviceManagerClient.CreateService, req, settings.GRPC, c.logger, "CreateService")
 		return err
 	}, opts...)
 	if err != nil {
@@ -720,7 +725,7 @@ func (c *serviceManagerGRPCClient) DeleteService(ctx context.Context, req *servi
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.serviceManagerClient.DeleteService(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.serviceManagerClient.DeleteService, req, settings.GRPC, c.logger, "DeleteService")
 		return err
 	}, opts...)
 	if err != nil {
@@ -740,7 +745,7 @@ func (c *serviceManagerGRPCClient) UndeleteService(ctx context.Context, req *ser
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.serviceManagerClient.UndeleteService(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.serviceManagerClient.UndeleteService, req, settings.GRPC, c.logger, "UndeleteService")
 		return err
 	}, opts...)
 	if err != nil {
@@ -771,7 +776,7 @@ func (c *serviceManagerGRPCClient) ListServiceConfigs(ctx context.Context, req *
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.serviceManagerClient.ListServiceConfigs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.serviceManagerClient.ListServiceConfigs, req, settings.GRPC, c.logger, "ListServiceConfigs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -806,7 +811,7 @@ func (c *serviceManagerGRPCClient) GetServiceConfig(ctx context.Context, req *se
 	var resp *serviceconfigpb.Service
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.serviceManagerClient.GetServiceConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.serviceManagerClient.GetServiceConfig, req, settings.GRPC, c.logger, "GetServiceConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -824,7 +829,7 @@ func (c *serviceManagerGRPCClient) CreateServiceConfig(ctx context.Context, req 
 	var resp *serviceconfigpb.Service
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.serviceManagerClient.CreateServiceConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.serviceManagerClient.CreateServiceConfig, req, settings.GRPC, c.logger, "CreateServiceConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -842,7 +847,7 @@ func (c *serviceManagerGRPCClient) SubmitConfigSource(ctx context.Context, req *
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.serviceManagerClient.SubmitConfigSource(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.serviceManagerClient.SubmitConfigSource, req, settings.GRPC, c.logger, "SubmitConfigSource")
 		return err
 	}, opts...)
 	if err != nil {
@@ -873,7 +878,7 @@ func (c *serviceManagerGRPCClient) ListServiceRollouts(ctx context.Context, req 
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.serviceManagerClient.ListServiceRollouts(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.serviceManagerClient.ListServiceRollouts, req, settings.GRPC, c.logger, "ListServiceRollouts")
 			return err
 		}, opts...)
 		if err != nil {
@@ -908,7 +913,7 @@ func (c *serviceManagerGRPCClient) GetServiceRollout(ctx context.Context, req *s
 	var resp *servicemanagementpb.Rollout
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.serviceManagerClient.GetServiceRollout(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.serviceManagerClient.GetServiceRollout, req, settings.GRPC, c.logger, "GetServiceRollout")
 		return err
 	}, opts...)
 	if err != nil {
@@ -926,7 +931,7 @@ func (c *serviceManagerGRPCClient) CreateServiceRollout(ctx context.Context, req
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.serviceManagerClient.CreateServiceRollout(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.serviceManagerClient.CreateServiceRollout, req, settings.GRPC, c.logger, "CreateServiceRollout")
 		return err
 	}, opts...)
 	if err != nil {
@@ -943,7 +948,7 @@ func (c *serviceManagerGRPCClient) GenerateConfigReport(ctx context.Context, req
 	var resp *servicemanagementpb.GenerateConfigReportResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.serviceManagerClient.GenerateConfigReport(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.serviceManagerClient.GenerateConfigReport, req, settings.GRPC, c.logger, "GenerateConfigReport")
 		return err
 	}, opts...)
 	if err != nil {
@@ -961,7 +966,7 @@ func (c *serviceManagerGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -979,7 +984,7 @@ func (c *serviceManagerGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -997,7 +1002,7 @@ func (c *serviceManagerGRPCClient) TestIamPermissions(ctx context.Context, req *
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1023,7 +1028,7 @@ func (c *serviceManagerGRPCClient) ListOperations(ctx context.Context, req *long
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1104,21 +1109,10 @@ func (c *serviceManagerRESTClient) ListServices(ctx context.Context, req *servic
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListServices")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1182,17 +1176,7 @@ func (c *serviceManagerRESTClient) GetService(ctx context.Context, req *servicem
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetService")
 		if err != nil {
 			return err
 		}
@@ -1255,21 +1239,10 @@ func (c *serviceManagerRESTClient) CreateService(ctx context.Context, req *servi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateService")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1326,21 +1299,10 @@ func (c *serviceManagerRESTClient) DeleteService(ctx context.Context, req *servi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteService")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1395,21 +1357,10 @@ func (c *serviceManagerRESTClient) UndeleteService(ctx context.Context, req *ser
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "UndeleteService")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1473,21 +1424,10 @@ func (c *serviceManagerRESTClient) ListServiceConfigs(ctx context.Context, req *
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListServiceConfigs")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1553,17 +1493,7 @@ func (c *serviceManagerRESTClient) GetServiceConfig(ctx context.Context, req *se
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetServiceConfig")
 		if err != nil {
 			return err
 		}
@@ -1627,17 +1557,7 @@ func (c *serviceManagerRESTClient) CreateServiceConfig(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateServiceConfig")
 		if err != nil {
 			return err
 		}
@@ -1705,21 +1625,10 @@ func (c *serviceManagerRESTClient) SubmitConfigSource(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SubmitConfigSource")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1784,21 +1693,10 @@ func (c *serviceManagerRESTClient) ListServiceRollouts(ctx context.Context, req 
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListServiceRollouts")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1862,17 +1760,7 @@ func (c *serviceManagerRESTClient) GetServiceRollout(ctx context.Context, req *s
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetServiceRollout")
 		if err != nil {
 			return err
 		}
@@ -1941,21 +1829,10 @@ func (c *serviceManagerRESTClient) CreateServiceRollout(ctx context.Context, req
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateServiceRollout")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2019,17 +1896,7 @@ func (c *serviceManagerRESTClient) GenerateConfigReport(ctx context.Context, req
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GenerateConfigReport")
 		if err != nil {
 			return err
 		}
@@ -2086,17 +1953,7 @@ func (c *serviceManagerRESTClient) GetIamPolicy(ctx context.Context, req *iampb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -2156,17 +2013,7 @@ func (c *serviceManagerRESTClient) SetIamPolicy(ctx context.Context, req *iampb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -2228,17 +2075,7 @@ func (c *serviceManagerRESTClient) TestIamPermissions(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
 		if err != nil {
 			return err
 		}
@@ -2306,21 +2143,10 @@ func (c *serviceManagerRESTClient) ListOperations(ctx context.Context, req *long
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

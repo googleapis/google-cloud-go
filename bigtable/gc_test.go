@@ -19,7 +19,7 @@ import (
 	"testing"
 	"time"
 
-	bttdpb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
+	bttdpb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
 )
 
 func TestGcRuleToString(t *testing.T) {

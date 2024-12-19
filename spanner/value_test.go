@@ -18,7 +18,9 @@ package spanner
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"math"
 	"math/big"
@@ -211,7 +213,7 @@ func (c *customArray) DecodeSpanner(val interface{}) error {
 	}
 	asSlice := listVal.AsSlice()
 	if len(asSlice) != 4 {
-		return fmt.Errorf("failed to decode customArray: expected array of length 4")
+		return errors.New("failed to decode customArray: expected array of length 4")
 	}
 	for i, vI := range asSlice {
 		vStr, ok := vI.(string)
@@ -563,6 +565,9 @@ func TestEncodeValue(t *testing.T) {
 		{[]*pb.Genre{nil, (*pb.Genre)(nil)}, listProto(nullProto(), nullProto()), listType(tProtoEnum), "Array of Proto Enum with nil values"},
 		{[]*pb.SingerInfo{singer1ProtoMsg, singer2ProtoMsg, nil, (*pb.SingerInfo)(nil)}, listProto(protoMessageProto(singer1ProtoMsg), protoMessageProto(singer2ProtoMsg), nullProto(), nullProto()), listType(tProtoMessage), "Array of Proto Message with non-nil and nil values"},
 		{[]*pb.Genre{&singer1ProtoEnum, &singer2ProtoEnum, nil, (*pb.Genre)(nil)}, listProto(protoEnumProto(singer1ProtoEnum), protoEnumProto(singer2ProtoEnum), nullProto(), nullProto()), listType(tProtoEnum), "Array of Proto Enum with non-nil and nil values"},
+		// PROTO MESSAGE AND ENUM WITH CUSTOM ENCODER
+		{&pb.CustomSingerInfo{SingerName: &sValue}, stringProto("abc"), tString, "Proto message with encoder interface to string"},
+		{pb.CustomGenre_CUSTOM_ROCK, stringProto("CUSTOM_ROCK"), tString, "Proto Enum with encoder interface to string"},
 	} {
 		got, gotType, err := encodeValue(test.in)
 		if err != nil {
@@ -1978,6 +1983,14 @@ func TestDecodeValue(t *testing.T) {
 		},
 		{desc: "decode ENUM to protoreflect.Enum", proto: protoEnumProto(pb.Genre_ROCK), protoType: protoEnumType(protoEnumfqn), want: singerEnumValue},
 		{desc: "decode PROTO to NullProto", proto: protoMessageProto(&singerProtoMsg), protoType: protoMessageType(protoMessagefqn), want: NullProtoMessage{&singerProtoMsg, true}},
+		{desc: "decode PROTO to *pb.SingerInfo", proto: protoMessageProto(&singerProtoMsg), protoType: protoMessageType(protoMessagefqn),
+			want: &pb.SingerInfo{
+				SingerId:    proto.Int64(1),
+				BirthDate:   proto.String("January"),
+				Nationality: proto.String("Country1"),
+				Genre:       &singerEnumValue,
+			},
+		},
 		{desc: "decode NULL to NullProto", proto: nullProto(), protoType: protoMessageType(protoMessagefqn), want: NullProtoMessage{}},
 		{desc: "decode ENUM to NullEnum", proto: protoEnumProto(pb.Genre_ROCK), protoType: protoEnumType(protoEnumfqn), want: NullProtoEnum{&singerEnumValue, true}},
 		{desc: "decode NULL to NullEnum", proto: nullProto(), protoType: protoEnumType(protoEnumfqn), want: NullProtoEnum{}},
@@ -1996,6 +2009,8 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode all NULL elements in ARRAY<PROTO<>> to []*pb.SingerInfo", proto: listProto(nullProto(), nullProto()), protoType: listType(protoMessageType(protoMessagefqn)), want: []*pb.SingerInfo{nil, nil}},
 		{desc: "decode ARRAY<ENUM<>> to []*pb.Genre", proto: listProto(nullProto(), protoEnumProto(pb.Genre_ROCK), protoEnumProto(pb.Genre_FOLK)), protoType: listType(protoEnumType(protoEnumfqn)), want: []*pb.Genre{nil, &singerEnumValue, &singer2ProtoEnum}},
 		{desc: "decode all NULL elements in ARRAY<ENUM<>> to []*pb.Genre", proto: listProto(nullProto(), nullProto()), protoType: listType(protoEnumType(protoEnumfqn)), want: []*pb.Genre{nil, nil}},
+		// PROTO MESSAGE WITH CUSTOM DECODER
+		{desc: "decode STRING to Proto message", proto: stringProto("abc"), protoType: stringType(), want: pb.CustomSingerInfo{SingerName: proto.String("abc")}},
 	} {
 		gotp := reflect.New(reflect.TypeOf(test.want))
 		v := gotp.Interface()
@@ -3264,5 +3279,85 @@ func expectUnmarshalNullableTypes(t *testing.T, err error, v interface{}, isNull
 	}
 	if s, ok := v.(fmt.Stringer); !ok || s.String() != expect {
 		t.Fatalf("Incorrect unmarshalling a json string to nullable types: got %q, want %q", v, expect)
+	}
+}
+
+func TestNullJson(t *testing.T) {
+	v, _ := nulljson(false, nil)
+	v[0] = 'X'
+	v, _ = nulljson(false, nil)
+	if string(v) != "null" {
+		t.Fatalf("expected null, got %s", v)
+	}
+}
+
+// Test decode for PROTO type when custom type is a variant of a base type
+func TestDecodeProtoUsingBaseVariant(t *testing.T) {
+	// nullBytes is custom type from []byte base type.
+	type nullBytes []byte
+
+	var b []byte
+	var nb nullBytes
+
+	gcv := &GenericColumnValue{
+		Type: &sppb.Type{
+			Code:         sppb.TypeCode_PROTO,
+			ProtoTypeFqn: "examples.ProtoType",
+		},
+		Value: structpb.NewStringValue("Zm9vCg=="),
+	}
+	if err := gcv.Decode(&nb); err != nil {
+		t.Error(err)
+	}
+	if err := gcv.Decode(&b); err != nil {
+		t.Error(err)
+	}
+
+	// Convert []byte and nullBytes to base64 encoding and then compare the contents.
+	if !testutil.Equal(base64.StdEncoding.EncodeToString(b), base64.StdEncoding.EncodeToString(nb)) {
+		t.Errorf("%s: got %+v, want %+v", "Test PROTO decode to []byte custom type", nb, b)
+	}
+}
+
+// Test decode for PROTO type when custom type is a variant of a base type
+func TestDecodeProtoArrayUsingBaseVariant(t *testing.T) {
+	// nullBytes is custom type from []byte base type.
+	type nullBytes [][]byte
+
+	var b [][]byte
+	var nb nullBytes
+
+	gcv := &GenericColumnValue{
+		Type: &sppb.Type{
+			Code: sppb.TypeCode_ARRAY,
+			ArrayElementType: &sppb.Type{
+				Code:         sppb.TypeCode_PROTO,
+				ProtoTypeFqn: "examples.ProtoType",
+			},
+		},
+		Value: structpb.NewListValue(
+			&structpb.ListValue{
+				Values: []*structpb.Value{
+					structpb.NewStringValue("Zm9vCg=="),
+				},
+			}),
+	}
+	if err := gcv.Decode(&nb); err != nil {
+		t.Error(err)
+	}
+	if err := gcv.Decode(&b); err != nil {
+		t.Error(err)
+	}
+
+	if len(b) != 1 {
+		t.Errorf("Expected length to be 1")
+	}
+
+	if len(nb) != 1 {
+		t.Errorf("Expected length to be 1")
+	}
+	// Convert to base64 encoding and then compare the contents.
+	if !testutil.Equal(base64.StdEncoding.EncodeToString(b[0]), base64.StdEncoding.EncodeToString(nb[0])) {
+		t.Errorf("%s: got %+v, want %+v", "Test PROTO decode to [][]byte custom type", nb, b)
 	}
 }

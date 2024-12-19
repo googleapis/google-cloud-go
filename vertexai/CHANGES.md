@@ -1,5 +1,36 @@
 # Changelog
 
+## [0.13.2](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.13.1...vertexai/v0.13.2) (2024-11-04)
+
+
+### Bug Fixes
+
+* **vertexai:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **vertexai:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([2b8ca4b](https://github.com/googleapis/google-cloud-go/commit/2b8ca4b4127ce3025c7a21cc7247510e07cc5625))
+
+## [0.13.1](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.13.0...vertexai/v0.13.1) (2024-09-05)
+
+
+### Bug Fixes
+
+* **vertexai:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+## [0.13.0](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.12.0...vertexai/v0.13.0) (2024-08-22)
+
+
+### Features
+
+* **vertexai/genai:** Add WithClientInfo option ([#10535](https://github.com/googleapis/google-cloud-go/issues/10535)) ([265963b](https://github.com/googleapis/google-cloud-go/commit/265963bd5b91c257b3c3d3c1f52cdf2b5f4c9d1a))
+* **vertexai:** Update tokenizer documentation and pull new code ([#10718](https://github.com/googleapis/google-cloud-go/issues/10718)) ([0ee1430](https://github.com/googleapis/google-cloud-go/commit/0ee1430154f4d51d84b5d5927b1b477f6beb0fc1))
+
+
+### Bug Fixes
+
+* **vertexai:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+* **vertexai:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+* **vertexai:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+* **vertexai:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [0.12.0](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.11.0...vertexai/v0.12.0) (2024-06-12)
 
 

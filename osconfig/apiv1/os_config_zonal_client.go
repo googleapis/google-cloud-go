@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	osconfigpb "cloud.google.com/go/osconfig/apiv1/osconfigpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -562,6 +561,8 @@ type osConfigZonalGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewOsConfigZonalClient creates a new os config zonal service client based on gRPC.
@@ -591,6 +592,7 @@ func NewOsConfigZonalClient(ctx context.Context, opts ...option.ClientOption) (*
 		connPool:            connPool,
 		osConfigZonalClient: osconfigpb.NewOsConfigZonalServiceClient(connPool),
 		CallOptions:         &client.CallOptions,
+		logger:              internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -653,6 +655,8 @@ type osConfigZonalRESTClient struct {
 
 	// Points back to the CallOptions field of the containing OsConfigZonalClient
 	CallOptions **OsConfigZonalCallOptions
+
+	logger *slog.Logger
 }
 
 // NewOsConfigZonalRESTClient creates a new os config zonal service rest client.
@@ -673,6 +677,7 @@ func NewOsConfigZonalRESTClient(ctx context.Context, opts ...option.ClientOption
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -735,7 +740,7 @@ func (c *osConfigZonalGRPCClient) CreateOSPolicyAssignment(ctx context.Context, 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.osConfigZonalClient.CreateOSPolicyAssignment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.osConfigZonalClient.CreateOSPolicyAssignment, req, settings.GRPC, c.logger, "CreateOSPolicyAssignment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -755,7 +760,7 @@ func (c *osConfigZonalGRPCClient) UpdateOSPolicyAssignment(ctx context.Context, 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.osConfigZonalClient.UpdateOSPolicyAssignment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.osConfigZonalClient.UpdateOSPolicyAssignment, req, settings.GRPC, c.logger, "UpdateOSPolicyAssignment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -775,7 +780,7 @@ func (c *osConfigZonalGRPCClient) GetOSPolicyAssignment(ctx context.Context, req
 	var resp *osconfigpb.OSPolicyAssignment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.osConfigZonalClient.GetOSPolicyAssignment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.osConfigZonalClient.GetOSPolicyAssignment, req, settings.GRPC, c.logger, "GetOSPolicyAssignment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -804,7 +809,7 @@ func (c *osConfigZonalGRPCClient) ListOSPolicyAssignments(ctx context.Context, r
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.osConfigZonalClient.ListOSPolicyAssignments(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.osConfigZonalClient.ListOSPolicyAssignments, req, settings.GRPC, c.logger, "ListOSPolicyAssignments")
 			return err
 		}, opts...)
 		if err != nil {
@@ -850,7 +855,7 @@ func (c *osConfigZonalGRPCClient) ListOSPolicyAssignmentRevisions(ctx context.Co
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.osConfigZonalClient.ListOSPolicyAssignmentRevisions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.osConfigZonalClient.ListOSPolicyAssignmentRevisions, req, settings.GRPC, c.logger, "ListOSPolicyAssignmentRevisions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -885,7 +890,7 @@ func (c *osConfigZonalGRPCClient) DeleteOSPolicyAssignment(ctx context.Context, 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.osConfigZonalClient.DeleteOSPolicyAssignment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.osConfigZonalClient.DeleteOSPolicyAssignment, req, settings.GRPC, c.logger, "DeleteOSPolicyAssignment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -905,7 +910,7 @@ func (c *osConfigZonalGRPCClient) GetOSPolicyAssignmentReport(ctx context.Contex
 	var resp *osconfigpb.OSPolicyAssignmentReport
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.osConfigZonalClient.GetOSPolicyAssignmentReport(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.osConfigZonalClient.GetOSPolicyAssignmentReport, req, settings.GRPC, c.logger, "GetOSPolicyAssignmentReport")
 		return err
 	}, opts...)
 	if err != nil {
@@ -934,7 +939,7 @@ func (c *osConfigZonalGRPCClient) ListOSPolicyAssignmentReports(ctx context.Cont
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.osConfigZonalClient.ListOSPolicyAssignmentReports(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.osConfigZonalClient.ListOSPolicyAssignmentReports, req, settings.GRPC, c.logger, "ListOSPolicyAssignmentReports")
 			return err
 		}, opts...)
 		if err != nil {
@@ -969,7 +974,7 @@ func (c *osConfigZonalGRPCClient) GetInventory(ctx context.Context, req *osconfi
 	var resp *osconfigpb.Inventory
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.osConfigZonalClient.GetInventory(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.osConfigZonalClient.GetInventory, req, settings.GRPC, c.logger, "GetInventory")
 		return err
 	}, opts...)
 	if err != nil {
@@ -998,7 +1003,7 @@ func (c *osConfigZonalGRPCClient) ListInventories(ctx context.Context, req *osco
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.osConfigZonalClient.ListInventories(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.osConfigZonalClient.ListInventories, req, settings.GRPC, c.logger, "ListInventories")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1033,7 +1038,7 @@ func (c *osConfigZonalGRPCClient) GetVulnerabilityReport(ctx context.Context, re
 	var resp *osconfigpb.VulnerabilityReport
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.osConfigZonalClient.GetVulnerabilityReport(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.osConfigZonalClient.GetVulnerabilityReport, req, settings.GRPC, c.logger, "GetVulnerabilityReport")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1062,7 +1067,7 @@ func (c *osConfigZonalGRPCClient) ListVulnerabilityReports(ctx context.Context, 
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.osConfigZonalClient.ListVulnerabilityReports(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.osConfigZonalClient.ListVulnerabilityReports, req, settings.GRPC, c.logger, "ListVulnerabilityReports")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1136,21 +1141,10 @@ func (c *osConfigZonalRESTClient) CreateOSPolicyAssignment(ctx context.Context, 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateOSPolicyAssignment")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1194,11 +1188,11 @@ func (c *osConfigZonalRESTClient) UpdateOSPolicyAssignment(ctx context.Context, 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1222,21 +1216,10 @@ func (c *osConfigZonalRESTClient) UpdateOSPolicyAssignment(ctx context.Context, 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateOSPolicyAssignment")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1291,17 +1274,7 @@ func (c *osConfigZonalRESTClient) GetOSPolicyAssignment(ctx context.Context, req
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOSPolicyAssignment")
 		if err != nil {
 			return err
 		}
@@ -1365,21 +1338,10 @@ func (c *osConfigZonalRESTClient) ListOSPolicyAssignments(ctx context.Context, r
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOSPolicyAssignments")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1454,21 +1416,10 @@ func (c *osConfigZonalRESTClient) ListOSPolicyAssignmentRevisions(ctx context.Co
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOSPolicyAssignmentRevisions")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1541,21 +1492,10 @@ func (c *osConfigZonalRESTClient) DeleteOSPolicyAssignment(ctx context.Context, 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOSPolicyAssignment")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1607,17 +1547,7 @@ func (c *osConfigZonalRESTClient) GetOSPolicyAssignmentReport(ctx context.Contex
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOSPolicyAssignmentReport")
 		if err != nil {
 			return err
 		}
@@ -1683,21 +1613,10 @@ func (c *osConfigZonalRESTClient) ListOSPolicyAssignmentReports(ctx context.Cont
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOSPolicyAssignmentReports")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1764,17 +1683,7 @@ func (c *osConfigZonalRESTClient) GetInventory(ctx context.Context, req *osconfi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetInventory")
 		if err != nil {
 			return err
 		}
@@ -1842,21 +1751,10 @@ func (c *osConfigZonalRESTClient) ListInventories(ctx context.Context, req *osco
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListInventories")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1920,17 +1818,7 @@ func (c *osConfigZonalRESTClient) GetVulnerabilityReport(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetVulnerabilityReport")
 		if err != nil {
 			return err
 		}
@@ -1995,21 +1883,10 @@ func (c *osConfigZonalRESTClient) ListVulnerabilityReports(ctx context.Context, 
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListVulnerabilityReports")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

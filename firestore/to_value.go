@@ -34,6 +34,8 @@ var (
 	typeOfLatLng         = reflect.TypeOf((*latlng.LatLng)(nil))
 	typeOfDocumentRef    = reflect.TypeOf((*DocumentRef)(nil))
 	typeOfProtoTimestamp = reflect.TypeOf((*ts.Timestamp)(nil))
+	typeOfVector64       = reflect.TypeOf(Vector64{})
+	typeOfVector32       = reflect.TypeOf(Vector32{})
 )
 
 // toProtoValue converts a Go value to a Firestore Value protobuf.
@@ -69,6 +71,10 @@ func toProtoValue(v reflect.Value) (pbv *pb.Value, sawTransform bool, err error)
 			return nullValue, false, nil
 		}
 		return &pb.Value{ValueType: &pb.Value_TimestampValue{TimestampValue: x}}, false, nil
+	case Vector32:
+		return vectorToProtoValue(x), false, nil
+	case Vector64:
+		return vectorToProtoValue(x), false, nil
 	case *latlng.LatLng:
 		if x == nil {
 			// gRPC doesn't like nil oneofs. Use NullValue.
@@ -95,9 +101,9 @@ func toProtoValue(v reflect.Value) (pbv *pb.Value, sawTransform bool, err error)
 	case reflect.Uint8, reflect.Uint16, reflect.Uint32:
 		return &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(v.Uint())}}, false, nil
 	case reflect.Float32, reflect.Float64:
-		return &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: v.Float()}}, false, nil
+		return floatToProtoValue(v.Float()), false, nil
 	case reflect.String:
-		return &pb.Value{ValueType: &pb.Value_StringValue{StringValue: v.String()}}, false, nil
+		return stringToProtoValue(v.String()), false, nil
 	case reflect.Array:
 		return arrayToProtoValue(v)
 	case reflect.Slice:
@@ -120,6 +126,14 @@ func toProtoValue(v reflect.Value) (pbv *pb.Value, sawTransform bool, err error)
 	default:
 		return nil, false, fmt.Errorf("firestore: cannot convert type %s to value", v.Type())
 	}
+}
+
+func stringToProtoValue(s string) *pb.Value {
+	return &pb.Value{ValueType: &pb.Value_StringValue{StringValue: s}}
+}
+
+func floatToProtoValue(f float64) *pb.Value {
+	return &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: f}}
 }
 
 // arrayToProtoValue converts a array to a Firestore Value protobuf and reports

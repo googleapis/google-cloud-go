@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "AddIpOverride": {
+              "methods": [
+                "AddIpOverride"
+              ]
+            },
             "AnnotateAssessment": {
               "methods": [
                 "AnnotateAssessment"
@@ -60,6 +65,11 @@
                 "ListFirewallPolicies"
               ]
             },
+            "ListIpOverrides": {
+              "methods": [
+                "ListIpOverrides"
+              ]
+            },
             "ListKeys": {
               "methods": [
                 "ListKeys"
@@ -78,6 +88,11 @@
             "MigrateKey": {
               "methods": [
                 "MigrateKey"
+              ]
+            },
+            "RemoveIpOverride": {
+              "methods": [
+                "RemoveIpOverride"
               ]
             },
             "ReorderFirewallPolicies": {

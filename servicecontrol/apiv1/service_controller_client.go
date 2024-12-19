@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	servicecontrolpb "cloud.google.com/go/servicecontrol/apiv1/servicecontrolpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -202,6 +201,8 @@ type serviceControllerGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewServiceControllerClient creates a new service controller client based on gRPC.
@@ -231,6 +232,7 @@ func NewServiceControllerClient(ctx context.Context, opts ...option.ClientOption
 		connPool:                connPool,
 		serviceControllerClient: servicecontrolpb.NewServiceControllerClient(connPool),
 		CallOptions:             &client.CallOptions,
+		logger:                  internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -277,6 +279,8 @@ type serviceControllerRESTClient struct {
 
 	// Points back to the CallOptions field of the containing ServiceControllerClient
 	CallOptions **ServiceControllerCallOptions
+
+	logger *slog.Logger
 }
 
 // NewServiceControllerRESTClient creates a new service controller rest client.
@@ -297,6 +301,7 @@ func NewServiceControllerRESTClient(ctx context.Context, opts ...option.ClientOp
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -349,7 +354,7 @@ func (c *serviceControllerGRPCClient) Check(ctx context.Context, req *servicecon
 	var resp *servicecontrolpb.CheckResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.serviceControllerClient.Check(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.serviceControllerClient.Check, req, settings.GRPC, c.logger, "Check")
 		return err
 	}, opts...)
 	if err != nil {
@@ -367,7 +372,7 @@ func (c *serviceControllerGRPCClient) Report(ctx context.Context, req *serviceco
 	var resp *servicecontrolpb.ReportResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.serviceControllerClient.Report(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.serviceControllerClient.Report, req, settings.GRPC, c.logger, "Report")
 		return err
 	}, opts...)
 	if err != nil {
@@ -431,17 +436,7 @@ func (c *serviceControllerRESTClient) Check(ctx context.Context, req *servicecon
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "Check")
 		if err != nil {
 			return err
 		}
@@ -511,17 +506,7 @@ func (c *serviceControllerRESTClient) Report(ctx context.Context, req *serviceco
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "Report")
 		if err != nil {
 			return err
 		}

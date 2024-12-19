@@ -474,7 +474,7 @@ type LocationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *LocationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -521,7 +521,7 @@ type OperationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *OperationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -568,7 +568,7 @@ type PostureDeploymentIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*securityposturepb.PostureDeployment, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *PostureDeploymentIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -615,7 +615,7 @@ type PostureIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*securityposturepb.Posture, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *PostureIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -662,7 +662,7 @@ type PostureTemplateIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*securityposturepb.PostureTemplate, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *PostureTemplateIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

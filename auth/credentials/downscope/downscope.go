@@ -18,6 +18,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"strings"
@@ -25,6 +26,7 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
+	"github.com/googleapis/gax-go/v2/internallog"
 )
 
 const (
@@ -49,13 +51,18 @@ type Options struct {
 	// UniverseDomain is the default service domain for a given Cloud universe.
 	// The default value is "googleapis.com". Optional.
 	UniverseDomain string
+	// Logger is used for debug logging. If provided, logging will be enabled
+	// at the loggers configured level. By default logging is disabled unless
+	// enabled by setting GOOGLE_SDK_GO_LOGGING_LEVEL in which case a default
+	// logger will be used. Optional.
+	Logger *slog.Logger
 }
 
 func (o *Options) client() *http.Client {
 	if o.Client != nil {
 		return o.Client
 	}
-	return internal.CloneDefaultClient()
+	return internal.DefaultClient()
 }
 
 // identityBindingEndpoint returns the identity binding endpoint with the
@@ -128,6 +135,7 @@ func NewCredentials(opts *Options) (*auth.Credentials, error) {
 			Options:                 opts,
 			Client:                  opts.client(),
 			identityBindingEndpoint: opts.identityBindingEndpoint(),
+			logger:                  internallog.New(opts.Logger),
 		},
 		ProjectIDProvider:      auth.CredentialsPropertyFunc(opts.Credentials.ProjectID),
 		QuotaProjectIDProvider: auth.CredentialsPropertyFunc(opts.Credentials.QuotaProjectID),
@@ -142,6 +150,7 @@ type downscopedTokenProvider struct {
 	// identityBindingEndpoint is the identity binding endpoint with the
 	// configured universe domain.
 	identityBindingEndpoint string
+	logger                  *slog.Logger
 }
 
 type downscopedOptions struct {
@@ -187,10 +196,12 @@ func (dts *downscopedTokenProvider) Token(ctx context.Context) (*auth.Token, err
 		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	dts.logger.DebugContext(ctx, "downscoped token request", "request", internallog.HTTPRequest(req, []byte(form.Encode())))
 	resp, body, err := internal.DoRequest(dts.Client, req)
 	if err != nil {
 		return nil, err
 	}
+	dts.logger.DebugContext(ctx, "downscoped token response", "response", internallog.HTTPResponse(resp, body))
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("downscope: unable to exchange token, %v: %s", resp.StatusCode, body)
 	}

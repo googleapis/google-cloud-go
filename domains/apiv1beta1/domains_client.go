@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -30,7 +30,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -413,6 +412,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new domains client based on gRPC.
@@ -439,6 +440,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      domainspb.NewDomainsClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -501,6 +503,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new domains rest client.
@@ -518,6 +522,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -580,7 +585,7 @@ func (c *gRPCClient) SearchDomains(ctx context.Context, req *domainspb.SearchDom
 	var resp *domainspb.SearchDomainsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.SearchDomains(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.SearchDomains, req, settings.GRPC, c.logger, "SearchDomains")
 		return err
 	}, opts...)
 	if err != nil {
@@ -598,7 +603,7 @@ func (c *gRPCClient) RetrieveRegisterParameters(ctx context.Context, req *domain
 	var resp *domainspb.RetrieveRegisterParametersResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.RetrieveRegisterParameters(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.RetrieveRegisterParameters, req, settings.GRPC, c.logger, "RetrieveRegisterParameters")
 		return err
 	}, opts...)
 	if err != nil {
@@ -616,7 +621,7 @@ func (c *gRPCClient) RegisterDomain(ctx context.Context, req *domainspb.Register
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.RegisterDomain(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.RegisterDomain, req, settings.GRPC, c.logger, "RegisterDomain")
 		return err
 	}, opts...)
 	if err != nil {
@@ -636,7 +641,7 @@ func (c *gRPCClient) RetrieveTransferParameters(ctx context.Context, req *domain
 	var resp *domainspb.RetrieveTransferParametersResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.RetrieveTransferParameters(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.RetrieveTransferParameters, req, settings.GRPC, c.logger, "RetrieveTransferParameters")
 		return err
 	}, opts...)
 	if err != nil {
@@ -654,7 +659,7 @@ func (c *gRPCClient) TransferDomain(ctx context.Context, req *domainspb.Transfer
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.TransferDomain(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.TransferDomain, req, settings.GRPC, c.logger, "TransferDomain")
 		return err
 	}, opts...)
 	if err != nil {
@@ -685,7 +690,7 @@ func (c *gRPCClient) ListRegistrations(ctx context.Context, req *domainspb.ListR
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListRegistrations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListRegistrations, req, settings.GRPC, c.logger, "ListRegistrations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -720,7 +725,7 @@ func (c *gRPCClient) GetRegistration(ctx context.Context, req *domainspb.GetRegi
 	var resp *domainspb.Registration
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetRegistration(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetRegistration, req, settings.GRPC, c.logger, "GetRegistration")
 		return err
 	}, opts...)
 	if err != nil {
@@ -738,7 +743,7 @@ func (c *gRPCClient) UpdateRegistration(ctx context.Context, req *domainspb.Upda
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateRegistration(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateRegistration, req, settings.GRPC, c.logger, "UpdateRegistration")
 		return err
 	}, opts...)
 	if err != nil {
@@ -758,7 +763,7 @@ func (c *gRPCClient) ConfigureManagementSettings(ctx context.Context, req *domai
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ConfigureManagementSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ConfigureManagementSettings, req, settings.GRPC, c.logger, "ConfigureManagementSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -778,7 +783,7 @@ func (c *gRPCClient) ConfigureDnsSettings(ctx context.Context, req *domainspb.Co
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ConfigureDnsSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ConfigureDnsSettings, req, settings.GRPC, c.logger, "ConfigureDnsSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -798,7 +803,7 @@ func (c *gRPCClient) ConfigureContactSettings(ctx context.Context, req *domainsp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ConfigureContactSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ConfigureContactSettings, req, settings.GRPC, c.logger, "ConfigureContactSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -818,7 +823,7 @@ func (c *gRPCClient) ExportRegistration(ctx context.Context, req *domainspb.Expo
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ExportRegistration(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ExportRegistration, req, settings.GRPC, c.logger, "ExportRegistration")
 		return err
 	}, opts...)
 	if err != nil {
@@ -838,7 +843,7 @@ func (c *gRPCClient) DeleteRegistration(ctx context.Context, req *domainspb.Dele
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteRegistration(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteRegistration, req, settings.GRPC, c.logger, "DeleteRegistration")
 		return err
 	}, opts...)
 	if err != nil {
@@ -858,7 +863,7 @@ func (c *gRPCClient) RetrieveAuthorizationCode(ctx context.Context, req *domains
 	var resp *domainspb.AuthorizationCode
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.RetrieveAuthorizationCode(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.RetrieveAuthorizationCode, req, settings.GRPC, c.logger, "RetrieveAuthorizationCode")
 		return err
 	}, opts...)
 	if err != nil {
@@ -876,7 +881,7 @@ func (c *gRPCClient) ResetAuthorizationCode(ctx context.Context, req *domainspb.
 	var resp *domainspb.AuthorizationCode
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ResetAuthorizationCode(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ResetAuthorizationCode, req, settings.GRPC, c.logger, "ResetAuthorizationCode")
 		return err
 	}, opts...)
 	if err != nil {
@@ -923,17 +928,7 @@ func (c *restClient) SearchDomains(ctx context.Context, req *domainspb.SearchDom
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "SearchDomains")
 		if err != nil {
 			return err
 		}
@@ -985,17 +980,7 @@ func (c *restClient) RetrieveRegisterParameters(ctx context.Context, req *domain
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "RetrieveRegisterParameters")
 		if err != nil {
 			return err
 		}
@@ -1062,21 +1047,10 @@ func (c *restClient) RegisterDomain(ctx context.Context, req *domainspb.Register
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RegisterDomain")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1132,17 +1106,7 @@ func (c *restClient) RetrieveTransferParameters(ctx context.Context, req *domain
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "RetrieveTransferParameters")
 		if err != nil {
 			return err
 		}
@@ -1216,21 +1180,10 @@ func (c *restClient) TransferDomain(ctx context.Context, req *domainspb.Transfer
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TransferDomain")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1296,21 +1249,10 @@ func (c *restClient) ListRegistrations(ctx context.Context, req *domainspb.ListR
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListRegistrations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1373,17 +1315,7 @@ func (c *restClient) GetRegistration(ctx context.Context, req *domainspb.GetRegi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetRegistration")
 		if err != nil {
 			return err
 		}
@@ -1425,11 +1357,11 @@ func (c *restClient) UpdateRegistration(ctx context.Context, req *domainspb.Upda
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1453,21 +1385,10 @@ func (c *restClient) UpdateRegistration(ctx context.Context, req *domainspb.Upda
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateRegistration")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1523,21 +1444,10 @@ func (c *restClient) ConfigureManagementSettings(ctx context.Context, req *domai
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ConfigureManagementSettings")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1593,21 +1503,10 @@ func (c *restClient) ConfigureDnsSettings(ctx context.Context, req *domainspb.Co
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ConfigureDnsSettings")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1664,21 +1563,10 @@ func (c *restClient) ConfigureContactSettings(ctx context.Context, req *domainsp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ConfigureContactSettings")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1742,21 +1630,10 @@ func (c *restClient) ExportRegistration(ctx context.Context, req *domainspb.Expo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExportRegistration")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1826,21 +1703,10 @@ func (c *restClient) DeleteRegistration(ctx context.Context, req *domainspb.Dele
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteRegistration")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1895,17 +1761,7 @@ func (c *restClient) RetrieveAuthorizationCode(ctx context.Context, req *domains
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "RetrieveAuthorizationCode")
 		if err != nil {
 			return err
 		}
@@ -1964,17 +1820,7 @@ func (c *restClient) ResetAuthorizationCode(ctx context.Context, req *domainspb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ResetAuthorizationCode")
 		if err != nil {
 			return err
 		}

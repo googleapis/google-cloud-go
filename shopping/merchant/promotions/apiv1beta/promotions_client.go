@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	promotionspb "cloud.google.com/go/shopping/merchant/promotions/apiv1beta/promotionspb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -227,6 +226,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new promotions service client based on gRPC.
@@ -253,6 +254,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      promotionspb.NewPromotionsServiceClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -299,6 +301,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new promotions service rest client.
@@ -316,6 +320,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -368,7 +373,7 @@ func (c *gRPCClient) InsertPromotion(ctx context.Context, req *promotionspb.Inse
 	var resp *promotionspb.Promotion
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.InsertPromotion(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.InsertPromotion, req, settings.GRPC, c.logger, "InsertPromotion")
 		return err
 	}, opts...)
 	if err != nil {
@@ -386,7 +391,7 @@ func (c *gRPCClient) GetPromotion(ctx context.Context, req *promotionspb.GetProm
 	var resp *promotionspb.Promotion
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetPromotion(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetPromotion, req, settings.GRPC, c.logger, "GetPromotion")
 		return err
 	}, opts...)
 	if err != nil {
@@ -415,7 +420,7 @@ func (c *gRPCClient) ListPromotions(ctx context.Context, req *promotionspb.ListP
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListPromotions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListPromotions, req, settings.GRPC, c.logger, "ListPromotions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -481,17 +486,7 @@ func (c *restClient) InsertPromotion(ctx context.Context, req *promotionspb.Inse
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "InsertPromotion")
 		if err != nil {
 			return err
 		}
@@ -544,17 +539,7 @@ func (c *restClient) GetPromotion(ctx context.Context, req *promotionspb.GetProm
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetPromotion")
 		if err != nil {
 			return err
 		}
@@ -621,21 +606,10 @@ func (c *restClient) ListPromotions(ctx context.Context, req *promotionspb.ListP
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListPromotions")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

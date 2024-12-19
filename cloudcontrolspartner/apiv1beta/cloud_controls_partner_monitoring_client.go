@@ -19,7 +19,7 @@ package cloudcontrolspartner
 import (
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -27,7 +27,6 @@ import (
 
 	cloudcontrolspartnerpb "cloud.google.com/go/cloudcontrolspartner/apiv1beta/cloudcontrolspartnerpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -193,6 +192,8 @@ type cloudControlsPartnerMonitoringGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewCloudControlsPartnerMonitoringClient creates a new cloud controls partner monitoring client based on gRPC.
@@ -219,6 +220,7 @@ func NewCloudControlsPartnerMonitoringClient(ctx context.Context, opts ...option
 		connPool:                             connPool,
 		cloudControlsPartnerMonitoringClient: cloudcontrolspartnerpb.NewCloudControlsPartnerMonitoringClient(connPool),
 		CallOptions:                          &client.CallOptions,
+		logger:                               internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -265,6 +267,8 @@ type cloudControlsPartnerMonitoringRESTClient struct {
 
 	// Points back to the CallOptions field of the containing CloudControlsPartnerMonitoringClient
 	CallOptions **CloudControlsPartnerMonitoringCallOptions
+
+	logger *slog.Logger
 }
 
 // NewCloudControlsPartnerMonitoringRESTClient creates a new cloud controls partner monitoring rest client.
@@ -282,6 +286,7 @@ func NewCloudControlsPartnerMonitoringRESTClient(ctx context.Context, opts ...op
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -345,7 +350,7 @@ func (c *cloudControlsPartnerMonitoringGRPCClient) ListViolations(ctx context.Co
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudControlsPartnerMonitoringClient.ListViolations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudControlsPartnerMonitoringClient.ListViolations, req, settings.GRPC, c.logger, "ListViolations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -380,7 +385,7 @@ func (c *cloudControlsPartnerMonitoringGRPCClient) GetViolation(ctx context.Cont
 	var resp *cloudcontrolspartnerpb.Violation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudControlsPartnerMonitoringClient.GetViolation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudControlsPartnerMonitoringClient.GetViolation, req, settings.GRPC, c.logger, "GetViolation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -422,18 +427,18 @@ func (c *cloudControlsPartnerMonitoringRESTClient) ListViolations(ctx context.Co
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
 		if req.GetInterval().GetEndTime() != nil {
-			endTime, err := protojson.Marshal(req.GetInterval().GetEndTime())
+			field, err := protojson.Marshal(req.GetInterval().GetEndTime())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("interval.endTime", string(endTime[1:len(endTime)-1]))
+			params.Add("interval.endTime", string(field[1:len(field)-1]))
 		}
 		if req.GetInterval().GetStartTime() != nil {
-			startTime, err := protojson.Marshal(req.GetInterval().GetStartTime())
+			field, err := protojson.Marshal(req.GetInterval().GetStartTime())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("interval.startTime", string(startTime[1:len(startTime)-1]))
+			params.Add("interval.startTime", string(field[1:len(field)-1]))
 		}
 		if req.GetOrderBy() != "" {
 			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
@@ -460,21 +465,10 @@ func (c *cloudControlsPartnerMonitoringRESTClient) ListViolations(ctx context.Co
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListViolations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -537,17 +531,7 @@ func (c *cloudControlsPartnerMonitoringRESTClient) GetViolation(ctx context.Cont
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetViolation")
 		if err != nil {
 			return err
 		}

@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	recaptchaenterprisepb "cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1/recaptchaenterprisepb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -152,6 +151,8 @@ type recaptchaEnterpriseServiceV1Beta1GRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewRecaptchaEnterpriseServiceV1Beta1Client creates a new recaptcha enterprise service v1 beta1 client based on gRPC.
@@ -178,6 +179,7 @@ func NewRecaptchaEnterpriseServiceV1Beta1Client(ctx context.Context, opts ...opt
 		connPool:                                connPool,
 		recaptchaEnterpriseServiceV1Beta1Client: recaptchaenterprisepb.NewRecaptchaEnterpriseServiceV1Beta1Client(connPool),
 		CallOptions:                             &client.CallOptions,
+		logger:                                  internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -224,6 +226,8 @@ type recaptchaEnterpriseServiceV1Beta1RESTClient struct {
 
 	// Points back to the CallOptions field of the containing RecaptchaEnterpriseServiceV1Beta1Client
 	CallOptions **RecaptchaEnterpriseServiceV1Beta1CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRecaptchaEnterpriseServiceV1Beta1RESTClient creates a new recaptcha enterprise service v1 beta1 rest client.
@@ -241,6 +245,7 @@ func NewRecaptchaEnterpriseServiceV1Beta1RESTClient(ctx context.Context, opts ..
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -293,7 +298,7 @@ func (c *recaptchaEnterpriseServiceV1Beta1GRPCClient) CreateAssessment(ctx conte
 	var resp *recaptchaenterprisepb.Assessment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.recaptchaEnterpriseServiceV1Beta1Client.CreateAssessment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.recaptchaEnterpriseServiceV1Beta1Client.CreateAssessment, req, settings.GRPC, c.logger, "CreateAssessment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -311,7 +316,7 @@ func (c *recaptchaEnterpriseServiceV1Beta1GRPCClient) AnnotateAssessment(ctx con
 	var resp *recaptchaenterprisepb.AnnotateAssessmentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.recaptchaEnterpriseServiceV1Beta1Client.AnnotateAssessment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.recaptchaEnterpriseServiceV1Beta1Client.AnnotateAssessment, req, settings.GRPC, c.logger, "AnnotateAssessment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -360,17 +365,7 @@ func (c *recaptchaEnterpriseServiceV1Beta1RESTClient) CreateAssessment(ctx conte
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateAssessment")
 		if err != nil {
 			return err
 		}
@@ -427,17 +422,7 @@ func (c *recaptchaEnterpriseServiceV1Beta1RESTClient) AnnotateAssessment(ctx con
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AnnotateAssessment")
 		if err != nil {
 			return err
 		}
