@@ -106,7 +106,12 @@ func (c *QueryClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// QueryTimeSeries queries time series using Monitoring Query Language.
+// QueryTimeSeries queries time series by using Monitoring Query Language (MQL). We recommend
+// using PromQL instead of MQL. For more information about the status of MQL,
+// see the MQL deprecation
+// notice (at https://cloud.google.com/stackdriver/docs/deprecations/mql).
+//
+// Deprecated: QueryTimeSeries may be removed in a future version.
 func (c *QueryClient) QueryTimeSeries(ctx context.Context, req *monitoringpb.QueryTimeSeriesRequest, opts ...gax.CallOption) *TimeSeriesDataIterator {
 	return c.internalClient.QueryTimeSeries(ctx, req, opts...)
 }

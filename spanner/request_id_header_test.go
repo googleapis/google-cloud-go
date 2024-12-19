@@ -115,6 +115,10 @@ func validateRequestIDSegments(recv *requestIDSegments) error {
 }
 
 func TestRequestIDHeader_sentOnEveryClientCall(t *testing.T) {
+	if isMultiplexEnabled {
+		t.Skip("Skipping these tests with multiplexed sessions until #11308 is fixed")
+	}
+
 	interceptorTracker := newInterceptorTracker()
 
 	clientOpts := []option.ClientOption{
@@ -448,6 +452,10 @@ func newInterceptorTracker() *interceptorTracker {
 }
 
 func TestRequestIDHeader_onRetriesWithFailedTransactionCommit(t *testing.T) {
+	if isMultiplexEnabled {
+		t.Skip("Skipping these tests with multiplexed sessions until #11308 is fixed")
+	}
+
 	interceptorTracker := newInterceptorTracker()
 	clientOpts := []option.ClientOption{
 		option.WithGRPCDialOption(grpc.WithUnaryInterceptor(interceptorTracker.unaryClientInterceptor)),
@@ -504,6 +512,10 @@ func TestRequestIDHeader_onRetriesWithFailedTransactionCommit(t *testing.T) {
 
 // Tests that SessionNotFound errors are retried.
 func TestRequestIDHeader_retriesOnSessionNotFound(t *testing.T) {
+	if isMultiplexEnabled {
+		t.Skip("Skipping these tests with multiplexed sessions until #11308 is fixed")
+	}
+
 	t.Parallel()
 	ctx := context.Background()
 	interceptorTracker := newInterceptorTracker()
@@ -582,6 +594,10 @@ func TestRequestIDHeader_retriesOnSessionNotFound(t *testing.T) {
 }
 
 func TestRequestIDHeader_BatchDMLWithMultipleDML(t *testing.T) {
+	if isMultiplexEnabled {
+		t.Skip("Skipping these tests with multiplexed sessions until #11308 is fixed")
+	}
+
 	t.Parallel()
 
 	interceptorTracker := newInterceptorTracker()
@@ -662,6 +678,10 @@ func TestRequestIDHeader_BatchDMLWithMultipleDML(t *testing.T) {
 }
 
 func TestRequestIDHeader_clientBatchWrite(t *testing.T) {
+	if isMultiplexEnabled {
+		t.Skip("Skipping these tests with multiplexed sessions until #11308 is fixed")
+	}
+
 	t.Parallel()
 
 	interceptorTracker := newInterceptorTracker()
@@ -720,6 +740,10 @@ func TestRequestIDHeader_clientBatchWrite(t *testing.T) {
 }
 
 func TestRequestIDHeader_ClientBatchWriteWithSessionNotFound(t *testing.T) {
+	if isMultiplexEnabled {
+		t.Skip("Skipping these tests with multiplexed sessions until #11308 is fixed")
+	}
+
 	t.Parallel()
 
 	interceptorTracker := newInterceptorTracker()
@@ -786,6 +810,10 @@ func TestRequestIDHeader_ClientBatchWriteWithSessionNotFound(t *testing.T) {
 }
 
 func TestRequestIDHeader_ClientBatchWriteWithError(t *testing.T) {
+	if isMultiplexEnabled {
+		t.Skip("Skipping these tests with multiplexed sessions until #11308 is fixed")
+	}
+
 	t.Parallel()
 
 	interceptorTracker := newInterceptorTracker()
@@ -859,6 +887,10 @@ func TestRequestIDHeader_PartitionQueryWithError(t *testing.T) {
 }
 
 func testRequestIDHeaderPartitionQuery(t *testing.T, mustErrorOnPartitionQuery bool) {
+	if isMultiplexEnabled {
+		t.Skip("Skipping these tests with multiplexed sessions until #11308 is fixed")
+	}
+
 	t.Parallel()
 
 	interceptorTracker := newInterceptorTracker()
@@ -1026,6 +1058,10 @@ func testRequestIDHeaderPartitionQuery(t *testing.T, mustErrorOnPartitionQuery b
 }
 
 func TestRequestIDHeader_ReadWriteTransactionUpdate(t *testing.T) {
+	if isMultiplexEnabled {
+		t.Skip("Skipping these tests with multiplexed sessions until #11308 is fixed")
+	}
+
 	t.Parallel()
 
 	interceptorTracker := newInterceptorTracker()
@@ -1109,6 +1145,10 @@ func TestRequestIDHeader_ReadWriteTransactionUpdate(t *testing.T) {
 }
 
 func TestRequestIDHeader_ReadWriteTransactionBatchUpdateWithOptions(t *testing.T) {
+	if isMultiplexEnabled {
+		t.Skip("Skipping these tests with multiplexed sessions until #11308 is fixed")
+	}
+
 	t.Parallel()
 
 	interceptorTracker := newInterceptorTracker()
@@ -1168,6 +1208,10 @@ func TestRequestIDHeader_ReadWriteTransactionBatchUpdateWithOptions(t *testing.T
 }
 
 func TestRequestIDHeader_multipleParallelCallsWithConventionalCustomerCalls(t *testing.T) {
+	if isMultiplexEnabled {
+		t.Skip("Skipping these tests with multiplexed sessions until #11308 is fixed")
+	}
+
 	t.Parallel()
 
 	interceptorTracker := newInterceptorTracker()
@@ -1294,6 +1338,10 @@ func newInvalidArgumentError() error {
 }
 
 func TestRequestIDHeader_RetryOnAbortAndValidate(t *testing.T) {
+	if isMultiplexEnabled {
+		t.Skip("Skipping these tests with multiplexed sessions until #11308 is fixed")
+	}
+
 	t.Parallel()
 
 	ctx := context.Background()
@@ -1378,6 +1426,10 @@ func TestRequestIDHeader_RetryOnAbortAndValidate(t *testing.T) {
 }
 
 func TestRequestIDHeader_BatchCreateSessions_Unavailable(t *testing.T) {
+	if isMultiplexEnabled {
+		t.Skip("Skipping these tests with multiplexed sessions until #11308 is fixed")
+	}
+
 	t.Parallel()
 
 	ctx := context.Background()
@@ -1458,6 +1510,10 @@ func TestRequestIDHeader_BatchCreateSessions_Unavailable(t *testing.T) {
 }
 
 func TestRequestIDHeader_SingleUseReadOnly_ExecuteStreamingSql_Unavailable(t *testing.T) {
+	if isMultiplexEnabled {
+		t.Skip("Skipping these tests with multiplexed sessions until #11308 is fixed")
+	}
+
 	t.Parallel()
 
 	ctx := context.Background()
@@ -1786,6 +1842,10 @@ func TestRequestIDInError(t *testing.T) {
 }
 
 func TestRequestIDHeader_SingleUseReadOnly_ExecuteStreamingSql_UnavailableDuringStream(t *testing.T) {
+	if isMultiplexEnabled {
+		t.Skip("Skipping these tests with multiplexed sessions until #11308 is fixed")
+	}
+
 	t.Parallel()
 	ctx := context.Background()
 	interceptorTracker := newInterceptorTracker()

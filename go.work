@@ -108,6 +108,7 @@ use (
 	./maps
 	./mediatranslation
 	./memcache
+	./memorystore
 	./metastore
 	./migrationcenter
 	./monitoring
