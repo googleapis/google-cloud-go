@@ -524,7 +524,7 @@ func TestMetadataParsingWithReader(t *testing.T) {
 		expectedMetadata := map[string]string{
 			"Custom-Metadata-Key": "custom-metadata-value",
 		}
-		if diff := cmp.Diff(rd.Attrs.Metadata, expectedMetadata); diff != "" {
+		if diff := cmp.Diff(rd.Metadata(), expectedMetadata); diff != "" {
 			t.Fatalf("metadata mismatch diff got vs want: %v", diff)
 		}
 

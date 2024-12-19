@@ -845,7 +845,11 @@ func TestOpenReaderEmulated_Metadata(t *testing.T) {
 		if diff := cmp.Diff(got, randomBytesToWrite); diff != "" {
 			t.Fatalf("Read: got(-),want(+):\n%s", diff)
 		}
-		if diff := cmp.Diff(r.Attrs.Metadata["Custom-Key"], "custom-value"); diff != "" {
+		expectedMetadata := map[string]string{
+			"Custom-Key":     "custom-value",
+			"Some-Other-Key": "some-other-value",
+		}
+		if diff := cmp.Diff(r.Metadata(), expectedMetadata); diff != "" {
 			t.Fatalf("Object Metadata: got(-),want(+):\n%s", diff)
 		}
 

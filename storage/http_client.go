@@ -1539,16 +1539,16 @@ func parseReadResponse(res *http.Response, params *newRangeReaderParams, reopen 
 		LastModified:    lm,
 		StartOffset:     startOffset,
 		Generation:      params.gen,
-		Metadata:        metadata,
 		Metageneration:  metaGen,
 		CRC32C:          crc,
 		Decompressed:    res.Uncompressed || uncompressedByServer(res),
 	}
 	return &Reader{
-		Attrs:    attrs,
-		size:     size,
-		remain:   remain,
-		checkCRC: checkCRC,
+		Attrs:          attrs,
+		objectMetadata: metadata,
+		size:           size,
+		remain:         remain,
+		checkCRC:       checkCRC,
 		reader: &httpReader{
 			reopen:   reopen,
 			body:     body,

@@ -5078,7 +5078,7 @@ func TestIntegration_ReaderAttrs_Metadata(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		got := rc.Attrs.Metadata
+		got := rc.Metadata()
 		want := map[string]string{
 			"Custom-Key": "custom-value",
 			"Other-Key":  "other-value",
