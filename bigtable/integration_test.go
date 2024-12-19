@@ -4399,8 +4399,10 @@ func createTableWithRetry(ctx context.Context, t *testing.T, adminClient *AdminC
 		func() error { return adminClient.DeleteTable(ctx, tableName) })
 }
 
+// retry 'f' and runs 'onExists' if 'f' returns AlreadyExists error
+// onExists can be nil
 func retry(t *testing.T, f func() error, onExists func() error) error {
-	if f == nil || onExists == nil {
+	if f == nil {
 		return nil
 	}
 
