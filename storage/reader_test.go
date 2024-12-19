@@ -417,8 +417,8 @@ func TestContentEncodingGzipWithReader(t *testing.T) {
 	}{
 		{
 			"NewReader", func(cxt context.Context, obj *ObjectHandle) (*Reader, error) {
-			return obj.NewReader(ctx)
-		},
+				return obj.NewReader(ctx)
+			},
 		},
 		{
 			"NewRangeReader(0, -1)",
