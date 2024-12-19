@@ -41,7 +41,7 @@ type DeliveryVehicleIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*deliverypb.DeliveryVehicle, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *DeliveryVehicleIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -88,7 +88,7 @@ type TaskIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*deliverypb.Task, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TaskIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

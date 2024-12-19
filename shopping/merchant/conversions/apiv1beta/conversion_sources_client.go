@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	conversionspb "cloud.google.com/go/shopping/merchant/conversions/apiv1beta/conversionspb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -313,6 +312,8 @@ type conversionSourcesGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewConversionSourcesClient creates a new conversion sources service client based on gRPC.
@@ -339,6 +340,7 @@ func NewConversionSourcesClient(ctx context.Context, opts ...option.ClientOption
 		connPool:                connPool,
 		conversionSourcesClient: conversionspb.NewConversionSourcesServiceClient(connPool),
 		CallOptions:             &client.CallOptions,
+		logger:                  internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -385,6 +387,8 @@ type conversionSourcesRESTClient struct {
 
 	// Points back to the CallOptions field of the containing ConversionSourcesClient
 	CallOptions **ConversionSourcesCallOptions
+
+	logger *slog.Logger
 }
 
 // NewConversionSourcesRESTClient creates a new conversion sources service rest client.
@@ -402,6 +406,7 @@ func NewConversionSourcesRESTClient(ctx context.Context, opts ...option.ClientOp
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -454,7 +459,7 @@ func (c *conversionSourcesGRPCClient) CreateConversionSource(ctx context.Context
 	var resp *conversionspb.ConversionSource
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.conversionSourcesClient.CreateConversionSource(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.conversionSourcesClient.CreateConversionSource, req, settings.GRPC, c.logger, "CreateConversionSource")
 		return err
 	}, opts...)
 	if err != nil {
@@ -472,7 +477,7 @@ func (c *conversionSourcesGRPCClient) UpdateConversionSource(ctx context.Context
 	var resp *conversionspb.ConversionSource
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.conversionSourcesClient.UpdateConversionSource(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.conversionSourcesClient.UpdateConversionSource, req, settings.GRPC, c.logger, "UpdateConversionSource")
 		return err
 	}, opts...)
 	if err != nil {
@@ -489,7 +494,7 @@ func (c *conversionSourcesGRPCClient) DeleteConversionSource(ctx context.Context
 	opts = append((*c.CallOptions).DeleteConversionSource[0:len((*c.CallOptions).DeleteConversionSource):len((*c.CallOptions).DeleteConversionSource)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.conversionSourcesClient.DeleteConversionSource(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.conversionSourcesClient.DeleteConversionSource, req, settings.GRPC, c.logger, "DeleteConversionSource")
 		return err
 	}, opts...)
 	return err
@@ -504,7 +509,7 @@ func (c *conversionSourcesGRPCClient) UndeleteConversionSource(ctx context.Conte
 	var resp *conversionspb.ConversionSource
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.conversionSourcesClient.UndeleteConversionSource(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.conversionSourcesClient.UndeleteConversionSource, req, settings.GRPC, c.logger, "UndeleteConversionSource")
 		return err
 	}, opts...)
 	if err != nil {
@@ -522,7 +527,7 @@ func (c *conversionSourcesGRPCClient) GetConversionSource(ctx context.Context, r
 	var resp *conversionspb.ConversionSource
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.conversionSourcesClient.GetConversionSource(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.conversionSourcesClient.GetConversionSource, req, settings.GRPC, c.logger, "GetConversionSource")
 		return err
 	}, opts...)
 	if err != nil {
@@ -551,7 +556,7 @@ func (c *conversionSourcesGRPCClient) ListConversionSources(ctx context.Context,
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.conversionSourcesClient.ListConversionSources(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.conversionSourcesClient.ListConversionSources, req, settings.GRPC, c.logger, "ListConversionSources")
 			return err
 		}, opts...)
 		if err != nil {
@@ -617,17 +622,7 @@ func (c *conversionSourcesRESTClient) CreateConversionSource(ctx context.Context
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateConversionSource")
 		if err != nil {
 			return err
 		}
@@ -663,11 +658,11 @@ func (c *conversionSourcesRESTClient) UpdateConversionSource(ctx context.Context
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -692,17 +687,7 @@ func (c *conversionSourcesRESTClient) UpdateConversionSource(ctx context.Context
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateConversionSource")
 		if err != nil {
 			return err
 		}
@@ -752,15 +737,8 @@ func (c *conversionSourcesRESTClient) DeleteConversionSource(ctx context.Context
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteConversionSource")
+		return err
 	}, opts...)
 }
 
@@ -804,17 +782,7 @@ func (c *conversionSourcesRESTClient) UndeleteConversionSource(ctx context.Conte
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UndeleteConversionSource")
 		if err != nil {
 			return err
 		}
@@ -864,17 +832,7 @@ func (c *conversionSourcesRESTClient) GetConversionSource(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetConversionSource")
 		if err != nil {
 			return err
 		}
@@ -939,21 +897,10 @@ func (c *conversionSourcesRESTClient) ListConversionSources(ctx context.Context,
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListConversionSources")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

@@ -962,7 +962,7 @@ type AccessLevelIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*accesscontextmanagerpb.AccessLevel, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AccessLevelIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1009,7 +1009,7 @@ type AccessPolicyIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*accesscontextmanagerpb.AccessPolicy, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AccessPolicyIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1056,7 +1056,7 @@ type GcpUserAccessBindingIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*accesscontextmanagerpb.GcpUserAccessBinding, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *GcpUserAccessBindingIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1103,7 +1103,7 @@ type ServicePerimeterIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*accesscontextmanagerpb.ServicePerimeter, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ServicePerimeterIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

@@ -24,6 +24,7 @@ import (
 	"cloud.google.com/go/spanner/apiv1/spannerpb"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -103,7 +104,7 @@ func (s *MockedSpannerInMemTestServer) setupMockedServerWithAddr(t *testing.T, a
 	s.ServerAddress = lis.Addr().String()
 	opts := []option.ClientOption{
 		option.WithEndpoint(s.ServerAddress),
-		option.WithGRPCDialOption(grpc.WithInsecure()),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
 		option.WithoutAuthentication(),
 	}
 	return opts

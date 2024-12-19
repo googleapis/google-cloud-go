@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -29,7 +29,6 @@ import (
 	dialogflowpb "cloud.google.com/go/dialogflow/apiv2/dialogflowpb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -330,6 +329,8 @@ type knowledgeBasesGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewKnowledgeBasesClient creates a new knowledge bases client based on gRPC.
@@ -357,6 +358,7 @@ func NewKnowledgeBasesClient(ctx context.Context, opts ...option.ClientOption) (
 		connPool:             connPool,
 		knowledgeBasesClient: dialogflowpb.NewKnowledgeBasesClient(connPool),
 		CallOptions:          &client.CallOptions,
+		logger:               internaloption.GetLogger(opts),
 		operationsClient:     longrunningpb.NewOperationsClient(connPool),
 		locationsClient:      locationpb.NewLocationsClient(connPool),
 	}
@@ -405,6 +407,8 @@ type knowledgeBasesRESTClient struct {
 
 	// Points back to the CallOptions field of the containing KnowledgeBasesClient
 	CallOptions **KnowledgeBasesCallOptions
+
+	logger *slog.Logger
 }
 
 // NewKnowledgeBasesRESTClient creates a new knowledge bases rest client.
@@ -423,6 +427,7 @@ func NewKnowledgeBasesRESTClient(ctx context.Context, opts ...option.ClientOptio
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -486,7 +491,7 @@ func (c *knowledgeBasesGRPCClient) ListKnowledgeBases(ctx context.Context, req *
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.knowledgeBasesClient.ListKnowledgeBases(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.knowledgeBasesClient.ListKnowledgeBases, req, settings.GRPC, c.logger, "ListKnowledgeBases")
 			return err
 		}, opts...)
 		if err != nil {
@@ -521,7 +526,7 @@ func (c *knowledgeBasesGRPCClient) GetKnowledgeBase(ctx context.Context, req *di
 	var resp *dialogflowpb.KnowledgeBase
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.knowledgeBasesClient.GetKnowledgeBase(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.knowledgeBasesClient.GetKnowledgeBase, req, settings.GRPC, c.logger, "GetKnowledgeBase")
 		return err
 	}, opts...)
 	if err != nil {
@@ -539,7 +544,7 @@ func (c *knowledgeBasesGRPCClient) CreateKnowledgeBase(ctx context.Context, req 
 	var resp *dialogflowpb.KnowledgeBase
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.knowledgeBasesClient.CreateKnowledgeBase(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.knowledgeBasesClient.CreateKnowledgeBase, req, settings.GRPC, c.logger, "CreateKnowledgeBase")
 		return err
 	}, opts...)
 	if err != nil {
@@ -556,7 +561,7 @@ func (c *knowledgeBasesGRPCClient) DeleteKnowledgeBase(ctx context.Context, req 
 	opts = append((*c.CallOptions).DeleteKnowledgeBase[0:len((*c.CallOptions).DeleteKnowledgeBase):len((*c.CallOptions).DeleteKnowledgeBase)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.knowledgeBasesClient.DeleteKnowledgeBase(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.knowledgeBasesClient.DeleteKnowledgeBase, req, settings.GRPC, c.logger, "DeleteKnowledgeBase")
 		return err
 	}, opts...)
 	return err
@@ -571,7 +576,7 @@ func (c *knowledgeBasesGRPCClient) UpdateKnowledgeBase(ctx context.Context, req 
 	var resp *dialogflowpb.KnowledgeBase
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.knowledgeBasesClient.UpdateKnowledgeBase(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.knowledgeBasesClient.UpdateKnowledgeBase, req, settings.GRPC, c.logger, "UpdateKnowledgeBase")
 		return err
 	}, opts...)
 	if err != nil {
@@ -589,7 +594,7 @@ func (c *knowledgeBasesGRPCClient) GetLocation(ctx context.Context, req *locatio
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -618,7 +623,7 @@ func (c *knowledgeBasesGRPCClient) ListLocations(ctx context.Context, req *locat
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -652,7 +657,7 @@ func (c *knowledgeBasesGRPCClient) CancelOperation(ctx context.Context, req *lon
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -667,7 +672,7 @@ func (c *knowledgeBasesGRPCClient) GetOperation(ctx context.Context, req *longru
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -696,7 +701,7 @@ func (c *knowledgeBasesGRPCClient) ListOperations(ctx context.Context, req *long
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -770,21 +775,10 @@ func (c *knowledgeBasesRESTClient) ListKnowledgeBases(ctx context.Context, req *
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListKnowledgeBases")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -847,17 +841,7 @@ func (c *knowledgeBasesRESTClient) GetKnowledgeBase(ctx context.Context, req *di
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetKnowledgeBase")
 		if err != nil {
 			return err
 		}
@@ -914,17 +898,7 @@ func (c *knowledgeBasesRESTClient) CreateKnowledgeBase(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateKnowledgeBase")
 		if err != nil {
 			return err
 		}
@@ -974,15 +948,8 @@ func (c *knowledgeBasesRESTClient) DeleteKnowledgeBase(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteKnowledgeBase")
+		return err
 	}, opts...)
 }
 
@@ -1004,11 +971,11 @@ func (c *knowledgeBasesRESTClient) UpdateKnowledgeBase(ctx context.Context, req 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1033,17 +1000,7 @@ func (c *knowledgeBasesRESTClient) UpdateKnowledgeBase(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateKnowledgeBase")
 		if err != nil {
 			return err
 		}
@@ -1093,17 +1050,7 @@ func (c *knowledgeBasesRESTClient) GetLocation(ctx context.Context, req *locatio
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -1168,21 +1115,10 @@ func (c *knowledgeBasesRESTClient) ListLocations(ctx context.Context, req *locat
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1242,15 +1178,8 @@ func (c *knowledgeBasesRESTClient) CancelOperation(ctx context.Context, req *lon
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -1287,17 +1216,7 @@ func (c *knowledgeBasesRESTClient) GetOperation(ctx context.Context, req *longru
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -1362,21 +1281,10 @@ func (c *knowledgeBasesRESTClient) ListOperations(ctx context.Context, req *long
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

@@ -27,11 +27,11 @@ import (
 	vkit "cloud.google.com/go/firestore/apiv1"
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/firestore/internal"
+	"cloud.google.com/go/internal/detect"
 	"cloud.google.com/go/internal/trace"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	"google.golang.org/api/transport"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -62,7 +62,7 @@ func reqParamsHeaderVal(dbPath string) string {
 // if no credentials were provided. When providing credentials, not all
 // options will allow NewClient to extract the project ID. Specifically a JWT
 // does not have the project ID encoded.
-const DetectProjectID = "*detect-project-id*"
+const DetectProjectID = detect.ProjectIDSentinel
 
 // DefaultDatabaseID is name of the default database
 const DefaultDatabaseID = "(default)"
@@ -88,21 +88,17 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 			return nil, fmt.Errorf("firestore: dialing address from env var FIRESTORE_EMULATOR_HOST: %s", err)
 		}
 		o = []option.ClientOption{option.WithGRPCConn(conn)}
-		if projectID == DetectProjectID {
-			projectID, _ = detectProjectID(ctx, opts...)
-			if projectID == "" {
-				projectID = "dummy-emulator-firestore-project"
-			}
+		projectID, _ = detect.ProjectID(ctx, projectID, "", opts...)
+		if projectID == "" {
+			projectID = "dummy-emulator-firestore-project"
 		}
 	}
 	o = append(o, opts...)
 
-	if projectID == DetectProjectID {
-		detected, err := detectProjectID(ctx, o...)
-		if err != nil {
-			return nil, err
-		}
-		projectID = detected
+	// Detect project ID.
+	projectID, err := detect.ProjectID(ctx, projectID, "", o...)
+	if err != nil {
+		return nil, err
 	}
 
 	vc, err := vkit.NewClient(ctx, o...)
@@ -133,17 +129,6 @@ func NewClientWithDatabase(ctx context.Context, projectID string, databaseID str
 
 	client.databaseID = databaseID
 	return client, nil
-}
-
-func detectProjectID(ctx context.Context, opts ...option.ClientOption) (string, error) {
-	creds, err := transport.Creds(ctx, opts...)
-	if err != nil {
-		return "", fmt.Errorf("fetching creds: %w", err)
-	}
-	if creds.ProjectID == "" {
-		return "", errors.New("firestore: see the docs on DetectProjectID")
-	}
-	return creds.ProjectID, nil
 }
 
 // Close closes any resources held by the client.
@@ -256,8 +241,8 @@ func (c *Client) getAll(ctx context.Context, docRefs []*DocumentRef, tid []byte,
 	var docNames []string
 	docIndices := map[string][]int{} // doc name to positions in docRefs
 	for i, dr := range docRefs {
-		if dr == nil {
-			return nil, errNilDocRef
+		if err := dr.isValid(); err != nil {
+			return nil, err
 		}
 		docNames = append(docNames, dr.Path)
 		docIndices[dr.Path] = append(docIndices[dr.Path], i)

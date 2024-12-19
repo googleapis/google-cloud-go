@@ -84,8 +84,9 @@ func TestWithEndpointAndPoolSize(t *testing.T) {
 	_, l := mockServer(t)
 	ctx := context.Background()
 	connPool, err := Dial(ctx, false, &Options{
-		Endpoint: l.Addr().String(),
-		PoolSize: 4,
+		Endpoint:              l.Addr().String(),
+		PoolSize:              4,
+		DisableAuthentication: true,
 	})
 	if err != nil {
 		t.Fatal(err)

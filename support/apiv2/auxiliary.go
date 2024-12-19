@@ -41,7 +41,7 @@ type AttachmentIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*supportpb.Attachment, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AttachmentIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -88,7 +88,7 @@ type CaseClassificationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*supportpb.CaseClassification, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *CaseClassificationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -135,7 +135,7 @@ type CaseIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*supportpb.Case, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *CaseIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -182,7 +182,7 @@ type CommentIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*supportpb.Comment, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *CommentIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

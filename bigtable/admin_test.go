@@ -22,11 +22,11 @@ import (
 	"testing"
 	"time"
 
+	btapb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
 	"cloud.google.com/go/internal/pretty"
 	"cloud.google.com/go/internal/testutil"
 	longrunning "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"github.com/google/go-cmp/cmp"
-	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/anypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -368,7 +368,7 @@ func TestTableAdmin_UpdateTableDisableChangeStream(t *testing.T) {
 func TestTableAdmin_SetGcPolicy(t *testing.T) {
 	for _, test := range []struct {
 		desc string
-		opts GCPolicyOption
+		opts UpdateFamilyOption
 		want bool
 	}{
 		{
@@ -407,38 +407,6 @@ func TestTableAdmin_SetGcPolicy(t *testing.T) {
 	modColumnReq := mock.modColumnReq
 	if modColumnReq.IgnoreWarnings {
 		t.Errorf("SetGCPolicy: IgnoreWarnings should be set to false")
-	}
-}
-
-func TestTableAdmin_SetType(t *testing.T) {
-	for _, test := range []struct {
-		desc       string
-		familyType Type
-		hasError   bool
-	}{
-		{
-			desc:       "Update with aggregate type failed",
-			familyType: AggregateType{Input: Int64Type{Encoding: BigEndianBytesEncoding{}}, Aggregator: SumAggregator{}},
-			hasError:   true,
-		},
-		{
-			desc:       "Update with string type",
-			familyType: StringType{Encoding: StringUtf8Encoding{}},
-			hasError:   false,
-		},
-		{
-			desc:       "Update with nil type",
-			familyType: nil,
-			hasError:   true,
-		},
-	} {
-		mock := &mockTableAdminClock{}
-		c := setupTableClient(t, mock)
-
-		err := c.SetValueType(context.Background(), "My-table", "cf1", test.familyType)
-		if err != nil && !test.hasError {
-			t.Fatalf("Unexpected error when setting type: %v", err)
-		}
 	}
 }
 

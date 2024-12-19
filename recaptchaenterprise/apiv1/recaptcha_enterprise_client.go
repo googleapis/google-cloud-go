@@ -19,6 +19,7 @@ package recaptchaenterprise
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 	"time"
@@ -46,6 +47,9 @@ type CallOptions struct {
 	UpdateKey                            []gax.CallOption
 	DeleteKey                            []gax.CallOption
 	MigrateKey                           []gax.CallOption
+	AddIpOverride                        []gax.CallOption
+	RemoveIpOverride                     []gax.CallOption
+	ListIpOverrides                      []gax.CallOption
 	GetMetrics                           []gax.CallOption
 	CreateFirewallPolicy                 []gax.CallOption
 	ListFirewallPolicies                 []gax.CallOption
@@ -98,6 +102,9 @@ func defaultCallOptions() *CallOptions {
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
 		MigrateKey:                           []gax.CallOption{},
+		AddIpOverride:                        []gax.CallOption{},
+		RemoveIpOverride:                     []gax.CallOption{},
+		ListIpOverrides:                      []gax.CallOption{},
 		GetMetrics:                           []gax.CallOption{},
 		CreateFirewallPolicy:                 []gax.CallOption{},
 		ListFirewallPolicies:                 []gax.CallOption{},
@@ -125,6 +132,9 @@ type internalClient interface {
 	UpdateKey(context.Context, *recaptchaenterprisepb.UpdateKeyRequest, ...gax.CallOption) (*recaptchaenterprisepb.Key, error)
 	DeleteKey(context.Context, *recaptchaenterprisepb.DeleteKeyRequest, ...gax.CallOption) error
 	MigrateKey(context.Context, *recaptchaenterprisepb.MigrateKeyRequest, ...gax.CallOption) (*recaptchaenterprisepb.Key, error)
+	AddIpOverride(context.Context, *recaptchaenterprisepb.AddIpOverrideRequest, ...gax.CallOption) (*recaptchaenterprisepb.AddIpOverrideResponse, error)
+	RemoveIpOverride(context.Context, *recaptchaenterprisepb.RemoveIpOverrideRequest, ...gax.CallOption) (*recaptchaenterprisepb.RemoveIpOverrideResponse, error)
+	ListIpOverrides(context.Context, *recaptchaenterprisepb.ListIpOverridesRequest, ...gax.CallOption) *IpOverrideDataIterator
 	GetMetrics(context.Context, *recaptchaenterprisepb.GetMetricsRequest, ...gax.CallOption) (*recaptchaenterprisepb.Metrics, error)
 	CreateFirewallPolicy(context.Context, *recaptchaenterprisepb.CreateFirewallPolicyRequest, ...gax.CallOption) (*recaptchaenterprisepb.FirewallPolicy, error)
 	ListFirewallPolicies(context.Context, *recaptchaenterprisepb.ListFirewallPoliciesRequest, ...gax.CallOption) *FirewallPolicyIterator
@@ -225,6 +235,32 @@ func (c *Client) MigrateKey(ctx context.Context, req *recaptchaenterprisepb.Migr
 	return c.internalClient.MigrateKey(ctx, req, opts...)
 }
 
+// AddIpOverride adds an IP override to a key. The following restrictions hold:
+//
+//	The maximum number of IP overrides per key is 100.
+//
+//	For any conflict (such as IP already exists or IP part of an existing
+//	IP range), an error is returned.
+func (c *Client) AddIpOverride(ctx context.Context, req *recaptchaenterprisepb.AddIpOverrideRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.AddIpOverrideResponse, error) {
+	return c.internalClient.AddIpOverride(ctx, req, opts...)
+}
+
+// RemoveIpOverride removes an IP override from a key. The following restrictions hold:
+//
+//	If the IP isn’t found in an existing IP override, a NOT_FOUND error
+//	is returned.
+//
+//	If the IP is found in an existing IP override, but the
+//	override type does not match, a NOT_FOUND error is returned.
+func (c *Client) RemoveIpOverride(ctx context.Context, req *recaptchaenterprisepb.RemoveIpOverrideRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.RemoveIpOverrideResponse, error) {
+	return c.internalClient.RemoveIpOverride(ctx, req, opts...)
+}
+
+// ListIpOverrides lists all IP overrides for a key.
+func (c *Client) ListIpOverrides(ctx context.Context, req *recaptchaenterprisepb.ListIpOverridesRequest, opts ...gax.CallOption) *IpOverrideDataIterator {
+	return c.internalClient.ListIpOverrides(ctx, req, opts...)
+}
+
 // GetMetrics get some aggregated metrics for a Key. This data can be used to build
 // dashboards.
 func (c *Client) GetMetrics(ctx context.Context, req *recaptchaenterprisepb.GetMetricsRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Metrics, error) {
@@ -293,6 +329,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new recaptcha enterprise service client based on gRPC.
@@ -319,6 +357,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      recaptchaenterprisepb.NewRecaptchaEnterpriseServiceClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -361,7 +400,7 @@ func (c *gRPCClient) CreateAssessment(ctx context.Context, req *recaptchaenterpr
 	var resp *recaptchaenterprisepb.Assessment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateAssessment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateAssessment, req, settings.GRPC, c.logger, "CreateAssessment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -379,7 +418,7 @@ func (c *gRPCClient) AnnotateAssessment(ctx context.Context, req *recaptchaenter
 	var resp *recaptchaenterprisepb.AnnotateAssessmentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.AnnotateAssessment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.AnnotateAssessment, req, settings.GRPC, c.logger, "AnnotateAssessment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -397,7 +436,7 @@ func (c *gRPCClient) CreateKey(ctx context.Context, req *recaptchaenterprisepb.C
 	var resp *recaptchaenterprisepb.Key
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateKey(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateKey, req, settings.GRPC, c.logger, "CreateKey")
 		return err
 	}, opts...)
 	if err != nil {
@@ -426,7 +465,7 @@ func (c *gRPCClient) ListKeys(ctx context.Context, req *recaptchaenterprisepb.Li
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListKeys(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListKeys, req, settings.GRPC, c.logger, "ListKeys")
 			return err
 		}, opts...)
 		if err != nil {
@@ -461,7 +500,7 @@ func (c *gRPCClient) RetrieveLegacySecretKey(ctx context.Context, req *recaptcha
 	var resp *recaptchaenterprisepb.RetrieveLegacySecretKeyResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.RetrieveLegacySecretKey(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.RetrieveLegacySecretKey, req, settings.GRPC, c.logger, "RetrieveLegacySecretKey")
 		return err
 	}, opts...)
 	if err != nil {
@@ -479,7 +518,7 @@ func (c *gRPCClient) GetKey(ctx context.Context, req *recaptchaenterprisepb.GetK
 	var resp *recaptchaenterprisepb.Key
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetKey(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetKey, req, settings.GRPC, c.logger, "GetKey")
 		return err
 	}, opts...)
 	if err != nil {
@@ -497,7 +536,7 @@ func (c *gRPCClient) UpdateKey(ctx context.Context, req *recaptchaenterprisepb.U
 	var resp *recaptchaenterprisepb.Key
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateKey(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateKey, req, settings.GRPC, c.logger, "UpdateKey")
 		return err
 	}, opts...)
 	if err != nil {
@@ -514,7 +553,7 @@ func (c *gRPCClient) DeleteKey(ctx context.Context, req *recaptchaenterprisepb.D
 	opts = append((*c.CallOptions).DeleteKey[0:len((*c.CallOptions).DeleteKey):len((*c.CallOptions).DeleteKey)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteKey(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteKey, req, settings.GRPC, c.logger, "DeleteKey")
 		return err
 	}, opts...)
 	return err
@@ -529,13 +568,95 @@ func (c *gRPCClient) MigrateKey(ctx context.Context, req *recaptchaenterprisepb.
 	var resp *recaptchaenterprisepb.Key
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.MigrateKey(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.MigrateKey, req, settings.GRPC, c.logger, "MigrateKey")
 		return err
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *gRPCClient) AddIpOverride(ctx context.Context, req *recaptchaenterprisepb.AddIpOverrideRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.AddIpOverrideResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).AddIpOverride[0:len((*c.CallOptions).AddIpOverride):len((*c.CallOptions).AddIpOverride)], opts...)
+	var resp *recaptchaenterprisepb.AddIpOverrideResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.AddIpOverride, req, settings.GRPC, c.logger, "AddIpOverride")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) RemoveIpOverride(ctx context.Context, req *recaptchaenterprisepb.RemoveIpOverrideRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.RemoveIpOverrideResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).RemoveIpOverride[0:len((*c.CallOptions).RemoveIpOverride):len((*c.CallOptions).RemoveIpOverride)], opts...)
+	var resp *recaptchaenterprisepb.RemoveIpOverrideResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.RemoveIpOverride, req, settings.GRPC, c.logger, "RemoveIpOverride")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListIpOverrides(ctx context.Context, req *recaptchaenterprisepb.ListIpOverridesRequest, opts ...gax.CallOption) *IpOverrideDataIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListIpOverrides[0:len((*c.CallOptions).ListIpOverrides):len((*c.CallOptions).ListIpOverrides)], opts...)
+	it := &IpOverrideDataIterator{}
+	req = proto.Clone(req).(*recaptchaenterprisepb.ListIpOverridesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*recaptchaenterprisepb.IpOverrideData, string, error) {
+		resp := &recaptchaenterprisepb.ListIpOverridesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListIpOverrides, req, settings.GRPC, c.logger, "ListIpOverrides")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetIpOverrides(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 func (c *gRPCClient) GetMetrics(ctx context.Context, req *recaptchaenterprisepb.GetMetricsRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Metrics, error) {
@@ -547,7 +668,7 @@ func (c *gRPCClient) GetMetrics(ctx context.Context, req *recaptchaenterprisepb.
 	var resp *recaptchaenterprisepb.Metrics
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetMetrics(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetMetrics, req, settings.GRPC, c.logger, "GetMetrics")
 		return err
 	}, opts...)
 	if err != nil {
@@ -565,7 +686,7 @@ func (c *gRPCClient) CreateFirewallPolicy(ctx context.Context, req *recaptchaent
 	var resp *recaptchaenterprisepb.FirewallPolicy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateFirewallPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateFirewallPolicy, req, settings.GRPC, c.logger, "CreateFirewallPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -594,7 +715,7 @@ func (c *gRPCClient) ListFirewallPolicies(ctx context.Context, req *recaptchaent
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListFirewallPolicies(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListFirewallPolicies, req, settings.GRPC, c.logger, "ListFirewallPolicies")
 			return err
 		}, opts...)
 		if err != nil {
@@ -629,7 +750,7 @@ func (c *gRPCClient) GetFirewallPolicy(ctx context.Context, req *recaptchaenterp
 	var resp *recaptchaenterprisepb.FirewallPolicy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetFirewallPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetFirewallPolicy, req, settings.GRPC, c.logger, "GetFirewallPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -647,7 +768,7 @@ func (c *gRPCClient) UpdateFirewallPolicy(ctx context.Context, req *recaptchaent
 	var resp *recaptchaenterprisepb.FirewallPolicy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateFirewallPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateFirewallPolicy, req, settings.GRPC, c.logger, "UpdateFirewallPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -664,7 +785,7 @@ func (c *gRPCClient) DeleteFirewallPolicy(ctx context.Context, req *recaptchaent
 	opts = append((*c.CallOptions).DeleteFirewallPolicy[0:len((*c.CallOptions).DeleteFirewallPolicy):len((*c.CallOptions).DeleteFirewallPolicy)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteFirewallPolicy(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteFirewallPolicy, req, settings.GRPC, c.logger, "DeleteFirewallPolicy")
 		return err
 	}, opts...)
 	return err
@@ -679,7 +800,7 @@ func (c *gRPCClient) ReorderFirewallPolicies(ctx context.Context, req *recaptcha
 	var resp *recaptchaenterprisepb.ReorderFirewallPoliciesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ReorderFirewallPolicies(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ReorderFirewallPolicies, req, settings.GRPC, c.logger, "ReorderFirewallPolicies")
 		return err
 	}, opts...)
 	if err != nil {
@@ -708,7 +829,7 @@ func (c *gRPCClient) ListRelatedAccountGroups(ctx context.Context, req *recaptch
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListRelatedAccountGroups(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListRelatedAccountGroups, req, settings.GRPC, c.logger, "ListRelatedAccountGroups")
 			return err
 		}, opts...)
 		if err != nil {
@@ -754,7 +875,7 @@ func (c *gRPCClient) ListRelatedAccountGroupMemberships(ctx context.Context, req
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListRelatedAccountGroupMemberships(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListRelatedAccountGroupMemberships, req, settings.GRPC, c.logger, "ListRelatedAccountGroupMemberships")
 			return err
 		}, opts...)
 		if err != nil {
@@ -800,7 +921,7 @@ func (c *gRPCClient) SearchRelatedAccountGroupMemberships(ctx context.Context, r
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.SearchRelatedAccountGroupMemberships(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.SearchRelatedAccountGroupMemberships, req, settings.GRPC, c.logger, "SearchRelatedAccountGroupMemberships")
 			return err
 		}, opts...)
 		if err != nil {

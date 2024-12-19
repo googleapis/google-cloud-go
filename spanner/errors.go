@@ -58,6 +58,10 @@ type Error struct {
 	// additionalInformation optionally contains any additional information
 	// about the error.
 	additionalInformation string
+
+	// RequestID is the associated ID that was sent to Google Cloud Spanner's
+	// backend, as the value in the "x-goog-spanner-request-id" gRPC header.
+	RequestID string
 }
 
 // TransactionOutcomeUnknownError is wrapped in a Spanner error when the error
@@ -82,13 +86,20 @@ func (e *TransactionOutcomeUnknownError) Unwrap() error { return e.err }
 // Error implements error.Error.
 func (e *Error) Error() string {
 	if e == nil {
-		return fmt.Sprintf("spanner: OK")
+		return "spanner: OK"
 	}
 	code := ErrCode(e)
+
+	var s string
 	if e.additionalInformation == "" {
-		return fmt.Sprintf("spanner: code = %q, desc = %q", code, e.Desc)
+		s = fmt.Sprintf("spanner: code = %q, desc = %q", code, e.Desc)
+	} else {
+		s = fmt.Sprintf("spanner: code = %q, desc = %q, additional information = %s", code, e.Desc, e.additionalInformation)
 	}
-	return fmt.Sprintf("spanner: code = %q, desc = %q, additional information = %s", code, e.Desc, e.additionalInformation)
+	if e.RequestID != "" {
+		s = fmt.Sprintf("%s, requestID = %q", s, e.RequestID)
+	}
+	return s
 }
 
 // Unwrap returns the wrapped error (if any).
@@ -100,7 +111,7 @@ func (e *Error) Unwrap() error {
 // This allows the error to be converted to a gRPC status using
 // `status.Convert(error)`.
 func (e *Error) GRPCStatus() *status.Status {
-	err := unwrap(e)
+	err := errors.Unwrap(e)
 	for {
 		// If the base error is nil, return status created from e.Code and e.Desc.
 		if err == nil {
@@ -110,7 +121,7 @@ func (e *Error) GRPCStatus() *status.Status {
 		if code != codes.Unknown {
 			return status.New(code, e.Desc)
 		}
-		err = unwrap(err)
+		err = errors.Unwrap(err)
 	}
 }
 
@@ -123,6 +134,10 @@ func (e *Error) decorate(info string) {
 // APIError error having given error code as its status.
 func spannerErrorf(code codes.Code, format string, args ...interface{}) error {
 	msg := fmt.Sprintf(format, args...)
+	return spannerError(code, msg)
+}
+
+func spannerError(code codes.Code, msg string) error {
 	wrapped, _ := apierror.FromError(status.Error(code, msg))
 	return &Error{
 		Code: code,
@@ -161,7 +176,7 @@ func toSpannerErrorWithCommitInfo(err error, errorDuringCommit bool) error {
 		return nil
 	}
 	var se *Error
-	if errorAs(err, &se) {
+	if errors.As(err, &se) {
 		return se
 	}
 	switch {
@@ -172,9 +187,9 @@ func toSpannerErrorWithCommitInfo(err error, errorDuringCommit bool) error {
 			desc = fmt.Sprintf("%s, %s", desc, transactionOutcomeUnknownMsg)
 			wrapped = &TransactionOutcomeUnknownError{err: wrapped}
 		}
-		return &Error{status.FromContextError(err).Code(), toAPIError(wrapped), desc, ""}
+		return &Error{status.FromContextError(err).Code(), toAPIError(wrapped), desc, "", ""}
 	case status.Code(err) == codes.Unknown:
-		return &Error{codes.Unknown, toAPIError(err), err.Error(), ""}
+		return &Error{codes.Unknown, toAPIError(err), err.Error(), "", ""}
 	default:
 		statusErr := status.Convert(err)
 		code, desc := statusErr.Code(), statusErr.Message()
@@ -183,7 +198,7 @@ func toSpannerErrorWithCommitInfo(err error, errorDuringCommit bool) error {
 			desc = fmt.Sprintf("%s, %s", desc, transactionOutcomeUnknownMsg)
 			wrapped = &TransactionOutcomeUnknownError{err: wrapped}
 		}
-		return &Error{code, toAPIError(wrapped), desc, ""}
+		return &Error{code, toAPIError(wrapped), desc, "", ""}
 	}
 }
 
@@ -199,7 +214,7 @@ func ErrCode(err error) codes.Code {
 // ErrDesc extracts the Cloud Spanner error description from a Go error.
 func ErrDesc(err error) string {
 	var se *Error
-	if !errorAs(err, &se) {
+	if !errors.As(err, &se) {
 		return err.Error()
 	}
 	return se.Desc
@@ -210,7 +225,7 @@ func ErrDesc(err error) string {
 func extractResourceType(err error) (string, bool) {
 	var s *status.Status
 	var se *Error
-	if errorAs(err, &se) {
+	if errors.As(err, &se) {
 		// Unwrap statusError.
 		s = status.Convert(se.Unwrap())
 	} else {

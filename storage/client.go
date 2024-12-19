@@ -132,6 +132,8 @@ type settings struct {
 
 	// userProject is the user project that should be billed for the request.
 	userProject string
+
+	metricsContext *metricsContext
 }
 
 func initSettings(opts ...storageOption) *settings {
@@ -235,7 +237,8 @@ type openWriterParams struct {
 	chunkSize int
 	// chunkRetryDeadline - see `Writer.ChunkRetryDeadline`.
 	// Optional.
-	chunkRetryDeadline time.Duration
+	chunkRetryDeadline   time.Duration
+	chunkTransferTimeout time.Duration
 
 	// Object/request properties
 

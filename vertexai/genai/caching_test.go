@@ -16,6 +16,7 @@ package genai
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"strings"
 	"testing"
@@ -76,8 +77,10 @@ func testCaching(t *testing.T, client *Client) {
 			return cc
 		}
 
+		vertexProject := os.Getenv("VERTEX_PROJECT_ID")
+
 		want := &CachedContent{
-			Model: "projects/" + os.Getenv("VERTEX_PROJECT_ID") +
+			Model: "projects/" + vertexProject +
 				"/locations/us-central1/publishers/google/models/" + model,
 			CreateTime: time.Now().UTC(),
 			UpdateTime: time.Now().UTC(),
@@ -93,14 +96,16 @@ func testCaching(t *testing.T, client *Client) {
 			}
 		}
 
+		gcsFilePath := fmt.Sprintf("gs://0002-test-multimodal-%s/embeddings/xray-embedding.json", vertexProject)
+
 		ttl := 30 * time.Minute
 		wantExpireTime := time.Now().Add(ttl)
 		argcc := &CachedContent{
 			Model:      model,
 			Expiration: ExpireTimeOrTTL{TTL: ttl},
-			Contents: []*Content{{Role: "user", Parts: []Part{
-				FileData{MIMEType: "text/plain", FileURI: "gs://0002-test-multimodal/embeddings/xray-embedding.json"},
-			}}},
+			Contents: []*Content{NewUserContent(FileData{
+				MIMEType: "text/plain",
+				FileURI:  gcsFilePath})},
 		}
 		cc := must(client.CreateCachedContent(ctx, argcc))
 		compare(cc, wantExpireTime)

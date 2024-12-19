@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	addressvalidationpb "cloud.google.com/go/maps/addressvalidation/apiv1/addressvalidationpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -190,6 +189,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new address validation client based on gRPC.
@@ -216,6 +217,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      addressvalidationpb.NewAddressValidationClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -262,6 +264,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new address validation rest client.
@@ -279,6 +283,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -328,7 +333,7 @@ func (c *gRPCClient) ValidateAddress(ctx context.Context, req *addressvalidation
 	var resp *addressvalidationpb.ValidateAddressResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ValidateAddress(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ValidateAddress, req, settings.GRPC, c.logger, "ValidateAddress")
 		return err
 	}, opts...)
 	if err != nil {
@@ -343,7 +348,7 @@ func (c *gRPCClient) ProvideValidationFeedback(ctx context.Context, req *address
 	var resp *addressvalidationpb.ProvideValidationFeedbackResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ProvideValidationFeedback(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ProvideValidationFeedback, req, settings.GRPC, c.logger, "ProvideValidationFeedback")
 		return err
 	}, opts...)
 	if err != nil {
@@ -388,17 +393,7 @@ func (c *restClient) ValidateAddress(ctx context.Context, req *addressvalidation
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ValidateAddress")
 		if err != nil {
 			return err
 		}
@@ -455,17 +450,7 @@ func (c *restClient) ProvideValidationFeedback(ctx context.Context, req *address
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ProvideValidationFeedback")
 		if err != nil {
 			return err
 		}

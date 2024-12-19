@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	networkconnectivitypb "cloud.google.com/go/networkconnectivity/apiv1alpha1/networkconnectivitypb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -384,6 +383,8 @@ type hubGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewHubClient creates a new hub service client based on gRPC.
@@ -413,6 +414,7 @@ func NewHubClient(ctx context.Context, opts ...option.ClientOption) (*HubClient,
 		connPool:    connPool,
 		hubClient:   networkconnectivitypb.NewHubServiceClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -475,6 +477,8 @@ type hubRESTClient struct {
 
 	// Points back to the CallOptions field of the containing HubClient
 	CallOptions **HubCallOptions
+
+	logger *slog.Logger
 }
 
 // NewHubRESTClient creates a new hub service rest client.
@@ -495,6 +499,7 @@ func NewHubRESTClient(ctx context.Context, opts ...option.ClientOption) (*HubCli
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -568,7 +573,7 @@ func (c *hubGRPCClient) ListHubs(ctx context.Context, req *networkconnectivitypb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.hubClient.ListHubs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.hubClient.ListHubs, req, settings.GRPC, c.logger, "ListHubs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -603,7 +608,7 @@ func (c *hubGRPCClient) GetHub(ctx context.Context, req *networkconnectivitypb.G
 	var resp *networkconnectivitypb.Hub
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.GetHub(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.GetHub, req, settings.GRPC, c.logger, "GetHub")
 		return err
 	}, opts...)
 	if err != nil {
@@ -621,7 +626,7 @@ func (c *hubGRPCClient) CreateHub(ctx context.Context, req *networkconnectivityp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.CreateHub(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.CreateHub, req, settings.GRPC, c.logger, "CreateHub")
 		return err
 	}, opts...)
 	if err != nil {
@@ -641,7 +646,7 @@ func (c *hubGRPCClient) UpdateHub(ctx context.Context, req *networkconnectivityp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.UpdateHub(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.UpdateHub, req, settings.GRPC, c.logger, "UpdateHub")
 		return err
 	}, opts...)
 	if err != nil {
@@ -661,7 +666,7 @@ func (c *hubGRPCClient) DeleteHub(ctx context.Context, req *networkconnectivityp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.DeleteHub(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.DeleteHub, req, settings.GRPC, c.logger, "DeleteHub")
 		return err
 	}, opts...)
 	if err != nil {
@@ -692,7 +697,7 @@ func (c *hubGRPCClient) ListSpokes(ctx context.Context, req *networkconnectivity
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.hubClient.ListSpokes(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.hubClient.ListSpokes, req, settings.GRPC, c.logger, "ListSpokes")
 			return err
 		}, opts...)
 		if err != nil {
@@ -727,7 +732,7 @@ func (c *hubGRPCClient) GetSpoke(ctx context.Context, req *networkconnectivitypb
 	var resp *networkconnectivitypb.Spoke
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.GetSpoke(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.GetSpoke, req, settings.GRPC, c.logger, "GetSpoke")
 		return err
 	}, opts...)
 	if err != nil {
@@ -745,7 +750,7 @@ func (c *hubGRPCClient) CreateSpoke(ctx context.Context, req *networkconnectivit
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.CreateSpoke(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.CreateSpoke, req, settings.GRPC, c.logger, "CreateSpoke")
 		return err
 	}, opts...)
 	if err != nil {
@@ -765,7 +770,7 @@ func (c *hubGRPCClient) UpdateSpoke(ctx context.Context, req *networkconnectivit
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.UpdateSpoke(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.UpdateSpoke, req, settings.GRPC, c.logger, "UpdateSpoke")
 		return err
 	}, opts...)
 	if err != nil {
@@ -785,7 +790,7 @@ func (c *hubGRPCClient) DeleteSpoke(ctx context.Context, req *networkconnectivit
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.DeleteSpoke(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.DeleteSpoke, req, settings.GRPC, c.logger, "DeleteSpoke")
 		return err
 	}, opts...)
 	if err != nil {
@@ -847,21 +852,10 @@ func (c *hubRESTClient) ListHubs(ctx context.Context, req *networkconnectivitypb
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListHubs")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -924,17 +918,7 @@ func (c *hubRESTClient) GetHub(ctx context.Context, req *networkconnectivitypb.G
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetHub")
 		if err != nil {
 			return err
 		}
@@ -996,21 +980,10 @@ func (c *hubRESTClient) CreateHub(ctx context.Context, req *networkconnectivityp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateHub")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1049,11 +1022,11 @@ func (c *hubRESTClient) UpdateHub(ctx context.Context, req *networkconnectivityp
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1077,21 +1050,10 @@ func (c *hubRESTClient) UpdateHub(ctx context.Context, req *networkconnectivityp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateHub")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1144,21 +1106,10 @@ func (c *hubRESTClient) DeleteHub(ctx context.Context, req *networkconnectivityp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteHub")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1227,21 +1178,10 @@ func (c *hubRESTClient) ListSpokes(ctx context.Context, req *networkconnectivity
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSpokes")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1304,17 +1244,7 @@ func (c *hubRESTClient) GetSpoke(ctx context.Context, req *networkconnectivitypb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSpoke")
 		if err != nil {
 			return err
 		}
@@ -1376,21 +1306,10 @@ func (c *hubRESTClient) CreateSpoke(ctx context.Context, req *networkconnectivit
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateSpoke")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1429,11 +1348,11 @@ func (c *hubRESTClient) UpdateSpoke(ctx context.Context, req *networkconnectivit
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1457,21 +1376,10 @@ func (c *hubRESTClient) UpdateSpoke(ctx context.Context, req *networkconnectivit
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateSpoke")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1524,21 +1432,10 @@ func (c *hubRESTClient) DeleteSpoke(ctx context.Context, req *networkconnectivit
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteSpoke")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}

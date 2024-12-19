@@ -54,7 +54,7 @@ func main() {
 		indirectDep = regexp.MustCompile(fmt.Sprintf(`%s [\-\/\.a-zA-Z0-9]+ \/\/ indirect`, *dep))
 	}
 	commitLevel = *commitLvl
-	commitMsg := *msg
+	commitMsg = *msg
 	if commitMsg == "" {
 		commitMsg = fmt.Sprintf("update %s to %s", *dep, *version)
 	}

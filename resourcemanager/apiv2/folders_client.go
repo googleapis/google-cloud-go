@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	resourcemanagerpb "cloud.google.com/go/resourcemanager/apiv2/resourcemanagerpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -357,6 +356,8 @@ type foldersGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewFoldersClient creates a new folders client based on gRPC.
@@ -385,6 +386,7 @@ func NewFoldersClient(ctx context.Context, opts ...option.ClientOption) (*Folder
 		connPool:      connPool,
 		foldersClient: resourcemanagerpb.NewFoldersClient(connPool),
 		CallOptions:   &client.CallOptions,
+		logger:        internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -447,6 +449,8 @@ type foldersRESTClient struct {
 
 	// Points back to the CallOptions field of the containing FoldersClient
 	CallOptions **FoldersCallOptions
+
+	logger *slog.Logger
 }
 
 // NewFoldersRESTClient creates a new folders rest client.
@@ -466,6 +470,7 @@ func NewFoldersRESTClient(ctx context.Context, opts ...option.ClientOption) (*Fo
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -536,7 +541,7 @@ func (c *foldersGRPCClient) ListFolders(ctx context.Context, req *resourcemanage
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.foldersClient.ListFolders(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.foldersClient.ListFolders, req, settings.GRPC, c.logger, "ListFolders")
 			return err
 		}, opts...)
 		if err != nil {
@@ -579,7 +584,7 @@ func (c *foldersGRPCClient) SearchFolders(ctx context.Context, req *resourcemana
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.foldersClient.SearchFolders(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.foldersClient.SearchFolders, req, settings.GRPC, c.logger, "SearchFolders")
 			return err
 		}, opts...)
 		if err != nil {
@@ -614,7 +619,7 @@ func (c *foldersGRPCClient) GetFolder(ctx context.Context, req *resourcemanagerp
 	var resp *resourcemanagerpb.Folder
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.foldersClient.GetFolder(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.foldersClient.GetFolder, req, settings.GRPC, c.logger, "GetFolder")
 		return err
 	}, opts...)
 	if err != nil {
@@ -629,7 +634,7 @@ func (c *foldersGRPCClient) CreateFolder(ctx context.Context, req *resourcemanag
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.foldersClient.CreateFolder(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.foldersClient.CreateFolder, req, settings.GRPC, c.logger, "CreateFolder")
 		return err
 	}, opts...)
 	if err != nil {
@@ -649,7 +654,7 @@ func (c *foldersGRPCClient) UpdateFolder(ctx context.Context, req *resourcemanag
 	var resp *resourcemanagerpb.Folder
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.foldersClient.UpdateFolder(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.foldersClient.UpdateFolder, req, settings.GRPC, c.logger, "UpdateFolder")
 		return err
 	}, opts...)
 	if err != nil {
@@ -667,7 +672,7 @@ func (c *foldersGRPCClient) MoveFolder(ctx context.Context, req *resourcemanager
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.foldersClient.MoveFolder(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.foldersClient.MoveFolder, req, settings.GRPC, c.logger, "MoveFolder")
 		return err
 	}, opts...)
 	if err != nil {
@@ -687,7 +692,7 @@ func (c *foldersGRPCClient) DeleteFolder(ctx context.Context, req *resourcemanag
 	var resp *resourcemanagerpb.Folder
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.foldersClient.DeleteFolder(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.foldersClient.DeleteFolder, req, settings.GRPC, c.logger, "DeleteFolder")
 		return err
 	}, opts...)
 	if err != nil {
@@ -705,7 +710,7 @@ func (c *foldersGRPCClient) UndeleteFolder(ctx context.Context, req *resourceman
 	var resp *resourcemanagerpb.Folder
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.foldersClient.UndeleteFolder(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.foldersClient.UndeleteFolder, req, settings.GRPC, c.logger, "UndeleteFolder")
 		return err
 	}, opts...)
 	if err != nil {
@@ -723,7 +728,7 @@ func (c *foldersGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamP
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.foldersClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.foldersClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -741,7 +746,7 @@ func (c *foldersGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamP
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.foldersClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.foldersClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -759,7 +764,7 @@ func (c *foldersGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.T
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.foldersClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.foldersClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -823,21 +828,10 @@ func (c *foldersRESTClient) ListFolders(ctx context.Context, req *resourcemanage
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListFolders")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -917,21 +911,10 @@ func (c *foldersRESTClient) SearchFolders(ctx context.Context, req *resourcemana
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SearchFolders")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -998,17 +981,7 @@ func (c *foldersRESTClient) GetFolder(ctx context.Context, req *resourcemanagerp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetFolder")
 		if err != nil {
 			return err
 		}
@@ -1090,21 +1063,10 @@ func (c *foldersRESTClient) CreateFolder(ctx context.Context, req *resourcemanag
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateFolder")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1154,11 +1116,11 @@ func (c *foldersRESTClient) UpdateFolder(ctx context.Context, req *resourcemanag
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1183,17 +1145,7 @@ func (c *foldersRESTClient) UpdateFolder(ctx context.Context, req *resourcemanag
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateFolder")
 		if err != nil {
 			return err
 		}
@@ -1264,21 +1216,10 @@ func (c *foldersRESTClient) MoveFolder(ctx context.Context, req *resourcemanager
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "MoveFolder")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1340,17 +1281,7 @@ func (c *foldersRESTClient) DeleteFolder(ctx context.Context, req *resourcemanag
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteFolder")
 		if err != nil {
 			return err
 		}
@@ -1415,17 +1346,7 @@ func (c *foldersRESTClient) UndeleteFolder(ctx context.Context, req *resourceman
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UndeleteFolder")
 		if err != nil {
 			return err
 		}
@@ -1485,17 +1406,7 @@ func (c *foldersRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamP
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -1555,17 +1466,7 @@ func (c *foldersRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamP
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -1625,17 +1526,7 @@ func (c *foldersRESTClient) TestIamPermissions(ctx context.Context, req *iampb.T
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
 		if err != nil {
 			return err
 		}

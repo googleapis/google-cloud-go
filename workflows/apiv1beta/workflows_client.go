@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -30,7 +30,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	workflowspb "cloud.google.com/go/workflows/apiv1beta/workflowspb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -216,6 +215,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new workflows client based on gRPC.
@@ -244,6 +245,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      workflowspb.NewWorkflowsClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -306,6 +308,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new workflows rest client.
@@ -325,6 +329,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -398,7 +403,7 @@ func (c *gRPCClient) ListWorkflows(ctx context.Context, req *workflowspb.ListWor
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListWorkflows(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListWorkflows, req, settings.GRPC, c.logger, "ListWorkflows")
 			return err
 		}, opts...)
 		if err != nil {
@@ -433,7 +438,7 @@ func (c *gRPCClient) GetWorkflow(ctx context.Context, req *workflowspb.GetWorkfl
 	var resp *workflowspb.Workflow
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetWorkflow(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetWorkflow, req, settings.GRPC, c.logger, "GetWorkflow")
 		return err
 	}, opts...)
 	if err != nil {
@@ -451,7 +456,7 @@ func (c *gRPCClient) CreateWorkflow(ctx context.Context, req *workflowspb.Create
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateWorkflow(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateWorkflow, req, settings.GRPC, c.logger, "CreateWorkflow")
 		return err
 	}, opts...)
 	if err != nil {
@@ -471,7 +476,7 @@ func (c *gRPCClient) DeleteWorkflow(ctx context.Context, req *workflowspb.Delete
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteWorkflow(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteWorkflow, req, settings.GRPC, c.logger, "DeleteWorkflow")
 		return err
 	}, opts...)
 	if err != nil {
@@ -491,7 +496,7 @@ func (c *gRPCClient) UpdateWorkflow(ctx context.Context, req *workflowspb.Update
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateWorkflow(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateWorkflow, req, settings.GRPC, c.logger, "UpdateWorkflow")
 		return err
 	}, opts...)
 	if err != nil {
@@ -554,21 +559,10 @@ func (c *restClient) ListWorkflows(ctx context.Context, req *workflowspb.ListWor
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListWorkflows")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -631,17 +625,7 @@ func (c *restClient) GetWorkflow(ctx context.Context, req *workflowspb.GetWorkfl
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetWorkflow")
 		if err != nil {
 			return err
 		}
@@ -700,21 +684,10 @@ func (c *restClient) CreateWorkflow(ctx context.Context, req *workflowspb.Create
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateWorkflow")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -766,21 +739,10 @@ func (c *restClient) DeleteWorkflow(ctx context.Context, req *workflowspb.Delete
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteWorkflow")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -820,11 +782,11 @@ func (c *restClient) UpdateWorkflow(ctx context.Context, req *workflowspb.Update
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -848,21 +810,10 @@ func (c *restClient) UpdateWorkflow(ctx context.Context, req *workflowspb.Update
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateWorkflow")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}

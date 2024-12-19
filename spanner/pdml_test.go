@@ -17,7 +17,8 @@ package spanner
 import (
 	"bytes"
 	"context"
-	"io/ioutil"
+	"errors"
+	"io"
 	"log"
 	"os"
 	"testing"
@@ -57,7 +58,7 @@ func TestMockPartitionedUpdateWithQuery(t *testing.T) {
 	_, err := client.PartitionedUpdate(ctx, stmt)
 	wantCode := codes.InvalidArgument
 	var serr *Error
-	if !errorAs(err, &serr) {
+	if !errors.As(err, &serr) {
 		t.Errorf("got error %v, want spanner.Error", err)
 	}
 	if ErrCode(serr) != wantCode {
@@ -101,8 +102,12 @@ func TestPartitionedUpdate_Aborted(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	id1 := gotReqs[2].(*sppb.ExecuteSqlRequest).Transaction.GetId()
-	id2 := gotReqs[4].(*sppb.ExecuteSqlRequest).Transaction.GetId()
+	muxCreateBuffer := 0
+	if isMultiplexEnabled {
+		muxCreateBuffer = 1
+	}
+	id1 := gotReqs[2+muxCreateBuffer].(*sppb.ExecuteSqlRequest).Transaction.GetId()
+	id2 := gotReqs[4+muxCreateBuffer].(*sppb.ExecuteSqlRequest).Transaction.GetId()
 	if bytes.Equal(id1, id2) {
 		t.Errorf("same transaction used twice, expected two different transactions\ngot tx1: %q\ngot tx2: %q", id1, id2)
 	}
@@ -114,8 +119,9 @@ func TestPartitionedUpdate_WithDeadline(t *testing.T) {
 	t.Parallel()
 	logger := log.New(os.Stderr, "", log.LstdFlags)
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		SessionPoolConfig: DefaultSessionPoolConfig,
-		Logger:            logger,
+		DisableNativeMetrics: true,
+		SessionPoolConfig:    DefaultSessionPoolConfig,
+		Logger:               logger,
 	})
 	defer teardown()
 
@@ -130,7 +136,7 @@ func TestPartitionedUpdate_WithDeadline(t *testing.T) {
 	// The following update will cause a 'Failed to delete session' warning to
 	// be logged. This is expected. To avoid spamming the log, we temporarily
 	// set the output to be discarded.
-	logger.SetOutput(ioutil.Discard)
+	logger.SetOutput(io.Discard)
 	_, err := client.PartitionedUpdate(ctx, stmt)
 	logger.SetOutput(os.Stderr)
 	if err == nil {
@@ -151,7 +157,7 @@ func TestPartitionedUpdate_QueryOptions(t *testing.T) {
 			}
 
 			ctx := context.Background()
-			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{QueryOptions: tt.client, Compression: gzip.Name})
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, QueryOptions: tt.client, Compression: gzip.Name})
 			defer teardown()
 
 			var err error
@@ -196,8 +202,12 @@ func TestPartitionedUpdate_ExcludeTxnFromChangeStreams(t *testing.T) {
 		&sppb.ExecuteSqlRequest{}}, requests); err != nil {
 		t.Fatal(err)
 	}
+	muxCreateBuffer := 0
+	if isMultiplexEnabled {
+		muxCreateBuffer = 1
+	}
 
-	if !requests[1].(*sppb.BeginTransactionRequest).GetOptions().GetExcludeTxnFromChangeStreams() {
+	if !requests[1+muxCreateBuffer].(*sppb.BeginTransactionRequest).GetOptions().GetExcludeTxnFromChangeStreams() {
 		t.Fatal("Transaction is not set to be excluded from change streams")
 	}
 }

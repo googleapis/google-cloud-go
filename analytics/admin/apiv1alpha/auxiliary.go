@@ -41,7 +41,7 @@ type AccessBindingIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.AccessBinding, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AccessBindingIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -88,7 +88,7 @@ type AccountIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.Account, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AccountIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -135,7 +135,7 @@ type AccountSummaryIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.AccountSummary, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AccountSummaryIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -182,7 +182,7 @@ type AdSenseLinkIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.AdSenseLink, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AdSenseLinkIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -229,7 +229,7 @@ type AudienceIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.Audience, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AudienceIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -276,7 +276,7 @@ type BigQueryLinkIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.BigQueryLink, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *BigQueryLinkIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -323,7 +323,7 @@ type CalculatedMetricIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.CalculatedMetric, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *CalculatedMetricIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -370,7 +370,7 @@ type ChangeHistoryEventIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.ChangeHistoryEvent, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ChangeHistoryEventIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -417,7 +417,7 @@ type ChannelGroupIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.ChannelGroup, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ChannelGroupIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -464,7 +464,7 @@ type ConversionEventIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.ConversionEvent, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ConversionEventIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -511,7 +511,7 @@ type CustomDimensionIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.CustomDimension, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *CustomDimensionIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -558,7 +558,7 @@ type CustomMetricIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.CustomMetric, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *CustomMetricIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -605,7 +605,7 @@ type DataStreamIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.DataStream, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *DataStreamIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -652,7 +652,7 @@ type DisplayVideo360AdvertiserLinkIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.DisplayVideo360AdvertiserLink, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *DisplayVideo360AdvertiserLinkIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -699,7 +699,7 @@ type DisplayVideo360AdvertiserLinkProposalIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.DisplayVideo360AdvertiserLinkProposal, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *DisplayVideo360AdvertiserLinkProposalIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -746,7 +746,7 @@ type EventCreateRuleIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.EventCreateRule, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *EventCreateRuleIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -773,6 +773,53 @@ func (it *EventCreateRuleIterator) takeBuf() interface{} {
 	return b
 }
 
+// EventEditRuleIterator manages a stream of *adminpb.EventEditRule.
+type EventEditRuleIterator struct {
+	items    []*adminpb.EventEditRule
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.EventEditRule, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *EventEditRuleIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *EventEditRuleIterator) Next() (*adminpb.EventEditRule, error) {
+	var item *adminpb.EventEditRule
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *EventEditRuleIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *EventEditRuleIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // ExpandedDataSetIterator manages a stream of *adminpb.ExpandedDataSet.
 type ExpandedDataSetIterator struct {
 	items    []*adminpb.ExpandedDataSet
@@ -793,7 +840,7 @@ type ExpandedDataSetIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.ExpandedDataSet, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ExpandedDataSetIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -840,7 +887,7 @@ type FirebaseLinkIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.FirebaseLink, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *FirebaseLinkIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -887,7 +934,7 @@ type GoogleAdsLinkIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.GoogleAdsLink, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *GoogleAdsLinkIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -914,6 +961,53 @@ func (it *GoogleAdsLinkIterator) takeBuf() interface{} {
 	return b
 }
 
+// KeyEventIterator manages a stream of *adminpb.KeyEvent.
+type KeyEventIterator struct {
+	items    []*adminpb.KeyEvent
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.KeyEvent, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *KeyEventIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *KeyEventIterator) Next() (*adminpb.KeyEvent, error) {
+	var item *adminpb.KeyEvent
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *KeyEventIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *KeyEventIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // MeasurementProtocolSecretIterator manages a stream of *adminpb.MeasurementProtocolSecret.
 type MeasurementProtocolSecretIterator struct {
 	items    []*adminpb.MeasurementProtocolSecret
@@ -934,7 +1028,7 @@ type MeasurementProtocolSecretIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.MeasurementProtocolSecret, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *MeasurementProtocolSecretIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -981,7 +1075,7 @@ type PropertyIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.Property, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *PropertyIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1028,7 +1122,7 @@ type RollupPropertySourceLinkIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.RollupPropertySourceLink, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *RollupPropertySourceLinkIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1075,7 +1169,7 @@ type SKAdNetworkConversionValueSchemaIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.SKAdNetworkConversionValueSchema, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *SKAdNetworkConversionValueSchemaIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1122,7 +1216,7 @@ type SearchAds360LinkIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.SearchAds360Link, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *SearchAds360LinkIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1169,7 +1263,7 @@ type SubpropertyEventFilterIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.SubpropertyEventFilter, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *SubpropertyEventFilterIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

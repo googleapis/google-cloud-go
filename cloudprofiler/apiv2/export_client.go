@@ -19,7 +19,7 @@ package cloudprofiler
 import (
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -27,7 +27,6 @@ import (
 
 	cloudprofilerpb "cloud.google.com/go/cloudprofiler/apiv2/cloudprofilerpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -55,6 +54,7 @@ func defaultExportGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://cloudprofiler.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -158,6 +158,8 @@ type exportGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewExportClient creates a new export service client based on gRPC.
@@ -185,6 +187,7 @@ func NewExportClient(ctx context.Context, opts ...option.ClientOption) (*ExportC
 		connPool:     connPool,
 		exportClient: cloudprofilerpb.NewExportServiceClient(connPool),
 		CallOptions:  &client.CallOptions,
+		logger:       internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -231,6 +234,8 @@ type exportRESTClient struct {
 
 	// Points back to the CallOptions field of the containing ExportClient
 	CallOptions **ExportCallOptions
+
+	logger *slog.Logger
 }
 
 // NewExportRESTClient creates a new export service rest client.
@@ -249,6 +254,7 @@ func NewExportRESTClient(ctx context.Context, opts ...option.ClientOption) (*Exp
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -263,6 +269,7 @@ func defaultExportRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudprofiler.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -311,7 +318,7 @@ func (c *exportGRPCClient) ListProfiles(ctx context.Context, req *cloudprofilerp
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.exportClient.ListProfiles(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.exportClient.ListProfiles, req, settings.GRPC, c.logger, "ListProfiles")
 			return err
 		}, opts...)
 		if err != nil {
@@ -383,21 +390,10 @@ func (c *exportRESTClient) ListProfiles(ctx context.Context, req *cloudprofilerp
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListProfiles")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

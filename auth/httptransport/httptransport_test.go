@@ -25,6 +25,7 @@ import (
 	"cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/auth/internal"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 )
 
 func TestAddAuthorizationMiddleware(t *testing.T) {
@@ -49,12 +50,12 @@ func TestAddAuthorizationMiddleware(t *testing.T) {
 		},
 		{
 			name:    "missing creds field",
-			client:  internal.CloneDefaultClient(),
+			client:  internal.DefaultClient(),
 			wantErr: true,
 		},
 		{
 			name:   "works",
-			client: internal.CloneDefaultClient(),
+			client: internal.DefaultClient(),
 			creds:  creds,
 			want:   "fakeToken",
 		},
@@ -296,7 +297,7 @@ func TestOptions_ResolveDetectOptions(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := tt.in.resolveDetectOptions()
-			if diff := cmp.Diff(tt.want, got); diff != "" {
+			if diff := cmp.Diff(tt.want, got, cmpopts.IgnoreFields(credentials.DetectOptions{}, "Logger")); diff != "" {
 				t.Errorf("mismatch (-want +got):\n%s", diff)
 			}
 		})
@@ -372,6 +373,37 @@ func TestNewClient_APIKey(t *testing.T) {
 	}
 }
 
+func TestNewClient_QuotaPrecedence(t *testing.T) {
+	testQuota := "testquotaWins"
+	t.Setenv(internal.QuotaProjectEnvVar, "testquotaLoses")
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if got := r.Header.Get(quotaProjectHeaderKey); got != testQuota {
+			t.Errorf("got %q, want %q", got, testQuota)
+		}
+	}))
+	defer ts.Close()
+
+	h := make(http.Header)
+	h.Set(quotaProjectHeaderKey, testQuota)
+	client, err := NewClient(&Options{
+		InternalOptions: &InternalOptions{
+			DefaultEndpointTemplate: ts.URL,
+		},
+		DetectOpts: &credentials.DetectOptions{
+			Audience:         ts.URL,
+			CredentialsFile:  "../internal/testdata/sa.json",
+			UseSelfSignedJWT: true,
+		},
+		Headers: h,
+	})
+	if err != nil {
+		t.Fatalf("NewClient() = %v", err)
+	}
+	if _, err := client.Get(ts.URL); err != nil {
+		t.Fatalf("client.Get() = %v", err)
+	}
+}
+
 func TestNewClient_BaseRoundTripper(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		got := r.Header.Get("Foo")
@@ -394,6 +426,20 @@ func TestNewClient_BaseRoundTripper(t *testing.T) {
 	}
 	if _, err := client.Get(ts.URL); err != nil {
 		t.Fatalf("client.Get() = %v", err)
+	}
+}
+
+func TestNewClient_HandlesNonTransportAsDefaultTransport(t *testing.T) {
+	// Override the global http.DefaultTransport.
+	dt := http.DefaultTransport
+	http.DefaultTransport = &rt{}
+	defer func() { http.DefaultTransport = dt }()
+
+	_, err := NewClient(&Options{
+		APIKey: "key",
+	})
+	if err != nil {
+		t.Fatalf("NewClient() = %v", err)
 	}
 }
 

@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	retailpb "cloud.google.com/go/retail/apiv2alpha/retailpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -463,6 +462,8 @@ type projectGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewProjectClient creates a new project service client based on gRPC.
@@ -489,6 +490,7 @@ func NewProjectClient(ctx context.Context, opts ...option.ClientOption) (*Projec
 		connPool:         connPool,
 		projectClient:    retailpb.NewProjectServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -552,6 +554,8 @@ type projectRESTClient struct {
 
 	// Points back to the CallOptions field of the containing ProjectClient
 	CallOptions **ProjectCallOptions
+
+	logger *slog.Logger
 }
 
 // NewProjectRESTClient creates a new project service rest client.
@@ -569,6 +573,7 @@ func NewProjectRESTClient(ctx context.Context, opts ...option.ClientOption) (*Pr
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -631,7 +636,7 @@ func (c *projectGRPCClient) GetProject(ctx context.Context, req *retailpb.GetPro
 	var resp *retailpb.Project
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.projectClient.GetProject(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.projectClient.GetProject, req, settings.GRPC, c.logger, "GetProject")
 		return err
 	}, opts...)
 	if err != nil {
@@ -649,7 +654,7 @@ func (c *projectGRPCClient) AcceptTerms(ctx context.Context, req *retailpb.Accep
 	var resp *retailpb.Project
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.projectClient.AcceptTerms(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.projectClient.AcceptTerms, req, settings.GRPC, c.logger, "AcceptTerms")
 		return err
 	}, opts...)
 	if err != nil {
@@ -667,7 +672,7 @@ func (c *projectGRPCClient) EnrollSolution(ctx context.Context, req *retailpb.En
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.projectClient.EnrollSolution(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.projectClient.EnrollSolution, req, settings.GRPC, c.logger, "EnrollSolution")
 		return err
 	}, opts...)
 	if err != nil {
@@ -687,7 +692,7 @@ func (c *projectGRPCClient) ListEnrolledSolutions(ctx context.Context, req *reta
 	var resp *retailpb.ListEnrolledSolutionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.projectClient.ListEnrolledSolutions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.projectClient.ListEnrolledSolutions, req, settings.GRPC, c.logger, "ListEnrolledSolutions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -705,7 +710,7 @@ func (c *projectGRPCClient) GetLoggingConfig(ctx context.Context, req *retailpb.
 	var resp *retailpb.LoggingConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.projectClient.GetLoggingConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.projectClient.GetLoggingConfig, req, settings.GRPC, c.logger, "GetLoggingConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -723,7 +728,7 @@ func (c *projectGRPCClient) UpdateLoggingConfig(ctx context.Context, req *retail
 	var resp *retailpb.LoggingConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.projectClient.UpdateLoggingConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.projectClient.UpdateLoggingConfig, req, settings.GRPC, c.logger, "UpdateLoggingConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -741,7 +746,7 @@ func (c *projectGRPCClient) GetAlertConfig(ctx context.Context, req *retailpb.Ge
 	var resp *retailpb.AlertConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.projectClient.GetAlertConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.projectClient.GetAlertConfig, req, settings.GRPC, c.logger, "GetAlertConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -759,7 +764,7 @@ func (c *projectGRPCClient) UpdateAlertConfig(ctx context.Context, req *retailpb
 	var resp *retailpb.AlertConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.projectClient.UpdateAlertConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.projectClient.UpdateAlertConfig, req, settings.GRPC, c.logger, "UpdateAlertConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -777,7 +782,7 @@ func (c *projectGRPCClient) GetOperation(ctx context.Context, req *longrunningpb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -806,7 +811,7 @@ func (c *projectGRPCClient) ListOperations(ctx context.Context, req *longrunning
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -868,17 +873,7 @@ func (c *projectRESTClient) GetProject(ctx context.Context, req *retailpb.GetPro
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetProject")
 		if err != nil {
 			return err
 		}
@@ -937,17 +932,7 @@ func (c *projectRESTClient) AcceptTerms(ctx context.Context, req *retailpb.Accep
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AcceptTerms")
 		if err != nil {
 			return err
 		}
@@ -1009,21 +994,10 @@ func (c *projectRESTClient) EnrollSolution(ctx context.Context, req *retailpb.En
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "EnrollSolution")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1074,17 +1048,7 @@ func (c *projectRESTClient) ListEnrolledSolutions(ctx context.Context, req *reta
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListEnrolledSolutions")
 		if err != nil {
 			return err
 		}
@@ -1135,17 +1099,7 @@ func (c *projectRESTClient) GetLoggingConfig(ctx context.Context, req *retailpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLoggingConfig")
 		if err != nil {
 			return err
 		}
@@ -1181,11 +1135,11 @@ func (c *projectRESTClient) UpdateLoggingConfig(ctx context.Context, req *retail
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1210,17 +1164,7 @@ func (c *projectRESTClient) UpdateLoggingConfig(ctx context.Context, req *retail
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateLoggingConfig")
 		if err != nil {
 			return err
 		}
@@ -1271,17 +1215,7 @@ func (c *projectRESTClient) GetAlertConfig(ctx context.Context, req *retailpb.Ge
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAlertConfig")
 		if err != nil {
 			return err
 		}
@@ -1316,11 +1250,11 @@ func (c *projectRESTClient) UpdateAlertConfig(ctx context.Context, req *retailpb
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1345,17 +1279,7 @@ func (c *projectRESTClient) UpdateAlertConfig(ctx context.Context, req *retailpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateAlertConfig")
 		if err != nil {
 			return err
 		}
@@ -1405,17 +1329,7 @@ func (c *projectRESTClient) GetOperation(ctx context.Context, req *longrunningpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -1480,21 +1394,10 @@ func (c *projectRESTClient) ListOperations(ctx context.Context, req *longrunning
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

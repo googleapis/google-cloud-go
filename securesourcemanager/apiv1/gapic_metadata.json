@@ -15,6 +15,11 @@
                 "CancelOperation"
               ]
             },
+            "CreateBranchRule": {
+              "methods": [
+                "CreateBranchRule"
+              ]
+            },
             "CreateInstance": {
               "methods": [
                 "CreateInstance"
@@ -23,6 +28,11 @@
             "CreateRepository": {
               "methods": [
                 "CreateRepository"
+              ]
+            },
+            "DeleteBranchRule": {
+              "methods": [
+                "DeleteBranchRule"
               ]
             },
             "DeleteInstance": {
@@ -38,6 +48,11 @@
             "DeleteRepository": {
               "methods": [
                 "DeleteRepository"
+              ]
+            },
+            "GetBranchRule": {
+              "methods": [
+                "GetBranchRule"
               ]
             },
             "GetIamPolicy": {
@@ -68,6 +83,11 @@
             "GetRepository": {
               "methods": [
                 "GetRepository"
+              ]
+            },
+            "ListBranchRules": {
+              "methods": [
+                "ListBranchRules"
               ]
             },
             "ListInstances": {
@@ -108,6 +128,11 @@
             "TestIamPermissionsRepo": {
               "methods": [
                 "TestIamPermissionsRepo"
+              ]
+            },
+            "UpdateBranchRule": {
+              "methods": [
+                "UpdateBranchRule"
               ]
             }
           }
@@ -120,6 +145,11 @@
                 "CancelOperation"
               ]
             },
+            "CreateBranchRule": {
+              "methods": [
+                "CreateBranchRule"
+              ]
+            },
             "CreateInstance": {
               "methods": [
                 "CreateInstance"
@@ -128,6 +158,11 @@
             "CreateRepository": {
               "methods": [
                 "CreateRepository"
+              ]
+            },
+            "DeleteBranchRule": {
+              "methods": [
+                "DeleteBranchRule"
               ]
             },
             "DeleteInstance": {
@@ -143,6 +178,11 @@
             "DeleteRepository": {
               "methods": [
                 "DeleteRepository"
+              ]
+            },
+            "GetBranchRule": {
+              "methods": [
+                "GetBranchRule"
               ]
             },
             "GetIamPolicy": {
@@ -173,6 +213,11 @@
             "GetRepository": {
               "methods": [
                 "GetRepository"
+              ]
+            },
+            "ListBranchRules": {
+              "methods": [
+                "ListBranchRules"
               ]
             },
             "ListInstances": {
@@ -213,6 +258,11 @@
             "TestIamPermissionsRepo": {
               "methods": [
                 "TestIamPermissionsRepo"
+              ]
+            },
+            "UpdateBranchRule": {
+              "methods": [
+                "UpdateBranchRule"
               ]
             }
           }

@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -573,6 +572,8 @@ type agentsGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewAgentsClient creates a new agents client based on gRPC.
@@ -599,6 +600,7 @@ func NewAgentsClient(ctx context.Context, opts ...option.ClientOption) (*AgentsC
 		connPool:         connPool,
 		agentsClient:     cxpb.NewAgentsClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
@@ -663,6 +665,8 @@ type agentsRESTClient struct {
 
 	// Points back to the CallOptions field of the containing AgentsClient
 	CallOptions **AgentsCallOptions
+
+	logger *slog.Logger
 }
 
 // NewAgentsRESTClient creates a new agents rest client.
@@ -680,6 +684,7 @@ func NewAgentsRESTClient(ctx context.Context, opts ...option.ClientOption) (*Age
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -753,7 +758,7 @@ func (c *agentsGRPCClient) ListAgents(ctx context.Context, req *cxpb.ListAgentsR
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.agentsClient.ListAgents(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.agentsClient.ListAgents, req, settings.GRPC, c.logger, "ListAgents")
 			return err
 		}, opts...)
 		if err != nil {
@@ -788,7 +793,7 @@ func (c *agentsGRPCClient) GetAgent(ctx context.Context, req *cxpb.GetAgentReque
 	var resp *cxpb.Agent
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.agentsClient.GetAgent(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.agentsClient.GetAgent, req, settings.GRPC, c.logger, "GetAgent")
 		return err
 	}, opts...)
 	if err != nil {
@@ -806,7 +811,7 @@ func (c *agentsGRPCClient) CreateAgent(ctx context.Context, req *cxpb.CreateAgen
 	var resp *cxpb.Agent
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.agentsClient.CreateAgent(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.agentsClient.CreateAgent, req, settings.GRPC, c.logger, "CreateAgent")
 		return err
 	}, opts...)
 	if err != nil {
@@ -824,7 +829,7 @@ func (c *agentsGRPCClient) UpdateAgent(ctx context.Context, req *cxpb.UpdateAgen
 	var resp *cxpb.Agent
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.agentsClient.UpdateAgent(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.agentsClient.UpdateAgent, req, settings.GRPC, c.logger, "UpdateAgent")
 		return err
 	}, opts...)
 	if err != nil {
@@ -841,7 +846,7 @@ func (c *agentsGRPCClient) DeleteAgent(ctx context.Context, req *cxpb.DeleteAgen
 	opts = append((*c.CallOptions).DeleteAgent[0:len((*c.CallOptions).DeleteAgent):len((*c.CallOptions).DeleteAgent)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.agentsClient.DeleteAgent(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.agentsClient.DeleteAgent, req, settings.GRPC, c.logger, "DeleteAgent")
 		return err
 	}, opts...)
 	return err
@@ -856,7 +861,7 @@ func (c *agentsGRPCClient) ExportAgent(ctx context.Context, req *cxpb.ExportAgen
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.agentsClient.ExportAgent(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.agentsClient.ExportAgent, req, settings.GRPC, c.logger, "ExportAgent")
 		return err
 	}, opts...)
 	if err != nil {
@@ -876,7 +881,7 @@ func (c *agentsGRPCClient) RestoreAgent(ctx context.Context, req *cxpb.RestoreAg
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.agentsClient.RestoreAgent(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.agentsClient.RestoreAgent, req, settings.GRPC, c.logger, "RestoreAgent")
 		return err
 	}, opts...)
 	if err != nil {
@@ -896,7 +901,7 @@ func (c *agentsGRPCClient) ValidateAgent(ctx context.Context, req *cxpb.Validate
 	var resp *cxpb.AgentValidationResult
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.agentsClient.ValidateAgent(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.agentsClient.ValidateAgent, req, settings.GRPC, c.logger, "ValidateAgent")
 		return err
 	}, opts...)
 	if err != nil {
@@ -914,7 +919,7 @@ func (c *agentsGRPCClient) GetAgentValidationResult(ctx context.Context, req *cx
 	var resp *cxpb.AgentValidationResult
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.agentsClient.GetAgentValidationResult(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.agentsClient.GetAgentValidationResult, req, settings.GRPC, c.logger, "GetAgentValidationResult")
 		return err
 	}, opts...)
 	if err != nil {
@@ -932,7 +937,7 @@ func (c *agentsGRPCClient) GetGenerativeSettings(ctx context.Context, req *cxpb.
 	var resp *cxpb.GenerativeSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.agentsClient.GetGenerativeSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.agentsClient.GetGenerativeSettings, req, settings.GRPC, c.logger, "GetGenerativeSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -950,7 +955,7 @@ func (c *agentsGRPCClient) UpdateGenerativeSettings(ctx context.Context, req *cx
 	var resp *cxpb.GenerativeSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.agentsClient.UpdateGenerativeSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.agentsClient.UpdateGenerativeSettings, req, settings.GRPC, c.logger, "UpdateGenerativeSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -968,7 +973,7 @@ func (c *agentsGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetL
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -997,7 +1002,7 @@ func (c *agentsGRPCClient) ListLocations(ctx context.Context, req *locationpb.Li
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1031,7 +1036,7 @@ func (c *agentsGRPCClient) CancelOperation(ctx context.Context, req *longrunning
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -1046,7 +1051,7 @@ func (c *agentsGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1075,7 +1080,7 @@ func (c *agentsGRPCClient) ListOperations(ctx context.Context, req *longrunningp
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1146,21 +1151,10 @@ func (c *agentsRESTClient) ListAgents(ctx context.Context, req *cxpb.ListAgentsR
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAgents")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1223,17 +1217,7 @@ func (c *agentsRESTClient) GetAgent(ctx context.Context, req *cxpb.GetAgentReque
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAgent")
 		if err != nil {
 			return err
 		}
@@ -1294,17 +1278,7 @@ func (c *agentsRESTClient) CreateAgent(ctx context.Context, req *cxpb.CreateAgen
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateAgent")
 		if err != nil {
 			return err
 		}
@@ -1343,11 +1317,11 @@ func (c *agentsRESTClient) UpdateAgent(ctx context.Context, req *cxpb.UpdateAgen
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1372,17 +1346,7 @@ func (c *agentsRESTClient) UpdateAgent(ctx context.Context, req *cxpb.UpdateAgen
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateAgent")
 		if err != nil {
 			return err
 		}
@@ -1429,15 +1393,8 @@ func (c *agentsRESTClient) DeleteAgent(ctx context.Context, req *cxpb.DeleteAgen
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteAgent")
+		return err
 	}, opts...)
 }
 
@@ -1489,21 +1446,10 @@ func (c *agentsRESTClient) ExportAgent(ctx context.Context, req *cxpb.ExportAgen
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExportAgent")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1576,21 +1522,10 @@ func (c *agentsRESTClient) RestoreAgent(ctx context.Context, req *cxpb.RestoreAg
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RestoreAgent")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1649,17 +1584,7 @@ func (c *agentsRESTClient) ValidateAgent(ctx context.Context, req *cxpb.Validate
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ValidateAgent")
 		if err != nil {
 			return err
 		}
@@ -1713,17 +1638,7 @@ func (c *agentsRESTClient) GetAgentValidationResult(ctx context.Context, req *cx
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAgentValidationResult")
 		if err != nil {
 			return err
 		}
@@ -1774,17 +1689,7 @@ func (c *agentsRESTClient) GetGenerativeSettings(ctx context.Context, req *cxpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetGenerativeSettings")
 		if err != nil {
 			return err
 		}
@@ -1819,11 +1724,11 @@ func (c *agentsRESTClient) UpdateGenerativeSettings(ctx context.Context, req *cx
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1848,17 +1753,7 @@ func (c *agentsRESTClient) UpdateGenerativeSettings(ctx context.Context, req *cx
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateGenerativeSettings")
 		if err != nil {
 			return err
 		}
@@ -1908,17 +1803,7 @@ func (c *agentsRESTClient) GetLocation(ctx context.Context, req *locationpb.GetL
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -1983,21 +1868,10 @@ func (c *agentsRESTClient) ListLocations(ctx context.Context, req *locationpb.Li
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2057,15 +1931,8 @@ func (c *agentsRESTClient) CancelOperation(ctx context.Context, req *longrunning
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -2102,17 +1969,7 @@ func (c *agentsRESTClient) GetOperation(ctx context.Context, req *longrunningpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -2177,21 +2034,10 @@ func (c *agentsRESTClient) ListOperations(ctx context.Context, req *longrunningp
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

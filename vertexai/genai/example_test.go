@@ -74,14 +74,48 @@ func ExampleGenerativeModel_GenerateContent_config() {
 	model.SetTopP(0.5)
 	model.SetTopK(20)
 	model.SetMaxOutputTokens(100)
-	model.SystemInstruction = &genai.Content{
-		Parts: []genai.Part{genai.Text("You are Yoda from Star Wars.")},
-	}
+	model.SystemInstruction = genai.NewUserContent(genai.Text("You are Yoda from Star Wars."))
 	resp, err := model.GenerateContent(ctx, genai.Text("What is the average size of a swallow?"))
 	if err != nil {
 		log.Fatal(err)
 	}
 	printResponse(resp)
+}
+
+// This example shows how to send multiple requests concurrently using goroutines.
+func ExampleGenerativeModel_GenerateContent_goroutine() {
+	ctx := context.Background()
+	const projectID = "YOUR PROJECT ID"
+	const location = "GCP LOCATION"
+	client, err := genai.NewClient(ctx, projectID, location)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer client.Close()
+
+	model := client.GenerativeModel("gemini-1.0-pro")
+
+	queries := []string{"Hello, World!", "What's the weather today?"}
+	resultChan := make(chan *genai.GenerateContentResponse, len(queries))
+
+	worker := func(query string) {
+		result, err := model.GenerateContent(ctx, genai.Text(query))
+		if err != nil {
+			log.Fatal(err)
+		}
+		resultChan <- result
+	}
+	// Send two requests concurrently
+	for _, query := range queries {
+		go worker(query)
+	}
+
+	// Wait for the responses
+	for a := 0; a < len(queries); a++ {
+		result := <-resultChan
+		printResponse(result)
+	}
+	close(resultChan)
 }
 
 func ExampleGenerativeModel_GenerateContentStream() {
@@ -315,7 +349,7 @@ func ExampleClient_cachedContent() {
 	file := genai.FileData{MIMEType: "application/pdf", FileURI: "gs://my-bucket/my-doc.pdf"}
 	cc, err := client.CreateCachedContent(ctx, &genai.CachedContent{
 		Model:    modelName,
-		Contents: []*genai.Content{{Parts: []genai.Part{file}}},
+		Contents: []*genai.Content{genai.NewUserContent(file)},
 	})
 	model := client.GenerativeModelFromCachedContent(cc)
 	// Work with the model as usual in this program.
