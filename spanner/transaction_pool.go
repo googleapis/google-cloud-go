@@ -61,6 +61,7 @@ type fixedSizePool struct {
 	numPrepareErrs int
 	maxPrepareErrs int
 	numFailed      int
+	numWaiters     int
 
 	prepareFunc func()
 }
@@ -117,11 +118,13 @@ func (p *fixedSizePool) get(ctx context.Context) (*preparedTransaction, error) {
 				p.mu.Unlock()
 				return nil, err
 			}
+			p.numWaiters++
 			p.mu.Unlock()
 			if err := p.waitForTransaction(ctx); err != nil {
 				return nil, err
 			}
 			p.mu.Lock()
+			p.numWaiters--
 			l = len(p.transactions)
 			if l > 0 {
 				break
@@ -168,9 +171,12 @@ func (p *fixedSizePool) prepareTransaction() {
 			p.numPrepareErrs = 0
 			p.transactions = append(p.transactions, tx)
 		}
+		numWaiters := p.numWaiters
 		p.mu.Unlock()
 		if err == nil || maxErrsReached {
-			p.transactionReady <- true
+			if numWaiters > 0 {
+				p.transactionReady <- true
+			}
 			break
 		}
 	}
