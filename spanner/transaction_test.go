@@ -366,7 +366,13 @@ func TestReadWriteTransaction_PrecommitToken(t *testing.T) {
 			}
 
 			requests := drainRequestsFromServer(server.TestSpanner)
-			commitReq := requests[len(requests)-1].(*sppb.CommitRequest)
+			var commitReq *sppb.CommitRequest
+			for _, req := range requests {
+				if c, ok := req.(*sppb.CommitRequest); ok {
+					commitReq = c
+					break
+				}
+			}
 			if commitReq.PrecommitToken == nil || len(commitReq.PrecommitToken.GetPrecommitToken()) == 0 {
 				t.Fatalf("Expected commit request to contain a valid precommitToken, got: %v", commitReq.PrecommitToken)
 			}
