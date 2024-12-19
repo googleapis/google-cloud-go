@@ -4636,6 +4636,10 @@ func TestIntegration_ObjectMove(t *testing.T) {
 		if objAttrs == nil || objAttrs.Name == "" {
 			t.Errorf("wanted object attrs to be populated; got %+v", objAttrs)
 		}
+		// Check source object is no longer present.
+		if _, err := obj.Attrs(ctx); !errors.Is(err, ErrObjectNotExist) {
+			t.Errorf("source object: got err %v, want ErrObjectNotExist", err)
+		}
 
 		// Test that source and destination preconditions are applied appropriately.
 		srcObj2 := "move-src-obj2"
@@ -4650,19 +4654,13 @@ func TestIntegration_ObjectMove(t *testing.T) {
 		_, err = obj2.If(Conditions{
 			GenerationMatch: 123,
 		}).Move(ctx, MoveObjectDestination{Object: dstObj2})
-		if err == nil {
-			t.Error("ObjectHandle.Move: got nil, want 412 error")
-		}
-		if !(status.Code(err) == codes.FailedPrecondition || extractErrCode(err) == http.StatusPreconditionFailed) {
+		if err == nil || !(status.Code(err) == codes.FailedPrecondition || extractErrCode(err) == http.StatusPreconditionFailed) {
 			t.Errorf("ObjectHandle.Move: got err %v, want failed precondition (412)", err)
 		}
 
 		// Bad dest generation should also cause 412.
 		_, err = obj2.Move(ctx, MoveObjectDestination{Object: dstObj2, Conditions: &Conditions{GenerationMatch: 123}})
-		if err == nil {
-			t.Error("ObjectHandle.Move: got nil, want 412 error")
-		}
-		if !(status.Code(err) == codes.FailedPrecondition || extractErrCode(err) == http.StatusPreconditionFailed) {
+		if err == nil || !(status.Code(err) == codes.FailedPrecondition || extractErrCode(err) == http.StatusPreconditionFailed) {
 			t.Errorf("ObjectHandle.Move: got err %v, want failed precondition (412)", err)
 		}
 
