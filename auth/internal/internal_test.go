@@ -28,13 +28,13 @@ func TestComputeUniverseDomainProvider(t *testing.T) {
 	notDefinedError := metadata.NotDefinedError("universe/universe_domain")
 	testCases := []struct {
 		name    string
-		getFunc func(ctx context.Context) (string, error)
+		getFunc func(context.Context, *metadata.Client) (string, error)
 		want    string
 		wantErr error
 	}{
 		{
 			name: "test error",
-			getFunc: func(ctx context.Context) (string, error) {
+			getFunc: func(context.Context, *metadata.Client) (string, error) {
 				return "", fatalErr
 			},
 			want:    "",
@@ -42,7 +42,7 @@ func TestComputeUniverseDomainProvider(t *testing.T) {
 		},
 		{
 			name: "test error 404",
-			getFunc: func(ctx context.Context) (string, error) {
+			getFunc: func(context.Context, *metadata.Client) (string, error) {
 				return "", notDefinedError
 			},
 			want:    DefaultUniverseDomain,
@@ -50,7 +50,7 @@ func TestComputeUniverseDomainProvider(t *testing.T) {
 		},
 		{
 			name: "test valid",
-			getFunc: func(ctx context.Context) (string, error) {
+			getFunc: func(context.Context, *metadata.Client) (string, error) {
 				return "example.com", nil
 			},
 			want:    "example.com",

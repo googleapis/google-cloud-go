@@ -312,7 +312,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader),
 		sh.session.logger,
 		t.sp.sc.metricsTracerFactory,
-		func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
+		func(ctx context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
 			if t.sh != nil {
 				t.sh.updateLastUseTime()
 			}
@@ -331,7 +331,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 					DirectedReadOptions: directedReadOptions,
 					OrderBy:             orderBy,
 					LockHint:            lockHint,
-				})
+				}, opts...)
 			if err != nil {
 				if _, ok := t.getTransactionSelector().GetSelector().(*sppb.TransactionSelector_Begin); ok {
 					t.setTransactionID(nil)
@@ -357,6 +357,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		},
 		t.setTimestamp,
 		t.release,
+		client.(*grpcSpannerClient),
 	)
 }
 
@@ -612,13 +613,13 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 		contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader),
 		sh.session.logger,
 		t.sp.sc.metricsTracerFactory,
-		func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
+		func(ctx context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
 			req.ResumeToken = resumeToken
 			req.Session = t.sh.getID()
 			req.Transaction = t.getTransactionSelector()
 			t.sh.updateLastUseTime()
 
-			client, err := client.ExecuteStreamingSql(ctx, req)
+			client, err := client.ExecuteStreamingSql(ctx, req, opts...)
 			if err != nil {
 				if _, ok := req.Transaction.GetSelector().(*sppb.TransactionSelector_Begin); ok {
 					t.setTransactionID(nil)
@@ -643,7 +644,8 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 			return t.updateTxState(err)
 		},
 		t.setTimestamp,
-		t.release)
+		t.release,
+		client.(*grpcSpannerClient))
 }
 
 func (t *txReadOnly) prepareExecuteSQL(ctx context.Context, stmt Statement, options QueryOptions) (*sppb.ExecuteSqlRequest, *sessionHandle, error) {
@@ -1370,7 +1372,7 @@ func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts
 		return counts, errInlineBeginTransactionFailed()
 	}
 	if resp.Status != nil && resp.Status.Code != 0 {
-		return counts, t.txReadOnly.updateTxState(spannerErrorf(codes.Code(uint32(resp.Status.Code)), resp.Status.Message))
+		return counts, t.txReadOnly.updateTxState(spannerError(codes.Code(uint32(resp.Status.Code)), resp.Status.Message))
 	}
 	return counts, nil
 }

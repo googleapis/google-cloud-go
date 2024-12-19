@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.20.3](https://github.com/googleapis/google-cloud-go/compare/kms/v1.20.2...kms/v1.20.3) (2024-12-18)
+
+
+### Documentation
+
+* **kms:** Code documentation improvements ([4254053](https://github.com/googleapis/google-cloud-go/commit/42540530e44e5f331e66e0777c4aabf449f5fd90))
+
 ## [1.20.2](https://github.com/googleapis/google-cloud-go/compare/kms/v1.20.1...kms/v1.20.2) (2024-12-04)
 
 
