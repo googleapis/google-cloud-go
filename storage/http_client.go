@@ -1523,6 +1523,14 @@ func parseReadResponse(res *http.Response, params *newRangeReaderParams, reopen 
 		}
 	}
 
+	metadata := map[string]string{}
+	for key, values := range res.Header {
+		if len(values) > 0 && strings.HasPrefix(key, "X-Goog-Meta-") {
+			key := key[len("X-Goog-Meta-"):]
+			metadata[key] = values[0]
+		}
+	}
+
 	attrs := ReaderObjectAttrs{
 		Size:            size,
 		ContentType:     res.Header.Get("Content-Type"),
@@ -1536,10 +1544,11 @@ func parseReadResponse(res *http.Response, params *newRangeReaderParams, reopen 
 		Decompressed:    res.Uncompressed || uncompressedByServer(res),
 	}
 	return &Reader{
-		Attrs:    attrs,
-		size:     size,
-		remain:   remain,
-		checkCRC: checkCRC,
+		Attrs:          attrs,
+		objectMetadata: &metadata,
+		size:           size,
+		remain:         remain,
+		checkCRC:       checkCRC,
 		reader: &httpReader{
 			reopen:   reopen,
 			body:     body,
