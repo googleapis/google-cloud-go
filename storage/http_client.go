@@ -1545,7 +1545,7 @@ func parseReadResponse(res *http.Response, params *newRangeReaderParams, reopen 
 	}
 	return &Reader{
 		Attrs:          attrs,
-		objectMetadata: metadata,
+		objectMetadata: &metadata,
 		size:           size,
 		remain:         remain,
 		checkCRC:       checkCRC,

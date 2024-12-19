@@ -223,7 +223,7 @@ var emptyBody = ioutil.NopCloser(strings.NewReader(""))
 // is skipped if transcoding occurs. See https://cloud.google.com/storage/docs/transcoding.
 type Reader struct {
 	Attrs          ReaderObjectAttrs
-	objectMetadata map[string]string
+	objectMetadata *map[string]string
 
 	seen, remain, size int64
 	checkCRC           bool // Did we check the CRC? This is now only used by tests.
@@ -308,5 +308,8 @@ func (r *Reader) LastModified() (time.Time, error) {
 // custom metadata via the Reader; for JSON make a separate call to
 // ObjectHandle.Attrs.
 func (r *Reader) Metadata() map[string]string {
-	return r.objectMetadata
+	if r.objectMetadata != nil {
+		return *r.objectMetadata
+	}
+	return nil
 }
