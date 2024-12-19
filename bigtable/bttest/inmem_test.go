@@ -248,20 +248,20 @@ func TestGetPartitionsByTableName(t *testing.T) {
 		t.Fatalf("Creating table: %v", err2)
 	}
 
-	tbl_name_prefix := "cluster" + "/tables/"
+	tblNamePrefix := "cluster" + "/tables/"
 
 	// A random table name doesn't return partitions.
-	partitions := s.GetPartitionsByTableName(tbl_name_prefix + "random")
+	partitions := s.GetPartitionsByTableName(tblNamePrefix + "random")
 	if partitions != nil {
 		t.Fatalf("Getting partitions for table random")
 	}
 
-	partitions = s.GetPartitionsByTableName(tbl_name_prefix + "t1")
+	partitions = s.GetPartitionsByTableName(tblNamePrefix + "t1")
 	if len(partitions) != 10 {
 		t.Fatalf("Getting partitions for table t1")
 	}
 
-	partitions = s.GetPartitionsByTableName(tbl_name_prefix + "t2")
+	partitions = s.GetPartitionsByTableName(tblNamePrefix + "t2")
 	if len(partitions) != 10 {
 		t.Fatalf("Getting partitions for table t2")
 	}
