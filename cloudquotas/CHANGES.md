@@ -2,6 +2,50 @@
 
 
 
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/cloudquotas/v1.1.2...cloudquotas/v1.2.0) (2024-11-14)
+
+
+### Features
+
+* **cloudquotas:** A new value `NOT_ENOUGH_USAGE_HISTORY` is added to enum `IneligibilityReason` ([e85151d](https://github.com/googleapis/google-cloud-go/commit/e85151ddc5f70174f951265106d5a114191c5f53))
+* **cloudquotas:** A new value `NOT_SUPPORTED` is added to enum `IneligibilityReason` ([e85151d](https://github.com/googleapis/google-cloud-go/commit/e85151ddc5f70174f951265106d5a114191c5f53))
+
+## [1.1.2](https://github.com/googleapis/google-cloud-go/compare/cloudquotas/v1.1.1...cloudquotas/v1.1.2) (2024-10-23)
+
+
+### Bug Fixes
+
+* **cloudquotas:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **cloudquotas:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
+## [1.1.1](https://github.com/googleapis/google-cloud-go/compare/cloudquotas/v1.1.0...cloudquotas/v1.1.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **cloudquotas:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/cloudquotas/v1.0.4...cloudquotas/v1.1.0) (2024-08-20)
+
+
+### Features
+
+* **cloudquotas:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.0.4](https://github.com/googleapis/google-cloud-go/compare/cloudquotas/v1.0.3...cloudquotas/v1.0.4) (2024-08-08)
+
+
+### Bug Fixes
+
+* **cloudquotas:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+## [1.0.3](https://github.com/googleapis/google-cloud-go/compare/cloudquotas/v1.0.2...cloudquotas/v1.0.3) (2024-07-24)
+
+
+### Bug Fixes
+
+* **cloudquotas:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
 ## [1.0.2](https://github.com/googleapis/google-cloud-go/compare/cloudquotas/v1.0.1...cloudquotas/v1.0.2) (2024-07-10)
 
 

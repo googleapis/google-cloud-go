@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	vmmigrationpb "cloud.google.com/go/vmmigration/apiv1/vmmigrationpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1015,6 +1014,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new vm migration client based on gRPC.
@@ -1041,6 +1042,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:         connPool,
 		client:           vmmigrationpb.NewVmMigrationClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
@@ -1105,6 +1107,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new vm migration rest client.
@@ -1122,6 +1126,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -1195,7 +1200,7 @@ func (c *gRPCClient) ListSources(ctx context.Context, req *vmmigrationpb.ListSou
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListSources(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListSources, req, settings.GRPC, c.logger, "ListSources")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1230,7 +1235,7 @@ func (c *gRPCClient) GetSource(ctx context.Context, req *vmmigrationpb.GetSource
 	var resp *vmmigrationpb.Source
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetSource(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetSource, req, settings.GRPC, c.logger, "GetSource")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1248,7 +1253,7 @@ func (c *gRPCClient) CreateSource(ctx context.Context, req *vmmigrationpb.Create
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateSource(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateSource, req, settings.GRPC, c.logger, "CreateSource")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1268,7 +1273,7 @@ func (c *gRPCClient) UpdateSource(ctx context.Context, req *vmmigrationpb.Update
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateSource(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateSource, req, settings.GRPC, c.logger, "UpdateSource")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1288,7 +1293,7 @@ func (c *gRPCClient) DeleteSource(ctx context.Context, req *vmmigrationpb.Delete
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteSource(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteSource, req, settings.GRPC, c.logger, "DeleteSource")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1308,7 +1313,7 @@ func (c *gRPCClient) FetchInventory(ctx context.Context, req *vmmigrationpb.Fetc
 	var resp *vmmigrationpb.FetchInventoryResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.FetchInventory(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.FetchInventory, req, settings.GRPC, c.logger, "FetchInventory")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1337,7 +1342,7 @@ func (c *gRPCClient) ListUtilizationReports(ctx context.Context, req *vmmigratio
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListUtilizationReports(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListUtilizationReports, req, settings.GRPC, c.logger, "ListUtilizationReports")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1372,7 +1377,7 @@ func (c *gRPCClient) GetUtilizationReport(ctx context.Context, req *vmmigrationp
 	var resp *vmmigrationpb.UtilizationReport
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetUtilizationReport(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetUtilizationReport, req, settings.GRPC, c.logger, "GetUtilizationReport")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1390,7 +1395,7 @@ func (c *gRPCClient) CreateUtilizationReport(ctx context.Context, req *vmmigrati
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateUtilizationReport(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateUtilizationReport, req, settings.GRPC, c.logger, "CreateUtilizationReport")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1410,7 +1415,7 @@ func (c *gRPCClient) DeleteUtilizationReport(ctx context.Context, req *vmmigrati
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteUtilizationReport(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteUtilizationReport, req, settings.GRPC, c.logger, "DeleteUtilizationReport")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1441,7 +1446,7 @@ func (c *gRPCClient) ListDatacenterConnectors(ctx context.Context, req *vmmigrat
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListDatacenterConnectors(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListDatacenterConnectors, req, settings.GRPC, c.logger, "ListDatacenterConnectors")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1476,7 +1481,7 @@ func (c *gRPCClient) GetDatacenterConnector(ctx context.Context, req *vmmigratio
 	var resp *vmmigrationpb.DatacenterConnector
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetDatacenterConnector(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetDatacenterConnector, req, settings.GRPC, c.logger, "GetDatacenterConnector")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1494,7 +1499,7 @@ func (c *gRPCClient) CreateDatacenterConnector(ctx context.Context, req *vmmigra
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateDatacenterConnector(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateDatacenterConnector, req, settings.GRPC, c.logger, "CreateDatacenterConnector")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1514,7 +1519,7 @@ func (c *gRPCClient) DeleteDatacenterConnector(ctx context.Context, req *vmmigra
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteDatacenterConnector(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteDatacenterConnector, req, settings.GRPC, c.logger, "DeleteDatacenterConnector")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1534,7 +1539,7 @@ func (c *gRPCClient) UpgradeAppliance(ctx context.Context, req *vmmigrationpb.Up
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpgradeAppliance(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpgradeAppliance, req, settings.GRPC, c.logger, "UpgradeAppliance")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1554,7 +1559,7 @@ func (c *gRPCClient) CreateMigratingVm(ctx context.Context, req *vmmigrationpb.C
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateMigratingVm(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateMigratingVm, req, settings.GRPC, c.logger, "CreateMigratingVm")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1585,7 +1590,7 @@ func (c *gRPCClient) ListMigratingVms(ctx context.Context, req *vmmigrationpb.Li
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListMigratingVms(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListMigratingVms, req, settings.GRPC, c.logger, "ListMigratingVms")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1620,7 +1625,7 @@ func (c *gRPCClient) GetMigratingVm(ctx context.Context, req *vmmigrationpb.GetM
 	var resp *vmmigrationpb.MigratingVm
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetMigratingVm(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetMigratingVm, req, settings.GRPC, c.logger, "GetMigratingVm")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1638,7 +1643,7 @@ func (c *gRPCClient) UpdateMigratingVm(ctx context.Context, req *vmmigrationpb.U
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateMigratingVm(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateMigratingVm, req, settings.GRPC, c.logger, "UpdateMigratingVm")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1658,7 +1663,7 @@ func (c *gRPCClient) DeleteMigratingVm(ctx context.Context, req *vmmigrationpb.D
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteMigratingVm(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteMigratingVm, req, settings.GRPC, c.logger, "DeleteMigratingVm")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1678,7 +1683,7 @@ func (c *gRPCClient) StartMigration(ctx context.Context, req *vmmigrationpb.Star
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.StartMigration(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.StartMigration, req, settings.GRPC, c.logger, "StartMigration")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1698,7 +1703,7 @@ func (c *gRPCClient) ResumeMigration(ctx context.Context, req *vmmigrationpb.Res
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ResumeMigration(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ResumeMigration, req, settings.GRPC, c.logger, "ResumeMigration")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1718,7 +1723,7 @@ func (c *gRPCClient) PauseMigration(ctx context.Context, req *vmmigrationpb.Paus
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.PauseMigration(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.PauseMigration, req, settings.GRPC, c.logger, "PauseMigration")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1738,7 +1743,7 @@ func (c *gRPCClient) FinalizeMigration(ctx context.Context, req *vmmigrationpb.F
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.FinalizeMigration(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.FinalizeMigration, req, settings.GRPC, c.logger, "FinalizeMigration")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1758,7 +1763,7 @@ func (c *gRPCClient) CreateCloneJob(ctx context.Context, req *vmmigrationpb.Crea
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateCloneJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateCloneJob, req, settings.GRPC, c.logger, "CreateCloneJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1778,7 +1783,7 @@ func (c *gRPCClient) CancelCloneJob(ctx context.Context, req *vmmigrationpb.Canc
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CancelCloneJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CancelCloneJob, req, settings.GRPC, c.logger, "CancelCloneJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1809,7 +1814,7 @@ func (c *gRPCClient) ListCloneJobs(ctx context.Context, req *vmmigrationpb.ListC
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListCloneJobs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListCloneJobs, req, settings.GRPC, c.logger, "ListCloneJobs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1844,7 +1849,7 @@ func (c *gRPCClient) GetCloneJob(ctx context.Context, req *vmmigrationpb.GetClon
 	var resp *vmmigrationpb.CloneJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetCloneJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetCloneJob, req, settings.GRPC, c.logger, "GetCloneJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1862,7 +1867,7 @@ func (c *gRPCClient) CreateCutoverJob(ctx context.Context, req *vmmigrationpb.Cr
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateCutoverJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateCutoverJob, req, settings.GRPC, c.logger, "CreateCutoverJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1882,7 +1887,7 @@ func (c *gRPCClient) CancelCutoverJob(ctx context.Context, req *vmmigrationpb.Ca
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CancelCutoverJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CancelCutoverJob, req, settings.GRPC, c.logger, "CancelCutoverJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1913,7 +1918,7 @@ func (c *gRPCClient) ListCutoverJobs(ctx context.Context, req *vmmigrationpb.Lis
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListCutoverJobs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListCutoverJobs, req, settings.GRPC, c.logger, "ListCutoverJobs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1948,7 +1953,7 @@ func (c *gRPCClient) GetCutoverJob(ctx context.Context, req *vmmigrationpb.GetCu
 	var resp *vmmigrationpb.CutoverJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetCutoverJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetCutoverJob, req, settings.GRPC, c.logger, "GetCutoverJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1977,7 +1982,7 @@ func (c *gRPCClient) ListGroups(ctx context.Context, req *vmmigrationpb.ListGrou
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListGroups(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListGroups, req, settings.GRPC, c.logger, "ListGroups")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2012,7 +2017,7 @@ func (c *gRPCClient) GetGroup(ctx context.Context, req *vmmigrationpb.GetGroupRe
 	var resp *vmmigrationpb.Group
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetGroup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetGroup, req, settings.GRPC, c.logger, "GetGroup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2030,7 +2035,7 @@ func (c *gRPCClient) CreateGroup(ctx context.Context, req *vmmigrationpb.CreateG
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateGroup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateGroup, req, settings.GRPC, c.logger, "CreateGroup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2050,7 +2055,7 @@ func (c *gRPCClient) UpdateGroup(ctx context.Context, req *vmmigrationpb.UpdateG
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateGroup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateGroup, req, settings.GRPC, c.logger, "UpdateGroup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2070,7 +2075,7 @@ func (c *gRPCClient) DeleteGroup(ctx context.Context, req *vmmigrationpb.DeleteG
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteGroup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteGroup, req, settings.GRPC, c.logger, "DeleteGroup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2090,7 +2095,7 @@ func (c *gRPCClient) AddGroupMigration(ctx context.Context, req *vmmigrationpb.A
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.AddGroupMigration(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.AddGroupMigration, req, settings.GRPC, c.logger, "AddGroupMigration")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2110,7 +2115,7 @@ func (c *gRPCClient) RemoveGroupMigration(ctx context.Context, req *vmmigrationp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.RemoveGroupMigration(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.RemoveGroupMigration, req, settings.GRPC, c.logger, "RemoveGroupMigration")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2141,7 +2146,7 @@ func (c *gRPCClient) ListTargetProjects(ctx context.Context, req *vmmigrationpb.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListTargetProjects(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListTargetProjects, req, settings.GRPC, c.logger, "ListTargetProjects")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2176,7 +2181,7 @@ func (c *gRPCClient) GetTargetProject(ctx context.Context, req *vmmigrationpb.Ge
 	var resp *vmmigrationpb.TargetProject
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetTargetProject(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetTargetProject, req, settings.GRPC, c.logger, "GetTargetProject")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2194,7 +2199,7 @@ func (c *gRPCClient) CreateTargetProject(ctx context.Context, req *vmmigrationpb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateTargetProject(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateTargetProject, req, settings.GRPC, c.logger, "CreateTargetProject")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2214,7 +2219,7 @@ func (c *gRPCClient) UpdateTargetProject(ctx context.Context, req *vmmigrationpb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateTargetProject(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateTargetProject, req, settings.GRPC, c.logger, "UpdateTargetProject")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2234,7 +2239,7 @@ func (c *gRPCClient) DeleteTargetProject(ctx context.Context, req *vmmigrationpb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteTargetProject(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteTargetProject, req, settings.GRPC, c.logger, "DeleteTargetProject")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2265,7 +2270,7 @@ func (c *gRPCClient) ListReplicationCycles(ctx context.Context, req *vmmigration
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListReplicationCycles(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListReplicationCycles, req, settings.GRPC, c.logger, "ListReplicationCycles")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2300,7 +2305,7 @@ func (c *gRPCClient) GetReplicationCycle(ctx context.Context, req *vmmigrationpb
 	var resp *vmmigrationpb.ReplicationCycle
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetReplicationCycle(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetReplicationCycle, req, settings.GRPC, c.logger, "GetReplicationCycle")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2318,7 +2323,7 @@ func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2347,7 +2352,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2381,7 +2386,7 @@ func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -2395,7 +2400,7 @@ func (c *gRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -2410,7 +2415,7 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2439,7 +2444,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2514,21 +2519,10 @@ func (c *restClient) ListSources(ctx context.Context, req *vmmigrationpb.ListSou
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSources")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2591,17 +2585,7 @@ func (c *restClient) GetSource(ctx context.Context, req *vmmigrationpb.GetSource
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSource")
 		if err != nil {
 			return err
 		}
@@ -2661,21 +2645,10 @@ func (c *restClient) CreateSource(ctx context.Context, req *vmmigrationpb.Create
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateSource")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2714,11 +2687,11 @@ func (c *restClient) UpdateSource(ctx context.Context, req *vmmigrationpb.Update
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2742,21 +2715,10 @@ func (c *restClient) UpdateSource(ctx context.Context, req *vmmigrationpb.Update
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateSource")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2809,21 +2771,10 @@ func (c *restClient) DeleteSource(ctx context.Context, req *vmmigrationpb.Delete
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteSource")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2881,17 +2832,7 @@ func (c *restClient) FetchInventory(ctx context.Context, req *vmmigrationpb.Fetc
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FetchInventory")
 		if err != nil {
 			return err
 		}
@@ -2960,21 +2901,10 @@ func (c *restClient) ListUtilizationReports(ctx context.Context, req *vmmigratio
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListUtilizationReports")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3040,17 +2970,7 @@ func (c *restClient) GetUtilizationReport(ctx context.Context, req *vmmigrationp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetUtilizationReport")
 		if err != nil {
 			return err
 		}
@@ -3110,21 +3030,10 @@ func (c *restClient) CreateUtilizationReport(ctx context.Context, req *vmmigrati
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateUtilizationReport")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3177,21 +3086,10 @@ func (c *restClient) DeleteUtilizationReport(ctx context.Context, req *vmmigrati
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteUtilizationReport")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3258,21 +3156,10 @@ func (c *restClient) ListDatacenterConnectors(ctx context.Context, req *vmmigrat
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDatacenterConnectors")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3335,17 +3222,7 @@ func (c *restClient) GetDatacenterConnector(ctx context.Context, req *vmmigratio
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDatacenterConnector")
 		if err != nil {
 			return err
 		}
@@ -3405,21 +3282,10 @@ func (c *restClient) CreateDatacenterConnector(ctx context.Context, req *vmmigra
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDatacenterConnector")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3472,21 +3338,10 @@ func (c *restClient) DeleteDatacenterConnector(ctx context.Context, req *vmmigra
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDatacenterConnector")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3543,21 +3398,10 @@ func (c *restClient) UpgradeAppliance(ctx context.Context, req *vmmigrationpb.Up
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpgradeAppliance")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3618,21 +3462,10 @@ func (c *restClient) CreateMigratingVm(ctx context.Context, req *vmmigrationpb.C
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateMigratingVm")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3702,21 +3535,10 @@ func (c *restClient) ListMigratingVms(ctx context.Context, req *vmmigrationpb.Li
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListMigratingVms")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3782,17 +3604,7 @@ func (c *restClient) GetMigratingVm(ctx context.Context, req *vmmigrationpb.GetM
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetMigratingVm")
 		if err != nil {
 			return err
 		}
@@ -3830,11 +3642,11 @@ func (c *restClient) UpdateMigratingVm(ctx context.Context, req *vmmigrationpb.U
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3858,21 +3670,10 @@ func (c *restClient) UpdateMigratingVm(ctx context.Context, req *vmmigrationpb.U
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateMigratingVm")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3922,21 +3723,10 @@ func (c *restClient) DeleteMigratingVm(ctx context.Context, req *vmmigrationpb.D
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteMigratingVm")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3993,21 +3783,10 @@ func (c *restClient) StartMigration(ctx context.Context, req *vmmigrationpb.Star
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "StartMigration")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4066,21 +3845,10 @@ func (c *restClient) ResumeMigration(ctx context.Context, req *vmmigrationpb.Res
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ResumeMigration")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4138,21 +3906,10 @@ func (c *restClient) PauseMigration(ctx context.Context, req *vmmigrationpb.Paus
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PauseMigration")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4209,21 +3966,10 @@ func (c *restClient) FinalizeMigration(ctx context.Context, req *vmmigrationpb.F
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "FinalizeMigration")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4284,21 +4030,10 @@ func (c *restClient) CreateCloneJob(ctx context.Context, req *vmmigrationpb.Crea
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateCloneJob")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4354,21 +4089,10 @@ func (c *restClient) CancelCloneJob(ctx context.Context, req *vmmigrationpb.Canc
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelCloneJob")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4435,21 +4159,10 @@ func (c *restClient) ListCloneJobs(ctx context.Context, req *vmmigrationpb.ListC
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListCloneJobs")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4512,17 +4225,7 @@ func (c *restClient) GetCloneJob(ctx context.Context, req *vmmigrationpb.GetClon
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCloneJob")
 		if err != nil {
 			return err
 		}
@@ -4584,21 +4287,10 @@ func (c *restClient) CreateCutoverJob(ctx context.Context, req *vmmigrationpb.Cr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateCutoverJob")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4654,21 +4346,10 @@ func (c *restClient) CancelCutoverJob(ctx context.Context, req *vmmigrationpb.Ca
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelCutoverJob")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4735,21 +4416,10 @@ func (c *restClient) ListCutoverJobs(ctx context.Context, req *vmmigrationpb.Lis
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListCutoverJobs")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4812,17 +4482,7 @@ func (c *restClient) GetCutoverJob(ctx context.Context, req *vmmigrationpb.GetCu
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCutoverJob")
 		if err != nil {
 			return err
 		}
@@ -4888,21 +4548,10 @@ func (c *restClient) ListGroups(ctx context.Context, req *vmmigrationpb.ListGrou
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListGroups")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4965,17 +4614,7 @@ func (c *restClient) GetGroup(ctx context.Context, req *vmmigrationpb.GetGroupRe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetGroup")
 		if err != nil {
 			return err
 		}
@@ -5035,21 +4674,10 @@ func (c *restClient) CreateGroup(ctx context.Context, req *vmmigrationpb.CreateG
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateGroup")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5088,11 +4716,11 @@ func (c *restClient) UpdateGroup(ctx context.Context, req *vmmigrationpb.UpdateG
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -5116,21 +4744,10 @@ func (c *restClient) UpdateGroup(ctx context.Context, req *vmmigrationpb.UpdateG
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateGroup")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5183,21 +4800,10 @@ func (c *restClient) DeleteGroup(ctx context.Context, req *vmmigrationpb.DeleteG
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteGroup")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5253,21 +4859,10 @@ func (c *restClient) AddGroupMigration(ctx context.Context, req *vmmigrationpb.A
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AddGroupMigration")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5323,21 +4918,10 @@ func (c *restClient) RemoveGroupMigration(ctx context.Context, req *vmmigrationp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RemoveGroupMigration")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5407,21 +4991,10 @@ func (c *restClient) ListTargetProjects(ctx context.Context, req *vmmigrationpb.
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListTargetProjects")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -5487,17 +5060,7 @@ func (c *restClient) GetTargetProject(ctx context.Context, req *vmmigrationpb.Ge
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetTargetProject")
 		if err != nil {
 			return err
 		}
@@ -5560,21 +5123,10 @@ func (c *restClient) CreateTargetProject(ctx context.Context, req *vmmigrationpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateTargetProject")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5616,11 +5168,11 @@ func (c *restClient) UpdateTargetProject(ctx context.Context, req *vmmigrationpb
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -5644,21 +5196,10 @@ func (c *restClient) UpdateTargetProject(ctx context.Context, req *vmmigrationpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateTargetProject")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5714,21 +5255,10 @@ func (c *restClient) DeleteTargetProject(ctx context.Context, req *vmmigrationpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteTargetProject")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5795,21 +5325,10 @@ func (c *restClient) ListReplicationCycles(ctx context.Context, req *vmmigration
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListReplicationCycles")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -5872,17 +5391,7 @@ func (c *restClient) GetReplicationCycle(ctx context.Context, req *vmmigrationpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetReplicationCycle")
 		if err != nil {
 			return err
 		}
@@ -5932,17 +5441,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -6007,21 +5506,10 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -6087,15 +5575,8 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -6129,15 +5610,8 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOperation")
+		return err
 	}, opts...)
 }
 
@@ -6174,17 +5648,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -6249,21 +5713,10 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

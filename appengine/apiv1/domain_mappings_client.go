@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -233,6 +232,8 @@ type domainMappingsGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewDomainMappingsClient creates a new domain mappings client based on gRPC.
@@ -259,6 +260,7 @@ func NewDomainMappingsClient(ctx context.Context, opts ...option.ClientOption) (
 		connPool:             connPool,
 		domainMappingsClient: appenginepb.NewDomainMappingsClient(connPool),
 		CallOptions:          &client.CallOptions,
+		logger:               internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -321,6 +323,8 @@ type domainMappingsRESTClient struct {
 
 	// Points back to the CallOptions field of the containing DomainMappingsClient
 	CallOptions **DomainMappingsCallOptions
+
+	logger *slog.Logger
 }
 
 // NewDomainMappingsRESTClient creates a new domain mappings rest client.
@@ -338,6 +342,7 @@ func NewDomainMappingsRESTClient(ctx context.Context, opts ...option.ClientOptio
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -411,7 +416,7 @@ func (c *domainMappingsGRPCClient) ListDomainMappings(ctx context.Context, req *
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.domainMappingsClient.ListDomainMappings(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.domainMappingsClient.ListDomainMappings, req, settings.GRPC, c.logger, "ListDomainMappings")
 			return err
 		}, opts...)
 		if err != nil {
@@ -446,7 +451,7 @@ func (c *domainMappingsGRPCClient) GetDomainMapping(ctx context.Context, req *ap
 	var resp *appenginepb.DomainMapping
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.domainMappingsClient.GetDomainMapping(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.domainMappingsClient.GetDomainMapping, req, settings.GRPC, c.logger, "GetDomainMapping")
 		return err
 	}, opts...)
 	if err != nil {
@@ -464,7 +469,7 @@ func (c *domainMappingsGRPCClient) CreateDomainMapping(ctx context.Context, req 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.domainMappingsClient.CreateDomainMapping(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.domainMappingsClient.CreateDomainMapping, req, settings.GRPC, c.logger, "CreateDomainMapping")
 		return err
 	}, opts...)
 	if err != nil {
@@ -484,7 +489,7 @@ func (c *domainMappingsGRPCClient) UpdateDomainMapping(ctx context.Context, req 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.domainMappingsClient.UpdateDomainMapping(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.domainMappingsClient.UpdateDomainMapping, req, settings.GRPC, c.logger, "UpdateDomainMapping")
 		return err
 	}, opts...)
 	if err != nil {
@@ -504,7 +509,7 @@ func (c *domainMappingsGRPCClient) DeleteDomainMapping(ctx context.Context, req 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.domainMappingsClient.DeleteDomainMapping(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.domainMappingsClient.DeleteDomainMapping, req, settings.GRPC, c.logger, "DeleteDomainMapping")
 		return err
 	}, opts...)
 	if err != nil {
@@ -560,21 +565,10 @@ func (c *domainMappingsRESTClient) ListDomainMappings(ctx context.Context, req *
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDomainMappings")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -637,17 +631,7 @@ func (c *domainMappingsRESTClient) GetDomainMapping(ctx context.Context, req *ap
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDomainMapping")
 		if err != nil {
 			return err
 		}
@@ -708,21 +692,10 @@ func (c *domainMappingsRESTClient) CreateDomainMapping(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDomainMapping")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -761,11 +734,11 @@ func (c *domainMappingsRESTClient) UpdateDomainMapping(ctx context.Context, req 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -789,21 +762,10 @@ func (c *domainMappingsRESTClient) UpdateDomainMapping(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateDomainMapping")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -855,21 +817,10 @@ func (c *domainMappingsRESTClient) DeleteDomainMapping(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDomainMapping")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}

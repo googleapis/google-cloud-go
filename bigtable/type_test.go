@@ -19,7 +19,9 @@ package bigtable
 import (
 	"testing"
 
-	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
+	btapb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -29,15 +31,7 @@ func aggregateProto() *btapb.Type {
 			Int64Type: &btapb.Type_Int64{
 				Encoding: &btapb.Type_Int64_Encoding{
 					Encoding: &btapb.Type_Int64_Encoding_BigEndianBytes_{
-						BigEndianBytes: &btapb.Type_Int64_Encoding_BigEndianBytes{
-							BytesType: &btapb.Type_Bytes{
-								Encoding: &btapb.Type_Bytes_Encoding{
-									Encoding: &btapb.Type_Bytes_Encoding_Raw_{
-										Raw: &btapb.Type_Bytes_Encoding_Raw{},
-									},
-								},
-							},
-						},
+						BigEndianBytes: &btapb.Type_Int64_Encoding_BigEndianBytes{},
 					},
 				},
 			},
@@ -45,12 +39,25 @@ func aggregateProto() *btapb.Type {
 	}
 }
 
+func TestUnknown(t *testing.T) {
+	unsupportedType := &btapb.Type{
+		Kind: &btapb.Type_Float64Type{
+			Float64Type: &btapb.Type_Float64{},
+		},
+	}
+	got, ok := ProtoToType(unsupportedType).(unknown[btapb.Type])
+	if !ok {
+		t.Errorf("got: %T, wanted unknown[btapb.Type]", got)
+	}
+
+	assertType(t, got, unsupportedType)
+}
+
 func TestInt64Proto(t *testing.T) {
 	want := aggregateProto()
-	got := Int64Type{}.proto()
-	if !proto.Equal(got, want) {
-		t.Errorf("got type %v, want: %v", got, want)
-	}
+	it := Int64Type{Encoding: BigEndianBytesEncoding{}}
+
+	assertType(t, it, want)
 }
 
 func TestStringProto(t *testing.T) {
@@ -63,63 +70,121 @@ func TestStringProto(t *testing.T) {
 			},
 		},
 	}
+	st := StringType{Encoding: StringUtf8Encoding{}}
 
-	got := StringType{}.proto()
+	assertType(t, st, want)
+}
+
+func TestProtoBijection(t *testing.T) {
+	want := aggregateProto()
+	got := ProtoToType(want).proto()
 	if !proto.Equal(got, want) {
 		t.Errorf("got type %v, want: %v", got, want)
 	}
 }
 
 func TestAggregateProto(t *testing.T) {
-	want := &btapb.Type{
-		Kind: &btapb.Type_AggregateType{
-			AggregateType: &btapb.Type_Aggregate{
-				InputType: &btapb.Type{
-					Kind: &btapb.Type_Int64Type{
-						Int64Type: &btapb.Type_Int64{
-							Encoding: &btapb.Type_Int64_Encoding{
-								Encoding: &btapb.Type_Int64_Encoding_BigEndianBytes_{
-									BigEndianBytes: &btapb.Type_Int64_Encoding_BigEndianBytes{
-										BytesType: &btapb.Type_Bytes{
-											Encoding: &btapb.Type_Bytes_Encoding{
-												Encoding: &btapb.Type_Bytes_Encoding_Raw_{
-													Raw: &btapb.Type_Bytes_Encoding_Raw{},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
+	intType := &btapb.Type{
+		Kind: &btapb.Type_Int64Type{
+			Int64Type: &btapb.Type_Int64{
+				Encoding: &btapb.Type_Int64_Encoding{
+					Encoding: &btapb.Type_Int64_Encoding_BigEndianBytes_{
+						BigEndianBytes: &btapb.Type_Int64_Encoding_BigEndianBytes{},
 					},
-				},
-				Aggregator: &btapb.Type_Aggregate_Sum_{
-					Sum: &btapb.Type_Aggregate_Sum{},
 				},
 			},
 		},
 	}
 
-	got := AggregateType{Input: Int64Type{}, Aggregator: SumAggregator{}}.proto()
-	if !proto.Equal(got, want) {
-		t.Errorf("got type %v, want: %v", got, want)
+	testCases := []struct {
+		name     string
+		agg      Aggregator
+		protoAgg btapb.Type_Aggregate
+	}{
+		{
+			name: "hll",
+			agg:  HllppUniqueCountAggregator{},
+			protoAgg: btapb.Type_Aggregate{
+				InputType: intType,
+				Aggregator: &btapb.Type_Aggregate_HllppUniqueCount{
+					HllppUniqueCount: &btapb.Type_Aggregate_HyperLogLogPlusPlusUniqueCount{},
+				},
+			},
+		},
+		{
+			name: "min",
+			agg:  MinAggregator{},
+			protoAgg: btapb.Type_Aggregate{
+				InputType: intType,
+				Aggregator: &btapb.Type_Aggregate_Min_{
+					Min: &btapb.Type_Aggregate_Min{},
+				},
+			},
+		},
+		{
+			name: "max",
+			agg:  MaxAggregator{},
+			protoAgg: btapb.Type_Aggregate{
+				InputType: intType,
+				Aggregator: &btapb.Type_Aggregate_Max_{
+					Max: &btapb.Type_Aggregate_Max{},
+				},
+			},
+		},
+		{
+			name: "sum",
+			agg:  SumAggregator{},
+			protoAgg: btapb.Type_Aggregate{
+				InputType: intType,
+				Aggregator: &btapb.Type_Aggregate_Sum_{
+					Sum: &btapb.Type_Aggregate_Sum{},
+				},
+			},
+		}}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			want := &btapb.Type{
+				Kind: &btapb.Type_AggregateType{
+					AggregateType: &tc.protoAgg,
+				},
+			}
+			at := AggregateType{Input: Int64Type{Encoding: BigEndianBytesEncoding{}}, Aggregator: tc.agg}
+
+			assertType(t, at, want)
+		})
 	}
 }
 
-func TestProtoBijection(t *testing.T) {
-	want := aggregateProto()
-	got := protoToType(want).proto()
+func assertType(t *testing.T, ty Type, want *btapb.Type) {
+	t.Helper()
+
+	got := ty.proto()
 	if !proto.Equal(got, want) {
 		t.Errorf("got type %v, want: %v", got, want)
+	}
+
+	gotJSON, err := MarshalJSON(ty)
+	if err != nil {
+		t.Fatalf("Error calling MarshalJSON: %v", err)
+	}
+	result, err := UnmarshalJSON(gotJSON)
+	if err != nil {
+		t.Fatalf("Error calling UnmarshalJSON: %v", err)
+	}
+	if diff := cmp.Diff(result, ty, cmpopts.IgnoreUnexported(unknown[btapb.Type]{})); diff != "" {
+		t.Errorf("Unexpected diff: \n%s", diff)
+	}
+	if !Equal(result, ty) {
+		t.Errorf("Unexpected result. Got %#v, want %#v", result, ty)
 	}
 }
 
 func TestNilChecks(t *testing.T) {
-	// protoToType
-	if val, ok := protoToType(nil).(unknown[btapb.Type]); !ok {
+	// ProtoToType
+	if val, ok := ProtoToType(nil).(unknown[btapb.Type]); !ok {
 		t.Errorf("got: %T, wanted unknown[btapb.Type]", val)
 	}
-	if val, ok := protoToType(&btapb.Type{}).(unknown[btapb.Type]); !ok {
+	if val, ok := ProtoToType(&btapb.Type{}).(TypeUnspecified); !ok {
 		t.Errorf("got: %T, wanted unknown[btapb.Type]", val)
 	}
 
@@ -140,10 +205,7 @@ func TestNilChecks(t *testing.T) {
 	}
 
 	// aggregateProtoToType
-	aggType1, ok := aggregateProtoToType(nil).(AggregateType)
-	if !ok {
-		t.Fatalf("got: %T, wanted AggregateType", aggType1)
-	}
+	aggType1 := aggregateProtoToType(nil)
 	if val, ok := aggType1.Aggregator.(unknownAggregator); !ok {
 		t.Errorf("got: %T, wanted unknownAggregator", val)
 	}
@@ -151,14 +213,21 @@ func TestNilChecks(t *testing.T) {
 		t.Errorf("got: %v, wanted nil", aggType1.Input)
 	}
 
-	aggType2, ok := aggregateProtoToType(&btapb.Type_Aggregate{}).(AggregateType)
-	if !ok {
-		t.Fatalf("got: %T, wanted AggregateType", aggType2)
-	}
+	aggType2 := aggregateProtoToType(&btapb.Type_Aggregate{})
 	if val, ok := aggType2.Aggregator.(unknownAggregator); !ok {
 		t.Errorf("got: %T, wanted unknownAggregator", val)
 	}
 	if val, ok := aggType2.Input.(unknown[btapb.Type]); !ok {
 		t.Errorf("got: %T, wanted unknown[btapb.Type]", val)
+	}
+}
+
+func TestTypeUnspecified(t *testing.T) {
+	pb := &btapb.Type{}
+	tpe := ProtoToType(pb)
+	assertType(t, tpe, &btapb.Type{})
+	expect := TypeUnspecified{}
+	if tpe != expect {
+		t.Errorf("got: %v, wanted: %v", tpe, expect)
 	}
 }

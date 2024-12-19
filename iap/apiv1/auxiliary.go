@@ -41,7 +41,7 @@ type IdentityAwareProxyClientIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*iappb.IdentityAwareProxyClient, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *IdentityAwareProxyClientIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -88,7 +88,7 @@ type TunnelDestGroupIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*iappb.TunnelDestGroup, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TunnelDestGroupIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

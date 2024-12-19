@@ -41,7 +41,7 @@ type AssignmentIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*reservationpb.Assignment, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AssignmentIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -88,7 +88,7 @@ type CapacityCommitmentIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*reservationpb.CapacityCommitment, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *CapacityCommitmentIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -135,7 +135,7 @@ type ReservationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*reservationpb.Reservation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ReservationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

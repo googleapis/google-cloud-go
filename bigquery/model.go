@@ -86,15 +86,15 @@ func (m *Model) Metadata(ctx context.Context) (mm *ModelMetadata, err error) {
 	setClientHeader(req.Header())
 	var model *bq.Model
 	err = runWithRetry(ctx, func() (err error) {
-		ctx = trace.StartSpan(ctx, "bigquery.models.get")
+		sCtx := trace.StartSpan(ctx, "bigquery.models.get")
 		model, err = req.Do()
-		trace.EndSpan(ctx, err)
+		trace.EndSpan(sCtx, err)
 		return err
 	})
 	if err != nil {
 		return nil, err
 	}
-	return bqToModelMetadata(model)
+	return bqToModelMetadata(model), nil
 }
 
 // Update updates mutable fields in an ML model.
@@ -113,14 +113,14 @@ func (m *Model) Update(ctx context.Context, mm ModelMetadataToUpdate, etag strin
 	}
 	var res *bq.Model
 	if err := runWithRetry(ctx, func() (err error) {
-		ctx = trace.StartSpan(ctx, "bigquery.models.patch")
+		sCtx := trace.StartSpan(ctx, "bigquery.models.patch")
 		res, err = call.Do()
-		trace.EndSpan(ctx, err)
+		trace.EndSpan(sCtx, err)
 		return err
 	}); err != nil {
 		return nil, err
 	}
-	return bqToModelMetadata(res)
+	return bqToModelMetadata(res), nil
 }
 
 // Delete deletes an ML model.
@@ -229,8 +229,8 @@ func bqToModelCols(s []*bq.StandardSqlField) ([]*StandardSQLField, error) {
 	return cols, nil
 }
 
-func bqToModelMetadata(m *bq.Model) (*ModelMetadata, error) {
-	md := &ModelMetadata{
+func bqToModelMetadata(m *bq.Model) *ModelMetadata {
+	return &ModelMetadata{
 		Description:      m.Description,
 		Name:             m.FriendlyName,
 		Type:             m.ModelType,
@@ -245,7 +245,6 @@ func bqToModelMetadata(m *bq.Model) (*ModelMetadata, error) {
 		trainingRuns:     m.TrainingRuns,
 		ETag:             m.Etag,
 	}
-	return md, nil
 }
 
 // ModelMetadataToUpdate is used when updating an ML model's metadata.

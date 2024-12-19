@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "CatalogClient",
           "rpcs": {
+            "CancelMetadataJob": {
+              "methods": [
+                "CancelMetadataJob"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -33,6 +38,11 @@
             "CreateEntryType": {
               "methods": [
                 "CreateEntryType"
+              ]
+            },
+            "CreateMetadataJob": {
+              "methods": [
+                "CreateMetadataJob"
               ]
             },
             "DeleteAspectType": {
@@ -85,6 +95,11 @@
                 "GetLocation"
               ]
             },
+            "GetMetadataJob": {
+              "methods": [
+                "GetMetadataJob"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
@@ -113,6 +128,11 @@
             "ListLocations": {
               "methods": [
                 "ListLocations"
+              ]
+            },
+            "ListMetadataJobs": {
+              "methods": [
+                "ListMetadataJobs"
               ]
             },
             "ListOperations": {

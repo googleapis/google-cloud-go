@@ -21,15 +21,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
 	"time"
 
 	generativelanguagepb "cloud.google.com/go/ai/generativelanguage/apiv1beta/generativelanguagepb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -38,6 +39,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
 
 var newGenerativeClientHook clientHook
@@ -50,6 +52,8 @@ type GenerativeCallOptions struct {
 	EmbedContent          []gax.CallOption
 	BatchEmbedContents    []gax.CallOption
 	CountTokens           []gax.CallOption
+	GetOperation          []gax.CallOption
+	ListOperations        []gax.CallOption
 }
 
 func defaultGenerativeGRPCClientOptions() []option.ClientOption {
@@ -61,6 +65,7 @@ func defaultGenerativeGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://generativelanguage.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -139,6 +144,8 @@ func defaultGenerativeCallOptions() *GenerativeCallOptions {
 				})
 			}),
 		},
+		GetOperation:   []gax.CallOption{},
+		ListOperations: []gax.CallOption{},
 	}
 }
 
@@ -210,6 +217,8 @@ func defaultGenerativeRESTCallOptions() *GenerativeCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		GetOperation:   []gax.CallOption{},
+		ListOperations: []gax.CallOption{},
 	}
 }
 
@@ -224,6 +233,8 @@ type internalGenerativeClient interface {
 	EmbedContent(context.Context, *generativelanguagepb.EmbedContentRequest, ...gax.CallOption) (*generativelanguagepb.EmbedContentResponse, error)
 	BatchEmbedContents(context.Context, *generativelanguagepb.BatchEmbedContentsRequest, ...gax.CallOption) (*generativelanguagepb.BatchEmbedContentsResponse, error)
 	CountTokens(context.Context, *generativelanguagepb.CountTokensRequest, ...gax.CallOption) (*generativelanguagepb.CountTokensResponse, error)
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
+	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
 // GenerativeClient is a client for interacting with Generative Language API.
@@ -262,13 +273,13 @@ func (c *GenerativeClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// GenerateContent generates a response from the model given an input
-// GenerateContentRequest.
-//
-// Input capabilities differ between models, including tuned models. See the
-// model guide (at https://ai.google.dev/models/gemini) and
-// tuning guide (at https://ai.google.dev/docs/model_tuning_guidance) for
-// details.
+// GenerateContent generates a model response given an input GenerateContentRequest.
+// Refer to the text generation
+// guide (at https://ai.google.dev/gemini-api/docs/text-generation) for detailed
+// usage information. Input capabilities differ between models, including
+// tuned models. Refer to the model
+// guide (at https://ai.google.dev/gemini-api/docs/models/gemini) and tuning
+// guide (at https://ai.google.dev/gemini-api/docs/model-tuning) for details.
 func (c *GenerativeClient) GenerateContent(ctx context.Context, req *generativelanguagepb.GenerateContentRequest, opts ...gax.CallOption) (*generativelanguagepb.GenerateContentResponse, error) {
 	return c.internalClient.GenerateContent(ctx, req, opts...)
 }
@@ -279,26 +290,42 @@ func (c *GenerativeClient) GenerateAnswer(ctx context.Context, req *generativela
 	return c.internalClient.GenerateAnswer(ctx, req, opts...)
 }
 
-// StreamGenerateContent generates a streamed response from the model given an input
-// GenerateContentRequest.
+// StreamGenerateContent generates a streamed
+// response (at https://ai.google.dev/gemini-api/docs/text-generation?lang=python#generate-a-text-stream)
+// from the model given an input GenerateContentRequest.
 func (c *GenerativeClient) StreamGenerateContent(ctx context.Context, req *generativelanguagepb.GenerateContentRequest, opts ...gax.CallOption) (generativelanguagepb.GenerativeService_StreamGenerateContentClient, error) {
 	return c.internalClient.StreamGenerateContent(ctx, req, opts...)
 }
 
-// EmbedContent generates an embedding from the model given an input Content.
+// EmbedContent generates a text embedding vector from the input Content using the
+// specified Gemini Embedding
+// model (at https://ai.google.dev/gemini-api/docs/models/gemini#text-embedding).
 func (c *GenerativeClient) EmbedContent(ctx context.Context, req *generativelanguagepb.EmbedContentRequest, opts ...gax.CallOption) (*generativelanguagepb.EmbedContentResponse, error) {
 	return c.internalClient.EmbedContent(ctx, req, opts...)
 }
 
-// BatchEmbedContents generates multiple embeddings from the model given input text in a
-// synchronous call.
+// BatchEmbedContents generates multiple embedding vectors from the input Content which
+// consists of a batch of strings represented as EmbedContentRequest
+// objects.
 func (c *GenerativeClient) BatchEmbedContents(ctx context.Context, req *generativelanguagepb.BatchEmbedContentsRequest, opts ...gax.CallOption) (*generativelanguagepb.BatchEmbedContentsResponse, error) {
 	return c.internalClient.BatchEmbedContents(ctx, req, opts...)
 }
 
-// CountTokens runs a model’s tokenizer on input content and returns the token count.
+// CountTokens runs a model’s tokenizer on input Content and returns the token count.
+// Refer to the tokens guide (at https://ai.google.dev/gemini-api/docs/tokens)
+// to learn more about tokens.
 func (c *GenerativeClient) CountTokens(ctx context.Context, req *generativelanguagepb.CountTokensRequest, opts ...gax.CallOption) (*generativelanguagepb.CountTokensResponse, error) {
 	return c.internalClient.CountTokens(ctx, req, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *GenerativeClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *GenerativeClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
 // generativeGRPCClient is a client for interacting with Generative Language API over gRPC transport.
@@ -314,8 +341,12 @@ type generativeGRPCClient struct {
 	// The gRPC API client.
 	generativeClient generativelanguagepb.GenerativeServiceClient
 
+	operationsClient longrunningpb.OperationsClient
+
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewGenerativeClient creates a new generative service client based on gRPC.
@@ -343,6 +374,8 @@ func NewGenerativeClient(ctx context.Context, opts ...option.ClientOption) (*Gen
 		connPool:         connPool,
 		generativeClient: generativelanguagepb.NewGenerativeServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
+		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -389,6 +422,8 @@ type generativeRESTClient struct {
 
 	// Points back to the CallOptions field of the containing GenerativeClient
 	CallOptions **GenerativeCallOptions
+
+	logger *slog.Logger
 }
 
 // NewGenerativeRESTClient creates a new generative service rest client.
@@ -407,6 +442,7 @@ func NewGenerativeRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -421,6 +457,7 @@ func defaultGenerativeRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://generativelanguage.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -458,7 +495,7 @@ func (c *generativeGRPCClient) GenerateContent(ctx context.Context, req *generat
 	var resp *generativelanguagepb.GenerateContentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.generativeClient.GenerateContent(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.generativeClient.GenerateContent, req, settings.GRPC, c.logger, "GenerateContent")
 		return err
 	}, opts...)
 	if err != nil {
@@ -476,7 +513,7 @@ func (c *generativeGRPCClient) GenerateAnswer(ctx context.Context, req *generati
 	var resp *generativelanguagepb.GenerateAnswerResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.generativeClient.GenerateAnswer(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.generativeClient.GenerateAnswer, req, settings.GRPC, c.logger, "GenerateAnswer")
 		return err
 	}, opts...)
 	if err != nil {
@@ -494,7 +531,9 @@ func (c *generativeGRPCClient) StreamGenerateContent(ctx context.Context, req *g
 	var resp generativelanguagepb.GenerativeService_StreamGenerateContentClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "StreamGenerateContent")
 		resp, err = c.generativeClient.StreamGenerateContent(ctx, req, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "StreamGenerateContent")
 		return err
 	}, opts...)
 	if err != nil {
@@ -512,7 +551,7 @@ func (c *generativeGRPCClient) EmbedContent(ctx context.Context, req *generative
 	var resp *generativelanguagepb.EmbedContentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.generativeClient.EmbedContent(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.generativeClient.EmbedContent, req, settings.GRPC, c.logger, "EmbedContent")
 		return err
 	}, opts...)
 	if err != nil {
@@ -530,7 +569,7 @@ func (c *generativeGRPCClient) BatchEmbedContents(ctx context.Context, req *gene
 	var resp *generativelanguagepb.BatchEmbedContentsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.generativeClient.BatchEmbedContents(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.generativeClient.BatchEmbedContents, req, settings.GRPC, c.logger, "BatchEmbedContents")
 		return err
 	}, opts...)
 	if err != nil {
@@ -548,7 +587,7 @@ func (c *generativeGRPCClient) CountTokens(ctx context.Context, req *generativel
 	var resp *generativelanguagepb.CountTokensResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.generativeClient.CountTokens(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.generativeClient.CountTokens, req, settings.GRPC, c.logger, "CountTokens")
 		return err
 	}, opts...)
 	if err != nil {
@@ -557,13 +596,77 @@ func (c *generativeGRPCClient) CountTokens(ctx context.Context, req *generativel
 	return resp, nil
 }
 
-// GenerateContent generates a response from the model given an input
-// GenerateContentRequest.
-//
-// Input capabilities differ between models, including tuned models. See the
-// model guide (at https://ai.google.dev/models/gemini) and
-// tuning guide (at https://ai.google.dev/docs/model_tuning_guidance) for
-// details.
+func (c *generativeGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *generativeGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GenerateContent generates a model response given an input GenerateContentRequest.
+// Refer to the text generation
+// guide (at https://ai.google.dev/gemini-api/docs/text-generation) for detailed
+// usage information. Input capabilities differ between models, including
+// tuned models. Refer to the model
+// guide (at https://ai.google.dev/gemini-api/docs/models/gemini) and tuning
+// guide (at https://ai.google.dev/gemini-api/docs/model-tuning) for details.
 func (c *generativeRESTClient) GenerateContent(ctx context.Context, req *generativelanguagepb.GenerateContentRequest, opts ...gax.CallOption) (*generativelanguagepb.GenerateContentResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -602,17 +705,7 @@ func (c *generativeRESTClient) GenerateContent(ctx context.Context, req *generat
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GenerateContent")
 		if err != nil {
 			return err
 		}
@@ -669,17 +762,7 @@ func (c *generativeRESTClient) GenerateAnswer(ctx context.Context, req *generati
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GenerateAnswer")
 		if err != nil {
 			return err
 		}
@@ -696,8 +779,9 @@ func (c *generativeRESTClient) GenerateAnswer(ctx context.Context, req *generati
 	return resp, nil
 }
 
-// StreamGenerateContent generates a streamed response from the model given an input
-// GenerateContentRequest.
+// StreamGenerateContent generates a streamed
+// response (at https://ai.google.dev/gemini-api/docs/text-generation?lang=python#generate-a-text-stream)
+// from the model given an input GenerateContentRequest.
 func (c *generativeRESTClient) StreamGenerateContent(ctx context.Context, req *generativelanguagepb.GenerateContentRequest, opts ...gax.CallOption) (generativelanguagepb.GenerativeService_StreamGenerateContentClient, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -734,12 +818,8 @@ func (c *generativeRESTClient) StreamGenerateContent(ctx context.Context, req *g
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		httpRsp, err := executeStreamingHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "StreamGenerateContent")
 		if err != nil {
-			return err
-		}
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
 			return err
 		}
 
@@ -803,7 +883,9 @@ func (c *streamGenerateContentRESTClient) RecvMsg(m interface{}) error {
 	return errors.New("this method is not implemented, use Recv")
 }
 
-// EmbedContent generates an embedding from the model given an input Content.
+// EmbedContent generates a text embedding vector from the input Content using the
+// specified Gemini Embedding
+// model (at https://ai.google.dev/gemini-api/docs/models/gemini#text-embedding).
 func (c *generativeRESTClient) EmbedContent(ctx context.Context, req *generativelanguagepb.EmbedContentRequest, opts ...gax.CallOption) (*generativelanguagepb.EmbedContentResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -842,17 +924,7 @@ func (c *generativeRESTClient) EmbedContent(ctx context.Context, req *generative
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "EmbedContent")
 		if err != nil {
 			return err
 		}
@@ -869,8 +941,9 @@ func (c *generativeRESTClient) EmbedContent(ctx context.Context, req *generative
 	return resp, nil
 }
 
-// BatchEmbedContents generates multiple embeddings from the model given input text in a
-// synchronous call.
+// BatchEmbedContents generates multiple embedding vectors from the input Content which
+// consists of a batch of strings represented as EmbedContentRequest
+// objects.
 func (c *generativeRESTClient) BatchEmbedContents(ctx context.Context, req *generativelanguagepb.BatchEmbedContentsRequest, opts ...gax.CallOption) (*generativelanguagepb.BatchEmbedContentsResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -909,17 +982,7 @@ func (c *generativeRESTClient) BatchEmbedContents(ctx context.Context, req *gene
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchEmbedContents")
 		if err != nil {
 			return err
 		}
@@ -936,7 +999,9 @@ func (c *generativeRESTClient) BatchEmbedContents(ctx context.Context, req *gene
 	return resp, nil
 }
 
-// CountTokens runs a model’s tokenizer on input content and returns the token count.
+// CountTokens runs a model’s tokenizer on input Content and returns the token count.
+// Refer to the tokens guide (at https://ai.google.dev/gemini-api/docs/tokens)
+// to learn more about tokens.
 func (c *generativeRESTClient) CountTokens(ctx context.Context, req *generativelanguagepb.CountTokensRequest, opts ...gax.CallOption) (*generativelanguagepb.CountTokensResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -975,17 +1040,7 @@ func (c *generativeRESTClient) CountTokens(ctx context.Context, req *generativel
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CountTokens")
 		if err != nil {
 			return err
 		}
@@ -1000,4 +1055,135 @@ func (c *generativeRESTClient) CountTokens(ctx context.Context, req *generativel
 		return nil, e
 	}
 	return resp, nil
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *generativeRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *generativeRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1beta/%v/operations", req.GetName())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }

@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -29,7 +29,6 @@ import (
 	cxpb "cloud.google.com/go/dialogflow/cx/apiv3/cxpb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -347,6 +346,8 @@ type transitionRouteGroupsGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewTransitionRouteGroupsClient creates a new transition route groups client based on gRPC.
@@ -374,6 +375,7 @@ func NewTransitionRouteGroupsClient(ctx context.Context, opts ...option.ClientOp
 		connPool:                    connPool,
 		transitionRouteGroupsClient: cxpb.NewTransitionRouteGroupsClient(connPool),
 		CallOptions:                 &client.CallOptions,
+		logger:                      internaloption.GetLogger(opts),
 		operationsClient:            longrunningpb.NewOperationsClient(connPool),
 		locationsClient:             locationpb.NewLocationsClient(connPool),
 	}
@@ -422,6 +424,8 @@ type transitionRouteGroupsRESTClient struct {
 
 	// Points back to the CallOptions field of the containing TransitionRouteGroupsClient
 	CallOptions **TransitionRouteGroupsCallOptions
+
+	logger *slog.Logger
 }
 
 // NewTransitionRouteGroupsRESTClient creates a new transition route groups rest client.
@@ -440,6 +444,7 @@ func NewTransitionRouteGroupsRESTClient(ctx context.Context, opts ...option.Clie
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -503,7 +508,7 @@ func (c *transitionRouteGroupsGRPCClient) ListTransitionRouteGroups(ctx context.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.transitionRouteGroupsClient.ListTransitionRouteGroups(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.transitionRouteGroupsClient.ListTransitionRouteGroups, req, settings.GRPC, c.logger, "ListTransitionRouteGroups")
 			return err
 		}, opts...)
 		if err != nil {
@@ -538,7 +543,7 @@ func (c *transitionRouteGroupsGRPCClient) GetTransitionRouteGroup(ctx context.Co
 	var resp *cxpb.TransitionRouteGroup
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.transitionRouteGroupsClient.GetTransitionRouteGroup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.transitionRouteGroupsClient.GetTransitionRouteGroup, req, settings.GRPC, c.logger, "GetTransitionRouteGroup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -556,7 +561,7 @@ func (c *transitionRouteGroupsGRPCClient) CreateTransitionRouteGroup(ctx context
 	var resp *cxpb.TransitionRouteGroup
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.transitionRouteGroupsClient.CreateTransitionRouteGroup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.transitionRouteGroupsClient.CreateTransitionRouteGroup, req, settings.GRPC, c.logger, "CreateTransitionRouteGroup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -574,7 +579,7 @@ func (c *transitionRouteGroupsGRPCClient) UpdateTransitionRouteGroup(ctx context
 	var resp *cxpb.TransitionRouteGroup
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.transitionRouteGroupsClient.UpdateTransitionRouteGroup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.transitionRouteGroupsClient.UpdateTransitionRouteGroup, req, settings.GRPC, c.logger, "UpdateTransitionRouteGroup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -591,7 +596,7 @@ func (c *transitionRouteGroupsGRPCClient) DeleteTransitionRouteGroup(ctx context
 	opts = append((*c.CallOptions).DeleteTransitionRouteGroup[0:len((*c.CallOptions).DeleteTransitionRouteGroup):len((*c.CallOptions).DeleteTransitionRouteGroup)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.transitionRouteGroupsClient.DeleteTransitionRouteGroup(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.transitionRouteGroupsClient.DeleteTransitionRouteGroup, req, settings.GRPC, c.logger, "DeleteTransitionRouteGroup")
 		return err
 	}, opts...)
 	return err
@@ -606,7 +611,7 @@ func (c *transitionRouteGroupsGRPCClient) GetLocation(ctx context.Context, req *
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -635,7 +640,7 @@ func (c *transitionRouteGroupsGRPCClient) ListLocations(ctx context.Context, req
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -669,7 +674,7 @@ func (c *transitionRouteGroupsGRPCClient) CancelOperation(ctx context.Context, r
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -684,7 +689,7 @@ func (c *transitionRouteGroupsGRPCClient) GetOperation(ctx context.Context, req 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -713,7 +718,7 @@ func (c *transitionRouteGroupsGRPCClient) ListOperations(ctx context.Context, re
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -787,21 +792,10 @@ func (c *transitionRouteGroupsRESTClient) ListTransitionRouteGroups(ctx context.
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListTransitionRouteGroups")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -868,17 +862,7 @@ func (c *transitionRouteGroupsRESTClient) GetTransitionRouteGroup(ctx context.Co
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetTransitionRouteGroup")
 		if err != nil {
 			return err
 		}
@@ -944,17 +928,7 @@ func (c *transitionRouteGroupsRESTClient) CreateTransitionRouteGroup(ctx context
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateTransitionRouteGroup")
 		if err != nil {
 			return err
 		}
@@ -997,11 +971,11 @@ func (c *transitionRouteGroupsRESTClient) UpdateTransitionRouteGroup(ctx context
 		params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1026,17 +1000,7 @@ func (c *transitionRouteGroupsRESTClient) UpdateTransitionRouteGroup(ctx context
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateTransitionRouteGroup")
 		if err != nil {
 			return err
 		}
@@ -1091,15 +1055,8 @@ func (c *transitionRouteGroupsRESTClient) DeleteTransitionRouteGroup(ctx context
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteTransitionRouteGroup")
+		return err
 	}, opts...)
 }
 
@@ -1136,17 +1093,7 @@ func (c *transitionRouteGroupsRESTClient) GetLocation(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -1211,21 +1158,10 @@ func (c *transitionRouteGroupsRESTClient) ListLocations(ctx context.Context, req
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1285,15 +1221,8 @@ func (c *transitionRouteGroupsRESTClient) CancelOperation(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -1330,17 +1259,7 @@ func (c *transitionRouteGroupsRESTClient) GetOperation(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -1405,21 +1324,10 @@ func (c *transitionRouteGroupsRESTClient) ListOperations(ctx context.Context, re
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

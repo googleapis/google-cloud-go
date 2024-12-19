@@ -282,7 +282,7 @@ type BlueprintIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*telcoautomationpb.Blueprint, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *BlueprintIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -329,7 +329,7 @@ type DeploymentIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*telcoautomationpb.Deployment, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *DeploymentIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -376,7 +376,7 @@ type EdgeSlmIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*telcoautomationpb.EdgeSlm, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *EdgeSlmIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -423,7 +423,7 @@ type HydratedDeploymentIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*telcoautomationpb.HydratedDeployment, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *HydratedDeploymentIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -470,7 +470,7 @@ type LocationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *LocationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -517,7 +517,7 @@ type OperationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *OperationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -564,7 +564,7 @@ type OrchestrationClusterIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*telcoautomationpb.OrchestrationCluster, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *OrchestrationClusterIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -611,7 +611,7 @@ type PublicBlueprintIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*telcoautomationpb.PublicBlueprint, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *PublicBlueprintIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

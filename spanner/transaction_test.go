@@ -56,14 +56,18 @@ func TestSingle(t *testing.T) {
 	}
 
 	// Only one BatchCreateSessionsRequest is sent.
-	if _, err := shouldHaveReceived(server.TestSpanner, []interface{}{&sppb.BatchCreateSessionsRequest{}}); err != nil {
+	expectedReqs := []interface{}{&sppb.BatchCreateSessionsRequest{}}
+	if isMultiplexEnabled {
+		expectedReqs = []interface{}{&sppb.CreateSessionRequest{}}
+	}
+	if _, err := shouldHaveReceived(server.TestSpanner, expectedReqs); err != nil {
 		t.Fatal(err)
 	}
 }
 
 // Re-using ReadOnlyTransaction: can recover from acquire failure.
 func TestReadOnlyTransaction_RecoverFromFailure(t *testing.T) {
-	t.Parallel()
+
 	ctx := context.Background()
 	server, client, teardown := setupMockedTestServer(t)
 	defer teardown()
@@ -159,12 +163,28 @@ func TestApply_Single(t *testing.T) {
 	if _, e := client.Apply(ctx, ms, ApplyAtLeastOnce()); e != nil {
 		t.Fatalf("applyAtLeastOnce retry on abort, got %v, want nil.", e)
 	}
-
-	if _, err := shouldHaveReceived(server.TestSpanner, []interface{}{
+	requests := drainRequestsFromServer(server.TestSpanner)
+	expectedReqs := []interface{}{
 		&sppb.BatchCreateSessionsRequest{},
 		&sppb.CommitRequest{},
-	}); err != nil {
+	}
+	if isMultiplexEnabled {
+		expectedReqs = []interface{}{
+			&sppb.CreateSessionRequest{},
+			&sppb.CommitRequest{},
+		}
+	}
+	if err := compareRequests(expectedReqs, requests); err != nil {
 		t.Fatal(err)
+	}
+	for _, s := range requests {
+		switch req := s.(type) {
+		case *sppb.CommitRequest:
+			// Validate the session is multiplexed
+			if !testEqual(isMultiplexEnabled, strings.Contains(req.Session, "multiplexed")) {
+				t.Errorf("TestApply_Single expected multiplexed session to be used, got: %v", req.Session)
+			}
+		}
 	}
 }
 
@@ -316,17 +336,20 @@ func TestBatchDML_WithMultipleDML(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	if got, want := gotReqs[1].(*sppb.ExecuteSqlRequest).Seqno, int64(1); got != want {
+	muxCreateBuffer := 0
+	if isMultiplexEnabled {
+		muxCreateBuffer = 1
+	}
+	if got, want := gotReqs[1+muxCreateBuffer].(*sppb.ExecuteSqlRequest).Seqno, int64(1); got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[2].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(2); got != want {
+	if got, want := gotReqs[2+muxCreateBuffer].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(2); got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[3].(*sppb.ExecuteSqlRequest).Seqno, int64(3); got != want {
+	if got, want := gotReqs[3+muxCreateBuffer].(*sppb.ExecuteSqlRequest).Seqno, int64(3); got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[4].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(4); got != want {
+	if got, want := gotReqs[4+muxCreateBuffer].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(4); got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
 }
@@ -447,8 +470,106 @@ func TestReadWriteStmtBasedTransaction_CommitAborted(t *testing.T) {
 	}
 }
 
+func TestReadWriteStmtBasedTransaction_QueryAborted(t *testing.T) {
+	t.Parallel()
+	rowCount, attempts, err := testReadWriteStmtBasedTransaction(t, map[string]SimulatedExecutionTime{
+		MethodExecuteStreamingSql: {Errors: []error{status.Error(codes.Aborted, "Transaction aborted")}},
+	})
+	if err != nil {
+		t.Fatalf("transaction failed to commit: %v", err)
+	}
+	if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
+		t.Fatalf("Row count mismatch, got %v, expected %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
+	}
+	if g, w := attempts, 2; g != w {
+		t.Fatalf("number of attempts mismatch:\nGot%d\nWant:%d", g, w)
+	}
+}
+
+func TestReadWriteStmtBasedTransaction_UpdateAborted(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
+		SessionPoolConfig: SessionPoolConfig{
+			// Use a session pool with size 1 to ensure that there are no session leaks.
+			MinOpened: 1,
+			MaxOpened: 1,
+		},
+	})
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(
+		MethodExecuteSql,
+		SimulatedExecutionTime{Errors: []error{status.Error(codes.Aborted, "Transaction aborted")}})
+
+	ctx := context.Background()
+	tx, err := NewReadWriteStmtBasedTransaction(ctx, client)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = tx.Update(ctx, Statement{SQL: UpdateBarSetFoo})
+	if g, w := ErrCode(err), codes.Aborted; g != w {
+		t.Fatalf("error code mismatch\n Got: %v\nWant: %v", g, w)
+	}
+	tx, err = tx.ResetForRetry(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	c, err := tx.Update(ctx, Statement{SQL: UpdateBarSetFoo})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g, w := c, int64(UpdateBarSetFooRowCount); g != w {
+		t.Fatalf("update count mismatch\n Got: %v\nWant: %v", g, w)
+	}
+}
+
+func TestReadWriteStmtBasedTransaction_BatchUpdateAborted(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
+		SessionPoolConfig: SessionPoolConfig{
+			// Use a session pool with size 1 to ensure that there are no session leaks.
+			MinOpened: 1,
+			MaxOpened: 1,
+		},
+	})
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(
+		MethodExecuteBatchDml,
+		SimulatedExecutionTime{Errors: []error{status.Error(codes.Aborted, "Transaction aborted")}})
+
+	ctx := context.Background()
+	tx, err := NewReadWriteStmtBasedTransaction(ctx, client)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = tx.BatchUpdate(ctx, []Statement{{SQL: UpdateBarSetFoo}})
+	if g, w := ErrCode(err), codes.Aborted; g != w {
+		t.Fatalf("error code mismatch\n Got: %v\nWant: %v", g, w)
+	}
+	tx, err = tx.ResetForRetry(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	c, err := tx.BatchUpdate(ctx, []Statement{{SQL: UpdateBarSetFoo}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g, w := c, []int64{UpdateBarSetFooRowCount}; !reflect.DeepEqual(g, w) {
+		t.Fatalf("update count mismatch\n Got: %v\nWant: %v", g, w)
+	}
+}
+
 func testReadWriteStmtBasedTransaction(t *testing.T, executionTimes map[string]SimulatedExecutionTime) (rowCount int64, attempts int, err error) {
-	server, client, teardown := setupMockedTestServer(t)
+	// server, client, teardown := setupMockedTestServer(t)
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
+		SessionPoolConfig: SessionPoolConfig{
+			// Use a session pool with size 1 to ensure that there are no session leaks.
+			MinOpened: 1,
+			MaxOpened: 1,
+		},
+	})
 	defer teardown()
 	for method, exec := range executionTimes {
 		server.TestSpanner.PutExecutionTime(method, exec)
@@ -477,9 +598,14 @@ func testReadWriteStmtBasedTransaction(t *testing.T, executionTimes map[string]S
 		return rowCount, nil
 	}
 
+	var tx *ReadWriteStmtBasedTransaction
 	for {
 		attempts++
-		tx, err := NewReadWriteStmtBasedTransaction(ctx, client)
+		if attempts > 1 {
+			tx, err = tx.ResetForRetry(ctx)
+		} else {
+			tx, err = NewReadWriteStmtBasedTransaction(ctx, client)
+		}
 		if err != nil {
 			return 0, attempts, fmt.Errorf("failed to begin a transaction: %v", err)
 		}
@@ -542,12 +668,19 @@ func TestReadWriteStmtBasedTransactionWithOptions(t *testing.T) {
 			client,
 			TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}},
 		)
+		if err != nil {
+			t.Fatalf("failed to create transaction: %v", err)
+		}
+
 		_, err = f(tx)
 		if err != nil && status.Code(err) != codes.Aborted {
 			tx.Rollback(ctx)
 			break
 		} else if err == nil {
 			resp, err = tx.CommitWithReturnResp(ctx)
+			if err != nil {
+				t.Fatalf("failed to CommitWithReturnResp: %v", err)
+			}
 			break
 		}
 		// Set a default sleep time if the server delay is absent.
@@ -569,6 +702,10 @@ func TestBatchDML_StatementBased_WithMultipleDML(t *testing.T) {
 	defer teardown()
 
 	tx, err := NewReadWriteStmtBasedTransaction(ctx, client)
+	if err != nil {
+		t.Fatalf("failed to create transaction: %v", err)
+	}
+
 	if _, err = tx.Update(ctx, Statement{SQL: UpdateBarSetFoo}); err != nil {
 		tx.Rollback(ctx)
 		t.Fatal(err)
@@ -602,17 +739,20 @@ func TestBatchDML_StatementBased_WithMultipleDML(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	if got, want := gotReqs[2].(*sppb.ExecuteSqlRequest).Seqno, int64(1); got != want {
+	muxCreateBuffer := 0
+	if isMultiplexEnabled {
+		muxCreateBuffer = 1
+	}
+	if got, want := gotReqs[2+muxCreateBuffer].(*sppb.ExecuteSqlRequest).Seqno, int64(1); got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[3].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(2); got != want {
+	if got, want := gotReqs[3+muxCreateBuffer].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(2); got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[4].(*sppb.ExecuteSqlRequest).Seqno, int64(3); got != want {
+	if got, want := gotReqs[4+muxCreateBuffer].(*sppb.ExecuteSqlRequest).Seqno, int64(3); got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[5].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(4); got != want {
+	if got, want := gotReqs[5+muxCreateBuffer].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(4); got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
 }
@@ -621,12 +761,16 @@ func TestPriorityInQueryOptions(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	server, client, teardown := setupMockedTestServerWithConfigAndClientOptions(
-		t, ClientConfig{QueryOptions: QueryOptions{Priority: sppb.RequestOptions_PRIORITY_LOW}},
+		t, ClientConfig{DisableNativeMetrics: true, QueryOptions: QueryOptions{Priority: sppb.RequestOptions_PRIORITY_LOW}},
 		[]option.ClientOption{},
 	)
 	defer teardown()
 
 	tx, err := NewReadWriteStmtBasedTransaction(ctx, client)
+	if err != nil {
+		t.Fatalf("failed to create transaction: %v", err)
+	}
+
 	var iter *RowIterator
 	iter = tx.txReadOnly.Query(ctx, NewStatement("SELECT 1"))
 	err = iter.Do(func(r *Row) error { return nil })
@@ -670,22 +814,26 @@ func TestPriorityInQueryOptions(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got, want := gotReqs[2].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_LOW; got != want {
+	muxCreateBuffer := 0
+	if isMultiplexEnabled {
+		muxCreateBuffer = 1
+	}
+	if got, want := gotReqs[2+muxCreateBuffer].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_LOW; got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[3].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_MEDIUM; got != want {
+	if got, want := gotReqs[3+muxCreateBuffer].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_MEDIUM; got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[4].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_LOW; got != want {
+	if got, want := gotReqs[4+muxCreateBuffer].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_LOW; got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[5].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_LOW; got != want {
+	if got, want := gotReqs[5+muxCreateBuffer].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_LOW; got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[6].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_LOW; got != want {
+	if got, want := gotReqs[6+muxCreateBuffer].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_LOW; got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[7].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_MEDIUM; got != want {
+	if got, want := gotReqs[7+muxCreateBuffer].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_MEDIUM; got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
 }
@@ -702,6 +850,31 @@ func shouldHaveReceived(server InMemSpannerServer, want []interface{}) ([]interf
 
 // Compares expected requests (want) with actual requests (got).
 func compareRequests(want []interface{}, got []interface{}) error {
+	if reflect.TypeOf(want[0]) != reflect.TypeOf(&sppb.BatchCreateSessionsRequest{}) {
+		sessReq := 0
+		for i := 0; i < len(want); i++ {
+			if reflect.TypeOf(want[i]) == reflect.TypeOf(&sppb.BatchCreateSessionsRequest{}) {
+				sessReq = i
+				break
+			}
+		}
+		want[0], want[sessReq] = want[sessReq], want[0]
+	}
+	if isMultiplexEnabled {
+		if reflect.TypeOf(want[0]) != reflect.TypeOf(&sppb.CreateSessionRequest{}) {
+			want = append([]interface{}{&sppb.CreateSessionRequest{}}, want...)
+		}
+		if reflect.TypeOf(got[0]) == reflect.TypeOf(&sppb.BatchCreateSessionsRequest{}) {
+			muxSessionIndex := 0
+			for i := 0; i < len(got); i++ {
+				if reflect.TypeOf(got[i]) == reflect.TypeOf(&sppb.CreateSessionRequest{}) {
+					muxSessionIndex = i
+					break
+				}
+			}
+			got[0], got[muxSessionIndex] = got[muxSessionIndex], got[0]
+		}
+	}
 	if len(got) != len(want) {
 		var gotMsg string
 		for _, r := range got {

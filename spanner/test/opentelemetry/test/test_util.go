@@ -22,12 +22,21 @@ package test
 import (
 	"context"
 	"fmt"
+	"os"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/spanner"
 	stestutil "cloud.google.com/go/spanner/internal/testutil"
 )
+
+var (
+	isMultiplexEnabled = getMultiplexEnableFlag()
+)
+
+func getMultiplexEnableFlag() bool {
+	return os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS") == "true"
+}
 
 func setupMockedTestServerWithConfig(t *testing.T, config spanner.ClientConfig) (server *stestutil.MockedSpannerInMemTestServer, client *spanner.Client, teardown func()) {
 	server, opts, serverTeardown := stestutil.NewMockedSpannerInMemTestServer(t)
@@ -36,6 +45,13 @@ func setupMockedTestServerWithConfig(t *testing.T, config spanner.ClientConfig) 
 	client, err := spanner.NewClientWithConfig(ctx, formattedDatabase, config, opts...)
 	if err != nil {
 		t.Fatal(err)
+	}
+	if isMultiplexEnabled {
+		// trigger R/O txn for multiplexed session creation to avoid flakiness
+		waitFor(t, func() error {
+			iter := client.Single().Query(ctx, spanner.NewStatement(stestutil.SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+			return iter.Do(func(_ *spanner.Row) error { return nil })
+		})
 	}
 	return server, client, func() {
 		client.Close()

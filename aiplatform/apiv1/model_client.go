@@ -19,6 +19,7 @@ package aiplatform
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 
@@ -80,6 +81,7 @@ func defaultModelGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -433,6 +435,8 @@ type modelGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewModelClient creates a new model service client based on gRPC.
@@ -459,6 +463,7 @@ func NewModelClient(ctx context.Context, opts ...option.ClientOption) (*ModelCli
 		connPool:         connPool,
 		modelClient:      aiplatformpb.NewModelServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:  iampb.NewIAMPolicyClient(connPool),
 		locationsClient:  locationpb.NewLocationsClient(connPool),
@@ -515,7 +520,7 @@ func (c *modelGRPCClient) UploadModel(ctx context.Context, req *aiplatformpb.Upl
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.modelClient.UploadModel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.modelClient.UploadModel, req, settings.GRPC, c.logger, "UploadModel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -535,7 +540,7 @@ func (c *modelGRPCClient) GetModel(ctx context.Context, req *aiplatformpb.GetMod
 	var resp *aiplatformpb.Model
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.modelClient.GetModel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.modelClient.GetModel, req, settings.GRPC, c.logger, "GetModel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -564,7 +569,7 @@ func (c *modelGRPCClient) ListModels(ctx context.Context, req *aiplatformpb.List
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.modelClient.ListModels(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.modelClient.ListModels, req, settings.GRPC, c.logger, "ListModels")
 			return err
 		}, opts...)
 		if err != nil {
@@ -610,7 +615,7 @@ func (c *modelGRPCClient) ListModelVersions(ctx context.Context, req *aiplatform
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.modelClient.ListModelVersions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.modelClient.ListModelVersions, req, settings.GRPC, c.logger, "ListModelVersions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -645,7 +650,7 @@ func (c *modelGRPCClient) UpdateModel(ctx context.Context, req *aiplatformpb.Upd
 	var resp *aiplatformpb.Model
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.modelClient.UpdateModel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.modelClient.UpdateModel, req, settings.GRPC, c.logger, "UpdateModel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -663,7 +668,7 @@ func (c *modelGRPCClient) UpdateExplanationDataset(ctx context.Context, req *aip
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.modelClient.UpdateExplanationDataset(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.modelClient.UpdateExplanationDataset, req, settings.GRPC, c.logger, "UpdateExplanationDataset")
 		return err
 	}, opts...)
 	if err != nil {
@@ -683,7 +688,7 @@ func (c *modelGRPCClient) DeleteModel(ctx context.Context, req *aiplatformpb.Del
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.modelClient.DeleteModel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.modelClient.DeleteModel, req, settings.GRPC, c.logger, "DeleteModel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -703,7 +708,7 @@ func (c *modelGRPCClient) DeleteModelVersion(ctx context.Context, req *aiplatfor
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.modelClient.DeleteModelVersion(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.modelClient.DeleteModelVersion, req, settings.GRPC, c.logger, "DeleteModelVersion")
 		return err
 	}, opts...)
 	if err != nil {
@@ -723,7 +728,7 @@ func (c *modelGRPCClient) MergeVersionAliases(ctx context.Context, req *aiplatfo
 	var resp *aiplatformpb.Model
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.modelClient.MergeVersionAliases(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.modelClient.MergeVersionAliases, req, settings.GRPC, c.logger, "MergeVersionAliases")
 		return err
 	}, opts...)
 	if err != nil {
@@ -741,7 +746,7 @@ func (c *modelGRPCClient) ExportModel(ctx context.Context, req *aiplatformpb.Exp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.modelClient.ExportModel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.modelClient.ExportModel, req, settings.GRPC, c.logger, "ExportModel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -761,7 +766,7 @@ func (c *modelGRPCClient) CopyModel(ctx context.Context, req *aiplatformpb.CopyM
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.modelClient.CopyModel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.modelClient.CopyModel, req, settings.GRPC, c.logger, "CopyModel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -781,7 +786,7 @@ func (c *modelGRPCClient) ImportModelEvaluation(ctx context.Context, req *aiplat
 	var resp *aiplatformpb.ModelEvaluation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.modelClient.ImportModelEvaluation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.modelClient.ImportModelEvaluation, req, settings.GRPC, c.logger, "ImportModelEvaluation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -799,7 +804,7 @@ func (c *modelGRPCClient) BatchImportModelEvaluationSlices(ctx context.Context, 
 	var resp *aiplatformpb.BatchImportModelEvaluationSlicesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.modelClient.BatchImportModelEvaluationSlices(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.modelClient.BatchImportModelEvaluationSlices, req, settings.GRPC, c.logger, "BatchImportModelEvaluationSlices")
 		return err
 	}, opts...)
 	if err != nil {
@@ -817,7 +822,7 @@ func (c *modelGRPCClient) BatchImportEvaluatedAnnotations(ctx context.Context, r
 	var resp *aiplatformpb.BatchImportEvaluatedAnnotationsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.modelClient.BatchImportEvaluatedAnnotations(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.modelClient.BatchImportEvaluatedAnnotations, req, settings.GRPC, c.logger, "BatchImportEvaluatedAnnotations")
 		return err
 	}, opts...)
 	if err != nil {
@@ -835,7 +840,7 @@ func (c *modelGRPCClient) GetModelEvaluation(ctx context.Context, req *aiplatfor
 	var resp *aiplatformpb.ModelEvaluation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.modelClient.GetModelEvaluation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.modelClient.GetModelEvaluation, req, settings.GRPC, c.logger, "GetModelEvaluation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -864,7 +869,7 @@ func (c *modelGRPCClient) ListModelEvaluations(ctx context.Context, req *aiplatf
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.modelClient.ListModelEvaluations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.modelClient.ListModelEvaluations, req, settings.GRPC, c.logger, "ListModelEvaluations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -899,7 +904,7 @@ func (c *modelGRPCClient) GetModelEvaluationSlice(ctx context.Context, req *aipl
 	var resp *aiplatformpb.ModelEvaluationSlice
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.modelClient.GetModelEvaluationSlice(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.modelClient.GetModelEvaluationSlice, req, settings.GRPC, c.logger, "GetModelEvaluationSlice")
 		return err
 	}, opts...)
 	if err != nil {
@@ -928,7 +933,7 @@ func (c *modelGRPCClient) ListModelEvaluationSlices(ctx context.Context, req *ai
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.modelClient.ListModelEvaluationSlices(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.modelClient.ListModelEvaluationSlices, req, settings.GRPC, c.logger, "ListModelEvaluationSlices")
 			return err
 		}, opts...)
 		if err != nil {
@@ -963,7 +968,7 @@ func (c *modelGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLo
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -992,7 +997,7 @@ func (c *modelGRPCClient) ListLocations(ctx context.Context, req *locationpb.Lis
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1027,7 +1032,7 @@ func (c *modelGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPol
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1045,7 +1050,7 @@ func (c *modelGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPol
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1063,7 +1068,7 @@ func (c *modelGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.Tes
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1080,7 +1085,7 @@ func (c *modelGRPCClient) CancelOperation(ctx context.Context, req *longrunningp
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -1094,7 +1099,7 @@ func (c *modelGRPCClient) DeleteOperation(ctx context.Context, req *longrunningp
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -1109,7 +1114,7 @@ func (c *modelGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.G
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1138,7 +1143,7 @@ func (c *modelGRPCClient) ListOperations(ctx context.Context, req *longrunningpb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1173,7 +1178,7 @@ func (c *modelGRPCClient) WaitOperation(ctx context.Context, req *longrunningpb.
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.WaitOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.WaitOperation, req, settings.GRPC, c.logger, "WaitOperation")
 		return err
 	}, opts...)
 	if err != nil {

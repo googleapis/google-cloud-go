@@ -18,6 +18,7 @@ package spanner
 
 import (
 	"context"
+	"errors"
 	"strings"
 	"time"
 
@@ -85,7 +86,7 @@ func (r *spannerRetryer) Retry(err error) (time.Duration, bool) {
 // a minimum of 10ms and maximum of 32s. There is no delay before the retry if
 // the error was Session not found or failed inline begin transaction.
 func runWithRetryOnAbortedOrFailedInlineBeginOrSessionNotFound(ctx context.Context, f func(context.Context) error) error {
-	retryer := onCodes(DefaultRetryBackoff, codes.Aborted, codes.Internal)
+	retryer := onCodes(DefaultRetryBackoff, codes.Aborted, codes.ResourceExhausted, codes.Internal)
 	funcWithRetry := func(ctx context.Context) error {
 		for {
 			err := f(ctx)
@@ -98,7 +99,7 @@ func runWithRetryOnAbortedOrFailedInlineBeginOrSessionNotFound(ctx context.Conte
 			// interface.
 			var retryErr error
 			var se *Error
-			if errorAs(err, &se) {
+			if errors.As(err, &se) {
 				// It is a (wrapped) Spanner error. Use that to check whether
 				// we should retry.
 				retryErr = se
@@ -136,7 +137,7 @@ func ExtractRetryDelay(err error) (time.Duration, bool) {
 	var se *Error
 	var s *status.Status
 	// Unwrap status error.
-	if errorAs(err, &se) {
+	if errors.As(err, &se) {
 		s = status.Convert(se.Unwrap())
 	} else {
 		s = status.Convert(err)

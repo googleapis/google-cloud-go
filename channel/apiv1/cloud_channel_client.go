@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -2668,6 +2667,8 @@ type cloudChannelGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewCloudChannelClient creates a new cloud channel service client based on gRPC.
@@ -2717,6 +2718,7 @@ func NewCloudChannelClient(ctx context.Context, opts ...option.ClientOption) (*C
 		connPool:           connPool,
 		cloudChannelClient: channelpb.NewCloudChannelServiceClient(connPool),
 		CallOptions:        &client.CallOptions,
+		logger:             internaloption.GetLogger(opts),
 		operationsClient:   longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -2780,6 +2782,8 @@ type cloudChannelRESTClient struct {
 
 	// Points back to the CallOptions field of the containing CloudChannelClient
 	CallOptions **CloudChannelCallOptions
+
+	logger *slog.Logger
 }
 
 // NewCloudChannelRESTClient creates a new cloud channel service rest client.
@@ -2820,6 +2824,7 @@ func NewCloudChannelRESTClient(ctx context.Context, opts ...option.ClientOption)
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -2893,7 +2898,7 @@ func (c *cloudChannelGRPCClient) ListCustomers(ctx context.Context, req *channel
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudChannelClient.ListCustomers(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudChannelClient.ListCustomers, req, settings.GRPC, c.logger, "ListCustomers")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2928,7 +2933,7 @@ func (c *cloudChannelGRPCClient) GetCustomer(ctx context.Context, req *channelpb
 	var resp *channelpb.Customer
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.GetCustomer(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.GetCustomer, req, settings.GRPC, c.logger, "GetCustomer")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2946,7 +2951,7 @@ func (c *cloudChannelGRPCClient) CheckCloudIdentityAccountsExist(ctx context.Con
 	var resp *channelpb.CheckCloudIdentityAccountsExistResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.CheckCloudIdentityAccountsExist(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.CheckCloudIdentityAccountsExist, req, settings.GRPC, c.logger, "CheckCloudIdentityAccountsExist")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2964,7 +2969,7 @@ func (c *cloudChannelGRPCClient) CreateCustomer(ctx context.Context, req *channe
 	var resp *channelpb.Customer
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.CreateCustomer(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.CreateCustomer, req, settings.GRPC, c.logger, "CreateCustomer")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2982,7 +2987,7 @@ func (c *cloudChannelGRPCClient) UpdateCustomer(ctx context.Context, req *channe
 	var resp *channelpb.Customer
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.UpdateCustomer(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.UpdateCustomer, req, settings.GRPC, c.logger, "UpdateCustomer")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2999,7 +3004,7 @@ func (c *cloudChannelGRPCClient) DeleteCustomer(ctx context.Context, req *channe
 	opts = append((*c.CallOptions).DeleteCustomer[0:len((*c.CallOptions).DeleteCustomer):len((*c.CallOptions).DeleteCustomer)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.cloudChannelClient.DeleteCustomer(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.cloudChannelClient.DeleteCustomer, req, settings.GRPC, c.logger, "DeleteCustomer")
 		return err
 	}, opts...)
 	return err
@@ -3014,7 +3019,7 @@ func (c *cloudChannelGRPCClient) ImportCustomer(ctx context.Context, req *channe
 	var resp *channelpb.Customer
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.ImportCustomer(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.ImportCustomer, req, settings.GRPC, c.logger, "ImportCustomer")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3032,7 +3037,7 @@ func (c *cloudChannelGRPCClient) ProvisionCloudIdentity(ctx context.Context, req
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.ProvisionCloudIdentity(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.ProvisionCloudIdentity, req, settings.GRPC, c.logger, "ProvisionCloudIdentity")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3063,7 +3068,7 @@ func (c *cloudChannelGRPCClient) ListEntitlements(ctx context.Context, req *chan
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudChannelClient.ListEntitlements(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudChannelClient.ListEntitlements, req, settings.GRPC, c.logger, "ListEntitlements")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3109,7 +3114,7 @@ func (c *cloudChannelGRPCClient) ListTransferableSkus(ctx context.Context, req *
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudChannelClient.ListTransferableSkus(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudChannelClient.ListTransferableSkus, req, settings.GRPC, c.logger, "ListTransferableSkus")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3155,7 +3160,7 @@ func (c *cloudChannelGRPCClient) ListTransferableOffers(ctx context.Context, req
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudChannelClient.ListTransferableOffers(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudChannelClient.ListTransferableOffers, req, settings.GRPC, c.logger, "ListTransferableOffers")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3190,7 +3195,7 @@ func (c *cloudChannelGRPCClient) GetEntitlement(ctx context.Context, req *channe
 	var resp *channelpb.Entitlement
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.GetEntitlement(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.GetEntitlement, req, settings.GRPC, c.logger, "GetEntitlement")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3208,7 +3213,7 @@ func (c *cloudChannelGRPCClient) CreateEntitlement(ctx context.Context, req *cha
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.CreateEntitlement(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.CreateEntitlement, req, settings.GRPC, c.logger, "CreateEntitlement")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3228,7 +3233,7 @@ func (c *cloudChannelGRPCClient) ChangeParameters(ctx context.Context, req *chan
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.ChangeParameters(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.ChangeParameters, req, settings.GRPC, c.logger, "ChangeParameters")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3248,7 +3253,7 @@ func (c *cloudChannelGRPCClient) ChangeRenewalSettings(ctx context.Context, req 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.ChangeRenewalSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.ChangeRenewalSettings, req, settings.GRPC, c.logger, "ChangeRenewalSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3268,7 +3273,7 @@ func (c *cloudChannelGRPCClient) ChangeOffer(ctx context.Context, req *channelpb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.ChangeOffer(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.ChangeOffer, req, settings.GRPC, c.logger, "ChangeOffer")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3288,7 +3293,7 @@ func (c *cloudChannelGRPCClient) StartPaidService(ctx context.Context, req *chan
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.StartPaidService(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.StartPaidService, req, settings.GRPC, c.logger, "StartPaidService")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3308,7 +3313,7 @@ func (c *cloudChannelGRPCClient) SuspendEntitlement(ctx context.Context, req *ch
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.SuspendEntitlement(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.SuspendEntitlement, req, settings.GRPC, c.logger, "SuspendEntitlement")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3328,7 +3333,7 @@ func (c *cloudChannelGRPCClient) CancelEntitlement(ctx context.Context, req *cha
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.CancelEntitlement(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.CancelEntitlement, req, settings.GRPC, c.logger, "CancelEntitlement")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3348,7 +3353,7 @@ func (c *cloudChannelGRPCClient) ActivateEntitlement(ctx context.Context, req *c
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.ActivateEntitlement(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.ActivateEntitlement, req, settings.GRPC, c.logger, "ActivateEntitlement")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3368,7 +3373,7 @@ func (c *cloudChannelGRPCClient) TransferEntitlements(ctx context.Context, req *
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.TransferEntitlements(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.TransferEntitlements, req, settings.GRPC, c.logger, "TransferEntitlements")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3388,7 +3393,7 @@ func (c *cloudChannelGRPCClient) TransferEntitlementsToGoogle(ctx context.Contex
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.TransferEntitlementsToGoogle(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.TransferEntitlementsToGoogle, req, settings.GRPC, c.logger, "TransferEntitlementsToGoogle")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3419,7 +3424,7 @@ func (c *cloudChannelGRPCClient) ListChannelPartnerLinks(ctx context.Context, re
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudChannelClient.ListChannelPartnerLinks(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudChannelClient.ListChannelPartnerLinks, req, settings.GRPC, c.logger, "ListChannelPartnerLinks")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3454,7 +3459,7 @@ func (c *cloudChannelGRPCClient) GetChannelPartnerLink(ctx context.Context, req 
 	var resp *channelpb.ChannelPartnerLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.GetChannelPartnerLink(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.GetChannelPartnerLink, req, settings.GRPC, c.logger, "GetChannelPartnerLink")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3472,7 +3477,7 @@ func (c *cloudChannelGRPCClient) CreateChannelPartnerLink(ctx context.Context, r
 	var resp *channelpb.ChannelPartnerLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.CreateChannelPartnerLink(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.CreateChannelPartnerLink, req, settings.GRPC, c.logger, "CreateChannelPartnerLink")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3490,7 +3495,7 @@ func (c *cloudChannelGRPCClient) UpdateChannelPartnerLink(ctx context.Context, r
 	var resp *channelpb.ChannelPartnerLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.UpdateChannelPartnerLink(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.UpdateChannelPartnerLink, req, settings.GRPC, c.logger, "UpdateChannelPartnerLink")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3508,7 +3513,7 @@ func (c *cloudChannelGRPCClient) GetCustomerRepricingConfig(ctx context.Context,
 	var resp *channelpb.CustomerRepricingConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.GetCustomerRepricingConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.GetCustomerRepricingConfig, req, settings.GRPC, c.logger, "GetCustomerRepricingConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3537,7 +3542,7 @@ func (c *cloudChannelGRPCClient) ListCustomerRepricingConfigs(ctx context.Contex
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudChannelClient.ListCustomerRepricingConfigs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudChannelClient.ListCustomerRepricingConfigs, req, settings.GRPC, c.logger, "ListCustomerRepricingConfigs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3572,7 +3577,7 @@ func (c *cloudChannelGRPCClient) CreateCustomerRepricingConfig(ctx context.Conte
 	var resp *channelpb.CustomerRepricingConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.CreateCustomerRepricingConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.CreateCustomerRepricingConfig, req, settings.GRPC, c.logger, "CreateCustomerRepricingConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3590,7 +3595,7 @@ func (c *cloudChannelGRPCClient) UpdateCustomerRepricingConfig(ctx context.Conte
 	var resp *channelpb.CustomerRepricingConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.UpdateCustomerRepricingConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.UpdateCustomerRepricingConfig, req, settings.GRPC, c.logger, "UpdateCustomerRepricingConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3607,7 +3612,7 @@ func (c *cloudChannelGRPCClient) DeleteCustomerRepricingConfig(ctx context.Conte
 	opts = append((*c.CallOptions).DeleteCustomerRepricingConfig[0:len((*c.CallOptions).DeleteCustomerRepricingConfig):len((*c.CallOptions).DeleteCustomerRepricingConfig)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.cloudChannelClient.DeleteCustomerRepricingConfig(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.cloudChannelClient.DeleteCustomerRepricingConfig, req, settings.GRPC, c.logger, "DeleteCustomerRepricingConfig")
 		return err
 	}, opts...)
 	return err
@@ -3622,7 +3627,7 @@ func (c *cloudChannelGRPCClient) GetChannelPartnerRepricingConfig(ctx context.Co
 	var resp *channelpb.ChannelPartnerRepricingConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.GetChannelPartnerRepricingConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.GetChannelPartnerRepricingConfig, req, settings.GRPC, c.logger, "GetChannelPartnerRepricingConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3651,7 +3656,7 @@ func (c *cloudChannelGRPCClient) ListChannelPartnerRepricingConfigs(ctx context.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudChannelClient.ListChannelPartnerRepricingConfigs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudChannelClient.ListChannelPartnerRepricingConfigs, req, settings.GRPC, c.logger, "ListChannelPartnerRepricingConfigs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3686,7 +3691,7 @@ func (c *cloudChannelGRPCClient) CreateChannelPartnerRepricingConfig(ctx context
 	var resp *channelpb.ChannelPartnerRepricingConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.CreateChannelPartnerRepricingConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.CreateChannelPartnerRepricingConfig, req, settings.GRPC, c.logger, "CreateChannelPartnerRepricingConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3704,7 +3709,7 @@ func (c *cloudChannelGRPCClient) UpdateChannelPartnerRepricingConfig(ctx context
 	var resp *channelpb.ChannelPartnerRepricingConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.UpdateChannelPartnerRepricingConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.UpdateChannelPartnerRepricingConfig, req, settings.GRPC, c.logger, "UpdateChannelPartnerRepricingConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3721,7 +3726,7 @@ func (c *cloudChannelGRPCClient) DeleteChannelPartnerRepricingConfig(ctx context
 	opts = append((*c.CallOptions).DeleteChannelPartnerRepricingConfig[0:len((*c.CallOptions).DeleteChannelPartnerRepricingConfig):len((*c.CallOptions).DeleteChannelPartnerRepricingConfig)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.cloudChannelClient.DeleteChannelPartnerRepricingConfig(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.cloudChannelClient.DeleteChannelPartnerRepricingConfig, req, settings.GRPC, c.logger, "DeleteChannelPartnerRepricingConfig")
 		return err
 	}, opts...)
 	return err
@@ -3747,7 +3752,7 @@ func (c *cloudChannelGRPCClient) ListSkuGroups(ctx context.Context, req *channel
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudChannelClient.ListSkuGroups(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudChannelClient.ListSkuGroups, req, settings.GRPC, c.logger, "ListSkuGroups")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3793,7 +3798,7 @@ func (c *cloudChannelGRPCClient) ListSkuGroupBillableSkus(ctx context.Context, r
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudChannelClient.ListSkuGroupBillableSkus(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudChannelClient.ListSkuGroupBillableSkus, req, settings.GRPC, c.logger, "ListSkuGroupBillableSkus")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3828,7 +3833,7 @@ func (c *cloudChannelGRPCClient) LookupOffer(ctx context.Context, req *channelpb
 	var resp *channelpb.Offer
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.LookupOffer(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.LookupOffer, req, settings.GRPC, c.logger, "LookupOffer")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3854,7 +3859,7 @@ func (c *cloudChannelGRPCClient) ListProducts(ctx context.Context, req *channelp
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudChannelClient.ListProducts(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudChannelClient.ListProducts, req, settings.GRPC, c.logger, "ListProducts")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3900,7 +3905,7 @@ func (c *cloudChannelGRPCClient) ListSkus(ctx context.Context, req *channelpb.Li
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudChannelClient.ListSkus(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudChannelClient.ListSkus, req, settings.GRPC, c.logger, "ListSkus")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3946,7 +3951,7 @@ func (c *cloudChannelGRPCClient) ListOffers(ctx context.Context, req *channelpb.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudChannelClient.ListOffers(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudChannelClient.ListOffers, req, settings.GRPC, c.logger, "ListOffers")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3992,7 +3997,7 @@ func (c *cloudChannelGRPCClient) ListPurchasableSkus(ctx context.Context, req *c
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudChannelClient.ListPurchasableSkus(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudChannelClient.ListPurchasableSkus, req, settings.GRPC, c.logger, "ListPurchasableSkus")
 			return err
 		}, opts...)
 		if err != nil {
@@ -4038,7 +4043,7 @@ func (c *cloudChannelGRPCClient) ListPurchasableOffers(ctx context.Context, req 
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudChannelClient.ListPurchasableOffers(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudChannelClient.ListPurchasableOffers, req, settings.GRPC, c.logger, "ListPurchasableOffers")
 			return err
 		}, opts...)
 		if err != nil {
@@ -4073,7 +4078,7 @@ func (c *cloudChannelGRPCClient) QueryEligibleBillingAccounts(ctx context.Contex
 	var resp *channelpb.QueryEligibleBillingAccountsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.QueryEligibleBillingAccounts(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.QueryEligibleBillingAccounts, req, settings.GRPC, c.logger, "QueryEligibleBillingAccounts")
 		return err
 	}, opts...)
 	if err != nil {
@@ -4091,7 +4096,7 @@ func (c *cloudChannelGRPCClient) RegisterSubscriber(ctx context.Context, req *ch
 	var resp *channelpb.RegisterSubscriberResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.RegisterSubscriber(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.RegisterSubscriber, req, settings.GRPC, c.logger, "RegisterSubscriber")
 		return err
 	}, opts...)
 	if err != nil {
@@ -4109,7 +4114,7 @@ func (c *cloudChannelGRPCClient) UnregisterSubscriber(ctx context.Context, req *
 	var resp *channelpb.UnregisterSubscriberResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.UnregisterSubscriber(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.UnregisterSubscriber, req, settings.GRPC, c.logger, "UnregisterSubscriber")
 		return err
 	}, opts...)
 	if err != nil {
@@ -4138,7 +4143,7 @@ func (c *cloudChannelGRPCClient) ListSubscribers(ctx context.Context, req *chann
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudChannelClient.ListSubscribers(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudChannelClient.ListSubscribers, req, settings.GRPC, c.logger, "ListSubscribers")
 			return err
 		}, opts...)
 		if err != nil {
@@ -4184,7 +4189,7 @@ func (c *cloudChannelGRPCClient) ListEntitlementChanges(ctx context.Context, req
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudChannelClient.ListEntitlementChanges(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudChannelClient.ListEntitlementChanges, req, settings.GRPC, c.logger, "ListEntitlementChanges")
 			return err
 		}, opts...)
 		if err != nil {
@@ -4218,7 +4223,7 @@ func (c *cloudChannelGRPCClient) CancelOperation(ctx context.Context, req *longr
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -4232,7 +4237,7 @@ func (c *cloudChannelGRPCClient) DeleteOperation(ctx context.Context, req *longr
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -4247,7 +4252,7 @@ func (c *cloudChannelGRPCClient) GetOperation(ctx context.Context, req *longrunn
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -4276,7 +4281,7 @@ func (c *cloudChannelGRPCClient) ListOperations(ctx context.Context, req *longru
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -4361,21 +4366,10 @@ func (c *cloudChannelRESTClient) ListCustomers(ctx context.Context, req *channel
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListCustomers")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4452,17 +4446,7 @@ func (c *cloudChannelRESTClient) GetCustomer(ctx context.Context, req *channelpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCustomer")
 		if err != nil {
 			return err
 		}
@@ -4538,17 +4522,7 @@ func (c *cloudChannelRESTClient) CheckCloudIdentityAccountsExist(ctx context.Con
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CheckCloudIdentityAccountsExist")
 		if err != nil {
 			return err
 		}
@@ -4625,17 +4599,7 @@ func (c *cloudChannelRESTClient) CreateCustomer(ctx context.Context, req *channe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateCustomer")
 		if err != nil {
 			return err
 		}
@@ -4684,11 +4648,11 @@ func (c *cloudChannelRESTClient) UpdateCustomer(ctx context.Context, req *channe
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4713,17 +4677,7 @@ func (c *cloudChannelRESTClient) UpdateCustomer(ctx context.Context, req *channe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateCustomer")
 		if err != nil {
 			return err
 		}
@@ -4782,15 +4736,8 @@ func (c *cloudChannelRESTClient) DeleteCustomer(ctx context.Context, req *channe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteCustomer")
+		return err
 	}, opts...)
 }
 
@@ -4857,17 +4804,7 @@ func (c *cloudChannelRESTClient) ImportCustomer(ctx context.Context, req *channe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ImportCustomer")
 		if err != nil {
 			return err
 		}
@@ -4952,21 +4889,10 @@ func (c *cloudChannelRESTClient) ProvisionCloudIdentity(ctx context.Context, req
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ProvisionCloudIdentity")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5040,21 +4966,10 @@ func (c *cloudChannelRESTClient) ListEntitlements(ctx context.Context, req *chan
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListEntitlements")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -5151,21 +5066,10 @@ func (c *cloudChannelRESTClient) ListTransferableSkus(ctx context.Context, req *
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ListTransferableSkus")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -5266,21 +5170,10 @@ func (c *cloudChannelRESTClient) ListTransferableOffers(ctx context.Context, req
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ListTransferableOffers")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -5355,17 +5248,7 @@ func (c *cloudChannelRESTClient) GetEntitlement(ctx context.Context, req *channe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetEntitlement")
 		if err != nil {
 			return err
 		}
@@ -5476,21 +5359,10 @@ func (c *cloudChannelRESTClient) CreateEntitlement(ctx context.Context, req *cha
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateEntitlement")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5572,21 +5444,10 @@ func (c *cloudChannelRESTClient) ChangeParameters(ctx context.Context, req *chan
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ChangeParameters")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5669,21 +5530,10 @@ func (c *cloudChannelRESTClient) ChangeRenewalSettings(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ChangeRenewalSettings")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5763,21 +5613,10 @@ func (c *cloudChannelRESTClient) ChangeOffer(ctx context.Context, req *channelpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ChangeOffer")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5861,21 +5700,10 @@ func (c *cloudChannelRESTClient) StartPaidService(ctx context.Context, req *chan
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "StartPaidService")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5956,21 +5784,10 @@ func (c *cloudChannelRESTClient) SuspendEntitlement(ctx context.Context, req *ch
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SuspendEntitlement")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -6057,21 +5874,10 @@ func (c *cloudChannelRESTClient) CancelEntitlement(ctx context.Context, req *cha
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelEntitlement")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -6159,21 +5965,10 @@ func (c *cloudChannelRESTClient) ActivateEntitlement(ctx context.Context, req *c
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ActivateEntitlement")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -6274,21 +6069,10 @@ func (c *cloudChannelRESTClient) TransferEntitlements(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TransferEntitlements")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -6383,21 +6167,10 @@ func (c *cloudChannelRESTClient) TransferEntitlementsToGoogle(ctx context.Contex
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TransferEntitlementsToGoogle")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -6475,21 +6248,10 @@ func (c *cloudChannelRESTClient) ListChannelPartnerLinks(ctx context.Context, re
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListChannelPartnerLinks")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -6571,17 +6333,7 @@ func (c *cloudChannelRESTClient) GetChannelPartnerLink(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetChannelPartnerLink")
 		if err != nil {
 			return err
 		}
@@ -6665,17 +6417,7 @@ func (c *cloudChannelRESTClient) CreateChannelPartnerLink(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateChannelPartnerLink")
 		if err != nil {
 			return err
 		}
@@ -6759,17 +6501,7 @@ func (c *cloudChannelRESTClient) UpdateChannelPartnerLink(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateChannelPartnerLink")
 		if err != nil {
 			return err
 		}
@@ -6837,17 +6569,7 @@ func (c *cloudChannelRESTClient) GetCustomerRepricingConfig(ctx context.Context,
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCustomerRepricingConfig")
 		if err != nil {
 			return err
 		}
@@ -6941,21 +6663,10 @@ func (c *cloudChannelRESTClient) ListCustomerRepricingConfigs(ctx context.Contex
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListCustomerRepricingConfigs")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -7072,17 +6783,7 @@ func (c *cloudChannelRESTClient) CreateCustomerRepricingConfig(ctx context.Conte
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateCustomerRepricingConfig")
 		if err != nil {
 			return err
 		}
@@ -7173,17 +6874,7 @@ func (c *cloudChannelRESTClient) UpdateCustomerRepricingConfig(ctx context.Conte
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateCustomerRepricingConfig")
 		if err != nil {
 			return err
 		}
@@ -7249,15 +6940,8 @@ func (c *cloudChannelRESTClient) DeleteCustomerRepricingConfig(ctx context.Conte
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteCustomerRepricingConfig")
+		return err
 	}, opts...)
 }
 
@@ -7312,17 +6996,7 @@ func (c *cloudChannelRESTClient) GetChannelPartnerRepricingConfig(ctx context.Co
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetChannelPartnerRepricingConfig")
 		if err != nil {
 			return err
 		}
@@ -7414,21 +7088,10 @@ func (c *cloudChannelRESTClient) ListChannelPartnerRepricingConfigs(ctx context.
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListChannelPartnerRepricingConfigs")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -7546,17 +7209,7 @@ func (c *cloudChannelRESTClient) CreateChannelPartnerRepricingConfig(ctx context
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateChannelPartnerRepricingConfig")
 		if err != nil {
 			return err
 		}
@@ -7647,17 +7300,7 @@ func (c *cloudChannelRESTClient) UpdateChannelPartnerRepricingConfig(ctx context
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateChannelPartnerRepricingConfig")
 		if err != nil {
 			return err
 		}
@@ -7723,15 +7366,8 @@ func (c *cloudChannelRESTClient) DeleteChannelPartnerRepricingConfig(ctx context
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteChannelPartnerRepricingConfig")
+		return err
 	}, opts...)
 }
 
@@ -7799,21 +7435,10 @@ func (c *cloudChannelRESTClient) ListSkuGroups(ctx context.Context, req *channel
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSkuGroups")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -7907,21 +7532,10 @@ func (c *cloudChannelRESTClient) ListSkuGroupBillableSkus(ctx context.Context, r
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSkuGroupBillableSkus")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -7995,17 +7609,7 @@ func (c *cloudChannelRESTClient) LookupOffer(ctx context.Context, req *channelpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "LookupOffer")
 		if err != nil {
 			return err
 		}
@@ -8075,21 +7679,10 @@ func (c *cloudChannelRESTClient) ListProducts(ctx context.Context, req *channelp
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListProducts")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -8172,21 +7765,10 @@ func (c *cloudChannelRESTClient) ListSkus(ctx context.Context, req *channelpb.Li
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSkus")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -8274,21 +7856,10 @@ func (c *cloudChannelRESTClient) ListOffers(ctx context.Context, req *channelpb.
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOffers")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -8379,21 +7950,10 @@ func (c *cloudChannelRESTClient) ListPurchasableSkus(ctx context.Context, req *c
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListPurchasableSkus")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -8497,21 +8057,10 @@ func (c *cloudChannelRESTClient) ListPurchasableOffers(ctx context.Context, req 
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListPurchasableOffers")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -8591,17 +8140,7 @@ func (c *cloudChannelRESTClient) QueryEligibleBillingAccounts(ctx context.Contex
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "QueryEligibleBillingAccounts")
 		if err != nil {
 			return err
 		}
@@ -8677,17 +8216,7 @@ func (c *cloudChannelRESTClient) RegisterSubscriber(ctx context.Context, req *ch
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RegisterSubscriber")
 		if err != nil {
 			return err
 		}
@@ -8767,17 +8296,7 @@ func (c *cloudChannelRESTClient) UnregisterSubscriber(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UnregisterSubscriber")
 		if err != nil {
 			return err
 		}
@@ -8859,21 +8378,10 @@ func (c *cloudChannelRESTClient) ListSubscribers(ctx context.Context, req *chann
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSubscribers")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -8970,21 +8478,10 @@ func (c *cloudChannelRESTClient) ListEntitlementChanges(ctx context.Context, req
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListEntitlementChanges")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -9050,15 +8547,8 @@ func (c *cloudChannelRESTClient) CancelOperation(ctx context.Context, req *longr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -9092,15 +8582,8 @@ func (c *cloudChannelRESTClient) DeleteOperation(ctx context.Context, req *longr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOperation")
+		return err
 	}, opts...)
 }
 
@@ -9137,17 +8620,7 @@ func (c *cloudChannelRESTClient) GetOperation(ctx context.Context, req *longrunn
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -9212,21 +8685,10 @@ func (c *cloudChannelRESTClient) ListOperations(ctx context.Context, req *longru
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

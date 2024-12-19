@@ -19,6 +19,7 @@ package dataplex
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 	"time"
@@ -298,6 +299,8 @@ type metadataGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewMetadataClient creates a new metadata service client based on gRPC.
@@ -325,6 +328,7 @@ func NewMetadataClient(ctx context.Context, opts ...option.ClientOption) (*Metad
 		connPool:         connPool,
 		metadataClient:   dataplexpb.NewMetadataServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
@@ -369,7 +373,7 @@ func (c *metadataGRPCClient) CreateEntity(ctx context.Context, req *dataplexpb.C
 	var resp *dataplexpb.Entity
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.CreateEntity(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.CreateEntity, req, settings.GRPC, c.logger, "CreateEntity")
 		return err
 	}, opts...)
 	if err != nil {
@@ -387,7 +391,7 @@ func (c *metadataGRPCClient) UpdateEntity(ctx context.Context, req *dataplexpb.U
 	var resp *dataplexpb.Entity
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.UpdateEntity(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.UpdateEntity, req, settings.GRPC, c.logger, "UpdateEntity")
 		return err
 	}, opts...)
 	if err != nil {
@@ -404,7 +408,7 @@ func (c *metadataGRPCClient) DeleteEntity(ctx context.Context, req *dataplexpb.D
 	opts = append((*c.CallOptions).DeleteEntity[0:len((*c.CallOptions).DeleteEntity):len((*c.CallOptions).DeleteEntity)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.metadataClient.DeleteEntity(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.metadataClient.DeleteEntity, req, settings.GRPC, c.logger, "DeleteEntity")
 		return err
 	}, opts...)
 	return err
@@ -419,7 +423,7 @@ func (c *metadataGRPCClient) GetEntity(ctx context.Context, req *dataplexpb.GetE
 	var resp *dataplexpb.Entity
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.GetEntity(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.GetEntity, req, settings.GRPC, c.logger, "GetEntity")
 		return err
 	}, opts...)
 	if err != nil {
@@ -448,7 +452,7 @@ func (c *metadataGRPCClient) ListEntities(ctx context.Context, req *dataplexpb.L
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.metadataClient.ListEntities(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.metadataClient.ListEntities, req, settings.GRPC, c.logger, "ListEntities")
 			return err
 		}, opts...)
 		if err != nil {
@@ -483,7 +487,7 @@ func (c *metadataGRPCClient) CreatePartition(ctx context.Context, req *dataplexp
 	var resp *dataplexpb.Partition
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.CreatePartition(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.CreatePartition, req, settings.GRPC, c.logger, "CreatePartition")
 		return err
 	}, opts...)
 	if err != nil {
@@ -500,7 +504,7 @@ func (c *metadataGRPCClient) DeletePartition(ctx context.Context, req *dataplexp
 	opts = append((*c.CallOptions).DeletePartition[0:len((*c.CallOptions).DeletePartition):len((*c.CallOptions).DeletePartition)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.metadataClient.DeletePartition(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.metadataClient.DeletePartition, req, settings.GRPC, c.logger, "DeletePartition")
 		return err
 	}, opts...)
 	return err
@@ -515,7 +519,7 @@ func (c *metadataGRPCClient) GetPartition(ctx context.Context, req *dataplexpb.G
 	var resp *dataplexpb.Partition
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.GetPartition(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.GetPartition, req, settings.GRPC, c.logger, "GetPartition")
 		return err
 	}, opts...)
 	if err != nil {
@@ -544,7 +548,7 @@ func (c *metadataGRPCClient) ListPartitions(ctx context.Context, req *dataplexpb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.metadataClient.ListPartitions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.metadataClient.ListPartitions, req, settings.GRPC, c.logger, "ListPartitions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -579,7 +583,7 @@ func (c *metadataGRPCClient) GetLocation(ctx context.Context, req *locationpb.Ge
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -608,7 +612,7 @@ func (c *metadataGRPCClient) ListLocations(ctx context.Context, req *locationpb.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -642,7 +646,7 @@ func (c *metadataGRPCClient) CancelOperation(ctx context.Context, req *longrunni
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -656,7 +660,7 @@ func (c *metadataGRPCClient) DeleteOperation(ctx context.Context, req *longrunni
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -671,7 +675,7 @@ func (c *metadataGRPCClient) GetOperation(ctx context.Context, req *longrunningp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -700,7 +704,7 @@ func (c *metadataGRPCClient) ListOperations(ctx context.Context, req *longrunnin
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {

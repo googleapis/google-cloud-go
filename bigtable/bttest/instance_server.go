@@ -18,9 +18,9 @@ import (
 	"context"
 	"regexp"
 
+	btapb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
 	"cloud.google.com/go/iam/apiv1/iampb"
 	longrunning "cloud.google.com/go/longrunning/autogen/longrunningpb"
-	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"

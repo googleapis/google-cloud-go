@@ -19,6 +19,7 @@ package aiplatform
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 
@@ -68,6 +69,7 @@ func defaultDeploymentResourcePoolGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -295,6 +297,8 @@ type deploymentResourcePoolGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewDeploymentResourcePoolClient creates a new deployment resource pool service client based on gRPC.
@@ -321,6 +325,7 @@ func NewDeploymentResourcePoolClient(ctx context.Context, opts ...option.ClientO
 		connPool:                     connPool,
 		deploymentResourcePoolClient: aiplatformpb.NewDeploymentResourcePoolServiceClient(connPool),
 		CallOptions:                  &client.CallOptions,
+		logger:                       internaloption.GetLogger(opts),
 		operationsClient:             longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:              iampb.NewIAMPolicyClient(connPool),
 		locationsClient:              locationpb.NewLocationsClient(connPool),
@@ -377,7 +382,7 @@ func (c *deploymentResourcePoolGRPCClient) CreateDeploymentResourcePool(ctx cont
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.deploymentResourcePoolClient.CreateDeploymentResourcePool(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.deploymentResourcePoolClient.CreateDeploymentResourcePool, req, settings.GRPC, c.logger, "CreateDeploymentResourcePool")
 		return err
 	}, opts...)
 	if err != nil {
@@ -397,7 +402,7 @@ func (c *deploymentResourcePoolGRPCClient) GetDeploymentResourcePool(ctx context
 	var resp *aiplatformpb.DeploymentResourcePool
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.deploymentResourcePoolClient.GetDeploymentResourcePool(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.deploymentResourcePoolClient.GetDeploymentResourcePool, req, settings.GRPC, c.logger, "GetDeploymentResourcePool")
 		return err
 	}, opts...)
 	if err != nil {
@@ -426,7 +431,7 @@ func (c *deploymentResourcePoolGRPCClient) ListDeploymentResourcePools(ctx conte
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.deploymentResourcePoolClient.ListDeploymentResourcePools(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.deploymentResourcePoolClient.ListDeploymentResourcePools, req, settings.GRPC, c.logger, "ListDeploymentResourcePools")
 			return err
 		}, opts...)
 		if err != nil {
@@ -461,7 +466,7 @@ func (c *deploymentResourcePoolGRPCClient) UpdateDeploymentResourcePool(ctx cont
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.deploymentResourcePoolClient.UpdateDeploymentResourcePool(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.deploymentResourcePoolClient.UpdateDeploymentResourcePool, req, settings.GRPC, c.logger, "UpdateDeploymentResourcePool")
 		return err
 	}, opts...)
 	if err != nil {
@@ -481,7 +486,7 @@ func (c *deploymentResourcePoolGRPCClient) DeleteDeploymentResourcePool(ctx cont
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.deploymentResourcePoolClient.DeleteDeploymentResourcePool(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.deploymentResourcePoolClient.DeleteDeploymentResourcePool, req, settings.GRPC, c.logger, "DeleteDeploymentResourcePool")
 		return err
 	}, opts...)
 	if err != nil {
@@ -512,7 +517,7 @@ func (c *deploymentResourcePoolGRPCClient) QueryDeployedModels(ctx context.Conte
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.deploymentResourcePoolClient.QueryDeployedModels(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.deploymentResourcePoolClient.QueryDeployedModels, req, settings.GRPC, c.logger, "QueryDeployedModels")
 			return err
 		}, opts...)
 		if err != nil {
@@ -547,7 +552,7 @@ func (c *deploymentResourcePoolGRPCClient) GetLocation(ctx context.Context, req 
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -576,7 +581,7 @@ func (c *deploymentResourcePoolGRPCClient) ListLocations(ctx context.Context, re
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -611,7 +616,7 @@ func (c *deploymentResourcePoolGRPCClient) GetIamPolicy(ctx context.Context, req
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -629,7 +634,7 @@ func (c *deploymentResourcePoolGRPCClient) SetIamPolicy(ctx context.Context, req
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -647,7 +652,7 @@ func (c *deploymentResourcePoolGRPCClient) TestIamPermissions(ctx context.Contex
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -664,7 +669,7 @@ func (c *deploymentResourcePoolGRPCClient) CancelOperation(ctx context.Context, 
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -678,7 +683,7 @@ func (c *deploymentResourcePoolGRPCClient) DeleteOperation(ctx context.Context, 
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -693,7 +698,7 @@ func (c *deploymentResourcePoolGRPCClient) GetOperation(ctx context.Context, req
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -722,7 +727,7 @@ func (c *deploymentResourcePoolGRPCClient) ListOperations(ctx context.Context, r
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -757,7 +762,7 @@ func (c *deploymentResourcePoolGRPCClient) WaitOperation(ctx context.Context, re
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.WaitOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.WaitOperation, req, settings.GRPC, c.logger, "WaitOperation")
 		return err
 	}, opts...)
 	if err != nil {

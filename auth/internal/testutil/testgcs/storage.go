@@ -37,7 +37,7 @@ type Client struct {
 // NewClient creates a [Client] using the provided
 // [cloud.google.com/go/auth.TokenProvider] for authentication.
 func NewClient(tp auth.TokenProvider) *Client {
-	client := internal.CloneDefaultClient()
+	client := internal.DefaultClient()
 	httptransport.AddAuthorizationMiddleware(client, auth.NewCredentials(&auth.CredentialsOptions{
 		TokenProvider: tp,
 	}))

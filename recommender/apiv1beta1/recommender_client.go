@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	recommenderpb "cloud.google.com/go/recommender/apiv1beta1/recommenderpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -409,6 +408,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new recommender client based on gRPC.
@@ -438,6 +439,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      recommenderpb.NewRecommenderClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -484,6 +486,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new recommender rest client.
@@ -504,6 +508,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -567,7 +572,7 @@ func (c *gRPCClient) ListInsights(ctx context.Context, req *recommenderpb.ListIn
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListInsights(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListInsights, req, settings.GRPC, c.logger, "ListInsights")
 			return err
 		}, opts...)
 		if err != nil {
@@ -602,7 +607,7 @@ func (c *gRPCClient) GetInsight(ctx context.Context, req *recommenderpb.GetInsig
 	var resp *recommenderpb.Insight
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetInsight(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetInsight, req, settings.GRPC, c.logger, "GetInsight")
 		return err
 	}, opts...)
 	if err != nil {
@@ -620,7 +625,7 @@ func (c *gRPCClient) MarkInsightAccepted(ctx context.Context, req *recommenderpb
 	var resp *recommenderpb.Insight
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.MarkInsightAccepted(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.MarkInsightAccepted, req, settings.GRPC, c.logger, "MarkInsightAccepted")
 		return err
 	}, opts...)
 	if err != nil {
@@ -649,7 +654,7 @@ func (c *gRPCClient) ListRecommendations(ctx context.Context, req *recommenderpb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListRecommendations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListRecommendations, req, settings.GRPC, c.logger, "ListRecommendations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -684,7 +689,7 @@ func (c *gRPCClient) GetRecommendation(ctx context.Context, req *recommenderpb.G
 	var resp *recommenderpb.Recommendation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetRecommendation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetRecommendation, req, settings.GRPC, c.logger, "GetRecommendation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -702,7 +707,7 @@ func (c *gRPCClient) MarkRecommendationClaimed(ctx context.Context, req *recomme
 	var resp *recommenderpb.Recommendation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.MarkRecommendationClaimed(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.MarkRecommendationClaimed, req, settings.GRPC, c.logger, "MarkRecommendationClaimed")
 		return err
 	}, opts...)
 	if err != nil {
@@ -720,7 +725,7 @@ func (c *gRPCClient) MarkRecommendationSucceeded(ctx context.Context, req *recom
 	var resp *recommenderpb.Recommendation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.MarkRecommendationSucceeded(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.MarkRecommendationSucceeded, req, settings.GRPC, c.logger, "MarkRecommendationSucceeded")
 		return err
 	}, opts...)
 	if err != nil {
@@ -738,7 +743,7 @@ func (c *gRPCClient) MarkRecommendationFailed(ctx context.Context, req *recommen
 	var resp *recommenderpb.Recommendation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.MarkRecommendationFailed(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.MarkRecommendationFailed, req, settings.GRPC, c.logger, "MarkRecommendationFailed")
 		return err
 	}, opts...)
 	if err != nil {
@@ -756,7 +761,7 @@ func (c *gRPCClient) GetRecommenderConfig(ctx context.Context, req *recommenderp
 	var resp *recommenderpb.RecommenderConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetRecommenderConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetRecommenderConfig, req, settings.GRPC, c.logger, "GetRecommenderConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -774,7 +779,7 @@ func (c *gRPCClient) UpdateRecommenderConfig(ctx context.Context, req *recommend
 	var resp *recommenderpb.RecommenderConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateRecommenderConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateRecommenderConfig, req, settings.GRPC, c.logger, "UpdateRecommenderConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -792,7 +797,7 @@ func (c *gRPCClient) GetInsightTypeConfig(ctx context.Context, req *recommenderp
 	var resp *recommenderpb.InsightTypeConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetInsightTypeConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetInsightTypeConfig, req, settings.GRPC, c.logger, "GetInsightTypeConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -810,7 +815,7 @@ func (c *gRPCClient) UpdateInsightTypeConfig(ctx context.Context, req *recommend
 	var resp *recommenderpb.InsightTypeConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateInsightTypeConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateInsightTypeConfig, req, settings.GRPC, c.logger, "UpdateInsightTypeConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -836,7 +841,7 @@ func (c *gRPCClient) ListRecommenders(ctx context.Context, req *recommenderpb.Li
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListRecommenders(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListRecommenders, req, settings.GRPC, c.logger, "ListRecommenders")
 			return err
 		}, opts...)
 		if err != nil {
@@ -879,7 +884,7 @@ func (c *gRPCClient) ListInsightTypes(ctx context.Context, req *recommenderpb.Li
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListInsightTypes(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListInsightTypes, req, settings.GRPC, c.logger, "ListInsightTypes")
 			return err
 		}, opts...)
 		if err != nil {
@@ -954,21 +959,10 @@ func (c *restClient) ListInsights(ctx context.Context, req *recommenderpb.ListIn
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListInsights")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1032,17 +1026,7 @@ func (c *restClient) GetInsight(ctx context.Context, req *recommenderpb.GetInsig
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetInsight")
 		if err != nil {
 			return err
 		}
@@ -1103,17 +1087,7 @@ func (c *restClient) MarkInsightAccepted(ctx context.Context, req *recommenderpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "MarkInsightAccepted")
 		if err != nil {
 			return err
 		}
@@ -1179,21 +1153,10 @@ func (c *restClient) ListRecommendations(ctx context.Context, req *recommenderpb
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListRecommendations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1257,17 +1220,7 @@ func (c *restClient) GetRecommendation(ctx context.Context, req *recommenderpb.G
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetRecommendation")
 		if err != nil {
 			return err
 		}
@@ -1332,17 +1285,7 @@ func (c *restClient) MarkRecommendationClaimed(ctx context.Context, req *recomme
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "MarkRecommendationClaimed")
 		if err != nil {
 			return err
 		}
@@ -1408,17 +1351,7 @@ func (c *restClient) MarkRecommendationSucceeded(ctx context.Context, req *recom
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "MarkRecommendationSucceeded")
 		if err != nil {
 			return err
 		}
@@ -1484,17 +1417,7 @@ func (c *restClient) MarkRecommendationFailed(ctx context.Context, req *recommen
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "MarkRecommendationFailed")
 		if err != nil {
 			return err
 		}
@@ -1545,17 +1468,7 @@ func (c *restClient) GetRecommenderConfig(ctx context.Context, req *recommenderp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetRecommenderConfig")
 		if err != nil {
 			return err
 		}
@@ -1591,11 +1504,11 @@ func (c *restClient) UpdateRecommenderConfig(ctx context.Context, req *recommend
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 	if req.GetValidateOnly() {
 		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
@@ -1623,17 +1536,7 @@ func (c *restClient) UpdateRecommenderConfig(ctx context.Context, req *recommend
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateRecommenderConfig")
 		if err != nil {
 			return err
 		}
@@ -1684,17 +1587,7 @@ func (c *restClient) GetInsightTypeConfig(ctx context.Context, req *recommenderp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetInsightTypeConfig")
 		if err != nil {
 			return err
 		}
@@ -1730,11 +1623,11 @@ func (c *restClient) UpdateInsightTypeConfig(ctx context.Context, req *recommend
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 	if req.GetValidateOnly() {
 		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
@@ -1762,17 +1655,7 @@ func (c *restClient) UpdateInsightTypeConfig(ctx context.Context, req *recommend
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateInsightTypeConfig")
 		if err != nil {
 			return err
 		}
@@ -1835,21 +1718,10 @@ func (c *restClient) ListRecommenders(ctx context.Context, req *recommenderpb.Li
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListRecommenders")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1925,21 +1797,10 @@ func (c *restClient) ListInsightTypes(ctx context.Context, req *recommenderpb.Li
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListInsightTypes")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

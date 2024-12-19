@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -312,6 +311,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new api keys client based on gRPC.
@@ -338,6 +339,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:         connPool,
 		client:           apikeyspb.NewApiKeysClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -401,6 +403,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new api keys rest client.
@@ -418,6 +422,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -480,7 +485,7 @@ func (c *gRPCClient) CreateKey(ctx context.Context, req *apikeyspb.CreateKeyRequ
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateKey(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateKey, req, settings.GRPC, c.logger, "CreateKey")
 		return err
 	}, opts...)
 	if err != nil {
@@ -511,7 +516,7 @@ func (c *gRPCClient) ListKeys(ctx context.Context, req *apikeyspb.ListKeysReques
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListKeys(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListKeys, req, settings.GRPC, c.logger, "ListKeys")
 			return err
 		}, opts...)
 		if err != nil {
@@ -546,7 +551,7 @@ func (c *gRPCClient) GetKey(ctx context.Context, req *apikeyspb.GetKeyRequest, o
 	var resp *apikeyspb.Key
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetKey(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetKey, req, settings.GRPC, c.logger, "GetKey")
 		return err
 	}, opts...)
 	if err != nil {
@@ -564,7 +569,7 @@ func (c *gRPCClient) GetKeyString(ctx context.Context, req *apikeyspb.GetKeyStri
 	var resp *apikeyspb.GetKeyStringResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetKeyString(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetKeyString, req, settings.GRPC, c.logger, "GetKeyString")
 		return err
 	}, opts...)
 	if err != nil {
@@ -582,7 +587,7 @@ func (c *gRPCClient) UpdateKey(ctx context.Context, req *apikeyspb.UpdateKeyRequ
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateKey(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateKey, req, settings.GRPC, c.logger, "UpdateKey")
 		return err
 	}, opts...)
 	if err != nil {
@@ -602,7 +607,7 @@ func (c *gRPCClient) DeleteKey(ctx context.Context, req *apikeyspb.DeleteKeyRequ
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteKey(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteKey, req, settings.GRPC, c.logger, "DeleteKey")
 		return err
 	}, opts...)
 	if err != nil {
@@ -622,7 +627,7 @@ func (c *gRPCClient) UndeleteKey(ctx context.Context, req *apikeyspb.UndeleteKey
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UndeleteKey(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UndeleteKey, req, settings.GRPC, c.logger, "UndeleteKey")
 		return err
 	}, opts...)
 	if err != nil {
@@ -639,7 +644,7 @@ func (c *gRPCClient) LookupKey(ctx context.Context, req *apikeyspb.LookupKeyRequ
 	var resp *apikeyspb.LookupKeyResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.LookupKey(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.LookupKey, req, settings.GRPC, c.logger, "LookupKey")
 		return err
 	}, opts...)
 	if err != nil {
@@ -657,7 +662,7 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -711,21 +716,10 @@ func (c *restClient) CreateKey(ctx context.Context, req *apikeyspb.CreateKeyRequ
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateKey")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -795,21 +789,10 @@ func (c *restClient) ListKeys(ctx context.Context, req *apikeyspb.ListKeysReques
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListKeys")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -876,17 +859,7 @@ func (c *restClient) GetKey(ctx context.Context, req *apikeyspb.GetKeyRequest, o
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetKey")
 		if err != nil {
 			return err
 		}
@@ -939,17 +912,7 @@ func (c *restClient) GetKeyString(ctx context.Context, req *apikeyspb.GetKeyStri
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetKeyString")
 		if err != nil {
 			return err
 		}
@@ -988,11 +951,11 @@ func (c *restClient) UpdateKey(ctx context.Context, req *apikeyspb.UpdateKeyRequ
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1016,21 +979,10 @@ func (c *restClient) UpdateKey(ctx context.Context, req *apikeyspb.UpdateKeyRequ
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateKey")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1087,21 +1039,10 @@ func (c *restClient) DeleteKey(ctx context.Context, req *apikeyspb.DeleteKeyRequ
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteKey")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1160,21 +1101,10 @@ func (c *restClient) UndeleteKey(ctx context.Context, req *apikeyspb.UndeleteKey
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UndeleteKey")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1227,17 +1157,7 @@ func (c *restClient) LookupKey(ctx context.Context, req *apikeyspb.LookupKeyRequ
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "LookupKey")
 		if err != nil {
 			return err
 		}
@@ -1287,17 +1207,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}

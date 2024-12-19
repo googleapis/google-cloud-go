@@ -2,6 +2,63 @@
 
 
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/securesourcemanager/v1.2.1...securesourcemanager/v1.3.0) (2024-10-23)
+
+
+### Features
+
+* **securesourcemanager:** Add field `instance` to message `.google.cloud.securesourcemanager.v1.ListRepositoriesRequest` ([#10997](https://github.com/googleapis/google-cloud-go/issues/10997)) ([70d82fe](https://github.com/googleapis/google-cloud-go/commit/70d82fe93f60f1075298a077ce1616f9ae7e13fe))
+
+
+### Bug Fixes
+
+* **securesourcemanager:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **securesourcemanager:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([2b8ca4b](https://github.com/googleapis/google-cloud-go/commit/2b8ca4b4127ce3025c7a21cc7247510e07cc5625))
+
+
+### Documentation
+
+* **securesourcemanager:** A comment for field `instance` in message `.google.cloud.securesourcemanager.v1.Repository` is changed ([70d82fe](https://github.com/googleapis/google-cloud-go/commit/70d82fe93f60f1075298a077ce1616f9ae7e13fe))
+
+## [1.2.1](https://github.com/googleapis/google-cloud-go/compare/securesourcemanager/v1.2.0...securesourcemanager/v1.2.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **securesourcemanager:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/securesourcemanager/v1.1.1...securesourcemanager/v1.2.0) (2024-08-20)
+
+
+### Features
+
+* **securesourcemanager:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.1.1](https://github.com/googleapis/google-cloud-go/compare/securesourcemanager/v1.1.0...securesourcemanager/v1.1.1) (2024-08-08)
+
+
+### Bug Fixes
+
+* **securesourcemanager:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/securesourcemanager/v1.0.2...securesourcemanager/v1.1.0) (2024-07-24)
+
+
+### Features
+
+* **securesourcemanager:** Add constant `UNKNOWN` to field `State` in message `.google.cloud.securesourcemanager.v1.Instance` ([eb63f0d](https://github.com/googleapis/google-cloud-go/commit/eb63f0d4f42a06581e1425f99c2a03d52d6cb404))
+* **securesourcemanager:** Add field `private_config` to message `.google.cloud.securesourcemanager.v1.Instance` ([eb63f0d](https://github.com/googleapis/google-cloud-go/commit/eb63f0d4f42a06581e1425f99c2a03d52d6cb404))
+
+
+### Bug Fixes
+
+* **securesourcemanager:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+
+### Documentation
+
+* **securesourcemanager:** A comment for field `instance` in message `.google.cloud.securesourcemanager.v1.Repository` is updated to include data plane vs control plane behavior. ([eb63f0d](https://github.com/googleapis/google-cloud-go/commit/eb63f0d4f42a06581e1425f99c2a03d52d6cb404))
+
 ## [1.0.2](https://github.com/googleapis/google-cloud-go/compare/securesourcemanager/v1.0.1...securesourcemanager/v1.0.2) (2024-07-10)
 
 

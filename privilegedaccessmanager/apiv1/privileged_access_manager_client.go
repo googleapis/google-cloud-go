@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -30,7 +30,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	privilegedaccessmanagerpb "cloud.google.com/go/privilegedaccessmanager/apiv1/privilegedaccessmanagerpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -223,7 +222,7 @@ func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// CheckOnboardingStatus checkOnboardingStatus reports the onboarding status for a
+// CheckOnboardingStatus CheckOnboardingStatus reports the onboarding status for a
 // project/folder/organization. Any findings reported by this API need to be
 // fixed before PAM can be used on the resource.
 func (c *Client) CheckOnboardingStatus(ctx context.Context, req *privilegedaccessmanagerpb.CheckOnboardingStatusRequest, opts ...gax.CallOption) (*privilegedaccessmanagerpb.CheckOnboardingStatusResponse, error) {
@@ -323,7 +322,8 @@ func (c *Client) GetGrant(ctx context.Context, req *privilegedaccessmanagerpb.Ge
 	return c.internalClient.GetGrant(ctx, req, opts...)
 }
 
-// CreateGrant creates a new grant in a given project and location.
+// CreateGrant creates a new grant in a given project/folder/organization and
+// location.
 func (c *Client) CreateGrant(ctx context.Context, req *privilegedaccessmanagerpb.CreateGrantRequest, opts ...gax.CallOption) (*privilegedaccessmanagerpb.Grant, error) {
 	return c.internalClient.CreateGrant(ctx, req, opts...)
 }
@@ -403,6 +403,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new privileged access manager client based on gRPC.
@@ -452,6 +454,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:         connPool,
 		client:           privilegedaccessmanagerpb.NewPrivilegedAccessManagerClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
@@ -516,6 +519,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new privileged access manager rest client.
@@ -556,6 +561,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -618,7 +624,7 @@ func (c *gRPCClient) CheckOnboardingStatus(ctx context.Context, req *privilegeda
 	var resp *privilegedaccessmanagerpb.CheckOnboardingStatusResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CheckOnboardingStatus(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CheckOnboardingStatus, req, settings.GRPC, c.logger, "CheckOnboardingStatus")
 		return err
 	}, opts...)
 	if err != nil {
@@ -647,7 +653,7 @@ func (c *gRPCClient) ListEntitlements(ctx context.Context, req *privilegedaccess
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListEntitlements(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListEntitlements, req, settings.GRPC, c.logger, "ListEntitlements")
 			return err
 		}, opts...)
 		if err != nil {
@@ -693,7 +699,7 @@ func (c *gRPCClient) SearchEntitlements(ctx context.Context, req *privilegedacce
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.SearchEntitlements(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.SearchEntitlements, req, settings.GRPC, c.logger, "SearchEntitlements")
 			return err
 		}, opts...)
 		if err != nil {
@@ -728,7 +734,7 @@ func (c *gRPCClient) GetEntitlement(ctx context.Context, req *privilegedaccessma
 	var resp *privilegedaccessmanagerpb.Entitlement
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetEntitlement(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetEntitlement, req, settings.GRPC, c.logger, "GetEntitlement")
 		return err
 	}, opts...)
 	if err != nil {
@@ -746,7 +752,7 @@ func (c *gRPCClient) CreateEntitlement(ctx context.Context, req *privilegedacces
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateEntitlement(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateEntitlement, req, settings.GRPC, c.logger, "CreateEntitlement")
 		return err
 	}, opts...)
 	if err != nil {
@@ -766,7 +772,7 @@ func (c *gRPCClient) DeleteEntitlement(ctx context.Context, req *privilegedacces
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteEntitlement(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteEntitlement, req, settings.GRPC, c.logger, "DeleteEntitlement")
 		return err
 	}, opts...)
 	if err != nil {
@@ -786,7 +792,7 @@ func (c *gRPCClient) UpdateEntitlement(ctx context.Context, req *privilegedacces
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateEntitlement(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateEntitlement, req, settings.GRPC, c.logger, "UpdateEntitlement")
 		return err
 	}, opts...)
 	if err != nil {
@@ -817,7 +823,7 @@ func (c *gRPCClient) ListGrants(ctx context.Context, req *privilegedaccessmanage
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListGrants(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListGrants, req, settings.GRPC, c.logger, "ListGrants")
 			return err
 		}, opts...)
 		if err != nil {
@@ -863,7 +869,7 @@ func (c *gRPCClient) SearchGrants(ctx context.Context, req *privilegedaccessmana
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.SearchGrants(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.SearchGrants, req, settings.GRPC, c.logger, "SearchGrants")
 			return err
 		}, opts...)
 		if err != nil {
@@ -898,7 +904,7 @@ func (c *gRPCClient) GetGrant(ctx context.Context, req *privilegedaccessmanagerp
 	var resp *privilegedaccessmanagerpb.Grant
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetGrant(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetGrant, req, settings.GRPC, c.logger, "GetGrant")
 		return err
 	}, opts...)
 	if err != nil {
@@ -916,7 +922,7 @@ func (c *gRPCClient) CreateGrant(ctx context.Context, req *privilegedaccessmanag
 	var resp *privilegedaccessmanagerpb.Grant
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateGrant(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateGrant, req, settings.GRPC, c.logger, "CreateGrant")
 		return err
 	}, opts...)
 	if err != nil {
@@ -934,7 +940,7 @@ func (c *gRPCClient) ApproveGrant(ctx context.Context, req *privilegedaccessmana
 	var resp *privilegedaccessmanagerpb.Grant
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ApproveGrant(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ApproveGrant, req, settings.GRPC, c.logger, "ApproveGrant")
 		return err
 	}, opts...)
 	if err != nil {
@@ -952,7 +958,7 @@ func (c *gRPCClient) DenyGrant(ctx context.Context, req *privilegedaccessmanager
 	var resp *privilegedaccessmanagerpb.Grant
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DenyGrant(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DenyGrant, req, settings.GRPC, c.logger, "DenyGrant")
 		return err
 	}, opts...)
 	if err != nil {
@@ -970,7 +976,7 @@ func (c *gRPCClient) RevokeGrant(ctx context.Context, req *privilegedaccessmanag
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.RevokeGrant(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.RevokeGrant, req, settings.GRPC, c.logger, "RevokeGrant")
 		return err
 	}, opts...)
 	if err != nil {
@@ -990,7 +996,7 @@ func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1019,7 +1025,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1053,7 +1059,7 @@ func (c *gRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -1068,7 +1074,7 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1097,7 +1103,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1123,7 +1129,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	return it
 }
 
-// CheckOnboardingStatus checkOnboardingStatus reports the onboarding status for a
+// CheckOnboardingStatus CheckOnboardingStatus reports the onboarding status for a
 // project/folder/organization. Any findings reported by this API need to be
 // fixed before PAM can be used on the resource.
 func (c *restClient) CheckOnboardingStatus(ctx context.Context, req *privilegedaccessmanagerpb.CheckOnboardingStatusRequest, opts ...gax.CallOption) (*privilegedaccessmanagerpb.CheckOnboardingStatusResponse, error) {
@@ -1158,17 +1164,7 @@ func (c *restClient) CheckOnboardingStatus(ctx context.Context, req *privilegeda
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "CheckOnboardingStatus")
 		if err != nil {
 			return err
 		}
@@ -1236,21 +1232,10 @@ func (c *restClient) ListEntitlements(ctx context.Context, req *privilegedaccess
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListEntitlements")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1330,21 +1315,10 @@ func (c *restClient) SearchEntitlements(ctx context.Context, req *privilegedacce
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "SearchEntitlements")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1407,17 +1381,7 @@ func (c *restClient) GetEntitlement(ctx context.Context, req *privilegedaccessma
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetEntitlement")
 		if err != nil {
 			return err
 		}
@@ -1478,21 +1442,10 @@ func (c *restClient) CreateEntitlement(ctx context.Context, req *privilegedacces
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateEntitlement")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1550,21 +1503,10 @@ func (c *restClient) DeleteEntitlement(ctx context.Context, req *privilegedacces
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteEntitlement")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1625,11 +1567,11 @@ func (c *restClient) UpdateEntitlement(ctx context.Context, req *privilegedacces
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1653,21 +1595,10 @@ func (c *restClient) UpdateEntitlement(ctx context.Context, req *privilegedacces
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateEntitlement")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1736,21 +1667,10 @@ func (c *restClient) ListGrants(ctx context.Context, req *privilegedaccessmanage
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListGrants")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1830,21 +1750,10 @@ func (c *restClient) SearchGrants(ctx context.Context, req *privilegedaccessmana
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "SearchGrants")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1907,17 +1816,7 @@ func (c *restClient) GetGrant(ctx context.Context, req *privilegedaccessmanagerp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetGrant")
 		if err != nil {
 			return err
 		}
@@ -1934,7 +1833,8 @@ func (c *restClient) GetGrant(ctx context.Context, req *privilegedaccessmanagerp
 	return resp, nil
 }
 
-// CreateGrant creates a new grant in a given project and location.
+// CreateGrant creates a new grant in a given project/folder/organization and
+// location.
 func (c *restClient) CreateGrant(ctx context.Context, req *privilegedaccessmanagerpb.CreateGrantRequest, opts ...gax.CallOption) (*privilegedaccessmanagerpb.Grant, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetGrant()
@@ -1977,17 +1877,7 @@ func (c *restClient) CreateGrant(ctx context.Context, req *privilegedaccessmanag
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateGrant")
 		if err != nil {
 			return err
 		}
@@ -2045,17 +1935,7 @@ func (c *restClient) ApproveGrant(ctx context.Context, req *privilegedaccessmana
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ApproveGrant")
 		if err != nil {
 			return err
 		}
@@ -2113,17 +1993,7 @@ func (c *restClient) DenyGrant(ctx context.Context, req *privilegedaccessmanager
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "DenyGrant")
 		if err != nil {
 			return err
 		}
@@ -2179,21 +2049,10 @@ func (c *restClient) RevokeGrant(ctx context.Context, req *privilegedaccessmanag
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RevokeGrant")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2244,17 +2103,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -2319,21 +2168,10 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2393,15 +2231,8 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOperation")
+		return err
 	}, opts...)
 }
 
@@ -2438,17 +2269,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -2513,21 +2334,10 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

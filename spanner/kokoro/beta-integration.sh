@@ -25,7 +25,7 @@
 
 export GOOGLE_APPLICATION_CREDENTIALS=$(realpath ${KOKORO_GFILE_DIR}/${GOOGLE_APPLICATION_CREDENTIALS})
 
-export GCLOUD_TESTS_GOLANG_PROJECT_ID=span-cloud-testing
+export GCLOUD_TESTS_GOLANG_PROJECT_ID=dulcet-port-762
 export GCLOUD_TESTS_GOLANG_SPANNER_HOST=staging-wrenchworks.sandbox.googleapis.com:443
 export GCLOUD_TESTS_GOLANG_KEY=$GOOGLE_APPLICATION_CREDENTIALS
 
@@ -42,6 +42,7 @@ set -x
 
 # cd to project dir on Kokoro instance
 cd github/google-cloud-go
+git config --global --add safe.directory "$(pwd)/./.git"
 
 go version
 

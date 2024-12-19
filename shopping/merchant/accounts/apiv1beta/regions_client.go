@@ -20,20 +20,21 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
+	"time"
 
 	accountspb "cloud.google.com/go/shopping/merchant/accounts/apiv1beta/accountspb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -66,21 +67,126 @@ func defaultRegionsGRPCClientOptions() []option.ClientOption {
 
 func defaultRegionsCallOptions() *RegionsCallOptions {
 	return &RegionsCallOptions{
-		GetRegion:    []gax.CallOption{},
-		CreateRegion: []gax.CallOption{},
-		UpdateRegion: []gax.CallOption{},
-		DeleteRegion: []gax.CallOption{},
-		ListRegions:  []gax.CallOption{},
+		GetRegion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateRegion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateRegion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteRegion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListRegions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
 func defaultRegionsRESTCallOptions() *RegionsCallOptions {
 	return &RegionsCallOptions{
-		GetRegion:    []gax.CallOption{},
-		CreateRegion: []gax.CallOption{},
-		UpdateRegion: []gax.CallOption{},
-		DeleteRegion: []gax.CallOption{},
-		ListRegions:  []gax.CallOption{},
+		GetRegion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		CreateRegion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		UpdateRegion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		DeleteRegion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListRegions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 	}
 }
 
@@ -178,6 +284,8 @@ type regionsGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewRegionsClient creates a new regions service client based on gRPC.
@@ -208,6 +316,7 @@ func NewRegionsClient(ctx context.Context, opts ...option.ClientOption) (*Region
 		connPool:      connPool,
 		regionsClient: accountspb.NewRegionsServiceClient(connPool),
 		CallOptions:   &client.CallOptions,
+		logger:        internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -254,6 +363,8 @@ type regionsRESTClient struct {
 
 	// Points back to the CallOptions field of the containing RegionsClient
 	CallOptions **RegionsCallOptions
+
+	logger *slog.Logger
 }
 
 // NewRegionsRESTClient creates a new regions service rest client.
@@ -275,6 +386,7 @@ func NewRegionsRESTClient(ctx context.Context, opts ...option.ClientOption) (*Re
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -327,7 +439,7 @@ func (c *regionsGRPCClient) GetRegion(ctx context.Context, req *accountspb.GetRe
 	var resp *accountspb.Region
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.regionsClient.GetRegion(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.regionsClient.GetRegion, req, settings.GRPC, c.logger, "GetRegion")
 		return err
 	}, opts...)
 	if err != nil {
@@ -345,7 +457,7 @@ func (c *regionsGRPCClient) CreateRegion(ctx context.Context, req *accountspb.Cr
 	var resp *accountspb.Region
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.regionsClient.CreateRegion(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.regionsClient.CreateRegion, req, settings.GRPC, c.logger, "CreateRegion")
 		return err
 	}, opts...)
 	if err != nil {
@@ -363,7 +475,7 @@ func (c *regionsGRPCClient) UpdateRegion(ctx context.Context, req *accountspb.Up
 	var resp *accountspb.Region
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.regionsClient.UpdateRegion(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.regionsClient.UpdateRegion, req, settings.GRPC, c.logger, "UpdateRegion")
 		return err
 	}, opts...)
 	if err != nil {
@@ -380,7 +492,7 @@ func (c *regionsGRPCClient) DeleteRegion(ctx context.Context, req *accountspb.De
 	opts = append((*c.CallOptions).DeleteRegion[0:len((*c.CallOptions).DeleteRegion):len((*c.CallOptions).DeleteRegion)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.regionsClient.DeleteRegion(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.regionsClient.DeleteRegion, req, settings.GRPC, c.logger, "DeleteRegion")
 		return err
 	}, opts...)
 	return err
@@ -406,7 +518,7 @@ func (c *regionsGRPCClient) ListRegions(ctx context.Context, req *accountspb.Lis
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.regionsClient.ListRegions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.regionsClient.ListRegions, req, settings.GRPC, c.logger, "ListRegions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -465,17 +577,7 @@ func (c *regionsRESTClient) GetRegion(ctx context.Context, req *accountspb.GetRe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetRegion")
 		if err != nil {
 			return err
 		}
@@ -534,17 +636,7 @@ func (c *regionsRESTClient) CreateRegion(ctx context.Context, req *accountspb.Cr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateRegion")
 		if err != nil {
 			return err
 		}
@@ -580,11 +672,11 @@ func (c *regionsRESTClient) UpdateRegion(ctx context.Context, req *accountspb.Up
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -609,17 +701,7 @@ func (c *regionsRESTClient) UpdateRegion(ctx context.Context, req *accountspb.Up
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateRegion")
 		if err != nil {
 			return err
 		}
@@ -667,15 +749,8 @@ func (c *regionsRESTClient) DeleteRegion(ctx context.Context, req *accountspb.De
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteRegion")
+		return err
 	}, opts...)
 }
 
@@ -724,21 +799,10 @@ func (c *regionsRESTClient) ListRegions(ctx context.Context, req *accountspb.Lis
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListRegions")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

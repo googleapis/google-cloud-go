@@ -19,6 +19,7 @@ package fleetengine
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 	"regexp"
@@ -289,6 +290,8 @@ type vehicleGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewVehicleClient creates a new vehicle service client based on gRPC.
@@ -315,6 +318,7 @@ func NewVehicleClient(ctx context.Context, opts ...option.ClientOption) (*Vehicl
 		connPool:      connPool,
 		vehicleClient: fleetenginepb.NewVehicleServiceClient(connPool),
 		CallOptions:   &client.CallOptions,
+		logger:        internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -366,7 +370,7 @@ func (c *vehicleGRPCClient) CreateVehicle(ctx context.Context, req *fleetenginep
 	var resp *fleetenginepb.Vehicle
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.vehicleClient.CreateVehicle(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.vehicleClient.CreateVehicle, req, settings.GRPC, c.logger, "CreateVehicle")
 		return err
 	}, opts...)
 	if err != nil {
@@ -393,7 +397,7 @@ func (c *vehicleGRPCClient) GetVehicle(ctx context.Context, req *fleetenginepb.G
 	var resp *fleetenginepb.Vehicle
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.vehicleClient.GetVehicle(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.vehicleClient.GetVehicle, req, settings.GRPC, c.logger, "GetVehicle")
 		return err
 	}, opts...)
 	if err != nil {
@@ -420,7 +424,7 @@ func (c *vehicleGRPCClient) UpdateVehicle(ctx context.Context, req *fleetenginep
 	var resp *fleetenginepb.Vehicle
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.vehicleClient.UpdateVehicle(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.vehicleClient.UpdateVehicle, req, settings.GRPC, c.logger, "UpdateVehicle")
 		return err
 	}, opts...)
 	if err != nil {
@@ -447,7 +451,7 @@ func (c *vehicleGRPCClient) UpdateVehicleAttributes(ctx context.Context, req *fl
 	var resp *fleetenginepb.UpdateVehicleAttributesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.vehicleClient.UpdateVehicleAttributes(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.vehicleClient.UpdateVehicleAttributes, req, settings.GRPC, c.logger, "UpdateVehicleAttributes")
 		return err
 	}, opts...)
 	if err != nil {
@@ -485,7 +489,7 @@ func (c *vehicleGRPCClient) ListVehicles(ctx context.Context, req *fleetenginepb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.vehicleClient.ListVehicles(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.vehicleClient.ListVehicles, req, settings.GRPC, c.logger, "ListVehicles")
 			return err
 		}, opts...)
 		if err != nil {
@@ -529,7 +533,7 @@ func (c *vehicleGRPCClient) SearchVehicles(ctx context.Context, req *fleetengine
 	var resp *fleetenginepb.SearchVehiclesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.vehicleClient.SearchVehicles(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.vehicleClient.SearchVehicles, req, settings.GRPC, c.logger, "SearchVehicles")
 		return err
 	}, opts...)
 	if err != nil {

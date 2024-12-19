@@ -22,6 +22,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
+	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 )
 
@@ -164,14 +165,19 @@ func TestIntegration_DatasetUpdateDefaultExpirationAndMaxTimeTravel(t *testing.T
 		t.Skip("Integration tests skipped")
 	}
 	ctx := context.Background()
-	_, err := dataset.Metadata(ctx)
+	ds := client.Dataset(datasetIDs.New())
+	err := ds.Create(ctx, &DatasetMetadata{
+		Location: "US",
+	})
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("Create: %v", err)
 	}
+	defer ds.Delete(ctx)
+
 	wantExpiration := time.Hour
 	wantTimeTravel := 48 * time.Hour
 	// Set the default expiration time.
-	md, err := dataset.Update(ctx, DatasetMetadataToUpdate{
+	md, err := ds.Update(ctx, DatasetMetadataToUpdate{
 		DefaultTableExpiration: wantExpiration,
 		MaxTimeTravel:          wantTimeTravel,
 	}, "")
@@ -185,7 +191,7 @@ func TestIntegration_DatasetUpdateDefaultExpirationAndMaxTimeTravel(t *testing.T
 		t.Fatalf("MaxTimeTravelHours want %s got %s", wantTimeTravel, md.MaxTimeTravel)
 	}
 	// Omitting DefaultTableExpiration doesn't change it.
-	md, err = dataset.Update(ctx, DatasetMetadataToUpdate{Name: "xyz"}, "")
+	md, err = ds.Update(ctx, DatasetMetadataToUpdate{Name: "xyz"}, "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -193,7 +199,7 @@ func TestIntegration_DatasetUpdateDefaultExpirationAndMaxTimeTravel(t *testing.T
 		t.Fatalf("got %s, want 1h", md.DefaultTableExpiration)
 	}
 	// Setting it to 0 deletes it (which looks like a 0 duration).
-	md, err = dataset.Update(ctx, DatasetMetadataToUpdate{DefaultTableExpiration: time.Duration(0)}, "")
+	md, err = ds.Update(ctx, DatasetMetadataToUpdate{DefaultTableExpiration: time.Duration(0)}, "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -247,7 +253,8 @@ func TestIntegration_DatasetUpdateDefaultCollation(t *testing.T) {
 	ctx := context.Background()
 	ds := client.Dataset(datasetIDs.New())
 	err := ds.Create(ctx, &DatasetMetadata{
-		DefaultCollation: caseSensitiveCollation,
+		DefaultCollation:  caseSensitiveCollation,
+		IsCaseInsensitive: true,
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -257,18 +264,25 @@ func TestIntegration_DatasetUpdateDefaultCollation(t *testing.T) {
 		t.Fatal(err)
 	}
 	if md.DefaultCollation != caseSensitiveCollation {
-		t.Fatalf("got %q, want %q", md.DefaultCollation, caseSensitiveCollation)
+		t.Fatalf("DefaultCollation: got %q, want %q", md.DefaultCollation, caseSensitiveCollation)
+	}
+	if md.IsCaseInsensitive != true {
+		t.Fatalf("IsCaseInsensitive: got %t, want %t", md.IsCaseInsensitive, true)
 	}
 
 	// Update the default collation
 	md, err = ds.Update(ctx, DatasetMetadataToUpdate{
-		DefaultCollation: caseInsensitiveCollation,
+		DefaultCollation:  caseInsensitiveCollation,
+		IsCaseInsensitive: false,
 	}, "")
 	if err != nil {
 		t.Fatal(err)
 	}
 	if md.DefaultCollation != caseInsensitiveCollation {
 		t.Fatalf("got %q, want %q", md.DefaultCollation, caseInsensitiveCollation)
+	}
+	if md.IsCaseInsensitive != false {
+		t.Fatalf("IsCaseInsensitive: got %t, want %t", md.IsCaseInsensitive, false)
 	}
 
 	// Omitting DefaultCollation doesn't change it.
@@ -428,6 +442,102 @@ func TestIntegration_DatasetUpdateAccess(t *testing.T) {
 	if diff := testutil.Diff(md.Access, newAccess, cmpopts.SortSlices(lessAccessEntries), cmpopts.IgnoreUnexported(Routine{}, Dataset{})); diff != "" {
 		t.Errorf("got=-, want=+:\n%s", diff)
 	}
+}
+
+// This test validates behaviors related to IAM conditions in
+// dataset access control.
+func TestIntegration_DatasetConditions(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	// Use our test dataset for a base access policy.
+	md, err := dataset.Metadata(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	wantEntry := &AccessEntry{
+		Role:       ReaderRole,
+		Entity:     "Joe@example.com",
+		EntityType: UserEmailEntity,
+		Condition: &Expr{
+			Expression:  "request.time < timestamp('2030-01-01T00:00:00Z')",
+			Description: "requests before the year 2030",
+			Title:       "test condition",
+		},
+	}
+	origAccess := append(md.Access, wantEntry)
+
+	ds := client.Dataset(datasetIDs.New())
+	wantMeta := &DatasetMetadata{
+		Access:      origAccess,
+		Description: "test dataset",
+	}
+
+	// First, attempt to create the dataset without specifying a policy access version.
+	err = ds.Create(ctx, wantMeta)
+	if err == nil {
+		t.Fatalf("expected Create failure, but succeeded")
+	}
+
+	err = ds.CreateWithOptions(ctx, wantMeta, WithAccessPolicyVersion(3))
+	if err != nil {
+		t.Fatalf("expected Create to succeed, but failed: %v", err)
+	}
+	defer func() {
+		if err := ds.Delete(ctx); err != nil {
+			t.Logf("defer deletion failed: %v", err)
+		}
+	}()
+
+	// Now, get the dataset without specifying policy version
+	md, err = ds.Metadata(ctx)
+	if err != nil {
+		t.Fatalf("Metadata: %v", err)
+	}
+	for _, entry := range md.Access {
+		if entry.Entity == wantEntry.Entity &&
+			entry.Condition != nil {
+			t.Fatalf("got policy with condition without specifying access policy version")
+		}
+	}
+
+	// Re-fetch metadata with access policy specified.
+	md, err = ds.MetadataWithOptions(ctx, WithAccessPolicyVersion(3))
+	if err != nil {
+		t.Fatalf("Metadata (WithAccessPolicy): %v", err)
+	}
+	var foundEntry bool
+	for _, entry := range md.Access {
+		if entry.Entity == wantEntry.Entity {
+			if cmp.Equal(entry.Condition, wantEntry.Condition) {
+				foundEntry = true
+				break
+			}
+		}
+	}
+	if !foundEntry {
+		t.Fatalf("failed to find wanted entry in access list")
+	}
+
+	newAccess := append(origAccess, &AccessEntry{
+		Role:       ReaderRole,
+		Entity:     "allUsers",
+		EntityType: IAMMemberEntity,
+	})
+
+	// append another entry.  Should fail without sending access policy version since we have conditions present.
+	md, err = ds.Update(ctx, DatasetMetadataToUpdate{Access: newAccess}, "")
+	if err == nil {
+		t.Fatalf("Update succeeded where failure expected: %v", err)
+	}
+
+	md, err = ds.UpdateWithOptions(ctx, DatasetMetadataToUpdate{Access: newAccess}, "", WithAccessPolicyVersion(3))
+	if err != nil {
+		t.Fatalf("Update failed: %v", err)
+	}
+
 }
 
 // Comparison function for AccessEntries to enable order insensitive equality checking.
