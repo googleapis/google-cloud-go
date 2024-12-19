@@ -64,6 +64,9 @@ func testEqual(a, b interface{}) bool {
 			if strings.Contains(path.GoString(), "{*spanner.Error}.err") {
 				return true
 			}
+			if strings.Contains(path.GoString(), "{*spanner.Error}.RequestID") {
+				return true
+			}
 			return false
 		}, cmp.Ignore()))
 }

@@ -4187,12 +4187,16 @@ func TestReadWriteTransaction_ContextTimeoutDuringCommit(t *testing.T) {
 	if se.GRPCStatus().Code() != w.GRPCStatus().Code() {
 		t.Fatalf("Error status mismatch:\nGot: %v\nWant: %v", se.GRPCStatus(), w.GRPCStatus())
 	}
-	if se.Error() != w.Error() {
-		t.Fatalf("Error message mismatch:\nGot %s\nWant: %s", se.Error(), w.Error())
+	if !testEqual(se, w) {
+		t.Fatalf("Error message mismatch:\nGot:  %s\nWant: %s", se.Error(), w.Error())
 	}
 	var outcome *TransactionOutcomeUnknownError
 	if !errors.As(err, &outcome) {
 		t.Fatalf("Missing wrapped TransactionOutcomeUnknownError error")
+	}
+
+	if w.RequestID != "" {
+		t.Fatal("Missing .RequestID")
 	}
 }
 
