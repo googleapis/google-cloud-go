@@ -1,5 +1,12 @@
 # Changes
 
+## [1.24.1](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.24.0...datacatalog/v1.24.1) (2024-12-18)
+
+
+### Documentation
+
+* **datacatalog:** Fix markdown reference in `TagTemplate.is_publicly_readable` comment ([4254053](https://github.com/googleapis/google-cloud-go/commit/42540530e44e5f331e66e0777c4aabf449f5fd90))
+
 ## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.23.0...datacatalog/v1.24.0) (2024-11-21)
 
 

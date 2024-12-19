@@ -14,7 +14,7 @@ require (
 	golang.org/x/net v0.32.0
 	golang.org/x/sync v0.10.0
 	google.golang.org/api v0.211.0
-	google.golang.org/grpc v1.67.1
+	google.golang.org/grpc v1.67.3
 	google.golang.org/protobuf v1.35.2
 )
 
@@ -26,7 +26,7 @@ require (
 	cloud.google.com/go/compute/metadata v0.5.2 // indirect
 	cloud.google.com/go/iam v1.2.2 // indirect
 	cloud.google.com/go/trace v1.11.2 // indirect
-	github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp v1.24.1 // indirect
+	github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp v1.25.0 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapping v0.48.1 // indirect
 	github.com/census-instrumentation/opencensus-proto v0.4.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
