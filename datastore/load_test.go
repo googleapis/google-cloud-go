@@ -22,9 +22,9 @@ import (
 	"time"
 
 	"cloud.google.com/go/civil"
+	pb "cloud.google.com/go/datastore/apiv1/datastorepb"
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp/cmpopts"
-	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -1287,6 +1287,27 @@ func TestLoadNull(t *testing.T) {
 	err := LoadStruct(&got3, []Property{{Name: "X"}})
 	if err == nil {
 		t.Error("got nil, want error")
+	}
+}
+
+func TestLoadNilInterface(t *testing.T) {
+	type WithAny struct {
+		AnyField interface{}
+	}
+
+	withAny1 := &WithAny{}
+	err := loadEntityProto(withAny1, &pb.Entity{
+		Key: keyToProto(testKey0),
+		Properties: map[string]*pb.Value{
+			"AnyField": {ValueType: &pb.Value_NullValue{}},
+		},
+	})
+	if err != nil {
+		t.Fatalf("loadEntityProto got: %v, want: nil", err)
+	}
+
+	if withAny1.AnyField != nil {
+		t.Fatalf("got: %v, want: nil", withAny1.AnyField)
 	}
 }
 

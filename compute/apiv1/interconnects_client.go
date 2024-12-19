@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -42,13 +41,14 @@ var newInterconnectsClientHook clientHook
 
 // InterconnectsCallOptions contains the retry settings for each method of InterconnectsClient.
 type InterconnectsCallOptions struct {
-	Delete         []gax.CallOption
-	Get            []gax.CallOption
-	GetDiagnostics []gax.CallOption
-	Insert         []gax.CallOption
-	List           []gax.CallOption
-	Patch          []gax.CallOption
-	SetLabels      []gax.CallOption
+	Delete          []gax.CallOption
+	Get             []gax.CallOption
+	GetDiagnostics  []gax.CallOption
+	GetMacsecConfig []gax.CallOption
+	Insert          []gax.CallOption
+	List            []gax.CallOption
+	Patch           []gax.CallOption
+	SetLabels       []gax.CallOption
 }
 
 func defaultInterconnectsRESTCallOptions() *InterconnectsCallOptions {
@@ -69,6 +69,18 @@ func defaultInterconnectsRESTCallOptions() *InterconnectsCallOptions {
 			}),
 		},
 		GetDiagnostics: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetMacsecConfig: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -112,6 +124,7 @@ type internalInterconnectsClient interface {
 	Delete(context.Context, *computepb.DeleteInterconnectRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetInterconnectRequest, ...gax.CallOption) (*computepb.Interconnect, error)
 	GetDiagnostics(context.Context, *computepb.GetDiagnosticsInterconnectRequest, ...gax.CallOption) (*computepb.InterconnectsGetDiagnosticsResponse, error)
+	GetMacsecConfig(context.Context, *computepb.GetMacsecConfigInterconnectRequest, ...gax.CallOption) (*computepb.InterconnectsGetMacsecConfigResponse, error)
 	Insert(context.Context, *computepb.InsertInterconnectRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListInterconnectsRequest, ...gax.CallOption) *InterconnectIterator
 	Patch(context.Context, *computepb.PatchInterconnectRequest, ...gax.CallOption) (*Operation, error)
@@ -163,9 +176,14 @@ func (c *InterconnectsClient) Get(ctx context.Context, req *computepb.GetInterco
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// GetDiagnostics returns the interconnectDiagnostics for the specified Interconnect.
+// GetDiagnostics returns the interconnectDiagnostics for the specified Interconnect. In the event of a global outage, do not use this API to make decisions about where to redirect your network traffic. Unlike a VLAN attachment, which is regional, a Cloud Interconnect connection is a global resource. A global outage can prevent this API from functioning properly.
 func (c *InterconnectsClient) GetDiagnostics(ctx context.Context, req *computepb.GetDiagnosticsInterconnectRequest, opts ...gax.CallOption) (*computepb.InterconnectsGetDiagnosticsResponse, error) {
 	return c.internalClient.GetDiagnostics(ctx, req, opts...)
+}
+
+// GetMacsecConfig returns the interconnectMacsecConfig for the specified Interconnect.
+func (c *InterconnectsClient) GetMacsecConfig(ctx context.Context, req *computepb.GetMacsecConfigInterconnectRequest, opts ...gax.CallOption) (*computepb.InterconnectsGetMacsecConfigResponse, error) {
+	return c.internalClient.GetMacsecConfig(ctx, req, opts...)
 }
 
 // Insert creates an Interconnect in the specified project using the data included in the request.
@@ -204,6 +222,8 @@ type interconnectsRESTClient struct {
 
 	// Points back to the CallOptions field of the containing InterconnectsClient
 	CallOptions **InterconnectsCallOptions
+
+	logger *slog.Logger
 }
 
 // NewInterconnectsRESTClient creates a new interconnects rest client.
@@ -221,6 +241,7 @@ func NewInterconnectsRESTClient(ctx context.Context, opts ...option.ClientOption
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -240,9 +261,12 @@ func NewInterconnectsRESTClient(ctx context.Context, opts ...option.ClientOption
 func defaultInterconnectsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://compute.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -252,7 +276,9 @@ func defaultInterconnectsRESTClientOptions() []option.ClientOption {
 func (c *interconnectsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -308,17 +334,7 @@ func (c *interconnectsRESTClient) Delete(ctx context.Context, req *computepb.Del
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "Delete")
 		if err != nil {
 			return err
 		}
@@ -370,17 +386,7 @@ func (c *interconnectsRESTClient) Get(ctx context.Context, req *computepb.GetInt
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "Get")
 		if err != nil {
 			return err
 		}
@@ -397,7 +403,7 @@ func (c *interconnectsRESTClient) Get(ctx context.Context, req *computepb.GetInt
 	return resp, nil
 }
 
-// GetDiagnostics returns the interconnectDiagnostics for the specified Interconnect.
+// GetDiagnostics returns the interconnectDiagnostics for the specified Interconnect. In the event of a global outage, do not use this API to make decisions about where to redirect your network traffic. Unlike a VLAN attachment, which is regional, a Cloud Interconnect connection is a global resource. A global outage can prevent this API from functioning properly.
 func (c *interconnectsRESTClient) GetDiagnostics(ctx context.Context, req *computepb.GetDiagnosticsInterconnectRequest, opts ...gax.CallOption) (*computepb.InterconnectsGetDiagnosticsResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -425,17 +431,52 @@ func (c *interconnectsRESTClient) GetDiagnostics(ctx context.Context, req *compu
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDiagnostics")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
 
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
+		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
 
-		buf, err := io.ReadAll(httpRsp.Body)
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetMacsecConfig returns the interconnectMacsecConfig for the specified Interconnect.
+func (c *interconnectsRESTClient) GetMacsecConfig(ctx context.Context, req *computepb.GetMacsecConfigInterconnectRequest, opts ...gax.CallOption) (*computepb.InterconnectsGetMacsecConfigResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnects/%v/getMacsecConfig", req.GetProject(), req.GetInterconnect())
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "interconnect", url.QueryEscape(req.GetInterconnect()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetMacsecConfig[0:len((*c.CallOptions).GetMacsecConfig):len((*c.CallOptions).GetMacsecConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.InterconnectsGetMacsecConfigResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetMacsecConfig")
 		if err != nil {
 			return err
 		}
@@ -494,17 +535,7 @@ func (c *interconnectsRESTClient) Insert(ctx context.Context, req *computepb.Ins
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "Insert")
 		if err != nil {
 			return err
 		}
@@ -539,7 +570,7 @@ func (c *interconnectsRESTClient) List(ctx context.Context, req *computepb.ListI
 			req.PageToken = proto.String(pageToken)
 		}
 		if pageSize > math.MaxInt32 {
-			req.MaxResults = proto.Uint32(math.MaxInt32)
+			req.MaxResults = proto.Uint32(uint32(math.MaxInt32))
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
@@ -581,21 +612,10 @@ func (c *interconnectsRESTClient) List(ctx context.Context, req *computepb.ListI
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "List")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -667,17 +687,7 @@ func (c *interconnectsRESTClient) Patch(ctx context.Context, req *computepb.Patc
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "Patch")
 		if err != nil {
 			return err
 		}
@@ -736,17 +746,7 @@ func (c *interconnectsRESTClient) SetLabels(ctx context.Context, req *computepb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetLabels")
 		if err != nil {
 			return err
 		}
@@ -768,51 +768,4 @@ func (c *interconnectsRESTClient) SetLabels(ctx context.Context, req *computepb.
 		},
 	}
 	return op, nil
-}
-
-// InterconnectIterator manages a stream of *computepb.Interconnect.
-type InterconnectIterator struct {
-	items    []*computepb.Interconnect
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*computepb.Interconnect, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *InterconnectIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *InterconnectIterator) Next() (*computepb.Interconnect, error) {
-	var item *computepb.Interconnect
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *InterconnectIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *InterconnectIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

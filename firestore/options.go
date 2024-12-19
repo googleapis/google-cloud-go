@@ -20,7 +20,7 @@ import (
 	"time"
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
-	"github.com/golang/protobuf/ptypes"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // A Precondition modifies a Firestore update or delete operation.
@@ -42,7 +42,7 @@ type exists bool
 
 func (e exists) preconditionProto() (*pb.Precondition, error) {
 	return &pb.Precondition{
-		ConditionType: &pb.Precondition_Exists{bool(e)},
+		ConditionType: &pb.Precondition_Exists{Exists: bool(e)},
 	}, nil
 }
 
@@ -61,13 +61,10 @@ func LastUpdateTime(t time.Time) Precondition { return lastUpdateTime(t) }
 type lastUpdateTime time.Time
 
 func (u lastUpdateTime) preconditionProto() (*pb.Precondition, error) {
-	ts, err := ptypes.TimestampProto(time.Time(u))
-	if err != nil {
-		return nil, err
-	}
+	ts := timestamppb.New(time.Time(u))
 	return &pb.Precondition{
-		ConditionType: &pb.Precondition_UpdateTime{ts},
-	}, nil
+		ConditionType: &pb.Precondition_UpdateTime{UpdateTime: ts},
+	}, ts.CheckValid()
 }
 
 func (u lastUpdateTime) String() string { return fmt.Sprintf("LastUpdateTime(%s)", time.Time(u)) }
@@ -172,4 +169,53 @@ func processSetOptions(opts []SetOption) (fps []FieldPath, all bool, err error) 
 	default:
 		return nil, false, fmt.Errorf("conflicting options: %+v", opts)
 	}
+}
+
+type runQuerySettings struct {
+	// Explain options for the query. If set, additional query
+	// statistics will be returned. If not, only query results will be returned.
+	explainOptions *pb.ExplainOptions
+}
+
+// newRunQuerySettings creates a runQuerySettings with a given RunOption slice.
+func newRunQuerySettings(opts []RunOption) (*runQuerySettings, error) {
+	s := &runQuerySettings{}
+	for _, o := range opts {
+		if o == nil {
+			return nil, errors.New("firestore: RunOption cannot be nil")
+		}
+		err := o.apply(s)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return s, nil
+}
+
+// RunOption are options used while running a query
+type RunOption interface {
+	apply(*runQuerySettings) error
+}
+
+// ExplainOptions are Query Explain options.
+// Query Explain allows you to submit Cloud Firestore queries to the backend and
+// receive detailed performance statistics on backend query execution in return.
+type ExplainOptions struct {
+	// When false (the default), Query Explain plans the query, but skips over the
+	// execution stage. This will return planner stage information.
+	//
+	// When true, Query Explain both plans and executes the query. This returns all
+	// the planner information along with statistics from the query execution runtime.
+	// This will include the billing information of the query along with system-level
+	// insights into the query execution.
+	Analyze bool
+}
+
+func (e ExplainOptions) apply(s *runQuerySettings) error {
+	if s.explainOptions != nil {
+		return errors.New("firestore: ExplainOptions can be specified only once")
+	}
+	pbExplainOptions := pb.ExplainOptions{Analyze: e.Analyze}
+	s.explainOptions = &pbExplainOptions
+	return nil
 }

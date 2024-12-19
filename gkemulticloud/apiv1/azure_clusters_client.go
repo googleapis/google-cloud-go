@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package gkemulticloud
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 	"time"
@@ -41,35 +42,41 @@ var newAzureClustersClientHook clientHook
 
 // AzureClustersCallOptions contains the retry settings for each method of AzureClustersClient.
 type AzureClustersCallOptions struct {
-	CreateAzureClient        []gax.CallOption
-	GetAzureClient           []gax.CallOption
-	ListAzureClients         []gax.CallOption
-	DeleteAzureClient        []gax.CallOption
-	CreateAzureCluster       []gax.CallOption
-	UpdateAzureCluster       []gax.CallOption
-	GetAzureCluster          []gax.CallOption
-	ListAzureClusters        []gax.CallOption
-	DeleteAzureCluster       []gax.CallOption
-	GenerateAzureAccessToken []gax.CallOption
-	CreateAzureNodePool      []gax.CallOption
-	UpdateAzureNodePool      []gax.CallOption
-	GetAzureNodePool         []gax.CallOption
-	ListAzureNodePools       []gax.CallOption
-	DeleteAzureNodePool      []gax.CallOption
-	GetAzureServerConfig     []gax.CallOption
-	CancelOperation          []gax.CallOption
-	DeleteOperation          []gax.CallOption
-	GetOperation             []gax.CallOption
-	ListOperations           []gax.CallOption
+	CreateAzureClient              []gax.CallOption
+	GetAzureClient                 []gax.CallOption
+	ListAzureClients               []gax.CallOption
+	DeleteAzureClient              []gax.CallOption
+	CreateAzureCluster             []gax.CallOption
+	UpdateAzureCluster             []gax.CallOption
+	GetAzureCluster                []gax.CallOption
+	ListAzureClusters              []gax.CallOption
+	DeleteAzureCluster             []gax.CallOption
+	GenerateAzureClusterAgentToken []gax.CallOption
+	GenerateAzureAccessToken       []gax.CallOption
+	CreateAzureNodePool            []gax.CallOption
+	UpdateAzureNodePool            []gax.CallOption
+	GetAzureNodePool               []gax.CallOption
+	ListAzureNodePools             []gax.CallOption
+	DeleteAzureNodePool            []gax.CallOption
+	GetAzureOpenIdConfig           []gax.CallOption
+	GetAzureJsonWebKeys            []gax.CallOption
+	GetAzureServerConfig           []gax.CallOption
+	CancelOperation                []gax.CallOption
+	DeleteOperation                []gax.CallOption
+	GetOperation                   []gax.CallOption
+	ListOperations                 []gax.CallOption
 }
 
 func defaultAzureClustersGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("gkemulticloud.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("gkemulticloud.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("gkemulticloud.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://gkemulticloud.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -140,6 +147,18 @@ func defaultAzureClustersCallOptions() *AzureClustersCallOptions {
 		DeleteAzureCluster: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		GenerateAzureClusterAgentToken: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GenerateAzureAccessToken: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -185,6 +204,30 @@ func defaultAzureClustersCallOptions() *AzureClustersCallOptions {
 		DeleteAzureNodePool: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		GetAzureOpenIdConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetAzureJsonWebKeys: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GetAzureServerConfig: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -204,7 +247,7 @@ func defaultAzureClustersCallOptions() *AzureClustersCallOptions {
 	}
 }
 
-// internalAzureClustersClient is an interface that defines the methods available from Anthos Multi-Cloud API.
+// internalAzureClustersClient is an interface that defines the methods available from GKE Multi-Cloud API.
 type internalAzureClustersClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -223,6 +266,7 @@ type internalAzureClustersClient interface {
 	ListAzureClusters(context.Context, *gkemulticloudpb.ListAzureClustersRequest, ...gax.CallOption) *AzureClusterIterator
 	DeleteAzureCluster(context.Context, *gkemulticloudpb.DeleteAzureClusterRequest, ...gax.CallOption) (*DeleteAzureClusterOperation, error)
 	DeleteAzureClusterOperation(name string) *DeleteAzureClusterOperation
+	GenerateAzureClusterAgentToken(context.Context, *gkemulticloudpb.GenerateAzureClusterAgentTokenRequest, ...gax.CallOption) (*gkemulticloudpb.GenerateAzureClusterAgentTokenResponse, error)
 	GenerateAzureAccessToken(context.Context, *gkemulticloudpb.GenerateAzureAccessTokenRequest, ...gax.CallOption) (*gkemulticloudpb.GenerateAzureAccessTokenResponse, error)
 	CreateAzureNodePool(context.Context, *gkemulticloudpb.CreateAzureNodePoolRequest, ...gax.CallOption) (*CreateAzureNodePoolOperation, error)
 	CreateAzureNodePoolOperation(name string) *CreateAzureNodePoolOperation
@@ -232,6 +276,8 @@ type internalAzureClustersClient interface {
 	ListAzureNodePools(context.Context, *gkemulticloudpb.ListAzureNodePoolsRequest, ...gax.CallOption) *AzureNodePoolIterator
 	DeleteAzureNodePool(context.Context, *gkemulticloudpb.DeleteAzureNodePoolRequest, ...gax.CallOption) (*DeleteAzureNodePoolOperation, error)
 	DeleteAzureNodePoolOperation(name string) *DeleteAzureNodePoolOperation
+	GetAzureOpenIdConfig(context.Context, *gkemulticloudpb.GetAzureOpenIdConfigRequest, ...gax.CallOption) (*gkemulticloudpb.AzureOpenIdConfig, error)
+	GetAzureJsonWebKeys(context.Context, *gkemulticloudpb.GetAzureJsonWebKeysRequest, ...gax.CallOption) (*gkemulticloudpb.AzureJsonWebKeys, error)
 	GetAzureServerConfig(context.Context, *gkemulticloudpb.GetAzureServerConfigRequest, ...gax.CallOption) (*gkemulticloudpb.AzureServerConfig, error)
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
 	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
@@ -239,7 +285,7 @@ type internalAzureClustersClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// AzureClustersClient is a client for interacting with Anthos Multi-Cloud API.
+// AzureClustersClient is a client for interacting with GKE Multi-Cloud API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The AzureClusters API provides a single centrally managed service
@@ -389,6 +435,11 @@ func (c *AzureClustersClient) DeleteAzureClusterOperation(name string) *DeleteAz
 	return c.internalClient.DeleteAzureClusterOperation(name)
 }
 
+// GenerateAzureClusterAgentToken generates an access token for a cluster agent.
+func (c *AzureClustersClient) GenerateAzureClusterAgentToken(ctx context.Context, req *gkemulticloudpb.GenerateAzureClusterAgentTokenRequest, opts ...gax.CallOption) (*gkemulticloudpb.GenerateAzureClusterAgentTokenResponse, error) {
+	return c.internalClient.GenerateAzureClusterAgentToken(ctx, req, opts...)
+}
+
 // GenerateAzureAccessToken generates a short-lived access token to authenticate to a given
 // AzureCluster resource.
 func (c *AzureClustersClient) GenerateAzureAccessToken(ctx context.Context, req *gkemulticloudpb.GenerateAzureAccessTokenRequest, opts ...gax.CallOption) (*gkemulticloudpb.GenerateAzureAccessTokenResponse, error) {
@@ -452,6 +503,21 @@ func (c *AzureClustersClient) DeleteAzureNodePoolOperation(name string) *DeleteA
 	return c.internalClient.DeleteAzureNodePoolOperation(name)
 }
 
+// GetAzureOpenIdConfig gets the OIDC discovery document for the cluster.
+// See the
+// OpenID Connect Discovery 1.0
+// specification (at https://openid.net/specs/openid-connect-discovery-1_0.html)
+// for details.
+func (c *AzureClustersClient) GetAzureOpenIdConfig(ctx context.Context, req *gkemulticloudpb.GetAzureOpenIdConfigRequest, opts ...gax.CallOption) (*gkemulticloudpb.AzureOpenIdConfig, error) {
+	return c.internalClient.GetAzureOpenIdConfig(ctx, req, opts...)
+}
+
+// GetAzureJsonWebKeys gets the public component of the cluster signing keys in
+// JSON Web Key format.
+func (c *AzureClustersClient) GetAzureJsonWebKeys(ctx context.Context, req *gkemulticloudpb.GetAzureJsonWebKeysRequest, opts ...gax.CallOption) (*gkemulticloudpb.AzureJsonWebKeys, error) {
+	return c.internalClient.GetAzureJsonWebKeys(ctx, req, opts...)
+}
+
 // GetAzureServerConfig returns information, such as supported Azure regions and Kubernetes
 // versions, on a given Google Cloud location.
 func (c *AzureClustersClient) GetAzureServerConfig(ctx context.Context, req *gkemulticloudpb.GetAzureServerConfigRequest, opts ...gax.CallOption) (*gkemulticloudpb.AzureServerConfig, error) {
@@ -478,7 +544,7 @@ func (c *AzureClustersClient) ListOperations(ctx context.Context, req *longrunni
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// azureClustersGRPCClient is a client for interacting with Anthos Multi-Cloud API over gRPC transport.
+// azureClustersGRPCClient is a client for interacting with GKE Multi-Cloud API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type azureClustersGRPCClient struct {
@@ -500,6 +566,8 @@ type azureClustersGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewAzureClustersClient creates a new azure clusters client based on gRPC.
@@ -527,6 +595,7 @@ func NewAzureClustersClient(ctx context.Context, opts ...option.ClientOption) (*
 		connPool:            connPool,
 		azureClustersClient: gkemulticloudpb.NewAzureClustersClient(connPool),
 		CallOptions:         &client.CallOptions,
+		logger:              internaloption.GetLogger(opts),
 		operationsClient:    longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -561,7 +630,9 @@ func (c *azureClustersGRPCClient) Connection() *grpc.ClientConn {
 func (c *azureClustersGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -579,7 +650,7 @@ func (c *azureClustersGRPCClient) CreateAzureClient(ctx context.Context, req *gk
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.azureClustersClient.CreateAzureClient(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.azureClustersClient.CreateAzureClient, req, settings.GRPC, c.logger, "CreateAzureClient")
 		return err
 	}, opts...)
 	if err != nil {
@@ -599,7 +670,7 @@ func (c *azureClustersGRPCClient) GetAzureClient(ctx context.Context, req *gkemu
 	var resp *gkemulticloudpb.AzureClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.azureClustersClient.GetAzureClient(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.azureClustersClient.GetAzureClient, req, settings.GRPC, c.logger, "GetAzureClient")
 		return err
 	}, opts...)
 	if err != nil {
@@ -628,7 +699,7 @@ func (c *azureClustersGRPCClient) ListAzureClients(ctx context.Context, req *gke
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.azureClustersClient.ListAzureClients(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.azureClustersClient.ListAzureClients, req, settings.GRPC, c.logger, "ListAzureClients")
 			return err
 		}, opts...)
 		if err != nil {
@@ -663,7 +734,7 @@ func (c *azureClustersGRPCClient) DeleteAzureClient(ctx context.Context, req *gk
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.azureClustersClient.DeleteAzureClient(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.azureClustersClient.DeleteAzureClient, req, settings.GRPC, c.logger, "DeleteAzureClient")
 		return err
 	}, opts...)
 	if err != nil {
@@ -683,7 +754,7 @@ func (c *azureClustersGRPCClient) CreateAzureCluster(ctx context.Context, req *g
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.azureClustersClient.CreateAzureCluster(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.azureClustersClient.CreateAzureCluster, req, settings.GRPC, c.logger, "CreateAzureCluster")
 		return err
 	}, opts...)
 	if err != nil {
@@ -703,7 +774,7 @@ func (c *azureClustersGRPCClient) UpdateAzureCluster(ctx context.Context, req *g
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.azureClustersClient.UpdateAzureCluster(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.azureClustersClient.UpdateAzureCluster, req, settings.GRPC, c.logger, "UpdateAzureCluster")
 		return err
 	}, opts...)
 	if err != nil {
@@ -723,7 +794,7 @@ func (c *azureClustersGRPCClient) GetAzureCluster(ctx context.Context, req *gkem
 	var resp *gkemulticloudpb.AzureCluster
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.azureClustersClient.GetAzureCluster(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.azureClustersClient.GetAzureCluster, req, settings.GRPC, c.logger, "GetAzureCluster")
 		return err
 	}, opts...)
 	if err != nil {
@@ -752,7 +823,7 @@ func (c *azureClustersGRPCClient) ListAzureClusters(ctx context.Context, req *gk
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.azureClustersClient.ListAzureClusters(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.azureClustersClient.ListAzureClusters, req, settings.GRPC, c.logger, "ListAzureClusters")
 			return err
 		}, opts...)
 		if err != nil {
@@ -787,7 +858,7 @@ func (c *azureClustersGRPCClient) DeleteAzureCluster(ctx context.Context, req *g
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.azureClustersClient.DeleteAzureCluster(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.azureClustersClient.DeleteAzureCluster, req, settings.GRPC, c.logger, "DeleteAzureCluster")
 		return err
 	}, opts...)
 	if err != nil {
@@ -796,6 +867,24 @@ func (c *azureClustersGRPCClient) DeleteAzureCluster(ctx context.Context, req *g
 	return &DeleteAzureClusterOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *azureClustersGRPCClient) GenerateAzureClusterAgentToken(ctx context.Context, req *gkemulticloudpb.GenerateAzureClusterAgentTokenRequest, opts ...gax.CallOption) (*gkemulticloudpb.GenerateAzureClusterAgentTokenResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "azure_cluster", url.QueryEscape(req.GetAzureCluster()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GenerateAzureClusterAgentToken[0:len((*c.CallOptions).GenerateAzureClusterAgentToken):len((*c.CallOptions).GenerateAzureClusterAgentToken)], opts...)
+	var resp *gkemulticloudpb.GenerateAzureClusterAgentTokenResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.azureClustersClient.GenerateAzureClusterAgentToken, req, settings.GRPC, c.logger, "GenerateAzureClusterAgentToken")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *azureClustersGRPCClient) GenerateAzureAccessToken(ctx context.Context, req *gkemulticloudpb.GenerateAzureAccessTokenRequest, opts ...gax.CallOption) (*gkemulticloudpb.GenerateAzureAccessTokenResponse, error) {
@@ -807,7 +896,7 @@ func (c *azureClustersGRPCClient) GenerateAzureAccessToken(ctx context.Context, 
 	var resp *gkemulticloudpb.GenerateAzureAccessTokenResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.azureClustersClient.GenerateAzureAccessToken(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.azureClustersClient.GenerateAzureAccessToken, req, settings.GRPC, c.logger, "GenerateAzureAccessToken")
 		return err
 	}, opts...)
 	if err != nil {
@@ -825,7 +914,7 @@ func (c *azureClustersGRPCClient) CreateAzureNodePool(ctx context.Context, req *
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.azureClustersClient.CreateAzureNodePool(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.azureClustersClient.CreateAzureNodePool, req, settings.GRPC, c.logger, "CreateAzureNodePool")
 		return err
 	}, opts...)
 	if err != nil {
@@ -845,7 +934,7 @@ func (c *azureClustersGRPCClient) UpdateAzureNodePool(ctx context.Context, req *
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.azureClustersClient.UpdateAzureNodePool(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.azureClustersClient.UpdateAzureNodePool, req, settings.GRPC, c.logger, "UpdateAzureNodePool")
 		return err
 	}, opts...)
 	if err != nil {
@@ -865,7 +954,7 @@ func (c *azureClustersGRPCClient) GetAzureNodePool(ctx context.Context, req *gke
 	var resp *gkemulticloudpb.AzureNodePool
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.azureClustersClient.GetAzureNodePool(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.azureClustersClient.GetAzureNodePool, req, settings.GRPC, c.logger, "GetAzureNodePool")
 		return err
 	}, opts...)
 	if err != nil {
@@ -894,7 +983,7 @@ func (c *azureClustersGRPCClient) ListAzureNodePools(ctx context.Context, req *g
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.azureClustersClient.ListAzureNodePools(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.azureClustersClient.ListAzureNodePools, req, settings.GRPC, c.logger, "ListAzureNodePools")
 			return err
 		}, opts...)
 		if err != nil {
@@ -929,7 +1018,7 @@ func (c *azureClustersGRPCClient) DeleteAzureNodePool(ctx context.Context, req *
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.azureClustersClient.DeleteAzureNodePool(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.azureClustersClient.DeleteAzureNodePool, req, settings.GRPC, c.logger, "DeleteAzureNodePool")
 		return err
 	}, opts...)
 	if err != nil {
@@ -938,6 +1027,42 @@ func (c *azureClustersGRPCClient) DeleteAzureNodePool(ctx context.Context, req *
 	return &DeleteAzureNodePoolOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *azureClustersGRPCClient) GetAzureOpenIdConfig(ctx context.Context, req *gkemulticloudpb.GetAzureOpenIdConfigRequest, opts ...gax.CallOption) (*gkemulticloudpb.AzureOpenIdConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "azure_cluster", url.QueryEscape(req.GetAzureCluster()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetAzureOpenIdConfig[0:len((*c.CallOptions).GetAzureOpenIdConfig):len((*c.CallOptions).GetAzureOpenIdConfig)], opts...)
+	var resp *gkemulticloudpb.AzureOpenIdConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.azureClustersClient.GetAzureOpenIdConfig, req, settings.GRPC, c.logger, "GetAzureOpenIdConfig")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *azureClustersGRPCClient) GetAzureJsonWebKeys(ctx context.Context, req *gkemulticloudpb.GetAzureJsonWebKeysRequest, opts ...gax.CallOption) (*gkemulticloudpb.AzureJsonWebKeys, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "azure_cluster", url.QueryEscape(req.GetAzureCluster()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetAzureJsonWebKeys[0:len((*c.CallOptions).GetAzureJsonWebKeys):len((*c.CallOptions).GetAzureJsonWebKeys)], opts...)
+	var resp *gkemulticloudpb.AzureJsonWebKeys
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.azureClustersClient.GetAzureJsonWebKeys, req, settings.GRPC, c.logger, "GetAzureJsonWebKeys")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *azureClustersGRPCClient) GetAzureServerConfig(ctx context.Context, req *gkemulticloudpb.GetAzureServerConfigRequest, opts ...gax.CallOption) (*gkemulticloudpb.AzureServerConfig, error) {
@@ -949,7 +1074,7 @@ func (c *azureClustersGRPCClient) GetAzureServerConfig(ctx context.Context, req 
 	var resp *gkemulticloudpb.AzureServerConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.azureClustersClient.GetAzureServerConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.azureClustersClient.GetAzureServerConfig, req, settings.GRPC, c.logger, "GetAzureServerConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -966,7 +1091,7 @@ func (c *azureClustersGRPCClient) CancelOperation(ctx context.Context, req *long
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -980,7 +1105,7 @@ func (c *azureClustersGRPCClient) DeleteOperation(ctx context.Context, req *long
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -995,7 +1120,7 @@ func (c *azureClustersGRPCClient) GetOperation(ctx context.Context, req *longrun
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1024,7 +1149,7 @@ func (c *azureClustersGRPCClient) ListOperations(ctx context.Context, req *longr
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1050,78 +1175,12 @@ func (c *azureClustersGRPCClient) ListOperations(ctx context.Context, req *longr
 	return it
 }
 
-// CreateAzureClientOperation manages a long-running operation from CreateAzureClient.
-type CreateAzureClientOperation struct {
-	lro *longrunning.Operation
-}
-
 // CreateAzureClientOperation returns a new CreateAzureClientOperation from a given name.
 // The name must be that of a previously created CreateAzureClientOperation, possibly from a different process.
 func (c *azureClustersGRPCClient) CreateAzureClientOperation(name string) *CreateAzureClientOperation {
 	return &CreateAzureClientOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateAzureClientOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*gkemulticloudpb.AzureClient, error) {
-	var resp gkemulticloudpb.AzureClient
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateAzureClientOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*gkemulticloudpb.AzureClient, error) {
-	var resp gkemulticloudpb.AzureClient
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateAzureClientOperation) Metadata() (*gkemulticloudpb.OperationMetadata, error) {
-	var meta gkemulticloudpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateAzureClientOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateAzureClientOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateAzureClusterOperation manages a long-running operation from CreateAzureCluster.
-type CreateAzureClusterOperation struct {
-	lro *longrunning.Operation
 }
 
 // CreateAzureClusterOperation returns a new CreateAzureClusterOperation from a given name.
@@ -1132,134 +1191,12 @@ func (c *azureClustersGRPCClient) CreateAzureClusterOperation(name string) *Crea
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateAzureClusterOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*gkemulticloudpb.AzureCluster, error) {
-	var resp gkemulticloudpb.AzureCluster
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateAzureClusterOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*gkemulticloudpb.AzureCluster, error) {
-	var resp gkemulticloudpb.AzureCluster
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateAzureClusterOperation) Metadata() (*gkemulticloudpb.OperationMetadata, error) {
-	var meta gkemulticloudpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateAzureClusterOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateAzureClusterOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateAzureNodePoolOperation manages a long-running operation from CreateAzureNodePool.
-type CreateAzureNodePoolOperation struct {
-	lro *longrunning.Operation
-}
-
 // CreateAzureNodePoolOperation returns a new CreateAzureNodePoolOperation from a given name.
 // The name must be that of a previously created CreateAzureNodePoolOperation, possibly from a different process.
 func (c *azureClustersGRPCClient) CreateAzureNodePoolOperation(name string) *CreateAzureNodePoolOperation {
 	return &CreateAzureNodePoolOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateAzureNodePoolOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*gkemulticloudpb.AzureNodePool, error) {
-	var resp gkemulticloudpb.AzureNodePool
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateAzureNodePoolOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*gkemulticloudpb.AzureNodePool, error) {
-	var resp gkemulticloudpb.AzureNodePool
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateAzureNodePoolOperation) Metadata() (*gkemulticloudpb.OperationMetadata, error) {
-	var meta gkemulticloudpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateAzureNodePoolOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateAzureNodePoolOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteAzureClientOperation manages a long-running operation from DeleteAzureClient.
-type DeleteAzureClientOperation struct {
-	lro *longrunning.Operation
 }
 
 // DeleteAzureClientOperation returns a new DeleteAzureClientOperation from a given name.
@@ -1270,112 +1207,12 @@ func (c *azureClustersGRPCClient) DeleteAzureClientOperation(name string) *Delet
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteAzureClientOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteAzureClientOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteAzureClientOperation) Metadata() (*gkemulticloudpb.OperationMetadata, error) {
-	var meta gkemulticloudpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteAzureClientOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteAzureClientOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteAzureClusterOperation manages a long-running operation from DeleteAzureCluster.
-type DeleteAzureClusterOperation struct {
-	lro *longrunning.Operation
-}
-
 // DeleteAzureClusterOperation returns a new DeleteAzureClusterOperation from a given name.
 // The name must be that of a previously created DeleteAzureClusterOperation, possibly from a different process.
 func (c *azureClustersGRPCClient) DeleteAzureClusterOperation(name string) *DeleteAzureClusterOperation {
 	return &DeleteAzureClusterOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteAzureClusterOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteAzureClusterOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteAzureClusterOperation) Metadata() (*gkemulticloudpb.OperationMetadata, error) {
-	var meta gkemulticloudpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteAzureClusterOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteAzureClusterOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteAzureNodePoolOperation manages a long-running operation from DeleteAzureNodePool.
-type DeleteAzureNodePoolOperation struct {
-	lro *longrunning.Operation
 }
 
 // DeleteAzureNodePoolOperation returns a new DeleteAzureNodePoolOperation from a given name.
@@ -1386,56 +1223,6 @@ func (c *azureClustersGRPCClient) DeleteAzureNodePoolOperation(name string) *Del
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteAzureNodePoolOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteAzureNodePoolOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteAzureNodePoolOperation) Metadata() (*gkemulticloudpb.OperationMetadata, error) {
-	var meta gkemulticloudpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteAzureNodePoolOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteAzureNodePoolOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateAzureClusterOperation manages a long-running operation from UpdateAzureCluster.
-type UpdateAzureClusterOperation struct {
-	lro *longrunning.Operation
-}
-
 // UpdateAzureClusterOperation returns a new UpdateAzureClusterOperation from a given name.
 // The name must be that of a previously created UpdateAzureClusterOperation, possibly from a different process.
 func (c *azureClustersGRPCClient) UpdateAzureClusterOperation(name string) *UpdateAzureClusterOperation {
@@ -1444,268 +1231,10 @@ func (c *azureClustersGRPCClient) UpdateAzureClusterOperation(name string) *Upda
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateAzureClusterOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*gkemulticloudpb.AzureCluster, error) {
-	var resp gkemulticloudpb.AzureCluster
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateAzureClusterOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*gkemulticloudpb.AzureCluster, error) {
-	var resp gkemulticloudpb.AzureCluster
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateAzureClusterOperation) Metadata() (*gkemulticloudpb.OperationMetadata, error) {
-	var meta gkemulticloudpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateAzureClusterOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateAzureClusterOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateAzureNodePoolOperation manages a long-running operation from UpdateAzureNodePool.
-type UpdateAzureNodePoolOperation struct {
-	lro *longrunning.Operation
-}
-
 // UpdateAzureNodePoolOperation returns a new UpdateAzureNodePoolOperation from a given name.
 // The name must be that of a previously created UpdateAzureNodePoolOperation, possibly from a different process.
 func (c *azureClustersGRPCClient) UpdateAzureNodePoolOperation(name string) *UpdateAzureNodePoolOperation {
 	return &UpdateAzureNodePoolOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateAzureNodePoolOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*gkemulticloudpb.AzureNodePool, error) {
-	var resp gkemulticloudpb.AzureNodePool
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateAzureNodePoolOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*gkemulticloudpb.AzureNodePool, error) {
-	var resp gkemulticloudpb.AzureNodePool
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateAzureNodePoolOperation) Metadata() (*gkemulticloudpb.OperationMetadata, error) {
-	var meta gkemulticloudpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateAzureNodePoolOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateAzureNodePoolOperation) Name() string {
-	return op.lro.Name()
-}
-
-// AzureClientIterator manages a stream of *gkemulticloudpb.AzureClient.
-type AzureClientIterator struct {
-	items    []*gkemulticloudpb.AzureClient
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*gkemulticloudpb.AzureClient, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *AzureClientIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *AzureClientIterator) Next() (*gkemulticloudpb.AzureClient, error) {
-	var item *gkemulticloudpb.AzureClient
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *AzureClientIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *AzureClientIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// AzureClusterIterator manages a stream of *gkemulticloudpb.AzureCluster.
-type AzureClusterIterator struct {
-	items    []*gkemulticloudpb.AzureCluster
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*gkemulticloudpb.AzureCluster, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *AzureClusterIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *AzureClusterIterator) Next() (*gkemulticloudpb.AzureCluster, error) {
-	var item *gkemulticloudpb.AzureCluster
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *AzureClusterIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *AzureClusterIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// AzureNodePoolIterator manages a stream of *gkemulticloudpb.AzureNodePool.
-type AzureNodePoolIterator struct {
-	items    []*gkemulticloudpb.AzureNodePool
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*gkemulticloudpb.AzureNodePool, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *AzureNodePoolIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *AzureNodePoolIterator) Next() (*gkemulticloudpb.AzureNodePool, error) {
-	var item *gkemulticloudpb.AzureNodePool
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *AzureNodePoolIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *AzureNodePoolIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

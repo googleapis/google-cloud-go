@@ -1,0 +1,197 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.apps.meet.v2",
+  "libraryPackage": "cloud.google.com/go/apps/meet/apiv2",
+  "services": {
+    "ConferenceRecordsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ConferenceRecordsClient",
+          "rpcs": {
+            "GetConferenceRecord": {
+              "methods": [
+                "GetConferenceRecord"
+              ]
+            },
+            "GetParticipant": {
+              "methods": [
+                "GetParticipant"
+              ]
+            },
+            "GetParticipantSession": {
+              "methods": [
+                "GetParticipantSession"
+              ]
+            },
+            "GetRecording": {
+              "methods": [
+                "GetRecording"
+              ]
+            },
+            "GetTranscript": {
+              "methods": [
+                "GetTranscript"
+              ]
+            },
+            "GetTranscriptEntry": {
+              "methods": [
+                "GetTranscriptEntry"
+              ]
+            },
+            "ListConferenceRecords": {
+              "methods": [
+                "ListConferenceRecords"
+              ]
+            },
+            "ListParticipantSessions": {
+              "methods": [
+                "ListParticipantSessions"
+              ]
+            },
+            "ListParticipants": {
+              "methods": [
+                "ListParticipants"
+              ]
+            },
+            "ListRecordings": {
+              "methods": [
+                "ListRecordings"
+              ]
+            },
+            "ListTranscriptEntries": {
+              "methods": [
+                "ListTranscriptEntries"
+              ]
+            },
+            "ListTranscripts": {
+              "methods": [
+                "ListTranscripts"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ConferenceRecordsClient",
+          "rpcs": {
+            "GetConferenceRecord": {
+              "methods": [
+                "GetConferenceRecord"
+              ]
+            },
+            "GetParticipant": {
+              "methods": [
+                "GetParticipant"
+              ]
+            },
+            "GetParticipantSession": {
+              "methods": [
+                "GetParticipantSession"
+              ]
+            },
+            "GetRecording": {
+              "methods": [
+                "GetRecording"
+              ]
+            },
+            "GetTranscript": {
+              "methods": [
+                "GetTranscript"
+              ]
+            },
+            "GetTranscriptEntry": {
+              "methods": [
+                "GetTranscriptEntry"
+              ]
+            },
+            "ListConferenceRecords": {
+              "methods": [
+                "ListConferenceRecords"
+              ]
+            },
+            "ListParticipantSessions": {
+              "methods": [
+                "ListParticipantSessions"
+              ]
+            },
+            "ListParticipants": {
+              "methods": [
+                "ListParticipants"
+              ]
+            },
+            "ListRecordings": {
+              "methods": [
+                "ListRecordings"
+              ]
+            },
+            "ListTranscriptEntries": {
+              "methods": [
+                "ListTranscriptEntries"
+              ]
+            },
+            "ListTranscripts": {
+              "methods": [
+                "ListTranscripts"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "SpacesService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "SpacesClient",
+          "rpcs": {
+            "CreateSpace": {
+              "methods": [
+                "CreateSpace"
+              ]
+            },
+            "EndActiveConference": {
+              "methods": [
+                "EndActiveConference"
+              ]
+            },
+            "GetSpace": {
+              "methods": [
+                "GetSpace"
+              ]
+            },
+            "UpdateSpace": {
+              "methods": [
+                "UpdateSpace"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "SpacesClient",
+          "rpcs": {
+            "CreateSpace": {
+              "methods": [
+                "CreateSpace"
+              ]
+            },
+            "EndActiveConference": {
+              "methods": [
+                "EndActiveConference"
+              ]
+            },
+            "GetSpace": {
+              "methods": [
+                "GetSpace"
+              ]
+            },
+            "UpdateSpace": {
+              "methods": [
+                "UpdateSpace"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

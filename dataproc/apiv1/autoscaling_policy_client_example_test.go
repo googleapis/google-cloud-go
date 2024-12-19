@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -85,7 +85,7 @@ func ExampleAutoscalingPolicyClient_CreateAutoscalingPolicy() {
 	_ = resp
 }
 
-func ExampleAutoscalingPolicyClient_UpdateAutoscalingPolicy() {
+func ExampleAutoscalingPolicyClient_DeleteAutoscalingPolicy() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -98,16 +98,14 @@ func ExampleAutoscalingPolicyClient_UpdateAutoscalingPolicy() {
 	}
 	defer c.Close()
 
-	req := &dataprocpb.UpdateAutoscalingPolicyRequest{
+	req := &dataprocpb.DeleteAutoscalingPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataproc/v2/apiv1/dataprocpb#UpdateAutoscalingPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/v2/apiv1/dataprocpb#DeleteAutoscalingPolicyRequest.
 	}
-	resp, err := c.UpdateAutoscalingPolicy(ctx, req)
+	err = c.DeleteAutoscalingPolicy(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleAutoscalingPolicyClient_GetAutoscalingPolicy() {
@@ -163,10 +161,16 @@ func ExampleAutoscalingPolicyClient_ListAutoscalingPolicies() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*dataprocpb.ListAutoscalingPoliciesResponse)
 	}
 }
 
-func ExampleAutoscalingPolicyClient_DeleteAutoscalingPolicy() {
+func ExampleAutoscalingPolicyClient_UpdateAutoscalingPolicy() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -179,14 +183,16 @@ func ExampleAutoscalingPolicyClient_DeleteAutoscalingPolicy() {
 	}
 	defer c.Close()
 
-	req := &dataprocpb.DeleteAutoscalingPolicyRequest{
+	req := &dataprocpb.UpdateAutoscalingPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataproc/v2/apiv1/dataprocpb#DeleteAutoscalingPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/v2/apiv1/dataprocpb#UpdateAutoscalingPolicyRequest.
 	}
-	err = c.DeleteAutoscalingPolicy(ctx, req)
+	resp, err := c.UpdateAutoscalingPolicy(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleAutoscalingPolicyClient_GetIamPolicy() {
@@ -363,5 +369,11 @@ func ExampleAutoscalingPolicyClient_ListOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
 }

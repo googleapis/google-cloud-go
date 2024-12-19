@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@ package aiplatform
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
-	"time"
 
 	aiplatformpb "cloud.google.com/go/aiplatform/apiv1/aiplatformpb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
@@ -72,10 +72,13 @@ type VizierCallOptions struct {
 func defaultVizierGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("aiplatform.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("aiplatform.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("aiplatform.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -377,6 +380,8 @@ type vizierGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewVizierClient creates a new vizier service client based on gRPC.
@@ -407,6 +412,7 @@ func NewVizierClient(ctx context.Context, opts ...option.ClientOption) (*VizierC
 		connPool:         connPool,
 		vizierClient:     aiplatformpb.NewVizierServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:  iampb.NewIAMPolicyClient(connPool),
 		locationsClient:  locationpb.NewLocationsClient(connPool),
@@ -443,7 +449,9 @@ func (c *vizierGRPCClient) Connection() *grpc.ClientConn {
 func (c *vizierGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -461,7 +469,7 @@ func (c *vizierGRPCClient) CreateStudy(ctx context.Context, req *aiplatformpb.Cr
 	var resp *aiplatformpb.Study
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.vizierClient.CreateStudy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.vizierClient.CreateStudy, req, settings.GRPC, c.logger, "CreateStudy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -479,7 +487,7 @@ func (c *vizierGRPCClient) GetStudy(ctx context.Context, req *aiplatformpb.GetSt
 	var resp *aiplatformpb.Study
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.vizierClient.GetStudy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.vizierClient.GetStudy, req, settings.GRPC, c.logger, "GetStudy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -508,7 +516,7 @@ func (c *vizierGRPCClient) ListStudies(ctx context.Context, req *aiplatformpb.Li
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.vizierClient.ListStudies(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.vizierClient.ListStudies, req, settings.GRPC, c.logger, "ListStudies")
 			return err
 		}, opts...)
 		if err != nil {
@@ -542,7 +550,7 @@ func (c *vizierGRPCClient) DeleteStudy(ctx context.Context, req *aiplatformpb.De
 	opts = append((*c.CallOptions).DeleteStudy[0:len((*c.CallOptions).DeleteStudy):len((*c.CallOptions).DeleteStudy)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.vizierClient.DeleteStudy(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.vizierClient.DeleteStudy, req, settings.GRPC, c.logger, "DeleteStudy")
 		return err
 	}, opts...)
 	return err
@@ -557,7 +565,7 @@ func (c *vizierGRPCClient) LookupStudy(ctx context.Context, req *aiplatformpb.Lo
 	var resp *aiplatformpb.Study
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.vizierClient.LookupStudy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.vizierClient.LookupStudy, req, settings.GRPC, c.logger, "LookupStudy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -575,7 +583,7 @@ func (c *vizierGRPCClient) SuggestTrials(ctx context.Context, req *aiplatformpb.
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.vizierClient.SuggestTrials(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.vizierClient.SuggestTrials, req, settings.GRPC, c.logger, "SuggestTrials")
 		return err
 	}, opts...)
 	if err != nil {
@@ -595,7 +603,7 @@ func (c *vizierGRPCClient) CreateTrial(ctx context.Context, req *aiplatformpb.Cr
 	var resp *aiplatformpb.Trial
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.vizierClient.CreateTrial(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.vizierClient.CreateTrial, req, settings.GRPC, c.logger, "CreateTrial")
 		return err
 	}, opts...)
 	if err != nil {
@@ -613,7 +621,7 @@ func (c *vizierGRPCClient) GetTrial(ctx context.Context, req *aiplatformpb.GetTr
 	var resp *aiplatformpb.Trial
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.vizierClient.GetTrial(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.vizierClient.GetTrial, req, settings.GRPC, c.logger, "GetTrial")
 		return err
 	}, opts...)
 	if err != nil {
@@ -642,7 +650,7 @@ func (c *vizierGRPCClient) ListTrials(ctx context.Context, req *aiplatformpb.Lis
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.vizierClient.ListTrials(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.vizierClient.ListTrials, req, settings.GRPC, c.logger, "ListTrials")
 			return err
 		}, opts...)
 		if err != nil {
@@ -677,7 +685,7 @@ func (c *vizierGRPCClient) AddTrialMeasurement(ctx context.Context, req *aiplatf
 	var resp *aiplatformpb.Trial
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.vizierClient.AddTrialMeasurement(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.vizierClient.AddTrialMeasurement, req, settings.GRPC, c.logger, "AddTrialMeasurement")
 		return err
 	}, opts...)
 	if err != nil {
@@ -695,7 +703,7 @@ func (c *vizierGRPCClient) CompleteTrial(ctx context.Context, req *aiplatformpb.
 	var resp *aiplatformpb.Trial
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.vizierClient.CompleteTrial(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.vizierClient.CompleteTrial, req, settings.GRPC, c.logger, "CompleteTrial")
 		return err
 	}, opts...)
 	if err != nil {
@@ -712,7 +720,7 @@ func (c *vizierGRPCClient) DeleteTrial(ctx context.Context, req *aiplatformpb.De
 	opts = append((*c.CallOptions).DeleteTrial[0:len((*c.CallOptions).DeleteTrial):len((*c.CallOptions).DeleteTrial)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.vizierClient.DeleteTrial(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.vizierClient.DeleteTrial, req, settings.GRPC, c.logger, "DeleteTrial")
 		return err
 	}, opts...)
 	return err
@@ -727,7 +735,7 @@ func (c *vizierGRPCClient) CheckTrialEarlyStoppingState(ctx context.Context, req
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.vizierClient.CheckTrialEarlyStoppingState(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.vizierClient.CheckTrialEarlyStoppingState, req, settings.GRPC, c.logger, "CheckTrialEarlyStoppingState")
 		return err
 	}, opts...)
 	if err != nil {
@@ -747,7 +755,7 @@ func (c *vizierGRPCClient) StopTrial(ctx context.Context, req *aiplatformpb.Stop
 	var resp *aiplatformpb.Trial
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.vizierClient.StopTrial(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.vizierClient.StopTrial, req, settings.GRPC, c.logger, "StopTrial")
 		return err
 	}, opts...)
 	if err != nil {
@@ -765,7 +773,7 @@ func (c *vizierGRPCClient) ListOptimalTrials(ctx context.Context, req *aiplatfor
 	var resp *aiplatformpb.ListOptimalTrialsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.vizierClient.ListOptimalTrials(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.vizierClient.ListOptimalTrials, req, settings.GRPC, c.logger, "ListOptimalTrials")
 		return err
 	}, opts...)
 	if err != nil {
@@ -783,7 +791,7 @@ func (c *vizierGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetL
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -812,7 +820,7 @@ func (c *vizierGRPCClient) ListLocations(ctx context.Context, req *locationpb.Li
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -847,7 +855,7 @@ func (c *vizierGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPo
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -865,7 +873,7 @@ func (c *vizierGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPo
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -883,7 +891,7 @@ func (c *vizierGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.Te
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -900,7 +908,7 @@ func (c *vizierGRPCClient) CancelOperation(ctx context.Context, req *longrunning
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -914,7 +922,7 @@ func (c *vizierGRPCClient) DeleteOperation(ctx context.Context, req *longrunning
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -929,7 +937,7 @@ func (c *vizierGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -958,7 +966,7 @@ func (c *vizierGRPCClient) ListOperations(ctx context.Context, req *longrunningp
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -993,18 +1001,13 @@ func (c *vizierGRPCClient) WaitOperation(ctx context.Context, req *longrunningpb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.WaitOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.WaitOperation, req, settings.GRPC, c.logger, "WaitOperation")
 		return err
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return resp, nil
-}
-
-// CheckTrialEarlyStoppingStateOperation manages a long-running operation from CheckTrialEarlyStoppingState.
-type CheckTrialEarlyStoppingStateOperation struct {
-	lro *longrunning.Operation
 }
 
 // CheckTrialEarlyStoppingStateOperation returns a new CheckTrialEarlyStoppingStateOperation from a given name.
@@ -1015,221 +1018,10 @@ func (c *vizierGRPCClient) CheckTrialEarlyStoppingStateOperation(name string) *C
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CheckTrialEarlyStoppingStateOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.CheckTrialEarlyStoppingStateResponse, error) {
-	var resp aiplatformpb.CheckTrialEarlyStoppingStateResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CheckTrialEarlyStoppingStateOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.CheckTrialEarlyStoppingStateResponse, error) {
-	var resp aiplatformpb.CheckTrialEarlyStoppingStateResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CheckTrialEarlyStoppingStateOperation) Metadata() (*aiplatformpb.CheckTrialEarlyStoppingStateMetatdata, error) {
-	var meta aiplatformpb.CheckTrialEarlyStoppingStateMetatdata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CheckTrialEarlyStoppingStateOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CheckTrialEarlyStoppingStateOperation) Name() string {
-	return op.lro.Name()
-}
-
-// SuggestTrialsOperation manages a long-running operation from SuggestTrials.
-type SuggestTrialsOperation struct {
-	lro *longrunning.Operation
-}
-
 // SuggestTrialsOperation returns a new SuggestTrialsOperation from a given name.
 // The name must be that of a previously created SuggestTrialsOperation, possibly from a different process.
 func (c *vizierGRPCClient) SuggestTrialsOperation(name string) *SuggestTrialsOperation {
 	return &SuggestTrialsOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *SuggestTrialsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.SuggestTrialsResponse, error) {
-	var resp aiplatformpb.SuggestTrialsResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *SuggestTrialsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.SuggestTrialsResponse, error) {
-	var resp aiplatformpb.SuggestTrialsResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *SuggestTrialsOperation) Metadata() (*aiplatformpb.SuggestTrialsMetadata, error) {
-	var meta aiplatformpb.SuggestTrialsMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *SuggestTrialsOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *SuggestTrialsOperation) Name() string {
-	return op.lro.Name()
-}
-
-// StudyIterator manages a stream of *aiplatformpb.Study.
-type StudyIterator struct {
-	items    []*aiplatformpb.Study
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.Study, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *StudyIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *StudyIterator) Next() (*aiplatformpb.Study, error) {
-	var item *aiplatformpb.Study
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *StudyIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *StudyIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// TrialIterator manages a stream of *aiplatformpb.Trial.
-type TrialIterator struct {
-	items    []*aiplatformpb.Trial
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.Trial, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *TrialIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *TrialIterator) Next() (*aiplatformpb.Trial, error) {
-	var item *aiplatformpb.Trial
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *TrialIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *TrialIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

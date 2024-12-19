@@ -29,6 +29,11 @@ import (
 )
 
 func TestStorageIteratorRetry(t *testing.T) {
+	settings := defaultReadClientSettings()
+	randomErrors := []error{} // generate more errors than the # of workers
+	for i := 0; i < settings.maxWorkerCount+2; i++ {
+		randomErrors = append(randomErrors, fmt.Errorf("random error %d", i))
+	}
 	cancelledCtx, cancel := context.WithCancel(context.Background())
 	cancel()
 	testCases := []struct {
@@ -39,7 +44,7 @@ func TestStorageIteratorRetry(t *testing.T) {
 	}{
 		{
 			desc:     "no error",
-			errors:   []error{nil},
+			errors:   []error{},
 			wantFail: false,
 		},
 		{
@@ -49,9 +54,23 @@ func TestStorageIteratorRetry(t *testing.T) {
 				status.Errorf(codes.Unavailable, "try 2"),
 				status.Errorf(codes.Canceled, "try 3"),
 				status.Errorf(codes.Internal, "try 4"),
-				nil,
+				status.Errorf(codes.Aborted, "try 5"),
 			},
 			wantFail: false,
+		},
+		{
+			desc: "expired session",
+			errors: []error{
+				status.Errorf(codes.FailedPrecondition, "read session expired"),
+			},
+			wantFail: true,
+		},
+		{
+			desc: "not enough permission",
+			errors: []error{
+				status.Errorf(codes.PermissionDenied, "the user does not have 'bigquery.readsessions.getData' permission"),
+			},
+			wantFail: true,
 		},
 		{
 			desc: "permanent error",
@@ -70,19 +89,18 @@ func TestStorageIteratorRetry(t *testing.T) {
 			},
 			wantFail: true,
 		},
+		{
+			desc:     "filled with non-retryable errors and context cancelled",
+			errors:   randomErrors,
+			wantFail: true,
+		},
 	}
-
 	for _, tc := range testCases {
-		baseCtx := tc.ctx
-		if baseCtx == nil {
-			baseCtx = context.Background()
+		rrc := &testReadRowsClient{
+			errors: tc.errors,
 		}
-		ctx, cancel := context.WithTimeout(baseCtx, 5*time.Second)
-		defer cancel()
-		it, err := newRawStorageRowIterator(&readSession{
-			ctx:      ctx,
-			settings: defaultReadClientSettings(),
-			readRowsFunc: func(ctx context.Context, req *storagepb.ReadRowsRequest, opts ...gax.CallOption) (storagepb.BigQueryRead_ReadRowsClient, error) {
+		readRowsFuncs := map[string]func(context.Context, *storagepb.ReadRowsRequest, ...gax.CallOption) (storagepb.BigQueryRead_ReadRowsClient, error){
+			"readRows fail on first call": func(ctx context.Context, req *storagepb.ReadRowsRequest, opts ...gax.CallOption) (storagepb.BigQueryRead_ReadRowsClient, error) {
 				if len(tc.errors) == 0 {
 					return &testReadRowsClient{}, nil
 				}
@@ -93,25 +111,43 @@ func TestStorageIteratorRetry(t *testing.T) {
 				}
 				return &testReadRowsClient{}, nil
 			},
-			bqSession: &storagepb.ReadSession{},
-		})
-		if err != nil {
-			t.Fatalf("case %s: newRawStorageRowIterator: %v", tc.desc, err)
+			"readRows fails on Recv": func(ctx context.Context, req *storagepb.ReadRowsRequest, opts ...gax.CallOption) (storagepb.BigQueryRead_ReadRowsClient, error) {
+				return rrc, nil
+			},
 		}
-
-		it.processStream("test-stream")
-
-		if errors.Is(it.ctx.Err(), context.Canceled) || errors.Is(it.ctx.Err(), context.DeadlineExceeded) {
-			if tc.wantFail {
-				continue
+		for readRowsFuncType, readRowsFunc := range readRowsFuncs {
+			baseCtx := tc.ctx
+			if baseCtx == nil {
+				baseCtx = context.Background()
 			}
-			t.Fatalf("case %s: deadline exceeded", tc.desc)
-		}
-		if tc.wantFail && len(it.errs) == 0 {
-			t.Fatalf("case %s:want test to fail, but found no errors", tc.desc)
-		}
-		if !tc.wantFail && len(it.errs) > 0 {
-			t.Fatalf("case %s:test should not fail, but found %d errors", tc.desc, len(it.errs))
+			ctx, cancel := context.WithTimeout(baseCtx, 5*time.Second)
+			defer cancel()
+
+			it, err := newRawStorageRowIterator(&readSession{
+				ctx:          ctx,
+				settings:     settings,
+				bqSession:    &storagepb.ReadSession{},
+				readRowsFunc: readRowsFunc,
+			}, Schema{})
+			if err != nil {
+				t.Fatalf("case %s: newRawStorageRowIterator: %v", tc.desc, err)
+			}
+
+			it.processStream("test-stream")
+
+			if errors.Is(it.rs.ctx.Err(), context.Canceled) ||
+				errors.Is(it.rs.ctx.Err(), context.DeadlineExceeded) {
+				if tc.wantFail {
+					continue
+				}
+				t.Fatalf("case %s(%s): deadline exceeded", tc.desc, readRowsFuncType)
+			}
+			if tc.wantFail && len(it.errs) == 0 {
+				t.Fatalf("case %s(%s):want test to fail, but found no errors", tc.desc, readRowsFuncType)
+			}
+			if !tc.wantFail && len(it.errs) > 0 {
+				t.Fatalf("case %s(%s):test should not fail, but found %d errors", tc.desc, readRowsFuncType, len(it.errs))
+			}
 		}
 	}
 }
@@ -119,13 +155,19 @@ func TestStorageIteratorRetry(t *testing.T) {
 type testReadRowsClient struct {
 	storagepb.BigQueryRead_ReadRowsClient
 	responses []*storagepb.ReadRowsResponse
+	errors    []error
 }
 
 func (trrc *testReadRowsClient) Recv() (*storagepb.ReadRowsResponse, error) {
-	if len(trrc.responses) == 0 {
-		return nil, io.EOF
+	if len(trrc.errors) > 0 {
+		err := trrc.errors[0]
+		trrc.errors = trrc.errors[1:]
+		return nil, err
 	}
-	r := trrc.responses[0]
-	trrc.responses = trrc.responses[:1]
-	return r, nil
+	if len(trrc.responses) > 0 {
+		r := trrc.responses[0]
+		trrc.responses = trrc.responses[:1]
+		return r, nil
+	}
+	return nil, io.EOF
 }

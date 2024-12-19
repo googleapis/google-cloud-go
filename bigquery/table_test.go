@@ -29,6 +29,7 @@ func TestBQToTableMetadata(t *testing.T) {
 	aTimeMillis := aTime.UnixNano() / 1e6
 	aDurationMillis := int64(1800000)
 	aDuration := time.Duration(aDurationMillis) * time.Millisecond
+	aStalenessValue, _ := ParseInterval("8:0:0")
 	for _, test := range []struct {
 		in   *bq.Table
 		want *TableMetadata
@@ -53,10 +54,12 @@ func TestBQToTableMetadata(t *testing.T) {
 					OldestEntryTime: uint64(aTimeMillis),
 				},
 				MaterializedView: &bq.MaterializedViewDefinition{
-					EnableRefresh:     true,
-					Query:             "mat view query",
-					LastRefreshTime:   aTimeMillis,
-					RefreshIntervalMs: aDurationMillis,
+					EnableRefresh:                 true,
+					Query:                         "mat view query",
+					LastRefreshTime:               aTimeMillis,
+					RefreshIntervalMs:             aDurationMillis,
+					AllowNonIncrementalDefinition: true,
+					MaxStaleness:                  "8:0:0",
 				},
 				TimePartitioning: &bq.TimePartitioning{
 					ExpirationMs: 7890,
@@ -95,6 +98,10 @@ func TestBQToTableMetadata(t *testing.T) {
 						},
 					},
 				},
+				ResourceTags: map[string]string{
+					"key1": "val1",
+					"key2": "val2",
+				},
 			},
 			&TableMetadata{
 				Description:        "desc",
@@ -112,10 +119,12 @@ func TestBQToTableMetadata(t *testing.T) {
 				NumLongTermBytes:   23,
 				NumRows:            7,
 				MaterializedView: &MaterializedViewDefinition{
-					EnableRefresh:   true,
-					Query:           "mat view query",
-					LastRefreshTime: aTime,
-					RefreshInterval: aDuration,
+					EnableRefresh:                 true,
+					Query:                         "mat view query",
+					LastRefreshTime:               aTime,
+					RefreshInterval:               aDuration,
+					AllowNonIncrementalDefinition: true,
+					MaxStaleness:                  aStalenessValue,
 				},
 				TimePartitioning: &TimePartitioning{
 					Type:       DayPartitioningType,
@@ -155,6 +164,10 @@ func TestBQToTableMetadata(t *testing.T) {
 						},
 					},
 				},
+				ResourceTags: map[string]string{
+					"key1": "val1",
+					"key2": "val2",
+				},
 			},
 		},
 	} {
@@ -188,6 +201,10 @@ func TestTableMetadataToBQ(t *testing.T) {
 				Labels:             map[string]string{"a": "b"},
 				ExternalDataConfig: &ExternalDataConfig{SourceFormat: Bigtable},
 				EncryptionConfig:   &EncryptionConfig{KMSKeyName: "keyName"},
+				ResourceTags: map[string]string{
+					"key1": "val1",
+					"key2": "val2",
+				},
 			},
 			&bq.Table{
 				FriendlyName: "n",
@@ -201,6 +218,10 @@ func TestTableMetadataToBQ(t *testing.T) {
 				Labels:                    map[string]string{"a": "b"},
 				ExternalDataConfiguration: &bq.ExternalDataConfiguration{SourceFormat: "BIGTABLE"},
 				EncryptionConfiguration:   &bq.EncryptionConfiguration{KmsKeyName: "keyName"},
+				ResourceTags: map[string]string{
+					"key1": "val1",
+					"key2": "val2",
+				},
 			},
 		},
 		{
@@ -509,6 +530,21 @@ func TestTableMetadataToUpdateToBQ(t *testing.T) {
 						},
 					},
 				},
+			},
+		},
+		{
+			tm: TableMetadataToUpdate{
+				ResourceTags: map[string]string{
+					"key1": "val1",
+					"key2": "val2",
+				},
+			},
+			want: &bq.Table{
+				ResourceTags: map[string]string{
+					"key1": "val1",
+					"key2": "val2",
+				},
+				ForceSendFields: []string{"ResourceTags"},
 			},
 		},
 	} {

@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	schedulerpb "cloud.google.com/go/scheduler/apiv1/schedulerpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -60,10 +59,13 @@ type CloudSchedulerCallOptions struct {
 func defaultCloudSchedulerGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("cloudscheduler.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("cloudscheduler.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("cloudscheduler.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudscheduler.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -337,6 +339,8 @@ type cloudSchedulerGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewCloudSchedulerClient creates a new cloud scheduler client based on gRPC.
@@ -364,6 +368,7 @@ func NewCloudSchedulerClient(ctx context.Context, opts ...option.ClientOption) (
 		connPool:             connPool,
 		cloudSchedulerClient: schedulerpb.NewCloudSchedulerClient(connPool),
 		CallOptions:          &client.CallOptions,
+		logger:               internaloption.GetLogger(opts),
 		locationsClient:      locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -387,7 +392,9 @@ func (c *cloudSchedulerGRPCClient) Connection() *grpc.ClientConn {
 func (c *cloudSchedulerGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -409,6 +416,8 @@ type cloudSchedulerRESTClient struct {
 
 	// Points back to the CallOptions field of the containing CloudSchedulerClient
 	CallOptions **CloudSchedulerCallOptions
+
+	logger *slog.Logger
 }
 
 // NewCloudSchedulerRESTClient creates a new cloud scheduler rest client.
@@ -427,6 +436,7 @@ func NewCloudSchedulerRESTClient(ctx context.Context, opts ...option.ClientOptio
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -436,9 +446,12 @@ func NewCloudSchedulerRESTClient(ctx context.Context, opts ...option.ClientOptio
 func defaultCloudSchedulerRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://cloudscheduler.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://cloudscheduler.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://cloudscheduler.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudscheduler.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -448,7 +461,9 @@ func defaultCloudSchedulerRESTClientOptions() []option.ClientOption {
 func (c *cloudSchedulerRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -485,7 +500,7 @@ func (c *cloudSchedulerGRPCClient) ListJobs(ctx context.Context, req *schedulerp
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudSchedulerClient.ListJobs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudSchedulerClient.ListJobs, req, settings.GRPC, c.logger, "ListJobs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -520,7 +535,7 @@ func (c *cloudSchedulerGRPCClient) GetJob(ctx context.Context, req *schedulerpb.
 	var resp *schedulerpb.Job
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudSchedulerClient.GetJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudSchedulerClient.GetJob, req, settings.GRPC, c.logger, "GetJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -538,7 +553,7 @@ func (c *cloudSchedulerGRPCClient) CreateJob(ctx context.Context, req *scheduler
 	var resp *schedulerpb.Job
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudSchedulerClient.CreateJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudSchedulerClient.CreateJob, req, settings.GRPC, c.logger, "CreateJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -556,7 +571,7 @@ func (c *cloudSchedulerGRPCClient) UpdateJob(ctx context.Context, req *scheduler
 	var resp *schedulerpb.Job
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudSchedulerClient.UpdateJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudSchedulerClient.UpdateJob, req, settings.GRPC, c.logger, "UpdateJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -573,7 +588,7 @@ func (c *cloudSchedulerGRPCClient) DeleteJob(ctx context.Context, req *scheduler
 	opts = append((*c.CallOptions).DeleteJob[0:len((*c.CallOptions).DeleteJob):len((*c.CallOptions).DeleteJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.cloudSchedulerClient.DeleteJob(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.cloudSchedulerClient.DeleteJob, req, settings.GRPC, c.logger, "DeleteJob")
 		return err
 	}, opts...)
 	return err
@@ -588,7 +603,7 @@ func (c *cloudSchedulerGRPCClient) PauseJob(ctx context.Context, req *schedulerp
 	var resp *schedulerpb.Job
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudSchedulerClient.PauseJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudSchedulerClient.PauseJob, req, settings.GRPC, c.logger, "PauseJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -606,7 +621,7 @@ func (c *cloudSchedulerGRPCClient) ResumeJob(ctx context.Context, req *scheduler
 	var resp *schedulerpb.Job
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudSchedulerClient.ResumeJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudSchedulerClient.ResumeJob, req, settings.GRPC, c.logger, "ResumeJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -624,7 +639,7 @@ func (c *cloudSchedulerGRPCClient) RunJob(ctx context.Context, req *schedulerpb.
 	var resp *schedulerpb.Job
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudSchedulerClient.RunJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudSchedulerClient.RunJob, req, settings.GRPC, c.logger, "RunJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -642,7 +657,7 @@ func (c *cloudSchedulerGRPCClient) GetLocation(ctx context.Context, req *locatio
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -671,7 +686,7 @@ func (c *cloudSchedulerGRPCClient) ListLocations(ctx context.Context, req *locat
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -742,21 +757,10 @@ func (c *cloudSchedulerRESTClient) ListJobs(ctx context.Context, req *schedulerp
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListJobs")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -819,17 +823,7 @@ func (c *cloudSchedulerRESTClient) GetJob(ctx context.Context, req *schedulerpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetJob")
 		if err != nil {
 			return err
 		}
@@ -886,17 +880,7 @@ func (c *cloudSchedulerRESTClient) CreateJob(ctx context.Context, req *scheduler
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateJob")
 		if err != nil {
 			return err
 		}
@@ -940,11 +924,11 @@ func (c *cloudSchedulerRESTClient) UpdateJob(ctx context.Context, req *scheduler
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -969,17 +953,7 @@ func (c *cloudSchedulerRESTClient) UpdateJob(ctx context.Context, req *scheduler
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateJob")
 		if err != nil {
 			return err
 		}
@@ -1026,15 +1000,8 @@ func (c *cloudSchedulerRESTClient) DeleteJob(ctx context.Context, req *scheduler
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteJob")
+		return err
 	}, opts...)
 }
 
@@ -1086,17 +1053,7 @@ func (c *cloudSchedulerRESTClient) PauseJob(ctx context.Context, req *schedulerp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PauseJob")
 		if err != nil {
 			return err
 		}
@@ -1160,17 +1117,7 @@ func (c *cloudSchedulerRESTClient) ResumeJob(ctx context.Context, req *scheduler
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ResumeJob")
 		if err != nil {
 			return err
 		}
@@ -1229,17 +1176,7 @@ func (c *cloudSchedulerRESTClient) RunJob(ctx context.Context, req *schedulerpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RunJob")
 		if err != nil {
 			return err
 		}
@@ -1289,17 +1226,7 @@ func (c *cloudSchedulerRESTClient) GetLocation(ctx context.Context, req *locatio
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -1364,21 +1291,10 @@ func (c *cloudSchedulerRESTClient) ListLocations(ctx context.Context, req *locat
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1406,98 +1322,4 @@ func (c *cloudSchedulerRESTClient) ListLocations(ctx context.Context, req *locat
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
-}
-
-// JobIterator manages a stream of *schedulerpb.Job.
-type JobIterator struct {
-	items    []*schedulerpb.Job
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*schedulerpb.Job, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *JobIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *JobIterator) Next() (*schedulerpb.Job, error) {
-	var item *schedulerpb.Job
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *JobIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *JobIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// LocationIterator manages a stream of *locationpb.Location.
-type LocationIterator struct {
-	items    []*locationpb.Location
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *LocationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *LocationIterator) Next() (*locationpb.Location, error) {
-	var item *locationpb.Location
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *LocationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *LocationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

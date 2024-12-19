@@ -377,6 +377,34 @@ func TestSchemaConversion(t *testing.T) {
 			},
 		},
 		{
+			// rounding mode values
+			bqSchema: &bq.TableSchema{
+				Fields: []*bq.TableFieldSchema{
+					{
+						Name:         "num",
+						Type:         "NUMERIC",
+						RoundingMode: "ROUND_HALF_AWAY_FROM_ZERO",
+					},
+					{
+						Name:         "bignum",
+						Type:         "BIGNUMERIC",
+						RoundingMode: "ROUND_HALF_EVEN",
+					},
+				}},
+			schema: Schema{
+				{
+					Name:         "num",
+					Type:         NumericFieldType,
+					RoundingMode: RoundHalfAwayFromZero,
+				},
+				{
+					Name:         "bignum",
+					Type:         BigNumericFieldType,
+					RoundingMode: RoundHalfEven,
+				},
+			},
+		},
+		{
 			// policy tags
 			bqSchema: &bq.TableSchema{
 				Fields: []*bq.TableFieldSchema{
@@ -416,6 +444,29 @@ func TestSchemaConversion(t *testing.T) {
 						},
 					},
 				},
+			},
+		},
+		{
+			// RANGE
+			bqSchema: &bq.TableSchema{
+				Fields: []*bq.TableFieldSchema{
+					func() *bq.TableFieldSchema {
+						f := bqTableFieldSchema("desc", "rt", "RANGE", "", nil)
+						f.RangeElementType = &bq.TableFieldSchemaRangeElementType{
+							Type: "DATE",
+						}
+						return f
+					}(),
+				},
+			},
+			schema: Schema{
+				func() *FieldSchema {
+					f := fieldSchema("desc", "rt", "RANGE", false, false, nil)
+					f.RangeElementType = &RangeElementType{
+						Type: DateFieldType,
+					}
+					return f
+				}(),
 			},
 		},
 	}
@@ -462,10 +513,12 @@ type allBoolean struct {
 }
 
 type allTime struct {
-	Timestamp time.Time
-	Time      civil.Time
-	Date      civil.Date
-	DateTime  civil.DateTime
+	Timestamp    time.Time
+	Time         civil.Time
+	Date         civil.Date
+	DateTime     civil.DateTime
+	Interval     *IntervalValue
+	RangeGeneric *RangeValue
 }
 
 type allNumeric struct {
@@ -486,6 +539,12 @@ func optField(name, typ string) *FieldSchema {
 		Type:     FieldType(typ),
 		Required: false,
 	}
+}
+
+type jsonFields struct {
+	IntMap      map[string]int
+	StructMap   map[string]allTime
+	SliceOfMaps []map[string]int
 }
 
 func TestSimpleInference(t *testing.T) {
@@ -537,6 +596,8 @@ func TestSimpleInference(t *testing.T) {
 				reqField("Time", "TIME"),
 				reqField("Date", "DATE"),
 				reqField("DateTime", "DATETIME"),
+				reqField("Interval", "INTERVAL"),
+				reqField("RangeGeneric", "RANGE"),
 			},
 		},
 		{
@@ -552,15 +613,22 @@ func TestSimpleInference(t *testing.T) {
 				reqField("ByteSlice", "BYTES"),
 			},
 		},
+		{
+			in: jsonFields{},
+			want: Schema{
+				reqField("IntMap", "JSON"),
+				reqField("StructMap", "JSON"),
+				repField("SliceOfMaps", "JSON"),
+			},
+		},
 	}
 	for _, tc := range testCases {
 		got, err := InferSchema(tc.in)
 		if err != nil {
 			t.Fatalf("%T: error inferring TableSchema: %v", tc.in, err)
 		}
-		if !testutil.Equal(got, tc.want) {
-			t.Errorf("%T: inferring TableSchema: got:\n%#v\nwant:\n%#v", tc.in,
-				pretty.Value(got), pretty.Value(tc.want))
+		if d := testutil.Diff(got, tc.want); d != "" {
+			t.Errorf("%T: inferring TableSchema: %s", tc.in, d)
 		}
 	}
 }
@@ -810,12 +878,14 @@ func TestRecursiveInference(t *testing.T) {
 
 type withTags struct {
 	NoTag         int
-	ExcludeTag    int      `bigquery:"-"`
-	SimpleTag     int      `bigquery:"simple_tag"`
-	UnderscoreTag int      `bigquery:"_id"`
-	MixedCase     int      `bigquery:"MIXEDcase"`
-	Nullable      []byte   `bigquery:",nullable"`
-	NullNumeric   *big.Rat `bigquery:",nullable"`
+	ExcludeTag    int              `bigquery:"-"`
+	SimpleTag     int              `bigquery:"simple_tag"`
+	UnderscoreTag int              `bigquery:"_id"`
+	MixedCase     int              `bigquery:"MIXEDcase"`
+	Nullable      []byte           `bigquery:",nullable"`
+	NullNumeric   *big.Rat         `bigquery:",nullable"`
+	JSON          struct{ X int }  `bigquery:",json"`
+	JSONPtr       *struct{ X int } `bigquery:",json"`
 }
 
 type withTagsNested struct {
@@ -847,6 +917,8 @@ var withTagsSchema = Schema{
 	reqField("MIXEDcase", "INTEGER"),
 	optField("Nullable", "BYTES"),
 	optField("NullNumeric", "NUMERIC"),
+	reqField("JSON", "JSON"),
+	reqField("JSONPtr", "JSON"),
 }
 
 func TestTagInference(t *testing.T) {
@@ -988,10 +1060,6 @@ func TestSchemaErrors(t *testing.T) {
 			want: unsupportedFieldTypeError{},
 		},
 		{
-			in:   struct{ Map map[string]int }{},
-			want: unsupportedFieldTypeError{},
-		},
-		{
 			in:   struct{ Chan chan bool }{},
 			want: unsupportedFieldTypeError{},
 		},
@@ -1052,6 +1120,12 @@ func TestSchemaErrors(t *testing.T) {
 			want: badNullableError{},
 		},
 		{
+			in: struct {
+				X int `bigquery:",json"`
+			}{},
+			want: badJSONError{},
+		},
+		{
 			in:   struct{ X *[]byte }{},
 			want: unsupportedFieldTypeError{},
 		},
@@ -1061,6 +1135,10 @@ func TestSchemaErrors(t *testing.T) {
 		},
 		{
 			in:   struct{ X *int }{},
+			want: unsupportedFieldTypeError{},
+		},
+		{
+			in:   struct{ X map[struct{}]interface{} }{},
 			want: unsupportedFieldTypeError{},
 		},
 	}

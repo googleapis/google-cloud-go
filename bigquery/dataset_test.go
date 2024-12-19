@@ -327,8 +327,13 @@ func TestDatasetToBQ(t *testing.T) {
 			DefaultEncryptionConfig: &EncryptionConfig{
 				KMSKeyName: "some_key",
 			},
-			Location: "EU",
-			Labels:   map[string]string{"x": "y"},
+			ExternalDatasetReference: &ExternalDatasetReference{
+				Connection:     "conn",
+				ExternalSource: "external_src",
+			},
+			Location:          "EU",
+			Labels:            map[string]string{"x": "y"},
+			IsCaseInsensitive: true,
 			Access: []*AccessEntry{
 				{Role: OwnerRole, Entity: "example.com", EntityType: DomainEntity},
 				{
@@ -348,8 +353,13 @@ func TestDatasetToBQ(t *testing.T) {
 			DefaultEncryptionConfiguration: &bq.EncryptionConfiguration{
 				KmsKeyName: "some_key",
 			},
-			Location: "EU",
-			Labels:   map[string]string{"x": "y"},
+			ExternalDatasetReference: &bq.ExternalDatasetReference{
+				Connection:     "conn",
+				ExternalSource: "external_src",
+			},
+			Location:          "EU",
+			Labels:            map[string]string{"x": "y"},
+			IsCaseInsensitive: true,
 			Access: []*bq.DatasetAccess{
 				{Role: "OWNER", Domain: "example.com"},
 				{
@@ -404,10 +414,24 @@ func TestBQToDatasetMetadata(t *testing.T) {
 		DefaultEncryptionConfiguration: &bq.EncryptionConfiguration{
 			KmsKeyName: "some_key",
 		},
-		Location: "EU",
-		Labels:   map[string]string{"x": "y"},
+		ExternalDatasetReference: &bq.ExternalDatasetReference{
+			Connection:     "conn",
+			ExternalSource: "external_src",
+		},
+		Location:          "EU",
+		Labels:            map[string]string{"x": "y"},
+		IsCaseInsensitive: true,
 		Access: []*bq.DatasetAccess{
 			{Role: "READER", UserByEmail: "joe@example.com"},
+			{Role: "READER",
+				UserByEmail: "jane@example.com",
+				Condition: &bq.Expr{
+					Description: "desc",
+					Expression:  "expr",
+					Location:    "loc",
+					Title:       "title",
+				},
+			},
 			{Role: "WRITER", GroupByEmail: "users@example.com"},
 			{
 				Dataset: &bq.DatasetAccessEntry{
@@ -436,11 +460,29 @@ func TestBQToDatasetMetadata(t *testing.T) {
 		DefaultEncryptionConfig: &EncryptionConfig{
 			KMSKeyName: "some_key",
 		},
+		ExternalDatasetReference: &ExternalDatasetReference{
+			Connection:     "conn",
+			ExternalSource: "external_src",
+		},
 		StorageBillingModel: LogicalStorageBillingModel,
 		Location:            "EU",
 		Labels:              map[string]string{"x": "y"},
+		IsCaseInsensitive:   true,
 		Access: []*AccessEntry{
-			{Role: ReaderRole, Entity: "joe@example.com", EntityType: UserEmailEntity},
+			{Role: ReaderRole,
+				Entity:     "joe@example.com",
+				EntityType: UserEmailEntity,
+			},
+			{Role: ReaderRole,
+				Entity:     "jane@example.com",
+				EntityType: UserEmailEntity,
+				Condition: &Expr{
+					Title:       "title",
+					Expression:  "expr",
+					Location:    "loc",
+					Description: "desc",
+				},
+			},
 			{Role: WriterRole, Entity: "users@example.com", EntityType: GroupEmailEntity},
 			{
 				EntityType: DatasetEntity,
@@ -471,10 +513,15 @@ func TestDatasetMetadataToUpdateToBQ(t *testing.T) {
 		Name:                       "name",
 		DefaultTableExpiration:     time.Hour,
 		DefaultPartitionExpiration: 24 * time.Hour,
+		IsCaseInsensitive:          true,
 		MaxTimeTravel:              time.Duration(181 * time.Minute),
 		StorageBillingModel:        PhysicalStorageBillingModel,
 		DefaultEncryptionConfig: &EncryptionConfig{
 			KMSKeyName: "some_key",
+		},
+		ExternalDatasetReference: &ExternalDatasetReference{
+			Connection:     "conn",
+			ExternalSource: "external_src",
 		},
 	}
 	dm.SetLabel("label", "value")
@@ -495,9 +542,14 @@ func TestDatasetMetadataToUpdateToBQ(t *testing.T) {
 			KmsKeyName:      "some_key",
 			ForceSendFields: []string{"KmsKeyName"},
 		},
-		Labels:          map[string]string{"label": "value"},
-		ForceSendFields: []string{"Description", "FriendlyName", "StorageBillingModel"},
-		NullFields:      []string{"Labels.del"},
+		ExternalDatasetReference: &bq.ExternalDatasetReference{
+			Connection:     "conn",
+			ExternalSource: "external_src",
+		},
+		Labels:            map[string]string{"label": "value"},
+		IsCaseInsensitive: true,
+		ForceSendFields:   []string{"Description", "FriendlyName", "ExternalDatasetReference", "StorageBillingModel", "IsCaseInsensitive"},
+		NullFields:        []string{"Labels.del"},
 	}
 	if diff := testutil.Diff(got, want); diff != "" {
 		t.Errorf("-got, +want:\n%s", diff)
@@ -512,6 +564,12 @@ func TestConvertAccessEntry(t *testing.T) {
 		{Role: OwnerRole, Entity: "e", EntityType: UserEmailEntity},
 		{Role: ReaderRole, Entity: "e", EntityType: SpecialGroupEntity},
 		{Role: ReaderRole, Entity: "e", EntityType: IAMMemberEntity},
+		{Role: WriterRole, Entity: "e", EntityType: IAMMemberEntity,
+			Condition: &Expr{Expression: "expr",
+				Title:       "title",
+				Location:    "loc",
+				Description: "desc",
+			}},
 		{Role: ReaderRole, EntityType: ViewEntity,
 			View: &Table{ProjectID: "p", DatasetID: "d", TableID: "t", c: c}},
 		{Role: ReaderRole, EntityType: RoutineEntity,

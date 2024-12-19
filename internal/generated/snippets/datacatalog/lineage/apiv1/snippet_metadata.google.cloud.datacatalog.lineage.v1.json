@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/datacatalog/lineage/apiv1",
-    "version": "1.17.0",
+    "version": "1.24.0",
     "language": "GO",
     "apis": [
       {
@@ -52,7 +52,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -647,7 +647,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -693,7 +693,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -739,7 +739,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -785,7 +785,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datalineage_v1_generated_Lineage_ProcessOpenLineageRunEvent_sync",
+      "title": "datalineage ProcessOpenLineageRunEvent Sample",
+      "description": "ProcessOpenLineageRunEvent creates new lineage events together with their parents: process and run.\nUpdates the process and run if they already exist.\nMapped from Open Lineage specification: \nhttps: //github.com/OpenLineage/OpenLineage/blob/main/spec/OpenLineage.json.",
+      "file": "Client/ProcessOpenLineageRunEvent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ProcessOpenLineageRunEvent",
+        "fullName": "google.cloud.datacatalog.lineage.v1.Client.ProcessOpenLineageRunEvent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "lineagepb.ProcessOpenLineageRunEventRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*lineagepb.ProcessOpenLineageRunEventResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datacatalog.lineage.v1.Client"
+        },
+        "method": {
+          "shortName": "ProcessOpenLineageRunEvent",
+          "fullName": "google.cloud.datacatalog.lineage.v1.Lineage.ProcessOpenLineageRunEvent",
+          "service": {
+            "shortName": "Lineage",
+            "fullName": "google.cloud.datacatalog.lineage.v1.Lineage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -831,7 +877,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]

@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -91,6 +90,7 @@ type CloudChannelCallOptions struct {
 	ListOffers                          []gax.CallOption
 	ListPurchasableSkus                 []gax.CallOption
 	ListPurchasableOffers               []gax.CallOption
+	QueryEligibleBillingAccounts        []gax.CallOption
 	RegisterSubscriber                  []gax.CallOption
 	UnregisterSubscriber                []gax.CallOption
 	ListSubscribers                     []gax.CallOption
@@ -104,10 +104,13 @@ type CloudChannelCallOptions struct {
 func defaultCloudChannelGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("cloudchannel.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("cloudchannel.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("cloudchannel.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudchannel.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -533,6 +536,18 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		ListPurchasableOffers: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		QueryEligibleBillingAccounts: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -997,6 +1012,17 @@ func defaultCloudChannelRESTCallOptions() *CloudChannelCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		QueryEligibleBillingAccounts: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		RegisterSubscriber: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -1108,6 +1134,7 @@ type internalCloudChannelClient interface {
 	ListOffers(context.Context, *channelpb.ListOffersRequest, ...gax.CallOption) *OfferIterator
 	ListPurchasableSkus(context.Context, *channelpb.ListPurchasableSkusRequest, ...gax.CallOption) *PurchasableSkuIterator
 	ListPurchasableOffers(context.Context, *channelpb.ListPurchasableOffersRequest, ...gax.CallOption) *PurchasableOfferIterator
+	QueryEligibleBillingAccounts(context.Context, *channelpb.QueryEligibleBillingAccountsRequest, ...gax.CallOption) (*channelpb.QueryEligibleBillingAccountsResponse, error)
 	RegisterSubscriber(context.Context, *channelpb.RegisterSubscriberRequest, ...gax.CallOption) (*channelpb.RegisterSubscriberResponse, error)
 	UnregisterSubscriber(context.Context, *channelpb.UnregisterSubscriberRequest, ...gax.CallOption) (*channelpb.UnregisterSubscriberResponse, error)
 	ListSubscribers(context.Context, *channelpb.ListSubscribersRequest, ...gax.CallOption) *StringIterator
@@ -1246,8 +1273,13 @@ func (c *CloudChannelClient) CheckCloudIdentityAccountsExist(ctx context.Context
 //
 // Possible error codes:
 //
-//	PERMISSION_DENIED: The reseller account making the request is different
-//	from the reseller account in the API request.
+//	PERMISSION_DENIED:
+//
+//	  The reseller account making the request is different from the
+//	  reseller account in the API request.
+//
+//	  You are not authorized to create a customer. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
 //
 //	INVALID_ARGUMENT:
 //
@@ -1304,8 +1336,13 @@ func (c *CloudChannelClient) DeleteCustomer(ctx context.Context, req *channelpb.
 //
 // Possible error codes:
 //
-//	PERMISSION_DENIED: The reseller account making the request is different
-//	from the reseller account in the API request.
+//	PERMISSION_DENIED:
+//
+//	  The reseller account making the request is different from the
+//	  reseller account in the API request.
+//
+//	  You are not authorized to import the customer. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
 //
 //	NOT_FOUND: Cloud Identity doesn’t exist or was deleted.
 //
@@ -1326,7 +1363,12 @@ func (c *CloudChannelClient) ImportCustomer(ctx context.Context, req *channelpb.
 //
 // Possible error codes:
 //
-//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//	PERMISSION_DENIED:
+//
+//	  The customer doesn’t belong to the reseller.
+//
+//	  You are not authorized to provision cloud identity id. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
 //
 //	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
@@ -1419,6 +1461,9 @@ func (c *CloudChannelClient) ListTransferableSkus(ctx context.Context, req *chan
 //	  The reseller account making the request is different
 //	  from the reseller account in the query.
 //
+//	  The reseller is not authorized to transact on this Product. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
+//
 //	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
 // Return value:
@@ -1449,7 +1494,12 @@ func (c *CloudChannelClient) GetEntitlement(ctx context.Context, req *channelpb.
 //
 // Possible error codes:
 //
-//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//	PERMISSION_DENIED:
+//
+//	  The customer doesn’t belong to the reseller.
+//
+//	  The reseller is not authorized to transact on this Product. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
 //
 //	INVALID_ARGUMENT:
 //
@@ -1781,7 +1831,12 @@ func (c *CloudChannelClient) ActivateEntitlementOperation(name string) *Activate
 //
 // Possible error codes:
 //
-//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//	PERMISSION_DENIED:
+//
+//	  The customer doesn’t belong to the reseller.
+//
+//	  The reseller is not authorized to transact on this Product. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
 //
 //	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
@@ -2057,13 +2112,13 @@ func (c *CloudChannelClient) ListCustomerRepricingConfigs(ctx context.Context, r
 //	Changes to the config may be immediate, but may take up to 24 hours.
 //
 //	There is a limit of ten configs for any
-//	RepricingConfig.EntitlementGranularity.entitlement
-//	or
+//	RepricingConfig.EntitlementGranularity.entitlement,
+//	for any
 //	RepricingConfig.effective_invoice_month.
 //
 //	The contained
 //	CustomerRepricingConfig.repricing_config
-//	vaule must be different from the value used in the current config for a
+//	value must be different from the value used in the current config for a
 //	RepricingConfig.EntitlementGranularity.entitlement.
 //
 // Possible Error Codes:
@@ -2228,11 +2283,13 @@ func (c *CloudChannelClient) ListChannelPartnerRepricingConfigs(ctx context.Cont
 //	Changes to the config may be immediate, but may take up to 24 hours.
 //
 //	There is a limit of ten configs for any ChannelPartner or
+//	RepricingConfig.EntitlementGranularity.entitlement,
+//	for any
 //	RepricingConfig.effective_invoice_month.
 //
 //	The contained
 //	ChannelPartnerRepricingConfig.repricing_config
-//	vaule must be different from the value used in the current config for a
+//	value must be different from the value used in the current config for a
 //	ChannelPartner.
 //
 // Possible Error Codes:
@@ -2436,11 +2493,33 @@ func (c *CloudChannelClient) ListPurchasableSkus(ctx context.Context, req *chann
 //
 // Possible error codes:
 //
-//	PERMISSION_DENIED: The customer doesn’t belong to the reseller
+//	PERMISSION_DENIED:
+//
+//	  The customer doesn’t belong to the reseller
+//
+//	  The reseller is not authorized to transact on this Product. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
 //
 //	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 func (c *CloudChannelClient) ListPurchasableOffers(ctx context.Context, req *channelpb.ListPurchasableOffersRequest, opts ...gax.CallOption) *PurchasableOfferIterator {
 	return c.internalClient.ListPurchasableOffers(ctx, req, opts...)
+}
+
+// QueryEligibleBillingAccounts lists the billing accounts that are eligible to purchase particular SKUs
+// for a given customer.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//
+// Return value:
+// Based on the provided list of SKUs, returns a list of SKU groups that must
+// be purchased using the same billing account and the billing accounts
+// eligible to purchase each SKU group.
+func (c *CloudChannelClient) QueryEligibleBillingAccounts(ctx context.Context, req *channelpb.QueryEligibleBillingAccountsRequest, opts ...gax.CallOption) (*channelpb.QueryEligibleBillingAccountsResponse, error) {
+	return c.internalClient.QueryEligibleBillingAccounts(ctx, req, opts...)
 }
 
 // RegisterSubscriber registers a service account with subscriber privileges on the Cloud Pub/Sub
@@ -2588,6 +2667,8 @@ type cloudChannelGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewCloudChannelClient creates a new cloud channel service client based on gRPC.
@@ -2637,6 +2718,7 @@ func NewCloudChannelClient(ctx context.Context, opts ...option.ClientOption) (*C
 		connPool:           connPool,
 		cloudChannelClient: channelpb.NewCloudChannelServiceClient(connPool),
 		CallOptions:        &client.CallOptions,
+		logger:             internaloption.GetLogger(opts),
 		operationsClient:   longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -2671,7 +2753,9 @@ func (c *cloudChannelGRPCClient) Connection() *grpc.ClientConn {
 func (c *cloudChannelGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -2698,6 +2782,8 @@ type cloudChannelRESTClient struct {
 
 	// Points back to the CallOptions field of the containing CloudChannelClient
 	CallOptions **CloudChannelCallOptions
+
+	logger *slog.Logger
 }
 
 // NewCloudChannelRESTClient creates a new cloud channel service rest client.
@@ -2738,6 +2824,7 @@ func NewCloudChannelRESTClient(ctx context.Context, opts ...option.ClientOption)
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -2757,9 +2844,12 @@ func NewCloudChannelRESTClient(ctx context.Context, opts ...option.ClientOption)
 func defaultCloudChannelRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://cloudchannel.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://cloudchannel.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://cloudchannel.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudchannel.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -2769,7 +2859,9 @@ func defaultCloudChannelRESTClientOptions() []option.ClientOption {
 func (c *cloudChannelRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -2806,7 +2898,7 @@ func (c *cloudChannelGRPCClient) ListCustomers(ctx context.Context, req *channel
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudChannelClient.ListCustomers(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudChannelClient.ListCustomers, req, settings.GRPC, c.logger, "ListCustomers")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2841,7 +2933,7 @@ func (c *cloudChannelGRPCClient) GetCustomer(ctx context.Context, req *channelpb
 	var resp *channelpb.Customer
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.GetCustomer(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.GetCustomer, req, settings.GRPC, c.logger, "GetCustomer")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2859,7 +2951,7 @@ func (c *cloudChannelGRPCClient) CheckCloudIdentityAccountsExist(ctx context.Con
 	var resp *channelpb.CheckCloudIdentityAccountsExistResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.CheckCloudIdentityAccountsExist(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.CheckCloudIdentityAccountsExist, req, settings.GRPC, c.logger, "CheckCloudIdentityAccountsExist")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2877,7 +2969,7 @@ func (c *cloudChannelGRPCClient) CreateCustomer(ctx context.Context, req *channe
 	var resp *channelpb.Customer
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.CreateCustomer(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.CreateCustomer, req, settings.GRPC, c.logger, "CreateCustomer")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2895,7 +2987,7 @@ func (c *cloudChannelGRPCClient) UpdateCustomer(ctx context.Context, req *channe
 	var resp *channelpb.Customer
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.UpdateCustomer(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.UpdateCustomer, req, settings.GRPC, c.logger, "UpdateCustomer")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2912,7 +3004,7 @@ func (c *cloudChannelGRPCClient) DeleteCustomer(ctx context.Context, req *channe
 	opts = append((*c.CallOptions).DeleteCustomer[0:len((*c.CallOptions).DeleteCustomer):len((*c.CallOptions).DeleteCustomer)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.cloudChannelClient.DeleteCustomer(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.cloudChannelClient.DeleteCustomer, req, settings.GRPC, c.logger, "DeleteCustomer")
 		return err
 	}, opts...)
 	return err
@@ -2927,7 +3019,7 @@ func (c *cloudChannelGRPCClient) ImportCustomer(ctx context.Context, req *channe
 	var resp *channelpb.Customer
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.ImportCustomer(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.ImportCustomer, req, settings.GRPC, c.logger, "ImportCustomer")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2945,7 +3037,7 @@ func (c *cloudChannelGRPCClient) ProvisionCloudIdentity(ctx context.Context, req
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.ProvisionCloudIdentity(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.ProvisionCloudIdentity, req, settings.GRPC, c.logger, "ProvisionCloudIdentity")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2976,7 +3068,7 @@ func (c *cloudChannelGRPCClient) ListEntitlements(ctx context.Context, req *chan
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudChannelClient.ListEntitlements(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudChannelClient.ListEntitlements, req, settings.GRPC, c.logger, "ListEntitlements")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3022,7 +3114,7 @@ func (c *cloudChannelGRPCClient) ListTransferableSkus(ctx context.Context, req *
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudChannelClient.ListTransferableSkus(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudChannelClient.ListTransferableSkus, req, settings.GRPC, c.logger, "ListTransferableSkus")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3068,7 +3160,7 @@ func (c *cloudChannelGRPCClient) ListTransferableOffers(ctx context.Context, req
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudChannelClient.ListTransferableOffers(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudChannelClient.ListTransferableOffers, req, settings.GRPC, c.logger, "ListTransferableOffers")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3103,7 +3195,7 @@ func (c *cloudChannelGRPCClient) GetEntitlement(ctx context.Context, req *channe
 	var resp *channelpb.Entitlement
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.GetEntitlement(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.GetEntitlement, req, settings.GRPC, c.logger, "GetEntitlement")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3121,7 +3213,7 @@ func (c *cloudChannelGRPCClient) CreateEntitlement(ctx context.Context, req *cha
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.CreateEntitlement(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.CreateEntitlement, req, settings.GRPC, c.logger, "CreateEntitlement")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3141,7 +3233,7 @@ func (c *cloudChannelGRPCClient) ChangeParameters(ctx context.Context, req *chan
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.ChangeParameters(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.ChangeParameters, req, settings.GRPC, c.logger, "ChangeParameters")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3161,7 +3253,7 @@ func (c *cloudChannelGRPCClient) ChangeRenewalSettings(ctx context.Context, req 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.ChangeRenewalSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.ChangeRenewalSettings, req, settings.GRPC, c.logger, "ChangeRenewalSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3181,7 +3273,7 @@ func (c *cloudChannelGRPCClient) ChangeOffer(ctx context.Context, req *channelpb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.ChangeOffer(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.ChangeOffer, req, settings.GRPC, c.logger, "ChangeOffer")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3201,7 +3293,7 @@ func (c *cloudChannelGRPCClient) StartPaidService(ctx context.Context, req *chan
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.StartPaidService(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.StartPaidService, req, settings.GRPC, c.logger, "StartPaidService")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3221,7 +3313,7 @@ func (c *cloudChannelGRPCClient) SuspendEntitlement(ctx context.Context, req *ch
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.SuspendEntitlement(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.SuspendEntitlement, req, settings.GRPC, c.logger, "SuspendEntitlement")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3241,7 +3333,7 @@ func (c *cloudChannelGRPCClient) CancelEntitlement(ctx context.Context, req *cha
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.CancelEntitlement(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.CancelEntitlement, req, settings.GRPC, c.logger, "CancelEntitlement")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3261,7 +3353,7 @@ func (c *cloudChannelGRPCClient) ActivateEntitlement(ctx context.Context, req *c
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.ActivateEntitlement(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.ActivateEntitlement, req, settings.GRPC, c.logger, "ActivateEntitlement")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3281,7 +3373,7 @@ func (c *cloudChannelGRPCClient) TransferEntitlements(ctx context.Context, req *
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.TransferEntitlements(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.TransferEntitlements, req, settings.GRPC, c.logger, "TransferEntitlements")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3301,7 +3393,7 @@ func (c *cloudChannelGRPCClient) TransferEntitlementsToGoogle(ctx context.Contex
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.TransferEntitlementsToGoogle(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.TransferEntitlementsToGoogle, req, settings.GRPC, c.logger, "TransferEntitlementsToGoogle")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3332,7 +3424,7 @@ func (c *cloudChannelGRPCClient) ListChannelPartnerLinks(ctx context.Context, re
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudChannelClient.ListChannelPartnerLinks(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudChannelClient.ListChannelPartnerLinks, req, settings.GRPC, c.logger, "ListChannelPartnerLinks")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3367,7 +3459,7 @@ func (c *cloudChannelGRPCClient) GetChannelPartnerLink(ctx context.Context, req 
 	var resp *channelpb.ChannelPartnerLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.GetChannelPartnerLink(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.GetChannelPartnerLink, req, settings.GRPC, c.logger, "GetChannelPartnerLink")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3385,7 +3477,7 @@ func (c *cloudChannelGRPCClient) CreateChannelPartnerLink(ctx context.Context, r
 	var resp *channelpb.ChannelPartnerLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.CreateChannelPartnerLink(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.CreateChannelPartnerLink, req, settings.GRPC, c.logger, "CreateChannelPartnerLink")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3403,7 +3495,7 @@ func (c *cloudChannelGRPCClient) UpdateChannelPartnerLink(ctx context.Context, r
 	var resp *channelpb.ChannelPartnerLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.UpdateChannelPartnerLink(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.UpdateChannelPartnerLink, req, settings.GRPC, c.logger, "UpdateChannelPartnerLink")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3421,7 +3513,7 @@ func (c *cloudChannelGRPCClient) GetCustomerRepricingConfig(ctx context.Context,
 	var resp *channelpb.CustomerRepricingConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.GetCustomerRepricingConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.GetCustomerRepricingConfig, req, settings.GRPC, c.logger, "GetCustomerRepricingConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3450,7 +3542,7 @@ func (c *cloudChannelGRPCClient) ListCustomerRepricingConfigs(ctx context.Contex
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudChannelClient.ListCustomerRepricingConfigs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudChannelClient.ListCustomerRepricingConfigs, req, settings.GRPC, c.logger, "ListCustomerRepricingConfigs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3485,7 +3577,7 @@ func (c *cloudChannelGRPCClient) CreateCustomerRepricingConfig(ctx context.Conte
 	var resp *channelpb.CustomerRepricingConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.CreateCustomerRepricingConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.CreateCustomerRepricingConfig, req, settings.GRPC, c.logger, "CreateCustomerRepricingConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3503,7 +3595,7 @@ func (c *cloudChannelGRPCClient) UpdateCustomerRepricingConfig(ctx context.Conte
 	var resp *channelpb.CustomerRepricingConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.UpdateCustomerRepricingConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.UpdateCustomerRepricingConfig, req, settings.GRPC, c.logger, "UpdateCustomerRepricingConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3520,7 +3612,7 @@ func (c *cloudChannelGRPCClient) DeleteCustomerRepricingConfig(ctx context.Conte
 	opts = append((*c.CallOptions).DeleteCustomerRepricingConfig[0:len((*c.CallOptions).DeleteCustomerRepricingConfig):len((*c.CallOptions).DeleteCustomerRepricingConfig)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.cloudChannelClient.DeleteCustomerRepricingConfig(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.cloudChannelClient.DeleteCustomerRepricingConfig, req, settings.GRPC, c.logger, "DeleteCustomerRepricingConfig")
 		return err
 	}, opts...)
 	return err
@@ -3535,7 +3627,7 @@ func (c *cloudChannelGRPCClient) GetChannelPartnerRepricingConfig(ctx context.Co
 	var resp *channelpb.ChannelPartnerRepricingConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.GetChannelPartnerRepricingConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.GetChannelPartnerRepricingConfig, req, settings.GRPC, c.logger, "GetChannelPartnerRepricingConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3564,7 +3656,7 @@ func (c *cloudChannelGRPCClient) ListChannelPartnerRepricingConfigs(ctx context.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudChannelClient.ListChannelPartnerRepricingConfigs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudChannelClient.ListChannelPartnerRepricingConfigs, req, settings.GRPC, c.logger, "ListChannelPartnerRepricingConfigs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3599,7 +3691,7 @@ func (c *cloudChannelGRPCClient) CreateChannelPartnerRepricingConfig(ctx context
 	var resp *channelpb.ChannelPartnerRepricingConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.CreateChannelPartnerRepricingConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.CreateChannelPartnerRepricingConfig, req, settings.GRPC, c.logger, "CreateChannelPartnerRepricingConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3617,7 +3709,7 @@ func (c *cloudChannelGRPCClient) UpdateChannelPartnerRepricingConfig(ctx context
 	var resp *channelpb.ChannelPartnerRepricingConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.UpdateChannelPartnerRepricingConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.UpdateChannelPartnerRepricingConfig, req, settings.GRPC, c.logger, "UpdateChannelPartnerRepricingConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3634,7 +3726,7 @@ func (c *cloudChannelGRPCClient) DeleteChannelPartnerRepricingConfig(ctx context
 	opts = append((*c.CallOptions).DeleteChannelPartnerRepricingConfig[0:len((*c.CallOptions).DeleteChannelPartnerRepricingConfig):len((*c.CallOptions).DeleteChannelPartnerRepricingConfig)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.cloudChannelClient.DeleteChannelPartnerRepricingConfig(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.cloudChannelClient.DeleteChannelPartnerRepricingConfig, req, settings.GRPC, c.logger, "DeleteChannelPartnerRepricingConfig")
 		return err
 	}, opts...)
 	return err
@@ -3660,7 +3752,7 @@ func (c *cloudChannelGRPCClient) ListSkuGroups(ctx context.Context, req *channel
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudChannelClient.ListSkuGroups(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudChannelClient.ListSkuGroups, req, settings.GRPC, c.logger, "ListSkuGroups")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3706,7 +3798,7 @@ func (c *cloudChannelGRPCClient) ListSkuGroupBillableSkus(ctx context.Context, r
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudChannelClient.ListSkuGroupBillableSkus(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudChannelClient.ListSkuGroupBillableSkus, req, settings.GRPC, c.logger, "ListSkuGroupBillableSkus")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3741,7 +3833,7 @@ func (c *cloudChannelGRPCClient) LookupOffer(ctx context.Context, req *channelpb
 	var resp *channelpb.Offer
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.LookupOffer(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.LookupOffer, req, settings.GRPC, c.logger, "LookupOffer")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3767,7 +3859,7 @@ func (c *cloudChannelGRPCClient) ListProducts(ctx context.Context, req *channelp
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudChannelClient.ListProducts(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudChannelClient.ListProducts, req, settings.GRPC, c.logger, "ListProducts")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3813,7 +3905,7 @@ func (c *cloudChannelGRPCClient) ListSkus(ctx context.Context, req *channelpb.Li
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudChannelClient.ListSkus(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudChannelClient.ListSkus, req, settings.GRPC, c.logger, "ListSkus")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3859,7 +3951,7 @@ func (c *cloudChannelGRPCClient) ListOffers(ctx context.Context, req *channelpb.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudChannelClient.ListOffers(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudChannelClient.ListOffers, req, settings.GRPC, c.logger, "ListOffers")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3905,7 +3997,7 @@ func (c *cloudChannelGRPCClient) ListPurchasableSkus(ctx context.Context, req *c
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudChannelClient.ListPurchasableSkus(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudChannelClient.ListPurchasableSkus, req, settings.GRPC, c.logger, "ListPurchasableSkus")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3951,7 +4043,7 @@ func (c *cloudChannelGRPCClient) ListPurchasableOffers(ctx context.Context, req 
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudChannelClient.ListPurchasableOffers(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudChannelClient.ListPurchasableOffers, req, settings.GRPC, c.logger, "ListPurchasableOffers")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3977,6 +4069,24 @@ func (c *cloudChannelGRPCClient) ListPurchasableOffers(ctx context.Context, req 
 	return it
 }
 
+func (c *cloudChannelGRPCClient) QueryEligibleBillingAccounts(ctx context.Context, req *channelpb.QueryEligibleBillingAccountsRequest, opts ...gax.CallOption) (*channelpb.QueryEligibleBillingAccountsResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "customer", url.QueryEscape(req.GetCustomer()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).QueryEligibleBillingAccounts[0:len((*c.CallOptions).QueryEligibleBillingAccounts):len((*c.CallOptions).QueryEligibleBillingAccounts)], opts...)
+	var resp *channelpb.QueryEligibleBillingAccountsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.cloudChannelClient.QueryEligibleBillingAccounts, req, settings.GRPC, c.logger, "QueryEligibleBillingAccounts")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *cloudChannelGRPCClient) RegisterSubscriber(ctx context.Context, req *channelpb.RegisterSubscriberRequest, opts ...gax.CallOption) (*channelpb.RegisterSubscriberResponse, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "account", url.QueryEscape(req.GetAccount()))}
 
@@ -3986,7 +4096,7 @@ func (c *cloudChannelGRPCClient) RegisterSubscriber(ctx context.Context, req *ch
 	var resp *channelpb.RegisterSubscriberResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.RegisterSubscriber(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.RegisterSubscriber, req, settings.GRPC, c.logger, "RegisterSubscriber")
 		return err
 	}, opts...)
 	if err != nil {
@@ -4004,7 +4114,7 @@ func (c *cloudChannelGRPCClient) UnregisterSubscriber(ctx context.Context, req *
 	var resp *channelpb.UnregisterSubscriberResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudChannelClient.UnregisterSubscriber(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudChannelClient.UnregisterSubscriber, req, settings.GRPC, c.logger, "UnregisterSubscriber")
 		return err
 	}, opts...)
 	if err != nil {
@@ -4033,7 +4143,7 @@ func (c *cloudChannelGRPCClient) ListSubscribers(ctx context.Context, req *chann
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudChannelClient.ListSubscribers(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudChannelClient.ListSubscribers, req, settings.GRPC, c.logger, "ListSubscribers")
 			return err
 		}, opts...)
 		if err != nil {
@@ -4079,7 +4189,7 @@ func (c *cloudChannelGRPCClient) ListEntitlementChanges(ctx context.Context, req
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudChannelClient.ListEntitlementChanges(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudChannelClient.ListEntitlementChanges, req, settings.GRPC, c.logger, "ListEntitlementChanges")
 			return err
 		}, opts...)
 		if err != nil {
@@ -4113,7 +4223,7 @@ func (c *cloudChannelGRPCClient) CancelOperation(ctx context.Context, req *longr
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -4127,7 +4237,7 @@ func (c *cloudChannelGRPCClient) DeleteOperation(ctx context.Context, req *longr
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -4142,7 +4252,7 @@ func (c *cloudChannelGRPCClient) GetOperation(ctx context.Context, req *longrunn
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -4171,7 +4281,7 @@ func (c *cloudChannelGRPCClient) ListOperations(ctx context.Context, req *longru
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -4256,21 +4366,10 @@ func (c *cloudChannelRESTClient) ListCustomers(ctx context.Context, req *channel
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListCustomers")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4347,17 +4446,7 @@ func (c *cloudChannelRESTClient) GetCustomer(ctx context.Context, req *channelpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCustomer")
 		if err != nil {
 			return err
 		}
@@ -4433,17 +4522,7 @@ func (c *cloudChannelRESTClient) CheckCloudIdentityAccountsExist(ctx context.Con
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CheckCloudIdentityAccountsExist")
 		if err != nil {
 			return err
 		}
@@ -4465,8 +4544,13 @@ func (c *cloudChannelRESTClient) CheckCloudIdentityAccountsExist(ctx context.Con
 //
 // Possible error codes:
 //
-//	PERMISSION_DENIED: The reseller account making the request is different
-//	from the reseller account in the API request.
+//	PERMISSION_DENIED:
+//
+//	  The reseller account making the request is different from the
+//	  reseller account in the API request.
+//
+//	  You are not authorized to create a customer. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
 //
 //	INVALID_ARGUMENT:
 //
@@ -4515,17 +4599,7 @@ func (c *cloudChannelRESTClient) CreateCustomer(ctx context.Context, req *channe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateCustomer")
 		if err != nil {
 			return err
 		}
@@ -4574,11 +4648,11 @@ func (c *cloudChannelRESTClient) UpdateCustomer(ctx context.Context, req *channe
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4603,17 +4677,7 @@ func (c *cloudChannelRESTClient) UpdateCustomer(ctx context.Context, req *channe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateCustomer")
 		if err != nil {
 			return err
 		}
@@ -4672,15 +4736,8 @@ func (c *cloudChannelRESTClient) DeleteCustomer(ctx context.Context, req *channe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteCustomer")
+		return err
 	}, opts...)
 }
 
@@ -4691,8 +4748,13 @@ func (c *cloudChannelRESTClient) DeleteCustomer(ctx context.Context, req *channe
 //
 // Possible error codes:
 //
-//	PERMISSION_DENIED: The reseller account making the request is different
-//	from the reseller account in the API request.
+//	PERMISSION_DENIED:
+//
+//	  The reseller account making the request is different from the
+//	  reseller account in the API request.
+//
+//	  You are not authorized to import the customer. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
 //
 //	NOT_FOUND: Cloud Identity doesn’t exist or was deleted.
 //
@@ -4742,17 +4804,7 @@ func (c *cloudChannelRESTClient) ImportCustomer(ctx context.Context, req *channe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ImportCustomer")
 		if err != nil {
 			return err
 		}
@@ -4774,7 +4826,12 @@ func (c *cloudChannelRESTClient) ImportCustomer(ctx context.Context, req *channe
 //
 // Possible error codes:
 //
-//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//	PERMISSION_DENIED:
+//
+//	  The customer doesn’t belong to the reseller.
+//
+//	  You are not authorized to provision cloud identity id. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
 //
 //	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
@@ -4832,21 +4889,10 @@ func (c *cloudChannelRESTClient) ProvisionCloudIdentity(ctx context.Context, req
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ProvisionCloudIdentity")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4920,21 +4966,10 @@ func (c *cloudChannelRESTClient) ListEntitlements(ctx context.Context, req *chan
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListEntitlements")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -5031,21 +5066,10 @@ func (c *cloudChannelRESTClient) ListTransferableSkus(ctx context.Context, req *
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ListTransferableSkus")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -5093,6 +5117,9 @@ func (c *cloudChannelRESTClient) ListTransferableSkus(ctx context.Context, req *
 //
 //	  The reseller account making the request is different
 //	  from the reseller account in the query.
+//
+//	  The reseller is not authorized to transact on this Product. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
 //
 //	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
@@ -5143,21 +5170,10 @@ func (c *cloudChannelRESTClient) ListTransferableOffers(ctx context.Context, req
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ListTransferableOffers")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -5232,17 +5248,7 @@ func (c *cloudChannelRESTClient) GetEntitlement(ctx context.Context, req *channe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetEntitlement")
 		if err != nil {
 			return err
 		}
@@ -5263,7 +5269,12 @@ func (c *cloudChannelRESTClient) GetEntitlement(ctx context.Context, req *channe
 //
 // Possible error codes:
 //
-//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//	PERMISSION_DENIED:
+//
+//	  The customer doesn’t belong to the reseller.
+//
+//	  The reseller is not authorized to transact on this Product. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
 //
 //	INVALID_ARGUMENT:
 //
@@ -5348,21 +5359,10 @@ func (c *cloudChannelRESTClient) CreateEntitlement(ctx context.Context, req *cha
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateEntitlement")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5444,21 +5444,10 @@ func (c *cloudChannelRESTClient) ChangeParameters(ctx context.Context, req *chan
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ChangeParameters")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5541,21 +5530,10 @@ func (c *cloudChannelRESTClient) ChangeRenewalSettings(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ChangeRenewalSettings")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5635,21 +5613,10 @@ func (c *cloudChannelRESTClient) ChangeOffer(ctx context.Context, req *channelpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ChangeOffer")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5733,21 +5700,10 @@ func (c *cloudChannelRESTClient) StartPaidService(ctx context.Context, req *chan
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "StartPaidService")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5828,21 +5784,10 @@ func (c *cloudChannelRESTClient) SuspendEntitlement(ctx context.Context, req *ch
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SuspendEntitlement")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5929,21 +5874,10 @@ func (c *cloudChannelRESTClient) CancelEntitlement(ctx context.Context, req *cha
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelEntitlement")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -6031,21 +5965,10 @@ func (c *cloudChannelRESTClient) ActivateEntitlement(ctx context.Context, req *c
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ActivateEntitlement")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -6067,7 +5990,12 @@ func (c *cloudChannelRESTClient) ActivateEntitlement(ctx context.Context, req *c
 //
 // Possible error codes:
 //
-//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//	PERMISSION_DENIED:
+//
+//	  The customer doesn’t belong to the reseller.
+//
+//	  The reseller is not authorized to transact on this Product. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
 //
 //	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
@@ -6141,21 +6069,10 @@ func (c *cloudChannelRESTClient) TransferEntitlements(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TransferEntitlements")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -6250,21 +6167,10 @@ func (c *cloudChannelRESTClient) TransferEntitlementsToGoogle(ctx context.Contex
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TransferEntitlementsToGoogle")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -6342,21 +6248,10 @@ func (c *cloudChannelRESTClient) ListChannelPartnerLinks(ctx context.Context, re
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListChannelPartnerLinks")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -6438,17 +6333,7 @@ func (c *cloudChannelRESTClient) GetChannelPartnerLink(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetChannelPartnerLink")
 		if err != nil {
 			return err
 		}
@@ -6532,17 +6417,7 @@ func (c *cloudChannelRESTClient) CreateChannelPartnerLink(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateChannelPartnerLink")
 		if err != nil {
 			return err
 		}
@@ -6626,17 +6501,7 @@ func (c *cloudChannelRESTClient) UpdateChannelPartnerLink(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateChannelPartnerLink")
 		if err != nil {
 			return err
 		}
@@ -6704,17 +6569,7 @@ func (c *cloudChannelRESTClient) GetCustomerRepricingConfig(ctx context.Context,
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCustomerRepricingConfig")
 		if err != nil {
 			return err
 		}
@@ -6808,21 +6663,10 @@ func (c *cloudChannelRESTClient) ListCustomerRepricingConfigs(ctx context.Contex
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListCustomerRepricingConfigs")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -6871,13 +6715,13 @@ func (c *cloudChannelRESTClient) ListCustomerRepricingConfigs(ctx context.Contex
 //	Changes to the config may be immediate, but may take up to 24 hours.
 //
 //	There is a limit of ten configs for any
-//	RepricingConfig.EntitlementGranularity.entitlement
-//	or
+//	RepricingConfig.EntitlementGranularity.entitlement,
+//	for any
 //	RepricingConfig.effective_invoice_month.
 //
 //	The contained
 //	CustomerRepricingConfig.repricing_config
-//	vaule must be different from the value used in the current config for a
+//	value must be different from the value used in the current config for a
 //	RepricingConfig.EntitlementGranularity.entitlement.
 //
 // Possible Error Codes:
@@ -6939,17 +6783,7 @@ func (c *cloudChannelRESTClient) CreateCustomerRepricingConfig(ctx context.Conte
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateCustomerRepricingConfig")
 		if err != nil {
 			return err
 		}
@@ -7040,17 +6874,7 @@ func (c *cloudChannelRESTClient) UpdateCustomerRepricingConfig(ctx context.Conte
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateCustomerRepricingConfig")
 		if err != nil {
 			return err
 		}
@@ -7116,15 +6940,8 @@ func (c *cloudChannelRESTClient) DeleteCustomerRepricingConfig(ctx context.Conte
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteCustomerRepricingConfig")
+		return err
 	}, opts...)
 }
 
@@ -7179,17 +6996,7 @@ func (c *cloudChannelRESTClient) GetChannelPartnerRepricingConfig(ctx context.Co
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetChannelPartnerRepricingConfig")
 		if err != nil {
 			return err
 		}
@@ -7281,21 +7088,10 @@ func (c *cloudChannelRESTClient) ListChannelPartnerRepricingConfigs(ctx context.
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListChannelPartnerRepricingConfigs")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -7345,11 +7141,13 @@ func (c *cloudChannelRESTClient) ListChannelPartnerRepricingConfigs(ctx context.
 //	Changes to the config may be immediate, but may take up to 24 hours.
 //
 //	There is a limit of ten configs for any ChannelPartner or
+//	RepricingConfig.EntitlementGranularity.entitlement,
+//	for any
 //	RepricingConfig.effective_invoice_month.
 //
 //	The contained
 //	ChannelPartnerRepricingConfig.repricing_config
-//	vaule must be different from the value used in the current config for a
+//	value must be different from the value used in the current config for a
 //	ChannelPartner.
 //
 // Possible Error Codes:
@@ -7411,17 +7209,7 @@ func (c *cloudChannelRESTClient) CreateChannelPartnerRepricingConfig(ctx context
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateChannelPartnerRepricingConfig")
 		if err != nil {
 			return err
 		}
@@ -7512,17 +7300,7 @@ func (c *cloudChannelRESTClient) UpdateChannelPartnerRepricingConfig(ctx context
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateChannelPartnerRepricingConfig")
 		if err != nil {
 			return err
 		}
@@ -7588,15 +7366,8 @@ func (c *cloudChannelRESTClient) DeleteChannelPartnerRepricingConfig(ctx context
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteChannelPartnerRepricingConfig")
+		return err
 	}, opts...)
 }
 
@@ -7664,21 +7435,10 @@ func (c *cloudChannelRESTClient) ListSkuGroups(ctx context.Context, req *channel
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSkuGroups")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -7772,21 +7532,10 @@ func (c *cloudChannelRESTClient) ListSkuGroupBillableSkus(ctx context.Context, r
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSkuGroupBillableSkus")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -7860,17 +7609,7 @@ func (c *cloudChannelRESTClient) LookupOffer(ctx context.Context, req *channelpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "LookupOffer")
 		if err != nil {
 			return err
 		}
@@ -7940,21 +7679,10 @@ func (c *cloudChannelRESTClient) ListProducts(ctx context.Context, req *channelp
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListProducts")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -8037,21 +7765,10 @@ func (c *cloudChannelRESTClient) ListSkus(ctx context.Context, req *channelpb.Li
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSkus")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -8139,21 +7856,10 @@ func (c *cloudChannelRESTClient) ListOffers(ctx context.Context, req *channelpb.
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOffers")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -8244,21 +7950,10 @@ func (c *cloudChannelRESTClient) ListPurchasableSkus(ctx context.Context, req *c
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListPurchasableSkus")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -8296,7 +7991,12 @@ func (c *cloudChannelRESTClient) ListPurchasableSkus(ctx context.Context, req *c
 //
 // Possible error codes:
 //
-//	PERMISSION_DENIED: The customer doesn’t belong to the reseller
+//	PERMISSION_DENIED:
+//
+//	  The customer doesn’t belong to the reseller
+//
+//	  The reseller is not authorized to transact on this Product. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
 //
 //	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 func (c *cloudChannelRESTClient) ListPurchasableOffers(ctx context.Context, req *channelpb.ListPurchasableOffersRequest, opts ...gax.CallOption) *PurchasableOfferIterator {
@@ -8321,9 +8021,15 @@ func (c *cloudChannelRESTClient) ListPurchasableOffers(ctx context.Context, req 
 
 		params := url.Values{}
 		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetChangeOfferPurchase().GetBillingAccount() != "" {
+			params.Add("changeOfferPurchase.billingAccount", fmt.Sprintf("%v", req.GetChangeOfferPurchase().GetBillingAccount()))
+		}
 		params.Add("changeOfferPurchase.entitlement", fmt.Sprintf("%v", req.GetChangeOfferPurchase().GetEntitlement()))
 		if req.GetChangeOfferPurchase().GetNewSku() != "" {
 			params.Add("changeOfferPurchase.newSku", fmt.Sprintf("%v", req.GetChangeOfferPurchase().GetNewSku()))
+		}
+		if req.GetCreateEntitlementPurchase().GetBillingAccount() != "" {
+			params.Add("createEntitlementPurchase.billingAccount", fmt.Sprintf("%v", req.GetCreateEntitlementPurchase().GetBillingAccount()))
 		}
 		params.Add("createEntitlementPurchase.sku", fmt.Sprintf("%v", req.GetCreateEntitlementPurchase().GetSku()))
 		if req.GetLanguageCode() != "" {
@@ -8351,21 +8057,10 @@ func (c *cloudChannelRESTClient) ListPurchasableOffers(ctx context.Context, req 
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListPurchasableOffers")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -8393,6 +8088,73 @@ func (c *cloudChannelRESTClient) ListPurchasableOffers(ctx context.Context, req 
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// QueryEligibleBillingAccounts lists the billing accounts that are eligible to purchase particular SKUs
+// for a given customer.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//
+// Return value:
+// Based on the provided list of SKUs, returns a list of SKU groups that must
+// be purchased using the same billing account and the billing accounts
+// eligible to purchase each SKU group.
+func (c *cloudChannelRESTClient) QueryEligibleBillingAccounts(ctx context.Context, req *channelpb.QueryEligibleBillingAccountsRequest, opts ...gax.CallOption) (*channelpb.QueryEligibleBillingAccountsResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:queryEligibleBillingAccounts", req.GetCustomer())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if items := req.GetSkus(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("skus", fmt.Sprintf("%v", item))
+		}
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "customer", url.QueryEscape(req.GetCustomer()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).QueryEligibleBillingAccounts[0:len((*c.CallOptions).QueryEligibleBillingAccounts):len((*c.CallOptions).QueryEligibleBillingAccounts)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &channelpb.QueryEligibleBillingAccountsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "QueryEligibleBillingAccounts")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // RegisterSubscriber registers a service account with subscriber privileges on the Cloud Pub/Sub
@@ -8454,17 +8216,7 @@ func (c *cloudChannelRESTClient) RegisterSubscriber(ctx context.Context, req *ch
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RegisterSubscriber")
 		if err != nil {
 			return err
 		}
@@ -8544,17 +8296,7 @@ func (c *cloudChannelRESTClient) UnregisterSubscriber(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UnregisterSubscriber")
 		if err != nil {
 			return err
 		}
@@ -8636,21 +8378,10 @@ func (c *cloudChannelRESTClient) ListSubscribers(ctx context.Context, req *chann
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSubscribers")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -8747,21 +8478,10 @@ func (c *cloudChannelRESTClient) ListEntitlementChanges(ctx context.Context, req
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListEntitlementChanges")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -8827,15 +8547,8 @@ func (c *cloudChannelRESTClient) CancelOperation(ctx context.Context, req *longr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -8869,15 +8582,8 @@ func (c *cloudChannelRESTClient) DeleteOperation(ctx context.Context, req *longr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOperation")
+		return err
 	}, opts...)
 }
 
@@ -8914,17 +8620,7 @@ func (c *cloudChannelRESTClient) GetOperation(ctx context.Context, req *longrunn
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -8989,21 +8685,10 @@ func (c *cloudChannelRESTClient) ListOperations(ctx context.Context, req *longru
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -9033,12 +8718,6 @@ func (c *cloudChannelRESTClient) ListOperations(ctx context.Context, req *longru
 	return it
 }
 
-// ActivateEntitlementOperation manages a long-running operation from ActivateEntitlement.
-type ActivateEntitlementOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // ActivateEntitlementOperation returns a new ActivateEntitlementOperation from a given name.
 // The name must be that of a previously created ActivateEntitlementOperation, possibly from a different process.
 func (c *cloudChannelGRPCClient) ActivateEntitlementOperation(name string) *ActivateEntitlementOperation {
@@ -9055,70 +8734,6 @@ func (c *cloudChannelRESTClient) ActivateEntitlementOperation(name string) *Acti
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ActivateEntitlementOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*channelpb.Entitlement, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp channelpb.Entitlement
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ActivateEntitlementOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*channelpb.Entitlement, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp channelpb.Entitlement
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ActivateEntitlementOperation) Metadata() (*channelpb.OperationMetadata, error) {
-	var meta channelpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ActivateEntitlementOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ActivateEntitlementOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CancelEntitlementOperation manages a long-running operation from CancelEntitlement.
-type CancelEntitlementOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // CancelEntitlementOperation returns a new CancelEntitlementOperation from a given name.
@@ -9139,59 +8754,6 @@ func (c *cloudChannelRESTClient) CancelEntitlementOperation(name string) *Cancel
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CancelEntitlementOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CancelEntitlementOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CancelEntitlementOperation) Metadata() (*channelpb.OperationMetadata, error) {
-	var meta channelpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CancelEntitlementOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CancelEntitlementOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ChangeOfferOperation manages a long-running operation from ChangeOffer.
-type ChangeOfferOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // ChangeOfferOperation returns a new ChangeOfferOperation from a given name.
 // The name must be that of a previously created ChangeOfferOperation, possibly from a different process.
 func (c *cloudChannelGRPCClient) ChangeOfferOperation(name string) *ChangeOfferOperation {
@@ -9208,70 +8770,6 @@ func (c *cloudChannelRESTClient) ChangeOfferOperation(name string) *ChangeOfferO
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ChangeOfferOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*channelpb.Entitlement, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp channelpb.Entitlement
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ChangeOfferOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*channelpb.Entitlement, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp channelpb.Entitlement
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ChangeOfferOperation) Metadata() (*channelpb.OperationMetadata, error) {
-	var meta channelpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ChangeOfferOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ChangeOfferOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ChangeParametersOperation manages a long-running operation from ChangeParameters.
-type ChangeParametersOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // ChangeParametersOperation returns a new ChangeParametersOperation from a given name.
@@ -9292,70 +8790,6 @@ func (c *cloudChannelRESTClient) ChangeParametersOperation(name string) *ChangeP
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ChangeParametersOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*channelpb.Entitlement, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp channelpb.Entitlement
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ChangeParametersOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*channelpb.Entitlement, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp channelpb.Entitlement
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ChangeParametersOperation) Metadata() (*channelpb.OperationMetadata, error) {
-	var meta channelpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ChangeParametersOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ChangeParametersOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ChangeRenewalSettingsOperation manages a long-running operation from ChangeRenewalSettings.
-type ChangeRenewalSettingsOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // ChangeRenewalSettingsOperation returns a new ChangeRenewalSettingsOperation from a given name.
 // The name must be that of a previously created ChangeRenewalSettingsOperation, possibly from a different process.
 func (c *cloudChannelGRPCClient) ChangeRenewalSettingsOperation(name string) *ChangeRenewalSettingsOperation {
@@ -9372,70 +8806,6 @@ func (c *cloudChannelRESTClient) ChangeRenewalSettingsOperation(name string) *Ch
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ChangeRenewalSettingsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*channelpb.Entitlement, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp channelpb.Entitlement
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ChangeRenewalSettingsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*channelpb.Entitlement, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp channelpb.Entitlement
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ChangeRenewalSettingsOperation) Metadata() (*channelpb.OperationMetadata, error) {
-	var meta channelpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ChangeRenewalSettingsOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ChangeRenewalSettingsOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateEntitlementOperation manages a long-running operation from CreateEntitlement.
-type CreateEntitlementOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // CreateEntitlementOperation returns a new CreateEntitlementOperation from a given name.
@@ -9456,70 +8826,6 @@ func (c *cloudChannelRESTClient) CreateEntitlementOperation(name string) *Create
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateEntitlementOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*channelpb.Entitlement, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp channelpb.Entitlement
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateEntitlementOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*channelpb.Entitlement, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp channelpb.Entitlement
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateEntitlementOperation) Metadata() (*channelpb.OperationMetadata, error) {
-	var meta channelpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateEntitlementOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateEntitlementOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ProvisionCloudIdentityOperation manages a long-running operation from ProvisionCloudIdentity.
-type ProvisionCloudIdentityOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // ProvisionCloudIdentityOperation returns a new ProvisionCloudIdentityOperation from a given name.
 // The name must be that of a previously created ProvisionCloudIdentityOperation, possibly from a different process.
 func (c *cloudChannelGRPCClient) ProvisionCloudIdentityOperation(name string) *ProvisionCloudIdentityOperation {
@@ -9536,70 +8842,6 @@ func (c *cloudChannelRESTClient) ProvisionCloudIdentityOperation(name string) *P
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ProvisionCloudIdentityOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*channelpb.Customer, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp channelpb.Customer
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ProvisionCloudIdentityOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*channelpb.Customer, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp channelpb.Customer
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ProvisionCloudIdentityOperation) Metadata() (*channelpb.OperationMetadata, error) {
-	var meta channelpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ProvisionCloudIdentityOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ProvisionCloudIdentityOperation) Name() string {
-	return op.lro.Name()
-}
-
-// StartPaidServiceOperation manages a long-running operation from StartPaidService.
-type StartPaidServiceOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // StartPaidServiceOperation returns a new StartPaidServiceOperation from a given name.
@@ -9620,70 +8862,6 @@ func (c *cloudChannelRESTClient) StartPaidServiceOperation(name string) *StartPa
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *StartPaidServiceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*channelpb.Entitlement, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp channelpb.Entitlement
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *StartPaidServiceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*channelpb.Entitlement, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp channelpb.Entitlement
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *StartPaidServiceOperation) Metadata() (*channelpb.OperationMetadata, error) {
-	var meta channelpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *StartPaidServiceOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *StartPaidServiceOperation) Name() string {
-	return op.lro.Name()
-}
-
-// SuspendEntitlementOperation manages a long-running operation from SuspendEntitlement.
-type SuspendEntitlementOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // SuspendEntitlementOperation returns a new SuspendEntitlementOperation from a given name.
 // The name must be that of a previously created SuspendEntitlementOperation, possibly from a different process.
 func (c *cloudChannelGRPCClient) SuspendEntitlementOperation(name string) *SuspendEntitlementOperation {
@@ -9700,70 +8878,6 @@ func (c *cloudChannelRESTClient) SuspendEntitlementOperation(name string) *Suspe
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *SuspendEntitlementOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*channelpb.Entitlement, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp channelpb.Entitlement
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *SuspendEntitlementOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*channelpb.Entitlement, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp channelpb.Entitlement
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *SuspendEntitlementOperation) Metadata() (*channelpb.OperationMetadata, error) {
-	var meta channelpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *SuspendEntitlementOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *SuspendEntitlementOperation) Name() string {
-	return op.lro.Name()
-}
-
-// TransferEntitlementsOperation manages a long-running operation from TransferEntitlements.
-type TransferEntitlementsOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // TransferEntitlementsOperation returns a new TransferEntitlementsOperation from a given name.
@@ -9784,70 +8898,6 @@ func (c *cloudChannelRESTClient) TransferEntitlementsOperation(name string) *Tra
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *TransferEntitlementsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*channelpb.TransferEntitlementsResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp channelpb.TransferEntitlementsResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *TransferEntitlementsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*channelpb.TransferEntitlementsResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp channelpb.TransferEntitlementsResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *TransferEntitlementsOperation) Metadata() (*channelpb.OperationMetadata, error) {
-	var meta channelpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *TransferEntitlementsOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *TransferEntitlementsOperation) Name() string {
-	return op.lro.Name()
-}
-
-// TransferEntitlementsToGoogleOperation manages a long-running operation from TransferEntitlementsToGoogle.
-type TransferEntitlementsToGoogleOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // TransferEntitlementsToGoogleOperation returns a new TransferEntitlementsToGoogleOperation from a given name.
 // The name must be that of a previously created TransferEntitlementsToGoogleOperation, possibly from a different process.
 func (c *cloudChannelGRPCClient) TransferEntitlementsToGoogleOperation(name string) *TransferEntitlementsToGoogleOperation {
@@ -9864,803 +8914,4 @@ func (c *cloudChannelRESTClient) TransferEntitlementsToGoogleOperation(name stri
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *TransferEntitlementsToGoogleOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *TransferEntitlementsToGoogleOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *TransferEntitlementsToGoogleOperation) Metadata() (*channelpb.OperationMetadata, error) {
-	var meta channelpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *TransferEntitlementsToGoogleOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *TransferEntitlementsToGoogleOperation) Name() string {
-	return op.lro.Name()
-}
-
-// BillableSkuIterator manages a stream of *channelpb.BillableSku.
-type BillableSkuIterator struct {
-	items    []*channelpb.BillableSku
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*channelpb.BillableSku, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *BillableSkuIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *BillableSkuIterator) Next() (*channelpb.BillableSku, error) {
-	var item *channelpb.BillableSku
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *BillableSkuIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *BillableSkuIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ChannelPartnerLinkIterator manages a stream of *channelpb.ChannelPartnerLink.
-type ChannelPartnerLinkIterator struct {
-	items    []*channelpb.ChannelPartnerLink
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*channelpb.ChannelPartnerLink, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ChannelPartnerLinkIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ChannelPartnerLinkIterator) Next() (*channelpb.ChannelPartnerLink, error) {
-	var item *channelpb.ChannelPartnerLink
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ChannelPartnerLinkIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ChannelPartnerLinkIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ChannelPartnerRepricingConfigIterator manages a stream of *channelpb.ChannelPartnerRepricingConfig.
-type ChannelPartnerRepricingConfigIterator struct {
-	items    []*channelpb.ChannelPartnerRepricingConfig
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*channelpb.ChannelPartnerRepricingConfig, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ChannelPartnerRepricingConfigIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ChannelPartnerRepricingConfigIterator) Next() (*channelpb.ChannelPartnerRepricingConfig, error) {
-	var item *channelpb.ChannelPartnerRepricingConfig
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ChannelPartnerRepricingConfigIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ChannelPartnerRepricingConfigIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// CustomerIterator manages a stream of *channelpb.Customer.
-type CustomerIterator struct {
-	items    []*channelpb.Customer
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*channelpb.Customer, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *CustomerIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *CustomerIterator) Next() (*channelpb.Customer, error) {
-	var item *channelpb.Customer
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *CustomerIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *CustomerIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// CustomerRepricingConfigIterator manages a stream of *channelpb.CustomerRepricingConfig.
-type CustomerRepricingConfigIterator struct {
-	items    []*channelpb.CustomerRepricingConfig
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*channelpb.CustomerRepricingConfig, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *CustomerRepricingConfigIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *CustomerRepricingConfigIterator) Next() (*channelpb.CustomerRepricingConfig, error) {
-	var item *channelpb.CustomerRepricingConfig
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *CustomerRepricingConfigIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *CustomerRepricingConfigIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// EntitlementChangeIterator manages a stream of *channelpb.EntitlementChange.
-type EntitlementChangeIterator struct {
-	items    []*channelpb.EntitlementChange
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*channelpb.EntitlementChange, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *EntitlementChangeIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *EntitlementChangeIterator) Next() (*channelpb.EntitlementChange, error) {
-	var item *channelpb.EntitlementChange
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *EntitlementChangeIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *EntitlementChangeIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// EntitlementIterator manages a stream of *channelpb.Entitlement.
-type EntitlementIterator struct {
-	items    []*channelpb.Entitlement
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*channelpb.Entitlement, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *EntitlementIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *EntitlementIterator) Next() (*channelpb.Entitlement, error) {
-	var item *channelpb.Entitlement
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *EntitlementIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *EntitlementIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// OfferIterator manages a stream of *channelpb.Offer.
-type OfferIterator struct {
-	items    []*channelpb.Offer
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*channelpb.Offer, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *OfferIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *OfferIterator) Next() (*channelpb.Offer, error) {
-	var item *channelpb.Offer
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *OfferIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *OfferIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ProductIterator manages a stream of *channelpb.Product.
-type ProductIterator struct {
-	items    []*channelpb.Product
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*channelpb.Product, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ProductIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ProductIterator) Next() (*channelpb.Product, error) {
-	var item *channelpb.Product
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ProductIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ProductIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// PurchasableOfferIterator manages a stream of *channelpb.PurchasableOffer.
-type PurchasableOfferIterator struct {
-	items    []*channelpb.PurchasableOffer
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*channelpb.PurchasableOffer, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *PurchasableOfferIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *PurchasableOfferIterator) Next() (*channelpb.PurchasableOffer, error) {
-	var item *channelpb.PurchasableOffer
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *PurchasableOfferIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *PurchasableOfferIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// PurchasableSkuIterator manages a stream of *channelpb.PurchasableSku.
-type PurchasableSkuIterator struct {
-	items    []*channelpb.PurchasableSku
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*channelpb.PurchasableSku, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *PurchasableSkuIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *PurchasableSkuIterator) Next() (*channelpb.PurchasableSku, error) {
-	var item *channelpb.PurchasableSku
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *PurchasableSkuIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *PurchasableSkuIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// SkuGroupIterator manages a stream of *channelpb.SkuGroup.
-type SkuGroupIterator struct {
-	items    []*channelpb.SkuGroup
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*channelpb.SkuGroup, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *SkuGroupIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *SkuGroupIterator) Next() (*channelpb.SkuGroup, error) {
-	var item *channelpb.SkuGroup
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *SkuGroupIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *SkuGroupIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// SkuIterator manages a stream of *channelpb.Sku.
-type SkuIterator struct {
-	items    []*channelpb.Sku
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*channelpb.Sku, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *SkuIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *SkuIterator) Next() (*channelpb.Sku, error) {
-	var item *channelpb.Sku
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *SkuIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *SkuIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// StringIterator manages a stream of string.
-type StringIterator struct {
-	items    []string
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []string, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *StringIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *StringIterator) Next() (string, error) {
-	var item string
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *StringIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *StringIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// TransferableOfferIterator manages a stream of *channelpb.TransferableOffer.
-type TransferableOfferIterator struct {
-	items    []*channelpb.TransferableOffer
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*channelpb.TransferableOffer, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *TransferableOfferIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *TransferableOfferIterator) Next() (*channelpb.TransferableOffer, error) {
-	var item *channelpb.TransferableOffer
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *TransferableOfferIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *TransferableOfferIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// TransferableSkuIterator manages a stream of *channelpb.TransferableSku.
-type TransferableSkuIterator struct {
-	items    []*channelpb.TransferableSku
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*channelpb.TransferableSku, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *TransferableSkuIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *TransferableSkuIterator) Next() (*channelpb.TransferableSku, error) {
-	var item *channelpb.TransferableSku
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *TransferableSkuIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *TransferableSkuIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

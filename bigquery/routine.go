@@ -97,9 +97,9 @@ func (r *Routine) Metadata(ctx context.Context) (rm *RoutineMetadata, err error)
 	setClientHeader(req.Header())
 	var routine *bq.Routine
 	err = runWithRetry(ctx, func() (err error) {
-		ctx = trace.StartSpan(ctx, "bigquery.routines.get")
+		sCtx := trace.StartSpan(ctx, "bigquery.routines.get")
 		routine, err = req.Do()
-		trace.EndSpan(ctx, err)
+		trace.EndSpan(sCtx, err)
 		return err
 	})
 	if err != nil {
@@ -131,9 +131,9 @@ func (r *Routine) Update(ctx context.Context, upd *RoutineMetadataToUpdate, etag
 	}
 	var res *bq.Routine
 	if err := runWithRetry(ctx, func() (err error) {
-		ctx = trace.StartSpan(ctx, "bigquery.routines.update")
+		sCtx := trace.StartSpan(ctx, "bigquery.routines.update")
 		res, err = call.Do()
-		trace.EndSpan(ctx, err)
+		trace.EndSpan(sCtx, err)
 		return err
 	}); err != nil {
 		return nil, err
@@ -206,6 +206,11 @@ type RoutineMetadata struct {
 	// For JAVASCRIPT function, it is the evaluated string in the AS clause of
 	// a CREATE FUNCTION statement.
 	Body string
+
+	// For data governance use cases.  If set to "DATA_MASKING", the function
+	// is validated and made available as a masking function. For more information,
+	// see: https://cloud.google.com/bigquery/docs/user-defined-functions#custom-mask
+	DataGovernanceType string
 }
 
 // RemoteFunctionOptions contains information for a remote user-defined function.
@@ -232,9 +237,9 @@ type RemoteFunctionOptions struct {
 	UserDefinedContext map[string]string
 }
 
-func bqToRemoteFunctionOptions(in *bq.RemoteFunctionOptions) (*RemoteFunctionOptions, error) {
+func bqToRemoteFunctionOptions(in *bq.RemoteFunctionOptions) *RemoteFunctionOptions {
 	if in == nil {
-		return nil, nil
+		return nil
 	}
 	rfo := &RemoteFunctionOptions{
 		Connection:      in.Connection,
@@ -247,12 +252,12 @@ func bqToRemoteFunctionOptions(in *bq.RemoteFunctionOptions) (*RemoteFunctionOpt
 			rfo.UserDefinedContext[k] = v
 		}
 	}
-	return rfo, nil
+	return rfo
 }
 
-func (rfo *RemoteFunctionOptions) toBQ() (*bq.RemoteFunctionOptions, error) {
+func (rfo *RemoteFunctionOptions) toBQ() *bq.RemoteFunctionOptions {
 	if rfo == nil {
-		return nil, nil
+		return nil
 	}
 	r := &bq.RemoteFunctionOptions{
 		Connection:      rfo.Connection,
@@ -265,7 +270,7 @@ func (rfo *RemoteFunctionOptions) toBQ() (*bq.RemoteFunctionOptions, error) {
 			r.UserDefinedContext[k] = v
 		}
 	}
-	return r, nil
+	return r
 }
 
 func (rm *RoutineMetadata) toBQ() (*bq.Routine, error) {
@@ -278,6 +283,7 @@ func (rm *RoutineMetadata) toBQ() (*bq.Routine, error) {
 	r.Language = rm.Language
 	r.RoutineType = rm.Type
 	r.DefinitionBody = rm.Body
+	r.DataGovernanceType = rm.DataGovernanceType
 	rt, err := rm.ReturnType.toBQ()
 	if err != nil {
 		return nil, err
@@ -301,11 +307,7 @@ func (rm *RoutineMetadata) toBQ() (*bq.Routine, error) {
 	r.Arguments = args
 	r.ImportedLibraries = rm.ImportedLibraries
 	if rm.RemoteFunctionOptions != nil {
-		rfo, err := rm.RemoteFunctionOptions.toBQ()
-		if err != nil {
-			return nil, err
-		}
-		r.RemoteFunctionOptions = rfo
+		r.RemoteFunctionOptions = rm.RemoteFunctionOptions.toBQ()
 	}
 	if !rm.CreationTime.IsZero() {
 		return nil, errors.New("cannot set CreationTime on create")
@@ -405,15 +407,16 @@ func routineArgumentsToBQ(in []*RoutineArgument) ([]*bq.Argument, error) {
 
 // RoutineMetadataToUpdate governs updating a routine.
 type RoutineMetadataToUpdate struct {
-	Arguments         []*RoutineArgument
-	Description       optional.String
-	DeterminismLevel  optional.String
-	Type              optional.String
-	Language          optional.String
-	Body              optional.String
-	ImportedLibraries []string
-	ReturnType        *StandardSQLDataType
-	ReturnTableType   *StandardSQLTableType
+	Arguments          []*RoutineArgument
+	Description        optional.String
+	DeterminismLevel   optional.String
+	Type               optional.String
+	Language           optional.String
+	Body               optional.String
+	ImportedLibraries  []string
+	ReturnType         *StandardSQLDataType
+	ReturnTableType    *StandardSQLTableType
+	DataGovernanceType optional.String
 }
 
 func (rm *RoutineMetadataToUpdate) toBQ() (*bq.Routine, error) {
@@ -491,20 +494,25 @@ func (rm *RoutineMetadataToUpdate) toBQ() (*bq.Routine, error) {
 		r.ReturnTableType = tt
 		forceSend("ReturnTableType")
 	}
+	if rm.DataGovernanceType != nil {
+		r.DataGovernanceType = optional.ToString(rm.DataGovernanceType)
+		forceSend("DataGovernanceType")
+	}
 	return r, nil
 }
 
 func bqToRoutineMetadata(r *bq.Routine) (*RoutineMetadata, error) {
 	meta := &RoutineMetadata{
-		ETag:              r.Etag,
-		Type:              r.RoutineType,
-		CreationTime:      unixMillisToTime(r.CreationTime),
-		Description:       r.Description,
-		DeterminismLevel:  RoutineDeterminism(r.DeterminismLevel),
-		LastModifiedTime:  unixMillisToTime(r.LastModifiedTime),
-		Language:          r.Language,
-		ImportedLibraries: r.ImportedLibraries,
-		Body:              r.DefinitionBody,
+		ETag:               r.Etag,
+		Type:               r.RoutineType,
+		CreationTime:       unixMillisToTime(r.CreationTime),
+		Description:        r.Description,
+		DeterminismLevel:   RoutineDeterminism(r.DeterminismLevel),
+		LastModifiedTime:   unixMillisToTime(r.LastModifiedTime),
+		Language:           r.Language,
+		ImportedLibraries:  r.ImportedLibraries,
+		Body:               r.DefinitionBody,
+		DataGovernanceType: r.DataGovernanceType,
 	}
 	args, err := bqToArgs(r.Arguments)
 	if err != nil {
@@ -516,11 +524,7 @@ func bqToRoutineMetadata(r *bq.Routine) (*RoutineMetadata, error) {
 		return nil, err
 	}
 	meta.ReturnType = ret
-	rfo, err := bqToRemoteFunctionOptions(r.RemoteFunctionOptions)
-	if err != nil {
-		return nil, err
-	}
-	meta.RemoteFunctionOptions = rfo
+	meta.RemoteFunctionOptions = bqToRemoteFunctionOptions(r.RemoteFunctionOptions)
 	tt, err := bqToStandardSQLTableType(r.ReturnTableType)
 	if err != nil {
 		return nil, err

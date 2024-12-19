@@ -10,6 +10,26 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "AutocompletePlaces": {
+              "methods": [
+                "AutocompletePlaces"
+              ]
+            },
+            "GetPhotoMedia": {
+              "methods": [
+                "GetPhotoMedia"
+              ]
+            },
+            "GetPlace": {
+              "methods": [
+                "GetPlace"
+              ]
+            },
+            "SearchNearby": {
+              "methods": [
+                "SearchNearby"
+              ]
+            },
             "SearchText": {
               "methods": [
                 "SearchText"
@@ -20,6 +40,26 @@
         "rest": {
           "libraryClient": "Client",
           "rpcs": {
+            "AutocompletePlaces": {
+              "methods": [
+                "AutocompletePlaces"
+              ]
+            },
+            "GetPhotoMedia": {
+              "methods": [
+                "GetPhotoMedia"
+              ]
+            },
+            "GetPlace": {
+              "methods": [
+                "GetPlace"
+              ]
+            },
+            "SearchNearby": {
+              "methods": [
+                "SearchNearby"
+              ]
+            },
             "SearchText": {
               "methods": [
                 "SearchText"

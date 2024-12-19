@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@ package aiplatform
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
-	"time"
 
 	aiplatformpb "cloud.google.com/go/aiplatform/apiv1/aiplatformpb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
@@ -42,35 +42,40 @@ var newPipelineClientHook clientHook
 
 // PipelineCallOptions contains the retry settings for each method of PipelineClient.
 type PipelineCallOptions struct {
-	CreateTrainingPipeline []gax.CallOption
-	GetTrainingPipeline    []gax.CallOption
-	ListTrainingPipelines  []gax.CallOption
-	DeleteTrainingPipeline []gax.CallOption
-	CancelTrainingPipeline []gax.CallOption
-	CreatePipelineJob      []gax.CallOption
-	GetPipelineJob         []gax.CallOption
-	ListPipelineJobs       []gax.CallOption
-	DeletePipelineJob      []gax.CallOption
-	CancelPipelineJob      []gax.CallOption
-	GetLocation            []gax.CallOption
-	ListLocations          []gax.CallOption
-	GetIamPolicy           []gax.CallOption
-	SetIamPolicy           []gax.CallOption
-	TestIamPermissions     []gax.CallOption
-	CancelOperation        []gax.CallOption
-	DeleteOperation        []gax.CallOption
-	GetOperation           []gax.CallOption
-	ListOperations         []gax.CallOption
-	WaitOperation          []gax.CallOption
+	CreateTrainingPipeline  []gax.CallOption
+	GetTrainingPipeline     []gax.CallOption
+	ListTrainingPipelines   []gax.CallOption
+	DeleteTrainingPipeline  []gax.CallOption
+	CancelTrainingPipeline  []gax.CallOption
+	CreatePipelineJob       []gax.CallOption
+	GetPipelineJob          []gax.CallOption
+	ListPipelineJobs        []gax.CallOption
+	DeletePipelineJob       []gax.CallOption
+	BatchDeletePipelineJobs []gax.CallOption
+	CancelPipelineJob       []gax.CallOption
+	BatchCancelPipelineJobs []gax.CallOption
+	GetLocation             []gax.CallOption
+	ListLocations           []gax.CallOption
+	GetIamPolicy            []gax.CallOption
+	SetIamPolicy            []gax.CallOption
+	TestIamPermissions      []gax.CallOption
+	CancelOperation         []gax.CallOption
+	DeleteOperation         []gax.CallOption
+	GetOperation            []gax.CallOption
+	ListOperations          []gax.CallOption
+	WaitOperation           []gax.CallOption
 }
 
 func defaultPipelineGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("aiplatform.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("aiplatform.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("aiplatform.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -78,26 +83,28 @@ func defaultPipelineGRPCClientOptions() []option.ClientOption {
 
 func defaultPipelineCallOptions() *PipelineCallOptions {
 	return &PipelineCallOptions{
-		CreateTrainingPipeline: []gax.CallOption{},
-		GetTrainingPipeline:    []gax.CallOption{},
-		ListTrainingPipelines:  []gax.CallOption{},
-		DeleteTrainingPipeline: []gax.CallOption{},
-		CancelTrainingPipeline: []gax.CallOption{},
-		CreatePipelineJob:      []gax.CallOption{},
-		GetPipelineJob:         []gax.CallOption{},
-		ListPipelineJobs:       []gax.CallOption{},
-		DeletePipelineJob:      []gax.CallOption{},
-		CancelPipelineJob:      []gax.CallOption{},
-		GetLocation:            []gax.CallOption{},
-		ListLocations:          []gax.CallOption{},
-		GetIamPolicy:           []gax.CallOption{},
-		SetIamPolicy:           []gax.CallOption{},
-		TestIamPermissions:     []gax.CallOption{},
-		CancelOperation:        []gax.CallOption{},
-		DeleteOperation:        []gax.CallOption{},
-		GetOperation:           []gax.CallOption{},
-		ListOperations:         []gax.CallOption{},
-		WaitOperation:          []gax.CallOption{},
+		CreateTrainingPipeline:  []gax.CallOption{},
+		GetTrainingPipeline:     []gax.CallOption{},
+		ListTrainingPipelines:   []gax.CallOption{},
+		DeleteTrainingPipeline:  []gax.CallOption{},
+		CancelTrainingPipeline:  []gax.CallOption{},
+		CreatePipelineJob:       []gax.CallOption{},
+		GetPipelineJob:          []gax.CallOption{},
+		ListPipelineJobs:        []gax.CallOption{},
+		DeletePipelineJob:       []gax.CallOption{},
+		BatchDeletePipelineJobs: []gax.CallOption{},
+		CancelPipelineJob:       []gax.CallOption{},
+		BatchCancelPipelineJobs: []gax.CallOption{},
+		GetLocation:             []gax.CallOption{},
+		ListLocations:           []gax.CallOption{},
+		GetIamPolicy:            []gax.CallOption{},
+		SetIamPolicy:            []gax.CallOption{},
+		TestIamPermissions:      []gax.CallOption{},
+		CancelOperation:         []gax.CallOption{},
+		DeleteOperation:         []gax.CallOption{},
+		GetOperation:            []gax.CallOption{},
+		ListOperations:          []gax.CallOption{},
+		WaitOperation:           []gax.CallOption{},
 	}
 }
 
@@ -117,7 +124,11 @@ type internalPipelineClient interface {
 	ListPipelineJobs(context.Context, *aiplatformpb.ListPipelineJobsRequest, ...gax.CallOption) *PipelineJobIterator
 	DeletePipelineJob(context.Context, *aiplatformpb.DeletePipelineJobRequest, ...gax.CallOption) (*DeletePipelineJobOperation, error)
 	DeletePipelineJobOperation(name string) *DeletePipelineJobOperation
+	BatchDeletePipelineJobs(context.Context, *aiplatformpb.BatchDeletePipelineJobsRequest, ...gax.CallOption) (*BatchDeletePipelineJobsOperation, error)
+	BatchDeletePipelineJobsOperation(name string) *BatchDeletePipelineJobsOperation
 	CancelPipelineJob(context.Context, *aiplatformpb.CancelPipelineJobRequest, ...gax.CallOption) error
+	BatchCancelPipelineJobs(context.Context, *aiplatformpb.BatchCancelPipelineJobsRequest, ...gax.CallOption) (*BatchCancelPipelineJobsOperation, error)
+	BatchCancelPipelineJobsOperation(name string) *BatchCancelPipelineJobsOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -243,6 +254,19 @@ func (c *PipelineClient) DeletePipelineJobOperation(name string) *DeletePipeline
 	return c.internalClient.DeletePipelineJobOperation(name)
 }
 
+// BatchDeletePipelineJobs batch deletes PipelineJobs
+// The Operation is atomic. If it fails, none of the PipelineJobs are deleted.
+// If it succeeds, all of the PipelineJobs are deleted.
+func (c *PipelineClient) BatchDeletePipelineJobs(ctx context.Context, req *aiplatformpb.BatchDeletePipelineJobsRequest, opts ...gax.CallOption) (*BatchDeletePipelineJobsOperation, error) {
+	return c.internalClient.BatchDeletePipelineJobs(ctx, req, opts...)
+}
+
+// BatchDeletePipelineJobsOperation returns a new BatchDeletePipelineJobsOperation from a given name.
+// The name must be that of a previously created BatchDeletePipelineJobsOperation, possibly from a different process.
+func (c *PipelineClient) BatchDeletePipelineJobsOperation(name string) *BatchDeletePipelineJobsOperation {
+	return c.internalClient.BatchDeletePipelineJobsOperation(name)
+}
+
 // CancelPipelineJob cancels a PipelineJob.
 // Starts asynchronous cancellation on the PipelineJob. The server
 // makes a best effort to cancel the pipeline, but success is not
@@ -258,6 +282,23 @@ func (c *PipelineClient) DeletePipelineJobOperation(name string) *DeletePipeline
 // CANCELLED.
 func (c *PipelineClient) CancelPipelineJob(ctx context.Context, req *aiplatformpb.CancelPipelineJobRequest, opts ...gax.CallOption) error {
 	return c.internalClient.CancelPipelineJob(ctx, req, opts...)
+}
+
+// BatchCancelPipelineJobs batch cancel PipelineJobs.
+// Firstly the server will check if all the jobs are in non-terminal states,
+// and skip the jobs that are already terminated.
+// If the operation failed, none of the pipeline jobs are cancelled.
+// The server will poll the states of all the pipeline jobs periodically
+// to check the cancellation status.
+// This operation will return an LRO.
+func (c *PipelineClient) BatchCancelPipelineJobs(ctx context.Context, req *aiplatformpb.BatchCancelPipelineJobsRequest, opts ...gax.CallOption) (*BatchCancelPipelineJobsOperation, error) {
+	return c.internalClient.BatchCancelPipelineJobs(ctx, req, opts...)
+}
+
+// BatchCancelPipelineJobsOperation returns a new BatchCancelPipelineJobsOperation from a given name.
+// The name must be that of a previously created BatchCancelPipelineJobsOperation, possibly from a different process.
+func (c *PipelineClient) BatchCancelPipelineJobsOperation(name string) *BatchCancelPipelineJobsOperation {
+	return c.internalClient.BatchCancelPipelineJobsOperation(name)
 }
 
 // GetLocation gets information about a location.
@@ -347,6 +388,8 @@ type pipelineGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewPipelineClient creates a new pipeline service client based on gRPC.
@@ -375,6 +418,7 @@ func NewPipelineClient(ctx context.Context, opts ...option.ClientOption) (*Pipel
 		connPool:         connPool,
 		pipelineClient:   aiplatformpb.NewPipelineServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:  iampb.NewIAMPolicyClient(connPool),
 		locationsClient:  locationpb.NewLocationsClient(connPool),
@@ -411,7 +455,9 @@ func (c *pipelineGRPCClient) Connection() *grpc.ClientConn {
 func (c *pipelineGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -429,7 +475,7 @@ func (c *pipelineGRPCClient) CreateTrainingPipeline(ctx context.Context, req *ai
 	var resp *aiplatformpb.TrainingPipeline
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.pipelineClient.CreateTrainingPipeline(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.pipelineClient.CreateTrainingPipeline, req, settings.GRPC, c.logger, "CreateTrainingPipeline")
 		return err
 	}, opts...)
 	if err != nil {
@@ -447,7 +493,7 @@ func (c *pipelineGRPCClient) GetTrainingPipeline(ctx context.Context, req *aipla
 	var resp *aiplatformpb.TrainingPipeline
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.pipelineClient.GetTrainingPipeline(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.pipelineClient.GetTrainingPipeline, req, settings.GRPC, c.logger, "GetTrainingPipeline")
 		return err
 	}, opts...)
 	if err != nil {
@@ -476,7 +522,7 @@ func (c *pipelineGRPCClient) ListTrainingPipelines(ctx context.Context, req *aip
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.pipelineClient.ListTrainingPipelines(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.pipelineClient.ListTrainingPipelines, req, settings.GRPC, c.logger, "ListTrainingPipelines")
 			return err
 		}, opts...)
 		if err != nil {
@@ -511,7 +557,7 @@ func (c *pipelineGRPCClient) DeleteTrainingPipeline(ctx context.Context, req *ai
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.pipelineClient.DeleteTrainingPipeline(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.pipelineClient.DeleteTrainingPipeline, req, settings.GRPC, c.logger, "DeleteTrainingPipeline")
 		return err
 	}, opts...)
 	if err != nil {
@@ -530,7 +576,7 @@ func (c *pipelineGRPCClient) CancelTrainingPipeline(ctx context.Context, req *ai
 	opts = append((*c.CallOptions).CancelTrainingPipeline[0:len((*c.CallOptions).CancelTrainingPipeline):len((*c.CallOptions).CancelTrainingPipeline)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.pipelineClient.CancelTrainingPipeline(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.pipelineClient.CancelTrainingPipeline, req, settings.GRPC, c.logger, "CancelTrainingPipeline")
 		return err
 	}, opts...)
 	return err
@@ -545,7 +591,7 @@ func (c *pipelineGRPCClient) CreatePipelineJob(ctx context.Context, req *aiplatf
 	var resp *aiplatformpb.PipelineJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.pipelineClient.CreatePipelineJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.pipelineClient.CreatePipelineJob, req, settings.GRPC, c.logger, "CreatePipelineJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -563,7 +609,7 @@ func (c *pipelineGRPCClient) GetPipelineJob(ctx context.Context, req *aiplatform
 	var resp *aiplatformpb.PipelineJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.pipelineClient.GetPipelineJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.pipelineClient.GetPipelineJob, req, settings.GRPC, c.logger, "GetPipelineJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -592,7 +638,7 @@ func (c *pipelineGRPCClient) ListPipelineJobs(ctx context.Context, req *aiplatfo
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.pipelineClient.ListPipelineJobs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.pipelineClient.ListPipelineJobs, req, settings.GRPC, c.logger, "ListPipelineJobs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -627,13 +673,33 @@ func (c *pipelineGRPCClient) DeletePipelineJob(ctx context.Context, req *aiplatf
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.pipelineClient.DeletePipelineJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.pipelineClient.DeletePipelineJob, req, settings.GRPC, c.logger, "DeletePipelineJob")
 		return err
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return &DeletePipelineJobOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *pipelineGRPCClient) BatchDeletePipelineJobs(ctx context.Context, req *aiplatformpb.BatchDeletePipelineJobsRequest, opts ...gax.CallOption) (*BatchDeletePipelineJobsOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).BatchDeletePipelineJobs[0:len((*c.CallOptions).BatchDeletePipelineJobs):len((*c.CallOptions).BatchDeletePipelineJobs)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.pipelineClient.BatchDeletePipelineJobs, req, settings.GRPC, c.logger, "BatchDeletePipelineJobs")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &BatchDeletePipelineJobsOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -646,10 +712,30 @@ func (c *pipelineGRPCClient) CancelPipelineJob(ctx context.Context, req *aiplatf
 	opts = append((*c.CallOptions).CancelPipelineJob[0:len((*c.CallOptions).CancelPipelineJob):len((*c.CallOptions).CancelPipelineJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.pipelineClient.CancelPipelineJob(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.pipelineClient.CancelPipelineJob, req, settings.GRPC, c.logger, "CancelPipelineJob")
 		return err
 	}, opts...)
 	return err
+}
+
+func (c *pipelineGRPCClient) BatchCancelPipelineJobs(ctx context.Context, req *aiplatformpb.BatchCancelPipelineJobsRequest, opts ...gax.CallOption) (*BatchCancelPipelineJobsOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).BatchCancelPipelineJobs[0:len((*c.CallOptions).BatchCancelPipelineJobs):len((*c.CallOptions).BatchCancelPipelineJobs)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.pipelineClient.BatchCancelPipelineJobs, req, settings.GRPC, c.logger, "BatchCancelPipelineJobs")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &BatchCancelPipelineJobsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *pipelineGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -661,7 +747,7 @@ func (c *pipelineGRPCClient) GetLocation(ctx context.Context, req *locationpb.Ge
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -690,7 +776,7 @@ func (c *pipelineGRPCClient) ListLocations(ctx context.Context, req *locationpb.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -725,7 +811,7 @@ func (c *pipelineGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIam
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -743,7 +829,7 @@ func (c *pipelineGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIam
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -761,7 +847,7 @@ func (c *pipelineGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -778,7 +864,7 @@ func (c *pipelineGRPCClient) CancelOperation(ctx context.Context, req *longrunni
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -792,7 +878,7 @@ func (c *pipelineGRPCClient) DeleteOperation(ctx context.Context, req *longrunni
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -807,7 +893,7 @@ func (c *pipelineGRPCClient) GetOperation(ctx context.Context, req *longrunningp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -836,7 +922,7 @@ func (c *pipelineGRPCClient) ListOperations(ctx context.Context, req *longrunnin
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -871,7 +957,7 @@ func (c *pipelineGRPCClient) WaitOperation(ctx context.Context, req *longrunning
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.WaitOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.WaitOperation, req, settings.GRPC, c.logger, "WaitOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -880,9 +966,20 @@ func (c *pipelineGRPCClient) WaitOperation(ctx context.Context, req *longrunning
 	return resp, nil
 }
 
-// DeletePipelineJobOperation manages a long-running operation from DeletePipelineJob.
-type DeletePipelineJobOperation struct {
-	lro *longrunning.Operation
+// BatchCancelPipelineJobsOperation returns a new BatchCancelPipelineJobsOperation from a given name.
+// The name must be that of a previously created BatchCancelPipelineJobsOperation, possibly from a different process.
+func (c *pipelineGRPCClient) BatchCancelPipelineJobsOperation(name string) *BatchCancelPipelineJobsOperation {
+	return &BatchCancelPipelineJobsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// BatchDeletePipelineJobsOperation returns a new BatchDeletePipelineJobsOperation from a given name.
+// The name must be that of a previously created BatchDeletePipelineJobsOperation, possibly from a different process.
+func (c *pipelineGRPCClient) BatchDeletePipelineJobsOperation(name string) *BatchDeletePipelineJobsOperation {
+	return &BatchDeletePipelineJobsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
 }
 
 // DeletePipelineJobOperation returns a new DeletePipelineJobOperation from a given name.
@@ -893,199 +990,10 @@ func (c *pipelineGRPCClient) DeletePipelineJobOperation(name string) *DeletePipe
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeletePipelineJobOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeletePipelineJobOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeletePipelineJobOperation) Metadata() (*aiplatformpb.DeleteOperationMetadata, error) {
-	var meta aiplatformpb.DeleteOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeletePipelineJobOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeletePipelineJobOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteTrainingPipelineOperation manages a long-running operation from DeleteTrainingPipeline.
-type DeleteTrainingPipelineOperation struct {
-	lro *longrunning.Operation
-}
-
 // DeleteTrainingPipelineOperation returns a new DeleteTrainingPipelineOperation from a given name.
 // The name must be that of a previously created DeleteTrainingPipelineOperation, possibly from a different process.
 func (c *pipelineGRPCClient) DeleteTrainingPipelineOperation(name string) *DeleteTrainingPipelineOperation {
 	return &DeleteTrainingPipelineOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteTrainingPipelineOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteTrainingPipelineOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteTrainingPipelineOperation) Metadata() (*aiplatformpb.DeleteOperationMetadata, error) {
-	var meta aiplatformpb.DeleteOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteTrainingPipelineOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteTrainingPipelineOperation) Name() string {
-	return op.lro.Name()
-}
-
-// PipelineJobIterator manages a stream of *aiplatformpb.PipelineJob.
-type PipelineJobIterator struct {
-	items    []*aiplatformpb.PipelineJob
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.PipelineJob, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *PipelineJobIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *PipelineJobIterator) Next() (*aiplatformpb.PipelineJob, error) {
-	var item *aiplatformpb.PipelineJob
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *PipelineJobIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *PipelineJobIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// TrainingPipelineIterator manages a stream of *aiplatformpb.TrainingPipeline.
-type TrainingPipelineIterator struct {
-	items    []*aiplatformpb.TrainingPipeline
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.TrainingPipeline, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *TrainingPipelineIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *TrainingPipelineIterator) Next() (*aiplatformpb.TrainingPipeline, error) {
-	var item *aiplatformpb.TrainingPipeline
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *TrainingPipelineIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *TrainingPipelineIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package appengine
 import (
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -27,7 +27,6 @@ import (
 
 	appenginepb "cloud.google.com/go/appengine/apiv1/appenginepb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -48,10 +47,13 @@ type AuthorizedDomainsCallOptions struct {
 func defaultAuthorizedDomainsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("appengine.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("appengine.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("appengine.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://appengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -138,6 +140,8 @@ type authorizedDomainsGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewAuthorizedDomainsClient creates a new authorized domains client based on gRPC.
@@ -166,6 +170,7 @@ func NewAuthorizedDomainsClient(ctx context.Context, opts ...option.ClientOption
 		connPool:                connPool,
 		authorizedDomainsClient: appenginepb.NewAuthorizedDomainsClient(connPool),
 		CallOptions:             &client.CallOptions,
+		logger:                  internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -188,7 +193,9 @@ func (c *authorizedDomainsGRPCClient) Connection() *grpc.ClientConn {
 func (c *authorizedDomainsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -210,6 +217,8 @@ type authorizedDomainsRESTClient struct {
 
 	// Points back to the CallOptions field of the containing AuthorizedDomainsClient
 	CallOptions **AuthorizedDomainsCallOptions
+
+	logger *slog.Logger
 }
 
 // NewAuthorizedDomainsRESTClient creates a new authorized domains rest client.
@@ -229,6 +238,7 @@ func NewAuthorizedDomainsRESTClient(ctx context.Context, opts ...option.ClientOp
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -238,9 +248,12 @@ func NewAuthorizedDomainsRESTClient(ctx context.Context, opts ...option.ClientOp
 func defaultAuthorizedDomainsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://appengine.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://appengine.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://appengine.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://appengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -250,7 +263,9 @@ func defaultAuthorizedDomainsRESTClientOptions() []option.ClientOption {
 func (c *authorizedDomainsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -287,7 +302,7 @@ func (c *authorizedDomainsGRPCClient) ListAuthorizedDomains(ctx context.Context,
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.authorizedDomainsClient.ListAuthorizedDomains(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.authorizedDomainsClient.ListAuthorizedDomains, req, settings.GRPC, c.logger, "ListAuthorizedDomains")
 			return err
 		}, opts...)
 		if err != nil {
@@ -358,21 +373,10 @@ func (c *authorizedDomainsRESTClient) ListAuthorizedDomains(ctx context.Context,
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAuthorizedDomains")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -400,51 +404,4 @@ func (c *authorizedDomainsRESTClient) ListAuthorizedDomains(ctx context.Context,
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
-}
-
-// AuthorizedDomainIterator manages a stream of *appenginepb.AuthorizedDomain.
-type AuthorizedDomainIterator struct {
-	items    []*appenginepb.AuthorizedDomain
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*appenginepb.AuthorizedDomain, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *AuthorizedDomainIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *AuthorizedDomainIterator) Next() (*appenginepb.AuthorizedDomain, error) {
-	var item *appenginepb.AuthorizedDomain
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *AuthorizedDomainIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *AuthorizedDomainIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

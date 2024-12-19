@@ -10,9 +10,19 @@
         "grpc": {
           "libraryClient": "VideoStitcherClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateCdnKey": {
               "methods": [
                 "CreateCdnKey"
+              ]
+            },
+            "CreateLiveConfig": {
+              "methods": [
+                "CreateLiveConfig"
               ]
             },
             "CreateLiveSession": {
@@ -25,6 +35,11 @@
                 "CreateSlate"
               ]
             },
+            "CreateVodConfig": {
+              "methods": [
+                "CreateVodConfig"
+              ]
+            },
             "CreateVodSession": {
               "methods": [
                 "CreateVodSession"
@@ -35,9 +50,24 @@
                 "DeleteCdnKey"
               ]
             },
+            "DeleteLiveConfig": {
+              "methods": [
+                "DeleteLiveConfig"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "DeleteSlate": {
               "methods": [
                 "DeleteSlate"
+              ]
+            },
+            "DeleteVodConfig": {
+              "methods": [
+                "DeleteVodConfig"
               ]
             },
             "GetCdnKey": {
@@ -50,9 +80,19 @@
                 "GetLiveAdTagDetail"
               ]
             },
+            "GetLiveConfig": {
+              "methods": [
+                "GetLiveConfig"
+              ]
+            },
             "GetLiveSession": {
               "methods": [
                 "GetLiveSession"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "GetSlate": {
@@ -63,6 +103,11 @@
             "GetVodAdTagDetail": {
               "methods": [
                 "GetVodAdTagDetail"
+              ]
+            },
+            "GetVodConfig": {
+              "methods": [
+                "GetVodConfig"
               ]
             },
             "GetVodSession": {
@@ -85,6 +130,16 @@
                 "ListLiveAdTagDetails"
               ]
             },
+            "ListLiveConfigs": {
+              "methods": [
+                "ListLiveConfigs"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "ListSlates": {
               "methods": [
                 "ListSlates"
@@ -93,6 +148,11 @@
             "ListVodAdTagDetails": {
               "methods": [
                 "ListVodAdTagDetails"
+              ]
+            },
+            "ListVodConfigs": {
+              "methods": [
+                "ListVodConfigs"
               ]
             },
             "ListVodStitchDetails": {
@@ -105,9 +165,19 @@
                 "UpdateCdnKey"
               ]
             },
+            "UpdateLiveConfig": {
+              "methods": [
+                "UpdateLiveConfig"
+              ]
+            },
             "UpdateSlate": {
               "methods": [
                 "UpdateSlate"
+              ]
+            },
+            "UpdateVodConfig": {
+              "methods": [
+                "UpdateVodConfig"
               ]
             }
           }

@@ -19,38 +19,55 @@ package containeranalysis
 import (
 	"context"
 	"fmt"
+	"math"
 	"net/url"
+	"time"
 
 	grafeas "cloud.google.com/go/grafeas/apiv1"
 	"cloud.google.com/go/iam/apiv1/iampb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	containeranalysispb "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 )
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	SetIamPolicy       []gax.CallOption
-	GetIamPolicy       []gax.CallOption
-	TestIamPermissions []gax.CallOption
+	SetIamPolicy                       []gax.CallOption
+	GetIamPolicy                       []gax.CallOption
+	TestIamPermissions                 []gax.CallOption
+	GetVulnerabilityOccurrencesSummary []gax.CallOption
 }
 
 func defaultClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("containeranalysis.googleapis.com:443"),
-		option.WithScopes(DefaultAuthScopes()...),
+		internaloption.WithDefaultEndpoint("containeranalysis.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("containeranalysis.UNIVERSE_DOMAIN:443"),
+		internaloption.WithDefaultMTLSEndpoint("containeranalysis.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
+		internaloption.WithDefaultAudience("https://containeranalysis.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
+		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
+			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
 }
 
 func defaultCallOptions() *CallOptions {
-	retry := map[[2]string][]gax.CallOption{}
 	return &CallOptions{
-		SetIamPolicy:       retry[[2]string{"default", "non_idempotent"}],
-		GetIamPolicy:       retry[[2]string{"default", "non_idempotent"}],
-		TestIamPermissions: retry[[2]string{"default", "non_idempotent"}],
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
+		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
+		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
+		GetVulnerabilityOccurrencesSummary: []gax.CallOption{},
 	}
 }
 
@@ -71,7 +88,7 @@ type Client struct {
 	CallOptions *CallOptions
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewClient creates a new container analysis client.
@@ -133,8 +150,10 @@ func (c *Client) Close() error {
 // use by Google-written clients.
 func (c *Client) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // SetIamPolicy sets the access control policy on the specified note or occurrence.
@@ -146,9 +165,11 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 // notes and projects/[PROJECT_ID]/occurrences/[OCCURRENCE_ID] for
 // occurrences.
 func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.SetIamPolicy[0:len(c.CallOptions.SetIamPolicy):len(c.CallOptions.SetIamPolicy)], opts...)
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -170,9 +191,11 @@ func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyReques
 // notes and projects/[PROJECT_ID]/occurrences/[OCCURRENCE_ID] for
 // occurrences.
 func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetIamPolicy[0:len(c.CallOptions.GetIamPolicy):len(c.CallOptions.GetIamPolicy)], opts...)
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -193,13 +216,34 @@ func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyReques
 // notes and projects/[PROJECT_ID]/occurrences/[OCCURRENCE_ID] for
 // occurrences.
 func (c *Client) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.TestIamPermissions[0:len(c.CallOptions.TestIamPermissions):len(c.CallOptions.TestIamPermissions)], opts...)
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.TestIamPermissions(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// GetVulnerabilityOccurrencesSummary gets a summary of the number and severity of occurrences.
+func (c *Client) GetVulnerabilityOccurrencesSummary(ctx context.Context, req *containeranalysispb.GetVulnerabilityOccurrencesSummaryRequest, opts ...gax.CallOption) (*containeranalysispb.VulnerabilityOccurrencesSummary, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetVulnerabilityOccurrencesSummary[0:len((*c.CallOptions).GetVulnerabilityOccurrencesSummary):len((*c.CallOptions).GetVulnerabilityOccurrencesSummary)], opts...)
+	var resp *containeranalysispb.VulnerabilityOccurrencesSummary
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetVulnerabilityOccurrencesSummary(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {

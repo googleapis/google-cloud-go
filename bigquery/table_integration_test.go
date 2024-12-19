@@ -30,7 +30,7 @@ import (
 	"google.golang.org/api/iterator"
 )
 
-func TestIntegration_TableCreate(t *testing.T) {
+func TestIntegration_TableInvalidSchema(t *testing.T) {
 	// Check that creating a record field with an empty schema is an error.
 	if client == nil {
 		t.Skip("Integration tests skipped")
@@ -48,6 +48,40 @@ func TestIntegration_TableCreate(t *testing.T) {
 	}
 	if !hasStatusCode(err, http.StatusBadRequest) {
 		t.Fatalf("want a 400 error, got %v", err)
+	}
+}
+
+func TestIntegration_TableValidSchema(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	table := dataset.Table("t_bad")
+	schema := Schema{
+		{
+			Name: "range_dt",
+			Type: RangeFieldType,
+			RangeElementType: &RangeElementType{
+				Type: DateTimeFieldType,
+			},
+		},
+		{Name: "rec", Type: RecordFieldType, Schema: Schema{
+			{Name: "inner", Type: IntegerFieldType},
+		}},
+	}
+	err := table.Create(ctx, &TableMetadata{
+		Schema: schema,
+	})
+	if err != nil {
+		t.Fatalf("table.Create: %v", err)
+	}
+
+	meta, err := table.Metadata(ctx)
+	if err != nil {
+		t.Fatalf("table.Metadata: %v", err)
+	}
+	if diff := testutil.Diff(meta.Schema, schema); diff != "" {
+		t.Fatalf("got=-, want=+:\n%s", diff)
 	}
 }
 
@@ -657,6 +691,66 @@ func TestIntegration_TableDefaultCollation(t *testing.T) {
 		if field.Type == StringFieldType {
 			if field.Collation != caseInsensitiveCollation {
 				t.Fatalf("expected all columns to have collation %q, but found %q on field :%v", caseInsensitiveCollation, field.Collation, field.Name)
+			}
+		}
+	}
+}
+
+func TestIntegration_TableRoundingMode(t *testing.T) {
+	// Test RoundingMode for Table.Create and Table.Update
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	table := dataset.Table(tableIDs.New())
+	schema := Schema{
+		{Name: "num", Type: NumericFieldType, RoundingMode: RoundHalfAwayFromZero},
+	}
+	err := table.Create(context.Background(), &TableMetadata{
+		Schema:         schema,
+		ExpirationTime: testTableExpiration,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer table.Delete(ctx)
+	md, err := table.Metadata(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// all fields should be RoundHalfAwayFromZero
+	for _, field := range md.Schema {
+		if field.RoundingMode != RoundHalfAwayFromZero {
+			t.Fatalf("expected to have rounding mode %q, but found %q on field: %v", RoundHalfAwayFromZero, field.RoundingMode, field.Name)
+		}
+	}
+
+	// Add a bignum field with different rounding mode
+	updatedSchema := md.Schema
+	updatedSchema = append(updatedSchema, &FieldSchema{
+		Name:         "bignum",
+		Type:         BigNumericFieldType,
+		RoundingMode: RoundHalfEven,
+	})
+	md, err = table.Update(ctx, TableMetadataToUpdate{
+		Schema: updatedSchema,
+	}, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// numeric field is RoundHalfAwayFromZero
+	// and bignum is RoundHalfEven
+	for _, field := range md.Schema {
+		if field.Type == NumericFieldType {
+			if field.RoundingMode != RoundHalfAwayFromZero {
+				t.Fatalf("expected to have rounding mode %q, but found %q on field: %v", RoundHalfAwayFromZero, field.RoundingMode, field.Name)
+			}
+		}
+		if field.Type == BigNumericFieldType {
+			if field.RoundingMode != RoundHalfEven {
+				t.Fatalf("expected to have rounding mode %q, but found %q on field: %v", RoundHalfEven, field.RoundingMode, field.Name)
 			}
 		}
 	}

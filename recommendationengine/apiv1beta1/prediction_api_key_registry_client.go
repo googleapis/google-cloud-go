@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	recommendationenginepb "cloud.google.com/go/recommendationengine/apiv1beta1/recommendationenginepb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -52,10 +51,13 @@ type PredictionApiKeyRegistryCallOptions struct {
 func defaultPredictionApiKeyRegistryGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("recommendationengine.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("recommendationengine.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("recommendationengine.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://recommendationengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -225,6 +227,8 @@ type predictionApiKeyRegistryGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewPredictionApiKeyRegistryClient creates a new prediction api key registry client based on gRPC.
@@ -255,6 +259,7 @@ func NewPredictionApiKeyRegistryClient(ctx context.Context, opts ...option.Clien
 		connPool:                       connPool,
 		predictionApiKeyRegistryClient: recommendationenginepb.NewPredictionApiKeyRegistryClient(connPool),
 		CallOptions:                    &client.CallOptions,
+		logger:                         internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -277,7 +282,9 @@ func (c *predictionApiKeyRegistryGRPCClient) Connection() *grpc.ClientConn {
 func (c *predictionApiKeyRegistryGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -299,6 +306,8 @@ type predictionApiKeyRegistryRESTClient struct {
 
 	// Points back to the CallOptions field of the containing PredictionApiKeyRegistryClient
 	CallOptions **PredictionApiKeyRegistryCallOptions
+
+	logger *slog.Logger
 }
 
 // NewPredictionApiKeyRegistryRESTClient creates a new prediction api key registry rest client.
@@ -320,6 +329,7 @@ func NewPredictionApiKeyRegistryRESTClient(ctx context.Context, opts ...option.C
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -329,9 +339,12 @@ func NewPredictionApiKeyRegistryRESTClient(ctx context.Context, opts ...option.C
 func defaultPredictionApiKeyRegistryRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://recommendationengine.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://recommendationengine.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://recommendationengine.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://recommendationengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -341,7 +354,9 @@ func defaultPredictionApiKeyRegistryRESTClientOptions() []option.ClientOption {
 func (c *predictionApiKeyRegistryRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -367,7 +382,7 @@ func (c *predictionApiKeyRegistryGRPCClient) CreatePredictionApiKeyRegistration(
 	var resp *recommendationenginepb.PredictionApiKeyRegistration
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.predictionApiKeyRegistryClient.CreatePredictionApiKeyRegistration(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.predictionApiKeyRegistryClient.CreatePredictionApiKeyRegistration, req, settings.GRPC, c.logger, "CreatePredictionApiKeyRegistration")
 		return err
 	}, opts...)
 	if err != nil {
@@ -396,7 +411,7 @@ func (c *predictionApiKeyRegistryGRPCClient) ListPredictionApiKeyRegistrations(c
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.predictionApiKeyRegistryClient.ListPredictionApiKeyRegistrations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.predictionApiKeyRegistryClient.ListPredictionApiKeyRegistrations, req, settings.GRPC, c.logger, "ListPredictionApiKeyRegistrations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -430,7 +445,7 @@ func (c *predictionApiKeyRegistryGRPCClient) DeletePredictionApiKeyRegistration(
 	opts = append((*c.CallOptions).DeletePredictionApiKeyRegistration[0:len((*c.CallOptions).DeletePredictionApiKeyRegistration):len((*c.CallOptions).DeletePredictionApiKeyRegistration)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.predictionApiKeyRegistryClient.DeletePredictionApiKeyRegistration(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.predictionApiKeyRegistryClient.DeletePredictionApiKeyRegistration, req, settings.GRPC, c.logger, "DeletePredictionApiKeyRegistration")
 		return err
 	}, opts...)
 	return err
@@ -475,17 +490,7 @@ func (c *predictionApiKeyRegistryRESTClient) CreatePredictionApiKeyRegistration(
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreatePredictionApiKeyRegistration")
 		if err != nil {
 			return err
 		}
@@ -547,21 +552,10 @@ func (c *predictionApiKeyRegistryRESTClient) ListPredictionApiKeyRegistrations(c
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListPredictionApiKeyRegistrations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -621,61 +615,7 @@ func (c *predictionApiKeyRegistryRESTClient) DeletePredictionApiKeyRegistration(
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeletePredictionApiKeyRegistration")
+		return err
 	}, opts...)
-}
-
-// PredictionApiKeyRegistrationIterator manages a stream of *recommendationenginepb.PredictionApiKeyRegistration.
-type PredictionApiKeyRegistrationIterator struct {
-	items    []*recommendationenginepb.PredictionApiKeyRegistration
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*recommendationenginepb.PredictionApiKeyRegistration, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *PredictionApiKeyRegistrationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *PredictionApiKeyRegistrationIterator) Next() (*recommendationenginepb.PredictionApiKeyRegistration, error) {
-	var item *recommendationenginepb.PredictionApiKeyRegistration
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *PredictionApiKeyRegistrationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *PredictionApiKeyRegistrationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

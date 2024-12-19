@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -76,10 +75,13 @@ type CallOptions struct {
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("cloudasset.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("cloudasset.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("cloudasset.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudasset.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -714,8 +716,7 @@ func (c *Client) AnalyzeMove(ctx context.Context, req *assetpb.AnalyzeMoveReques
 }
 
 // QueryAssets issue a job that queries assets using a SQL statement compatible with
-// BigQuery Standard
-// SQL (at http://cloud/bigquery/docs/reference/standard-sql/enabling-standard-sql).
+// BigQuery SQL (at https://cloud.google.com/bigquery/docs/introduction-sql).
 //
 // If the query execution finishes within timeout and there’s no pagination,
 // the full query results will be returned in the QueryAssetsResponse.
@@ -724,9 +725,8 @@ func (c *Client) AnalyzeMove(ctx context.Context, req *assetpb.AnalyzeMoveReques
 // with the job_reference from the a previous QueryAssets call.
 //
 // Note, the query result has approximately 10 GB limitation enforced by
-// BigQuery
-// https://cloud.google.com/bigquery/docs/best-practices-performance-output (at https://cloud.google.com/bigquery/docs/best-practices-performance-output),
-// queries return larger results will result in errors.
+// BigQuery (at https://cloud.google.com/bigquery/docs/best-practices-performance-output).
+// Queries return larger results will result in errors.
 func (c *Client) QueryAssets(ctx context.Context, req *assetpb.QueryAssetsRequest, opts ...gax.CallOption) (*assetpb.QueryAssetsResponse, error) {
 	return c.internalClient.QueryAssets(ctx, req, opts...)
 }
@@ -774,31 +774,92 @@ func (c *Client) AnalyzeOrgPolicyGovernedContainers(ctx context.Context, req *as
 
 // AnalyzeOrgPolicyGovernedAssets analyzes organization policies governed assets (Google Cloud resources or
 // policies) under a scope. This RPC supports custom constraints and the
-// following 10 canned constraints:
+// following canned constraints:
 //
-//	storage.uniformBucketLevelAccess
+//	constraints/ainotebooks.accessMode
 //
-//	iam.disableServiceAccountKeyCreation
+//	constraints/ainotebooks.disableFileDownloads
 //
-//	iam.allowedPolicyMemberDomains
+//	constraints/ainotebooks.disableRootAccess
 //
-//	compute.vmExternalIpAccess
+//	constraints/ainotebooks.disableTerminal
 //
-//	appengine.enforceServiceAccountActAsCheck
+//	constraints/ainotebooks.environmentOptions
 //
-//	gcp.resourceLocations
+//	constraints/ainotebooks.requireAutoUpgradeSchedule
 //
-//	compute.trustedImageProjects
+//	constraints/ainotebooks.restrictVpcNetworks
 //
-//	compute.skipDefaultNetworkCreation
+//	constraints/compute.disableGuestAttributesAccess
 //
-//	compute.requireOsLogin
+//	constraints/compute.disableInstanceDataAccessApis
 //
-//	compute.disableNestedVirtualization
+//	constraints/compute.disableNestedVirtualization
 //
-// This RPC only returns either resources of types supported by searchable
-// asset
-// types (at https://cloud.google.com/asset-inventory/docs/supported-asset-types#searchable_asset_types),
+//	constraints/compute.disableSerialPortAccess
+//
+//	constraints/compute.disableSerialPortLogging
+//
+//	constraints/compute.disableVpcExternalIpv6
+//
+//	constraints/compute.requireOsLogin
+//
+//	constraints/compute.requireShieldedVm
+//
+//	constraints/compute.restrictLoadBalancerCreationForTypes
+//
+//	constraints/compute.restrictProtocolForwardingCreationForTypes
+//
+//	constraints/compute.restrictXpnProjectLienRemoval
+//
+//	constraints/compute.setNewProjectDefaultToZonalDNSOnly
+//
+//	constraints/compute.skipDefaultNetworkCreation
+//
+//	constraints/compute.trustedImageProjects
+//
+//	constraints/compute.vmCanIpForward
+//
+//	constraints/compute.vmExternalIpAccess
+//
+//	constraints/gcp.detailedAuditLoggingMode
+//
+//	constraints/gcp.resourceLocations
+//
+//	constraints/iam.allowedPolicyMemberDomains
+//
+//	constraints/iam.automaticIamGrantsForDefaultServiceAccounts
+//
+//	constraints/iam.disableServiceAccountCreation
+//
+//	constraints/iam.disableServiceAccountKeyCreation
+//
+//	constraints/iam.disableServiceAccountKeyUpload
+//
+//	constraints/iam.restrictCrossProjectServiceAccountLienRemoval
+//
+//	constraints/iam.serviceAccountKeyExpiryHours
+//
+//	constraints/resourcemanager.accessBoundaries
+//
+//	constraints/resourcemanager.allowedExportDestinations
+//
+//	constraints/sql.restrictAuthorizedNetworks
+//
+//	constraints/sql.restrictNoncompliantDiagnosticDataAccess
+//
+//	constraints/sql.restrictNoncompliantResourceCreation
+//
+//	constraints/sql.restrictPublicIp
+//
+//	constraints/storage.publicAccessPrevention
+//
+//	constraints/storage.restrictAuthTypes
+//
+//	constraints/storage.uniformBucketLevelAccess
+//
+// This RPC only returns either resources of types supported by search
+// APIs (at https://cloud.google.com/asset-inventory/docs/supported-asset-types)
 // or IAM policies.
 func (c *Client) AnalyzeOrgPolicyGovernedAssets(ctx context.Context, req *assetpb.AnalyzeOrgPolicyGovernedAssetsRequest, opts ...gax.CallOption) *AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator {
 	return c.internalClient.AnalyzeOrgPolicyGovernedAssets(ctx, req, opts...)
@@ -831,6 +892,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new asset service client based on gRPC.
@@ -857,6 +920,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:         connPool,
 		client:           assetpb.NewAssetServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -891,7 +955,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -918,6 +984,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new asset service rest client.
@@ -935,6 +1003,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -954,9 +1023,12 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 func defaultRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://cloudasset.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://cloudasset.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://cloudasset.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudasset.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -966,7 +1038,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -992,7 +1066,7 @@ func (c *gRPCClient) ExportAssets(ctx context.Context, req *assetpb.ExportAssets
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ExportAssets(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ExportAssets, req, settings.GRPC, c.logger, "ExportAssets")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1023,7 +1097,7 @@ func (c *gRPCClient) ListAssets(ctx context.Context, req *assetpb.ListAssetsRequ
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListAssets(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListAssets, req, settings.GRPC, c.logger, "ListAssets")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1058,7 +1132,7 @@ func (c *gRPCClient) BatchGetAssetsHistory(ctx context.Context, req *assetpb.Bat
 	var resp *assetpb.BatchGetAssetsHistoryResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.BatchGetAssetsHistory(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.BatchGetAssetsHistory, req, settings.GRPC, c.logger, "BatchGetAssetsHistory")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1076,7 +1150,7 @@ func (c *gRPCClient) CreateFeed(ctx context.Context, req *assetpb.CreateFeedRequ
 	var resp *assetpb.Feed
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateFeed(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateFeed, req, settings.GRPC, c.logger, "CreateFeed")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1094,7 +1168,7 @@ func (c *gRPCClient) GetFeed(ctx context.Context, req *assetpb.GetFeedRequest, o
 	var resp *assetpb.Feed
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetFeed(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetFeed, req, settings.GRPC, c.logger, "GetFeed")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1112,7 +1186,7 @@ func (c *gRPCClient) ListFeeds(ctx context.Context, req *assetpb.ListFeedsReques
 	var resp *assetpb.ListFeedsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ListFeeds(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ListFeeds, req, settings.GRPC, c.logger, "ListFeeds")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1130,7 +1204,7 @@ func (c *gRPCClient) UpdateFeed(ctx context.Context, req *assetpb.UpdateFeedRequ
 	var resp *assetpb.Feed
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateFeed(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateFeed, req, settings.GRPC, c.logger, "UpdateFeed")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1147,7 +1221,7 @@ func (c *gRPCClient) DeleteFeed(ctx context.Context, req *assetpb.DeleteFeedRequ
 	opts = append((*c.CallOptions).DeleteFeed[0:len((*c.CallOptions).DeleteFeed):len((*c.CallOptions).DeleteFeed)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteFeed(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteFeed, req, settings.GRPC, c.logger, "DeleteFeed")
 		return err
 	}, opts...)
 	return err
@@ -1173,7 +1247,7 @@ func (c *gRPCClient) SearchAllResources(ctx context.Context, req *assetpb.Search
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.SearchAllResources(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.SearchAllResources, req, settings.GRPC, c.logger, "SearchAllResources")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1219,7 +1293,7 @@ func (c *gRPCClient) SearchAllIamPolicies(ctx context.Context, req *assetpb.Sear
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.SearchAllIamPolicies(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.SearchAllIamPolicies, req, settings.GRPC, c.logger, "SearchAllIamPolicies")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1254,7 +1328,7 @@ func (c *gRPCClient) AnalyzeIamPolicy(ctx context.Context, req *assetpb.AnalyzeI
 	var resp *assetpb.AnalyzeIamPolicyResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.AnalyzeIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.AnalyzeIamPolicy, req, settings.GRPC, c.logger, "AnalyzeIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1272,7 +1346,7 @@ func (c *gRPCClient) AnalyzeIamPolicyLongrunning(ctx context.Context, req *asset
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.AnalyzeIamPolicyLongrunning(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.AnalyzeIamPolicyLongrunning, req, settings.GRPC, c.logger, "AnalyzeIamPolicyLongrunning")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1292,7 +1366,7 @@ func (c *gRPCClient) AnalyzeMove(ctx context.Context, req *assetpb.AnalyzeMoveRe
 	var resp *assetpb.AnalyzeMoveResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.AnalyzeMove(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.AnalyzeMove, req, settings.GRPC, c.logger, "AnalyzeMove")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1310,7 +1384,7 @@ func (c *gRPCClient) QueryAssets(ctx context.Context, req *assetpb.QueryAssetsRe
 	var resp *assetpb.QueryAssetsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.QueryAssets(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.QueryAssets, req, settings.GRPC, c.logger, "QueryAssets")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1328,7 +1402,7 @@ func (c *gRPCClient) CreateSavedQuery(ctx context.Context, req *assetpb.CreateSa
 	var resp *assetpb.SavedQuery
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateSavedQuery(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateSavedQuery, req, settings.GRPC, c.logger, "CreateSavedQuery")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1346,7 +1420,7 @@ func (c *gRPCClient) GetSavedQuery(ctx context.Context, req *assetpb.GetSavedQue
 	var resp *assetpb.SavedQuery
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetSavedQuery(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetSavedQuery, req, settings.GRPC, c.logger, "GetSavedQuery")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1375,7 +1449,7 @@ func (c *gRPCClient) ListSavedQueries(ctx context.Context, req *assetpb.ListSave
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListSavedQueries(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListSavedQueries, req, settings.GRPC, c.logger, "ListSavedQueries")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1410,7 +1484,7 @@ func (c *gRPCClient) UpdateSavedQuery(ctx context.Context, req *assetpb.UpdateSa
 	var resp *assetpb.SavedQuery
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateSavedQuery(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateSavedQuery, req, settings.GRPC, c.logger, "UpdateSavedQuery")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1427,7 +1501,7 @@ func (c *gRPCClient) DeleteSavedQuery(ctx context.Context, req *assetpb.DeleteSa
 	opts = append((*c.CallOptions).DeleteSavedQuery[0:len((*c.CallOptions).DeleteSavedQuery):len((*c.CallOptions).DeleteSavedQuery)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteSavedQuery(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteSavedQuery, req, settings.GRPC, c.logger, "DeleteSavedQuery")
 		return err
 	}, opts...)
 	return err
@@ -1442,7 +1516,7 @@ func (c *gRPCClient) BatchGetEffectiveIamPolicies(ctx context.Context, req *asse
 	var resp *assetpb.BatchGetEffectiveIamPoliciesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.BatchGetEffectiveIamPolicies(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.BatchGetEffectiveIamPolicies, req, settings.GRPC, c.logger, "BatchGetEffectiveIamPolicies")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1465,13 +1539,13 @@ func (c *gRPCClient) AnalyzeOrgPolicies(ctx context.Context, req *assetpb.Analyz
 			req.PageToken = pageToken
 		}
 		if pageSize > math.MaxInt32 {
-			req.PageSize = proto.Int32(math.MaxInt32)
+			req.PageSize = proto.Int32(int32(math.MaxInt32))
 		} else if pageSize != 0 {
 			req.PageSize = proto.Int32(int32(pageSize))
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.AnalyzeOrgPolicies(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.AnalyzeOrgPolicies, req, settings.GRPC, c.logger, "AnalyzeOrgPolicies")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1511,13 +1585,13 @@ func (c *gRPCClient) AnalyzeOrgPolicyGovernedContainers(ctx context.Context, req
 			req.PageToken = pageToken
 		}
 		if pageSize > math.MaxInt32 {
-			req.PageSize = proto.Int32(math.MaxInt32)
+			req.PageSize = proto.Int32(int32(math.MaxInt32))
 		} else if pageSize != 0 {
 			req.PageSize = proto.Int32(int32(pageSize))
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.AnalyzeOrgPolicyGovernedContainers(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.AnalyzeOrgPolicyGovernedContainers, req, settings.GRPC, c.logger, "AnalyzeOrgPolicyGovernedContainers")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1557,13 +1631,13 @@ func (c *gRPCClient) AnalyzeOrgPolicyGovernedAssets(ctx context.Context, req *as
 			req.PageToken = pageToken
 		}
 		if pageSize > math.MaxInt32 {
-			req.PageSize = proto.Int32(math.MaxInt32)
+			req.PageSize = proto.Int32(int32(math.MaxInt32))
 		} else if pageSize != 0 {
 			req.PageSize = proto.Int32(int32(pageSize))
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.AnalyzeOrgPolicyGovernedAssets(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.AnalyzeOrgPolicyGovernedAssets, req, settings.GRPC, c.logger, "AnalyzeOrgPolicyGovernedAssets")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1598,7 +1672,7 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1655,21 +1729,10 @@ func (c *restClient) ExportAssets(ctx context.Context, req *assetpb.ExportAssets
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExportAssets")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1726,11 +1789,11 @@ func (c *restClient) ListAssets(ctx context.Context, req *assetpb.ListAssetsRequ
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
 		if req.GetReadTime() != nil {
-			readTime, err := protojson.Marshal(req.GetReadTime())
+			field, err := protojson.Marshal(req.GetReadTime())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readTime", string(readTime[1:len(readTime)-1]))
+			params.Add("readTime", string(field[1:len(field)-1]))
 		}
 		if items := req.GetRelationshipTypes(); len(items) > 0 {
 			for _, item := range items {
@@ -1753,21 +1816,10 @@ func (c *restClient) ListAssets(ctx context.Context, req *assetpb.ListAssetsRequ
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAssets")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1822,18 +1874,18 @@ func (c *restClient) BatchGetAssetsHistory(ctx context.Context, req *assetpb.Bat
 		params.Add("contentType", fmt.Sprintf("%v", req.GetContentType()))
 	}
 	if req.GetReadTimeWindow().GetEndTime() != nil {
-		endTime, err := protojson.Marshal(req.GetReadTimeWindow().GetEndTime())
+		field, err := protojson.Marshal(req.GetReadTimeWindow().GetEndTime())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("readTimeWindow.endTime", string(endTime[1:len(endTime)-1]))
+		params.Add("readTimeWindow.endTime", string(field[1:len(field)-1]))
 	}
 	if req.GetReadTimeWindow().GetStartTime() != nil {
-		startTime, err := protojson.Marshal(req.GetReadTimeWindow().GetStartTime())
+		field, err := protojson.Marshal(req.GetReadTimeWindow().GetStartTime())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("readTimeWindow.startTime", string(startTime[1:len(startTime)-1]))
+		params.Add("readTimeWindow.startTime", string(field[1:len(field)-1]))
 	}
 	if items := req.GetRelationshipTypes(); len(items) > 0 {
 		for _, item := range items {
@@ -1863,17 +1915,7 @@ func (c *restClient) BatchGetAssetsHistory(ctx context.Context, req *assetpb.Bat
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "BatchGetAssetsHistory")
 		if err != nil {
 			return err
 		}
@@ -1930,17 +1972,7 @@ func (c *restClient) CreateFeed(ctx context.Context, req *assetpb.CreateFeedRequ
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateFeed")
 		if err != nil {
 			return err
 		}
@@ -1990,17 +2022,7 @@ func (c *restClient) GetFeed(ctx context.Context, req *assetpb.GetFeedRequest, o
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetFeed")
 		if err != nil {
 			return err
 		}
@@ -2050,17 +2072,7 @@ func (c *restClient) ListFeeds(ctx context.Context, req *assetpb.ListFeedsReques
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListFeeds")
 		if err != nil {
 			return err
 		}
@@ -2116,17 +2128,7 @@ func (c *restClient) UpdateFeed(ctx context.Context, req *assetpb.UpdateFeedRequ
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateFeed")
 		if err != nil {
 			return err
 		}
@@ -2173,15 +2175,8 @@ func (c *restClient) DeleteFeed(ctx context.Context, req *assetpb.DeleteFeedRequ
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteFeed")
+		return err
 	}, opts...)
 }
 
@@ -2229,11 +2224,11 @@ func (c *restClient) SearchAllResources(ctx context.Context, req *assetpb.Search
 			params.Add("query", fmt.Sprintf("%v", req.GetQuery()))
 		}
 		if req.GetReadMask() != nil {
-			readMask, err := protojson.Marshal(req.GetReadMask())
+			field, err := protojson.Marshal(req.GetReadMask())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask[1:len(readMask)-1]))
+			params.Add("readMask", string(field[1:len(field)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -2251,21 +2246,10 @@ func (c *restClient) SearchAllResources(ctx context.Context, req *assetpb.Search
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "SearchAllResources")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2354,21 +2338,10 @@ func (c *restClient) SearchAllIamPolicies(ctx context.Context, req *assetpb.Sear
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "SearchAllIamPolicies")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2420,11 +2393,11 @@ func (c *restClient) AnalyzeIamPolicy(ctx context.Context, req *assetpb.AnalyzeI
 		}
 	}
 	if req.GetAnalysisQuery().GetConditionContext().GetAccessTime() != nil {
-		accessTime, err := protojson.Marshal(req.GetAnalysisQuery().GetConditionContext().GetAccessTime())
+		field, err := protojson.Marshal(req.GetAnalysisQuery().GetConditionContext().GetAccessTime())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("analysisQuery.conditionContext.accessTime", string(accessTime[1:len(accessTime)-1]))
+		params.Add("analysisQuery.conditionContext.accessTime", string(field[1:len(field)-1]))
 	}
 	params.Add("analysisQuery.identitySelector.identity", fmt.Sprintf("%v", req.GetAnalysisQuery().GetIdentitySelector().GetIdentity()))
 	if req.GetAnalysisQuery().GetOptions().GetAnalyzeServiceAccountImpersonation() {
@@ -2447,11 +2420,11 @@ func (c *restClient) AnalyzeIamPolicy(ctx context.Context, req *assetpb.AnalyzeI
 	}
 	params.Add("analysisQuery.resourceSelector.fullResourceName", fmt.Sprintf("%v", req.GetAnalysisQuery().GetResourceSelector().GetFullResourceName()))
 	if req.GetExecutionTimeout() != nil {
-		executionTimeout, err := protojson.Marshal(req.GetExecutionTimeout())
+		field, err := protojson.Marshal(req.GetExecutionTimeout())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("executionTimeout", string(executionTimeout[1:len(executionTimeout)-1]))
+		params.Add("executionTimeout", string(field[1:len(field)-1]))
 	}
 	if req.GetSavedAnalysisQuery() != "" {
 		params.Add("savedAnalysisQuery", fmt.Sprintf("%v", req.GetSavedAnalysisQuery()))
@@ -2479,17 +2452,7 @@ func (c *restClient) AnalyzeIamPolicy(ctx context.Context, req *assetpb.AnalyzeI
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "AnalyzeIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -2553,21 +2516,10 @@ func (c *restClient) AnalyzeIamPolicyLongrunning(ctx context.Context, req *asset
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AnalyzeIamPolicyLongrunning")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2626,17 +2578,7 @@ func (c *restClient) AnalyzeMove(ctx context.Context, req *assetpb.AnalyzeMoveRe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "AnalyzeMove")
 		if err != nil {
 			return err
 		}
@@ -2654,8 +2596,7 @@ func (c *restClient) AnalyzeMove(ctx context.Context, req *assetpb.AnalyzeMoveRe
 }
 
 // QueryAssets issue a job that queries assets using a SQL statement compatible with
-// BigQuery Standard
-// SQL (at http://cloud/bigquery/docs/reference/standard-sql/enabling-standard-sql).
+// BigQuery SQL (at https://cloud.google.com/bigquery/docs/introduction-sql).
 //
 // If the query execution finishes within timeout and there’s no pagination,
 // the full query results will be returned in the QueryAssetsResponse.
@@ -2664,9 +2605,8 @@ func (c *restClient) AnalyzeMove(ctx context.Context, req *assetpb.AnalyzeMoveRe
 // with the job_reference from the a previous QueryAssets call.
 //
 // Note, the query result has approximately 10 GB limitation enforced by
-// BigQuery
-// https://cloud.google.com/bigquery/docs/best-practices-performance-output (at https://cloud.google.com/bigquery/docs/best-practices-performance-output),
-// queries return larger results will result in errors.
+// BigQuery (at https://cloud.google.com/bigquery/docs/best-practices-performance-output).
+// Queries return larger results will result in errors.
 func (c *restClient) QueryAssets(ctx context.Context, req *assetpb.QueryAssetsRequest, opts ...gax.CallOption) (*assetpb.QueryAssetsResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -2705,17 +2645,7 @@ func (c *restClient) QueryAssets(ctx context.Context, req *assetpb.QueryAssetsRe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "QueryAssets")
 		if err != nil {
 			return err
 		}
@@ -2773,17 +2703,7 @@ func (c *restClient) CreateSavedQuery(ctx context.Context, req *assetpb.CreateSa
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateSavedQuery")
 		if err != nil {
 			return err
 		}
@@ -2833,17 +2753,7 @@ func (c *restClient) GetSavedQuery(ctx context.Context, req *assetpb.GetSavedQue
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSavedQuery")
 		if err != nil {
 			return err
 		}
@@ -2908,21 +2818,10 @@ func (c *restClient) ListSavedQueries(ctx context.Context, req *assetpb.ListSave
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSavedQueries")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2970,11 +2869,11 @@ func (c *restClient) UpdateSavedQuery(ctx context.Context, req *assetpb.UpdateSa
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2999,17 +2898,7 @@ func (c *restClient) UpdateSavedQuery(ctx context.Context, req *assetpb.UpdateSa
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateSavedQuery")
 		if err != nil {
 			return err
 		}
@@ -3056,15 +2945,8 @@ func (c *restClient) DeleteSavedQuery(ctx context.Context, req *assetpb.DeleteSa
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteSavedQuery")
+		return err
 	}, opts...)
 }
 
@@ -3106,17 +2988,7 @@ func (c *restClient) BatchGetEffectiveIamPolicies(ctx context.Context, req *asse
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "BatchGetEffectiveIamPolicies")
 		if err != nil {
 			return err
 		}
@@ -3144,7 +3016,7 @@ func (c *restClient) AnalyzeOrgPolicies(ctx context.Context, req *assetpb.Analyz
 			req.PageToken = pageToken
 		}
 		if pageSize > math.MaxInt32 {
-			req.PageSize = proto.Int32(math.MaxInt32)
+			req.PageSize = proto.Int32(int32(math.MaxInt32))
 		} else if pageSize != 0 {
 			req.PageSize = proto.Int32(int32(pageSize))
 		}
@@ -3182,21 +3054,10 @@ func (c *restClient) AnalyzeOrgPolicies(ctx context.Context, req *assetpb.Analyz
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "AnalyzeOrgPolicies")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3238,7 +3099,7 @@ func (c *restClient) AnalyzeOrgPolicyGovernedContainers(ctx context.Context, req
 			req.PageToken = pageToken
 		}
 		if pageSize > math.MaxInt32 {
-			req.PageSize = proto.Int32(math.MaxInt32)
+			req.PageSize = proto.Int32(int32(math.MaxInt32))
 		} else if pageSize != 0 {
 			req.PageSize = proto.Int32(int32(pageSize))
 		}
@@ -3276,21 +3137,10 @@ func (c *restClient) AnalyzeOrgPolicyGovernedContainers(ctx context.Context, req
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "AnalyzeOrgPolicyGovernedContainers")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3322,31 +3172,92 @@ func (c *restClient) AnalyzeOrgPolicyGovernedContainers(ctx context.Context, req
 
 // AnalyzeOrgPolicyGovernedAssets analyzes organization policies governed assets (Google Cloud resources or
 // policies) under a scope. This RPC supports custom constraints and the
-// following 10 canned constraints:
+// following canned constraints:
 //
-//	storage.uniformBucketLevelAccess
+//	constraints/ainotebooks.accessMode
 //
-//	iam.disableServiceAccountKeyCreation
+//	constraints/ainotebooks.disableFileDownloads
 //
-//	iam.allowedPolicyMemberDomains
+//	constraints/ainotebooks.disableRootAccess
 //
-//	compute.vmExternalIpAccess
+//	constraints/ainotebooks.disableTerminal
 //
-//	appengine.enforceServiceAccountActAsCheck
+//	constraints/ainotebooks.environmentOptions
 //
-//	gcp.resourceLocations
+//	constraints/ainotebooks.requireAutoUpgradeSchedule
 //
-//	compute.trustedImageProjects
+//	constraints/ainotebooks.restrictVpcNetworks
 //
-//	compute.skipDefaultNetworkCreation
+//	constraints/compute.disableGuestAttributesAccess
 //
-//	compute.requireOsLogin
+//	constraints/compute.disableInstanceDataAccessApis
 //
-//	compute.disableNestedVirtualization
+//	constraints/compute.disableNestedVirtualization
 //
-// This RPC only returns either resources of types supported by searchable
-// asset
-// types (at https://cloud.google.com/asset-inventory/docs/supported-asset-types#searchable_asset_types),
+//	constraints/compute.disableSerialPortAccess
+//
+//	constraints/compute.disableSerialPortLogging
+//
+//	constraints/compute.disableVpcExternalIpv6
+//
+//	constraints/compute.requireOsLogin
+//
+//	constraints/compute.requireShieldedVm
+//
+//	constraints/compute.restrictLoadBalancerCreationForTypes
+//
+//	constraints/compute.restrictProtocolForwardingCreationForTypes
+//
+//	constraints/compute.restrictXpnProjectLienRemoval
+//
+//	constraints/compute.setNewProjectDefaultToZonalDNSOnly
+//
+//	constraints/compute.skipDefaultNetworkCreation
+//
+//	constraints/compute.trustedImageProjects
+//
+//	constraints/compute.vmCanIpForward
+//
+//	constraints/compute.vmExternalIpAccess
+//
+//	constraints/gcp.detailedAuditLoggingMode
+//
+//	constraints/gcp.resourceLocations
+//
+//	constraints/iam.allowedPolicyMemberDomains
+//
+//	constraints/iam.automaticIamGrantsForDefaultServiceAccounts
+//
+//	constraints/iam.disableServiceAccountCreation
+//
+//	constraints/iam.disableServiceAccountKeyCreation
+//
+//	constraints/iam.disableServiceAccountKeyUpload
+//
+//	constraints/iam.restrictCrossProjectServiceAccountLienRemoval
+//
+//	constraints/iam.serviceAccountKeyExpiryHours
+//
+//	constraints/resourcemanager.accessBoundaries
+//
+//	constraints/resourcemanager.allowedExportDestinations
+//
+//	constraints/sql.restrictAuthorizedNetworks
+//
+//	constraints/sql.restrictNoncompliantDiagnosticDataAccess
+//
+//	constraints/sql.restrictNoncompliantResourceCreation
+//
+//	constraints/sql.restrictPublicIp
+//
+//	constraints/storage.publicAccessPrevention
+//
+//	constraints/storage.restrictAuthTypes
+//
+//	constraints/storage.uniformBucketLevelAccess
+//
+// This RPC only returns either resources of types supported by search
+// APIs (at https://cloud.google.com/asset-inventory/docs/supported-asset-types)
 // or IAM policies.
 func (c *restClient) AnalyzeOrgPolicyGovernedAssets(ctx context.Context, req *assetpb.AnalyzeOrgPolicyGovernedAssetsRequest, opts ...gax.CallOption) *AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator {
 	it := &AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator{}
@@ -3358,7 +3269,7 @@ func (c *restClient) AnalyzeOrgPolicyGovernedAssets(ctx context.Context, req *as
 			req.PageToken = pageToken
 		}
 		if pageSize > math.MaxInt32 {
-			req.PageSize = proto.Int32(math.MaxInt32)
+			req.PageSize = proto.Int32(int32(math.MaxInt32))
 		} else if pageSize != 0 {
 			req.PageSize = proto.Int32(int32(pageSize))
 		}
@@ -3396,21 +3307,10 @@ func (c *restClient) AnalyzeOrgPolicyGovernedAssets(ctx context.Context, req *as
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "AnalyzeOrgPolicyGovernedAssets")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3473,17 +3373,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -3498,12 +3388,6 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 		return nil, e
 	}
 	return resp, nil
-}
-
-// AnalyzeIamPolicyLongrunningOperation manages a long-running operation from AnalyzeIamPolicyLongrunning.
-type AnalyzeIamPolicyLongrunningOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // AnalyzeIamPolicyLongrunningOperation returns a new AnalyzeIamPolicyLongrunningOperation from a given name.
@@ -3524,70 +3408,6 @@ func (c *restClient) AnalyzeIamPolicyLongrunningOperation(name string) *AnalyzeI
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *AnalyzeIamPolicyLongrunningOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*assetpb.AnalyzeIamPolicyLongrunningResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp assetpb.AnalyzeIamPolicyLongrunningResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *AnalyzeIamPolicyLongrunningOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*assetpb.AnalyzeIamPolicyLongrunningResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp assetpb.AnalyzeIamPolicyLongrunningResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *AnalyzeIamPolicyLongrunningOperation) Metadata() (*assetpb.AnalyzeIamPolicyLongrunningMetadata, error) {
-	var meta assetpb.AnalyzeIamPolicyLongrunningMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *AnalyzeIamPolicyLongrunningOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *AnalyzeIamPolicyLongrunningOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ExportAssetsOperation manages a long-running operation from ExportAssets.
-type ExportAssetsOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // ExportAssetsOperation returns a new ExportAssetsOperation from a given name.
 // The name must be that of a previously created ExportAssetsOperation, possibly from a different process.
 func (c *gRPCClient) ExportAssetsOperation(name string) *ExportAssetsOperation {
@@ -3604,391 +3424,4 @@ func (c *restClient) ExportAssetsOperation(name string) *ExportAssetsOperation {
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ExportAssetsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*assetpb.ExportAssetsResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp assetpb.ExportAssetsResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ExportAssetsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*assetpb.ExportAssetsResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp assetpb.ExportAssetsResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ExportAssetsOperation) Metadata() (*assetpb.ExportAssetsRequest, error) {
-	var meta assetpb.ExportAssetsRequest
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ExportAssetsOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ExportAssetsOperation) Name() string {
-	return op.lro.Name()
-}
-
-// AnalyzeOrgPoliciesResponse_OrgPolicyResultIterator manages a stream of *assetpb.AnalyzeOrgPoliciesResponse_OrgPolicyResult.
-type AnalyzeOrgPoliciesResponse_OrgPolicyResultIterator struct {
-	items    []*assetpb.AnalyzeOrgPoliciesResponse_OrgPolicyResult
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*assetpb.AnalyzeOrgPoliciesResponse_OrgPolicyResult, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *AnalyzeOrgPoliciesResponse_OrgPolicyResultIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *AnalyzeOrgPoliciesResponse_OrgPolicyResultIterator) Next() (*assetpb.AnalyzeOrgPoliciesResponse_OrgPolicyResult, error) {
-	var item *assetpb.AnalyzeOrgPoliciesResponse_OrgPolicyResult
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *AnalyzeOrgPoliciesResponse_OrgPolicyResultIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *AnalyzeOrgPoliciesResponse_OrgPolicyResultIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator manages a stream of *assetpb.AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAsset.
-type AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator struct {
-	items    []*assetpb.AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAsset
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*assetpb.AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAsset, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator) Next() (*assetpb.AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAsset, error) {
-	var item *assetpb.AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAsset
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainerIterator manages a stream of *assetpb.AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainer.
-type AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainerIterator struct {
-	items    []*assetpb.AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainer
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*assetpb.AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainer, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainerIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainerIterator) Next() (*assetpb.AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainer, error) {
-	var item *assetpb.AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainer
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainerIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainerIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// AssetIterator manages a stream of *assetpb.Asset.
-type AssetIterator struct {
-	items    []*assetpb.Asset
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*assetpb.Asset, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *AssetIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *AssetIterator) Next() (*assetpb.Asset, error) {
-	var item *assetpb.Asset
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *AssetIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *AssetIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// IamPolicySearchResultIterator manages a stream of *assetpb.IamPolicySearchResult.
-type IamPolicySearchResultIterator struct {
-	items    []*assetpb.IamPolicySearchResult
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*assetpb.IamPolicySearchResult, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *IamPolicySearchResultIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *IamPolicySearchResultIterator) Next() (*assetpb.IamPolicySearchResult, error) {
-	var item *assetpb.IamPolicySearchResult
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *IamPolicySearchResultIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *IamPolicySearchResultIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ResourceSearchResultIterator manages a stream of *assetpb.ResourceSearchResult.
-type ResourceSearchResultIterator struct {
-	items    []*assetpb.ResourceSearchResult
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*assetpb.ResourceSearchResult, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ResourceSearchResultIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ResourceSearchResultIterator) Next() (*assetpb.ResourceSearchResult, error) {
-	var item *assetpb.ResourceSearchResult
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ResourceSearchResultIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ResourceSearchResultIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// SavedQueryIterator manages a stream of *assetpb.SavedQuery.
-type SavedQueryIterator struct {
-	items    []*assetpb.SavedQuery
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*assetpb.SavedQuery, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *SavedQueryIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *SavedQueryIterator) Next() (*assetpb.SavedQuery, error) {
-	var item *assetpb.SavedQuery
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *SavedQueryIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *SavedQueryIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -32,7 +32,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -72,10 +71,13 @@ type RepositoryManagerCallOptions struct {
 func defaultRepositoryManagerGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("cloudbuild.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("cloudbuild.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("cloudbuild.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudbuild.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -535,6 +537,8 @@ type repositoryManagerGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewRepositoryManagerClient creates a new repository manager client based on gRPC.
@@ -561,6 +565,7 @@ func NewRepositoryManagerClient(ctx context.Context, opts ...option.ClientOption
 		connPool:                connPool,
 		repositoryManagerClient: cloudbuildpb.NewRepositoryManagerClient(connPool),
 		CallOptions:             &client.CallOptions,
+		logger:                  internaloption.GetLogger(opts),
 		operationsClient:        longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:         iampb.NewIAMPolicyClient(connPool),
 	}
@@ -596,7 +601,9 @@ func (c *repositoryManagerGRPCClient) Connection() *grpc.ClientConn {
 func (c *repositoryManagerGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -623,6 +630,8 @@ type repositoryManagerRESTClient struct {
 
 	// Points back to the CallOptions field of the containing RepositoryManagerClient
 	CallOptions **RepositoryManagerCallOptions
+
+	logger *slog.Logger
 }
 
 // NewRepositoryManagerRESTClient creates a new repository manager rest client.
@@ -640,6 +649,7 @@ func NewRepositoryManagerRESTClient(ctx context.Context, opts ...option.ClientOp
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -659,9 +669,12 @@ func NewRepositoryManagerRESTClient(ctx context.Context, opts ...option.ClientOp
 func defaultRepositoryManagerRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://cloudbuild.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://cloudbuild.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://cloudbuild.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudbuild.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -671,7 +684,9 @@ func defaultRepositoryManagerRESTClientOptions() []option.ClientOption {
 func (c *repositoryManagerRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -697,7 +712,7 @@ func (c *repositoryManagerGRPCClient) CreateConnection(ctx context.Context, req 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.repositoryManagerClient.CreateConnection(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.repositoryManagerClient.CreateConnection, req, settings.GRPC, c.logger, "CreateConnection")
 		return err
 	}, opts...)
 	if err != nil {
@@ -717,7 +732,7 @@ func (c *repositoryManagerGRPCClient) GetConnection(ctx context.Context, req *cl
 	var resp *cloudbuildpb.Connection
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.repositoryManagerClient.GetConnection(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.repositoryManagerClient.GetConnection, req, settings.GRPC, c.logger, "GetConnection")
 		return err
 	}, opts...)
 	if err != nil {
@@ -746,7 +761,7 @@ func (c *repositoryManagerGRPCClient) ListConnections(ctx context.Context, req *
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.repositoryManagerClient.ListConnections(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.repositoryManagerClient.ListConnections, req, settings.GRPC, c.logger, "ListConnections")
 			return err
 		}, opts...)
 		if err != nil {
@@ -781,7 +796,7 @@ func (c *repositoryManagerGRPCClient) UpdateConnection(ctx context.Context, req 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.repositoryManagerClient.UpdateConnection(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.repositoryManagerClient.UpdateConnection, req, settings.GRPC, c.logger, "UpdateConnection")
 		return err
 	}, opts...)
 	if err != nil {
@@ -801,7 +816,7 @@ func (c *repositoryManagerGRPCClient) DeleteConnection(ctx context.Context, req 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.repositoryManagerClient.DeleteConnection(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.repositoryManagerClient.DeleteConnection, req, settings.GRPC, c.logger, "DeleteConnection")
 		return err
 	}, opts...)
 	if err != nil {
@@ -821,7 +836,7 @@ func (c *repositoryManagerGRPCClient) CreateRepository(ctx context.Context, req 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.repositoryManagerClient.CreateRepository(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.repositoryManagerClient.CreateRepository, req, settings.GRPC, c.logger, "CreateRepository")
 		return err
 	}, opts...)
 	if err != nil {
@@ -841,7 +856,7 @@ func (c *repositoryManagerGRPCClient) BatchCreateRepositories(ctx context.Contex
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.repositoryManagerClient.BatchCreateRepositories(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.repositoryManagerClient.BatchCreateRepositories, req, settings.GRPC, c.logger, "BatchCreateRepositories")
 		return err
 	}, opts...)
 	if err != nil {
@@ -861,7 +876,7 @@ func (c *repositoryManagerGRPCClient) GetRepository(ctx context.Context, req *cl
 	var resp *cloudbuildpb.Repository
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.repositoryManagerClient.GetRepository(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.repositoryManagerClient.GetRepository, req, settings.GRPC, c.logger, "GetRepository")
 		return err
 	}, opts...)
 	if err != nil {
@@ -890,7 +905,7 @@ func (c *repositoryManagerGRPCClient) ListRepositories(ctx context.Context, req 
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.repositoryManagerClient.ListRepositories(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.repositoryManagerClient.ListRepositories, req, settings.GRPC, c.logger, "ListRepositories")
 			return err
 		}, opts...)
 		if err != nil {
@@ -925,7 +940,7 @@ func (c *repositoryManagerGRPCClient) DeleteRepository(ctx context.Context, req 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.repositoryManagerClient.DeleteRepository(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.repositoryManagerClient.DeleteRepository, req, settings.GRPC, c.logger, "DeleteRepository")
 		return err
 	}, opts...)
 	if err != nil {
@@ -945,7 +960,7 @@ func (c *repositoryManagerGRPCClient) FetchReadWriteToken(ctx context.Context, r
 	var resp *cloudbuildpb.FetchReadWriteTokenResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.repositoryManagerClient.FetchReadWriteToken(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.repositoryManagerClient.FetchReadWriteToken, req, settings.GRPC, c.logger, "FetchReadWriteToken")
 		return err
 	}, opts...)
 	if err != nil {
@@ -963,7 +978,7 @@ func (c *repositoryManagerGRPCClient) FetchReadToken(ctx context.Context, req *c
 	var resp *cloudbuildpb.FetchReadTokenResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.repositoryManagerClient.FetchReadToken(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.repositoryManagerClient.FetchReadToken, req, settings.GRPC, c.logger, "FetchReadToken")
 		return err
 	}, opts...)
 	if err != nil {
@@ -992,7 +1007,7 @@ func (c *repositoryManagerGRPCClient) FetchLinkableRepositories(ctx context.Cont
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.repositoryManagerClient.FetchLinkableRepositories(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.repositoryManagerClient.FetchLinkableRepositories, req, settings.GRPC, c.logger, "FetchLinkableRepositories")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1027,7 +1042,7 @@ func (c *repositoryManagerGRPCClient) FetchGitRefs(ctx context.Context, req *clo
 	var resp *cloudbuildpb.FetchGitRefsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.repositoryManagerClient.FetchGitRefs(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.repositoryManagerClient.FetchGitRefs, req, settings.GRPC, c.logger, "FetchGitRefs")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1045,7 +1060,7 @@ func (c *repositoryManagerGRPCClient) GetIamPolicy(ctx context.Context, req *iam
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1063,7 +1078,7 @@ func (c *repositoryManagerGRPCClient) SetIamPolicy(ctx context.Context, req *iam
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1081,7 +1096,7 @@ func (c *repositoryManagerGRPCClient) TestIamPermissions(ctx context.Context, re
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1098,7 +1113,7 @@ func (c *repositoryManagerGRPCClient) CancelOperation(ctx context.Context, req *
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -1113,7 +1128,7 @@ func (c *repositoryManagerGRPCClient) GetOperation(ctx context.Context, req *lon
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1162,21 +1177,10 @@ func (c *repositoryManagerRESTClient) CreateConnection(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateConnection")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1227,17 +1231,7 @@ func (c *repositoryManagerRESTClient) GetConnection(ctx context.Context, req *cl
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetConnection")
 		if err != nil {
 			return err
 		}
@@ -1299,21 +1293,10 @@ func (c *repositoryManagerRESTClient) ListConnections(ctx context.Context, req *
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListConnections")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1367,11 +1350,11 @@ func (c *repositoryManagerRESTClient) UpdateConnection(ctx context.Context, req 
 		params.Add("etag", fmt.Sprintf("%v", req.GetEtag()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1395,21 +1378,10 @@ func (c *repositoryManagerRESTClient) UpdateConnection(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateConnection")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1465,21 +1437,10 @@ func (c *repositoryManagerRESTClient) DeleteConnection(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteConnection")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1537,21 +1498,10 @@ func (c *repositoryManagerRESTClient) CreateRepository(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateRepository")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1607,21 +1557,10 @@ func (c *repositoryManagerRESTClient) BatchCreateRepositories(ctx context.Contex
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchCreateRepositories")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1672,17 +1611,7 @@ func (c *repositoryManagerRESTClient) GetRepository(ctx context.Context, req *cl
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetRepository")
 		if err != nil {
 			return err
 		}
@@ -1747,21 +1676,10 @@ func (c *repositoryManagerRESTClient) ListRepositories(ctx context.Context, req 
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListRepositories")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1829,21 +1747,10 @@ func (c *repositoryManagerRESTClient) DeleteRepository(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteRepository")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1900,17 +1807,7 @@ func (c *repositoryManagerRESTClient) FetchReadWriteToken(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "FetchReadWriteToken")
 		if err != nil {
 			return err
 		}
@@ -1966,17 +1863,7 @@ func (c *repositoryManagerRESTClient) FetchReadToken(ctx context.Context, req *c
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "FetchReadToken")
 		if err != nil {
 			return err
 		}
@@ -2039,21 +1926,10 @@ func (c *repositoryManagerRESTClient) FetchLinkableRepositories(ctx context.Cont
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FetchLinkableRepositories")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2119,17 +1995,7 @@ func (c *repositoryManagerRESTClient) FetchGitRefs(ctx context.Context, req *clo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FetchGitRefs")
 		if err != nil {
 			return err
 		}
@@ -2183,17 +2049,7 @@ func (c *repositoryManagerRESTClient) GetIamPolicy(ctx context.Context, req *iam
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -2253,17 +2109,7 @@ func (c *repositoryManagerRESTClient) SetIamPolicy(ctx context.Context, req *iam
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -2325,17 +2171,7 @@ func (c *repositoryManagerRESTClient) TestIamPermissions(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
 		if err != nil {
 			return err
 		}
@@ -2388,15 +2224,8 @@ func (c *repositoryManagerRESTClient) CancelOperation(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -2433,17 +2262,7 @@ func (c *repositoryManagerRESTClient) GetOperation(ctx context.Context, req *lon
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -2458,12 +2277,6 @@ func (c *repositoryManagerRESTClient) GetOperation(ctx context.Context, req *lon
 		return nil, e
 	}
 	return resp, nil
-}
-
-// BatchCreateRepositoriesOperation manages a long-running operation from BatchCreateRepositories.
-type BatchCreateRepositoriesOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // BatchCreateRepositoriesOperation returns a new BatchCreateRepositoriesOperation from a given name.
@@ -2484,70 +2297,6 @@ func (c *repositoryManagerRESTClient) BatchCreateRepositoriesOperation(name stri
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *BatchCreateRepositoriesOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*cloudbuildpb.BatchCreateRepositoriesResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp cloudbuildpb.BatchCreateRepositoriesResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *BatchCreateRepositoriesOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*cloudbuildpb.BatchCreateRepositoriesResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp cloudbuildpb.BatchCreateRepositoriesResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *BatchCreateRepositoriesOperation) Metadata() (*cloudbuildpb.OperationMetadata, error) {
-	var meta cloudbuildpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *BatchCreateRepositoriesOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *BatchCreateRepositoriesOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateConnectionOperation manages a long-running operation from CreateConnection.
-type CreateConnectionOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // CreateConnectionOperation returns a new CreateConnectionOperation from a given name.
 // The name must be that of a previously created CreateConnectionOperation, possibly from a different process.
 func (c *repositoryManagerGRPCClient) CreateConnectionOperation(name string) *CreateConnectionOperation {
@@ -2564,70 +2313,6 @@ func (c *repositoryManagerRESTClient) CreateConnectionOperation(name string) *Cr
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateConnectionOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*cloudbuildpb.Connection, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp cloudbuildpb.Connection
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateConnectionOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*cloudbuildpb.Connection, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp cloudbuildpb.Connection
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateConnectionOperation) Metadata() (*cloudbuildpb.OperationMetadata, error) {
-	var meta cloudbuildpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateConnectionOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateConnectionOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateRepositoryOperation manages a long-running operation from CreateRepository.
-type CreateRepositoryOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // CreateRepositoryOperation returns a new CreateRepositoryOperation from a given name.
@@ -2648,70 +2333,6 @@ func (c *repositoryManagerRESTClient) CreateRepositoryOperation(name string) *Cr
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateRepositoryOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*cloudbuildpb.Repository, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp cloudbuildpb.Repository
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateRepositoryOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*cloudbuildpb.Repository, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp cloudbuildpb.Repository
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateRepositoryOperation) Metadata() (*cloudbuildpb.OperationMetadata, error) {
-	var meta cloudbuildpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateRepositoryOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateRepositoryOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteConnectionOperation manages a long-running operation from DeleteConnection.
-type DeleteConnectionOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // DeleteConnectionOperation returns a new DeleteConnectionOperation from a given name.
 // The name must be that of a previously created DeleteConnectionOperation, possibly from a different process.
 func (c *repositoryManagerGRPCClient) DeleteConnectionOperation(name string) *DeleteConnectionOperation {
@@ -2728,59 +2349,6 @@ func (c *repositoryManagerRESTClient) DeleteConnectionOperation(name string) *De
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteConnectionOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteConnectionOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteConnectionOperation) Metadata() (*cloudbuildpb.OperationMetadata, error) {
-	var meta cloudbuildpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteConnectionOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteConnectionOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteRepositoryOperation manages a long-running operation from DeleteRepository.
-type DeleteRepositoryOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // DeleteRepositoryOperation returns a new DeleteRepositoryOperation from a given name.
@@ -2801,59 +2369,6 @@ func (c *repositoryManagerRESTClient) DeleteRepositoryOperation(name string) *De
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteRepositoryOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteRepositoryOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteRepositoryOperation) Metadata() (*cloudbuildpb.OperationMetadata, error) {
-	var meta cloudbuildpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteRepositoryOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteRepositoryOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateConnectionOperation manages a long-running operation from UpdateConnection.
-type UpdateConnectionOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdateConnectionOperation returns a new UpdateConnectionOperation from a given name.
 // The name must be that of a previously created UpdateConnectionOperation, possibly from a different process.
 func (c *repositoryManagerGRPCClient) UpdateConnectionOperation(name string) *UpdateConnectionOperation {
@@ -2870,156 +2385,4 @@ func (c *repositoryManagerRESTClient) UpdateConnectionOperation(name string) *Up
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateConnectionOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*cloudbuildpb.Connection, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp cloudbuildpb.Connection
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateConnectionOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*cloudbuildpb.Connection, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp cloudbuildpb.Connection
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateConnectionOperation) Metadata() (*cloudbuildpb.OperationMetadata, error) {
-	var meta cloudbuildpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateConnectionOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateConnectionOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ConnectionIterator manages a stream of *cloudbuildpb.Connection.
-type ConnectionIterator struct {
-	items    []*cloudbuildpb.Connection
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*cloudbuildpb.Connection, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ConnectionIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ConnectionIterator) Next() (*cloudbuildpb.Connection, error) {
-	var item *cloudbuildpb.Connection
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ConnectionIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ConnectionIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// RepositoryIterator manages a stream of *cloudbuildpb.Repository.
-type RepositoryIterator struct {
-	items    []*cloudbuildpb.Repository
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*cloudbuildpb.Repository, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *RepositoryIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *RepositoryIterator) Next() (*cloudbuildpb.Repository, error) {
-	var item *cloudbuildpb.Repository
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *RepositoryIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *RepositoryIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

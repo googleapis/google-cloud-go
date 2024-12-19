@@ -129,10 +129,15 @@ var keywords = map[string]bool{
 // https://cloud.google.com/spanner/docs/functions-and-operators
 var funcs = make(map[string]bool)
 var funcArgParsers = make(map[string]func(*parser) (Expr, *parseError))
+var aggregateFuncs = make(map[string]bool)
 
 func init() {
-	for _, f := range allFuncs {
+	for _, f := range funcNames {
 		funcs[f] = true
+	}
+	for _, f := range aggregateFuncNames {
+		funcs[f] = true
+		aggregateFuncs[f] = true
 	}
 	// Special case for CAST, SAFE_CAST and EXTRACT
 	funcArgParsers["CAST"] = typedArgParser
@@ -145,20 +150,13 @@ func init() {
 	// Spacial case of INTERVAL arg for TIMESTAMP_ADD, TIMESTAMP_SUB
 	funcArgParsers["TIMESTAMP_ADD"] = timestampIntervalArgParser
 	funcArgParsers["TIMESTAMP_SUB"] = timestampIntervalArgParser
+	// Special case of SEQUENCE arg for GET_NEXT_SEQUENCE_VALUE, GET_INTERNAL_SEQUENCE_STATE
+	funcArgParsers["GET_NEXT_SEQUENCE_VALUE"] = sequenceArgParser
+	funcArgParsers["GET_INTERNAL_SEQUENCE_STATE"] = sequenceArgParser
 }
 
-var allFuncs = []string{
+var funcNames = []string{
 	// TODO: many more
-
-	// Aggregate functions.
-	"ANY_VALUE",
-	"ARRAY_AGG",
-	"AVG",
-	"BIT_XOR",
-	"COUNT",
-	"MAX",
-	"MIN",
-	"SUM",
 
 	// Cast functions.
 	"CAST",
@@ -239,7 +237,9 @@ var allFuncs = []string{
 	// Array functions.
 	"ARRAY",
 	"ARRAY_CONCAT",
+	"ARRAY_FIRST", "ARRAY_INCLUDES", "ARRAY_INCLUDES_ALL", "ARRAY_INCLUDES_ANY", "ARRAY_LAST",
 	"ARRAY_LENGTH",
+	"ARRAY_MAX", "ARRAY_MIN", "ARRAY_REVERSE", "ARRAY_SLICE", "ARRAY_TRANSFORM",
 	"ARRAY_TO_STRING",
 	"GENERATE_ARRAY", "GENERATE_DATE_ARRAY",
 	"OFFSET", "ORDINAL",
@@ -279,5 +279,44 @@ var allFuncs = []string{
 	"PENDING_COMMIT_TIMESTAMP",
 
 	// JSON functions.
+	"JSON_QUERY",
 	"JSON_VALUE",
+	"JSON_QUERY_ARRAY",
+	"JSON_VALUE_ARRAY",
+
+	// Bit functions.
+	"BIT_COUNT",
+	"BIT_REVERSE",
+
+	// Sequence functions.
+	"GET_NEXT_SEQUENCE_VALUE",
+	"GET_INTERNAL_SEQUENCE_STATE",
+
+	// Utility functions.
+	"GENERATE_UUID",
+}
+
+var aggregateFuncNames = []string{
+	// Aggregate functions.
+	"ANY_VALUE",
+	"ARRAY_AGG",
+	"ARRAY_CONCAT_AGG",
+	"AVG",
+	"BIT_AND",
+	"BIT_OR",
+	"BIT_XOR",
+	"COUNT",
+	"COUNTIF",
+	"LOGICAL_AND",
+	"LOGICAL_OR",
+	"MAX",
+	"MIN",
+	"STRING_AGG",
+	"SUM",
+
+	// Statistical aggregate functions.
+	"STDDEV",
+	"STDDEV_SAMP",
+	"VAR_SAMP",
+	"VARIANCE",
 }

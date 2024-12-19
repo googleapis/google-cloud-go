@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -29,7 +29,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	talentpb "cloud.google.com/go/talent/apiv4/talentpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -56,10 +55,13 @@ type TenantCallOptions struct {
 func defaultTenantGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("jobs.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("jobs.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("jobs.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://jobs.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -259,6 +261,8 @@ type tenantGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewTenantClient creates a new tenant service client based on gRPC.
@@ -285,6 +289,7 @@ func NewTenantClient(ctx context.Context, opts ...option.ClientOption) (*TenantC
 		connPool:         connPool,
 		tenantClient:     talentpb.NewTenantServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -308,7 +313,9 @@ func (c *tenantGRPCClient) Connection() *grpc.ClientConn {
 func (c *tenantGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -330,6 +337,8 @@ type tenantRESTClient struct {
 
 	// Points back to the CallOptions field of the containing TenantClient
 	CallOptions **TenantCallOptions
+
+	logger *slog.Logger
 }
 
 // NewTenantRESTClient creates a new tenant service rest client.
@@ -347,6 +356,7 @@ func NewTenantRESTClient(ctx context.Context, opts ...option.ClientOption) (*Ten
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -356,9 +366,12 @@ func NewTenantRESTClient(ctx context.Context, opts ...option.ClientOption) (*Ten
 func defaultTenantRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://jobs.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://jobs.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://jobs.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://jobs.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -368,7 +381,9 @@ func defaultTenantRESTClientOptions() []option.ClientOption {
 func (c *tenantRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -394,7 +409,7 @@ func (c *tenantGRPCClient) CreateTenant(ctx context.Context, req *talentpb.Creat
 	var resp *talentpb.Tenant
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tenantClient.CreateTenant(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tenantClient.CreateTenant, req, settings.GRPC, c.logger, "CreateTenant")
 		return err
 	}, opts...)
 	if err != nil {
@@ -412,7 +427,7 @@ func (c *tenantGRPCClient) GetTenant(ctx context.Context, req *talentpb.GetTenan
 	var resp *talentpb.Tenant
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tenantClient.GetTenant(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tenantClient.GetTenant, req, settings.GRPC, c.logger, "GetTenant")
 		return err
 	}, opts...)
 	if err != nil {
@@ -430,7 +445,7 @@ func (c *tenantGRPCClient) UpdateTenant(ctx context.Context, req *talentpb.Updat
 	var resp *talentpb.Tenant
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tenantClient.UpdateTenant(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tenantClient.UpdateTenant, req, settings.GRPC, c.logger, "UpdateTenant")
 		return err
 	}, opts...)
 	if err != nil {
@@ -447,7 +462,7 @@ func (c *tenantGRPCClient) DeleteTenant(ctx context.Context, req *talentpb.Delet
 	opts = append((*c.CallOptions).DeleteTenant[0:len((*c.CallOptions).DeleteTenant):len((*c.CallOptions).DeleteTenant)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.tenantClient.DeleteTenant(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.tenantClient.DeleteTenant, req, settings.GRPC, c.logger, "DeleteTenant")
 		return err
 	}, opts...)
 	return err
@@ -473,7 +488,7 @@ func (c *tenantGRPCClient) ListTenants(ctx context.Context, req *talentpb.ListTe
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.tenantClient.ListTenants(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.tenantClient.ListTenants, req, settings.GRPC, c.logger, "ListTenants")
 			return err
 		}, opts...)
 		if err != nil {
@@ -508,7 +523,7 @@ func (c *tenantGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -557,17 +572,7 @@ func (c *tenantRESTClient) CreateTenant(ctx context.Context, req *talentpb.Creat
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateTenant")
 		if err != nil {
 			return err
 		}
@@ -617,17 +622,7 @@ func (c *tenantRESTClient) GetTenant(ctx context.Context, req *talentpb.GetTenan
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetTenant")
 		if err != nil {
 			return err
 		}
@@ -662,11 +657,11 @@ func (c *tenantRESTClient) UpdateTenant(ctx context.Context, req *talentpb.Updat
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -691,17 +686,7 @@ func (c *tenantRESTClient) UpdateTenant(ctx context.Context, req *talentpb.Updat
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateTenant")
 		if err != nil {
 			return err
 		}
@@ -748,15 +733,8 @@ func (c *tenantRESTClient) DeleteTenant(ctx context.Context, req *talentpb.Delet
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteTenant")
+		return err
 	}, opts...)
 }
 
@@ -805,21 +783,10 @@ func (c *tenantRESTClient) ListTenants(ctx context.Context, req *talentpb.ListTe
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListTenants")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -882,17 +849,7 @@ func (c *tenantRESTClient) GetOperation(ctx context.Context, req *longrunningpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -907,51 +864,4 @@ func (c *tenantRESTClient) GetOperation(ctx context.Context, req *longrunningpb.
 		return nil, e
 	}
 	return resp, nil
-}
-
-// TenantIterator manages a stream of *talentpb.Tenant.
-type TenantIterator struct {
-	items    []*talentpb.Tenant
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*talentpb.Tenant, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *TenantIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *TenantIterator) Next() (*talentpb.Tenant, error) {
-	var item *talentpb.Tenant
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *TenantIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *TenantIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

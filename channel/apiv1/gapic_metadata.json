@@ -304,6 +304,11 @@
                 "ProvisionCloudIdentity"
               ]
             },
+            "QueryEligibleBillingAccounts": {
+              "methods": [
+                "QueryEligibleBillingAccounts"
+              ]
+            },
             "RegisterSubscriber": {
               "methods": [
                 "RegisterSubscriber"
@@ -567,6 +572,11 @@
             "ProvisionCloudIdentity": {
               "methods": [
                 "ProvisionCloudIdentity"
+              ]
+            },
+            "QueryEligibleBillingAccounts": {
+              "methods": [
+                "QueryEligibleBillingAccounts"
               ]
             },
             "RegisterSubscriber": {

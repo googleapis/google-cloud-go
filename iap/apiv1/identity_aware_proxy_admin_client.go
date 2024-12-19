@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -29,7 +29,6 @@ import (
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	iappb "cloud.google.com/go/iap/apiv1/iappb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -59,10 +58,13 @@ type IdentityAwareProxyAdminCallOptions struct {
 func defaultIdentityAwareProxyAdminGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("iap.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("iap.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("iap.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://iap.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -267,6 +269,8 @@ type identityAwareProxyAdminGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewIdentityAwareProxyAdminClient creates a new identity aware proxy admin service client based on gRPC.
@@ -293,6 +297,7 @@ func NewIdentityAwareProxyAdminClient(ctx context.Context, opts ...option.Client
 		connPool:                      connPool,
 		identityAwareProxyAdminClient: iappb.NewIdentityAwareProxyAdminServiceClient(connPool),
 		CallOptions:                   &client.CallOptions,
+		logger:                        internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -315,7 +320,9 @@ func (c *identityAwareProxyAdminGRPCClient) Connection() *grpc.ClientConn {
 func (c *identityAwareProxyAdminGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -337,6 +344,8 @@ type identityAwareProxyAdminRESTClient struct {
 
 	// Points back to the CallOptions field of the containing IdentityAwareProxyAdminClient
 	CallOptions **IdentityAwareProxyAdminCallOptions
+
+	logger *slog.Logger
 }
 
 // NewIdentityAwareProxyAdminRESTClient creates a new identity aware proxy admin service rest client.
@@ -354,6 +363,7 @@ func NewIdentityAwareProxyAdminRESTClient(ctx context.Context, opts ...option.Cl
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -363,9 +373,12 @@ func NewIdentityAwareProxyAdminRESTClient(ctx context.Context, opts ...option.Cl
 func defaultIdentityAwareProxyAdminRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://iap.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://iap.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://iap.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://iap.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -375,7 +388,9 @@ func defaultIdentityAwareProxyAdminRESTClientOptions() []option.ClientOption {
 func (c *identityAwareProxyAdminRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -401,7 +416,7 @@ func (c *identityAwareProxyAdminGRPCClient) SetIamPolicy(ctx context.Context, re
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.identityAwareProxyAdminClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.identityAwareProxyAdminClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -419,7 +434,7 @@ func (c *identityAwareProxyAdminGRPCClient) GetIamPolicy(ctx context.Context, re
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.identityAwareProxyAdminClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.identityAwareProxyAdminClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -437,7 +452,7 @@ func (c *identityAwareProxyAdminGRPCClient) TestIamPermissions(ctx context.Conte
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.identityAwareProxyAdminClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.identityAwareProxyAdminClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -455,7 +470,7 @@ func (c *identityAwareProxyAdminGRPCClient) GetIapSettings(ctx context.Context, 
 	var resp *iappb.IapSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.identityAwareProxyAdminClient.GetIapSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.identityAwareProxyAdminClient.GetIapSettings, req, settings.GRPC, c.logger, "GetIapSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -473,7 +488,7 @@ func (c *identityAwareProxyAdminGRPCClient) UpdateIapSettings(ctx context.Contex
 	var resp *iappb.IapSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.identityAwareProxyAdminClient.UpdateIapSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.identityAwareProxyAdminClient.UpdateIapSettings, req, settings.GRPC, c.logger, "UpdateIapSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -502,7 +517,7 @@ func (c *identityAwareProxyAdminGRPCClient) ListTunnelDestGroups(ctx context.Con
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.identityAwareProxyAdminClient.ListTunnelDestGroups(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.identityAwareProxyAdminClient.ListTunnelDestGroups, req, settings.GRPC, c.logger, "ListTunnelDestGroups")
 			return err
 		}, opts...)
 		if err != nil {
@@ -537,7 +552,7 @@ func (c *identityAwareProxyAdminGRPCClient) CreateTunnelDestGroup(ctx context.Co
 	var resp *iappb.TunnelDestGroup
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.identityAwareProxyAdminClient.CreateTunnelDestGroup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.identityAwareProxyAdminClient.CreateTunnelDestGroup, req, settings.GRPC, c.logger, "CreateTunnelDestGroup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -555,7 +570,7 @@ func (c *identityAwareProxyAdminGRPCClient) GetTunnelDestGroup(ctx context.Conte
 	var resp *iappb.TunnelDestGroup
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.identityAwareProxyAdminClient.GetTunnelDestGroup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.identityAwareProxyAdminClient.GetTunnelDestGroup, req, settings.GRPC, c.logger, "GetTunnelDestGroup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -572,7 +587,7 @@ func (c *identityAwareProxyAdminGRPCClient) DeleteTunnelDestGroup(ctx context.Co
 	opts = append((*c.CallOptions).DeleteTunnelDestGroup[0:len((*c.CallOptions).DeleteTunnelDestGroup):len((*c.CallOptions).DeleteTunnelDestGroup)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.identityAwareProxyAdminClient.DeleteTunnelDestGroup(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.identityAwareProxyAdminClient.DeleteTunnelDestGroup, req, settings.GRPC, c.logger, "DeleteTunnelDestGroup")
 		return err
 	}, opts...)
 	return err
@@ -587,7 +602,7 @@ func (c *identityAwareProxyAdminGRPCClient) UpdateTunnelDestGroup(ctx context.Co
 	var resp *iappb.TunnelDestGroup
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.identityAwareProxyAdminClient.UpdateTunnelDestGroup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.identityAwareProxyAdminClient.UpdateTunnelDestGroup, req, settings.GRPC, c.logger, "UpdateTunnelDestGroup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -638,17 +653,7 @@ func (c *identityAwareProxyAdminRESTClient) SetIamPolicy(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -707,17 +712,7 @@ func (c *identityAwareProxyAdminRESTClient) GetIamPolicy(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -776,17 +771,7 @@ func (c *identityAwareProxyAdminRESTClient) TestIamPermissions(ctx context.Conte
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
 		if err != nil {
 			return err
 		}
@@ -836,17 +821,7 @@ func (c *identityAwareProxyAdminRESTClient) GetIapSettings(ctx context.Context, 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetIapSettings")
 		if err != nil {
 			return err
 		}
@@ -882,11 +857,11 @@ func (c *identityAwareProxyAdminRESTClient) UpdateIapSettings(ctx context.Contex
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -911,17 +886,7 @@ func (c *identityAwareProxyAdminRESTClient) UpdateIapSettings(ctx context.Contex
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateIapSettings")
 		if err != nil {
 			return err
 		}
@@ -985,21 +950,10 @@ func (c *identityAwareProxyAdminRESTClient) ListTunnelDestGroups(ctx context.Con
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListTunnelDestGroups")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1070,17 +1024,7 @@ func (c *identityAwareProxyAdminRESTClient) CreateTunnelDestGroup(ctx context.Co
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateTunnelDestGroup")
 		if err != nil {
 			return err
 		}
@@ -1130,17 +1074,7 @@ func (c *identityAwareProxyAdminRESTClient) GetTunnelDestGroup(ctx context.Conte
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetTunnelDestGroup")
 		if err != nil {
 			return err
 		}
@@ -1187,15 +1121,8 @@ func (c *identityAwareProxyAdminRESTClient) DeleteTunnelDestGroup(ctx context.Co
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteTunnelDestGroup")
+		return err
 	}, opts...)
 }
 
@@ -1217,11 +1144,11 @@ func (c *identityAwareProxyAdminRESTClient) UpdateTunnelDestGroup(ctx context.Co
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1246,17 +1173,7 @@ func (c *identityAwareProxyAdminRESTClient) UpdateTunnelDestGroup(ctx context.Co
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateTunnelDestGroup")
 		if err != nil {
 			return err
 		}
@@ -1271,51 +1188,4 @@ func (c *identityAwareProxyAdminRESTClient) UpdateTunnelDestGroup(ctx context.Co
 		return nil, e
 	}
 	return resp, nil
-}
-
-// TunnelDestGroupIterator manages a stream of *iappb.TunnelDestGroup.
-type TunnelDestGroupIterator struct {
-	items    []*iappb.TunnelDestGroup
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*iappb.TunnelDestGroup, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *TunnelDestGroupIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *TunnelDestGroupIterator) Next() (*iappb.TunnelDestGroup, error) {
-	var item *iappb.TunnelDestGroup
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *TunnelDestGroupIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *TunnelDestGroupIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

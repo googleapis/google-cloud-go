@@ -1,0 +1,273 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.securesourcemanager.v1",
+  "libraryPackage": "cloud.google.com/go/securesourcemanager/apiv1",
+  "services": {
+    "SecureSourceManager": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateBranchRule": {
+              "methods": [
+                "CreateBranchRule"
+              ]
+            },
+            "CreateInstance": {
+              "methods": [
+                "CreateInstance"
+              ]
+            },
+            "CreateRepository": {
+              "methods": [
+                "CreateRepository"
+              ]
+            },
+            "DeleteBranchRule": {
+              "methods": [
+                "DeleteBranchRule"
+              ]
+            },
+            "DeleteInstance": {
+              "methods": [
+                "DeleteInstance"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteRepository": {
+              "methods": [
+                "DeleteRepository"
+              ]
+            },
+            "GetBranchRule": {
+              "methods": [
+                "GetBranchRule"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetIamPolicyRepo": {
+              "methods": [
+                "GetIamPolicyRepo"
+              ]
+            },
+            "GetInstance": {
+              "methods": [
+                "GetInstance"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetRepository": {
+              "methods": [
+                "GetRepository"
+              ]
+            },
+            "ListBranchRules": {
+              "methods": [
+                "ListBranchRules"
+              ]
+            },
+            "ListInstances": {
+              "methods": [
+                "ListInstances"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListRepositories": {
+              "methods": [
+                "ListRepositories"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "SetIamPolicyRepo": {
+              "methods": [
+                "SetIamPolicyRepo"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "TestIamPermissionsRepo": {
+              "methods": [
+                "TestIamPermissionsRepo"
+              ]
+            },
+            "UpdateBranchRule": {
+              "methods": [
+                "UpdateBranchRule"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateBranchRule": {
+              "methods": [
+                "CreateBranchRule"
+              ]
+            },
+            "CreateInstance": {
+              "methods": [
+                "CreateInstance"
+              ]
+            },
+            "CreateRepository": {
+              "methods": [
+                "CreateRepository"
+              ]
+            },
+            "DeleteBranchRule": {
+              "methods": [
+                "DeleteBranchRule"
+              ]
+            },
+            "DeleteInstance": {
+              "methods": [
+                "DeleteInstance"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteRepository": {
+              "methods": [
+                "DeleteRepository"
+              ]
+            },
+            "GetBranchRule": {
+              "methods": [
+                "GetBranchRule"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetIamPolicyRepo": {
+              "methods": [
+                "GetIamPolicyRepo"
+              ]
+            },
+            "GetInstance": {
+              "methods": [
+                "GetInstance"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetRepository": {
+              "methods": [
+                "GetRepository"
+              ]
+            },
+            "ListBranchRules": {
+              "methods": [
+                "ListBranchRules"
+              ]
+            },
+            "ListInstances": {
+              "methods": [
+                "ListInstances"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListRepositories": {
+              "methods": [
+                "ListRepositories"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "SetIamPolicyRepo": {
+              "methods": [
+                "SetIamPolicyRepo"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "TestIamPermissionsRepo": {
+              "methods": [
+                "TestIamPermissionsRepo"
+              ]
+            },
+            "UpdateBranchRule": {
+              "methods": [
+                "UpdateBranchRule"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

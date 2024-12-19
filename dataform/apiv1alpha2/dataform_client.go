@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 	dataformpb "cloud.google.com/go/dataform/apiv1alpha2/dataformpb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -90,10 +89,13 @@ type CallOptions struct {
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("dataform.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("dataform.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("dataform.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://dataform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -511,6 +513,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new dataform client based on gRPC.
@@ -538,6 +542,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:        connPool,
 		client:          dataformpb.NewDataformClient(connPool),
 		CallOptions:     &client.CallOptions,
+		logger:          internaloption.GetLogger(opts),
 		iamPolicyClient: iampb.NewIAMPolicyClient(connPool),
 		locationsClient: locationpb.NewLocationsClient(connPool),
 	}
@@ -562,7 +567,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -584,6 +591,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new dataform rest client.
@@ -602,6 +611,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -611,9 +621,12 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 func defaultRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://dataform.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://dataform.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://dataform.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://dataform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -623,7 +636,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -660,7 +675,7 @@ func (c *gRPCClient) ListRepositories(ctx context.Context, req *dataformpb.ListR
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListRepositories(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListRepositories, req, settings.GRPC, c.logger, "ListRepositories")
 			return err
 		}, opts...)
 		if err != nil {
@@ -695,7 +710,7 @@ func (c *gRPCClient) GetRepository(ctx context.Context, req *dataformpb.GetRepos
 	var resp *dataformpb.Repository
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetRepository(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetRepository, req, settings.GRPC, c.logger, "GetRepository")
 		return err
 	}, opts...)
 	if err != nil {
@@ -713,7 +728,7 @@ func (c *gRPCClient) CreateRepository(ctx context.Context, req *dataformpb.Creat
 	var resp *dataformpb.Repository
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateRepository(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateRepository, req, settings.GRPC, c.logger, "CreateRepository")
 		return err
 	}, opts...)
 	if err != nil {
@@ -731,7 +746,7 @@ func (c *gRPCClient) UpdateRepository(ctx context.Context, req *dataformpb.Updat
 	var resp *dataformpb.Repository
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateRepository(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateRepository, req, settings.GRPC, c.logger, "UpdateRepository")
 		return err
 	}, opts...)
 	if err != nil {
@@ -748,7 +763,7 @@ func (c *gRPCClient) DeleteRepository(ctx context.Context, req *dataformpb.Delet
 	opts = append((*c.CallOptions).DeleteRepository[0:len((*c.CallOptions).DeleteRepository):len((*c.CallOptions).DeleteRepository)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteRepository(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteRepository, req, settings.GRPC, c.logger, "DeleteRepository")
 		return err
 	}, opts...)
 	return err
@@ -763,7 +778,7 @@ func (c *gRPCClient) FetchRemoteBranches(ctx context.Context, req *dataformpb.Fe
 	var resp *dataformpb.FetchRemoteBranchesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.FetchRemoteBranches(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.FetchRemoteBranches, req, settings.GRPC, c.logger, "FetchRemoteBranches")
 		return err
 	}, opts...)
 	if err != nil {
@@ -792,7 +807,7 @@ func (c *gRPCClient) ListWorkspaces(ctx context.Context, req *dataformpb.ListWor
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListWorkspaces(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListWorkspaces, req, settings.GRPC, c.logger, "ListWorkspaces")
 			return err
 		}, opts...)
 		if err != nil {
@@ -827,7 +842,7 @@ func (c *gRPCClient) GetWorkspace(ctx context.Context, req *dataformpb.GetWorksp
 	var resp *dataformpb.Workspace
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetWorkspace(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetWorkspace, req, settings.GRPC, c.logger, "GetWorkspace")
 		return err
 	}, opts...)
 	if err != nil {
@@ -845,7 +860,7 @@ func (c *gRPCClient) CreateWorkspace(ctx context.Context, req *dataformpb.Create
 	var resp *dataformpb.Workspace
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateWorkspace(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateWorkspace, req, settings.GRPC, c.logger, "CreateWorkspace")
 		return err
 	}, opts...)
 	if err != nil {
@@ -862,7 +877,7 @@ func (c *gRPCClient) DeleteWorkspace(ctx context.Context, req *dataformpb.Delete
 	opts = append((*c.CallOptions).DeleteWorkspace[0:len((*c.CallOptions).DeleteWorkspace):len((*c.CallOptions).DeleteWorkspace)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteWorkspace(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteWorkspace, req, settings.GRPC, c.logger, "DeleteWorkspace")
 		return err
 	}, opts...)
 	return err
@@ -877,7 +892,7 @@ func (c *gRPCClient) InstallNpmPackages(ctx context.Context, req *dataformpb.Ins
 	var resp *dataformpb.InstallNpmPackagesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.InstallNpmPackages(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.InstallNpmPackages, req, settings.GRPC, c.logger, "InstallNpmPackages")
 		return err
 	}, opts...)
 	if err != nil {
@@ -894,7 +909,7 @@ func (c *gRPCClient) PullGitCommits(ctx context.Context, req *dataformpb.PullGit
 	opts = append((*c.CallOptions).PullGitCommits[0:len((*c.CallOptions).PullGitCommits):len((*c.CallOptions).PullGitCommits)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.PullGitCommits(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.PullGitCommits, req, settings.GRPC, c.logger, "PullGitCommits")
 		return err
 	}, opts...)
 	return err
@@ -908,7 +923,7 @@ func (c *gRPCClient) PushGitCommits(ctx context.Context, req *dataformpb.PushGit
 	opts = append((*c.CallOptions).PushGitCommits[0:len((*c.CallOptions).PushGitCommits):len((*c.CallOptions).PushGitCommits)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.PushGitCommits(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.PushGitCommits, req, settings.GRPC, c.logger, "PushGitCommits")
 		return err
 	}, opts...)
 	return err
@@ -923,7 +938,7 @@ func (c *gRPCClient) FetchFileGitStatuses(ctx context.Context, req *dataformpb.F
 	var resp *dataformpb.FetchFileGitStatusesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.FetchFileGitStatuses(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.FetchFileGitStatuses, req, settings.GRPC, c.logger, "FetchFileGitStatuses")
 		return err
 	}, opts...)
 	if err != nil {
@@ -941,7 +956,7 @@ func (c *gRPCClient) FetchGitAheadBehind(ctx context.Context, req *dataformpb.Fe
 	var resp *dataformpb.FetchGitAheadBehindResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.FetchGitAheadBehind(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.FetchGitAheadBehind, req, settings.GRPC, c.logger, "FetchGitAheadBehind")
 		return err
 	}, opts...)
 	if err != nil {
@@ -958,7 +973,7 @@ func (c *gRPCClient) CommitWorkspaceChanges(ctx context.Context, req *dataformpb
 	opts = append((*c.CallOptions).CommitWorkspaceChanges[0:len((*c.CallOptions).CommitWorkspaceChanges):len((*c.CallOptions).CommitWorkspaceChanges)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.CommitWorkspaceChanges(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.CommitWorkspaceChanges, req, settings.GRPC, c.logger, "CommitWorkspaceChanges")
 		return err
 	}, opts...)
 	return err
@@ -972,7 +987,7 @@ func (c *gRPCClient) ResetWorkspaceChanges(ctx context.Context, req *dataformpb.
 	opts = append((*c.CallOptions).ResetWorkspaceChanges[0:len((*c.CallOptions).ResetWorkspaceChanges):len((*c.CallOptions).ResetWorkspaceChanges)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.ResetWorkspaceChanges(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.ResetWorkspaceChanges, req, settings.GRPC, c.logger, "ResetWorkspaceChanges")
 		return err
 	}, opts...)
 	return err
@@ -987,7 +1002,7 @@ func (c *gRPCClient) FetchFileDiff(ctx context.Context, req *dataformpb.FetchFil
 	var resp *dataformpb.FetchFileDiffResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.FetchFileDiff(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.FetchFileDiff, req, settings.GRPC, c.logger, "FetchFileDiff")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1016,7 +1031,7 @@ func (c *gRPCClient) QueryDirectoryContents(ctx context.Context, req *dataformpb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.QueryDirectoryContents(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.QueryDirectoryContents, req, settings.GRPC, c.logger, "QueryDirectoryContents")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1051,7 +1066,7 @@ func (c *gRPCClient) MakeDirectory(ctx context.Context, req *dataformpb.MakeDire
 	var resp *dataformpb.MakeDirectoryResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.MakeDirectory(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.MakeDirectory, req, settings.GRPC, c.logger, "MakeDirectory")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1068,7 +1083,7 @@ func (c *gRPCClient) RemoveDirectory(ctx context.Context, req *dataformpb.Remove
 	opts = append((*c.CallOptions).RemoveDirectory[0:len((*c.CallOptions).RemoveDirectory):len((*c.CallOptions).RemoveDirectory)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.RemoveDirectory(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.RemoveDirectory, req, settings.GRPC, c.logger, "RemoveDirectory")
 		return err
 	}, opts...)
 	return err
@@ -1083,7 +1098,7 @@ func (c *gRPCClient) MoveDirectory(ctx context.Context, req *dataformpb.MoveDire
 	var resp *dataformpb.MoveDirectoryResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.MoveDirectory(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.MoveDirectory, req, settings.GRPC, c.logger, "MoveDirectory")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1101,7 +1116,7 @@ func (c *gRPCClient) ReadFile(ctx context.Context, req *dataformpb.ReadFileReque
 	var resp *dataformpb.ReadFileResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ReadFile(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ReadFile, req, settings.GRPC, c.logger, "ReadFile")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1118,7 +1133,7 @@ func (c *gRPCClient) RemoveFile(ctx context.Context, req *dataformpb.RemoveFileR
 	opts = append((*c.CallOptions).RemoveFile[0:len((*c.CallOptions).RemoveFile):len((*c.CallOptions).RemoveFile)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.RemoveFile(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.RemoveFile, req, settings.GRPC, c.logger, "RemoveFile")
 		return err
 	}, opts...)
 	return err
@@ -1133,7 +1148,7 @@ func (c *gRPCClient) MoveFile(ctx context.Context, req *dataformpb.MoveFileReque
 	var resp *dataformpb.MoveFileResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.MoveFile(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.MoveFile, req, settings.GRPC, c.logger, "MoveFile")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1151,7 +1166,7 @@ func (c *gRPCClient) WriteFile(ctx context.Context, req *dataformpb.WriteFileReq
 	var resp *dataformpb.WriteFileResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.WriteFile(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.WriteFile, req, settings.GRPC, c.logger, "WriteFile")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1180,7 +1195,7 @@ func (c *gRPCClient) ListCompilationResults(ctx context.Context, req *dataformpb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListCompilationResults(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListCompilationResults, req, settings.GRPC, c.logger, "ListCompilationResults")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1215,7 +1230,7 @@ func (c *gRPCClient) GetCompilationResult(ctx context.Context, req *dataformpb.G
 	var resp *dataformpb.CompilationResult
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetCompilationResult(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetCompilationResult, req, settings.GRPC, c.logger, "GetCompilationResult")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1233,7 +1248,7 @@ func (c *gRPCClient) CreateCompilationResult(ctx context.Context, req *dataformp
 	var resp *dataformpb.CompilationResult
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateCompilationResult(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateCompilationResult, req, settings.GRPC, c.logger, "CreateCompilationResult")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1262,7 +1277,7 @@ func (c *gRPCClient) QueryCompilationResultActions(ctx context.Context, req *dat
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.QueryCompilationResultActions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.QueryCompilationResultActions, req, settings.GRPC, c.logger, "QueryCompilationResultActions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1308,7 +1323,7 @@ func (c *gRPCClient) ListWorkflowInvocations(ctx context.Context, req *dataformp
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListWorkflowInvocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListWorkflowInvocations, req, settings.GRPC, c.logger, "ListWorkflowInvocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1343,7 +1358,7 @@ func (c *gRPCClient) GetWorkflowInvocation(ctx context.Context, req *dataformpb.
 	var resp *dataformpb.WorkflowInvocation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetWorkflowInvocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetWorkflowInvocation, req, settings.GRPC, c.logger, "GetWorkflowInvocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1361,7 +1376,7 @@ func (c *gRPCClient) CreateWorkflowInvocation(ctx context.Context, req *dataform
 	var resp *dataformpb.WorkflowInvocation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateWorkflowInvocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateWorkflowInvocation, req, settings.GRPC, c.logger, "CreateWorkflowInvocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1378,7 +1393,7 @@ func (c *gRPCClient) DeleteWorkflowInvocation(ctx context.Context, req *dataform
 	opts = append((*c.CallOptions).DeleteWorkflowInvocation[0:len((*c.CallOptions).DeleteWorkflowInvocation):len((*c.CallOptions).DeleteWorkflowInvocation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteWorkflowInvocation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteWorkflowInvocation, req, settings.GRPC, c.logger, "DeleteWorkflowInvocation")
 		return err
 	}, opts...)
 	return err
@@ -1392,7 +1407,7 @@ func (c *gRPCClient) CancelWorkflowInvocation(ctx context.Context, req *dataform
 	opts = append((*c.CallOptions).CancelWorkflowInvocation[0:len((*c.CallOptions).CancelWorkflowInvocation):len((*c.CallOptions).CancelWorkflowInvocation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.CancelWorkflowInvocation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.CancelWorkflowInvocation, req, settings.GRPC, c.logger, "CancelWorkflowInvocation")
 		return err
 	}, opts...)
 	return err
@@ -1418,7 +1433,7 @@ func (c *gRPCClient) QueryWorkflowInvocationActions(ctx context.Context, req *da
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.QueryWorkflowInvocationActions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.QueryWorkflowInvocationActions, req, settings.GRPC, c.logger, "QueryWorkflowInvocationActions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1453,7 +1468,7 @@ func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1482,7 +1497,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1517,7 +1532,7 @@ func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1535,7 +1550,7 @@ func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1553,7 +1568,7 @@ func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1613,21 +1628,10 @@ func (c *restClient) ListRepositories(ctx context.Context, req *dataformpb.ListR
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListRepositories")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1690,17 +1694,7 @@ func (c *restClient) GetRepository(ctx context.Context, req *dataformpb.GetRepos
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetRepository")
 		if err != nil {
 			return err
 		}
@@ -1758,17 +1752,7 @@ func (c *restClient) CreateRepository(ctx context.Context, req *dataformpb.Creat
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateRepository")
 		if err != nil {
 			return err
 		}
@@ -1803,11 +1787,11 @@ func (c *restClient) UpdateRepository(ctx context.Context, req *dataformpb.Updat
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1832,17 +1816,7 @@ func (c *restClient) UpdateRepository(ctx context.Context, req *dataformpb.Updat
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateRepository")
 		if err != nil {
 			return err
 		}
@@ -1892,15 +1866,8 @@ func (c *restClient) DeleteRepository(ctx context.Context, req *dataformpb.Delet
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteRepository")
+		return err
 	}, opts...)
 }
 
@@ -1937,17 +1904,7 @@ func (c *restClient) FetchRemoteBranches(ctx context.Context, req *dataformpb.Fe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FetchRemoteBranches")
 		if err != nil {
 			return err
 		}
@@ -2015,21 +1972,10 @@ func (c *restClient) ListWorkspaces(ctx context.Context, req *dataformpb.ListWor
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListWorkspaces")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2092,17 +2038,7 @@ func (c *restClient) GetWorkspace(ctx context.Context, req *dataformpb.GetWorksp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetWorkspace")
 		if err != nil {
 			return err
 		}
@@ -2160,17 +2096,7 @@ func (c *restClient) CreateWorkspace(ctx context.Context, req *dataformpb.Create
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateWorkspace")
 		if err != nil {
 			return err
 		}
@@ -2217,15 +2143,8 @@ func (c *restClient) DeleteWorkspace(ctx context.Context, req *dataformpb.Delete
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteWorkspace")
+		return err
 	}, opts...)
 }
 
@@ -2268,17 +2187,7 @@ func (c *restClient) InstallNpmPackages(ctx context.Context, req *dataformpb.Ins
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "InstallNpmPackages")
 		if err != nil {
 			return err
 		}
@@ -2331,15 +2240,8 @@ func (c *restClient) PullGitCommits(ctx context.Context, req *dataformpb.PullGit
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PullGitCommits")
+		return err
 	}, opts...)
 }
 
@@ -2379,15 +2281,8 @@ func (c *restClient) PushGitCommits(ctx context.Context, req *dataformpb.PushGit
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PushGitCommits")
+		return err
 	}, opts...)
 }
 
@@ -2424,17 +2319,7 @@ func (c *restClient) FetchFileGitStatuses(ctx context.Context, req *dataformpb.F
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FetchFileGitStatuses")
 		if err != nil {
 			return err
 		}
@@ -2487,17 +2372,7 @@ func (c *restClient) FetchGitAheadBehind(ctx context.Context, req *dataformpb.Fe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FetchGitAheadBehind")
 		if err != nil {
 			return err
 		}
@@ -2550,15 +2425,8 @@ func (c *restClient) CommitWorkspaceChanges(ctx context.Context, req *dataformpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CommitWorkspaceChanges")
+		return err
 	}, opts...)
 }
 
@@ -2598,15 +2466,8 @@ func (c *restClient) ResetWorkspaceChanges(ctx context.Context, req *dataformpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ResetWorkspaceChanges")
+		return err
 	}, opts...)
 }
 
@@ -2644,17 +2505,7 @@ func (c *restClient) FetchFileDiff(ctx context.Context, req *dataformpb.FetchFil
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FetchFileDiff")
 		if err != nil {
 			return err
 		}
@@ -2719,21 +2570,10 @@ func (c *restClient) QueryDirectoryContents(ctx context.Context, req *dataformpb
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "QueryDirectoryContents")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2802,17 +2642,7 @@ func (c *restClient) MakeDirectory(ctx context.Context, req *dataformpb.MakeDire
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "MakeDirectory")
 		if err != nil {
 			return err
 		}
@@ -2865,15 +2695,8 @@ func (c *restClient) RemoveDirectory(ctx context.Context, req *dataformpb.Remove
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RemoveDirectory")
+		return err
 	}, opts...)
 }
 
@@ -2917,17 +2740,7 @@ func (c *restClient) MoveDirectory(ctx context.Context, req *dataformpb.MoveDire
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "MoveDirectory")
 		if err != nil {
 			return err
 		}
@@ -2978,17 +2791,7 @@ func (c *restClient) ReadFile(ctx context.Context, req *dataformpb.ReadFileReque
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ReadFile")
 		if err != nil {
 			return err
 		}
@@ -3041,15 +2844,8 @@ func (c *restClient) RemoveFile(ctx context.Context, req *dataformpb.RemoveFileR
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RemoveFile")
+		return err
 	}, opts...)
 }
 
@@ -3092,17 +2888,7 @@ func (c *restClient) MoveFile(ctx context.Context, req *dataformpb.MoveFileReque
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "MoveFile")
 		if err != nil {
 			return err
 		}
@@ -3158,17 +2944,7 @@ func (c *restClient) WriteFile(ctx context.Context, req *dataformpb.WriteFileReq
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "WriteFile")
 		if err != nil {
 			return err
 		}
@@ -3230,21 +3006,10 @@ func (c *restClient) ListCompilationResults(ctx context.Context, req *dataformpb
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListCompilationResults")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3307,17 +3072,7 @@ func (c *restClient) GetCompilationResult(ctx context.Context, req *dataformpb.G
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCompilationResult")
 		if err != nil {
 			return err
 		}
@@ -3374,17 +3129,7 @@ func (c *restClient) CreateCompilationResult(ctx context.Context, req *dataformp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateCompilationResult")
 		if err != nil {
 			return err
 		}
@@ -3449,21 +3194,10 @@ func (c *restClient) QueryCompilationResultActions(ctx context.Context, req *dat
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "QueryCompilationResultActions")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3538,21 +3272,10 @@ func (c *restClient) ListWorkflowInvocations(ctx context.Context, req *dataformp
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListWorkflowInvocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3615,17 +3338,7 @@ func (c *restClient) GetWorkflowInvocation(ctx context.Context, req *dataformpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetWorkflowInvocation")
 		if err != nil {
 			return err
 		}
@@ -3682,17 +3395,7 @@ func (c *restClient) CreateWorkflowInvocation(ctx context.Context, req *dataform
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateWorkflowInvocation")
 		if err != nil {
 			return err
 		}
@@ -3739,15 +3442,8 @@ func (c *restClient) DeleteWorkflowInvocation(ctx context.Context, req *dataform
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteWorkflowInvocation")
+		return err
 	}, opts...)
 }
 
@@ -3787,15 +3483,8 @@ func (c *restClient) CancelWorkflowInvocation(ctx context.Context, req *dataform
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelWorkflowInvocation")
+		return err
 	}, opts...)
 }
 
@@ -3844,21 +3533,10 @@ func (c *restClient) QueryWorkflowInvocationActions(ctx context.Context, req *da
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "QueryWorkflowInvocationActions")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3921,17 +3599,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -3996,21 +3664,10 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4077,17 +3734,7 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -4147,17 +3794,7 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -4219,17 +3856,7 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
 		if err != nil {
 			return err
 		}
@@ -4244,380 +3871,4 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 		return nil, e
 	}
 	return resp, nil
-}
-
-// CompilationResultActionIterator manages a stream of *dataformpb.CompilationResultAction.
-type CompilationResultActionIterator struct {
-	items    []*dataformpb.CompilationResultAction
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*dataformpb.CompilationResultAction, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *CompilationResultActionIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *CompilationResultActionIterator) Next() (*dataformpb.CompilationResultAction, error) {
-	var item *dataformpb.CompilationResultAction
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *CompilationResultActionIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *CompilationResultActionIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// CompilationResultIterator manages a stream of *dataformpb.CompilationResult.
-type CompilationResultIterator struct {
-	items    []*dataformpb.CompilationResult
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*dataformpb.CompilationResult, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *CompilationResultIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *CompilationResultIterator) Next() (*dataformpb.CompilationResult, error) {
-	var item *dataformpb.CompilationResult
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *CompilationResultIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *CompilationResultIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// LocationIterator manages a stream of *locationpb.Location.
-type LocationIterator struct {
-	items    []*locationpb.Location
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *LocationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *LocationIterator) Next() (*locationpb.Location, error) {
-	var item *locationpb.Location
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *LocationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *LocationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// QueryDirectoryContentsResponse_DirectoryEntryIterator manages a stream of *dataformpb.QueryDirectoryContentsResponse_DirectoryEntry.
-type QueryDirectoryContentsResponse_DirectoryEntryIterator struct {
-	items    []*dataformpb.QueryDirectoryContentsResponse_DirectoryEntry
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*dataformpb.QueryDirectoryContentsResponse_DirectoryEntry, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *QueryDirectoryContentsResponse_DirectoryEntryIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *QueryDirectoryContentsResponse_DirectoryEntryIterator) Next() (*dataformpb.QueryDirectoryContentsResponse_DirectoryEntry, error) {
-	var item *dataformpb.QueryDirectoryContentsResponse_DirectoryEntry
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *QueryDirectoryContentsResponse_DirectoryEntryIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *QueryDirectoryContentsResponse_DirectoryEntryIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// RepositoryIterator manages a stream of *dataformpb.Repository.
-type RepositoryIterator struct {
-	items    []*dataformpb.Repository
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*dataformpb.Repository, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *RepositoryIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *RepositoryIterator) Next() (*dataformpb.Repository, error) {
-	var item *dataformpb.Repository
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *RepositoryIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *RepositoryIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// WorkflowInvocationActionIterator manages a stream of *dataformpb.WorkflowInvocationAction.
-type WorkflowInvocationActionIterator struct {
-	items    []*dataformpb.WorkflowInvocationAction
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*dataformpb.WorkflowInvocationAction, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *WorkflowInvocationActionIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *WorkflowInvocationActionIterator) Next() (*dataformpb.WorkflowInvocationAction, error) {
-	var item *dataformpb.WorkflowInvocationAction
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *WorkflowInvocationActionIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *WorkflowInvocationActionIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// WorkflowInvocationIterator manages a stream of *dataformpb.WorkflowInvocation.
-type WorkflowInvocationIterator struct {
-	items    []*dataformpb.WorkflowInvocation
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*dataformpb.WorkflowInvocation, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *WorkflowInvocationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *WorkflowInvocationIterator) Next() (*dataformpb.WorkflowInvocation, error) {
-	var item *dataformpb.WorkflowInvocation
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *WorkflowInvocationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *WorkflowInvocationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// WorkspaceIterator manages a stream of *dataformpb.Workspace.
-type WorkspaceIterator struct {
-	items    []*dataformpb.Workspace
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*dataformpb.Workspace, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *WorkspaceIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *WorkspaceIterator) Next() (*dataformpb.Workspace, error) {
-	var item *dataformpb.Workspace
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *WorkspaceIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *WorkspaceIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

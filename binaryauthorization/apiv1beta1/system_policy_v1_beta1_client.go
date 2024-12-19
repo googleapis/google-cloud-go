@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,14 +19,13 @@ package binaryauthorization
 import (
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
 
 	binaryauthorizationpb "cloud.google.com/go/binaryauthorization/apiv1beta1/binaryauthorizationpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -45,10 +44,13 @@ type SystemPolicyV1Beta1CallOptions struct {
 func defaultSystemPolicyV1Beta1GRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("binaryauthorization.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("binaryauthorization.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("binaryauthorization.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://binaryauthorization.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -129,6 +131,8 @@ type systemPolicyV1Beta1GRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewSystemPolicyV1Beta1Client creates a new system policy v1 beta1 client based on gRPC.
@@ -155,6 +159,7 @@ func NewSystemPolicyV1Beta1Client(ctx context.Context, opts ...option.ClientOpti
 		connPool:                  connPool,
 		systemPolicyV1Beta1Client: binaryauthorizationpb.NewSystemPolicyV1Beta1Client(connPool),
 		CallOptions:               &client.CallOptions,
+		logger:                    internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -177,7 +182,9 @@ func (c *systemPolicyV1Beta1GRPCClient) Connection() *grpc.ClientConn {
 func (c *systemPolicyV1Beta1GRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -199,6 +206,8 @@ type systemPolicyV1Beta1RESTClient struct {
 
 	// Points back to the CallOptions field of the containing SystemPolicyV1Beta1Client
 	CallOptions **SystemPolicyV1Beta1CallOptions
+
+	logger *slog.Logger
 }
 
 // NewSystemPolicyV1Beta1RESTClient creates a new system policy v1 beta1 rest client.
@@ -216,6 +225,7 @@ func NewSystemPolicyV1Beta1RESTClient(ctx context.Context, opts ...option.Client
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -225,9 +235,12 @@ func NewSystemPolicyV1Beta1RESTClient(ctx context.Context, opts ...option.Client
 func defaultSystemPolicyV1Beta1RESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://binaryauthorization.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://binaryauthorization.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://binaryauthorization.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://binaryauthorization.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -237,7 +250,9 @@ func defaultSystemPolicyV1Beta1RESTClientOptions() []option.ClientOption {
 func (c *systemPolicyV1Beta1RESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -263,7 +278,7 @@ func (c *systemPolicyV1Beta1GRPCClient) GetSystemPolicy(ctx context.Context, req
 	var resp *binaryauthorizationpb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.systemPolicyV1Beta1Client.GetSystemPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.systemPolicyV1Beta1Client.GetSystemPolicy, req, settings.GRPC, c.logger, "GetSystemPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -305,17 +320,7 @@ func (c *systemPolicyV1Beta1RESTClient) GetSystemPolicy(ctx context.Context, req
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSystemPolicy")
 		if err != nil {
 			return err
 		}

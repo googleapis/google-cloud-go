@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	speechpb "cloud.google.com/go/speech/apiv1p1beta1/speechpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -60,10 +59,13 @@ type AdaptationCallOptions struct {
 func defaultAdaptationGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("speech.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("speech.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("speech.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://speech.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -236,6 +238,8 @@ type adaptationGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewAdaptationClient creates a new adaptation client based on gRPC.
@@ -262,6 +266,7 @@ func NewAdaptationClient(ctx context.Context, opts ...option.ClientOption) (*Ada
 		connPool:         connPool,
 		adaptationClient: speechpb.NewAdaptationClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -285,7 +290,9 @@ func (c *adaptationGRPCClient) Connection() *grpc.ClientConn {
 func (c *adaptationGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -307,6 +314,8 @@ type adaptationRESTClient struct {
 
 	// Points back to the CallOptions field of the containing AdaptationClient
 	CallOptions **AdaptationCallOptions
+
+	logger *slog.Logger
 }
 
 // NewAdaptationRESTClient creates a new adaptation rest client.
@@ -324,6 +333,7 @@ func NewAdaptationRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -333,9 +343,12 @@ func NewAdaptationRESTClient(ctx context.Context, opts ...option.ClientOption) (
 func defaultAdaptationRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://speech.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://speech.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://speech.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://speech.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -345,7 +358,9 @@ func defaultAdaptationRESTClientOptions() []option.ClientOption {
 func (c *adaptationRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -371,7 +386,7 @@ func (c *adaptationGRPCClient) CreatePhraseSet(ctx context.Context, req *speechp
 	var resp *speechpb.PhraseSet
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.adaptationClient.CreatePhraseSet(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.adaptationClient.CreatePhraseSet, req, settings.GRPC, c.logger, "CreatePhraseSet")
 		return err
 	}, opts...)
 	if err != nil {
@@ -389,7 +404,7 @@ func (c *adaptationGRPCClient) GetPhraseSet(ctx context.Context, req *speechpb.G
 	var resp *speechpb.PhraseSet
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.adaptationClient.GetPhraseSet(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.adaptationClient.GetPhraseSet, req, settings.GRPC, c.logger, "GetPhraseSet")
 		return err
 	}, opts...)
 	if err != nil {
@@ -418,7 +433,7 @@ func (c *adaptationGRPCClient) ListPhraseSet(ctx context.Context, req *speechpb.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.adaptationClient.ListPhraseSet(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.adaptationClient.ListPhraseSet, req, settings.GRPC, c.logger, "ListPhraseSet")
 			return err
 		}, opts...)
 		if err != nil {
@@ -453,7 +468,7 @@ func (c *adaptationGRPCClient) UpdatePhraseSet(ctx context.Context, req *speechp
 	var resp *speechpb.PhraseSet
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.adaptationClient.UpdatePhraseSet(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.adaptationClient.UpdatePhraseSet, req, settings.GRPC, c.logger, "UpdatePhraseSet")
 		return err
 	}, opts...)
 	if err != nil {
@@ -470,7 +485,7 @@ func (c *adaptationGRPCClient) DeletePhraseSet(ctx context.Context, req *speechp
 	opts = append((*c.CallOptions).DeletePhraseSet[0:len((*c.CallOptions).DeletePhraseSet):len((*c.CallOptions).DeletePhraseSet)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.adaptationClient.DeletePhraseSet(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.adaptationClient.DeletePhraseSet, req, settings.GRPC, c.logger, "DeletePhraseSet")
 		return err
 	}, opts...)
 	return err
@@ -485,7 +500,7 @@ func (c *adaptationGRPCClient) CreateCustomClass(ctx context.Context, req *speec
 	var resp *speechpb.CustomClass
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.adaptationClient.CreateCustomClass(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.adaptationClient.CreateCustomClass, req, settings.GRPC, c.logger, "CreateCustomClass")
 		return err
 	}, opts...)
 	if err != nil {
@@ -503,7 +518,7 @@ func (c *adaptationGRPCClient) GetCustomClass(ctx context.Context, req *speechpb
 	var resp *speechpb.CustomClass
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.adaptationClient.GetCustomClass(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.adaptationClient.GetCustomClass, req, settings.GRPC, c.logger, "GetCustomClass")
 		return err
 	}, opts...)
 	if err != nil {
@@ -532,7 +547,7 @@ func (c *adaptationGRPCClient) ListCustomClasses(ctx context.Context, req *speec
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.adaptationClient.ListCustomClasses(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.adaptationClient.ListCustomClasses, req, settings.GRPC, c.logger, "ListCustomClasses")
 			return err
 		}, opts...)
 		if err != nil {
@@ -567,7 +582,7 @@ func (c *adaptationGRPCClient) UpdateCustomClass(ctx context.Context, req *speec
 	var resp *speechpb.CustomClass
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.adaptationClient.UpdateCustomClass(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.adaptationClient.UpdateCustomClass, req, settings.GRPC, c.logger, "UpdateCustomClass")
 		return err
 	}, opts...)
 	if err != nil {
@@ -584,7 +599,7 @@ func (c *adaptationGRPCClient) DeleteCustomClass(ctx context.Context, req *speec
 	opts = append((*c.CallOptions).DeleteCustomClass[0:len((*c.CallOptions).DeleteCustomClass):len((*c.CallOptions).DeleteCustomClass)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.adaptationClient.DeleteCustomClass(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.adaptationClient.DeleteCustomClass, req, settings.GRPC, c.logger, "DeleteCustomClass")
 		return err
 	}, opts...)
 	return err
@@ -599,7 +614,7 @@ func (c *adaptationGRPCClient) GetOperation(ctx context.Context, req *longrunnin
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -625,7 +640,7 @@ func (c *adaptationGRPCClient) ListOperations(ctx context.Context, req *longrunn
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -692,17 +707,7 @@ func (c *adaptationRESTClient) CreatePhraseSet(ctx context.Context, req *speechp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreatePhraseSet")
 		if err != nil {
 			return err
 		}
@@ -752,17 +757,7 @@ func (c *adaptationRESTClient) GetPhraseSet(ctx context.Context, req *speechpb.G
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetPhraseSet")
 		if err != nil {
 			return err
 		}
@@ -824,21 +819,10 @@ func (c *adaptationRESTClient) ListPhraseSet(ctx context.Context, req *speechpb.
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListPhraseSet")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -886,11 +870,11 @@ func (c *adaptationRESTClient) UpdatePhraseSet(ctx context.Context, req *speechp
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -915,17 +899,7 @@ func (c *adaptationRESTClient) UpdatePhraseSet(ctx context.Context, req *speechp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdatePhraseSet")
 		if err != nil {
 			return err
 		}
@@ -972,15 +946,8 @@ func (c *adaptationRESTClient) DeletePhraseSet(ctx context.Context, req *speechp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeletePhraseSet")
+		return err
 	}, opts...)
 }
 
@@ -1023,17 +990,7 @@ func (c *adaptationRESTClient) CreateCustomClass(ctx context.Context, req *speec
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateCustomClass")
 		if err != nil {
 			return err
 		}
@@ -1083,17 +1040,7 @@ func (c *adaptationRESTClient) GetCustomClass(ctx context.Context, req *speechpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCustomClass")
 		if err != nil {
 			return err
 		}
@@ -1155,21 +1102,10 @@ func (c *adaptationRESTClient) ListCustomClasses(ctx context.Context, req *speec
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListCustomClasses")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1217,11 +1153,11 @@ func (c *adaptationRESTClient) UpdateCustomClass(ctx context.Context, req *speec
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1246,17 +1182,7 @@ func (c *adaptationRESTClient) UpdateCustomClass(ctx context.Context, req *speec
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateCustomClass")
 		if err != nil {
 			return err
 		}
@@ -1303,15 +1229,8 @@ func (c *adaptationRESTClient) DeleteCustomClass(ctx context.Context, req *speec
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteCustomClass")
+		return err
 	}, opts...)
 }
 
@@ -1348,17 +1267,7 @@ func (c *adaptationRESTClient) GetOperation(ctx context.Context, req *longrunnin
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -1426,21 +1335,10 @@ func (c *adaptationRESTClient) ListOperations(ctx context.Context, req *longrunn
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1468,98 +1366,4 @@ func (c *adaptationRESTClient) ListOperations(ctx context.Context, req *longrunn
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
-}
-
-// CustomClassIterator manages a stream of *speechpb.CustomClass.
-type CustomClassIterator struct {
-	items    []*speechpb.CustomClass
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*speechpb.CustomClass, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *CustomClassIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *CustomClassIterator) Next() (*speechpb.CustomClass, error) {
-	var item *speechpb.CustomClass
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *CustomClassIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *CustomClassIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// PhraseSetIterator manages a stream of *speechpb.PhraseSet.
-type PhraseSetIterator struct {
-	items    []*speechpb.PhraseSet
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*speechpb.PhraseSet, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *PhraseSetIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *PhraseSetIterator) Next() (*speechpb.PhraseSet, error) {
-	var item *speechpb.PhraseSet
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *PhraseSetIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *PhraseSetIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

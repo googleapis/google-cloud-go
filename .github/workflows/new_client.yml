@@ -7,19 +7,23 @@ on:
       - main
     paths:
       - '**/version.go'
-  
+
 permissions:
   contents: read
-  pull-requests: write
+
+env:
+  GOTOOLCHAIN: local
 
 jobs:
   new_versions:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-go@v4
+    - uses: actions/checkout@v4
       with:
-        go-version: 1.20.x
+        fetch-depth: 2
+    - uses: actions/setup-go@v5
+      with:
+        go-version: 1.23.x
     - name: Find new version files
       id: versions
       # Ignore changes to the internal and root directories.
@@ -47,7 +51,7 @@ jobs:
     strategy:
       matrix: ${{ fromJson(needs.new_versions.outputs.versions) }}
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - run: echo >> ${{ matrix.new }}/CHANGES.md
     - uses: googleapis/code-suggester@v4
       id: code_suggester

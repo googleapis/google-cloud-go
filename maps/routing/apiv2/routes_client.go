@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,15 +19,15 @@ package routing
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
 
 	routingpb "cloud.google.com/go/maps/routing/apiv2/routingpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -48,10 +48,13 @@ type RoutesCallOptions struct {
 func defaultRoutesGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("routes.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("routes.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("routes.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://routes.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -122,7 +125,7 @@ func (c *RoutesClient) Connection() *grpc.ClientConn {
 // the input. You can provide the response field mask by using URL parameter
 // $fields or fields, or by using an HTTP/gRPC header X-Goog-FieldMask
 // (see the available URL parameters and
-// headers (at https://cloud.google.com/apis/docs/system-parameters). The value
+// headers (at https://cloud.google.com/apis/docs/system-parameters)). The value
 // is a comma separated list of field paths. See detailed documentation about
 // how to construct the field
 // paths (at https://github.com/protocolbuffers/protobuf/blob/master/src/google/protobuf/field_mask.proto).
@@ -163,9 +166,9 @@ func (c *RoutesClient) ComputeRoutes(ctx context.Context, req *routingpb.Compute
 // the input. You can provide the response field mask by using the URL
 // parameter $fields or fields, or by using the HTTP/gRPC header
 // X-Goog-FieldMask (see the available URL parameters and
-// headers (at https://cloud.google.com/apis/docs/system-parameters). The value
-// is a comma separated list of field paths. See this detailed documentation
-// about how to construct the field
+// headers (at https://cloud.google.com/apis/docs/system-parameters)).
+// The value is a comma separated list of field paths. See this detailed
+// documentation about how to construct the field
 // paths (at https://github.com/protocolbuffers/protobuf/blob/master/src/google/protobuf/field_mask.proto).
 //
 // For example, in this method:
@@ -212,6 +215,8 @@ type routesGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewRoutesClient creates a new routes client based on gRPC.
@@ -238,6 +243,7 @@ func NewRoutesClient(ctx context.Context, opts ...option.ClientOption) (*RoutesC
 		connPool:     connPool,
 		routesClient: routingpb.NewRoutesClient(connPool),
 		CallOptions:  &client.CallOptions,
+		logger:       internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -260,7 +266,9 @@ func (c *routesGRPCClient) Connection() *grpc.ClientConn {
 func (c *routesGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -282,6 +290,8 @@ type routesRESTClient struct {
 
 	// Points back to the CallOptions field of the containing RoutesClient
 	CallOptions **RoutesCallOptions
+
+	logger *slog.Logger
 }
 
 // NewRoutesRESTClient creates a new routes rest client.
@@ -299,6 +309,7 @@ func NewRoutesRESTClient(ctx context.Context, opts ...option.ClientOption) (*Rou
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -308,9 +319,12 @@ func NewRoutesRESTClient(ctx context.Context, opts ...option.ClientOption) (*Rou
 func defaultRoutesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://routes.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://routes.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://routes.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://routes.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -320,7 +334,9 @@ func defaultRoutesRESTClientOptions() []option.ClientOption {
 func (c *routesRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -343,7 +359,7 @@ func (c *routesGRPCClient) ComputeRoutes(ctx context.Context, req *routingpb.Com
 	var resp *routingpb.ComputeRoutesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.routesClient.ComputeRoutes(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.routesClient.ComputeRoutes, req, settings.GRPC, c.logger, "ComputeRoutes")
 		return err
 	}, opts...)
 	if err != nil {
@@ -358,7 +374,9 @@ func (c *routesGRPCClient) ComputeRouteMatrix(ctx context.Context, req *routingp
 	var resp routingpb.Routes_ComputeRouteMatrixClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "ComputeRouteMatrix")
 		resp, err = c.routesClient.ComputeRouteMatrix(ctx, req, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "ComputeRouteMatrix")
 		return err
 	}, opts...)
 	if err != nil {
@@ -374,7 +392,7 @@ func (c *routesGRPCClient) ComputeRouteMatrix(ctx context.Context, req *routingp
 // the input. You can provide the response field mask by using URL parameter
 // $fields or fields, or by using an HTTP/gRPC header X-Goog-FieldMask
 // (see the available URL parameters and
-// headers (at https://cloud.google.com/apis/docs/system-parameters). The value
+// headers (at https://cloud.google.com/apis/docs/system-parameters)). The value
 // is a comma separated list of field paths. See detailed documentation about
 // how to construct the field
 // paths (at https://github.com/protocolbuffers/protobuf/blob/master/src/google/protobuf/field_mask.proto).
@@ -439,17 +457,7 @@ func (c *routesRESTClient) ComputeRoutes(ctx context.Context, req *routingpb.Com
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ComputeRoutes")
 		if err != nil {
 			return err
 		}
@@ -473,9 +481,9 @@ func (c *routesRESTClient) ComputeRoutes(ctx context.Context, req *routingpb.Com
 // the input. You can provide the response field mask by using the URL
 // parameter $fields or fields, or by using the HTTP/gRPC header
 // X-Goog-FieldMask (see the available URL parameters and
-// headers (at https://cloud.google.com/apis/docs/system-parameters). The value
-// is a comma separated list of field paths. See this detailed documentation
-// about how to construct the field
+// headers (at https://cloud.google.com/apis/docs/system-parameters)).
+// The value is a comma separated list of field paths. See this detailed
+// documentation about how to construct the field
 // paths (at https://github.com/protocolbuffers/protobuf/blob/master/src/google/protobuf/field_mask.proto).
 //
 // For example, in this method:
@@ -536,12 +544,8 @@ func (c *routesRESTClient) ComputeRouteMatrix(ctx context.Context, req *routingp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		httpRsp, err := executeStreamingHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ComputeRouteMatrix")
 		if err != nil {
-			return err
-		}
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
 			return err
 		}
 
@@ -588,7 +592,7 @@ func (c *computeRouteMatrixRESTClient) Trailer() metadata.MD {
 
 func (c *computeRouteMatrixRESTClient) CloseSend() error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *computeRouteMatrixRESTClient) Context() context.Context {
@@ -597,10 +601,10 @@ func (c *computeRouteMatrixRESTClient) Context() context.Context {
 
 func (c *computeRouteMatrixRESTClient) SendMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *computeRouteMatrixRESTClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented, use Recv")
+	return errors.New("this method is not implemented, use Recv")
 }

@@ -1,5 +1,138 @@
 # Changes
 
+## [0.25.2](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.25.1...analytics/v0.25.2) (2024-10-23)
+
+
+### Bug Fixes
+
+* **analytics:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **analytics:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
+## [0.25.1](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.25.0...analytics/v0.25.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **analytics:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+## [0.25.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.24.0...analytics/v0.25.0) (2024-08-20)
+
+
+### Features
+
+* **analytics:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [0.24.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.23.6...analytics/v0.24.0) (2024-08-08)
+
+
+### Features
+
+* **analytics/admin:** Add `CreateBigQueryLink`, `UpdateBigQueryLink`, and `DeleteBigQueryLink` methods ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **analytics/admin:** Add `GetEventEditRule`, `CreateEventEditRule`, `ListEventEditRules`, `UpdateEventEditRule`, `DeleteEventEditRule`, and `ReorderEventEditRules` methods to the Admin API v1 alpha ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **analytics/admin:** Add `GetKeyEvent`, `CreateKeyEvent`, `ListKeyEvents`, `UpdateKeyEvent`, and `DeleteKeyEvent` methods ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **analytics/admin:** Add the `BIGQUERY_LINK` option to the `ChangeHistoryResourceType` enum ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **analytics/admin:** Add the `create_time` field to the `Audience` resource ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **analytics/admin:** Add the `dataset_location` field to the `BigQueryLink` resource ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **analytics/admin:** Add the `gmp_organization` field to the `Account` resource ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **analytics/admin:** Add the `primary` field to the `ChannelGroup` resource ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **analytics/admin:** Mark `GetConversionEvent`, `CreateConversionEvent`, `ListConversionEvents`, `UpdateConversionEvent`, and `DeleteConversionEvent` methods as deprecated ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+
+
+### Bug Fixes
+
+* **analytics/admin:** Rename custom method `CreateSubpropertyRequest` to `ProvisionSubpropertyRequest` ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **analytics:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+
+### Documentation
+
+* **analytics/admin:** Add deprecation comment to `GetConversionEvent`, `CreateConversionEvent`, `ListConversionEvents`, `UpdateConversionEvent`, and `DeleteConversionEvent` methods ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **analytics/admin:** Improve comment formatting of `account` and `property` fields in `SearchChangeHistoryEventsRequest` ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **analytics/admin:** Improve comment formatting of the `name` field in `DeleteFirebaseLinkRequest`, `GetGlobalSiteTagRequest`, and `GetDataSharingSettingsRequest` ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **analytics/admin:** Improve comment formatting of the `parent` field in `CreateFirebaseLinkRequest` and `ListFirebaseLinksRequest` ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+
+## [0.23.6](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.23.5...analytics/v0.23.6) (2024-07-24)
+
+
+### Bug Fixes
+
+* **analytics:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+## [0.23.5](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.23.4...analytics/v0.23.5) (2024-07-10)
+
+
+### Bug Fixes
+
+* **analytics:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [0.23.4](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.23.3...analytics/v0.23.4) (2024-07-01)
+
+
+### Bug Fixes
+
+* **analytics:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [0.23.3](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.23.2...analytics/v0.23.3) (2024-06-26)
+
+
+### Bug Fixes
+
+* **analytics:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
+## [0.23.2](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.23.1...analytics/v0.23.2) (2024-05-01)
+
+
+### Bug Fixes
+
+* **analytics:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [0.23.1](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.23.0...analytics/v0.23.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **analytics:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [0.23.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.22.0...analytics/v0.23.0) (2024-01-30)
+
+
+### Features
+
+* **analytics/admin:** Add `GetCalculatedMetric`, `CreateCalculatedMetric`, `ListCalculatedMetrics`, `UpdateCalculatedMetric`, `DeleteCalculatedMetric` methods to the Admin API v1alpha ([97d62c7](https://github.com/googleapis/google-cloud-go/commit/97d62c7a6a305c47670ea9c147edc444f4bf8620))
+
+
+### Bug Fixes
+
+* **analytics:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [0.22.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.21.6...analytics/v0.22.0) (2024-01-03)
+
+
+### Features
+
+* **analytics/admin:** Add `GetSubpropertyEventFilter`, `ListSubpropertyEventFilters` methods to the Admin API v1 alpha ([69c49f2](https://github.com/googleapis/google-cloud-go/commit/69c49f2537af8064e7b18e4845c3b2fbd502f141))
+
+## [0.21.6](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.21.5...analytics/v0.21.6) (2023-11-01)
+
+
+### Bug Fixes
+
+* **analytics:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [0.21.5](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.21.4...analytics/v0.21.5) (2023-10-26)
+
+
+### Bug Fixes
+
+* **analytics:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [0.21.4](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.21.3...analytics/v0.21.4) (2023-10-12)
+
+
+### Bug Fixes
+
+* **analytics:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [0.21.3](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.21.2...analytics/v0.21.3) (2023-07-27)
 
 

@@ -25,6 +25,11 @@
                 "ApproveRollout"
               ]
             },
+            "CancelAutomationRun": {
+              "methods": [
+                "CancelAutomationRun"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -35,9 +40,24 @@
                 "CancelRollout"
               ]
             },
+            "CreateAutomation": {
+              "methods": [
+                "CreateAutomation"
+              ]
+            },
+            "CreateCustomTargetType": {
+              "methods": [
+                "CreateCustomTargetType"
+              ]
+            },
             "CreateDeliveryPipeline": {
               "methods": [
                 "CreateDeliveryPipeline"
+              ]
+            },
+            "CreateDeployPolicy": {
+              "methods": [
+                "CreateDeployPolicy"
               ]
             },
             "CreateRelease": {
@@ -55,9 +75,24 @@
                 "CreateTarget"
               ]
             },
+            "DeleteAutomation": {
+              "methods": [
+                "DeleteAutomation"
+              ]
+            },
+            "DeleteCustomTargetType": {
+              "methods": [
+                "DeleteCustomTargetType"
+              ]
+            },
             "DeleteDeliveryPipeline": {
               "methods": [
                 "DeleteDeliveryPipeline"
+              ]
+            },
+            "DeleteDeployPolicy": {
+              "methods": [
+                "DeleteDeployPolicy"
               ]
             },
             "DeleteOperation": {
@@ -70,14 +105,34 @@
                 "DeleteTarget"
               ]
             },
+            "GetAutomation": {
+              "methods": [
+                "GetAutomation"
+              ]
+            },
+            "GetAutomationRun": {
+              "methods": [
+                "GetAutomationRun"
+              ]
+            },
             "GetConfig": {
               "methods": [
                 "GetConfig"
               ]
             },
+            "GetCustomTargetType": {
+              "methods": [
+                "GetCustomTargetType"
+              ]
+            },
             "GetDeliveryPipeline": {
               "methods": [
                 "GetDeliveryPipeline"
+              ]
+            },
+            "GetDeployPolicy": {
+              "methods": [
+                "GetDeployPolicy"
               ]
             },
             "GetIamPolicy": {
@@ -120,9 +175,29 @@
                 "IgnoreJob"
               ]
             },
+            "ListAutomationRuns": {
+              "methods": [
+                "ListAutomationRuns"
+              ]
+            },
+            "ListAutomations": {
+              "methods": [
+                "ListAutomations"
+              ]
+            },
+            "ListCustomTargetTypes": {
+              "methods": [
+                "ListCustomTargetTypes"
+              ]
+            },
             "ListDeliveryPipelines": {
               "methods": [
                 "ListDeliveryPipelines"
+              ]
+            },
+            "ListDeployPolicies": {
+              "methods": [
+                "ListDeployPolicies"
               ]
             },
             "ListJobRuns": {
@@ -160,6 +235,11 @@
                 "RetryJob"
               ]
             },
+            "RollbackTarget": {
+              "methods": [
+                "RollbackTarget"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
@@ -175,9 +255,24 @@
                 "TestIamPermissions"
               ]
             },
+            "UpdateAutomation": {
+              "methods": [
+                "UpdateAutomation"
+              ]
+            },
+            "UpdateCustomTargetType": {
+              "methods": [
+                "UpdateCustomTargetType"
+              ]
+            },
             "UpdateDeliveryPipeline": {
               "methods": [
                 "UpdateDeliveryPipeline"
+              ]
+            },
+            "UpdateDeployPolicy": {
+              "methods": [
+                "UpdateDeployPolicy"
               ]
             },
             "UpdateTarget": {
@@ -205,6 +300,11 @@
                 "ApproveRollout"
               ]
             },
+            "CancelAutomationRun": {
+              "methods": [
+                "CancelAutomationRun"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -215,9 +315,24 @@
                 "CancelRollout"
               ]
             },
+            "CreateAutomation": {
+              "methods": [
+                "CreateAutomation"
+              ]
+            },
+            "CreateCustomTargetType": {
+              "methods": [
+                "CreateCustomTargetType"
+              ]
+            },
             "CreateDeliveryPipeline": {
               "methods": [
                 "CreateDeliveryPipeline"
+              ]
+            },
+            "CreateDeployPolicy": {
+              "methods": [
+                "CreateDeployPolicy"
               ]
             },
             "CreateRelease": {
@@ -235,9 +350,24 @@
                 "CreateTarget"
               ]
             },
+            "DeleteAutomation": {
+              "methods": [
+                "DeleteAutomation"
+              ]
+            },
+            "DeleteCustomTargetType": {
+              "methods": [
+                "DeleteCustomTargetType"
+              ]
+            },
             "DeleteDeliveryPipeline": {
               "methods": [
                 "DeleteDeliveryPipeline"
+              ]
+            },
+            "DeleteDeployPolicy": {
+              "methods": [
+                "DeleteDeployPolicy"
               ]
             },
             "DeleteOperation": {
@@ -250,14 +380,34 @@
                 "DeleteTarget"
               ]
             },
+            "GetAutomation": {
+              "methods": [
+                "GetAutomation"
+              ]
+            },
+            "GetAutomationRun": {
+              "methods": [
+                "GetAutomationRun"
+              ]
+            },
             "GetConfig": {
               "methods": [
                 "GetConfig"
               ]
             },
+            "GetCustomTargetType": {
+              "methods": [
+                "GetCustomTargetType"
+              ]
+            },
             "GetDeliveryPipeline": {
               "methods": [
                 "GetDeliveryPipeline"
+              ]
+            },
+            "GetDeployPolicy": {
+              "methods": [
+                "GetDeployPolicy"
               ]
             },
             "GetIamPolicy": {
@@ -300,9 +450,29 @@
                 "IgnoreJob"
               ]
             },
+            "ListAutomationRuns": {
+              "methods": [
+                "ListAutomationRuns"
+              ]
+            },
+            "ListAutomations": {
+              "methods": [
+                "ListAutomations"
+              ]
+            },
+            "ListCustomTargetTypes": {
+              "methods": [
+                "ListCustomTargetTypes"
+              ]
+            },
             "ListDeliveryPipelines": {
               "methods": [
                 "ListDeliveryPipelines"
+              ]
+            },
+            "ListDeployPolicies": {
+              "methods": [
+                "ListDeployPolicies"
               ]
             },
             "ListJobRuns": {
@@ -340,6 +510,11 @@
                 "RetryJob"
               ]
             },
+            "RollbackTarget": {
+              "methods": [
+                "RollbackTarget"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
@@ -355,9 +530,24 @@
                 "TestIamPermissions"
               ]
             },
+            "UpdateAutomation": {
+              "methods": [
+                "UpdateAutomation"
+              ]
+            },
+            "UpdateCustomTargetType": {
+              "methods": [
+                "UpdateCustomTargetType"
+              ]
+            },
             "UpdateDeliveryPipeline": {
               "methods": [
                 "UpdateDeliveryPipeline"
+              ]
+            },
+            "UpdateDeployPolicy": {
+              "methods": [
+                "UpdateDeployPolicy"
               ]
             },
             "UpdateTarget": {

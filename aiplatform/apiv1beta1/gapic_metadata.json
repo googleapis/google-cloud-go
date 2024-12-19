@@ -20,9 +20,19 @@
                 "CreateDataset"
               ]
             },
+            "CreateDatasetVersion": {
+              "methods": [
+                "CreateDatasetVersion"
+              ]
+            },
             "DeleteDataset": {
               "methods": [
                 "DeleteDataset"
+              ]
+            },
+            "DeleteDatasetVersion": {
+              "methods": [
+                "DeleteDatasetVersion"
               ]
             },
             "DeleteOperation": {
@@ -48,6 +58,11 @@
             "GetDataset": {
               "methods": [
                 "GetDataset"
+              ]
+            },
+            "GetDatasetVersion": {
+              "methods": [
+                "GetDatasetVersion"
               ]
             },
             "GetIamPolicy": {
@@ -80,6 +95,11 @@
                 "ListDataItems"
               ]
             },
+            "ListDatasetVersions": {
+              "methods": [
+                "ListDatasetVersions"
+              ]
+            },
             "ListDatasets": {
               "methods": [
                 "ListDatasets"
@@ -100,6 +120,11 @@
                 "ListSavedQueries"
               ]
             },
+            "RestoreDatasetVersion": {
+              "methods": [
+                "RestoreDatasetVersion"
+              ]
+            },
             "SearchDataItems": {
               "methods": [
                 "SearchDataItems"
@@ -118,6 +143,11 @@
             "UpdateDataset": {
               "methods": [
                 "UpdateDataset"
+              ]
+            },
+            "UpdateDatasetVersion": {
+              "methods": [
+                "UpdateDatasetVersion"
               ]
             },
             "WaitOperation": {
@@ -140,9 +170,19 @@
                 "CreateDataset"
               ]
             },
+            "CreateDatasetVersion": {
+              "methods": [
+                "CreateDatasetVersion"
+              ]
+            },
             "DeleteDataset": {
               "methods": [
                 "DeleteDataset"
+              ]
+            },
+            "DeleteDatasetVersion": {
+              "methods": [
+                "DeleteDatasetVersion"
               ]
             },
             "DeleteOperation": {
@@ -168,6 +208,11 @@
             "GetDataset": {
               "methods": [
                 "GetDataset"
+              ]
+            },
+            "GetDatasetVersion": {
+              "methods": [
+                "GetDatasetVersion"
               ]
             },
             "GetIamPolicy": {
@@ -200,6 +245,11 @@
                 "ListDataItems"
               ]
             },
+            "ListDatasetVersions": {
+              "methods": [
+                "ListDatasetVersions"
+              ]
+            },
             "ListDatasets": {
               "methods": [
                 "ListDatasets"
@@ -220,6 +270,11 @@
                 "ListSavedQueries"
               ]
             },
+            "RestoreDatasetVersion": {
+              "methods": [
+                "RestoreDatasetVersion"
+              ]
+            },
             "SearchDataItems": {
               "methods": [
                 "SearchDataItems"
@@ -238,6 +293,11 @@
             "UpdateDataset": {
               "methods": [
                 "UpdateDataset"
+              ]
+            },
+            "UpdateDatasetVersion": {
+              "methods": [
+                "UpdateDatasetVersion"
               ]
             },
             "WaitOperation": {
@@ -324,6 +384,11 @@
                 "TestIamPermissions"
               ]
             },
+            "UpdateDeploymentResourcePool": {
+              "methods": [
+                "UpdateDeploymentResourcePool"
+              ]
+            },
             "WaitOperation": {
               "methods": [
                 "WaitOperation"
@@ -402,6 +467,11 @@
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
+              ]
+            },
+            "UpdateDeploymentResourcePool": {
+              "methods": [
+                "UpdateDeploymentResourcePool"
               ]
             },
             "WaitOperation": {
@@ -503,6 +573,11 @@
                 "UpdateEndpoint"
               ]
             },
+            "UpdateEndpointLongRunning": {
+              "methods": [
+                "UpdateEndpointLongRunning"
+              ]
+            },
             "WaitOperation": {
               "methods": [
                 "WaitOperation"
@@ -596,6 +671,1115 @@
             "UpdateEndpoint": {
               "methods": [
                 "UpdateEndpoint"
+              ]
+            },
+            "UpdateEndpointLongRunning": {
+              "methods": [
+                "UpdateEndpointLongRunning"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "EvaluationService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "EvaluationClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "EvaluateInstances": {
+              "methods": [
+                "EvaluateInstances"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "EvaluationClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "EvaluateInstances": {
+              "methods": [
+                "EvaluateInstances"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "ExtensionExecutionService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ExtensionExecutionClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "ExecuteExtension": {
+              "methods": [
+                "ExecuteExtension"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "QueryExtension": {
+              "methods": [
+                "QueryExtension"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ExtensionExecutionClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "ExecuteExtension": {
+              "methods": [
+                "ExecuteExtension"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "QueryExtension": {
+              "methods": [
+                "QueryExtension"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "ExtensionRegistryService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ExtensionRegistryClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteExtension": {
+              "methods": [
+                "DeleteExtension"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetExtension": {
+              "methods": [
+                "GetExtension"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ImportExtension": {
+              "methods": [
+                "ImportExtension"
+              ]
+            },
+            "ListExtensions": {
+              "methods": [
+                "ListExtensions"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateExtension": {
+              "methods": [
+                "UpdateExtension"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ExtensionRegistryClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteExtension": {
+              "methods": [
+                "DeleteExtension"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetExtension": {
+              "methods": [
+                "GetExtension"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ImportExtension": {
+              "methods": [
+                "ImportExtension"
+              ]
+            },
+            "ListExtensions": {
+              "methods": [
+                "ListExtensions"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateExtension": {
+              "methods": [
+                "UpdateExtension"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "FeatureOnlineStoreAdminService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "FeatureOnlineStoreAdminClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateFeatureOnlineStore": {
+              "methods": [
+                "CreateFeatureOnlineStore"
+              ]
+            },
+            "CreateFeatureView": {
+              "methods": [
+                "CreateFeatureView"
+              ]
+            },
+            "DeleteFeatureOnlineStore": {
+              "methods": [
+                "DeleteFeatureOnlineStore"
+              ]
+            },
+            "DeleteFeatureView": {
+              "methods": [
+                "DeleteFeatureView"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetFeatureOnlineStore": {
+              "methods": [
+                "GetFeatureOnlineStore"
+              ]
+            },
+            "GetFeatureView": {
+              "methods": [
+                "GetFeatureView"
+              ]
+            },
+            "GetFeatureViewSync": {
+              "methods": [
+                "GetFeatureViewSync"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListFeatureOnlineStores": {
+              "methods": [
+                "ListFeatureOnlineStores"
+              ]
+            },
+            "ListFeatureViewSyncs": {
+              "methods": [
+                "ListFeatureViewSyncs"
+              ]
+            },
+            "ListFeatureViews": {
+              "methods": [
+                "ListFeatureViews"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "SyncFeatureView": {
+              "methods": [
+                "SyncFeatureView"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateFeatureOnlineStore": {
+              "methods": [
+                "UpdateFeatureOnlineStore"
+              ]
+            },
+            "UpdateFeatureView": {
+              "methods": [
+                "UpdateFeatureView"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "FeatureOnlineStoreAdminClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateFeatureOnlineStore": {
+              "methods": [
+                "CreateFeatureOnlineStore"
+              ]
+            },
+            "CreateFeatureView": {
+              "methods": [
+                "CreateFeatureView"
+              ]
+            },
+            "DeleteFeatureOnlineStore": {
+              "methods": [
+                "DeleteFeatureOnlineStore"
+              ]
+            },
+            "DeleteFeatureView": {
+              "methods": [
+                "DeleteFeatureView"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetFeatureOnlineStore": {
+              "methods": [
+                "GetFeatureOnlineStore"
+              ]
+            },
+            "GetFeatureView": {
+              "methods": [
+                "GetFeatureView"
+              ]
+            },
+            "GetFeatureViewSync": {
+              "methods": [
+                "GetFeatureViewSync"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListFeatureOnlineStores": {
+              "methods": [
+                "ListFeatureOnlineStores"
+              ]
+            },
+            "ListFeatureViewSyncs": {
+              "methods": [
+                "ListFeatureViewSyncs"
+              ]
+            },
+            "ListFeatureViews": {
+              "methods": [
+                "ListFeatureViews"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "SyncFeatureView": {
+              "methods": [
+                "SyncFeatureView"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateFeatureOnlineStore": {
+              "methods": [
+                "UpdateFeatureOnlineStore"
+              ]
+            },
+            "UpdateFeatureView": {
+              "methods": [
+                "UpdateFeatureView"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "FeatureOnlineStoreService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "FeatureOnlineStoreClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "FetchFeatureValues": {
+              "methods": [
+                "FetchFeatureValues"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SearchNearestEntities": {
+              "methods": [
+                "SearchNearestEntities"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "StreamingFetchFeatureValues": {
+              "methods": [
+                "StreamingFetchFeatureValues"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "FeatureOnlineStoreClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "FetchFeatureValues": {
+              "methods": [
+                "FetchFeatureValues"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SearchNearestEntities": {
+              "methods": [
+                "SearchNearestEntities"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "StreamingFetchFeatureValues": {
+              "methods": [
+                "StreamingFetchFeatureValues"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "FeatureRegistryService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "FeatureRegistryClient",
+          "rpcs": {
+            "BatchCreateFeatures": {
+              "methods": [
+                "BatchCreateFeatures"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateFeature": {
+              "methods": [
+                "CreateFeature"
+              ]
+            },
+            "CreateFeatureGroup": {
+              "methods": [
+                "CreateFeatureGroup"
+              ]
+            },
+            "CreateFeatureMonitor": {
+              "methods": [
+                "CreateFeatureMonitor"
+              ]
+            },
+            "CreateFeatureMonitorJob": {
+              "methods": [
+                "CreateFeatureMonitorJob"
+              ]
+            },
+            "DeleteFeature": {
+              "methods": [
+                "DeleteFeature"
+              ]
+            },
+            "DeleteFeatureGroup": {
+              "methods": [
+                "DeleteFeatureGroup"
+              ]
+            },
+            "DeleteFeatureMonitor": {
+              "methods": [
+                "DeleteFeatureMonitor"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetFeature": {
+              "methods": [
+                "GetFeature"
+              ]
+            },
+            "GetFeatureGroup": {
+              "methods": [
+                "GetFeatureGroup"
+              ]
+            },
+            "GetFeatureMonitor": {
+              "methods": [
+                "GetFeatureMonitor"
+              ]
+            },
+            "GetFeatureMonitorJob": {
+              "methods": [
+                "GetFeatureMonitorJob"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListFeatureGroups": {
+              "methods": [
+                "ListFeatureGroups"
+              ]
+            },
+            "ListFeatureMonitorJobs": {
+              "methods": [
+                "ListFeatureMonitorJobs"
+              ]
+            },
+            "ListFeatureMonitors": {
+              "methods": [
+                "ListFeatureMonitors"
+              ]
+            },
+            "ListFeatures": {
+              "methods": [
+                "ListFeatures"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateFeature": {
+              "methods": [
+                "UpdateFeature"
+              ]
+            },
+            "UpdateFeatureGroup": {
+              "methods": [
+                "UpdateFeatureGroup"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "FeatureRegistryClient",
+          "rpcs": {
+            "BatchCreateFeatures": {
+              "methods": [
+                "BatchCreateFeatures"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateFeature": {
+              "methods": [
+                "CreateFeature"
+              ]
+            },
+            "CreateFeatureGroup": {
+              "methods": [
+                "CreateFeatureGroup"
+              ]
+            },
+            "CreateFeatureMonitor": {
+              "methods": [
+                "CreateFeatureMonitor"
+              ]
+            },
+            "CreateFeatureMonitorJob": {
+              "methods": [
+                "CreateFeatureMonitorJob"
+              ]
+            },
+            "DeleteFeature": {
+              "methods": [
+                "DeleteFeature"
+              ]
+            },
+            "DeleteFeatureGroup": {
+              "methods": [
+                "DeleteFeatureGroup"
+              ]
+            },
+            "DeleteFeatureMonitor": {
+              "methods": [
+                "DeleteFeatureMonitor"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetFeature": {
+              "methods": [
+                "GetFeature"
+              ]
+            },
+            "GetFeatureGroup": {
+              "methods": [
+                "GetFeatureGroup"
+              ]
+            },
+            "GetFeatureMonitor": {
+              "methods": [
+                "GetFeatureMonitor"
+              ]
+            },
+            "GetFeatureMonitorJob": {
+              "methods": [
+                "GetFeatureMonitorJob"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListFeatureGroups": {
+              "methods": [
+                "ListFeatureGroups"
+              ]
+            },
+            "ListFeatureMonitorJobs": {
+              "methods": [
+                "ListFeatureMonitorJobs"
+              ]
+            },
+            "ListFeatureMonitors": {
+              "methods": [
+                "ListFeatureMonitors"
+              ]
+            },
+            "ListFeatures": {
+              "methods": [
+                "ListFeatures"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateFeature": {
+              "methods": [
+                "UpdateFeature"
+              ]
+            },
+            "UpdateFeatureGroup": {
+              "methods": [
+                "UpdateFeatureGroup"
               ]
             },
             "WaitOperation": {
@@ -1064,6 +2248,334 @@
             "UpdateFeaturestore": {
               "methods": [
                 "UpdateFeaturestore"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "GenAiCacheService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "GenAiCacheClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateCachedContent": {
+              "methods": [
+                "CreateCachedContent"
+              ]
+            },
+            "DeleteCachedContent": {
+              "methods": [
+                "DeleteCachedContent"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetCachedContent": {
+              "methods": [
+                "GetCachedContent"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListCachedContents": {
+              "methods": [
+                "ListCachedContents"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateCachedContent": {
+              "methods": [
+                "UpdateCachedContent"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "GenAiCacheClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateCachedContent": {
+              "methods": [
+                "CreateCachedContent"
+              ]
+            },
+            "DeleteCachedContent": {
+              "methods": [
+                "DeleteCachedContent"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetCachedContent": {
+              "methods": [
+                "GetCachedContent"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListCachedContents": {
+              "methods": [
+                "ListCachedContents"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateCachedContent": {
+              "methods": [
+                "UpdateCachedContent"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "GenAiTuningService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "GenAiTuningClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CancelTuningJob": {
+              "methods": [
+                "CancelTuningJob"
+              ]
+            },
+            "CreateTuningJob": {
+              "methods": [
+                "CreateTuningJob"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetTuningJob": {
+              "methods": [
+                "GetTuningJob"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListTuningJobs": {
+              "methods": [
+                "ListTuningJobs"
+              ]
+            },
+            "RebaseTunedModel": {
+              "methods": [
+                "RebaseTunedModel"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "GenAiTuningClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CancelTuningJob": {
+              "methods": [
+                "CancelTuningJob"
+              ]
+            },
+            "CreateTuningJob": {
+              "methods": [
+                "CreateTuningJob"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetTuningJob": {
+              "methods": [
+                "GetTuningJob"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListTuningJobs": {
+              "methods": [
+                "ListTuningJobs"
+              ]
+            },
+            "RebaseTunedModel": {
+              "methods": [
+                "RebaseTunedModel"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "WaitOperation": {
@@ -1917,6 +3429,130 @@
         }
       }
     },
+    "LlmUtilityService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "LlmUtilityClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "ComputeTokens": {
+              "methods": [
+                "ComputeTokens"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "LlmUtilityClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "ComputeTokens": {
+              "methods": [
+                "ComputeTokens"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        }
+      }
+    },
     "MatchService": {
       "clients": {
         "grpc": {
@@ -2664,6 +4300,11 @@
                 "ListOperations"
               ]
             },
+            "ListPublisherModels": {
+              "methods": [
+                "ListPublisherModels"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
@@ -2724,6 +4365,11 @@
                 "ListOperations"
               ]
             },
+            "ListPublisherModels": {
+              "methods": [
+                "ListPublisherModels"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
@@ -2732,6 +4378,230 @@
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "ModelMonitoringService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ModelMonitoringClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateModelMonitor": {
+              "methods": [
+                "CreateModelMonitor"
+              ]
+            },
+            "CreateModelMonitoringJob": {
+              "methods": [
+                "CreateModelMonitoringJob"
+              ]
+            },
+            "DeleteModelMonitor": {
+              "methods": [
+                "DeleteModelMonitor"
+              ]
+            },
+            "DeleteModelMonitoringJob": {
+              "methods": [
+                "DeleteModelMonitoringJob"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetModelMonitor": {
+              "methods": [
+                "GetModelMonitor"
+              ]
+            },
+            "GetModelMonitoringJob": {
+              "methods": [
+                "GetModelMonitoringJob"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListModelMonitoringJobs": {
+              "methods": [
+                "ListModelMonitoringJobs"
+              ]
+            },
+            "ListModelMonitors": {
+              "methods": [
+                "ListModelMonitors"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SearchModelMonitoringAlerts": {
+              "methods": [
+                "SearchModelMonitoringAlerts"
+              ]
+            },
+            "SearchModelMonitoringStats": {
+              "methods": [
+                "SearchModelMonitoringStats"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateModelMonitor": {
+              "methods": [
+                "UpdateModelMonitor"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ModelMonitoringClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateModelMonitor": {
+              "methods": [
+                "CreateModelMonitor"
+              ]
+            },
+            "CreateModelMonitoringJob": {
+              "methods": [
+                "CreateModelMonitoringJob"
+              ]
+            },
+            "DeleteModelMonitor": {
+              "methods": [
+                "DeleteModelMonitor"
+              ]
+            },
+            "DeleteModelMonitoringJob": {
+              "methods": [
+                "DeleteModelMonitoringJob"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetModelMonitor": {
+              "methods": [
+                "GetModelMonitor"
+              ]
+            },
+            "GetModelMonitoringJob": {
+              "methods": [
+                "GetModelMonitoringJob"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListModelMonitoringJobs": {
+              "methods": [
+                "ListModelMonitoringJobs"
+              ]
+            },
+            "ListModelMonitors": {
+              "methods": [
+                "ListModelMonitors"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SearchModelMonitoringAlerts": {
+              "methods": [
+                "SearchModelMonitoringAlerts"
+              ]
+            },
+            "SearchModelMonitoringStats": {
+              "methods": [
+                "SearchModelMonitoringStats"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateModelMonitor": {
+              "methods": [
+                "UpdateModelMonitor"
               ]
             },
             "WaitOperation": {
@@ -3037,6 +4907,280 @@
         }
       }
     },
+    "NotebookService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "NotebookClient",
+          "rpcs": {
+            "AssignNotebookRuntime": {
+              "methods": [
+                "AssignNotebookRuntime"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateNotebookExecutionJob": {
+              "methods": [
+                "CreateNotebookExecutionJob"
+              ]
+            },
+            "CreateNotebookRuntimeTemplate": {
+              "methods": [
+                "CreateNotebookRuntimeTemplate"
+              ]
+            },
+            "DeleteNotebookExecutionJob": {
+              "methods": [
+                "DeleteNotebookExecutionJob"
+              ]
+            },
+            "DeleteNotebookRuntime": {
+              "methods": [
+                "DeleteNotebookRuntime"
+              ]
+            },
+            "DeleteNotebookRuntimeTemplate": {
+              "methods": [
+                "DeleteNotebookRuntimeTemplate"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetNotebookExecutionJob": {
+              "methods": [
+                "GetNotebookExecutionJob"
+              ]
+            },
+            "GetNotebookRuntime": {
+              "methods": [
+                "GetNotebookRuntime"
+              ]
+            },
+            "GetNotebookRuntimeTemplate": {
+              "methods": [
+                "GetNotebookRuntimeTemplate"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListNotebookExecutionJobs": {
+              "methods": [
+                "ListNotebookExecutionJobs"
+              ]
+            },
+            "ListNotebookRuntimeTemplates": {
+              "methods": [
+                "ListNotebookRuntimeTemplates"
+              ]
+            },
+            "ListNotebookRuntimes": {
+              "methods": [
+                "ListNotebookRuntimes"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "StartNotebookRuntime": {
+              "methods": [
+                "StartNotebookRuntime"
+              ]
+            },
+            "StopNotebookRuntime": {
+              "methods": [
+                "StopNotebookRuntime"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateNotebookRuntimeTemplate": {
+              "methods": [
+                "UpdateNotebookRuntimeTemplate"
+              ]
+            },
+            "UpgradeNotebookRuntime": {
+              "methods": [
+                "UpgradeNotebookRuntime"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "NotebookClient",
+          "rpcs": {
+            "AssignNotebookRuntime": {
+              "methods": [
+                "AssignNotebookRuntime"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateNotebookExecutionJob": {
+              "methods": [
+                "CreateNotebookExecutionJob"
+              ]
+            },
+            "CreateNotebookRuntimeTemplate": {
+              "methods": [
+                "CreateNotebookRuntimeTemplate"
+              ]
+            },
+            "DeleteNotebookExecutionJob": {
+              "methods": [
+                "DeleteNotebookExecutionJob"
+              ]
+            },
+            "DeleteNotebookRuntime": {
+              "methods": [
+                "DeleteNotebookRuntime"
+              ]
+            },
+            "DeleteNotebookRuntimeTemplate": {
+              "methods": [
+                "DeleteNotebookRuntimeTemplate"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetNotebookExecutionJob": {
+              "methods": [
+                "GetNotebookExecutionJob"
+              ]
+            },
+            "GetNotebookRuntime": {
+              "methods": [
+                "GetNotebookRuntime"
+              ]
+            },
+            "GetNotebookRuntimeTemplate": {
+              "methods": [
+                "GetNotebookRuntimeTemplate"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListNotebookExecutionJobs": {
+              "methods": [
+                "ListNotebookExecutionJobs"
+              ]
+            },
+            "ListNotebookRuntimeTemplates": {
+              "methods": [
+                "ListNotebookRuntimeTemplates"
+              ]
+            },
+            "ListNotebookRuntimes": {
+              "methods": [
+                "ListNotebookRuntimes"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "StartNotebookRuntime": {
+              "methods": [
+                "StartNotebookRuntime"
+              ]
+            },
+            "StopNotebookRuntime": {
+              "methods": [
+                "StopNotebookRuntime"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateNotebookRuntimeTemplate": {
+              "methods": [
+                "UpdateNotebookRuntimeTemplate"
+              ]
+            },
+            "UpgradeNotebookRuntime": {
+              "methods": [
+                "UpgradeNotebookRuntime"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        }
+      }
+    },
     "PersistentResourceService": {
       "clients": {
         "grpc": {
@@ -3097,6 +5241,11 @@
                 "ListPersistentResources"
               ]
             },
+            "RebootPersistentResource": {
+              "methods": [
+                "RebootPersistentResource"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
@@ -3105,6 +5254,11 @@
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
+              ]
+            },
+            "UpdatePersistentResource": {
+              "methods": [
+                "UpdatePersistentResource"
               ]
             },
             "WaitOperation": {
@@ -3172,6 +5326,11 @@
                 "ListPersistentResources"
               ]
             },
+            "RebootPersistentResource": {
+              "methods": [
+                "RebootPersistentResource"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
@@ -3180,6 +5339,11 @@
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
+              ]
+            },
+            "UpdatePersistentResource": {
+              "methods": [
+                "UpdatePersistentResource"
               ]
             },
             "WaitOperation": {
@@ -3196,6 +5360,16 @@
         "grpc": {
           "libraryClient": "PipelineClient",
           "rpcs": {
+            "BatchCancelPipelineJobs": {
+              "methods": [
+                "BatchCancelPipelineJobs"
+              ]
+            },
+            "BatchDeletePipelineJobs": {
+              "methods": [
+                "BatchDeletePipelineJobs"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -3301,6 +5475,16 @@
         "rest": {
           "libraryClient": "PipelineClient",
           "rpcs": {
+            "BatchCancelPipelineJobs": {
+              "methods": [
+                "BatchCancelPipelineJobs"
+              ]
+            },
+            "BatchDeletePipelineJobs": {
+              "methods": [
+                "BatchDeletePipelineJobs"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -3415,6 +5599,11 @@
                 "CancelOperation"
               ]
             },
+            "ChatCompletions": {
+              "methods": [
+                "ChatCompletions"
+              ]
+            },
             "CountTokens": {
               "methods": [
                 "CountTokens"
@@ -3425,9 +5614,24 @@
                 "DeleteOperation"
               ]
             },
+            "DirectPredict": {
+              "methods": [
+                "DirectPredict"
+              ]
+            },
+            "DirectRawPredict": {
+              "methods": [
+                "DirectRawPredict"
+              ]
+            },
             "Explain": {
               "methods": [
                 "Explain"
+              ]
+            },
+            "GenerateContent": {
+              "methods": [
+                "GenerateContent"
               ]
             },
             "GetIamPolicy": {
@@ -3473,6 +5677,36 @@
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
+              ]
+            },
+            "StreamDirectPredict": {
+              "methods": [
+                "StreamDirectPredict"
+              ]
+            },
+            "StreamDirectRawPredict": {
+              "methods": [
+                "StreamDirectRawPredict"
+              ]
+            },
+            "StreamGenerateContent": {
+              "methods": [
+                "StreamGenerateContent"
+              ]
+            },
+            "StreamRawPredict": {
+              "methods": [
+                "StreamRawPredict"
+              ]
+            },
+            "StreamingPredict": {
+              "methods": [
+                "StreamingPredict"
+              ]
+            },
+            "StreamingRawPredict": {
+              "methods": [
+                "StreamingRawPredict"
               ]
             },
             "TestIamPermissions": {
@@ -3495,6 +5729,11 @@
                 "CancelOperation"
               ]
             },
+            "ChatCompletions": {
+              "methods": [
+                "ChatCompletions"
+              ]
+            },
             "CountTokens": {
               "methods": [
                 "CountTokens"
@@ -3505,9 +5744,24 @@
                 "DeleteOperation"
               ]
             },
+            "DirectPredict": {
+              "methods": [
+                "DirectPredict"
+              ]
+            },
+            "DirectRawPredict": {
+              "methods": [
+                "DirectRawPredict"
+              ]
+            },
             "Explain": {
               "methods": [
                 "Explain"
+              ]
+            },
+            "GenerateContent": {
+              "methods": [
+                "GenerateContent"
               ]
             },
             "GetIamPolicy": {
@@ -3555,9 +5809,337 @@
                 "SetIamPolicy"
               ]
             },
+            "StreamDirectPredict": {
+              "methods": [
+                "StreamDirectPredict"
+              ]
+            },
+            "StreamDirectRawPredict": {
+              "methods": [
+                "StreamDirectRawPredict"
+              ]
+            },
+            "StreamGenerateContent": {
+              "methods": [
+                "StreamGenerateContent"
+              ]
+            },
+            "StreamRawPredict": {
+              "methods": [
+                "StreamRawPredict"
+              ]
+            },
+            "StreamingPredict": {
+              "methods": [
+                "StreamingPredict"
+              ]
+            },
+            "StreamingRawPredict": {
+              "methods": [
+                "StreamingRawPredict"
+              ]
+            },
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "ReasoningEngineExecutionService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ReasoningEngineExecutionClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "QueryReasoningEngine": {
+              "methods": [
+                "QueryReasoningEngine"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "StreamQueryReasoningEngine": {
+              "methods": [
+                "StreamQueryReasoningEngine"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ReasoningEngineExecutionClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "QueryReasoningEngine": {
+              "methods": [
+                "QueryReasoningEngine"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "StreamQueryReasoningEngine": {
+              "methods": [
+                "StreamQueryReasoningEngine"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "ReasoningEngineService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ReasoningEngineClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateReasoningEngine": {
+              "methods": [
+                "CreateReasoningEngine"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteReasoningEngine": {
+              "methods": [
+                "DeleteReasoningEngine"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetReasoningEngine": {
+              "methods": [
+                "GetReasoningEngine"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListReasoningEngines": {
+              "methods": [
+                "ListReasoningEngines"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateReasoningEngine": {
+              "methods": [
+                "UpdateReasoningEngine"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ReasoningEngineClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateReasoningEngine": {
+              "methods": [
+                "CreateReasoningEngine"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteReasoningEngine": {
+              "methods": [
+                "DeleteReasoningEngine"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetReasoningEngine": {
+              "methods": [
+                "GetReasoningEngine"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListReasoningEngines": {
+              "methods": [
+                "ListReasoningEngines"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateReasoningEngine": {
+              "methods": [
+                "UpdateReasoningEngine"
               ]
             },
             "WaitOperation": {
@@ -4325,6 +6907,364 @@
             "WriteTensorboardRunData": {
               "methods": [
                 "WriteTensorboardRunData"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "VertexRagDataService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "VertexRagDataClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateRagCorpus": {
+              "methods": [
+                "CreateRagCorpus"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteRagCorpus": {
+              "methods": [
+                "DeleteRagCorpus"
+              ]
+            },
+            "DeleteRagFile": {
+              "methods": [
+                "DeleteRagFile"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetRagCorpus": {
+              "methods": [
+                "GetRagCorpus"
+              ]
+            },
+            "GetRagFile": {
+              "methods": [
+                "GetRagFile"
+              ]
+            },
+            "ImportRagFiles": {
+              "methods": [
+                "ImportRagFiles"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListRagCorpora": {
+              "methods": [
+                "ListRagCorpora"
+              ]
+            },
+            "ListRagFiles": {
+              "methods": [
+                "ListRagFiles"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateRagCorpus": {
+              "methods": [
+                "UpdateRagCorpus"
+              ]
+            },
+            "UploadRagFile": {
+              "methods": [
+                "UploadRagFile"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "VertexRagDataClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateRagCorpus": {
+              "methods": [
+                "CreateRagCorpus"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteRagCorpus": {
+              "methods": [
+                "DeleteRagCorpus"
+              ]
+            },
+            "DeleteRagFile": {
+              "methods": [
+                "DeleteRagFile"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetRagCorpus": {
+              "methods": [
+                "GetRagCorpus"
+              ]
+            },
+            "GetRagFile": {
+              "methods": [
+                "GetRagFile"
+              ]
+            },
+            "ImportRagFiles": {
+              "methods": [
+                "ImportRagFiles"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListRagCorpora": {
+              "methods": [
+                "ListRagCorpora"
+              ]
+            },
+            "ListRagFiles": {
+              "methods": [
+                "ListRagFiles"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateRagCorpus": {
+              "methods": [
+                "UpdateRagCorpus"
+              ]
+            },
+            "UploadRagFile": {
+              "methods": [
+                "UploadRagFile"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "VertexRagService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "VertexRagClient",
+          "rpcs": {
+            "AugmentPrompt": {
+              "methods": [
+                "AugmentPrompt"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CorroborateContent": {
+              "methods": [
+                "CorroborateContent"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RetrieveContexts": {
+              "methods": [
+                "RetrieveContexts"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "VertexRagClient",
+          "rpcs": {
+            "AugmentPrompt": {
+              "methods": [
+                "AugmentPrompt"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CorroborateContent": {
+              "methods": [
+                "CorroborateContent"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RetrieveContexts": {
+              "methods": [
+                "RetrieveContexts"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
               ]
             }
           }

@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	retailpb "cloud.google.com/go/retail/apiv2alpha/retailpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -57,10 +56,13 @@ type MerchantCenterAccountLinkCallOptions struct {
 func defaultMerchantCenterAccountLinkGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("retail.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("retail.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("retail.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -109,7 +111,7 @@ func defaultMerchantCenterAccountLinkRESTCallOptions() *MerchantCenterAccountLin
 	}
 }
 
-// internalMerchantCenterAccountLinkClient is an interface that defines the methods available from Retail API.
+// internalMerchantCenterAccountLinkClient is an interface that defines the methods available from Vertex AI Search for Retail API.
 type internalMerchantCenterAccountLinkClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -122,7 +124,7 @@ type internalMerchantCenterAccountLinkClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// MerchantCenterAccountLinkClient is a client for interacting with Retail API.
+// MerchantCenterAccountLinkClient is a client for interacting with Vertex AI Search for Retail API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Merchant Center Link service to link a Branch to a Merchant Center Account.
@@ -200,7 +202,7 @@ func (c *MerchantCenterAccountLinkClient) ListOperations(ctx context.Context, re
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// merchantCenterAccountLinkGRPCClient is a client for interacting with Retail API over gRPC transport.
+// merchantCenterAccountLinkGRPCClient is a client for interacting with Vertex AI Search for Retail API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type merchantCenterAccountLinkGRPCClient struct {
@@ -222,6 +224,8 @@ type merchantCenterAccountLinkGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewMerchantCenterAccountLinkClient creates a new merchant center account link service client based on gRPC.
@@ -248,6 +252,7 @@ func NewMerchantCenterAccountLinkClient(ctx context.Context, opts ...option.Clie
 		connPool:                        connPool,
 		merchantCenterAccountLinkClient: retailpb.NewMerchantCenterAccountLinkServiceClient(connPool),
 		CallOptions:                     &client.CallOptions,
+		logger:                          internaloption.GetLogger(opts),
 		operationsClient:                longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -282,7 +287,9 @@ func (c *merchantCenterAccountLinkGRPCClient) Connection() *grpc.ClientConn {
 func (c *merchantCenterAccountLinkGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -309,6 +316,8 @@ type merchantCenterAccountLinkRESTClient struct {
 
 	// Points back to the CallOptions field of the containing MerchantCenterAccountLinkClient
 	CallOptions **MerchantCenterAccountLinkCallOptions
+
+	logger *slog.Logger
 }
 
 // NewMerchantCenterAccountLinkRESTClient creates a new merchant center account link service rest client.
@@ -326,6 +335,7 @@ func NewMerchantCenterAccountLinkRESTClient(ctx context.Context, opts ...option.
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -345,9 +355,12 @@ func NewMerchantCenterAccountLinkRESTClient(ctx context.Context, opts ...option.
 func defaultMerchantCenterAccountLinkRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://retail.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://retail.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://retail.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -357,7 +370,9 @@ func defaultMerchantCenterAccountLinkRESTClientOptions() []option.ClientOption {
 func (c *merchantCenterAccountLinkRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -383,7 +398,7 @@ func (c *merchantCenterAccountLinkGRPCClient) ListMerchantCenterAccountLinks(ctx
 	var resp *retailpb.ListMerchantCenterAccountLinksResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.merchantCenterAccountLinkClient.ListMerchantCenterAccountLinks(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.merchantCenterAccountLinkClient.ListMerchantCenterAccountLinks, req, settings.GRPC, c.logger, "ListMerchantCenterAccountLinks")
 		return err
 	}, opts...)
 	if err != nil {
@@ -401,7 +416,7 @@ func (c *merchantCenterAccountLinkGRPCClient) CreateMerchantCenterAccountLink(ct
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.merchantCenterAccountLinkClient.CreateMerchantCenterAccountLink(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.merchantCenterAccountLinkClient.CreateMerchantCenterAccountLink, req, settings.GRPC, c.logger, "CreateMerchantCenterAccountLink")
 		return err
 	}, opts...)
 	if err != nil {
@@ -420,7 +435,7 @@ func (c *merchantCenterAccountLinkGRPCClient) DeleteMerchantCenterAccountLink(ct
 	opts = append((*c.CallOptions).DeleteMerchantCenterAccountLink[0:len((*c.CallOptions).DeleteMerchantCenterAccountLink):len((*c.CallOptions).DeleteMerchantCenterAccountLink)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.merchantCenterAccountLinkClient.DeleteMerchantCenterAccountLink(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.merchantCenterAccountLinkClient.DeleteMerchantCenterAccountLink, req, settings.GRPC, c.logger, "DeleteMerchantCenterAccountLink")
 		return err
 	}, opts...)
 	return err
@@ -435,7 +450,7 @@ func (c *merchantCenterAccountLinkGRPCClient) GetOperation(ctx context.Context, 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -464,7 +479,7 @@ func (c *merchantCenterAccountLinkGRPCClient) ListOperations(ctx context.Context
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -525,17 +540,7 @@ func (c *merchantCenterAccountLinkRESTClient) ListMerchantCenterAccountLinks(ctx
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListMerchantCenterAccountLinks")
 		if err != nil {
 			return err
 		}
@@ -592,21 +597,10 @@ func (c *merchantCenterAccountLinkRESTClient) CreateMerchantCenterAccountLink(ct
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateMerchantCenterAccountLink")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -658,15 +652,8 @@ func (c *merchantCenterAccountLinkRESTClient) DeleteMerchantCenterAccountLink(ct
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteMerchantCenterAccountLink")
+		return err
 	}, opts...)
 }
 
@@ -703,17 +690,7 @@ func (c *merchantCenterAccountLinkRESTClient) GetOperation(ctx context.Context, 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -778,21 +755,10 @@ func (c *merchantCenterAccountLinkRESTClient) ListOperations(ctx context.Context
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -822,12 +788,6 @@ func (c *merchantCenterAccountLinkRESTClient) ListOperations(ctx context.Context
 	return it
 }
 
-// CreateMerchantCenterAccountLinkOperation manages a long-running operation from CreateMerchantCenterAccountLink.
-type CreateMerchantCenterAccountLinkOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // CreateMerchantCenterAccountLinkOperation returns a new CreateMerchantCenterAccountLinkOperation from a given name.
 // The name must be that of a previously created CreateMerchantCenterAccountLinkOperation, possibly from a different process.
 func (c *merchantCenterAccountLinkGRPCClient) CreateMerchantCenterAccountLinkOperation(name string) *CreateMerchantCenterAccountLinkOperation {
@@ -844,62 +804,4 @@ func (c *merchantCenterAccountLinkRESTClient) CreateMerchantCenterAccountLinkOpe
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateMerchantCenterAccountLinkOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*retailpb.MerchantCenterAccountLink, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp retailpb.MerchantCenterAccountLink
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateMerchantCenterAccountLinkOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*retailpb.MerchantCenterAccountLink, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp retailpb.MerchantCenterAccountLink
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateMerchantCenterAccountLinkOperation) Metadata() (*retailpb.CreateMerchantCenterAccountLinkMetadata, error) {
-	var meta retailpb.CreateMerchantCenterAccountLinkMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateMerchantCenterAccountLinkOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateMerchantCenterAccountLinkOperation) Name() string {
-	return op.lro.Name()
 }

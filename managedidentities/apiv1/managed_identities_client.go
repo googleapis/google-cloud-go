@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package managedidentities
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 	"time"
@@ -55,10 +56,13 @@ type CallOptions struct {
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("managedidentities.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("managedidentities.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("managedidentities.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://managedidentities.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -314,6 +318,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new managed identities service client based on gRPC.
@@ -378,6 +384,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      managedidentitiespb.NewManagedIdentitiesServiceClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -411,7 +418,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -429,7 +438,7 @@ func (c *gRPCClient) CreateMicrosoftAdDomain(ctx context.Context, req *managedid
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateMicrosoftAdDomain(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateMicrosoftAdDomain, req, settings.GRPC, c.logger, "CreateMicrosoftAdDomain")
 		return err
 	}, opts...)
 	if err != nil {
@@ -449,7 +458,7 @@ func (c *gRPCClient) ResetAdminPassword(ctx context.Context, req *managedidentit
 	var resp *managedidentitiespb.ResetAdminPasswordResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ResetAdminPassword(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ResetAdminPassword, req, settings.GRPC, c.logger, "ResetAdminPassword")
 		return err
 	}, opts...)
 	if err != nil {
@@ -478,7 +487,7 @@ func (c *gRPCClient) ListDomains(ctx context.Context, req *managedidentitiespb.L
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListDomains(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListDomains, req, settings.GRPC, c.logger, "ListDomains")
 			return err
 		}, opts...)
 		if err != nil {
@@ -513,7 +522,7 @@ func (c *gRPCClient) GetDomain(ctx context.Context, req *managedidentitiespb.Get
 	var resp *managedidentitiespb.Domain
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetDomain(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetDomain, req, settings.GRPC, c.logger, "GetDomain")
 		return err
 	}, opts...)
 	if err != nil {
@@ -531,7 +540,7 @@ func (c *gRPCClient) UpdateDomain(ctx context.Context, req *managedidentitiespb.
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateDomain(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateDomain, req, settings.GRPC, c.logger, "UpdateDomain")
 		return err
 	}, opts...)
 	if err != nil {
@@ -551,7 +560,7 @@ func (c *gRPCClient) DeleteDomain(ctx context.Context, req *managedidentitiespb.
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteDomain(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteDomain, req, settings.GRPC, c.logger, "DeleteDomain")
 		return err
 	}, opts...)
 	if err != nil {
@@ -571,7 +580,7 @@ func (c *gRPCClient) AttachTrust(ctx context.Context, req *managedidentitiespb.A
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.AttachTrust(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.AttachTrust, req, settings.GRPC, c.logger, "AttachTrust")
 		return err
 	}, opts...)
 	if err != nil {
@@ -591,7 +600,7 @@ func (c *gRPCClient) ReconfigureTrust(ctx context.Context, req *managedidentitie
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ReconfigureTrust(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ReconfigureTrust, req, settings.GRPC, c.logger, "ReconfigureTrust")
 		return err
 	}, opts...)
 	if err != nil {
@@ -611,7 +620,7 @@ func (c *gRPCClient) DetachTrust(ctx context.Context, req *managedidentitiespb.D
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DetachTrust(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DetachTrust, req, settings.GRPC, c.logger, "DetachTrust")
 		return err
 	}, opts...)
 	if err != nil {
@@ -631,7 +640,7 @@ func (c *gRPCClient) ValidateTrust(ctx context.Context, req *managedidentitiespb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ValidateTrust(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ValidateTrust, req, settings.GRPC, c.logger, "ValidateTrust")
 		return err
 	}, opts...)
 	if err != nil {
@@ -642,78 +651,12 @@ func (c *gRPCClient) ValidateTrust(ctx context.Context, req *managedidentitiespb
 	}, nil
 }
 
-// AttachTrustOperation manages a long-running operation from AttachTrust.
-type AttachTrustOperation struct {
-	lro *longrunning.Operation
-}
-
 // AttachTrustOperation returns a new AttachTrustOperation from a given name.
 // The name must be that of a previously created AttachTrustOperation, possibly from a different process.
 func (c *gRPCClient) AttachTrustOperation(name string) *AttachTrustOperation {
 	return &AttachTrustOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *AttachTrustOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*managedidentitiespb.Domain, error) {
-	var resp managedidentitiespb.Domain
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *AttachTrustOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*managedidentitiespb.Domain, error) {
-	var resp managedidentitiespb.Domain
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *AttachTrustOperation) Metadata() (*managedidentitiespb.OpMetadata, error) {
-	var meta managedidentitiespb.OpMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *AttachTrustOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *AttachTrustOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateMicrosoftAdDomainOperation manages a long-running operation from CreateMicrosoftAdDomain.
-type CreateMicrosoftAdDomainOperation struct {
-	lro *longrunning.Operation
 }
 
 // CreateMicrosoftAdDomainOperation returns a new CreateMicrosoftAdDomainOperation from a given name.
@@ -724,123 +667,12 @@ func (c *gRPCClient) CreateMicrosoftAdDomainOperation(name string) *CreateMicros
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateMicrosoftAdDomainOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*managedidentitiespb.Domain, error) {
-	var resp managedidentitiespb.Domain
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateMicrosoftAdDomainOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*managedidentitiespb.Domain, error) {
-	var resp managedidentitiespb.Domain
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateMicrosoftAdDomainOperation) Metadata() (*managedidentitiespb.OpMetadata, error) {
-	var meta managedidentitiespb.OpMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateMicrosoftAdDomainOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateMicrosoftAdDomainOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteDomainOperation manages a long-running operation from DeleteDomain.
-type DeleteDomainOperation struct {
-	lro *longrunning.Operation
-}
-
 // DeleteDomainOperation returns a new DeleteDomainOperation from a given name.
 // The name must be that of a previously created DeleteDomainOperation, possibly from a different process.
 func (c *gRPCClient) DeleteDomainOperation(name string) *DeleteDomainOperation {
 	return &DeleteDomainOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteDomainOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteDomainOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteDomainOperation) Metadata() (*managedidentitiespb.OpMetadata, error) {
-	var meta managedidentitiespb.OpMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteDomainOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteDomainOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DetachTrustOperation manages a long-running operation from DetachTrust.
-type DetachTrustOperation struct {
-	lro *longrunning.Operation
 }
 
 // DetachTrustOperation returns a new DetachTrustOperation from a given name.
@@ -851,134 +683,12 @@ func (c *gRPCClient) DetachTrustOperation(name string) *DetachTrustOperation {
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DetachTrustOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*managedidentitiespb.Domain, error) {
-	var resp managedidentitiespb.Domain
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DetachTrustOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*managedidentitiespb.Domain, error) {
-	var resp managedidentitiespb.Domain
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DetachTrustOperation) Metadata() (*managedidentitiespb.OpMetadata, error) {
-	var meta managedidentitiespb.OpMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DetachTrustOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DetachTrustOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ReconfigureTrustOperation manages a long-running operation from ReconfigureTrust.
-type ReconfigureTrustOperation struct {
-	lro *longrunning.Operation
-}
-
 // ReconfigureTrustOperation returns a new ReconfigureTrustOperation from a given name.
 // The name must be that of a previously created ReconfigureTrustOperation, possibly from a different process.
 func (c *gRPCClient) ReconfigureTrustOperation(name string) *ReconfigureTrustOperation {
 	return &ReconfigureTrustOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ReconfigureTrustOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*managedidentitiespb.Domain, error) {
-	var resp managedidentitiespb.Domain
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ReconfigureTrustOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*managedidentitiespb.Domain, error) {
-	var resp managedidentitiespb.Domain
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ReconfigureTrustOperation) Metadata() (*managedidentitiespb.OpMetadata, error) {
-	var meta managedidentitiespb.OpMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ReconfigureTrustOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ReconfigureTrustOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateDomainOperation manages a long-running operation from UpdateDomain.
-type UpdateDomainOperation struct {
-	lro *longrunning.Operation
 }
 
 // UpdateDomainOperation returns a new UpdateDomainOperation from a given name.
@@ -989,174 +699,10 @@ func (c *gRPCClient) UpdateDomainOperation(name string) *UpdateDomainOperation {
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateDomainOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*managedidentitiespb.Domain, error) {
-	var resp managedidentitiespb.Domain
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateDomainOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*managedidentitiespb.Domain, error) {
-	var resp managedidentitiespb.Domain
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateDomainOperation) Metadata() (*managedidentitiespb.OpMetadata, error) {
-	var meta managedidentitiespb.OpMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateDomainOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateDomainOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ValidateTrustOperation manages a long-running operation from ValidateTrust.
-type ValidateTrustOperation struct {
-	lro *longrunning.Operation
-}
-
 // ValidateTrustOperation returns a new ValidateTrustOperation from a given name.
 // The name must be that of a previously created ValidateTrustOperation, possibly from a different process.
 func (c *gRPCClient) ValidateTrustOperation(name string) *ValidateTrustOperation {
 	return &ValidateTrustOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ValidateTrustOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*managedidentitiespb.Domain, error) {
-	var resp managedidentitiespb.Domain
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ValidateTrustOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*managedidentitiespb.Domain, error) {
-	var resp managedidentitiespb.Domain
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ValidateTrustOperation) Metadata() (*managedidentitiespb.OpMetadata, error) {
-	var meta managedidentitiespb.OpMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ValidateTrustOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ValidateTrustOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DomainIterator manages a stream of *managedidentitiespb.Domain.
-type DomainIterator struct {
-	items    []*managedidentitiespb.Domain
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*managedidentitiespb.Domain, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *DomainIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *DomainIterator) Next() (*managedidentitiespb.Domain, error) {
-	var item *managedidentitiespb.Domain
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *DomainIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *DomainIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

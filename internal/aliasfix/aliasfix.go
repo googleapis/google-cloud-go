@@ -26,6 +26,7 @@ import (
 	"io"
 	"io/fs"
 	"os"
+	"path"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -46,11 +47,11 @@ func ProcessPath(path string) error {
 	}
 	if dir.IsDir() {
 		err := filepath.WalkDir(path, func(path string, d fs.DirEntry, err error) error {
-			if err == nil && !d.IsDir() && strings.HasSuffix(d.Name(), ".go") {
-				err = processFile(path, nil)
-			}
-			if err != nil {
+			if err != nil || d.IsDir() {
 				return err
+			}
+			if strings.HasSuffix(d.Name(), ".go") {
+				return processFile(path, nil)
 			}
 			return nil
 		})
@@ -73,6 +74,7 @@ func processFile(name string, w io.Writer) (err error) {
 	if err != nil {
 		return err
 	}
+
 	var modified bool
 	for _, imp := range f.Imports {
 		var importPath string
@@ -81,8 +83,8 @@ func processFile(name string, w io.Writer) (err error) {
 			return err
 		}
 		if pkg, ok := GenprotoPkgMigration[importPath]; ok && pkg.Status == StatusMigrated {
-			oldNamespace := importPath[strings.LastIndex(importPath, "/")+1:]
-			newNamespace := pkg.ImportPath[strings.LastIndex(pkg.ImportPath, "/")+1:]
+			oldNamespace := genprotoNamespace(importPath)
+			newNamespace := path.Base(pkg.ImportPath)
 			if imp.Name == nil && oldNamespace != newNamespace {
 				// use old namespace for fewer diffs
 				imp.Name = ast.NewIdent(oldNamespace)
@@ -99,26 +101,6 @@ func processFile(name string, w io.Writer) (err error) {
 		return nil
 	}
 
-	if w == nil {
-		backup := name + ".bak"
-		if err = os.Rename(name, backup); err != nil {
-			return err
-		}
-		defer func() {
-			if err != nil {
-				os.Rename(backup, name)
-			} else {
-				os.Remove(backup)
-			}
-		}()
-		var file *os.File
-		file, err = os.Create(name)
-		if err != nil {
-			return err
-		}
-		defer file.Close()
-		w = file
-	}
 	var buf bytes.Buffer
 	if err := format.Node(&buf, fset, f); err != nil {
 		return err
@@ -127,9 +109,32 @@ func processFile(name string, w io.Writer) (err error) {
 	if err != nil {
 		return err
 	}
-	if _, err := w.Write(b); err != nil {
+
+	if w != nil {
+		_, err := w.Write(b)
 		return err
 	}
 
-	return nil
+	backup := name + ".bak"
+	if err = os.Rename(name, backup); err != nil {
+		return err
+	}
+	defer func() {
+		if err != nil {
+			os.Rename(backup, name)
+		} else {
+			os.Remove(backup)
+		}
+	}()
+
+	return os.WriteFile(name, b, 0644)
+}
+
+func genprotoNamespace(importPath string) string {
+	suffix := path.Base(importPath)
+	// if it looks like a version, then use the second from last component.
+	if len(suffix) >= 2 && suffix[0] == 'v' && '0' <= suffix[1] && suffix[1] <= '1' {
+		return path.Base(path.Dir(importPath))
+	}
+	return suffix
 }

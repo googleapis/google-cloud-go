@@ -40,6 +40,11 @@
                 "CreateDnsAuthorization"
               ]
             },
+            "CreateTrustConfig": {
+              "methods": [
+                "CreateTrustConfig"
+              ]
+            },
             "DeleteCertificate": {
               "methods": [
                 "DeleteCertificate"
@@ -68,6 +73,11 @@
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
+              ]
+            },
+            "DeleteTrustConfig": {
+              "methods": [
+                "DeleteTrustConfig"
               ]
             },
             "GetCertificate": {
@@ -105,6 +115,11 @@
                 "GetOperation"
               ]
             },
+            "GetTrustConfig": {
+              "methods": [
+                "GetTrustConfig"
+              ]
+            },
             "ListCertificateIssuanceConfigs": {
               "methods": [
                 "ListCertificateIssuanceConfigs"
@@ -140,6 +155,11 @@
                 "ListOperations"
               ]
             },
+            "ListTrustConfigs": {
+              "methods": [
+                "ListTrustConfigs"
+              ]
+            },
             "UpdateCertificate": {
               "methods": [
                 "UpdateCertificate"
@@ -158,6 +178,11 @@
             "UpdateDnsAuthorization": {
               "methods": [
                 "UpdateDnsAuthorization"
+              ]
+            },
+            "UpdateTrustConfig": {
+              "methods": [
+                "UpdateTrustConfig"
               ]
             }
           }
@@ -195,6 +220,11 @@
                 "CreateDnsAuthorization"
               ]
             },
+            "CreateTrustConfig": {
+              "methods": [
+                "CreateTrustConfig"
+              ]
+            },
             "DeleteCertificate": {
               "methods": [
                 "DeleteCertificate"
@@ -223,6 +253,11 @@
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
+              ]
+            },
+            "DeleteTrustConfig": {
+              "methods": [
+                "DeleteTrustConfig"
               ]
             },
             "GetCertificate": {
@@ -260,6 +295,11 @@
                 "GetOperation"
               ]
             },
+            "GetTrustConfig": {
+              "methods": [
+                "GetTrustConfig"
+              ]
+            },
             "ListCertificateIssuanceConfigs": {
               "methods": [
                 "ListCertificateIssuanceConfigs"
@@ -295,6 +335,11 @@
                 "ListOperations"
               ]
             },
+            "ListTrustConfigs": {
+              "methods": [
+                "ListTrustConfigs"
+              ]
+            },
             "UpdateCertificate": {
               "methods": [
                 "UpdateCertificate"
@@ -313,6 +358,11 @@
             "UpdateDnsAuthorization": {
               "methods": [
                 "UpdateDnsAuthorization"
+              ]
+            },
+            "UpdateTrustConfig": {
+              "methods": [
+                "UpdateTrustConfig"
               ]
             }
           }

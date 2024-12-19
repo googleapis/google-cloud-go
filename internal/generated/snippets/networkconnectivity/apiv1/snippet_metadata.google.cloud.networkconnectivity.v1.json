@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/networkconnectivity/apiv1",
-    "version": "1.12.1",
+    "version": "1.14.10",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,52 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "networkconnectivity_v1_generated_HubService_AcceptHubSpoke_sync",
+      "title": "networkconnectivity AcceptHubSpoke Sample",
+      "description": "AcceptHubSpoke accepts a proposal to attach a Network Connectivity Center spoke\nto a hub.",
+      "file": "HubClient/AcceptHubSpoke/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AcceptHubSpoke",
+        "fullName": "google.cloud.networkconnectivity.v1.HubClient.AcceptHubSpoke",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.AcceptHubSpokeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AcceptHubSpokeOperation",
+        "client": {
+          "shortName": "HubClient",
+          "fullName": "google.cloud.networkconnectivity.v1.HubClient"
+        },
+        "method": {
+          "shortName": "AcceptHubSpoke",
+          "fullName": "google.cloud.networkconnectivity.v1.HubService.AcceptHubSpoke",
+          "service": {
+            "shortName": "HubService",
+            "fullName": "google.cloud.networkconnectivity.v1.HubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "networkconnectivity_v1_generated_HubService_CancelOperation_sync",
       "title": "networkconnectivity CancelOperation Sample",
@@ -286,6 +332,52 @@
       ]
     },
     {
+      "regionTag": "networkconnectivity_v1_generated_HubService_GetGroup_sync",
+      "title": "networkconnectivity GetGroup Sample",
+      "description": "GetGroup gets details about a Network Connectivity Center group.",
+      "file": "HubClient/GetGroup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetGroup",
+        "fullName": "google.cloud.networkconnectivity.v1.HubClient.GetGroup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.GetGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*networkconnectivitypb.Group",
+        "client": {
+          "shortName": "HubClient",
+          "fullName": "google.cloud.networkconnectivity.v1.HubClient"
+        },
+        "method": {
+          "shortName": "GetGroup",
+          "fullName": "google.cloud.networkconnectivity.v1.HubService.GetGroup",
+          "service": {
+            "shortName": "HubService",
+            "fullName": "google.cloud.networkconnectivity.v1.HubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "networkconnectivity_v1_generated_HubService_GetHub_sync",
       "title": "networkconnectivity GetHub Sample",
       "description": "GetHub gets details about a Network Connectivity Center hub.",
@@ -470,6 +562,98 @@
       ]
     },
     {
+      "regionTag": "networkconnectivity_v1_generated_HubService_GetRoute_sync",
+      "title": "networkconnectivity GetRoute Sample",
+      "description": "GetRoute gets details about the specified route.",
+      "file": "HubClient/GetRoute/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetRoute",
+        "fullName": "google.cloud.networkconnectivity.v1.HubClient.GetRoute",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.GetRouteRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*networkconnectivitypb.Route",
+        "client": {
+          "shortName": "HubClient",
+          "fullName": "google.cloud.networkconnectivity.v1.HubClient"
+        },
+        "method": {
+          "shortName": "GetRoute",
+          "fullName": "google.cloud.networkconnectivity.v1.HubService.GetRoute",
+          "service": {
+            "shortName": "HubService",
+            "fullName": "google.cloud.networkconnectivity.v1.HubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_HubService_GetRouteTable_sync",
+      "title": "networkconnectivity GetRouteTable Sample",
+      "description": "GetRouteTable gets details about a Network Connectivity Center route table.",
+      "file": "HubClient/GetRouteTable/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetRouteTable",
+        "fullName": "google.cloud.networkconnectivity.v1.HubClient.GetRouteTable",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.GetRouteTableRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*networkconnectivitypb.RouteTable",
+        "client": {
+          "shortName": "HubClient",
+          "fullName": "google.cloud.networkconnectivity.v1.HubClient"
+        },
+        "method": {
+          "shortName": "GetRouteTable",
+          "fullName": "google.cloud.networkconnectivity.v1.HubService.GetRouteTable",
+          "service": {
+            "shortName": "HubService",
+            "fullName": "google.cloud.networkconnectivity.v1.HubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "networkconnectivity_v1_generated_HubService_GetSpoke_sync",
       "title": "networkconnectivity GetSpoke Sample",
       "description": "GetSpoke gets details about a Network Connectivity Center spoke.",
@@ -516,6 +700,98 @@
       ]
     },
     {
+      "regionTag": "networkconnectivity_v1_generated_HubService_ListGroups_sync",
+      "title": "networkconnectivity ListGroups Sample",
+      "description": "ListGroups lists groups in a given hub.",
+      "file": "HubClient/ListGroups/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListGroups",
+        "fullName": "google.cloud.networkconnectivity.v1.HubClient.ListGroups",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.ListGroupsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "GroupIterator",
+        "client": {
+          "shortName": "HubClient",
+          "fullName": "google.cloud.networkconnectivity.v1.HubClient"
+        },
+        "method": {
+          "shortName": "ListGroups",
+          "fullName": "google.cloud.networkconnectivity.v1.HubService.ListGroups",
+          "service": {
+            "shortName": "HubService",
+            "fullName": "google.cloud.networkconnectivity.v1.HubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_HubService_ListHubSpokes_sync",
+      "title": "networkconnectivity ListHubSpokes Sample",
+      "description": "ListHubSpokes lists the Network Connectivity Center spokes associated with a\nspecified hub and location. The list includes both spokes that are attached\nto the hub and spokes that have been proposed but not yet accepted.",
+      "file": "HubClient/ListHubSpokes/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListHubSpokes",
+        "fullName": "google.cloud.networkconnectivity.v1.HubClient.ListHubSpokes",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.ListHubSpokesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SpokeIterator",
+        "client": {
+          "shortName": "HubClient",
+          "fullName": "google.cloud.networkconnectivity.v1.HubClient"
+        },
+        "method": {
+          "shortName": "ListHubSpokes",
+          "fullName": "google.cloud.networkconnectivity.v1.HubService.ListHubSpokes",
+          "service": {
+            "shortName": "HubService",
+            "fullName": "google.cloud.networkconnectivity.v1.HubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "networkconnectivity_v1_generated_HubService_ListHubs_sync",
       "title": "networkconnectivity ListHubs Sample",
       "description": "ListHubs lists the Network Connectivity Center hubs associated with a given project.",
@@ -556,7 +832,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -602,7 +878,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -648,7 +924,99 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_HubService_ListRouteTables_sync",
+      "title": "networkconnectivity ListRouteTables Sample",
+      "description": "ListRouteTables lists route tables in a given hub.",
+      "file": "HubClient/ListRouteTables/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRouteTables",
+        "fullName": "google.cloud.networkconnectivity.v1.HubClient.ListRouteTables",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.ListRouteTablesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RouteTableIterator",
+        "client": {
+          "shortName": "HubClient",
+          "fullName": "google.cloud.networkconnectivity.v1.HubClient"
+        },
+        "method": {
+          "shortName": "ListRouteTables",
+          "fullName": "google.cloud.networkconnectivity.v1.HubService.ListRouteTables",
+          "service": {
+            "shortName": "HubService",
+            "fullName": "google.cloud.networkconnectivity.v1.HubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_HubService_ListRoutes_sync",
+      "title": "networkconnectivity ListRoutes Sample",
+      "description": "ListRoutes lists routes in a given route table.",
+      "file": "HubClient/ListRoutes/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRoutes",
+        "fullName": "google.cloud.networkconnectivity.v1.HubClient.ListRoutes",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.ListRoutesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RouteIterator",
+        "client": {
+          "shortName": "HubClient",
+          "fullName": "google.cloud.networkconnectivity.v1.HubClient"
+        },
+        "method": {
+          "shortName": "ListRoutes",
+          "fullName": "google.cloud.networkconnectivity.v1.HubService.ListRoutes",
+          "service": {
+            "shortName": "HubService",
+            "fullName": "google.cloud.networkconnectivity.v1.HubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -694,7 +1062,99 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_HubService_QueryHubStatus_sync",
+      "title": "networkconnectivity QueryHubStatus Sample",
+      "description": "QueryHubStatus query the Private Service Connect propagation status of a Network\nConnectivity Center hub.",
+      "file": "HubClient/QueryHubStatus/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "QueryHubStatus",
+        "fullName": "google.cloud.networkconnectivity.v1.HubClient.QueryHubStatus",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.QueryHubStatusRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "HubStatusEntryIterator",
+        "client": {
+          "shortName": "HubClient",
+          "fullName": "google.cloud.networkconnectivity.v1.HubClient"
+        },
+        "method": {
+          "shortName": "QueryHubStatus",
+          "fullName": "google.cloud.networkconnectivity.v1.HubService.QueryHubStatus",
+          "service": {
+            "shortName": "HubService",
+            "fullName": "google.cloud.networkconnectivity.v1.HubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_HubService_RejectHubSpoke_sync",
+      "title": "networkconnectivity RejectHubSpoke Sample",
+      "description": "RejectHubSpoke rejects a Network Connectivity Center spoke from being attached to a hub.\nIf the spoke was previously in the `ACTIVE` state, it\ntransitions to the `INACTIVE` state and is no longer able to\nconnect to other spokes that are attached to the hub.",
+      "file": "HubClient/RejectHubSpoke/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RejectHubSpoke",
+        "fullName": "google.cloud.networkconnectivity.v1.HubClient.RejectHubSpoke",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.RejectHubSpokeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RejectHubSpokeOperation",
+        "client": {
+          "shortName": "HubClient",
+          "fullName": "google.cloud.networkconnectivity.v1.HubClient"
+        },
+        "method": {
+          "shortName": "RejectHubSpoke",
+          "fullName": "google.cloud.networkconnectivity.v1.HubService.RejectHubSpoke",
+          "service": {
+            "shortName": "HubService",
+            "fullName": "google.cloud.networkconnectivity.v1.HubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -792,6 +1252,52 @@
       ]
     },
     {
+      "regionTag": "networkconnectivity_v1_generated_HubService_UpdateGroup_sync",
+      "title": "networkconnectivity UpdateGroup Sample",
+      "description": "UpdateGroup updates the parameters of a Network Connectivity Center group.",
+      "file": "HubClient/UpdateGroup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateGroup",
+        "fullName": "google.cloud.networkconnectivity.v1.HubClient.UpdateGroup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.UpdateGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateGroupOperation",
+        "client": {
+          "shortName": "HubClient",
+          "fullName": "google.cloud.networkconnectivity.v1.HubClient"
+        },
+        "method": {
+          "shortName": "UpdateGroup",
+          "fullName": "google.cloud.networkconnectivity.v1.HubService.UpdateGroup",
+          "service": {
+            "shortName": "HubService",
+            "fullName": "google.cloud.networkconnectivity.v1.HubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "networkconnectivity_v1_generated_HubService_UpdateHub_sync",
       "title": "networkconnectivity UpdateHub Sample",
       "description": "UpdateHub updates the description and/or labels of a Network Connectivity Center\nhub.",
@@ -879,6 +1385,602 @@
         {
           "start": 18,
           "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_PolicyBasedRoutingService_CancelOperation_sync",
+      "title": "networkconnectivity CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "PolicyBasedRoutingClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "PolicyBasedRoutingClient",
+          "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_PolicyBasedRoutingService_CreatePolicyBasedRoute_sync",
+      "title": "networkconnectivity CreatePolicyBasedRoute Sample",
+      "description": "CreatePolicyBasedRoute creates a new PolicyBasedRoute in a given project and location.",
+      "file": "PolicyBasedRoutingClient/CreatePolicyBasedRoute/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreatePolicyBasedRoute",
+        "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient.CreatePolicyBasedRoute",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.CreatePolicyBasedRouteRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreatePolicyBasedRouteOperation",
+        "client": {
+          "shortName": "PolicyBasedRoutingClient",
+          "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient"
+        },
+        "method": {
+          "shortName": "CreatePolicyBasedRoute",
+          "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingService.CreatePolicyBasedRoute",
+          "service": {
+            "shortName": "PolicyBasedRoutingService",
+            "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_PolicyBasedRoutingService_DeleteOperation_sync",
+      "title": "networkconnectivity DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "PolicyBasedRoutingClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "PolicyBasedRoutingClient",
+          "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_PolicyBasedRoutingService_DeletePolicyBasedRoute_sync",
+      "title": "networkconnectivity DeletePolicyBasedRoute Sample",
+      "description": "DeletePolicyBasedRoute deletes a single PolicyBasedRoute.",
+      "file": "PolicyBasedRoutingClient/DeletePolicyBasedRoute/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeletePolicyBasedRoute",
+        "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient.DeletePolicyBasedRoute",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.DeletePolicyBasedRouteRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeletePolicyBasedRouteOperation",
+        "client": {
+          "shortName": "PolicyBasedRoutingClient",
+          "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient"
+        },
+        "method": {
+          "shortName": "DeletePolicyBasedRoute",
+          "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingService.DeletePolicyBasedRoute",
+          "service": {
+            "shortName": "PolicyBasedRoutingService",
+            "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_PolicyBasedRoutingService_GetIamPolicy_sync",
+      "title": "networkconnectivity GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "PolicyBasedRoutingClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "PolicyBasedRoutingClient",
+          "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_PolicyBasedRoutingService_GetLocation_sync",
+      "title": "networkconnectivity GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "PolicyBasedRoutingClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "PolicyBasedRoutingClient",
+          "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_PolicyBasedRoutingService_GetOperation_sync",
+      "title": "networkconnectivity GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "PolicyBasedRoutingClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "PolicyBasedRoutingClient",
+          "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_PolicyBasedRoutingService_GetPolicyBasedRoute_sync",
+      "title": "networkconnectivity GetPolicyBasedRoute Sample",
+      "description": "GetPolicyBasedRoute gets details of a single PolicyBasedRoute.",
+      "file": "PolicyBasedRoutingClient/GetPolicyBasedRoute/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetPolicyBasedRoute",
+        "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient.GetPolicyBasedRoute",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.GetPolicyBasedRouteRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*networkconnectivitypb.PolicyBasedRoute",
+        "client": {
+          "shortName": "PolicyBasedRoutingClient",
+          "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient"
+        },
+        "method": {
+          "shortName": "GetPolicyBasedRoute",
+          "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingService.GetPolicyBasedRoute",
+          "service": {
+            "shortName": "PolicyBasedRoutingService",
+            "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_PolicyBasedRoutingService_ListLocations_sync",
+      "title": "networkconnectivity ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "PolicyBasedRoutingClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "PolicyBasedRoutingClient",
+          "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_PolicyBasedRoutingService_ListOperations_sync",
+      "title": "networkconnectivity ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "PolicyBasedRoutingClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "PolicyBasedRoutingClient",
+          "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_PolicyBasedRoutingService_ListPolicyBasedRoutes_sync",
+      "title": "networkconnectivity ListPolicyBasedRoutes Sample",
+      "description": "ListPolicyBasedRoutes lists PolicyBasedRoutes in a given project and location.",
+      "file": "PolicyBasedRoutingClient/ListPolicyBasedRoutes/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListPolicyBasedRoutes",
+        "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient.ListPolicyBasedRoutes",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.ListPolicyBasedRoutesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PolicyBasedRouteIterator",
+        "client": {
+          "shortName": "PolicyBasedRoutingClient",
+          "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient"
+        },
+        "method": {
+          "shortName": "ListPolicyBasedRoutes",
+          "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingService.ListPolicyBasedRoutes",
+          "service": {
+            "shortName": "PolicyBasedRoutingService",
+            "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_PolicyBasedRoutingService_SetIamPolicy_sync",
+      "title": "networkconnectivity SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "PolicyBasedRoutingClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "PolicyBasedRoutingClient",
+          "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_PolicyBasedRoutingService_TestIamPermissions_sync",
+      "title": "networkconnectivity TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "PolicyBasedRoutingClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "PolicyBasedRoutingClient",
+          "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]

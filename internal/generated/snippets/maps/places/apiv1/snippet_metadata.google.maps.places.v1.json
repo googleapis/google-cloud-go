@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/maps/places/apiv1",
-    "version": "1.4.0",
+    "version": "1.17.0",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,190 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "places_v1_generated_Places_AutocompletePlaces_sync",
+      "title": "places AutocompletePlaces Sample",
+      "description": "AutocompletePlaces returns predictions for the given input.",
+      "file": "Client/AutocompletePlaces/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AutocompletePlaces",
+        "fullName": "google.maps.places.v1.Client.AutocompletePlaces",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "placespb.AutocompletePlacesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*placespb.AutocompletePlacesResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.maps.places.v1.Client"
+        },
+        "method": {
+          "shortName": "AutocompletePlaces",
+          "fullName": "google.maps.places.v1.Places.AutocompletePlaces",
+          "service": {
+            "shortName": "Places",
+            "fullName": "google.maps.places.v1.Places"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "places_v1_generated_Places_GetPhotoMedia_sync",
+      "title": "places GetPhotoMedia Sample",
+      "description": "GetPhotoMedia get a photo media with a photo reference string.",
+      "file": "Client/GetPhotoMedia/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetPhotoMedia",
+        "fullName": "google.maps.places.v1.Client.GetPhotoMedia",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "placespb.GetPhotoMediaRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*placespb.PhotoMedia",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.maps.places.v1.Client"
+        },
+        "method": {
+          "shortName": "GetPhotoMedia",
+          "fullName": "google.maps.places.v1.Places.GetPhotoMedia",
+          "service": {
+            "shortName": "Places",
+            "fullName": "google.maps.places.v1.Places"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "places_v1_generated_Places_GetPlace_sync",
+      "title": "places GetPlace Sample",
+      "description": "GetPlace get the details of a place based on its resource name, which is a string\nin the `places/{place_id}` format.",
+      "file": "Client/GetPlace/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetPlace",
+        "fullName": "google.maps.places.v1.Client.GetPlace",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "placespb.GetPlaceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*placespb.Place",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.maps.places.v1.Client"
+        },
+        "method": {
+          "shortName": "GetPlace",
+          "fullName": "google.maps.places.v1.Places.GetPlace",
+          "service": {
+            "shortName": "Places",
+            "fullName": "google.maps.places.v1.Places"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "places_v1_generated_Places_SearchNearby_sync",
+      "title": "places SearchNearby Sample",
+      "description": "SearchNearby search for places near locations.",
+      "file": "Client/SearchNearby/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SearchNearby",
+        "fullName": "google.maps.places.v1.Client.SearchNearby",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "placespb.SearchNearbyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*placespb.SearchNearbyResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.maps.places.v1.Client"
+        },
+        "method": {
+          "shortName": "SearchNearby",
+          "fullName": "google.maps.places.v1.Places.SearchNearby",
+          "service": {
+            "shortName": "Places",
+            "fullName": "google.maps.places.v1.Places"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "places_v1_generated_Places_SearchText_sync",
       "title": "places SearchText Sample",

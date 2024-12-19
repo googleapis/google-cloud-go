@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,8 +19,9 @@ package spanner
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +29,6 @@ import (
 
 	spannerpb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -60,15 +60,19 @@ type CallOptions struct {
 	Rollback            []gax.CallOption
 	PartitionQuery      []gax.CallOption
 	PartitionRead       []gax.CallOption
+	BatchWrite          []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("spanner.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("spanner.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("spanner.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://spanner.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -81,6 +85,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
 					Initial:    250 * time.Millisecond,
 					Max:        32000 * time.Millisecond,
@@ -93,6 +98,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
 					Initial:    250 * time.Millisecond,
 					Max:        32000 * time.Millisecond,
@@ -105,6 +111,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
 					Initial:    250 * time.Millisecond,
 					Max:        32000 * time.Millisecond,
@@ -117,6 +124,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
 					Initial:    250 * time.Millisecond,
 					Max:        32000 * time.Millisecond,
@@ -129,6 +137,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
 					Initial:    250 * time.Millisecond,
 					Max:        32000 * time.Millisecond,
@@ -141,6 +150,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
 					Initial:    250 * time.Millisecond,
 					Max:        32000 * time.Millisecond,
@@ -154,6 +164,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
 					Initial:    250 * time.Millisecond,
 					Max:        32000 * time.Millisecond,
@@ -166,6 +177,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
 					Initial:    250 * time.Millisecond,
 					Max:        32000 * time.Millisecond,
@@ -179,6 +191,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
 					Initial:    250 * time.Millisecond,
 					Max:        32000 * time.Millisecond,
@@ -191,6 +204,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
 					Initial:    250 * time.Millisecond,
 					Max:        32000 * time.Millisecond,
@@ -203,6 +217,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
 					Initial:    250 * time.Millisecond,
 					Max:        32000 * time.Millisecond,
@@ -215,6 +230,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
 					Initial:    250 * time.Millisecond,
 					Max:        32000 * time.Millisecond,
@@ -227,6 +243,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
 					Initial:    250 * time.Millisecond,
 					Max:        32000 * time.Millisecond,
@@ -234,6 +251,7 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		BatchWrite: []gax.CallOption{},
 	}
 }
 
@@ -247,7 +265,8 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        32000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
 		},
 		BatchCreateSessions: []gax.CallOption{
@@ -258,7 +277,8 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        32000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
 		},
 		GetSession: []gax.CallOption{
@@ -269,7 +289,8 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        32000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
 		},
 		ListSessions: []gax.CallOption{
@@ -280,7 +301,8 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        32000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
 		},
 		DeleteSession: []gax.CallOption{
@@ -291,7 +313,8 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        32000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
 		},
 		ExecuteSql: []gax.CallOption{
@@ -302,7 +325,8 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        32000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
 		},
 		ExecuteStreamingSql: []gax.CallOption{
@@ -316,7 +340,8 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        32000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
 		},
 		Read: []gax.CallOption{
@@ -327,7 +352,8 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        32000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
 		},
 		StreamingRead: []gax.CallOption{
@@ -341,7 +367,8 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        32000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
 		},
 		Commit: []gax.CallOption{
@@ -352,7 +379,8 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        32000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
 		},
 		Rollback: []gax.CallOption{
@@ -363,7 +391,8 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        32000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
 		},
 		PartitionQuery: []gax.CallOption{
@@ -374,7 +403,8 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        32000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
 		},
 		PartitionRead: []gax.CallOption{
@@ -385,8 +415,12 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        32000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
+		},
+		BatchWrite: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 		},
 	}
 }
@@ -411,6 +445,7 @@ type internalClient interface {
 	Rollback(context.Context, *spannerpb.RollbackRequest, ...gax.CallOption) error
 	PartitionQuery(context.Context, *spannerpb.PartitionQueryRequest, ...gax.CallOption) (*spannerpb.PartitionResponse, error)
 	PartitionRead(context.Context, *spannerpb.PartitionReadRequest, ...gax.CallOption) (*spannerpb.PartitionResponse, error)
+	BatchWrite(context.Context, *spannerpb.BatchWriteRequest, ...gax.CallOption) (spannerpb.Spanner_BatchWriteClient, error)
 }
 
 // Client is a client for interacting with Cloud Spanner API.
@@ -508,19 +543,21 @@ func (c *Client) DeleteSession(ctx context.Context, req *spannerpb.DeleteSession
 //
 // Operations inside read-write transactions might return ABORTED. If
 // this occurs, the application should restart the transaction from
-// the beginning. See Transaction for more details.
+// the beginning. See Transaction for more
+// details.
 //
 // Larger result sets can be fetched in streaming fashion by calling
-// ExecuteStreamingSql instead.
+// ExecuteStreamingSql
+// instead.
 func (c *Client) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (*spannerpb.ResultSet, error) {
 	return c.internalClient.ExecuteSql(ctx, req, opts...)
 }
 
-// ExecuteStreamingSql like ExecuteSql, except returns the result
-// set as a stream. Unlike ExecuteSql, there
-// is no limit on the size of the returned result set. However, no
-// individual row in the result set can exceed 100 MiB, and no
-// column value can exceed 10 MiB.
+// ExecuteStreamingSql like ExecuteSql, except returns the
+// result set as a stream. Unlike
+// ExecuteSql, there is no limit on
+// the size of the returned result set. However, no individual row in the
+// result set can exceed 100 MiB, and no column value can exceed 10 MiB.
 func (c *Client) ExecuteStreamingSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (spannerpb.Spanner_ExecuteStreamingSqlClient, error) {
 	return c.internalClient.ExecuteStreamingSql(ctx, req, opts...)
 }
@@ -530,9 +567,10 @@ func (c *Client) ExecuteStreamingSql(ctx context.Context, req *spannerpb.Execute
 // ExecuteSql.
 //
 // Statements are executed in sequential order. A request can succeed even if
-// a statement fails. The ExecuteBatchDmlResponse.status field in the
-// response provides information about the statement that failed. Clients must
-// inspect this field to determine whether an error occurred.
+// a statement fails. The
+// ExecuteBatchDmlResponse.status
+// field in the response provides information about the statement that failed.
+// Clients must inspect this field to determine whether an error occurred.
 //
 // Execution stops after the first failed statement; the remaining statements
 // are not executed.
@@ -542,14 +580,15 @@ func (c *Client) ExecuteBatchDml(ctx context.Context, req *spannerpb.ExecuteBatc
 
 // Read reads rows from the database using key lookups and scans, as a
 // simple key/value style alternative to
-// ExecuteSql.  This method cannot be used to
-// return a result set larger than 10 MiB; if the read matches more
+// ExecuteSql.  This method cannot be
+// used to return a result set larger than 10 MiB; if the read matches more
 // data than that, the read fails with a FAILED_PRECONDITION
 // error.
 //
 // Reads inside read-write transactions might return ABORTED. If
 // this occurs, the application should restart the transaction from
-// the beginning. See Transaction for more details.
+// the beginning. See Transaction for more
+// details.
 //
 // Larger result sets can be yielded in streaming fashion by calling
 // StreamingRead instead.
@@ -557,9 +596,9 @@ func (c *Client) Read(ctx context.Context, req *spannerpb.ReadRequest, opts ...g
 	return c.internalClient.Read(ctx, req, opts...)
 }
 
-// StreamingRead like Read, except returns the result set as a
-// stream. Unlike Read, there is no limit on the
-// size of the returned result set. However, no individual row in
+// StreamingRead like Read, except returns the result set
+// as a stream. Unlike Read, there is no
+// limit on the size of the returned result set. However, no individual row in
 // the result set can exceed 100 MiB, and no column value can exceed
 // 10 MiB.
 func (c *Client) StreamingRead(ctx context.Context, req *spannerpb.ReadRequest, opts ...gax.CallOption) (spannerpb.Spanner_StreamingReadClient, error) {
@@ -567,7 +606,8 @@ func (c *Client) StreamingRead(ctx context.Context, req *spannerpb.ReadRequest, 
 }
 
 // BeginTransaction begins a new transaction. This step can often be skipped:
-// Read, ExecuteSql and
+// Read,
+// ExecuteSql and
 // Commit can begin a new transaction as a
 // side-effect.
 func (c *Client) BeginTransaction(ctx context.Context, req *spannerpb.BeginTransactionRequest, opts ...gax.CallOption) (*spannerpb.Transaction, error) {
@@ -594,8 +634,9 @@ func (c *Client) Commit(ctx context.Context, req *spannerpb.CommitRequest, opts 
 
 // Rollback rolls back a transaction, releasing any locks it holds. It is a good
 // idea to call this for any transaction that includes one or more
-// Read or ExecuteSql requests and
-// ultimately decides not to commit.
+// Read or
+// ExecuteSql requests and ultimately
+// decides not to commit.
 //
 // Rollback returns OK if it successfully aborts the transaction, the
 // transaction was already aborted, or the transaction is not
@@ -606,10 +647,11 @@ func (c *Client) Rollback(ctx context.Context, req *spannerpb.RollbackRequest, o
 
 // PartitionQuery creates a set of partition tokens that can be used to execute a query
 // operation in parallel.  Each of the returned partition tokens can be used
-// by ExecuteStreamingSql to specify a subset
-// of the query result to read.  The same session and read-only transaction
-// must be used by the PartitionQueryRequest used to create the
-// partition tokens and the ExecuteSqlRequests that use the partition tokens.
+// by ExecuteStreamingSql to
+// specify a subset of the query result to read.  The same session and
+// read-only transaction must be used by the PartitionQueryRequest used to
+// create the partition tokens and the ExecuteSqlRequests that use the
+// partition tokens.
 //
 // Partition tokens become invalid when the session used to create them
 // is deleted, is idle for too long, begins a new transaction, or becomes too
@@ -621,12 +663,13 @@ func (c *Client) PartitionQuery(ctx context.Context, req *spannerpb.PartitionQue
 
 // PartitionRead creates a set of partition tokens that can be used to execute a read
 // operation in parallel.  Each of the returned partition tokens can be used
-// by StreamingRead to specify a subset of the read
-// result to read.  The same session and read-only transaction must be used by
-// the PartitionReadRequest used to create the partition tokens and the
-// ReadRequests that use the partition tokens.  There are no ordering
-// guarantees on rows returned among the returned partition tokens, or even
-// within each individual StreamingRead call issued with a partition_token.
+// by StreamingRead to specify a
+// subset of the read result to read.  The same session and read-only
+// transaction must be used by the PartitionReadRequest used to create the
+// partition tokens and the ReadRequests that use the partition tokens.  There
+// are no ordering guarantees on rows returned among the returned partition
+// tokens, or even within each individual StreamingRead call issued with a
+// partition_token.
 //
 // Partition tokens become invalid when the session used to create them
 // is deleted, is idle for too long, begins a new transaction, or becomes too
@@ -634,6 +677,25 @@ func (c *Client) PartitionQuery(ctx context.Context, req *spannerpb.PartitionQue
 // the whole operation must be restarted from the beginning.
 func (c *Client) PartitionRead(ctx context.Context, req *spannerpb.PartitionReadRequest, opts ...gax.CallOption) (*spannerpb.PartitionResponse, error) {
 	return c.internalClient.PartitionRead(ctx, req, opts...)
+}
+
+// BatchWrite batches the supplied mutation groups in a collection of efficient
+// transactions. All mutations in a group are committed atomically. However,
+// mutations across groups can be committed non-atomically in an unspecified
+// order and thus, they must be independent of each other. Partial failure is
+// possible, i.e., some groups may have been committed successfully, while
+// some may have failed. The results of individual batches are streamed into
+// the response as the batches are applied.
+//
+// BatchWrite requests are not replay protected, meaning that each mutation
+// group may be applied more than once. Replays of non-idempotent mutations
+// may have undesirable effects. For example, replays of an insert mutation
+// may produce an already exists error or if you use generated or commit
+// timestamp-based keys, it may result in additional rows being added to the
+// mutation’s table. We recommend structuring your mutation groups to be
+// idempotent to avoid this issue.
+func (c *Client) BatchWrite(ctx context.Context, req *spannerpb.BatchWriteRequest, opts ...gax.CallOption) (spannerpb.Spanner_BatchWriteClient, error) {
+	return c.internalClient.BatchWrite(ctx, req, opts...)
 }
 
 // gRPCClient is a client for interacting with Cloud Spanner API over gRPC transport.
@@ -651,6 +713,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new spanner client based on gRPC.
@@ -680,6 +744,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      spannerpb.NewSpannerClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -702,7 +767,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -724,6 +791,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new spanner rest client.
@@ -744,6 +813,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -753,9 +823,12 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 func defaultRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://spanner.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://spanner.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://spanner.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://spanner.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -765,7 +838,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -791,7 +866,7 @@ func (c *gRPCClient) CreateSession(ctx context.Context, req *spannerpb.CreateSes
 	var resp *spannerpb.Session
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateSession(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateSession, req, settings.GRPC, c.logger, "CreateSession")
 		return err
 	}, opts...)
 	if err != nil {
@@ -809,7 +884,7 @@ func (c *gRPCClient) BatchCreateSessions(ctx context.Context, req *spannerpb.Bat
 	var resp *spannerpb.BatchCreateSessionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.BatchCreateSessions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.BatchCreateSessions, req, settings.GRPC, c.logger, "BatchCreateSessions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -827,7 +902,7 @@ func (c *gRPCClient) GetSession(ctx context.Context, req *spannerpb.GetSessionRe
 	var resp *spannerpb.Session
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetSession(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetSession, req, settings.GRPC, c.logger, "GetSession")
 		return err
 	}, opts...)
 	if err != nil {
@@ -856,7 +931,7 @@ func (c *gRPCClient) ListSessions(ctx context.Context, req *spannerpb.ListSessio
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListSessions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListSessions, req, settings.GRPC, c.logger, "ListSessions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -890,7 +965,7 @@ func (c *gRPCClient) DeleteSession(ctx context.Context, req *spannerpb.DeleteSes
 	opts = append((*c.CallOptions).DeleteSession[0:len((*c.CallOptions).DeleteSession):len((*c.CallOptions).DeleteSession)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteSession(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteSession, req, settings.GRPC, c.logger, "DeleteSession")
 		return err
 	}, opts...)
 	return err
@@ -905,7 +980,7 @@ func (c *gRPCClient) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRe
 	var resp *spannerpb.ResultSet
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ExecuteSql(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ExecuteSql, req, settings.GRPC, c.logger, "ExecuteSql")
 		return err
 	}, opts...)
 	if err != nil {
@@ -923,7 +998,9 @@ func (c *gRPCClient) ExecuteStreamingSql(ctx context.Context, req *spannerpb.Exe
 	var resp spannerpb.Spanner_ExecuteStreamingSqlClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "ExecuteStreamingSql")
 		resp, err = c.client.ExecuteStreamingSql(ctx, req, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "ExecuteStreamingSql")
 		return err
 	}, opts...)
 	if err != nil {
@@ -941,7 +1018,7 @@ func (c *gRPCClient) ExecuteBatchDml(ctx context.Context, req *spannerpb.Execute
 	var resp *spannerpb.ExecuteBatchDmlResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ExecuteBatchDml(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ExecuteBatchDml, req, settings.GRPC, c.logger, "ExecuteBatchDml")
 		return err
 	}, opts...)
 	if err != nil {
@@ -959,7 +1036,7 @@ func (c *gRPCClient) Read(ctx context.Context, req *spannerpb.ReadRequest, opts 
 	var resp *spannerpb.ResultSet
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.Read(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.Read, req, settings.GRPC, c.logger, "Read")
 		return err
 	}, opts...)
 	if err != nil {
@@ -977,7 +1054,9 @@ func (c *gRPCClient) StreamingRead(ctx context.Context, req *spannerpb.ReadReque
 	var resp spannerpb.Spanner_StreamingReadClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "StreamingRead")
 		resp, err = c.client.StreamingRead(ctx, req, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "StreamingRead")
 		return err
 	}, opts...)
 	if err != nil {
@@ -995,7 +1074,7 @@ func (c *gRPCClient) BeginTransaction(ctx context.Context, req *spannerpb.BeginT
 	var resp *spannerpb.Transaction
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.BeginTransaction(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.BeginTransaction, req, settings.GRPC, c.logger, "BeginTransaction")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1013,7 +1092,7 @@ func (c *gRPCClient) Commit(ctx context.Context, req *spannerpb.CommitRequest, o
 	var resp *spannerpb.CommitResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.Commit(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.Commit, req, settings.GRPC, c.logger, "Commit")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1030,7 +1109,7 @@ func (c *gRPCClient) Rollback(ctx context.Context, req *spannerpb.RollbackReques
 	opts = append((*c.CallOptions).Rollback[0:len((*c.CallOptions).Rollback):len((*c.CallOptions).Rollback)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.Rollback(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.Rollback, req, settings.GRPC, c.logger, "Rollback")
 		return err
 	}, opts...)
 	return err
@@ -1045,7 +1124,7 @@ func (c *gRPCClient) PartitionQuery(ctx context.Context, req *spannerpb.Partitio
 	var resp *spannerpb.PartitionResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.PartitionQuery(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.PartitionQuery, req, settings.GRPC, c.logger, "PartitionQuery")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1063,7 +1142,27 @@ func (c *gRPCClient) PartitionRead(ctx context.Context, req *spannerpb.Partition
 	var resp *spannerpb.PartitionResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.PartitionRead(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.PartitionRead, req, settings.GRPC, c.logger, "PartitionRead")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) BatchWrite(ctx context.Context, req *spannerpb.BatchWriteRequest, opts ...gax.CallOption) (spannerpb.Spanner_BatchWriteClient, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).BatchWrite[0:len((*c.CallOptions).BatchWrite):len((*c.CallOptions).BatchWrite)], opts...)
+	var resp spannerpb.Spanner_BatchWriteClient
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "BatchWrite")
+		resp, err = c.client.BatchWrite(ctx, req, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "BatchWrite")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1129,17 +1228,7 @@ func (c *restClient) CreateSession(ctx context.Context, req *spannerpb.CreateSes
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateSession")
 		if err != nil {
 			return err
 		}
@@ -1198,17 +1287,7 @@ func (c *restClient) BatchCreateSessions(ctx context.Context, req *spannerpb.Bat
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchCreateSessions")
 		if err != nil {
 			return err
 		}
@@ -1260,17 +1339,7 @@ func (c *restClient) GetSession(ctx context.Context, req *spannerpb.GetSessionRe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSession")
 		if err != nil {
 			return err
 		}
@@ -1335,21 +1404,10 @@ func (c *restClient) ListSessions(ctx context.Context, req *spannerpb.ListSessio
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSessions")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1411,15 +1469,8 @@ func (c *restClient) DeleteSession(ctx context.Context, req *spannerpb.DeleteSes
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteSession")
+		return err
 	}, opts...)
 }
 
@@ -1430,10 +1481,12 @@ func (c *restClient) DeleteSession(ctx context.Context, req *spannerpb.DeleteSes
 //
 // Operations inside read-write transactions might return ABORTED. If
 // this occurs, the application should restart the transaction from
-// the beginning. See Transaction for more details.
+// the beginning. See Transaction for more
+// details.
 //
 // Larger result sets can be fetched in streaming fashion by calling
-// ExecuteStreamingSql instead.
+// ExecuteStreamingSql
+// instead.
 func (c *restClient) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (*spannerpb.ResultSet, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1472,17 +1525,7 @@ func (c *restClient) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExecuteSql")
 		if err != nil {
 			return err
 		}
@@ -1499,11 +1542,11 @@ func (c *restClient) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRe
 	return resp, nil
 }
 
-// ExecuteStreamingSql like ExecuteSql, except returns the result
-// set as a stream. Unlike ExecuteSql, there
-// is no limit on the size of the returned result set. However, no
-// individual row in the result set can exceed 100 MiB, and no
-// column value can exceed 10 MiB.
+// ExecuteStreamingSql like ExecuteSql, except returns the
+// result set as a stream. Unlike
+// ExecuteSql, there is no limit on
+// the size of the returned result set. However, no individual row in the
+// result set can exceed 100 MiB, and no column value can exceed 10 MiB.
 func (c *restClient) ExecuteStreamingSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (spannerpb.Spanner_ExecuteStreamingSqlClient, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1540,12 +1583,8 @@ func (c *restClient) ExecuteStreamingSql(ctx context.Context, req *spannerpb.Exe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		httpRsp, err := executeStreamingHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExecuteStreamingSql")
 		if err != nil {
-			return err
-		}
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
 			return err
 		}
 
@@ -1592,7 +1631,7 @@ func (c *executeStreamingSqlRESTClient) Trailer() metadata.MD {
 
 func (c *executeStreamingSqlRESTClient) CloseSend() error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *executeStreamingSqlRESTClient) Context() context.Context {
@@ -1601,12 +1640,12 @@ func (c *executeStreamingSqlRESTClient) Context() context.Context {
 
 func (c *executeStreamingSqlRESTClient) SendMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *executeStreamingSqlRESTClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented, use Recv")
+	return errors.New("this method is not implemented, use Recv")
 }
 
 // ExecuteBatchDml executes a batch of SQL DML statements. This method allows many statements
@@ -1614,9 +1653,10 @@ func (c *executeStreamingSqlRESTClient) RecvMsg(m interface{}) error {
 // ExecuteSql.
 //
 // Statements are executed in sequential order. A request can succeed even if
-// a statement fails. The ExecuteBatchDmlResponse.status field in the
-// response provides information about the statement that failed. Clients must
-// inspect this field to determine whether an error occurred.
+// a statement fails. The
+// ExecuteBatchDmlResponse.status
+// field in the response provides information about the statement that failed.
+// Clients must inspect this field to determine whether an error occurred.
 //
 // Execution stops after the first failed statement; the remaining statements
 // are not executed.
@@ -1658,17 +1698,7 @@ func (c *restClient) ExecuteBatchDml(ctx context.Context, req *spannerpb.Execute
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExecuteBatchDml")
 		if err != nil {
 			return err
 		}
@@ -1687,14 +1717,15 @@ func (c *restClient) ExecuteBatchDml(ctx context.Context, req *spannerpb.Execute
 
 // Read reads rows from the database using key lookups and scans, as a
 // simple key/value style alternative to
-// ExecuteSql.  This method cannot be used to
-// return a result set larger than 10 MiB; if the read matches more
+// ExecuteSql.  This method cannot be
+// used to return a result set larger than 10 MiB; if the read matches more
 // data than that, the read fails with a FAILED_PRECONDITION
 // error.
 //
 // Reads inside read-write transactions might return ABORTED. If
 // this occurs, the application should restart the transaction from
-// the beginning. See Transaction for more details.
+// the beginning. See Transaction for more
+// details.
 //
 // Larger result sets can be yielded in streaming fashion by calling
 // StreamingRead instead.
@@ -1736,17 +1767,7 @@ func (c *restClient) Read(ctx context.Context, req *spannerpb.ReadRequest, opts 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "Read")
 		if err != nil {
 			return err
 		}
@@ -1763,9 +1784,9 @@ func (c *restClient) Read(ctx context.Context, req *spannerpb.ReadRequest, opts 
 	return resp, nil
 }
 
-// StreamingRead like Read, except returns the result set as a
-// stream. Unlike Read, there is no limit on the
-// size of the returned result set. However, no individual row in
+// StreamingRead like Read, except returns the result set
+// as a stream. Unlike Read, there is no
+// limit on the size of the returned result set. However, no individual row in
 // the result set can exceed 100 MiB, and no column value can exceed
 // 10 MiB.
 func (c *restClient) StreamingRead(ctx context.Context, req *spannerpb.ReadRequest, opts ...gax.CallOption) (spannerpb.Spanner_StreamingReadClient, error) {
@@ -1804,12 +1825,8 @@ func (c *restClient) StreamingRead(ctx context.Context, req *spannerpb.ReadReque
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		httpRsp, err := executeStreamingHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "StreamingRead")
 		if err != nil {
-			return err
-		}
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
 			return err
 		}
 
@@ -1856,7 +1873,7 @@ func (c *streamingReadRESTClient) Trailer() metadata.MD {
 
 func (c *streamingReadRESTClient) CloseSend() error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *streamingReadRESTClient) Context() context.Context {
@@ -1865,16 +1882,17 @@ func (c *streamingReadRESTClient) Context() context.Context {
 
 func (c *streamingReadRESTClient) SendMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *streamingReadRESTClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented, use Recv")
+	return errors.New("this method is not implemented, use Recv")
 }
 
 // BeginTransaction begins a new transaction. This step can often be skipped:
-// Read, ExecuteSql and
+// Read,
+// ExecuteSql and
 // Commit can begin a new transaction as a
 // side-effect.
 func (c *restClient) BeginTransaction(ctx context.Context, req *spannerpb.BeginTransactionRequest, opts ...gax.CallOption) (*spannerpb.Transaction, error) {
@@ -1915,17 +1933,7 @@ func (c *restClient) BeginTransaction(ctx context.Context, req *spannerpb.BeginT
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BeginTransaction")
 		if err != nil {
 			return err
 		}
@@ -1994,17 +2002,7 @@ func (c *restClient) Commit(ctx context.Context, req *spannerpb.CommitRequest, o
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "Commit")
 		if err != nil {
 			return err
 		}
@@ -2023,8 +2021,9 @@ func (c *restClient) Commit(ctx context.Context, req *spannerpb.CommitRequest, o
 
 // Rollback rolls back a transaction, releasing any locks it holds. It is a good
 // idea to call this for any transaction that includes one or more
-// Read or ExecuteSql requests and
-// ultimately decides not to commit.
+// Read or
+// ExecuteSql requests and ultimately
+// decides not to commit.
 //
 // Rollback returns OK if it successfully aborts the transaction, the
 // transaction was already aborted, or the transaction is not
@@ -2064,24 +2063,18 @@ func (c *restClient) Rollback(ctx context.Context, req *spannerpb.RollbackReques
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "Rollback")
+		return err
 	}, opts...)
 }
 
 // PartitionQuery creates a set of partition tokens that can be used to execute a query
 // operation in parallel.  Each of the returned partition tokens can be used
-// by ExecuteStreamingSql to specify a subset
-// of the query result to read.  The same session and read-only transaction
-// must be used by the PartitionQueryRequest used to create the
-// partition tokens and the ExecuteSqlRequests that use the partition tokens.
+// by ExecuteStreamingSql to
+// specify a subset of the query result to read.  The same session and
+// read-only transaction must be used by the PartitionQueryRequest used to
+// create the partition tokens and the ExecuteSqlRequests that use the
+// partition tokens.
 //
 // Partition tokens become invalid when the session used to create them
 // is deleted, is idle for too long, begins a new transaction, or becomes too
@@ -2125,17 +2118,7 @@ func (c *restClient) PartitionQuery(ctx context.Context, req *spannerpb.Partitio
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PartitionQuery")
 		if err != nil {
 			return err
 		}
@@ -2154,12 +2137,13 @@ func (c *restClient) PartitionQuery(ctx context.Context, req *spannerpb.Partitio
 
 // PartitionRead creates a set of partition tokens that can be used to execute a read
 // operation in parallel.  Each of the returned partition tokens can be used
-// by StreamingRead to specify a subset of the read
-// result to read.  The same session and read-only transaction must be used by
-// the PartitionReadRequest used to create the partition tokens and the
-// ReadRequests that use the partition tokens.  There are no ordering
-// guarantees on rows returned among the returned partition tokens, or even
-// within each individual StreamingRead call issued with a partition_token.
+// by StreamingRead to specify a
+// subset of the read result to read.  The same session and read-only
+// transaction must be used by the PartitionReadRequest used to create the
+// partition tokens and the ReadRequests that use the partition tokens.  There
+// are no ordering guarantees on rows returned among the returned partition
+// tokens, or even within each individual StreamingRead call issued with a
+// partition_token.
 //
 // Partition tokens become invalid when the session used to create them
 // is deleted, is idle for too long, begins a new transaction, or becomes too
@@ -2203,17 +2187,7 @@ func (c *restClient) PartitionRead(ctx context.Context, req *spannerpb.Partition
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PartitionRead")
 		if err != nil {
 			return err
 		}
@@ -2230,49 +2204,118 @@ func (c *restClient) PartitionRead(ctx context.Context, req *spannerpb.Partition
 	return resp, nil
 }
 
-// SessionIterator manages a stream of *spannerpb.Session.
-type SessionIterator struct {
-	items    []*spannerpb.Session
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*spannerpb.Session, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *SessionIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *SessionIterator) Next() (*spannerpb.Session, error) {
-	var item *spannerpb.Session
-	if err := it.nextFunc(); err != nil {
-		return item, err
+// BatchWrite batches the supplied mutation groups in a collection of efficient
+// transactions. All mutations in a group are committed atomically. However,
+// mutations across groups can be committed non-atomically in an unspecified
+// order and thus, they must be independent of each other. Partial failure is
+// possible, i.e., some groups may have been committed successfully, while
+// some may have failed. The results of individual batches are streamed into
+// the response as the batches are applied.
+//
+// BatchWrite requests are not replay protected, meaning that each mutation
+// group may be applied more than once. Replays of non-idempotent mutations
+// may have undesirable effects. For example, replays of an insert mutation
+// may produce an already exists error or if you use generated or commit
+// timestamp-based keys, it may result in additional rows being added to the
+// mutation’s table. We recommend structuring your mutation groups to be
+// idempotent to avoid this issue.
+func (c *restClient) BatchWrite(ctx context.Context, req *spannerpb.BatchWriteRequest, opts ...gax.CallOption) (spannerpb.Spanner_BatchWriteClient, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:batchWrite", req.GetSession())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	var streamClient *batchWriteRESTClient
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := executeStreamingHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchWrite")
+		if err != nil {
+			return err
+		}
+
+		streamClient = &batchWriteRESTClient{
+			ctx:    ctx,
+			md:     metadata.MD(httpRsp.Header),
+			stream: gax.NewProtoJSONStreamReader(httpRsp.Body, (&spannerpb.BatchWriteResponse{}).ProtoReflect().Type()),
+		}
+		return nil
+	}, opts...)
+
+	return streamClient, e
 }
 
-func (it *SessionIterator) bufLen() int {
-	return len(it.items)
+// batchWriteRESTClient is the stream client used to consume the server stream created by
+// the REST implementation of BatchWrite.
+type batchWriteRESTClient struct {
+	ctx    context.Context
+	md     metadata.MD
+	stream *gax.ProtoJSONStream
 }
 
-func (it *SessionIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
+func (c *batchWriteRESTClient) Recv() (*spannerpb.BatchWriteResponse, error) {
+	if err := c.ctx.Err(); err != nil {
+		defer c.stream.Close()
+		return nil, err
+	}
+	msg, err := c.stream.Recv()
+	if err != nil {
+		defer c.stream.Close()
+		return nil, err
+	}
+	res := msg.(*spannerpb.BatchWriteResponse)
+	return res, nil
+}
+
+func (c *batchWriteRESTClient) Header() (metadata.MD, error) {
+	return c.md, nil
+}
+
+func (c *batchWriteRESTClient) Trailer() metadata.MD {
+	return c.md
+}
+
+func (c *batchWriteRESTClient) CloseSend() error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented for a server-stream")
+}
+
+func (c *batchWriteRESTClient) Context() context.Context {
+	return c.ctx
+}
+
+func (c *batchWriteRESTClient) SendMsg(m interface{}) error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented for a server-stream")
+}
+
+func (c *batchWriteRESTClient) RecvMsg(m interface{}) error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented, use Recv")
 }

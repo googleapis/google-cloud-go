@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	settingspb "cloud.google.com/go/securitycenter/settings/apiv1beta1/settingspb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -62,10 +61,13 @@ type SecurityCenterSettingsCallOptions struct {
 func defaultSecurityCenterSettingsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("securitycenter.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("securitycenter.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("securitycenter.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://securitycenter.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -579,6 +581,8 @@ type securityCenterSettingsGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewSecurityCenterSettingsClient creates a new security center settings service client based on gRPC.
@@ -608,6 +612,7 @@ func NewSecurityCenterSettingsClient(ctx context.Context, opts ...option.ClientO
 		connPool:                     connPool,
 		securityCenterSettingsClient: settingspb.NewSecurityCenterSettingsServiceClient(connPool),
 		CallOptions:                  &client.CallOptions,
+		logger:                       internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -630,7 +635,9 @@ func (c *securityCenterSettingsGRPCClient) Connection() *grpc.ClientConn {
 func (c *securityCenterSettingsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -652,6 +659,8 @@ type securityCenterSettingsRESTClient struct {
 
 	// Points back to the CallOptions field of the containing SecurityCenterSettingsClient
 	CallOptions **SecurityCenterSettingsCallOptions
+
+	logger *slog.Logger
 }
 
 // NewSecurityCenterSettingsRESTClient creates a new security center settings service rest client.
@@ -672,6 +681,7 @@ func NewSecurityCenterSettingsRESTClient(ctx context.Context, opts ...option.Cli
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -681,9 +691,12 @@ func NewSecurityCenterSettingsRESTClient(ctx context.Context, opts ...option.Cli
 func defaultSecurityCenterSettingsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://securitycenter.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://securitycenter.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://securitycenter.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://securitycenter.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -693,7 +706,9 @@ func defaultSecurityCenterSettingsRESTClientOptions() []option.ClientOption {
 func (c *securityCenterSettingsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -719,7 +734,7 @@ func (c *securityCenterSettingsGRPCClient) GetServiceAccount(ctx context.Context
 	var resp *settingspb.ServiceAccount
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.securityCenterSettingsClient.GetServiceAccount(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.securityCenterSettingsClient.GetServiceAccount, req, settings.GRPC, c.logger, "GetServiceAccount")
 		return err
 	}, opts...)
 	if err != nil {
@@ -737,7 +752,7 @@ func (c *securityCenterSettingsGRPCClient) GetSettings(ctx context.Context, req 
 	var resp *settingspb.Settings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.securityCenterSettingsClient.GetSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.securityCenterSettingsClient.GetSettings, req, settings.GRPC, c.logger, "GetSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -755,7 +770,7 @@ func (c *securityCenterSettingsGRPCClient) UpdateSettings(ctx context.Context, r
 	var resp *settingspb.Settings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.securityCenterSettingsClient.UpdateSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.securityCenterSettingsClient.UpdateSettings, req, settings.GRPC, c.logger, "UpdateSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -772,7 +787,7 @@ func (c *securityCenterSettingsGRPCClient) ResetSettings(ctx context.Context, re
 	opts = append((*c.CallOptions).ResetSettings[0:len((*c.CallOptions).ResetSettings):len((*c.CallOptions).ResetSettings)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.securityCenterSettingsClient.ResetSettings(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.securityCenterSettingsClient.ResetSettings, req, settings.GRPC, c.logger, "ResetSettings")
 		return err
 	}, opts...)
 	return err
@@ -787,7 +802,7 @@ func (c *securityCenterSettingsGRPCClient) BatchGetSettings(ctx context.Context,
 	var resp *settingspb.BatchGetSettingsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.securityCenterSettingsClient.BatchGetSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.securityCenterSettingsClient.BatchGetSettings, req, settings.GRPC, c.logger, "BatchGetSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -805,7 +820,7 @@ func (c *securityCenterSettingsGRPCClient) CalculateEffectiveSettings(ctx contex
 	var resp *settingspb.Settings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.securityCenterSettingsClient.CalculateEffectiveSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.securityCenterSettingsClient.CalculateEffectiveSettings, req, settings.GRPC, c.logger, "CalculateEffectiveSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -823,7 +838,7 @@ func (c *securityCenterSettingsGRPCClient) BatchCalculateEffectiveSettings(ctx c
 	var resp *settingspb.BatchCalculateEffectiveSettingsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.securityCenterSettingsClient.BatchCalculateEffectiveSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.securityCenterSettingsClient.BatchCalculateEffectiveSettings, req, settings.GRPC, c.logger, "BatchCalculateEffectiveSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -841,7 +856,7 @@ func (c *securityCenterSettingsGRPCClient) GetComponentSettings(ctx context.Cont
 	var resp *settingspb.ComponentSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.securityCenterSettingsClient.GetComponentSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.securityCenterSettingsClient.GetComponentSettings, req, settings.GRPC, c.logger, "GetComponentSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -859,7 +874,7 @@ func (c *securityCenterSettingsGRPCClient) UpdateComponentSettings(ctx context.C
 	var resp *settingspb.ComponentSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.securityCenterSettingsClient.UpdateComponentSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.securityCenterSettingsClient.UpdateComponentSettings, req, settings.GRPC, c.logger, "UpdateComponentSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -876,7 +891,7 @@ func (c *securityCenterSettingsGRPCClient) ResetComponentSettings(ctx context.Co
 	opts = append((*c.CallOptions).ResetComponentSettings[0:len((*c.CallOptions).ResetComponentSettings):len((*c.CallOptions).ResetComponentSettings)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.securityCenterSettingsClient.ResetComponentSettings(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.securityCenterSettingsClient.ResetComponentSettings, req, settings.GRPC, c.logger, "ResetComponentSettings")
 		return err
 	}, opts...)
 	return err
@@ -891,7 +906,7 @@ func (c *securityCenterSettingsGRPCClient) CalculateEffectiveComponentSettings(c
 	var resp *settingspb.ComponentSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.securityCenterSettingsClient.CalculateEffectiveComponentSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.securityCenterSettingsClient.CalculateEffectiveComponentSettings, req, settings.GRPC, c.logger, "CalculateEffectiveComponentSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -920,7 +935,7 @@ func (c *securityCenterSettingsGRPCClient) ListDetectors(ctx context.Context, re
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.securityCenterSettingsClient.ListDetectors(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.securityCenterSettingsClient.ListDetectors, req, settings.GRPC, c.logger, "ListDetectors")
 			return err
 		}, opts...)
 		if err != nil {
@@ -966,7 +981,7 @@ func (c *securityCenterSettingsGRPCClient) ListComponents(ctx context.Context, r
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.securityCenterSettingsClient.ListComponents(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.securityCenterSettingsClient.ListComponents, req, settings.GRPC, c.logger, "ListComponents")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1029,17 +1044,7 @@ func (c *securityCenterSettingsRESTClient) GetServiceAccount(ctx context.Context
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetServiceAccount")
 		if err != nil {
 			return err
 		}
@@ -1084,17 +1089,7 @@ func (c *securityCenterSettingsRESTClient) GetSettings(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSettings")
 		if err != nil {
 			return err
 		}
@@ -1128,11 +1123,11 @@ func (c *securityCenterSettingsRESTClient) UpdateSettings(ctx context.Context, r
 
 	params := url.Values{}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1157,17 +1152,7 @@ func (c *securityCenterSettingsRESTClient) UpdateSettings(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateSettings")
 		if err != nil {
 			return err
 		}
@@ -1224,15 +1209,8 @@ func (c *securityCenterSettingsRESTClient) ResetSettings(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ResetSettings")
+		return err
 	}, opts...)
 }
 
@@ -1273,17 +1251,7 @@ func (c *securityCenterSettingsRESTClient) BatchGetSettings(ctx context.Context,
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "BatchGetSettings")
 		if err != nil {
 			return err
 		}
@@ -1341,17 +1309,7 @@ func (c *securityCenterSettingsRESTClient) CalculateEffectiveSettings(ctx contex
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "CalculateEffectiveSettings")
 		if err != nil {
 			return err
 		}
@@ -1402,17 +1360,7 @@ func (c *securityCenterSettingsRESTClient) BatchCalculateEffectiveSettings(ctx c
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchCalculateEffectiveSettings")
 		if err != nil {
 			return err
 		}
@@ -1457,17 +1405,7 @@ func (c *securityCenterSettingsRESTClient) GetComponentSettings(ctx context.Cont
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetComponentSettings")
 		if err != nil {
 			return err
 		}
@@ -1501,11 +1439,11 @@ func (c *securityCenterSettingsRESTClient) UpdateComponentSettings(ctx context.C
 
 	params := url.Values{}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1530,17 +1468,7 @@ func (c *securityCenterSettingsRESTClient) UpdateComponentSettings(ctx context.C
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateComponentSettings")
 		if err != nil {
 			return err
 		}
@@ -1592,15 +1520,8 @@ func (c *securityCenterSettingsRESTClient) ResetComponentSettings(ctx context.Co
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ResetComponentSettings")
+		return err
 	}, opts...)
 }
 
@@ -1632,17 +1553,7 @@ func (c *securityCenterSettingsRESTClient) CalculateEffectiveComponentSettings(c
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "CalculateEffectiveComponentSettings")
 		if err != nil {
 			return err
 		}
@@ -1706,21 +1617,10 @@ func (c *securityCenterSettingsRESTClient) ListDetectors(ctx context.Context, re
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDetectors")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1794,21 +1694,10 @@ func (c *securityCenterSettingsRESTClient) ListComponents(ctx context.Context, r
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListComponents")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1836,98 +1725,4 @@ func (c *securityCenterSettingsRESTClient) ListComponents(ctx context.Context, r
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
-}
-
-// DetectorIterator manages a stream of *settingspb.Detector.
-type DetectorIterator struct {
-	items    []*settingspb.Detector
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*settingspb.Detector, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *DetectorIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *DetectorIterator) Next() (*settingspb.Detector, error) {
-	var item *settingspb.Detector
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *DetectorIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *DetectorIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// StringIterator manages a stream of string.
-type StringIterator struct {
-	items    []string
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []string, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *StringIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *StringIterator) Next() (string, error) {
-	var item string
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *StringIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *StringIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

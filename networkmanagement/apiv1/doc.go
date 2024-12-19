@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@
 //
 // To get started with this package, create a client.
 //
+//	// go get cloud.google.com/go/networkmanagement/apiv1@latest
 //	ctx := context.Background()
 //	// This snippet has been automatically generated and should be regarded as a code template only.
 //	// It will require modifications to work:
@@ -54,36 +55,23 @@
 //
 // # Using the Client
 //
-// The following is an example of making an API call with the newly created client.
+// The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	ctx := context.Background()
-//	// This snippet has been automatically generated and should be regarded as a code template only.
-//	// It will require modifications to work:
-//	// - It may require correct/in-range values for request initialization.
-//	// - It may require specifying regional endpoints when creating the service client as shown in:
-//	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//	c, err := networkmanagement.NewReachabilityClient(ctx)
+//	req := &networkmanagementpb.CreateConnectivityTestRequest{
+//		// TODO: Fill request struct fields.
+//		// See https://pkg.go.dev/cloud.google.com/go/networkmanagement/apiv1/networkmanagementpb#CreateConnectivityTestRequest.
+//	}
+//	op, err := c.CreateConnectivityTest(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
-//	defer c.Close()
 //
-//	req := &networkmanagementpb.ListConnectivityTestsRequest{
-//		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/networkmanagement/apiv1/networkmanagementpb#ListConnectivityTestsRequest.
+//	resp, err := op.Wait(ctx)
+//	if err != nil {
+//		// TODO: Handle error.
 //	}
-//	it := c.ListConnectivityTests(ctx, req)
-//	for {
-//		resp, err := it.Next()
-//		if err == iterator.Done {
-//			break
-//		}
-//		if err != nil {
-//			// TODO: Handle error.
-//		}
-//		// TODO: Use resp.
-//		_ = resp
-//	}
+//	// TODO: Use resp.
+//	_ = resp
 //
 // # Use of Context
 //
@@ -99,30 +87,3 @@
 // [Debugging Client Libraries]: https://pkg.go.dev/cloud.google.com/go#hdr-Debugging
 // [Inspecting errors]: https://pkg.go.dev/cloud.google.com/go#hdr-Inspecting_errors
 package networkmanagement // import "cloud.google.com/go/networkmanagement/apiv1"
-
-import (
-	"context"
-
-	"google.golang.org/api/option"
-)
-
-// For more information on implementing a client constructor hook, see
-// https://github.com/googleapis/google-cloud-go/wiki/Customizing-constructors.
-type clientHookParams struct{}
-type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
-
-var versionClient string
-
-func getVersionClient() string {
-	if versionClient == "" {
-		return "UNKNOWN"
-	}
-	return versionClient
-}
-
-// DefaultAuthScopes reports the default set of authentication scopes to use with this package.
-func DefaultAuthScopes() []string {
-	return []string{
-		"https://www.googleapis.com/auth/cloud-platform",
-	}
-}

@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -60,6 +60,31 @@ func ExampleNewRegistrationRESTClient() {
 	_ = c
 }
 
+func ExampleRegistrationClient_CreateEndpoint() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := servicedirectory.NewRegistrationClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &servicedirectorypb.CreateEndpointRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/servicedirectory/apiv1beta1/servicedirectorypb#CreateEndpointRequest.
+	}
+	resp, err := c.CreateEndpoint(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleRegistrationClient_CreateNamespace() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -83,110 +108,6 @@ func ExampleRegistrationClient_CreateNamespace() {
 	}
 	// TODO: Use resp.
 	_ = resp
-}
-
-func ExampleRegistrationClient_ListNamespaces() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := servicedirectory.NewRegistrationClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &servicedirectorypb.ListNamespacesRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/servicedirectory/apiv1beta1/servicedirectorypb#ListNamespacesRequest.
-	}
-	it := c.ListNamespaces(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleRegistrationClient_GetNamespace() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := servicedirectory.NewRegistrationClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &servicedirectorypb.GetNamespaceRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/servicedirectory/apiv1beta1/servicedirectorypb#GetNamespaceRequest.
-	}
-	resp, err := c.GetNamespace(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleRegistrationClient_UpdateNamespace() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := servicedirectory.NewRegistrationClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &servicedirectorypb.UpdateNamespaceRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/servicedirectory/apiv1beta1/servicedirectorypb#UpdateNamespaceRequest.
-	}
-	resp, err := c.UpdateNamespace(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleRegistrationClient_DeleteNamespace() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := servicedirectory.NewRegistrationClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &servicedirectorypb.DeleteNamespaceRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/servicedirectory/apiv1beta1/servicedirectorypb#DeleteNamespaceRequest.
-	}
-	err = c.DeleteNamespace(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
 }
 
 func ExampleRegistrationClient_CreateService() {
@@ -214,7 +135,7 @@ func ExampleRegistrationClient_CreateService() {
 	_ = resp
 }
 
-func ExampleRegistrationClient_ListServices() {
+func ExampleRegistrationClient_DeleteEndpoint() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -227,25 +148,17 @@ func ExampleRegistrationClient_ListServices() {
 	}
 	defer c.Close()
 
-	req := &servicedirectorypb.ListServicesRequest{
+	req := &servicedirectorypb.DeleteEndpointRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/servicedirectory/apiv1beta1/servicedirectorypb#ListServicesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/servicedirectory/apiv1beta1/servicedirectorypb#DeleteEndpointRequest.
 	}
-	it := c.ListServices(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
+	err = c.DeleteEndpoint(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
 	}
 }
 
-func ExampleRegistrationClient_GetService() {
+func ExampleRegistrationClient_DeleteNamespace() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -258,41 +171,14 @@ func ExampleRegistrationClient_GetService() {
 	}
 	defer c.Close()
 
-	req := &servicedirectorypb.GetServiceRequest{
+	req := &servicedirectorypb.DeleteNamespaceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/servicedirectory/apiv1beta1/servicedirectorypb#GetServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/servicedirectory/apiv1beta1/servicedirectorypb#DeleteNamespaceRequest.
 	}
-	resp, err := c.GetService(ctx, req)
+	err = c.DeleteNamespace(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleRegistrationClient_UpdateService() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := servicedirectory.NewRegistrationClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &servicedirectorypb.UpdateServiceRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/servicedirectory/apiv1beta1/servicedirectorypb#UpdateServiceRequest.
-	}
-	resp, err := c.UpdateService(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleRegistrationClient_DeleteService() {
@@ -318,7 +204,7 @@ func ExampleRegistrationClient_DeleteService() {
 	}
 }
 
-func ExampleRegistrationClient_CreateEndpoint() {
+func ExampleRegistrationClient_GetEndpoint() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -331,11 +217,86 @@ func ExampleRegistrationClient_CreateEndpoint() {
 	}
 	defer c.Close()
 
-	req := &servicedirectorypb.CreateEndpointRequest{
+	req := &servicedirectorypb.GetEndpointRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/servicedirectory/apiv1beta1/servicedirectorypb#CreateEndpointRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/servicedirectory/apiv1beta1/servicedirectorypb#GetEndpointRequest.
 	}
-	resp, err := c.CreateEndpoint(ctx, req)
+	resp, err := c.GetEndpoint(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleRegistrationClient_GetIamPolicy() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := servicedirectory.NewRegistrationClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &iampb.GetIamPolicyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#GetIamPolicyRequest.
+	}
+	resp, err := c.GetIamPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleRegistrationClient_GetNamespace() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := servicedirectory.NewRegistrationClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &servicedirectorypb.GetNamespaceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/servicedirectory/apiv1beta1/servicedirectorypb#GetNamespaceRequest.
+	}
+	resp, err := c.GetNamespace(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleRegistrationClient_GetService() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := servicedirectory.NewRegistrationClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &servicedirectorypb.GetServiceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/servicedirectory/apiv1beta1/servicedirectorypb#GetServiceRequest.
+	}
+	resp, err := c.GetService(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -371,10 +332,16 @@ func ExampleRegistrationClient_ListEndpoints() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*servicedirectorypb.ListEndpointsResponse)
 	}
 }
 
-func ExampleRegistrationClient_GetEndpoint() {
+func ExampleRegistrationClient_ListNamespaces() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -387,19 +354,31 @@ func ExampleRegistrationClient_GetEndpoint() {
 	}
 	defer c.Close()
 
-	req := &servicedirectorypb.GetEndpointRequest{
+	req := &servicedirectorypb.ListNamespacesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/servicedirectory/apiv1beta1/servicedirectorypb#GetEndpointRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/servicedirectory/apiv1beta1/servicedirectorypb#ListNamespacesRequest.
 	}
-	resp, err := c.GetEndpoint(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.ListNamespaces(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*servicedirectorypb.ListNamespacesResponse)
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
-func ExampleRegistrationClient_UpdateEndpoint() {
+func ExampleRegistrationClient_ListServices() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -412,64 +391,28 @@ func ExampleRegistrationClient_UpdateEndpoint() {
 	}
 	defer c.Close()
 
-	req := &servicedirectorypb.UpdateEndpointRequest{
+	req := &servicedirectorypb.ListServicesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/servicedirectory/apiv1beta1/servicedirectorypb#UpdateEndpointRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/servicedirectory/apiv1beta1/servicedirectorypb#ListServicesRequest.
 	}
-	resp, err := c.UpdateEndpoint(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
+	it := c.ListServices(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 
-func ExampleRegistrationClient_DeleteEndpoint() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := servicedirectory.NewRegistrationClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*servicedirectorypb.ListServicesResponse)
 	}
-	defer c.Close()
-
-	req := &servicedirectorypb.DeleteEndpointRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/servicedirectory/apiv1beta1/servicedirectorypb#DeleteEndpointRequest.
-	}
-	err = c.DeleteEndpoint(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleRegistrationClient_GetIamPolicy() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := servicedirectory.NewRegistrationClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &iampb.GetIamPolicyRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#GetIamPolicyRequest.
-	}
-	resp, err := c.GetIamPolicy(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleRegistrationClient_SetIamPolicy() {
@@ -515,6 +458,81 @@ func ExampleRegistrationClient_TestIamPermissions() {
 		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#TestIamPermissionsRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleRegistrationClient_UpdateEndpoint() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := servicedirectory.NewRegistrationClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &servicedirectorypb.UpdateEndpointRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/servicedirectory/apiv1beta1/servicedirectorypb#UpdateEndpointRequest.
+	}
+	resp, err := c.UpdateEndpoint(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleRegistrationClient_UpdateNamespace() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := servicedirectory.NewRegistrationClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &servicedirectorypb.UpdateNamespaceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/servicedirectory/apiv1beta1/servicedirectorypb#UpdateNamespaceRequest.
+	}
+	resp, err := c.UpdateNamespace(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleRegistrationClient_UpdateService() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := servicedirectory.NewRegistrationClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &servicedirectorypb.UpdateServiceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/servicedirectory/apiv1beta1/servicedirectorypb#UpdateServiceRequest.
+	}
+	resp, err := c.UpdateService(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -575,5 +593,11 @@ func ExampleRegistrationClient_ListLocations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*locationpb.ListLocationsResponse)
 	}
 }

@@ -1,0 +1,1703 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.visionai.v1",
+  "libraryPackage": "cloud.google.com/go/visionai/apiv1",
+  "services": {
+    "AppPlatform": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "AppPlatformClient",
+          "rpcs": {
+            "AddApplicationStreamInput": {
+              "methods": [
+                "AddApplicationStreamInput"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateApplication": {
+              "methods": [
+                "CreateApplication"
+              ]
+            },
+            "CreateApplicationInstances": {
+              "methods": [
+                "CreateApplicationInstances"
+              ]
+            },
+            "CreateDraft": {
+              "methods": [
+                "CreateDraft"
+              ]
+            },
+            "CreateProcessor": {
+              "methods": [
+                "CreateProcessor"
+              ]
+            },
+            "DeleteApplication": {
+              "methods": [
+                "DeleteApplication"
+              ]
+            },
+            "DeleteApplicationInstances": {
+              "methods": [
+                "DeleteApplicationInstances"
+              ]
+            },
+            "DeleteDraft": {
+              "methods": [
+                "DeleteDraft"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteProcessor": {
+              "methods": [
+                "DeleteProcessor"
+              ]
+            },
+            "DeployApplication": {
+              "methods": [
+                "DeployApplication"
+              ]
+            },
+            "GetApplication": {
+              "methods": [
+                "GetApplication"
+              ]
+            },
+            "GetDraft": {
+              "methods": [
+                "GetDraft"
+              ]
+            },
+            "GetInstance": {
+              "methods": [
+                "GetInstance"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetProcessor": {
+              "methods": [
+                "GetProcessor"
+              ]
+            },
+            "ListApplications": {
+              "methods": [
+                "ListApplications"
+              ]
+            },
+            "ListDrafts": {
+              "methods": [
+                "ListDrafts"
+              ]
+            },
+            "ListInstances": {
+              "methods": [
+                "ListInstances"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListPrebuiltProcessors": {
+              "methods": [
+                "ListPrebuiltProcessors"
+              ]
+            },
+            "ListProcessors": {
+              "methods": [
+                "ListProcessors"
+              ]
+            },
+            "RemoveApplicationStreamInput": {
+              "methods": [
+                "RemoveApplicationStreamInput"
+              ]
+            },
+            "UndeployApplication": {
+              "methods": [
+                "UndeployApplication"
+              ]
+            },
+            "UpdateApplication": {
+              "methods": [
+                "UpdateApplication"
+              ]
+            },
+            "UpdateApplicationInstances": {
+              "methods": [
+                "UpdateApplicationInstances"
+              ]
+            },
+            "UpdateApplicationStreamInput": {
+              "methods": [
+                "UpdateApplicationStreamInput"
+              ]
+            },
+            "UpdateDraft": {
+              "methods": [
+                "UpdateDraft"
+              ]
+            },
+            "UpdateProcessor": {
+              "methods": [
+                "UpdateProcessor"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "AppPlatformClient",
+          "rpcs": {
+            "AddApplicationStreamInput": {
+              "methods": [
+                "AddApplicationStreamInput"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateApplication": {
+              "methods": [
+                "CreateApplication"
+              ]
+            },
+            "CreateApplicationInstances": {
+              "methods": [
+                "CreateApplicationInstances"
+              ]
+            },
+            "CreateDraft": {
+              "methods": [
+                "CreateDraft"
+              ]
+            },
+            "CreateProcessor": {
+              "methods": [
+                "CreateProcessor"
+              ]
+            },
+            "DeleteApplication": {
+              "methods": [
+                "DeleteApplication"
+              ]
+            },
+            "DeleteApplicationInstances": {
+              "methods": [
+                "DeleteApplicationInstances"
+              ]
+            },
+            "DeleteDraft": {
+              "methods": [
+                "DeleteDraft"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteProcessor": {
+              "methods": [
+                "DeleteProcessor"
+              ]
+            },
+            "DeployApplication": {
+              "methods": [
+                "DeployApplication"
+              ]
+            },
+            "GetApplication": {
+              "methods": [
+                "GetApplication"
+              ]
+            },
+            "GetDraft": {
+              "methods": [
+                "GetDraft"
+              ]
+            },
+            "GetInstance": {
+              "methods": [
+                "GetInstance"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetProcessor": {
+              "methods": [
+                "GetProcessor"
+              ]
+            },
+            "ListApplications": {
+              "methods": [
+                "ListApplications"
+              ]
+            },
+            "ListDrafts": {
+              "methods": [
+                "ListDrafts"
+              ]
+            },
+            "ListInstances": {
+              "methods": [
+                "ListInstances"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListPrebuiltProcessors": {
+              "methods": [
+                "ListPrebuiltProcessors"
+              ]
+            },
+            "ListProcessors": {
+              "methods": [
+                "ListProcessors"
+              ]
+            },
+            "RemoveApplicationStreamInput": {
+              "methods": [
+                "RemoveApplicationStreamInput"
+              ]
+            },
+            "UndeployApplication": {
+              "methods": [
+                "UndeployApplication"
+              ]
+            },
+            "UpdateApplication": {
+              "methods": [
+                "UpdateApplication"
+              ]
+            },
+            "UpdateApplicationInstances": {
+              "methods": [
+                "UpdateApplicationInstances"
+              ]
+            },
+            "UpdateApplicationStreamInput": {
+              "methods": [
+                "UpdateApplicationStreamInput"
+              ]
+            },
+            "UpdateDraft": {
+              "methods": [
+                "UpdateDraft"
+              ]
+            },
+            "UpdateProcessor": {
+              "methods": [
+                "UpdateProcessor"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "HealthCheckService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "HealthCheckClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "HealthCheck": {
+              "methods": [
+                "HealthCheck"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "HealthCheckClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "HealthCheck": {
+              "methods": [
+                "HealthCheck"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "LiveVideoAnalytics": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "LiveVideoAnalyticsClient",
+          "rpcs": {
+            "BatchRunProcess": {
+              "methods": [
+                "BatchRunProcess"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateAnalysis": {
+              "methods": [
+                "CreateAnalysis"
+              ]
+            },
+            "CreateOperator": {
+              "methods": [
+                "CreateOperator"
+              ]
+            },
+            "CreateProcess": {
+              "methods": [
+                "CreateProcess"
+              ]
+            },
+            "DeleteAnalysis": {
+              "methods": [
+                "DeleteAnalysis"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteOperator": {
+              "methods": [
+                "DeleteOperator"
+              ]
+            },
+            "DeleteProcess": {
+              "methods": [
+                "DeleteProcess"
+              ]
+            },
+            "GetAnalysis": {
+              "methods": [
+                "GetAnalysis"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetOperator": {
+              "methods": [
+                "GetOperator"
+              ]
+            },
+            "GetProcess": {
+              "methods": [
+                "GetProcess"
+              ]
+            },
+            "ListAnalyses": {
+              "methods": [
+                "ListAnalyses"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListOperators": {
+              "methods": [
+                "ListOperators"
+              ]
+            },
+            "ListProcesses": {
+              "methods": [
+                "ListProcesses"
+              ]
+            },
+            "ListPublicOperators": {
+              "methods": [
+                "ListPublicOperators"
+              ]
+            },
+            "ResolveOperatorInfo": {
+              "methods": [
+                "ResolveOperatorInfo"
+              ]
+            },
+            "UpdateAnalysis": {
+              "methods": [
+                "UpdateAnalysis"
+              ]
+            },
+            "UpdateOperator": {
+              "methods": [
+                "UpdateOperator"
+              ]
+            },
+            "UpdateProcess": {
+              "methods": [
+                "UpdateProcess"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "LiveVideoAnalyticsClient",
+          "rpcs": {
+            "BatchRunProcess": {
+              "methods": [
+                "BatchRunProcess"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateAnalysis": {
+              "methods": [
+                "CreateAnalysis"
+              ]
+            },
+            "CreateOperator": {
+              "methods": [
+                "CreateOperator"
+              ]
+            },
+            "CreateProcess": {
+              "methods": [
+                "CreateProcess"
+              ]
+            },
+            "DeleteAnalysis": {
+              "methods": [
+                "DeleteAnalysis"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteOperator": {
+              "methods": [
+                "DeleteOperator"
+              ]
+            },
+            "DeleteProcess": {
+              "methods": [
+                "DeleteProcess"
+              ]
+            },
+            "GetAnalysis": {
+              "methods": [
+                "GetAnalysis"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetOperator": {
+              "methods": [
+                "GetOperator"
+              ]
+            },
+            "GetProcess": {
+              "methods": [
+                "GetProcess"
+              ]
+            },
+            "ListAnalyses": {
+              "methods": [
+                "ListAnalyses"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListOperators": {
+              "methods": [
+                "ListOperators"
+              ]
+            },
+            "ListProcesses": {
+              "methods": [
+                "ListProcesses"
+              ]
+            },
+            "ListPublicOperators": {
+              "methods": [
+                "ListPublicOperators"
+              ]
+            },
+            "ResolveOperatorInfo": {
+              "methods": [
+                "ResolveOperatorInfo"
+              ]
+            },
+            "UpdateAnalysis": {
+              "methods": [
+                "UpdateAnalysis"
+              ]
+            },
+            "UpdateOperator": {
+              "methods": [
+                "UpdateOperator"
+              ]
+            },
+            "UpdateProcess": {
+              "methods": [
+                "UpdateProcess"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "StreamingService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "StreamingClient",
+          "rpcs": {
+            "AcquireLease": {
+              "methods": [
+                "AcquireLease"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ReceiveEvents": {
+              "methods": [
+                "ReceiveEvents"
+              ]
+            },
+            "ReceivePackets": {
+              "methods": [
+                "ReceivePackets"
+              ]
+            },
+            "ReleaseLease": {
+              "methods": [
+                "ReleaseLease"
+              ]
+            },
+            "RenewLease": {
+              "methods": [
+                "RenewLease"
+              ]
+            },
+            "SendPackets": {
+              "methods": [
+                "SendPackets"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "StreamingClient",
+          "rpcs": {
+            "AcquireLease": {
+              "methods": [
+                "AcquireLease"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ReceiveEvents": {
+              "methods": [
+                "ReceiveEvents"
+              ]
+            },
+            "ReceivePackets": {
+              "methods": [
+                "ReceivePackets"
+              ]
+            },
+            "ReleaseLease": {
+              "methods": [
+                "ReleaseLease"
+              ]
+            },
+            "RenewLease": {
+              "methods": [
+                "RenewLease"
+              ]
+            },
+            "SendPackets": {
+              "methods": [
+                "SendPackets"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "StreamsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "StreamsClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateCluster": {
+              "methods": [
+                "CreateCluster"
+              ]
+            },
+            "CreateEvent": {
+              "methods": [
+                "CreateEvent"
+              ]
+            },
+            "CreateSeries": {
+              "methods": [
+                "CreateSeries"
+              ]
+            },
+            "CreateStream": {
+              "methods": [
+                "CreateStream"
+              ]
+            },
+            "DeleteCluster": {
+              "methods": [
+                "DeleteCluster"
+              ]
+            },
+            "DeleteEvent": {
+              "methods": [
+                "DeleteEvent"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteSeries": {
+              "methods": [
+                "DeleteSeries"
+              ]
+            },
+            "DeleteStream": {
+              "methods": [
+                "DeleteStream"
+              ]
+            },
+            "GenerateStreamHlsToken": {
+              "methods": [
+                "GenerateStreamHlsToken"
+              ]
+            },
+            "GetCluster": {
+              "methods": [
+                "GetCluster"
+              ]
+            },
+            "GetEvent": {
+              "methods": [
+                "GetEvent"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSeries": {
+              "methods": [
+                "GetSeries"
+              ]
+            },
+            "GetStream": {
+              "methods": [
+                "GetStream"
+              ]
+            },
+            "GetStreamThumbnail": {
+              "methods": [
+                "GetStreamThumbnail"
+              ]
+            },
+            "ListClusters": {
+              "methods": [
+                "ListClusters"
+              ]
+            },
+            "ListEvents": {
+              "methods": [
+                "ListEvents"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListSeries": {
+              "methods": [
+                "ListSeries"
+              ]
+            },
+            "ListStreams": {
+              "methods": [
+                "ListStreams"
+              ]
+            },
+            "MaterializeChannel": {
+              "methods": [
+                "MaterializeChannel"
+              ]
+            },
+            "UpdateCluster": {
+              "methods": [
+                "UpdateCluster"
+              ]
+            },
+            "UpdateEvent": {
+              "methods": [
+                "UpdateEvent"
+              ]
+            },
+            "UpdateSeries": {
+              "methods": [
+                "UpdateSeries"
+              ]
+            },
+            "UpdateStream": {
+              "methods": [
+                "UpdateStream"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "StreamsClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateCluster": {
+              "methods": [
+                "CreateCluster"
+              ]
+            },
+            "CreateEvent": {
+              "methods": [
+                "CreateEvent"
+              ]
+            },
+            "CreateSeries": {
+              "methods": [
+                "CreateSeries"
+              ]
+            },
+            "CreateStream": {
+              "methods": [
+                "CreateStream"
+              ]
+            },
+            "DeleteCluster": {
+              "methods": [
+                "DeleteCluster"
+              ]
+            },
+            "DeleteEvent": {
+              "methods": [
+                "DeleteEvent"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteSeries": {
+              "methods": [
+                "DeleteSeries"
+              ]
+            },
+            "DeleteStream": {
+              "methods": [
+                "DeleteStream"
+              ]
+            },
+            "GenerateStreamHlsToken": {
+              "methods": [
+                "GenerateStreamHlsToken"
+              ]
+            },
+            "GetCluster": {
+              "methods": [
+                "GetCluster"
+              ]
+            },
+            "GetEvent": {
+              "methods": [
+                "GetEvent"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSeries": {
+              "methods": [
+                "GetSeries"
+              ]
+            },
+            "GetStream": {
+              "methods": [
+                "GetStream"
+              ]
+            },
+            "GetStreamThumbnail": {
+              "methods": [
+                "GetStreamThumbnail"
+              ]
+            },
+            "ListClusters": {
+              "methods": [
+                "ListClusters"
+              ]
+            },
+            "ListEvents": {
+              "methods": [
+                "ListEvents"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListSeries": {
+              "methods": [
+                "ListSeries"
+              ]
+            },
+            "ListStreams": {
+              "methods": [
+                "ListStreams"
+              ]
+            },
+            "MaterializeChannel": {
+              "methods": [
+                "MaterializeChannel"
+              ]
+            },
+            "UpdateCluster": {
+              "methods": [
+                "UpdateCluster"
+              ]
+            },
+            "UpdateEvent": {
+              "methods": [
+                "UpdateEvent"
+              ]
+            },
+            "UpdateSeries": {
+              "methods": [
+                "UpdateSeries"
+              ]
+            },
+            "UpdateStream": {
+              "methods": [
+                "UpdateStream"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "Warehouse": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "WarehouseClient",
+          "rpcs": {
+            "AddCollectionItem": {
+              "methods": [
+                "AddCollectionItem"
+              ]
+            },
+            "AnalyzeAsset": {
+              "methods": [
+                "AnalyzeAsset"
+              ]
+            },
+            "AnalyzeCorpus": {
+              "methods": [
+                "AnalyzeCorpus"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "ClipAsset": {
+              "methods": [
+                "ClipAsset"
+              ]
+            },
+            "CreateAnnotation": {
+              "methods": [
+                "CreateAnnotation"
+              ]
+            },
+            "CreateAsset": {
+              "methods": [
+                "CreateAsset"
+              ]
+            },
+            "CreateCollection": {
+              "methods": [
+                "CreateCollection"
+              ]
+            },
+            "CreateCorpus": {
+              "methods": [
+                "CreateCorpus"
+              ]
+            },
+            "CreateDataSchema": {
+              "methods": [
+                "CreateDataSchema"
+              ]
+            },
+            "CreateIndex": {
+              "methods": [
+                "CreateIndex"
+              ]
+            },
+            "CreateIndexEndpoint": {
+              "methods": [
+                "CreateIndexEndpoint"
+              ]
+            },
+            "CreateSearchConfig": {
+              "methods": [
+                "CreateSearchConfig"
+              ]
+            },
+            "CreateSearchHypernym": {
+              "methods": [
+                "CreateSearchHypernym"
+              ]
+            },
+            "DeleteAnnotation": {
+              "methods": [
+                "DeleteAnnotation"
+              ]
+            },
+            "DeleteAsset": {
+              "methods": [
+                "DeleteAsset"
+              ]
+            },
+            "DeleteCollection": {
+              "methods": [
+                "DeleteCollection"
+              ]
+            },
+            "DeleteCorpus": {
+              "methods": [
+                "DeleteCorpus"
+              ]
+            },
+            "DeleteDataSchema": {
+              "methods": [
+                "DeleteDataSchema"
+              ]
+            },
+            "DeleteIndex": {
+              "methods": [
+                "DeleteIndex"
+              ]
+            },
+            "DeleteIndexEndpoint": {
+              "methods": [
+                "DeleteIndexEndpoint"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteSearchConfig": {
+              "methods": [
+                "DeleteSearchConfig"
+              ]
+            },
+            "DeleteSearchHypernym": {
+              "methods": [
+                "DeleteSearchHypernym"
+              ]
+            },
+            "DeployIndex": {
+              "methods": [
+                "DeployIndex"
+              ]
+            },
+            "GenerateHlsUri": {
+              "methods": [
+                "GenerateHlsUri"
+              ]
+            },
+            "GenerateRetrievalUrl": {
+              "methods": [
+                "GenerateRetrievalUrl"
+              ]
+            },
+            "GetAnnotation": {
+              "methods": [
+                "GetAnnotation"
+              ]
+            },
+            "GetAsset": {
+              "methods": [
+                "GetAsset"
+              ]
+            },
+            "GetCollection": {
+              "methods": [
+                "GetCollection"
+              ]
+            },
+            "GetCorpus": {
+              "methods": [
+                "GetCorpus"
+              ]
+            },
+            "GetDataSchema": {
+              "methods": [
+                "GetDataSchema"
+              ]
+            },
+            "GetIndex": {
+              "methods": [
+                "GetIndex"
+              ]
+            },
+            "GetIndexEndpoint": {
+              "methods": [
+                "GetIndexEndpoint"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSearchConfig": {
+              "methods": [
+                "GetSearchConfig"
+              ]
+            },
+            "GetSearchHypernym": {
+              "methods": [
+                "GetSearchHypernym"
+              ]
+            },
+            "ImportAssets": {
+              "methods": [
+                "ImportAssets"
+              ]
+            },
+            "IndexAsset": {
+              "methods": [
+                "IndexAsset"
+              ]
+            },
+            "IngestAsset": {
+              "methods": [
+                "IngestAsset"
+              ]
+            },
+            "ListAnnotations": {
+              "methods": [
+                "ListAnnotations"
+              ]
+            },
+            "ListAssets": {
+              "methods": [
+                "ListAssets"
+              ]
+            },
+            "ListCollections": {
+              "methods": [
+                "ListCollections"
+              ]
+            },
+            "ListCorpora": {
+              "methods": [
+                "ListCorpora"
+              ]
+            },
+            "ListDataSchemas": {
+              "methods": [
+                "ListDataSchemas"
+              ]
+            },
+            "ListIndexEndpoints": {
+              "methods": [
+                "ListIndexEndpoints"
+              ]
+            },
+            "ListIndexes": {
+              "methods": [
+                "ListIndexes"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListSearchConfigs": {
+              "methods": [
+                "ListSearchConfigs"
+              ]
+            },
+            "ListSearchHypernyms": {
+              "methods": [
+                "ListSearchHypernyms"
+              ]
+            },
+            "RemoveCollectionItem": {
+              "methods": [
+                "RemoveCollectionItem"
+              ]
+            },
+            "RemoveIndexAsset": {
+              "methods": [
+                "RemoveIndexAsset"
+              ]
+            },
+            "SearchAssets": {
+              "methods": [
+                "SearchAssets"
+              ]
+            },
+            "SearchIndexEndpoint": {
+              "methods": [
+                "SearchIndexEndpoint"
+              ]
+            },
+            "UndeployIndex": {
+              "methods": [
+                "UndeployIndex"
+              ]
+            },
+            "UpdateAnnotation": {
+              "methods": [
+                "UpdateAnnotation"
+              ]
+            },
+            "UpdateAsset": {
+              "methods": [
+                "UpdateAsset"
+              ]
+            },
+            "UpdateCollection": {
+              "methods": [
+                "UpdateCollection"
+              ]
+            },
+            "UpdateCorpus": {
+              "methods": [
+                "UpdateCorpus"
+              ]
+            },
+            "UpdateDataSchema": {
+              "methods": [
+                "UpdateDataSchema"
+              ]
+            },
+            "UpdateIndex": {
+              "methods": [
+                "UpdateIndex"
+              ]
+            },
+            "UpdateIndexEndpoint": {
+              "methods": [
+                "UpdateIndexEndpoint"
+              ]
+            },
+            "UpdateSearchConfig": {
+              "methods": [
+                "UpdateSearchConfig"
+              ]
+            },
+            "UpdateSearchHypernym": {
+              "methods": [
+                "UpdateSearchHypernym"
+              ]
+            },
+            "UploadAsset": {
+              "methods": [
+                "UploadAsset"
+              ]
+            },
+            "ViewCollectionItems": {
+              "methods": [
+                "ViewCollectionItems"
+              ]
+            },
+            "ViewIndexedAssets": {
+              "methods": [
+                "ViewIndexedAssets"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "WarehouseClient",
+          "rpcs": {
+            "AddCollectionItem": {
+              "methods": [
+                "AddCollectionItem"
+              ]
+            },
+            "AnalyzeAsset": {
+              "methods": [
+                "AnalyzeAsset"
+              ]
+            },
+            "AnalyzeCorpus": {
+              "methods": [
+                "AnalyzeCorpus"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "ClipAsset": {
+              "methods": [
+                "ClipAsset"
+              ]
+            },
+            "CreateAnnotation": {
+              "methods": [
+                "CreateAnnotation"
+              ]
+            },
+            "CreateAsset": {
+              "methods": [
+                "CreateAsset"
+              ]
+            },
+            "CreateCollection": {
+              "methods": [
+                "CreateCollection"
+              ]
+            },
+            "CreateCorpus": {
+              "methods": [
+                "CreateCorpus"
+              ]
+            },
+            "CreateDataSchema": {
+              "methods": [
+                "CreateDataSchema"
+              ]
+            },
+            "CreateIndex": {
+              "methods": [
+                "CreateIndex"
+              ]
+            },
+            "CreateIndexEndpoint": {
+              "methods": [
+                "CreateIndexEndpoint"
+              ]
+            },
+            "CreateSearchConfig": {
+              "methods": [
+                "CreateSearchConfig"
+              ]
+            },
+            "CreateSearchHypernym": {
+              "methods": [
+                "CreateSearchHypernym"
+              ]
+            },
+            "DeleteAnnotation": {
+              "methods": [
+                "DeleteAnnotation"
+              ]
+            },
+            "DeleteAsset": {
+              "methods": [
+                "DeleteAsset"
+              ]
+            },
+            "DeleteCollection": {
+              "methods": [
+                "DeleteCollection"
+              ]
+            },
+            "DeleteCorpus": {
+              "methods": [
+                "DeleteCorpus"
+              ]
+            },
+            "DeleteDataSchema": {
+              "methods": [
+                "DeleteDataSchema"
+              ]
+            },
+            "DeleteIndex": {
+              "methods": [
+                "DeleteIndex"
+              ]
+            },
+            "DeleteIndexEndpoint": {
+              "methods": [
+                "DeleteIndexEndpoint"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteSearchConfig": {
+              "methods": [
+                "DeleteSearchConfig"
+              ]
+            },
+            "DeleteSearchHypernym": {
+              "methods": [
+                "DeleteSearchHypernym"
+              ]
+            },
+            "DeployIndex": {
+              "methods": [
+                "DeployIndex"
+              ]
+            },
+            "GenerateHlsUri": {
+              "methods": [
+                "GenerateHlsUri"
+              ]
+            },
+            "GenerateRetrievalUrl": {
+              "methods": [
+                "GenerateRetrievalUrl"
+              ]
+            },
+            "GetAnnotation": {
+              "methods": [
+                "GetAnnotation"
+              ]
+            },
+            "GetAsset": {
+              "methods": [
+                "GetAsset"
+              ]
+            },
+            "GetCollection": {
+              "methods": [
+                "GetCollection"
+              ]
+            },
+            "GetCorpus": {
+              "methods": [
+                "GetCorpus"
+              ]
+            },
+            "GetDataSchema": {
+              "methods": [
+                "GetDataSchema"
+              ]
+            },
+            "GetIndex": {
+              "methods": [
+                "GetIndex"
+              ]
+            },
+            "GetIndexEndpoint": {
+              "methods": [
+                "GetIndexEndpoint"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSearchConfig": {
+              "methods": [
+                "GetSearchConfig"
+              ]
+            },
+            "GetSearchHypernym": {
+              "methods": [
+                "GetSearchHypernym"
+              ]
+            },
+            "ImportAssets": {
+              "methods": [
+                "ImportAssets"
+              ]
+            },
+            "IndexAsset": {
+              "methods": [
+                "IndexAsset"
+              ]
+            },
+            "IngestAsset": {
+              "methods": [
+                "IngestAsset"
+              ]
+            },
+            "ListAnnotations": {
+              "methods": [
+                "ListAnnotations"
+              ]
+            },
+            "ListAssets": {
+              "methods": [
+                "ListAssets"
+              ]
+            },
+            "ListCollections": {
+              "methods": [
+                "ListCollections"
+              ]
+            },
+            "ListCorpora": {
+              "methods": [
+                "ListCorpora"
+              ]
+            },
+            "ListDataSchemas": {
+              "methods": [
+                "ListDataSchemas"
+              ]
+            },
+            "ListIndexEndpoints": {
+              "methods": [
+                "ListIndexEndpoints"
+              ]
+            },
+            "ListIndexes": {
+              "methods": [
+                "ListIndexes"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListSearchConfigs": {
+              "methods": [
+                "ListSearchConfigs"
+              ]
+            },
+            "ListSearchHypernyms": {
+              "methods": [
+                "ListSearchHypernyms"
+              ]
+            },
+            "RemoveCollectionItem": {
+              "methods": [
+                "RemoveCollectionItem"
+              ]
+            },
+            "RemoveIndexAsset": {
+              "methods": [
+                "RemoveIndexAsset"
+              ]
+            },
+            "SearchAssets": {
+              "methods": [
+                "SearchAssets"
+              ]
+            },
+            "SearchIndexEndpoint": {
+              "methods": [
+                "SearchIndexEndpoint"
+              ]
+            },
+            "UndeployIndex": {
+              "methods": [
+                "UndeployIndex"
+              ]
+            },
+            "UpdateAnnotation": {
+              "methods": [
+                "UpdateAnnotation"
+              ]
+            },
+            "UpdateAsset": {
+              "methods": [
+                "UpdateAsset"
+              ]
+            },
+            "UpdateCollection": {
+              "methods": [
+                "UpdateCollection"
+              ]
+            },
+            "UpdateCorpus": {
+              "methods": [
+                "UpdateCorpus"
+              ]
+            },
+            "UpdateDataSchema": {
+              "methods": [
+                "UpdateDataSchema"
+              ]
+            },
+            "UpdateIndex": {
+              "methods": [
+                "UpdateIndex"
+              ]
+            },
+            "UpdateIndexEndpoint": {
+              "methods": [
+                "UpdateIndexEndpoint"
+              ]
+            },
+            "UpdateSearchConfig": {
+              "methods": [
+                "UpdateSearchConfig"
+              ]
+            },
+            "UpdateSearchHypernym": {
+              "methods": [
+                "UpdateSearchHypernym"
+              ]
+            },
+            "UploadAsset": {
+              "methods": [
+                "UploadAsset"
+              ]
+            },
+            "ViewCollectionItems": {
+              "methods": [
+                "ViewCollectionItems"
+              ]
+            },
+            "ViewIndexedAssets": {
+              "methods": [
+                "ViewIndexedAssets"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

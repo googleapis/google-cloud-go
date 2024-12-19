@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -61,7 +61,7 @@ func ExampleNewNotebookRESTClient() {
 	_ = c
 }
 
-func ExampleNotebookClient_ListInstances() {
+func ExampleNotebookClient_CheckInstanceUpgradability() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -74,42 +74,11 @@ func ExampleNotebookClient_ListInstances() {
 	}
 	defer c.Close()
 
-	req := &notebookspb.ListInstancesRequest{
+	req := &notebookspb.CheckInstanceUpgradabilityRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv2/notebookspb#ListInstancesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv2/notebookspb#CheckInstanceUpgradabilityRequest.
 	}
-	it := c.ListInstances(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleNotebookClient_GetInstance() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := notebooks.NewNotebookClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &notebookspb.GetInstanceRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv2/notebookspb#GetInstanceRequest.
-	}
-	resp, err := c.GetInstance(ctx, req)
+	resp, err := c.CheckInstanceUpgradability(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -135,36 +104,6 @@ func ExampleNotebookClient_CreateInstance() {
 		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv2/notebookspb#CreateInstanceRequest.
 	}
 	op, err := c.CreateInstance(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleNotebookClient_UpdateInstance() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := notebooks.NewNotebookClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &notebookspb.UpdateInstanceRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv2/notebookspb#UpdateInstanceRequest.
-	}
-	op, err := c.UpdateInstance(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -203,6 +142,158 @@ func ExampleNotebookClient_DeleteInstance() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+}
+
+func ExampleNotebookClient_DiagnoseInstance() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := notebooks.NewNotebookClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &notebookspb.DiagnoseInstanceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv2/notebookspb#DiagnoseInstanceRequest.
+	}
+	op, err := c.DiagnoseInstance(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleNotebookClient_GetInstance() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := notebooks.NewNotebookClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &notebookspb.GetInstanceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv2/notebookspb#GetInstanceRequest.
+	}
+	resp, err := c.GetInstance(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleNotebookClient_ListInstances() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := notebooks.NewNotebookClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &notebookspb.ListInstancesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv2/notebookspb#ListInstancesRequest.
+	}
+	it := c.ListInstances(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*notebookspb.ListInstancesResponse)
+	}
+}
+
+func ExampleNotebookClient_ResetInstance() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := notebooks.NewNotebookClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &notebookspb.ResetInstanceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv2/notebookspb#ResetInstanceRequest.
+	}
+	op, err := c.ResetInstance(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleNotebookClient_RollbackInstance() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := notebooks.NewNotebookClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &notebookspb.RollbackInstanceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv2/notebookspb#RollbackInstanceRequest.
+	}
+	op, err := c.RollbackInstance(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleNotebookClient_StartInstance() {
@@ -265,7 +356,7 @@ func ExampleNotebookClient_StopInstance() {
 	_ = resp
 }
 
-func ExampleNotebookClient_ResetInstance() {
+func ExampleNotebookClient_UpdateInstance() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -278,41 +369,16 @@ func ExampleNotebookClient_ResetInstance() {
 	}
 	defer c.Close()
 
-	req := &notebookspb.ResetInstanceRequest{
+	req := &notebookspb.UpdateInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv2/notebookspb#ResetInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv2/notebookspb#UpdateInstanceRequest.
 	}
-	op, err := c.ResetInstance(ctx, req)
+	op, err := c.UpdateInstance(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
 	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleNotebookClient_CheckInstanceUpgradability() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := notebooks.NewNotebookClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &notebookspb.CheckInstanceUpgradabilityRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv2/notebookspb#CheckInstanceUpgradabilityRequest.
-	}
-	resp, err := c.CheckInstanceUpgradability(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -338,66 +404,6 @@ func ExampleNotebookClient_UpgradeInstance() {
 		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv2/notebookspb#UpgradeInstanceRequest.
 	}
 	op, err := c.UpgradeInstance(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleNotebookClient_RollbackInstance() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := notebooks.NewNotebookClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &notebookspb.RollbackInstanceRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv2/notebookspb#RollbackInstanceRequest.
-	}
-	op, err := c.RollbackInstance(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleNotebookClient_DiagnoseInstance() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := notebooks.NewNotebookClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &notebookspb.DiagnoseInstanceRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv2/notebookspb#DiagnoseInstanceRequest.
-	}
-	op, err := c.DiagnoseInstance(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -463,6 +469,12 @@ func ExampleNotebookClient_ListLocations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*locationpb.ListLocationsResponse)
 	}
 }
 
@@ -640,5 +652,11 @@ func ExampleNotebookClient_ListOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
 }

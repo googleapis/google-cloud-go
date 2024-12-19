@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -58,10 +57,13 @@ type PoliciesCallOptions struct {
 func defaultPoliciesGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("iam.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("iam.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("iam.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://iam.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -336,6 +338,8 @@ type policiesGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewPoliciesClient creates a new policies client based on gRPC.
@@ -362,6 +366,7 @@ func NewPoliciesClient(ctx context.Context, opts ...option.ClientOption) (*Polic
 		connPool:         connPool,
 		policiesClient:   iampb.NewPoliciesClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -396,7 +401,9 @@ func (c *policiesGRPCClient) Connection() *grpc.ClientConn {
 func (c *policiesGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -423,6 +430,8 @@ type policiesRESTClient struct {
 
 	// Points back to the CallOptions field of the containing PoliciesClient
 	CallOptions **PoliciesCallOptions
+
+	logger *slog.Logger
 }
 
 // NewPoliciesRESTClient creates a new policies rest client.
@@ -440,6 +449,7 @@ func NewPoliciesRESTClient(ctx context.Context, opts ...option.ClientOption) (*P
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -459,9 +469,12 @@ func NewPoliciesRESTClient(ctx context.Context, opts ...option.ClientOption) (*P
 func defaultPoliciesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://iam.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://iam.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://iam.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://iam.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -471,7 +484,9 @@ func defaultPoliciesRESTClientOptions() []option.ClientOption {
 func (c *policiesRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -508,7 +523,7 @@ func (c *policiesGRPCClient) ListPolicies(ctx context.Context, req *iampb.ListPo
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.policiesClient.ListPolicies(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.policiesClient.ListPolicies, req, settings.GRPC, c.logger, "ListPolicies")
 			return err
 		}, opts...)
 		if err != nil {
@@ -543,7 +558,7 @@ func (c *policiesGRPCClient) GetPolicy(ctx context.Context, req *iampb.GetPolicy
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.policiesClient.GetPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.policiesClient.GetPolicy, req, settings.GRPC, c.logger, "GetPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -561,7 +576,7 @@ func (c *policiesGRPCClient) CreatePolicy(ctx context.Context, req *iampb.Create
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.policiesClient.CreatePolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.policiesClient.CreatePolicy, req, settings.GRPC, c.logger, "CreatePolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -581,7 +596,7 @@ func (c *policiesGRPCClient) UpdatePolicy(ctx context.Context, req *iampb.Update
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.policiesClient.UpdatePolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.policiesClient.UpdatePolicy, req, settings.GRPC, c.logger, "UpdatePolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -601,7 +616,7 @@ func (c *policiesGRPCClient) DeletePolicy(ctx context.Context, req *iampb.Delete
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.policiesClient.DeletePolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.policiesClient.DeletePolicy, req, settings.GRPC, c.logger, "DeletePolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -621,7 +636,7 @@ func (c *policiesGRPCClient) GetOperation(ctx context.Context, req *longrunningp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -679,21 +694,10 @@ func (c *policiesRESTClient) ListPolicies(ctx context.Context, req *iampb.ListPo
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListPolicies")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -756,17 +760,7 @@ func (c *policiesRESTClient) GetPolicy(ctx context.Context, req *iampb.GetPolicy
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetPolicy")
 		if err != nil {
 			return err
 		}
@@ -825,21 +819,10 @@ func (c *policiesRESTClient) CreatePolicy(ctx context.Context, req *iampb.Create
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreatePolicy")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -908,21 +891,10 @@ func (c *policiesRESTClient) UpdatePolicy(ctx context.Context, req *iampb.Update
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdatePolicy")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -975,21 +947,10 @@ func (c *policiesRESTClient) DeletePolicy(ctx context.Context, req *iampb.Delete
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeletePolicy")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1040,17 +1001,7 @@ func (c *policiesRESTClient) GetOperation(ctx context.Context, req *longrunningp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -1065,12 +1016,6 @@ func (c *policiesRESTClient) GetOperation(ctx context.Context, req *longrunningp
 		return nil, e
 	}
 	return resp, nil
-}
-
-// CreatePolicyOperation manages a long-running operation from CreatePolicy.
-type CreatePolicyOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // CreatePolicyOperation returns a new CreatePolicyOperation from a given name.
@@ -1091,70 +1036,6 @@ func (c *policiesRESTClient) CreatePolicyOperation(name string) *CreatePolicyOpe
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreatePolicyOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*iampb.Policy, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp iampb.Policy
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreatePolicyOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*iampb.Policy, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp iampb.Policy
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreatePolicyOperation) Metadata() (*iampb.PolicyOperationMetadata, error) {
-	var meta iampb.PolicyOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreatePolicyOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreatePolicyOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeletePolicyOperation manages a long-running operation from DeletePolicy.
-type DeletePolicyOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // DeletePolicyOperation returns a new DeletePolicyOperation from a given name.
 // The name must be that of a previously created DeletePolicyOperation, possibly from a different process.
 func (c *policiesGRPCClient) DeletePolicyOperation(name string) *DeletePolicyOperation {
@@ -1173,70 +1054,6 @@ func (c *policiesRESTClient) DeletePolicyOperation(name string) *DeletePolicyOpe
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeletePolicyOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*iampb.Policy, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp iampb.Policy
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeletePolicyOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*iampb.Policy, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp iampb.Policy
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeletePolicyOperation) Metadata() (*iampb.PolicyOperationMetadata, error) {
-	var meta iampb.PolicyOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeletePolicyOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeletePolicyOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdatePolicyOperation manages a long-running operation from UpdatePolicy.
-type UpdatePolicyOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdatePolicyOperation returns a new UpdatePolicyOperation from a given name.
 // The name must be that of a previously created UpdatePolicyOperation, possibly from a different process.
 func (c *policiesGRPCClient) UpdatePolicyOperation(name string) *UpdatePolicyOperation {
@@ -1253,109 +1070,4 @@ func (c *policiesRESTClient) UpdatePolicyOperation(name string) *UpdatePolicyOpe
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdatePolicyOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*iampb.Policy, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp iampb.Policy
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdatePolicyOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*iampb.Policy, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp iampb.Policy
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdatePolicyOperation) Metadata() (*iampb.PolicyOperationMetadata, error) {
-	var meta iampb.PolicyOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdatePolicyOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdatePolicyOperation) Name() string {
-	return op.lro.Name()
-}
-
-// PolicyIterator manages a stream of *iampb.Policy.
-type PolicyIterator struct {
-	items    []*iampb.Policy
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*iampb.Policy, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *PolicyIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *PolicyIterator) Next() (*iampb.Policy, error) {
-	var item *iampb.Policy
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *PolicyIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *PolicyIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

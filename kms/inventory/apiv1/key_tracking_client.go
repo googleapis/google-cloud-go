@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package inventory
 import (
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -27,7 +27,6 @@ import (
 
 	inventorypb "cloud.google.com/go/kms/inventory/apiv1/inventorypb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -49,10 +48,13 @@ type KeyTrackingCallOptions struct {
 func defaultKeyTrackingGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("kmsinventory.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("kmsinventory.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("kmsinventory.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://kmsinventory.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -155,6 +157,8 @@ type keyTrackingGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewKeyTrackingClient creates a new key tracking service client based on gRPC.
@@ -182,6 +186,7 @@ func NewKeyTrackingClient(ctx context.Context, opts ...option.ClientOption) (*Ke
 		connPool:          connPool,
 		keyTrackingClient: inventorypb.NewKeyTrackingServiceClient(connPool),
 		CallOptions:       &client.CallOptions,
+		logger:            internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -204,7 +209,9 @@ func (c *keyTrackingGRPCClient) Connection() *grpc.ClientConn {
 func (c *keyTrackingGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -226,6 +233,8 @@ type keyTrackingRESTClient struct {
 
 	// Points back to the CallOptions field of the containing KeyTrackingClient
 	CallOptions **KeyTrackingCallOptions
+
+	logger *slog.Logger
 }
 
 // NewKeyTrackingRESTClient creates a new key tracking service rest client.
@@ -244,6 +253,7 @@ func NewKeyTrackingRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -253,9 +263,12 @@ func NewKeyTrackingRESTClient(ctx context.Context, opts ...option.ClientOption) 
 func defaultKeyTrackingRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://kmsinventory.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://kmsinventory.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://kmsinventory.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://kmsinventory.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -265,7 +278,9 @@ func defaultKeyTrackingRESTClientOptions() []option.ClientOption {
 func (c *keyTrackingRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -291,7 +306,7 @@ func (c *keyTrackingGRPCClient) GetProtectedResourcesSummary(ctx context.Context
 	var resp *inventorypb.ProtectedResourcesSummary
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.keyTrackingClient.GetProtectedResourcesSummary(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.keyTrackingClient.GetProtectedResourcesSummary, req, settings.GRPC, c.logger, "GetProtectedResourcesSummary")
 		return err
 	}, opts...)
 	if err != nil {
@@ -320,7 +335,7 @@ func (c *keyTrackingGRPCClient) SearchProtectedResources(ctx context.Context, re
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.keyTrackingClient.SearchProtectedResources(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.keyTrackingClient.SearchProtectedResources, req, settings.GRPC, c.logger, "SearchProtectedResources")
 			return err
 		}, opts...)
 		if err != nil {
@@ -383,17 +398,7 @@ func (c *keyTrackingRESTClient) GetProtectedResourcesSummary(ctx context.Context
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetProtectedResourcesSummary")
 		if err != nil {
 			return err
 		}
@@ -462,21 +467,10 @@ func (c *keyTrackingRESTClient) SearchProtectedResources(ctx context.Context, re
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "SearchProtectedResources")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -504,51 +498,4 @@ func (c *keyTrackingRESTClient) SearchProtectedResources(ctx context.Context, re
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
-}
-
-// ProtectedResourceIterator manages a stream of *inventorypb.ProtectedResource.
-type ProtectedResourceIterator struct {
-	items    []*inventorypb.ProtectedResource
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*inventorypb.ProtectedResource, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ProtectedResourceIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ProtectedResourceIterator) Next() (*inventorypb.ProtectedResource, error) {
-	var item *inventorypb.ProtectedResource
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ProtectedResourceIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ProtectedResourceIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

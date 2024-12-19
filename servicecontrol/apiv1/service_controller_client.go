@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	servicecontrolpb "cloud.google.com/go/servicecontrol/apiv1/servicecontrolpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -49,10 +48,13 @@ type ServiceControllerCallOptions struct {
 func defaultServiceControllerGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("servicecontrol.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("servicecontrol.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("servicecontrol.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://servicecontrol.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -199,6 +201,8 @@ type serviceControllerGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewServiceControllerClient creates a new service controller client based on gRPC.
@@ -228,6 +232,7 @@ func NewServiceControllerClient(ctx context.Context, opts ...option.ClientOption
 		connPool:                connPool,
 		serviceControllerClient: servicecontrolpb.NewServiceControllerClient(connPool),
 		CallOptions:             &client.CallOptions,
+		logger:                  internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -250,7 +255,9 @@ func (c *serviceControllerGRPCClient) Connection() *grpc.ClientConn {
 func (c *serviceControllerGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -272,6 +279,8 @@ type serviceControllerRESTClient struct {
 
 	// Points back to the CallOptions field of the containing ServiceControllerClient
 	CallOptions **ServiceControllerCallOptions
+
+	logger *slog.Logger
 }
 
 // NewServiceControllerRESTClient creates a new service controller rest client.
@@ -292,6 +301,7 @@ func NewServiceControllerRESTClient(ctx context.Context, opts ...option.ClientOp
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -301,9 +311,12 @@ func NewServiceControllerRESTClient(ctx context.Context, opts ...option.ClientOp
 func defaultServiceControllerRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://servicecontrol.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://servicecontrol.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://servicecontrol.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://servicecontrol.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -313,7 +326,9 @@ func defaultServiceControllerRESTClientOptions() []option.ClientOption {
 func (c *serviceControllerRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -339,7 +354,7 @@ func (c *serviceControllerGRPCClient) Check(ctx context.Context, req *servicecon
 	var resp *servicecontrolpb.CheckResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.serviceControllerClient.Check(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.serviceControllerClient.Check, req, settings.GRPC, c.logger, "Check")
 		return err
 	}, opts...)
 	if err != nil {
@@ -357,7 +372,7 @@ func (c *serviceControllerGRPCClient) Report(ctx context.Context, req *serviceco
 	var resp *servicecontrolpb.ReportResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.serviceControllerClient.Report(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.serviceControllerClient.Report, req, settings.GRPC, c.logger, "Report")
 		return err
 	}, opts...)
 	if err != nil {
@@ -421,17 +436,7 @@ func (c *serviceControllerRESTClient) Check(ctx context.Context, req *servicecon
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "Check")
 		if err != nil {
 			return err
 		}
@@ -501,17 +506,7 @@ func (c *serviceControllerRESTClient) Report(ctx context.Context, req *serviceco
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "Report")
 		if err != nil {
 			return err
 		}

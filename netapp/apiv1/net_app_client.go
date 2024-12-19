@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	netapppb "cloud.google.com/go/netapp/apiv1/netapppb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -53,6 +52,7 @@ type CallOptions struct {
 	GetStoragePool              []gax.CallOption
 	UpdateStoragePool           []gax.CallOption
 	DeleteStoragePool           []gax.CallOption
+	SwitchActiveReplicaZone     []gax.CallOption
 	ListVolumes                 []gax.CallOption
 	GetVolume                   []gax.CallOption
 	CreateVolume                []gax.CallOption
@@ -84,6 +84,23 @@ type CallOptions struct {
 	StopReplication             []gax.CallOption
 	ResumeReplication           []gax.CallOption
 	ReverseReplicationDirection []gax.CallOption
+	EstablishPeering            []gax.CallOption
+	SyncReplication             []gax.CallOption
+	CreateBackupVault           []gax.CallOption
+	GetBackupVault              []gax.CallOption
+	ListBackupVaults            []gax.CallOption
+	UpdateBackupVault           []gax.CallOption
+	DeleteBackupVault           []gax.CallOption
+	CreateBackup                []gax.CallOption
+	GetBackup                   []gax.CallOption
+	ListBackups                 []gax.CallOption
+	DeleteBackup                []gax.CallOption
+	UpdateBackup                []gax.CallOption
+	CreateBackupPolicy          []gax.CallOption
+	GetBackupPolicy             []gax.CallOption
+	ListBackupPolicies          []gax.CallOption
+	UpdateBackupPolicy          []gax.CallOption
+	DeleteBackupPolicy          []gax.CallOption
 	GetLocation                 []gax.CallOption
 	ListLocations               []gax.CallOption
 	CancelOperation             []gax.CallOption
@@ -95,10 +112,13 @@ type CallOptions struct {
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("netapp.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("netapp.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("netapp.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://netapp.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -139,6 +159,7 @@ func defaultCallOptions() *CallOptions {
 		DeleteStoragePool: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		SwitchActiveReplicaZone: []gax.CallOption{},
 		ListVolumes: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -320,6 +341,107 @@ func defaultCallOptions() *CallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		ReverseReplicationDirection: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		EstablishPeering: []gax.CallOption{},
+		SyncReplication:  []gax.CallOption{},
+		CreateBackupVault: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetBackupVault: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListBackupVaults: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateBackupVault: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteBackupVault: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateBackup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetBackup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListBackups: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteBackup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateBackup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateBackupPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetBackupPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListBackupPolicies: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateBackupPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteBackupPolicy: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		GetLocation:     []gax.CallOption{},
@@ -364,6 +486,7 @@ func defaultRESTCallOptions() *CallOptions {
 		DeleteStoragePool: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		SwitchActiveReplicaZone: []gax.CallOption{},
 		ListVolumes: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -537,6 +660,101 @@ func defaultRESTCallOptions() *CallOptions {
 		ReverseReplicationDirection: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		EstablishPeering: []gax.CallOption{},
+		SyncReplication:  []gax.CallOption{},
+		CreateBackupVault: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetBackupVault: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListBackupVaults: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		UpdateBackupVault: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteBackupVault: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateBackup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetBackup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListBackups: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		DeleteBackup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateBackup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateBackupPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetBackupPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListBackupPolicies: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		UpdateBackupPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteBackupPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -559,6 +777,8 @@ type internalClient interface {
 	UpdateStoragePoolOperation(name string) *UpdateStoragePoolOperation
 	DeleteStoragePool(context.Context, *netapppb.DeleteStoragePoolRequest, ...gax.CallOption) (*DeleteStoragePoolOperation, error)
 	DeleteStoragePoolOperation(name string) *DeleteStoragePoolOperation
+	SwitchActiveReplicaZone(context.Context, *netapppb.SwitchActiveReplicaZoneRequest, ...gax.CallOption) (*SwitchActiveReplicaZoneOperation, error)
+	SwitchActiveReplicaZoneOperation(name string) *SwitchActiveReplicaZoneOperation
 	ListVolumes(context.Context, *netapppb.ListVolumesRequest, ...gax.CallOption) *VolumeIterator
 	GetVolume(context.Context, *netapppb.GetVolumeRequest, ...gax.CallOption) (*netapppb.Volume, error)
 	CreateVolume(context.Context, *netapppb.CreateVolumeRequest, ...gax.CallOption) (*CreateVolumeOperation, error)
@@ -610,6 +830,34 @@ type internalClient interface {
 	ResumeReplicationOperation(name string) *ResumeReplicationOperation
 	ReverseReplicationDirection(context.Context, *netapppb.ReverseReplicationDirectionRequest, ...gax.CallOption) (*ReverseReplicationDirectionOperation, error)
 	ReverseReplicationDirectionOperation(name string) *ReverseReplicationDirectionOperation
+	EstablishPeering(context.Context, *netapppb.EstablishPeeringRequest, ...gax.CallOption) (*EstablishPeeringOperation, error)
+	EstablishPeeringOperation(name string) *EstablishPeeringOperation
+	SyncReplication(context.Context, *netapppb.SyncReplicationRequest, ...gax.CallOption) (*SyncReplicationOperation, error)
+	SyncReplicationOperation(name string) *SyncReplicationOperation
+	CreateBackupVault(context.Context, *netapppb.CreateBackupVaultRequest, ...gax.CallOption) (*CreateBackupVaultOperation, error)
+	CreateBackupVaultOperation(name string) *CreateBackupVaultOperation
+	GetBackupVault(context.Context, *netapppb.GetBackupVaultRequest, ...gax.CallOption) (*netapppb.BackupVault, error)
+	ListBackupVaults(context.Context, *netapppb.ListBackupVaultsRequest, ...gax.CallOption) *BackupVaultIterator
+	UpdateBackupVault(context.Context, *netapppb.UpdateBackupVaultRequest, ...gax.CallOption) (*UpdateBackupVaultOperation, error)
+	UpdateBackupVaultOperation(name string) *UpdateBackupVaultOperation
+	DeleteBackupVault(context.Context, *netapppb.DeleteBackupVaultRequest, ...gax.CallOption) (*DeleteBackupVaultOperation, error)
+	DeleteBackupVaultOperation(name string) *DeleteBackupVaultOperation
+	CreateBackup(context.Context, *netapppb.CreateBackupRequest, ...gax.CallOption) (*CreateBackupOperation, error)
+	CreateBackupOperation(name string) *CreateBackupOperation
+	GetBackup(context.Context, *netapppb.GetBackupRequest, ...gax.CallOption) (*netapppb.Backup, error)
+	ListBackups(context.Context, *netapppb.ListBackupsRequest, ...gax.CallOption) *BackupIterator
+	DeleteBackup(context.Context, *netapppb.DeleteBackupRequest, ...gax.CallOption) (*DeleteBackupOperation, error)
+	DeleteBackupOperation(name string) *DeleteBackupOperation
+	UpdateBackup(context.Context, *netapppb.UpdateBackupRequest, ...gax.CallOption) (*UpdateBackupOperation, error)
+	UpdateBackupOperation(name string) *UpdateBackupOperation
+	CreateBackupPolicy(context.Context, *netapppb.CreateBackupPolicyRequest, ...gax.CallOption) (*CreateBackupPolicyOperation, error)
+	CreateBackupPolicyOperation(name string) *CreateBackupPolicyOperation
+	GetBackupPolicy(context.Context, *netapppb.GetBackupPolicyRequest, ...gax.CallOption) (*netapppb.BackupPolicy, error)
+	ListBackupPolicies(context.Context, *netapppb.ListBackupPoliciesRequest, ...gax.CallOption) *BackupPolicyIterator
+	UpdateBackupPolicy(context.Context, *netapppb.UpdateBackupPolicyRequest, ...gax.CallOption) (*UpdateBackupPolicyOperation, error)
+	UpdateBackupPolicyOperation(name string) *UpdateBackupPolicyOperation
+	DeleteBackupPolicy(context.Context, *netapppb.DeleteBackupPolicyRequest, ...gax.CallOption) (*DeleteBackupPolicyOperation, error)
+	DeleteBackupPolicyOperation(name string) *DeleteBackupPolicyOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -699,6 +947,18 @@ func (c *Client) DeleteStoragePool(ctx context.Context, req *netapppb.DeleteStor
 // The name must be that of a previously created DeleteStoragePoolOperation, possibly from a different process.
 func (c *Client) DeleteStoragePoolOperation(name string) *DeleteStoragePoolOperation {
 	return c.internalClient.DeleteStoragePoolOperation(name)
+}
+
+// SwitchActiveReplicaZone this operation will switch the active/replica zone for a regional
+// storagePool.
+func (c *Client) SwitchActiveReplicaZone(ctx context.Context, req *netapppb.SwitchActiveReplicaZoneRequest, opts ...gax.CallOption) (*SwitchActiveReplicaZoneOperation, error) {
+	return c.internalClient.SwitchActiveReplicaZone(ctx, req, opts...)
+}
+
+// SwitchActiveReplicaZoneOperation returns a new SwitchActiveReplicaZoneOperation from a given name.
+// The name must be that of a previously created SwitchActiveReplicaZoneOperation, possibly from a different process.
+func (c *Client) SwitchActiveReplicaZoneOperation(name string) *SwitchActiveReplicaZoneOperation {
+	return c.internalClient.SwitchActiveReplicaZoneOperation(name)
 }
 
 // ListVolumes lists Volumes in a given project.
@@ -981,6 +1241,161 @@ func (c *Client) ReverseReplicationDirectionOperation(name string) *ReverseRepli
 	return c.internalClient.ReverseReplicationDirectionOperation(name)
 }
 
+// EstablishPeering establish replication peering.
+func (c *Client) EstablishPeering(ctx context.Context, req *netapppb.EstablishPeeringRequest, opts ...gax.CallOption) (*EstablishPeeringOperation, error) {
+	return c.internalClient.EstablishPeering(ctx, req, opts...)
+}
+
+// EstablishPeeringOperation returns a new EstablishPeeringOperation from a given name.
+// The name must be that of a previously created EstablishPeeringOperation, possibly from a different process.
+func (c *Client) EstablishPeeringOperation(name string) *EstablishPeeringOperation {
+	return c.internalClient.EstablishPeeringOperation(name)
+}
+
+// SyncReplication syncs the replication. This will invoke one time volume data transfer from
+// source to destination.
+func (c *Client) SyncReplication(ctx context.Context, req *netapppb.SyncReplicationRequest, opts ...gax.CallOption) (*SyncReplicationOperation, error) {
+	return c.internalClient.SyncReplication(ctx, req, opts...)
+}
+
+// SyncReplicationOperation returns a new SyncReplicationOperation from a given name.
+// The name must be that of a previously created SyncReplicationOperation, possibly from a different process.
+func (c *Client) SyncReplicationOperation(name string) *SyncReplicationOperation {
+	return c.internalClient.SyncReplicationOperation(name)
+}
+
+// CreateBackupVault creates new backup vault
+func (c *Client) CreateBackupVault(ctx context.Context, req *netapppb.CreateBackupVaultRequest, opts ...gax.CallOption) (*CreateBackupVaultOperation, error) {
+	return c.internalClient.CreateBackupVault(ctx, req, opts...)
+}
+
+// CreateBackupVaultOperation returns a new CreateBackupVaultOperation from a given name.
+// The name must be that of a previously created CreateBackupVaultOperation, possibly from a different process.
+func (c *Client) CreateBackupVaultOperation(name string) *CreateBackupVaultOperation {
+	return c.internalClient.CreateBackupVaultOperation(name)
+}
+
+// GetBackupVault returns the description of the specified backup vault
+func (c *Client) GetBackupVault(ctx context.Context, req *netapppb.GetBackupVaultRequest, opts ...gax.CallOption) (*netapppb.BackupVault, error) {
+	return c.internalClient.GetBackupVault(ctx, req, opts...)
+}
+
+// ListBackupVaults returns list of all available backup vaults.
+func (c *Client) ListBackupVaults(ctx context.Context, req *netapppb.ListBackupVaultsRequest, opts ...gax.CallOption) *BackupVaultIterator {
+	return c.internalClient.ListBackupVaults(ctx, req, opts...)
+}
+
+// UpdateBackupVault updates the settings of a specific backup vault.
+func (c *Client) UpdateBackupVault(ctx context.Context, req *netapppb.UpdateBackupVaultRequest, opts ...gax.CallOption) (*UpdateBackupVaultOperation, error) {
+	return c.internalClient.UpdateBackupVault(ctx, req, opts...)
+}
+
+// UpdateBackupVaultOperation returns a new UpdateBackupVaultOperation from a given name.
+// The name must be that of a previously created UpdateBackupVaultOperation, possibly from a different process.
+func (c *Client) UpdateBackupVaultOperation(name string) *UpdateBackupVaultOperation {
+	return c.internalClient.UpdateBackupVaultOperation(name)
+}
+
+// DeleteBackupVault warning! This operation will permanently delete the backup vault.
+func (c *Client) DeleteBackupVault(ctx context.Context, req *netapppb.DeleteBackupVaultRequest, opts ...gax.CallOption) (*DeleteBackupVaultOperation, error) {
+	return c.internalClient.DeleteBackupVault(ctx, req, opts...)
+}
+
+// DeleteBackupVaultOperation returns a new DeleteBackupVaultOperation from a given name.
+// The name must be that of a previously created DeleteBackupVaultOperation, possibly from a different process.
+func (c *Client) DeleteBackupVaultOperation(name string) *DeleteBackupVaultOperation {
+	return c.internalClient.DeleteBackupVaultOperation(name)
+}
+
+// CreateBackup creates a backup from the volume specified in the request
+// The backup can be created from the given snapshot if specified in the
+// request. If no snapshot specified, there’ll be a new snapshot taken to
+// initiate the backup creation.
+func (c *Client) CreateBackup(ctx context.Context, req *netapppb.CreateBackupRequest, opts ...gax.CallOption) (*CreateBackupOperation, error) {
+	return c.internalClient.CreateBackup(ctx, req, opts...)
+}
+
+// CreateBackupOperation returns a new CreateBackupOperation from a given name.
+// The name must be that of a previously created CreateBackupOperation, possibly from a different process.
+func (c *Client) CreateBackupOperation(name string) *CreateBackupOperation {
+	return c.internalClient.CreateBackupOperation(name)
+}
+
+// GetBackup returns the description of the specified backup
+func (c *Client) GetBackup(ctx context.Context, req *netapppb.GetBackupRequest, opts ...gax.CallOption) (*netapppb.Backup, error) {
+	return c.internalClient.GetBackup(ctx, req, opts...)
+}
+
+// ListBackups returns descriptions of all backups for a backupVault.
+func (c *Client) ListBackups(ctx context.Context, req *netapppb.ListBackupsRequest, opts ...gax.CallOption) *BackupIterator {
+	return c.internalClient.ListBackups(ctx, req, opts...)
+}
+
+// DeleteBackup warning! This operation will permanently delete the backup.
+func (c *Client) DeleteBackup(ctx context.Context, req *netapppb.DeleteBackupRequest, opts ...gax.CallOption) (*DeleteBackupOperation, error) {
+	return c.internalClient.DeleteBackup(ctx, req, opts...)
+}
+
+// DeleteBackupOperation returns a new DeleteBackupOperation from a given name.
+// The name must be that of a previously created DeleteBackupOperation, possibly from a different process.
+func (c *Client) DeleteBackupOperation(name string) *DeleteBackupOperation {
+	return c.internalClient.DeleteBackupOperation(name)
+}
+
+// UpdateBackup update backup with full spec.
+func (c *Client) UpdateBackup(ctx context.Context, req *netapppb.UpdateBackupRequest, opts ...gax.CallOption) (*UpdateBackupOperation, error) {
+	return c.internalClient.UpdateBackup(ctx, req, opts...)
+}
+
+// UpdateBackupOperation returns a new UpdateBackupOperation from a given name.
+// The name must be that of a previously created UpdateBackupOperation, possibly from a different process.
+func (c *Client) UpdateBackupOperation(name string) *UpdateBackupOperation {
+	return c.internalClient.UpdateBackupOperation(name)
+}
+
+// CreateBackupPolicy creates new backup policy
+func (c *Client) CreateBackupPolicy(ctx context.Context, req *netapppb.CreateBackupPolicyRequest, opts ...gax.CallOption) (*CreateBackupPolicyOperation, error) {
+	return c.internalClient.CreateBackupPolicy(ctx, req, opts...)
+}
+
+// CreateBackupPolicyOperation returns a new CreateBackupPolicyOperation from a given name.
+// The name must be that of a previously created CreateBackupPolicyOperation, possibly from a different process.
+func (c *Client) CreateBackupPolicyOperation(name string) *CreateBackupPolicyOperation {
+	return c.internalClient.CreateBackupPolicyOperation(name)
+}
+
+// GetBackupPolicy returns the description of the specified backup policy by backup_policy_id.
+func (c *Client) GetBackupPolicy(ctx context.Context, req *netapppb.GetBackupPolicyRequest, opts ...gax.CallOption) (*netapppb.BackupPolicy, error) {
+	return c.internalClient.GetBackupPolicy(ctx, req, opts...)
+}
+
+// ListBackupPolicies returns list of all available backup policies.
+func (c *Client) ListBackupPolicies(ctx context.Context, req *netapppb.ListBackupPoliciesRequest, opts ...gax.CallOption) *BackupPolicyIterator {
+	return c.internalClient.ListBackupPolicies(ctx, req, opts...)
+}
+
+// UpdateBackupPolicy updates settings of a specific backup policy.
+func (c *Client) UpdateBackupPolicy(ctx context.Context, req *netapppb.UpdateBackupPolicyRequest, opts ...gax.CallOption) (*UpdateBackupPolicyOperation, error) {
+	return c.internalClient.UpdateBackupPolicy(ctx, req, opts...)
+}
+
+// UpdateBackupPolicyOperation returns a new UpdateBackupPolicyOperation from a given name.
+// The name must be that of a previously created UpdateBackupPolicyOperation, possibly from a different process.
+func (c *Client) UpdateBackupPolicyOperation(name string) *UpdateBackupPolicyOperation {
+	return c.internalClient.UpdateBackupPolicyOperation(name)
+}
+
+// DeleteBackupPolicy warning! This operation will permanently delete the backup policy.
+func (c *Client) DeleteBackupPolicy(ctx context.Context, req *netapppb.DeleteBackupPolicyRequest, opts ...gax.CallOption) (*DeleteBackupPolicyOperation, error) {
+	return c.internalClient.DeleteBackupPolicy(ctx, req, opts...)
+}
+
+// DeleteBackupPolicyOperation returns a new DeleteBackupPolicyOperation from a given name.
+// The name must be that of a previously created DeleteBackupPolicyOperation, possibly from a different process.
+func (c *Client) DeleteBackupPolicyOperation(name string) *DeleteBackupPolicyOperation {
+	return c.internalClient.DeleteBackupPolicyOperation(name)
+}
+
 // GetLocation gets information about a location.
 func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
@@ -1035,6 +1450,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new net app client based on gRPC.
@@ -1061,6 +1478,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:         connPool,
 		client:           netapppb.NewNetAppClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
@@ -1096,7 +1514,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1123,6 +1543,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new net app rest client.
@@ -1140,6 +1562,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -1159,9 +1582,12 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 func defaultRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://netapp.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://netapp.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://netapp.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://netapp.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -1171,7 +1597,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1208,7 +1636,7 @@ func (c *gRPCClient) ListStoragePools(ctx context.Context, req *netapppb.ListSto
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListStoragePools(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListStoragePools, req, settings.GRPC, c.logger, "ListStoragePools")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1243,7 +1671,7 @@ func (c *gRPCClient) CreateStoragePool(ctx context.Context, req *netapppb.Create
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateStoragePool(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateStoragePool, req, settings.GRPC, c.logger, "CreateStoragePool")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1263,7 +1691,7 @@ func (c *gRPCClient) GetStoragePool(ctx context.Context, req *netapppb.GetStorag
 	var resp *netapppb.StoragePool
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetStoragePool(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetStoragePool, req, settings.GRPC, c.logger, "GetStoragePool")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1281,7 +1709,7 @@ func (c *gRPCClient) UpdateStoragePool(ctx context.Context, req *netapppb.Update
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateStoragePool(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateStoragePool, req, settings.GRPC, c.logger, "UpdateStoragePool")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1301,13 +1729,33 @@ func (c *gRPCClient) DeleteStoragePool(ctx context.Context, req *netapppb.Delete
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteStoragePool(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteStoragePool, req, settings.GRPC, c.logger, "DeleteStoragePool")
 		return err
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return &DeleteStoragePoolOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) SwitchActiveReplicaZone(ctx context.Context, req *netapppb.SwitchActiveReplicaZoneRequest, opts ...gax.CallOption) (*SwitchActiveReplicaZoneOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).SwitchActiveReplicaZone[0:len((*c.CallOptions).SwitchActiveReplicaZone):len((*c.CallOptions).SwitchActiveReplicaZone)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.SwitchActiveReplicaZone, req, settings.GRPC, c.logger, "SwitchActiveReplicaZone")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &SwitchActiveReplicaZoneOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -1332,7 +1780,7 @@ func (c *gRPCClient) ListVolumes(ctx context.Context, req *netapppb.ListVolumesR
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListVolumes(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListVolumes, req, settings.GRPC, c.logger, "ListVolumes")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1367,7 +1815,7 @@ func (c *gRPCClient) GetVolume(ctx context.Context, req *netapppb.GetVolumeReque
 	var resp *netapppb.Volume
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetVolume(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetVolume, req, settings.GRPC, c.logger, "GetVolume")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1385,7 +1833,7 @@ func (c *gRPCClient) CreateVolume(ctx context.Context, req *netapppb.CreateVolum
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateVolume(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateVolume, req, settings.GRPC, c.logger, "CreateVolume")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1405,7 +1853,7 @@ func (c *gRPCClient) UpdateVolume(ctx context.Context, req *netapppb.UpdateVolum
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateVolume(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateVolume, req, settings.GRPC, c.logger, "UpdateVolume")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1425,7 +1873,7 @@ func (c *gRPCClient) DeleteVolume(ctx context.Context, req *netapppb.DeleteVolum
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteVolume(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteVolume, req, settings.GRPC, c.logger, "DeleteVolume")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1445,7 +1893,7 @@ func (c *gRPCClient) RevertVolume(ctx context.Context, req *netapppb.RevertVolum
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.RevertVolume(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.RevertVolume, req, settings.GRPC, c.logger, "RevertVolume")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1476,7 +1924,7 @@ func (c *gRPCClient) ListSnapshots(ctx context.Context, req *netapppb.ListSnapsh
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListSnapshots(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListSnapshots, req, settings.GRPC, c.logger, "ListSnapshots")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1511,7 +1959,7 @@ func (c *gRPCClient) GetSnapshot(ctx context.Context, req *netapppb.GetSnapshotR
 	var resp *netapppb.Snapshot
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetSnapshot(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetSnapshot, req, settings.GRPC, c.logger, "GetSnapshot")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1529,7 +1977,7 @@ func (c *gRPCClient) CreateSnapshot(ctx context.Context, req *netapppb.CreateSna
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateSnapshot(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateSnapshot, req, settings.GRPC, c.logger, "CreateSnapshot")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1549,7 +1997,7 @@ func (c *gRPCClient) DeleteSnapshot(ctx context.Context, req *netapppb.DeleteSna
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteSnapshot(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteSnapshot, req, settings.GRPC, c.logger, "DeleteSnapshot")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1569,7 +2017,7 @@ func (c *gRPCClient) UpdateSnapshot(ctx context.Context, req *netapppb.UpdateSna
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateSnapshot(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateSnapshot, req, settings.GRPC, c.logger, "UpdateSnapshot")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1600,7 +2048,7 @@ func (c *gRPCClient) ListActiveDirectories(ctx context.Context, req *netapppb.Li
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListActiveDirectories(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListActiveDirectories, req, settings.GRPC, c.logger, "ListActiveDirectories")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1635,7 +2083,7 @@ func (c *gRPCClient) GetActiveDirectory(ctx context.Context, req *netapppb.GetAc
 	var resp *netapppb.ActiveDirectory
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetActiveDirectory(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetActiveDirectory, req, settings.GRPC, c.logger, "GetActiveDirectory")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1653,7 +2101,7 @@ func (c *gRPCClient) CreateActiveDirectory(ctx context.Context, req *netapppb.Cr
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateActiveDirectory(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateActiveDirectory, req, settings.GRPC, c.logger, "CreateActiveDirectory")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1673,7 +2121,7 @@ func (c *gRPCClient) UpdateActiveDirectory(ctx context.Context, req *netapppb.Up
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateActiveDirectory(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateActiveDirectory, req, settings.GRPC, c.logger, "UpdateActiveDirectory")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1693,7 +2141,7 @@ func (c *gRPCClient) DeleteActiveDirectory(ctx context.Context, req *netapppb.De
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteActiveDirectory(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteActiveDirectory, req, settings.GRPC, c.logger, "DeleteActiveDirectory")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1724,7 +2172,7 @@ func (c *gRPCClient) ListKmsConfigs(ctx context.Context, req *netapppb.ListKmsCo
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListKmsConfigs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListKmsConfigs, req, settings.GRPC, c.logger, "ListKmsConfigs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1759,7 +2207,7 @@ func (c *gRPCClient) CreateKmsConfig(ctx context.Context, req *netapppb.CreateKm
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateKmsConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateKmsConfig, req, settings.GRPC, c.logger, "CreateKmsConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1779,7 +2227,7 @@ func (c *gRPCClient) GetKmsConfig(ctx context.Context, req *netapppb.GetKmsConfi
 	var resp *netapppb.KmsConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetKmsConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetKmsConfig, req, settings.GRPC, c.logger, "GetKmsConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1797,7 +2245,7 @@ func (c *gRPCClient) UpdateKmsConfig(ctx context.Context, req *netapppb.UpdateKm
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateKmsConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateKmsConfig, req, settings.GRPC, c.logger, "UpdateKmsConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1817,7 +2265,7 @@ func (c *gRPCClient) EncryptVolumes(ctx context.Context, req *netapppb.EncryptVo
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.EncryptVolumes(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.EncryptVolumes, req, settings.GRPC, c.logger, "EncryptVolumes")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1837,7 +2285,7 @@ func (c *gRPCClient) VerifyKmsConfig(ctx context.Context, req *netapppb.VerifyKm
 	var resp *netapppb.VerifyKmsConfigResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.VerifyKmsConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.VerifyKmsConfig, req, settings.GRPC, c.logger, "VerifyKmsConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1855,7 +2303,7 @@ func (c *gRPCClient) DeleteKmsConfig(ctx context.Context, req *netapppb.DeleteKm
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteKmsConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteKmsConfig, req, settings.GRPC, c.logger, "DeleteKmsConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1886,7 +2334,7 @@ func (c *gRPCClient) ListReplications(ctx context.Context, req *netapppb.ListRep
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListReplications(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListReplications, req, settings.GRPC, c.logger, "ListReplications")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1921,7 +2369,7 @@ func (c *gRPCClient) GetReplication(ctx context.Context, req *netapppb.GetReplic
 	var resp *netapppb.Replication
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetReplication(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetReplication, req, settings.GRPC, c.logger, "GetReplication")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1939,7 +2387,7 @@ func (c *gRPCClient) CreateReplication(ctx context.Context, req *netapppb.Create
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateReplication(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateReplication, req, settings.GRPC, c.logger, "CreateReplication")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1959,7 +2407,7 @@ func (c *gRPCClient) DeleteReplication(ctx context.Context, req *netapppb.Delete
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteReplication(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteReplication, req, settings.GRPC, c.logger, "DeleteReplication")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1979,7 +2427,7 @@ func (c *gRPCClient) UpdateReplication(ctx context.Context, req *netapppb.Update
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateReplication(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateReplication, req, settings.GRPC, c.logger, "UpdateReplication")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1999,7 +2447,7 @@ func (c *gRPCClient) StopReplication(ctx context.Context, req *netapppb.StopRepl
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.StopReplication(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.StopReplication, req, settings.GRPC, c.logger, "StopReplication")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2019,7 +2467,7 @@ func (c *gRPCClient) ResumeReplication(ctx context.Context, req *netapppb.Resume
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ResumeReplication(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ResumeReplication, req, settings.GRPC, c.logger, "ResumeReplication")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2039,13 +2487,425 @@ func (c *gRPCClient) ReverseReplicationDirection(ctx context.Context, req *netap
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ReverseReplicationDirection(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ReverseReplicationDirection, req, settings.GRPC, c.logger, "ReverseReplicationDirection")
 		return err
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return &ReverseReplicationDirectionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) EstablishPeering(ctx context.Context, req *netapppb.EstablishPeeringRequest, opts ...gax.CallOption) (*EstablishPeeringOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).EstablishPeering[0:len((*c.CallOptions).EstablishPeering):len((*c.CallOptions).EstablishPeering)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.EstablishPeering, req, settings.GRPC, c.logger, "EstablishPeering")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &EstablishPeeringOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) SyncReplication(ctx context.Context, req *netapppb.SyncReplicationRequest, opts ...gax.CallOption) (*SyncReplicationOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).SyncReplication[0:len((*c.CallOptions).SyncReplication):len((*c.CallOptions).SyncReplication)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.SyncReplication, req, settings.GRPC, c.logger, "SyncReplication")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &SyncReplicationOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) CreateBackupVault(ctx context.Context, req *netapppb.CreateBackupVaultRequest, opts ...gax.CallOption) (*CreateBackupVaultOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateBackupVault[0:len((*c.CallOptions).CreateBackupVault):len((*c.CallOptions).CreateBackupVault)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateBackupVault, req, settings.GRPC, c.logger, "CreateBackupVault")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateBackupVaultOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) GetBackupVault(ctx context.Context, req *netapppb.GetBackupVaultRequest, opts ...gax.CallOption) (*netapppb.BackupVault, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetBackupVault[0:len((*c.CallOptions).GetBackupVault):len((*c.CallOptions).GetBackupVault)], opts...)
+	var resp *netapppb.BackupVault
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetBackupVault, req, settings.GRPC, c.logger, "GetBackupVault")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListBackupVaults(ctx context.Context, req *netapppb.ListBackupVaultsRequest, opts ...gax.CallOption) *BackupVaultIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListBackupVaults[0:len((*c.CallOptions).ListBackupVaults):len((*c.CallOptions).ListBackupVaults)], opts...)
+	it := &BackupVaultIterator{}
+	req = proto.Clone(req).(*netapppb.ListBackupVaultsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.BackupVault, string, error) {
+		resp := &netapppb.ListBackupVaultsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListBackupVaults, req, settings.GRPC, c.logger, "ListBackupVaults")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetBackupVaults(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) UpdateBackupVault(ctx context.Context, req *netapppb.UpdateBackupVaultRequest, opts ...gax.CallOption) (*UpdateBackupVaultOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "backup_vault.name", url.QueryEscape(req.GetBackupVault().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateBackupVault[0:len((*c.CallOptions).UpdateBackupVault):len((*c.CallOptions).UpdateBackupVault)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateBackupVault, req, settings.GRPC, c.logger, "UpdateBackupVault")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateBackupVaultOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeleteBackupVault(ctx context.Context, req *netapppb.DeleteBackupVaultRequest, opts ...gax.CallOption) (*DeleteBackupVaultOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteBackupVault[0:len((*c.CallOptions).DeleteBackupVault):len((*c.CallOptions).DeleteBackupVault)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteBackupVault, req, settings.GRPC, c.logger, "DeleteBackupVault")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteBackupVaultOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) CreateBackup(ctx context.Context, req *netapppb.CreateBackupRequest, opts ...gax.CallOption) (*CreateBackupOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateBackup[0:len((*c.CallOptions).CreateBackup):len((*c.CallOptions).CreateBackup)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateBackup, req, settings.GRPC, c.logger, "CreateBackup")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateBackupOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) GetBackup(ctx context.Context, req *netapppb.GetBackupRequest, opts ...gax.CallOption) (*netapppb.Backup, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetBackup[0:len((*c.CallOptions).GetBackup):len((*c.CallOptions).GetBackup)], opts...)
+	var resp *netapppb.Backup
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetBackup, req, settings.GRPC, c.logger, "GetBackup")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListBackups(ctx context.Context, req *netapppb.ListBackupsRequest, opts ...gax.CallOption) *BackupIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListBackups[0:len((*c.CallOptions).ListBackups):len((*c.CallOptions).ListBackups)], opts...)
+	it := &BackupIterator{}
+	req = proto.Clone(req).(*netapppb.ListBackupsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.Backup, string, error) {
+		resp := &netapppb.ListBackupsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListBackups, req, settings.GRPC, c.logger, "ListBackups")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetBackups(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) DeleteBackup(ctx context.Context, req *netapppb.DeleteBackupRequest, opts ...gax.CallOption) (*DeleteBackupOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteBackup[0:len((*c.CallOptions).DeleteBackup):len((*c.CallOptions).DeleteBackup)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteBackup, req, settings.GRPC, c.logger, "DeleteBackup")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteBackupOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) UpdateBackup(ctx context.Context, req *netapppb.UpdateBackupRequest, opts ...gax.CallOption) (*UpdateBackupOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "backup.name", url.QueryEscape(req.GetBackup().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateBackup[0:len((*c.CallOptions).UpdateBackup):len((*c.CallOptions).UpdateBackup)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateBackup, req, settings.GRPC, c.logger, "UpdateBackup")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateBackupOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) CreateBackupPolicy(ctx context.Context, req *netapppb.CreateBackupPolicyRequest, opts ...gax.CallOption) (*CreateBackupPolicyOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateBackupPolicy[0:len((*c.CallOptions).CreateBackupPolicy):len((*c.CallOptions).CreateBackupPolicy)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateBackupPolicy, req, settings.GRPC, c.logger, "CreateBackupPolicy")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateBackupPolicyOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) GetBackupPolicy(ctx context.Context, req *netapppb.GetBackupPolicyRequest, opts ...gax.CallOption) (*netapppb.BackupPolicy, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetBackupPolicy[0:len((*c.CallOptions).GetBackupPolicy):len((*c.CallOptions).GetBackupPolicy)], opts...)
+	var resp *netapppb.BackupPolicy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetBackupPolicy, req, settings.GRPC, c.logger, "GetBackupPolicy")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListBackupPolicies(ctx context.Context, req *netapppb.ListBackupPoliciesRequest, opts ...gax.CallOption) *BackupPolicyIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListBackupPolicies[0:len((*c.CallOptions).ListBackupPolicies):len((*c.CallOptions).ListBackupPolicies)], opts...)
+	it := &BackupPolicyIterator{}
+	req = proto.Clone(req).(*netapppb.ListBackupPoliciesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.BackupPolicy, string, error) {
+		resp := &netapppb.ListBackupPoliciesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListBackupPolicies, req, settings.GRPC, c.logger, "ListBackupPolicies")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetBackupPolicies(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) UpdateBackupPolicy(ctx context.Context, req *netapppb.UpdateBackupPolicyRequest, opts ...gax.CallOption) (*UpdateBackupPolicyOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "backup_policy.name", url.QueryEscape(req.GetBackupPolicy().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateBackupPolicy[0:len((*c.CallOptions).UpdateBackupPolicy):len((*c.CallOptions).UpdateBackupPolicy)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateBackupPolicy, req, settings.GRPC, c.logger, "UpdateBackupPolicy")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateBackupPolicyOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeleteBackupPolicy(ctx context.Context, req *netapppb.DeleteBackupPolicyRequest, opts ...gax.CallOption) (*DeleteBackupPolicyOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteBackupPolicy[0:len((*c.CallOptions).DeleteBackupPolicy):len((*c.CallOptions).DeleteBackupPolicy)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteBackupPolicy, req, settings.GRPC, c.logger, "DeleteBackupPolicy")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteBackupPolicyOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -2059,7 +2919,7 @@ func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2088,7 +2948,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2122,7 +2982,7 @@ func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -2136,7 +2996,7 @@ func (c *gRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -2151,7 +3011,7 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2180,7 +3040,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2257,21 +3117,10 @@ func (c *restClient) ListStoragePools(ctx context.Context, req *netapppb.ListSto
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListStoragePools")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2341,21 +3190,10 @@ func (c *restClient) CreateStoragePool(ctx context.Context, req *netapppb.Create
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateStoragePool")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2406,17 +3244,7 @@ func (c *restClient) GetStoragePool(ctx context.Context, req *netapppb.GetStorag
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetStoragePool")
 		if err != nil {
 			return err
 		}
@@ -2451,11 +3279,11 @@ func (c *restClient) UpdateStoragePool(ctx context.Context, req *netapppb.Update
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2479,21 +3307,10 @@ func (c *restClient) UpdateStoragePool(ctx context.Context, req *netapppb.Update
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateStoragePool")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2543,21 +3360,10 @@ func (c *restClient) DeleteStoragePool(ctx context.Context, req *netapppb.Delete
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteStoragePool")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2570,6 +3376,66 @@ func (c *restClient) DeleteStoragePool(ctx context.Context, req *netapppb.Delete
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
 	return &DeleteStoragePoolOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// SwitchActiveReplicaZone this operation will switch the active/replica zone for a regional
+// storagePool.
+func (c *restClient) SwitchActiveReplicaZone(ctx context.Context, req *netapppb.SwitchActiveReplicaZoneRequest, opts ...gax.CallOption) (*SwitchActiveReplicaZoneOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:switch", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SwitchActiveReplicaZone")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &SwitchActiveReplicaZoneOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
@@ -2626,21 +3492,10 @@ func (c *restClient) ListVolumes(ctx context.Context, req *netapppb.ListVolumesR
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListVolumes")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2703,17 +3558,7 @@ func (c *restClient) GetVolume(ctx context.Context, req *netapppb.GetVolumeReque
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetVolume")
 		if err != nil {
 			return err
 		}
@@ -2770,21 +3615,10 @@ func (c *restClient) CreateVolume(ctx context.Context, req *netapppb.CreateVolum
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateVolume")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2820,11 +3654,11 @@ func (c *restClient) UpdateVolume(ctx context.Context, req *netapppb.UpdateVolum
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2848,21 +3682,10 @@ func (c *restClient) UpdateVolume(ctx context.Context, req *netapppb.UpdateVolum
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateVolume")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2915,21 +3738,10 @@ func (c *restClient) DeleteVolume(ctx context.Context, req *netapppb.DeleteVolum
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteVolume")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2987,21 +3799,10 @@ func (c *restClient) RevertVolume(ctx context.Context, req *netapppb.RevertVolum
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RevertVolume")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3070,21 +3871,10 @@ func (c *restClient) ListSnapshots(ctx context.Context, req *netapppb.ListSnapsh
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSnapshots")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3147,17 +3937,7 @@ func (c *restClient) GetSnapshot(ctx context.Context, req *netapppb.GetSnapshotR
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSnapshot")
 		if err != nil {
 			return err
 		}
@@ -3214,21 +3994,10 @@ func (c *restClient) CreateSnapshot(ctx context.Context, req *netapppb.CreateSna
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateSnapshot")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3278,21 +4047,10 @@ func (c *restClient) DeleteSnapshot(ctx context.Context, req *netapppb.DeleteSna
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteSnapshot")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3328,11 +4086,11 @@ func (c *restClient) UpdateSnapshot(ctx context.Context, req *netapppb.UpdateSna
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3356,21 +4114,10 @@ func (c *restClient) UpdateSnapshot(ctx context.Context, req *netapppb.UpdateSna
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateSnapshot")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3439,21 +4186,10 @@ func (c *restClient) ListActiveDirectories(ctx context.Context, req *netapppb.Li
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListActiveDirectories")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3516,17 +4252,7 @@ func (c *restClient) GetActiveDirectory(ctx context.Context, req *netapppb.GetAc
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetActiveDirectory")
 		if err != nil {
 			return err
 		}
@@ -3584,21 +4310,10 @@ func (c *restClient) CreateActiveDirectory(ctx context.Context, req *netapppb.Cr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateActiveDirectory")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3634,11 +4349,11 @@ func (c *restClient) UpdateActiveDirectory(ctx context.Context, req *netapppb.Up
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3662,21 +4377,10 @@ func (c *restClient) UpdateActiveDirectory(ctx context.Context, req *netapppb.Up
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateActiveDirectory")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3726,21 +4430,10 @@ func (c *restClient) DeleteActiveDirectory(ctx context.Context, req *netapppb.De
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteActiveDirectory")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3809,21 +4502,10 @@ func (c *restClient) ListKmsConfigs(ctx context.Context, req *netapppb.ListKmsCo
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListKmsConfigs")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3893,21 +4575,10 @@ func (c *restClient) CreateKmsConfig(ctx context.Context, req *netapppb.CreateKm
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateKmsConfig")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3958,17 +4629,7 @@ func (c *restClient) GetKmsConfig(ctx context.Context, req *netapppb.GetKmsConfi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetKmsConfig")
 		if err != nil {
 			return err
 		}
@@ -4003,11 +4664,11 @@ func (c *restClient) UpdateKmsConfig(ctx context.Context, req *netapppb.UpdateKm
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4031,21 +4692,10 @@ func (c *restClient) UpdateKmsConfig(ctx context.Context, req *netapppb.UpdateKm
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateKmsConfig")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4102,21 +4752,10 @@ func (c *restClient) EncryptVolumes(ctx context.Context, req *netapppb.EncryptVo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "EncryptVolumes")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4173,17 +4812,7 @@ func (c *restClient) VerifyKmsConfig(ctx context.Context, req *netapppb.VerifyKm
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "VerifyKmsConfig")
 		if err != nil {
 			return err
 		}
@@ -4232,21 +4861,10 @@ func (c *restClient) DeleteKmsConfig(ctx context.Context, req *netapppb.DeleteKm
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteKmsConfig")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4315,21 +4933,10 @@ func (c *restClient) ListReplications(ctx context.Context, req *netapppb.ListRep
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListReplications")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4392,17 +4999,7 @@ func (c *restClient) GetReplication(ctx context.Context, req *netapppb.GetReplic
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetReplication")
 		if err != nil {
 			return err
 		}
@@ -4459,21 +5056,10 @@ func (c *restClient) CreateReplication(ctx context.Context, req *netapppb.Create
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateReplication")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4523,21 +5109,10 @@ func (c *restClient) DeleteReplication(ctx context.Context, req *netapppb.Delete
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteReplication")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4573,11 +5148,11 @@ func (c *restClient) UpdateReplication(ctx context.Context, req *netapppb.Update
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4601,21 +5176,10 @@ func (c *restClient) UpdateReplication(ctx context.Context, req *netapppb.Update
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateReplication")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4671,21 +5235,10 @@ func (c *restClient) StopReplication(ctx context.Context, req *netapppb.StopRepl
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "StopReplication")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4741,21 +5294,10 @@ func (c *restClient) ResumeReplication(ctx context.Context, req *netapppb.Resume
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ResumeReplication")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4812,17 +5354,241 @@ func (c *restClient) ReverseReplicationDirection(ctx context.Context, req *netap
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ReverseReplicationDirection")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
+		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
 
-		buf, err := io.ReadAll(httpRsp.Body)
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &ReverseReplicationDirectionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// EstablishPeering establish replication peering.
+func (c *restClient) EstablishPeering(ctx context.Context, req *netapppb.EstablishPeeringRequest, opts ...gax.CallOption) (*EstablishPeeringOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:establishPeering", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "EstablishPeering")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &EstablishPeeringOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// SyncReplication syncs the replication. This will invoke one time volume data transfer from
+// source to destination.
+func (c *restClient) SyncReplication(ctx context.Context, req *netapppb.SyncReplicationRequest, opts ...gax.CallOption) (*SyncReplicationOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:sync", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SyncReplication")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &SyncReplicationOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// CreateBackupVault creates new backup vault
+func (c *restClient) CreateBackupVault(ctx context.Context, req *netapppb.CreateBackupVaultRequest, opts ...gax.CallOption) (*CreateBackupVaultOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetBackupVault()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/backupVaults", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("backupVaultId", fmt.Sprintf("%v", req.GetBackupVaultId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateBackupVault")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateBackupVaultOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// GetBackupVault returns the description of the specified backup vault
+func (c *restClient) GetBackupVault(ctx context.Context, req *netapppb.GetBackupVaultRequest, opts ...gax.CallOption) (*netapppb.BackupVault, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetBackupVault[0:len((*c.CallOptions).GetBackupVault):len((*c.CallOptions).GetBackupVault)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &netapppb.BackupVault{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetBackupVault")
 		if err != nil {
 			return err
 		}
@@ -4836,9 +5602,841 @@ func (c *restClient) ReverseReplicationDirection(ctx context.Context, req *netap
 	if e != nil {
 		return nil, e
 	}
+	return resp, nil
+}
+
+// ListBackupVaults returns list of all available backup vaults.
+func (c *restClient) ListBackupVaults(ctx context.Context, req *netapppb.ListBackupVaultsRequest, opts ...gax.CallOption) *BackupVaultIterator {
+	it := &BackupVaultIterator{}
+	req = proto.Clone(req).(*netapppb.ListBackupVaultsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.BackupVault, string, error) {
+		resp := &netapppb.ListBackupVaultsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/backupVaults", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListBackupVaults")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetBackupVaults(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// UpdateBackupVault updates the settings of a specific backup vault.
+func (c *restClient) UpdateBackupVault(ctx context.Context, req *netapppb.UpdateBackupVaultRequest, opts ...gax.CallOption) (*UpdateBackupVaultOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetBackupVault()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetBackupVault().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "backup_vault.name", url.QueryEscape(req.GetBackupVault().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateBackupVault")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	return &ReverseReplicationDirectionOperation{
+	return &UpdateBackupVaultOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteBackupVault warning! This operation will permanently delete the backup vault.
+func (c *restClient) DeleteBackupVault(ctx context.Context, req *netapppb.DeleteBackupVaultRequest, opts ...gax.CallOption) (*DeleteBackupVaultOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteBackupVault")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteBackupVaultOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// CreateBackup creates a backup from the volume specified in the request
+// The backup can be created from the given snapshot if specified in the
+// request. If no snapshot specified, there’ll be a new snapshot taken to
+// initiate the backup creation.
+func (c *restClient) CreateBackup(ctx context.Context, req *netapppb.CreateBackupRequest, opts ...gax.CallOption) (*CreateBackupOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetBackup()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/backups", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("backupId", fmt.Sprintf("%v", req.GetBackupId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateBackup")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateBackupOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// GetBackup returns the description of the specified backup
+func (c *restClient) GetBackup(ctx context.Context, req *netapppb.GetBackupRequest, opts ...gax.CallOption) (*netapppb.Backup, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetBackup[0:len((*c.CallOptions).GetBackup):len((*c.CallOptions).GetBackup)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &netapppb.Backup{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetBackup")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListBackups returns descriptions of all backups for a backupVault.
+func (c *restClient) ListBackups(ctx context.Context, req *netapppb.ListBackupsRequest, opts ...gax.CallOption) *BackupIterator {
+	it := &BackupIterator{}
+	req = proto.Clone(req).(*netapppb.ListBackupsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.Backup, string, error) {
+		resp := &netapppb.ListBackupsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/backups", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListBackups")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetBackups(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// DeleteBackup warning! This operation will permanently delete the backup.
+func (c *restClient) DeleteBackup(ctx context.Context, req *netapppb.DeleteBackupRequest, opts ...gax.CallOption) (*DeleteBackupOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteBackup")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteBackupOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateBackup update backup with full spec.
+func (c *restClient) UpdateBackup(ctx context.Context, req *netapppb.UpdateBackupRequest, opts ...gax.CallOption) (*UpdateBackupOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetBackup()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetBackup().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "backup.name", url.QueryEscape(req.GetBackup().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateBackup")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateBackupOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// CreateBackupPolicy creates new backup policy
+func (c *restClient) CreateBackupPolicy(ctx context.Context, req *netapppb.CreateBackupPolicyRequest, opts ...gax.CallOption) (*CreateBackupPolicyOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetBackupPolicy()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/backupPolicies", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("backupPolicyId", fmt.Sprintf("%v", req.GetBackupPolicyId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateBackupPolicy")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateBackupPolicyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// GetBackupPolicy returns the description of the specified backup policy by backup_policy_id.
+func (c *restClient) GetBackupPolicy(ctx context.Context, req *netapppb.GetBackupPolicyRequest, opts ...gax.CallOption) (*netapppb.BackupPolicy, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetBackupPolicy[0:len((*c.CallOptions).GetBackupPolicy):len((*c.CallOptions).GetBackupPolicy)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &netapppb.BackupPolicy{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetBackupPolicy")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListBackupPolicies returns list of all available backup policies.
+func (c *restClient) ListBackupPolicies(ctx context.Context, req *netapppb.ListBackupPoliciesRequest, opts ...gax.CallOption) *BackupPolicyIterator {
+	it := &BackupPolicyIterator{}
+	req = proto.Clone(req).(*netapppb.ListBackupPoliciesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.BackupPolicy, string, error) {
+		resp := &netapppb.ListBackupPoliciesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/backupPolicies", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListBackupPolicies")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetBackupPolicies(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// UpdateBackupPolicy updates settings of a specific backup policy.
+func (c *restClient) UpdateBackupPolicy(ctx context.Context, req *netapppb.UpdateBackupPolicyRequest, opts ...gax.CallOption) (*UpdateBackupPolicyOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetBackupPolicy()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetBackupPolicy().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "backup_policy.name", url.QueryEscape(req.GetBackupPolicy().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateBackupPolicy")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateBackupPolicyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteBackupPolicy warning! This operation will permanently delete the backup policy.
+func (c *restClient) DeleteBackupPolicy(ctx context.Context, req *netapppb.DeleteBackupPolicyRequest, opts ...gax.CallOption) (*DeleteBackupPolicyOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteBackupPolicy")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteBackupPolicyOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
@@ -4877,17 +6475,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -4952,21 +6540,10 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -5032,15 +6609,8 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -5074,15 +6644,8 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOperation")
+		return err
 	}, opts...)
 }
 
@@ -5119,17 +6682,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -5194,21 +6747,10 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -5238,12 +6780,6 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	return it
 }
 
-// CreateActiveDirectoryOperation manages a long-running operation from CreateActiveDirectory.
-type CreateActiveDirectoryOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // CreateActiveDirectoryOperation returns a new CreateActiveDirectoryOperation from a given name.
 // The name must be that of a previously created CreateActiveDirectoryOperation, possibly from a different process.
 func (c *gRPCClient) CreateActiveDirectoryOperation(name string) *CreateActiveDirectoryOperation {
@@ -5262,68 +6798,58 @@ func (c *restClient) CreateActiveDirectoryOperation(name string) *CreateActiveDi
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateActiveDirectoryOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*netapppb.ActiveDirectory, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp netapppb.ActiveDirectory
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
+// CreateBackupOperation returns a new CreateBackupOperation from a given name.
+// The name must be that of a previously created CreateBackupOperation, possibly from a different process.
+func (c *gRPCClient) CreateBackupOperation(name string) *CreateBackupOperation {
+	return &CreateBackupOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-	return &resp, nil
 }
 
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateActiveDirectoryOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*netapppb.ActiveDirectory, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp netapppb.ActiveDirectory
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
+// CreateBackupOperation returns a new CreateBackupOperation from a given name.
+// The name must be that of a previously created CreateBackupOperation, possibly from a different process.
+func (c *restClient) CreateBackupOperation(name string) *CreateBackupOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateBackupOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	if !op.Done() {
-		return nil, nil
+}
+
+// CreateBackupPolicyOperation returns a new CreateBackupPolicyOperation from a given name.
+// The name must be that of a previously created CreateBackupPolicyOperation, possibly from a different process.
+func (c *gRPCClient) CreateBackupPolicyOperation(name string) *CreateBackupPolicyOperation {
+	return &CreateBackupPolicyOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-	return &resp, nil
 }
 
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateActiveDirectoryOperation) Metadata() (*netapppb.OperationMetadata, error) {
-	var meta netapppb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
+// CreateBackupPolicyOperation returns a new CreateBackupPolicyOperation from a given name.
+// The name must be that of a previously created CreateBackupPolicyOperation, possibly from a different process.
+func (c *restClient) CreateBackupPolicyOperation(name string) *CreateBackupPolicyOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateBackupPolicyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	return &meta, nil
 }
 
-// Done reports whether the long-running operation has completed.
-func (op *CreateActiveDirectoryOperation) Done() bool {
-	return op.lro.Done()
+// CreateBackupVaultOperation returns a new CreateBackupVaultOperation from a given name.
+// The name must be that of a previously created CreateBackupVaultOperation, possibly from a different process.
+func (c *gRPCClient) CreateBackupVaultOperation(name string) *CreateBackupVaultOperation {
+	return &CreateBackupVaultOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
 }
 
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateActiveDirectoryOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateKmsConfigOperation manages a long-running operation from CreateKmsConfig.
-type CreateKmsConfigOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
+// CreateBackupVaultOperation returns a new CreateBackupVaultOperation from a given name.
+// The name must be that of a previously created CreateBackupVaultOperation, possibly from a different process.
+func (c *restClient) CreateBackupVaultOperation(name string) *CreateBackupVaultOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateBackupVaultOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
 }
 
 // CreateKmsConfigOperation returns a new CreateKmsConfigOperation from a given name.
@@ -5344,70 +6870,6 @@ func (c *restClient) CreateKmsConfigOperation(name string) *CreateKmsConfigOpera
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateKmsConfigOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*netapppb.KmsConfig, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp netapppb.KmsConfig
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateKmsConfigOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*netapppb.KmsConfig, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp netapppb.KmsConfig
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateKmsConfigOperation) Metadata() (*netapppb.OperationMetadata, error) {
-	var meta netapppb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateKmsConfigOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateKmsConfigOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateReplicationOperation manages a long-running operation from CreateReplication.
-type CreateReplicationOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // CreateReplicationOperation returns a new CreateReplicationOperation from a given name.
 // The name must be that of a previously created CreateReplicationOperation, possibly from a different process.
 func (c *gRPCClient) CreateReplicationOperation(name string) *CreateReplicationOperation {
@@ -5424,70 +6886,6 @@ func (c *restClient) CreateReplicationOperation(name string) *CreateReplicationO
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateReplicationOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*netapppb.Replication, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp netapppb.Replication
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateReplicationOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*netapppb.Replication, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp netapppb.Replication
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateReplicationOperation) Metadata() (*netapppb.OperationMetadata, error) {
-	var meta netapppb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateReplicationOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateReplicationOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateSnapshotOperation manages a long-running operation from CreateSnapshot.
-type CreateSnapshotOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // CreateSnapshotOperation returns a new CreateSnapshotOperation from a given name.
@@ -5508,70 +6906,6 @@ func (c *restClient) CreateSnapshotOperation(name string) *CreateSnapshotOperati
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateSnapshotOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*netapppb.Snapshot, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp netapppb.Snapshot
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateSnapshotOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*netapppb.Snapshot, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp netapppb.Snapshot
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateSnapshotOperation) Metadata() (*netapppb.OperationMetadata, error) {
-	var meta netapppb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateSnapshotOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateSnapshotOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateStoragePoolOperation manages a long-running operation from CreateStoragePool.
-type CreateStoragePoolOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // CreateStoragePoolOperation returns a new CreateStoragePoolOperation from a given name.
 // The name must be that of a previously created CreateStoragePoolOperation, possibly from a different process.
 func (c *gRPCClient) CreateStoragePoolOperation(name string) *CreateStoragePoolOperation {
@@ -5588,70 +6922,6 @@ func (c *restClient) CreateStoragePoolOperation(name string) *CreateStoragePoolO
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateStoragePoolOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*netapppb.StoragePool, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp netapppb.StoragePool
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateStoragePoolOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*netapppb.StoragePool, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp netapppb.StoragePool
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateStoragePoolOperation) Metadata() (*netapppb.OperationMetadata, error) {
-	var meta netapppb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateStoragePoolOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateStoragePoolOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateVolumeOperation manages a long-running operation from CreateVolume.
-type CreateVolumeOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // CreateVolumeOperation returns a new CreateVolumeOperation from a given name.
@@ -5672,70 +6942,6 @@ func (c *restClient) CreateVolumeOperation(name string) *CreateVolumeOperation {
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateVolumeOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*netapppb.Volume, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp netapppb.Volume
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateVolumeOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*netapppb.Volume, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp netapppb.Volume
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateVolumeOperation) Metadata() (*netapppb.OperationMetadata, error) {
-	var meta netapppb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateVolumeOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateVolumeOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteActiveDirectoryOperation manages a long-running operation from DeleteActiveDirectory.
-type DeleteActiveDirectoryOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // DeleteActiveDirectoryOperation returns a new DeleteActiveDirectoryOperation from a given name.
 // The name must be that of a previously created DeleteActiveDirectoryOperation, possibly from a different process.
 func (c *gRPCClient) DeleteActiveDirectoryOperation(name string) *DeleteActiveDirectoryOperation {
@@ -5754,57 +6960,58 @@ func (c *restClient) DeleteActiveDirectoryOperation(name string) *DeleteActiveDi
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteActiveDirectoryOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteActiveDirectoryOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteActiveDirectoryOperation) Metadata() (*netapppb.OperationMetadata, error) {
-	var meta netapppb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
+// DeleteBackupOperation returns a new DeleteBackupOperation from a given name.
+// The name must be that of a previously created DeleteBackupOperation, possibly from a different process.
+func (c *gRPCClient) DeleteBackupOperation(name string) *DeleteBackupOperation {
+	return &DeleteBackupOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-	return &meta, nil
 }
 
-// Done reports whether the long-running operation has completed.
-func (op *DeleteActiveDirectoryOperation) Done() bool {
-	return op.lro.Done()
+// DeleteBackupOperation returns a new DeleteBackupOperation from a given name.
+// The name must be that of a previously created DeleteBackupOperation, possibly from a different process.
+func (c *restClient) DeleteBackupOperation(name string) *DeleteBackupOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteBackupOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
 }
 
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteActiveDirectoryOperation) Name() string {
-	return op.lro.Name()
+// DeleteBackupPolicyOperation returns a new DeleteBackupPolicyOperation from a given name.
+// The name must be that of a previously created DeleteBackupPolicyOperation, possibly from a different process.
+func (c *gRPCClient) DeleteBackupPolicyOperation(name string) *DeleteBackupPolicyOperation {
+	return &DeleteBackupPolicyOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
 }
 
-// DeleteKmsConfigOperation manages a long-running operation from DeleteKmsConfig.
-type DeleteKmsConfigOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
+// DeleteBackupPolicyOperation returns a new DeleteBackupPolicyOperation from a given name.
+// The name must be that of a previously created DeleteBackupPolicyOperation, possibly from a different process.
+func (c *restClient) DeleteBackupPolicyOperation(name string) *DeleteBackupPolicyOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteBackupPolicyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// DeleteBackupVaultOperation returns a new DeleteBackupVaultOperation from a given name.
+// The name must be that of a previously created DeleteBackupVaultOperation, possibly from a different process.
+func (c *gRPCClient) DeleteBackupVaultOperation(name string) *DeleteBackupVaultOperation {
+	return &DeleteBackupVaultOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteBackupVaultOperation returns a new DeleteBackupVaultOperation from a given name.
+// The name must be that of a previously created DeleteBackupVaultOperation, possibly from a different process.
+func (c *restClient) DeleteBackupVaultOperation(name string) *DeleteBackupVaultOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteBackupVaultOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
 }
 
 // DeleteKmsConfigOperation returns a new DeleteKmsConfigOperation from a given name.
@@ -5825,59 +7032,6 @@ func (c *restClient) DeleteKmsConfigOperation(name string) *DeleteKmsConfigOpera
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteKmsConfigOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteKmsConfigOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteKmsConfigOperation) Metadata() (*netapppb.OperationMetadata, error) {
-	var meta netapppb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteKmsConfigOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteKmsConfigOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteReplicationOperation manages a long-running operation from DeleteReplication.
-type DeleteReplicationOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // DeleteReplicationOperation returns a new DeleteReplicationOperation from a given name.
 // The name must be that of a previously created DeleteReplicationOperation, possibly from a different process.
 func (c *gRPCClient) DeleteReplicationOperation(name string) *DeleteReplicationOperation {
@@ -5894,59 +7048,6 @@ func (c *restClient) DeleteReplicationOperation(name string) *DeleteReplicationO
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteReplicationOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteReplicationOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteReplicationOperation) Metadata() (*netapppb.OperationMetadata, error) {
-	var meta netapppb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteReplicationOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteReplicationOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteSnapshotOperation manages a long-running operation from DeleteSnapshot.
-type DeleteSnapshotOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // DeleteSnapshotOperation returns a new DeleteSnapshotOperation from a given name.
@@ -5967,59 +7068,6 @@ func (c *restClient) DeleteSnapshotOperation(name string) *DeleteSnapshotOperati
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteSnapshotOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteSnapshotOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteSnapshotOperation) Metadata() (*netapppb.OperationMetadata, error) {
-	var meta netapppb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteSnapshotOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteSnapshotOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteStoragePoolOperation manages a long-running operation from DeleteStoragePool.
-type DeleteStoragePoolOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // DeleteStoragePoolOperation returns a new DeleteStoragePoolOperation from a given name.
 // The name must be that of a previously created DeleteStoragePoolOperation, possibly from a different process.
 func (c *gRPCClient) DeleteStoragePoolOperation(name string) *DeleteStoragePoolOperation {
@@ -6036,59 +7084,6 @@ func (c *restClient) DeleteStoragePoolOperation(name string) *DeleteStoragePoolO
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteStoragePoolOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteStoragePoolOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteStoragePoolOperation) Metadata() (*netapppb.OperationMetadata, error) {
-	var meta netapppb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteStoragePoolOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteStoragePoolOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteVolumeOperation manages a long-running operation from DeleteVolume.
-type DeleteVolumeOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // DeleteVolumeOperation returns a new DeleteVolumeOperation from a given name.
@@ -6109,59 +7104,6 @@ func (c *restClient) DeleteVolumeOperation(name string) *DeleteVolumeOperation {
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteVolumeOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteVolumeOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteVolumeOperation) Metadata() (*netapppb.OperationMetadata, error) {
-	var meta netapppb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteVolumeOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteVolumeOperation) Name() string {
-	return op.lro.Name()
-}
-
-// EncryptVolumesOperation manages a long-running operation from EncryptVolumes.
-type EncryptVolumesOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // EncryptVolumesOperation returns a new EncryptVolumesOperation from a given name.
 // The name must be that of a previously created EncryptVolumesOperation, possibly from a different process.
 func (c *gRPCClient) EncryptVolumesOperation(name string) *EncryptVolumesOperation {
@@ -6180,68 +7122,22 @@ func (c *restClient) EncryptVolumesOperation(name string) *EncryptVolumesOperati
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *EncryptVolumesOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*netapppb.KmsConfig, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp netapppb.KmsConfig
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
+// EstablishPeeringOperation returns a new EstablishPeeringOperation from a given name.
+// The name must be that of a previously created EstablishPeeringOperation, possibly from a different process.
+func (c *gRPCClient) EstablishPeeringOperation(name string) *EstablishPeeringOperation {
+	return &EstablishPeeringOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-	return &resp, nil
 }
 
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *EncryptVolumesOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*netapppb.KmsConfig, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp netapppb.KmsConfig
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
+// EstablishPeeringOperation returns a new EstablishPeeringOperation from a given name.
+// The name must be that of a previously created EstablishPeeringOperation, possibly from a different process.
+func (c *restClient) EstablishPeeringOperation(name string) *EstablishPeeringOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &EstablishPeeringOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *EncryptVolumesOperation) Metadata() (*netapppb.OperationMetadata, error) {
-	var meta netapppb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *EncryptVolumesOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *EncryptVolumesOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ResumeReplicationOperation manages a long-running operation from ResumeReplication.
-type ResumeReplicationOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // ResumeReplicationOperation returns a new ResumeReplicationOperation from a given name.
@@ -6262,70 +7158,6 @@ func (c *restClient) ResumeReplicationOperation(name string) *ResumeReplicationO
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ResumeReplicationOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*netapppb.Replication, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp netapppb.Replication
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ResumeReplicationOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*netapppb.Replication, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp netapppb.Replication
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ResumeReplicationOperation) Metadata() (*netapppb.OperationMetadata, error) {
-	var meta netapppb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ResumeReplicationOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ResumeReplicationOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ReverseReplicationDirectionOperation manages a long-running operation from ReverseReplicationDirection.
-type ReverseReplicationDirectionOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // ReverseReplicationDirectionOperation returns a new ReverseReplicationDirectionOperation from a given name.
 // The name must be that of a previously created ReverseReplicationDirectionOperation, possibly from a different process.
 func (c *gRPCClient) ReverseReplicationDirectionOperation(name string) *ReverseReplicationDirectionOperation {
@@ -6342,70 +7174,6 @@ func (c *restClient) ReverseReplicationDirectionOperation(name string) *ReverseR
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ReverseReplicationDirectionOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*netapppb.Replication, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp netapppb.Replication
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ReverseReplicationDirectionOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*netapppb.Replication, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp netapppb.Replication
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ReverseReplicationDirectionOperation) Metadata() (*netapppb.OperationMetadata, error) {
-	var meta netapppb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ReverseReplicationDirectionOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ReverseReplicationDirectionOperation) Name() string {
-	return op.lro.Name()
-}
-
-// RevertVolumeOperation manages a long-running operation from RevertVolume.
-type RevertVolumeOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // RevertVolumeOperation returns a new RevertVolumeOperation from a given name.
@@ -6426,70 +7194,6 @@ func (c *restClient) RevertVolumeOperation(name string) *RevertVolumeOperation {
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *RevertVolumeOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*netapppb.Volume, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp netapppb.Volume
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *RevertVolumeOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*netapppb.Volume, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp netapppb.Volume
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *RevertVolumeOperation) Metadata() (*netapppb.OperationMetadata, error) {
-	var meta netapppb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *RevertVolumeOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *RevertVolumeOperation) Name() string {
-	return op.lro.Name()
-}
-
-// StopReplicationOperation manages a long-running operation from StopReplication.
-type StopReplicationOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // StopReplicationOperation returns a new StopReplicationOperation from a given name.
 // The name must be that of a previously created StopReplicationOperation, possibly from a different process.
 func (c *gRPCClient) StopReplicationOperation(name string) *StopReplicationOperation {
@@ -6508,68 +7212,40 @@ func (c *restClient) StopReplicationOperation(name string) *StopReplicationOpera
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *StopReplicationOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*netapppb.Replication, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp netapppb.Replication
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
+// SwitchActiveReplicaZoneOperation returns a new SwitchActiveReplicaZoneOperation from a given name.
+// The name must be that of a previously created SwitchActiveReplicaZoneOperation, possibly from a different process.
+func (c *gRPCClient) SwitchActiveReplicaZoneOperation(name string) *SwitchActiveReplicaZoneOperation {
+	return &SwitchActiveReplicaZoneOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-	return &resp, nil
 }
 
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *StopReplicationOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*netapppb.Replication, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp netapppb.Replication
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
+// SwitchActiveReplicaZoneOperation returns a new SwitchActiveReplicaZoneOperation from a given name.
+// The name must be that of a previously created SwitchActiveReplicaZoneOperation, possibly from a different process.
+func (c *restClient) SwitchActiveReplicaZoneOperation(name string) *SwitchActiveReplicaZoneOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &SwitchActiveReplicaZoneOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	if !op.Done() {
-		return nil, nil
+}
+
+// SyncReplicationOperation returns a new SyncReplicationOperation from a given name.
+// The name must be that of a previously created SyncReplicationOperation, possibly from a different process.
+func (c *gRPCClient) SyncReplicationOperation(name string) *SyncReplicationOperation {
+	return &SyncReplicationOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-	return &resp, nil
 }
 
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *StopReplicationOperation) Metadata() (*netapppb.OperationMetadata, error) {
-	var meta netapppb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
+// SyncReplicationOperation returns a new SyncReplicationOperation from a given name.
+// The name must be that of a previously created SyncReplicationOperation, possibly from a different process.
+func (c *restClient) SyncReplicationOperation(name string) *SyncReplicationOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &SyncReplicationOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *StopReplicationOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *StopReplicationOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateActiveDirectoryOperation manages a long-running operation from UpdateActiveDirectory.
-type UpdateActiveDirectoryOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // UpdateActiveDirectoryOperation returns a new UpdateActiveDirectoryOperation from a given name.
@@ -6590,68 +7266,58 @@ func (c *restClient) UpdateActiveDirectoryOperation(name string) *UpdateActiveDi
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateActiveDirectoryOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*netapppb.ActiveDirectory, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp netapppb.ActiveDirectory
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
+// UpdateBackupOperation returns a new UpdateBackupOperation from a given name.
+// The name must be that of a previously created UpdateBackupOperation, possibly from a different process.
+func (c *gRPCClient) UpdateBackupOperation(name string) *UpdateBackupOperation {
+	return &UpdateBackupOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-	return &resp, nil
 }
 
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateActiveDirectoryOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*netapppb.ActiveDirectory, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp netapppb.ActiveDirectory
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
+// UpdateBackupOperation returns a new UpdateBackupOperation from a given name.
+// The name must be that of a previously created UpdateBackupOperation, possibly from a different process.
+func (c *restClient) UpdateBackupOperation(name string) *UpdateBackupOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateBackupOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	if !op.Done() {
-		return nil, nil
+}
+
+// UpdateBackupPolicyOperation returns a new UpdateBackupPolicyOperation from a given name.
+// The name must be that of a previously created UpdateBackupPolicyOperation, possibly from a different process.
+func (c *gRPCClient) UpdateBackupPolicyOperation(name string) *UpdateBackupPolicyOperation {
+	return &UpdateBackupPolicyOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-	return &resp, nil
 }
 
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateActiveDirectoryOperation) Metadata() (*netapppb.OperationMetadata, error) {
-	var meta netapppb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
+// UpdateBackupPolicyOperation returns a new UpdateBackupPolicyOperation from a given name.
+// The name must be that of a previously created UpdateBackupPolicyOperation, possibly from a different process.
+func (c *restClient) UpdateBackupPolicyOperation(name string) *UpdateBackupPolicyOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateBackupPolicyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	return &meta, nil
 }
 
-// Done reports whether the long-running operation has completed.
-func (op *UpdateActiveDirectoryOperation) Done() bool {
-	return op.lro.Done()
+// UpdateBackupVaultOperation returns a new UpdateBackupVaultOperation from a given name.
+// The name must be that of a previously created UpdateBackupVaultOperation, possibly from a different process.
+func (c *gRPCClient) UpdateBackupVaultOperation(name string) *UpdateBackupVaultOperation {
+	return &UpdateBackupVaultOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
 }
 
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateActiveDirectoryOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateKmsConfigOperation manages a long-running operation from UpdateKmsConfig.
-type UpdateKmsConfigOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
+// UpdateBackupVaultOperation returns a new UpdateBackupVaultOperation from a given name.
+// The name must be that of a previously created UpdateBackupVaultOperation, possibly from a different process.
+func (c *restClient) UpdateBackupVaultOperation(name string) *UpdateBackupVaultOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateBackupVaultOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
 }
 
 // UpdateKmsConfigOperation returns a new UpdateKmsConfigOperation from a given name.
@@ -6672,70 +7338,6 @@ func (c *restClient) UpdateKmsConfigOperation(name string) *UpdateKmsConfigOpera
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateKmsConfigOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*netapppb.KmsConfig, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp netapppb.KmsConfig
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateKmsConfigOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*netapppb.KmsConfig, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp netapppb.KmsConfig
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateKmsConfigOperation) Metadata() (*netapppb.OperationMetadata, error) {
-	var meta netapppb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateKmsConfigOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateKmsConfigOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateReplicationOperation manages a long-running operation from UpdateReplication.
-type UpdateReplicationOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdateReplicationOperation returns a new UpdateReplicationOperation from a given name.
 // The name must be that of a previously created UpdateReplicationOperation, possibly from a different process.
 func (c *gRPCClient) UpdateReplicationOperation(name string) *UpdateReplicationOperation {
@@ -6752,70 +7354,6 @@ func (c *restClient) UpdateReplicationOperation(name string) *UpdateReplicationO
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateReplicationOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*netapppb.Replication, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp netapppb.Replication
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateReplicationOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*netapppb.Replication, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp netapppb.Replication
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateReplicationOperation) Metadata() (*netapppb.OperationMetadata, error) {
-	var meta netapppb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateReplicationOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateReplicationOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateSnapshotOperation manages a long-running operation from UpdateSnapshot.
-type UpdateSnapshotOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // UpdateSnapshotOperation returns a new UpdateSnapshotOperation from a given name.
@@ -6836,70 +7374,6 @@ func (c *restClient) UpdateSnapshotOperation(name string) *UpdateSnapshotOperati
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateSnapshotOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*netapppb.Snapshot, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp netapppb.Snapshot
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateSnapshotOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*netapppb.Snapshot, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp netapppb.Snapshot
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateSnapshotOperation) Metadata() (*netapppb.OperationMetadata, error) {
-	var meta netapppb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateSnapshotOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateSnapshotOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateStoragePoolOperation manages a long-running operation from UpdateStoragePool.
-type UpdateStoragePoolOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdateStoragePoolOperation returns a new UpdateStoragePoolOperation from a given name.
 // The name must be that of a previously created UpdateStoragePoolOperation, possibly from a different process.
 func (c *gRPCClient) UpdateStoragePoolOperation(name string) *UpdateStoragePoolOperation {
@@ -6918,70 +7392,6 @@ func (c *restClient) UpdateStoragePoolOperation(name string) *UpdateStoragePoolO
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateStoragePoolOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*netapppb.StoragePool, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp netapppb.StoragePool
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateStoragePoolOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*netapppb.StoragePool, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp netapppb.StoragePool
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateStoragePoolOperation) Metadata() (*netapppb.OperationMetadata, error) {
-	var meta netapppb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateStoragePoolOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateStoragePoolOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateVolumeOperation manages a long-running operation from UpdateVolume.
-type UpdateVolumeOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdateVolumeOperation returns a new UpdateVolumeOperation from a given name.
 // The name must be that of a previously created UpdateVolumeOperation, possibly from a different process.
 func (c *gRPCClient) UpdateVolumeOperation(name string) *UpdateVolumeOperation {
@@ -6998,438 +7408,4 @@ func (c *restClient) UpdateVolumeOperation(name string) *UpdateVolumeOperation {
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateVolumeOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*netapppb.Volume, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp netapppb.Volume
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateVolumeOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*netapppb.Volume, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp netapppb.Volume
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateVolumeOperation) Metadata() (*netapppb.OperationMetadata, error) {
-	var meta netapppb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateVolumeOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateVolumeOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ActiveDirectoryIterator manages a stream of *netapppb.ActiveDirectory.
-type ActiveDirectoryIterator struct {
-	items    []*netapppb.ActiveDirectory
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*netapppb.ActiveDirectory, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ActiveDirectoryIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ActiveDirectoryIterator) Next() (*netapppb.ActiveDirectory, error) {
-	var item *netapppb.ActiveDirectory
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ActiveDirectoryIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ActiveDirectoryIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// KmsConfigIterator manages a stream of *netapppb.KmsConfig.
-type KmsConfigIterator struct {
-	items    []*netapppb.KmsConfig
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*netapppb.KmsConfig, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *KmsConfigIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *KmsConfigIterator) Next() (*netapppb.KmsConfig, error) {
-	var item *netapppb.KmsConfig
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *KmsConfigIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *KmsConfigIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// LocationIterator manages a stream of *locationpb.Location.
-type LocationIterator struct {
-	items    []*locationpb.Location
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *LocationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *LocationIterator) Next() (*locationpb.Location, error) {
-	var item *locationpb.Location
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *LocationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *LocationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// OperationIterator manages a stream of *longrunningpb.Operation.
-type OperationIterator struct {
-	items    []*longrunningpb.Operation
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *OperationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *OperationIterator) Next() (*longrunningpb.Operation, error) {
-	var item *longrunningpb.Operation
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *OperationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *OperationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ReplicationIterator manages a stream of *netapppb.Replication.
-type ReplicationIterator struct {
-	items    []*netapppb.Replication
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*netapppb.Replication, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ReplicationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ReplicationIterator) Next() (*netapppb.Replication, error) {
-	var item *netapppb.Replication
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ReplicationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ReplicationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// SnapshotIterator manages a stream of *netapppb.Snapshot.
-type SnapshotIterator struct {
-	items    []*netapppb.Snapshot
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*netapppb.Snapshot, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *SnapshotIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *SnapshotIterator) Next() (*netapppb.Snapshot, error) {
-	var item *netapppb.Snapshot
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *SnapshotIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *SnapshotIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// StoragePoolIterator manages a stream of *netapppb.StoragePool.
-type StoragePoolIterator struct {
-	items    []*netapppb.StoragePool
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*netapppb.StoragePool, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *StoragePoolIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *StoragePoolIterator) Next() (*netapppb.StoragePool, error) {
-	var item *netapppb.StoragePool
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *StoragePoolIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *StoragePoolIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// VolumeIterator manages a stream of *netapppb.Volume.
-type VolumeIterator struct {
-	items    []*netapppb.Volume
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*netapppb.Volume, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *VolumeIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *VolumeIterator) Next() (*netapppb.Volume, error) {
-	var item *netapppb.Volume
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *VolumeIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *VolumeIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "HubClient",
           "rpcs": {
+            "AcceptHubSpoke": {
+              "methods": [
+                "AcceptHubSpoke"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -40,6 +45,11 @@
                 "DeleteSpoke"
               ]
             },
+            "GetGroup": {
+              "methods": [
+                "GetGroup"
+              ]
+            },
             "GetHub": {
               "methods": [
                 "GetHub"
@@ -60,9 +70,29 @@
                 "GetOperation"
               ]
             },
+            "GetRoute": {
+              "methods": [
+                "GetRoute"
+              ]
+            },
+            "GetRouteTable": {
+              "methods": [
+                "GetRouteTable"
+              ]
+            },
             "GetSpoke": {
               "methods": [
                 "GetSpoke"
+              ]
+            },
+            "ListGroups": {
+              "methods": [
+                "ListGroups"
+              ]
+            },
+            "ListHubSpokes": {
+              "methods": [
+                "ListHubSpokes"
               ]
             },
             "ListHubs": {
@@ -80,9 +110,29 @@
                 "ListOperations"
               ]
             },
+            "ListRouteTables": {
+              "methods": [
+                "ListRouteTables"
+              ]
+            },
+            "ListRoutes": {
+              "methods": [
+                "ListRoutes"
+              ]
+            },
             "ListSpokes": {
               "methods": [
                 "ListSpokes"
+              ]
+            },
+            "QueryHubStatus": {
+              "methods": [
+                "QueryHubStatus"
+              ]
+            },
+            "RejectHubSpoke": {
+              "methods": [
+                "RejectHubSpoke"
               ]
             },
             "SetIamPolicy": {
@@ -95,6 +145,11 @@
                 "TestIamPermissions"
               ]
             },
+            "UpdateGroup": {
+              "methods": [
+                "UpdateGroup"
+              ]
+            },
             "UpdateHub": {
               "methods": [
                 "UpdateHub"
@@ -103,6 +158,80 @@
             "UpdateSpoke": {
               "methods": [
                 "UpdateSpoke"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "PolicyBasedRoutingService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "PolicyBasedRoutingClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreatePolicyBasedRoute": {
+              "methods": [
+                "CreatePolicyBasedRoute"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeletePolicyBasedRoute": {
+              "methods": [
+                "DeletePolicyBasedRoute"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetPolicyBasedRoute": {
+              "methods": [
+                "GetPolicyBasedRoute"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListPolicyBasedRoutes": {
+              "methods": [
+                "ListPolicyBasedRoutes"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             }
           }

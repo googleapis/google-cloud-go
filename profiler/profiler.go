@@ -52,8 +52,6 @@ import (
 	gcemd "cloud.google.com/go/compute/metadata"
 	"cloud.google.com/go/internal/version"
 	"cloud.google.com/go/profiler/internal"
-	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
 	"github.com/google/pprof/profile"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
@@ -64,6 +62,7 @@ import (
 	"google.golang.org/grpc/codes"
 	grpcmd "google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 )
 
 var (
@@ -297,14 +296,13 @@ func abortedBackoffDuration(md grpcmd.MD) (time.Duration, error) {
 	var retryInfo edpb.RetryInfo
 	if err := proto.Unmarshal([]byte(elem[0]), &retryInfo); err != nil {
 		return 0, err
-	} else if time, err := ptypes.Duration(retryInfo.RetryDelay); err != nil {
-		return 0, err
-	} else {
-		if time < 0 {
-			return 0, errors.New("negative retry duration")
-		}
-		return time, nil
 	}
+
+	time := retryInfo.RetryDelay.AsDuration()
+	if time < 0 {
+		return 0, errors.New("negative retry duration")
+	}
+	return time, nil
 }
 
 type retryer struct {
@@ -386,11 +384,7 @@ func (a *agent) profileAndUpload(ctx context.Context, p *pb.Profile) {
 
 	switch pt {
 	case pb.ProfileType_CPU:
-		duration, err := ptypes.Duration(p.Duration)
-		if err != nil {
-			debugLog("failed to get profile duration for CPU profile: %v", err)
-			return
-		}
+		duration := p.Duration.AsDuration()
 		if err := startCPUProfile(&prof); err != nil {
 			debugLog("failed to start CPU profile: %v", err)
 			return
@@ -403,11 +397,7 @@ func (a *agent) profileAndUpload(ctx context.Context, p *pb.Profile) {
 			return
 		}
 	case pb.ProfileType_HEAP_ALLOC:
-		duration, err := ptypes.Duration(p.Duration)
-		if err != nil {
-			debugLog("failed to get profile duration for allocation profile: %v", err)
-			return
-		}
+		duration := p.Duration.AsDuration()
 		if err := deltaAllocProfile(ctx, duration, config.AllocForceGC, &prof); err != nil {
 			debugLog("failed to collect allocation profile: %v", err)
 			return
@@ -418,11 +408,7 @@ func (a *agent) profileAndUpload(ctx context.Context, p *pb.Profile) {
 			return
 		}
 	case pb.ProfileType_CONTENTION:
-		duration, err := ptypes.Duration(p.Duration)
-		if err != nil {
-			debugLog("failed to get profile duration: %v", err)
-			return
-		}
+		duration := p.Duration.AsDuration()
 		if err := deltaMutexProfile(ctx, duration, &prof); err != nil {
 			debugLog("failed to collect mutex profile: %v", err)
 			return

@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package monitoring
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 	"time"
@@ -50,10 +51,13 @@ type GroupCallOptions struct {
 func defaultGroupGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("monitoring.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("monitoring.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("monitoring.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://monitoring.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -232,6 +236,8 @@ type groupGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewGroupClient creates a new group service client based on gRPC.
@@ -269,6 +275,7 @@ func NewGroupClient(ctx context.Context, opts ...option.ClientOption) (*GroupCli
 		connPool:    connPool,
 		groupClient: monitoringpb.NewGroupServiceClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -291,7 +298,9 @@ func (c *groupGRPCClient) Connection() *grpc.ClientConn {
 func (c *groupGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -320,7 +329,7 @@ func (c *groupGRPCClient) ListGroups(ctx context.Context, req *monitoringpb.List
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.groupClient.ListGroups(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.groupClient.ListGroups, req, settings.GRPC, c.logger, "ListGroups")
 			return err
 		}, opts...)
 		if err != nil {
@@ -355,7 +364,7 @@ func (c *groupGRPCClient) GetGroup(ctx context.Context, req *monitoringpb.GetGro
 	var resp *monitoringpb.Group
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.groupClient.GetGroup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.groupClient.GetGroup, req, settings.GRPC, c.logger, "GetGroup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -373,7 +382,7 @@ func (c *groupGRPCClient) CreateGroup(ctx context.Context, req *monitoringpb.Cre
 	var resp *monitoringpb.Group
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.groupClient.CreateGroup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.groupClient.CreateGroup, req, settings.GRPC, c.logger, "CreateGroup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -391,7 +400,7 @@ func (c *groupGRPCClient) UpdateGroup(ctx context.Context, req *monitoringpb.Upd
 	var resp *monitoringpb.Group
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.groupClient.UpdateGroup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.groupClient.UpdateGroup, req, settings.GRPC, c.logger, "UpdateGroup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -408,7 +417,7 @@ func (c *groupGRPCClient) DeleteGroup(ctx context.Context, req *monitoringpb.Del
 	opts = append((*c.CallOptions).DeleteGroup[0:len((*c.CallOptions).DeleteGroup):len((*c.CallOptions).DeleteGroup)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.groupClient.DeleteGroup(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.groupClient.DeleteGroup, req, settings.GRPC, c.logger, "DeleteGroup")
 		return err
 	}, opts...)
 	return err
@@ -434,7 +443,7 @@ func (c *groupGRPCClient) ListGroupMembers(ctx context.Context, req *monitoringp
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.groupClient.ListGroupMembers(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.groupClient.ListGroupMembers, req, settings.GRPC, c.logger, "ListGroupMembers")
 			return err
 		}, opts...)
 		if err != nil {
@@ -458,98 +467,4 @@ func (c *groupGRPCClient) ListGroupMembers(ctx context.Context, req *monitoringp
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
-}
-
-// GroupIterator manages a stream of *monitoringpb.Group.
-type GroupIterator struct {
-	items    []*monitoringpb.Group
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*monitoringpb.Group, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *GroupIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *GroupIterator) Next() (*monitoringpb.Group, error) {
-	var item *monitoringpb.Group
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *GroupIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *GroupIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// MonitoredResourceIterator manages a stream of *monitoredrespb.MonitoredResource.
-type MonitoredResourceIterator struct {
-	items    []*monitoredrespb.MonitoredResource
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*monitoredrespb.MonitoredResource, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *MonitoredResourceIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *MonitoredResourceIterator) Next() (*monitoredrespb.MonitoredResource, error) {
-	var item *monitoredrespb.MonitoredResource
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *MonitoredResourceIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *MonitoredResourceIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

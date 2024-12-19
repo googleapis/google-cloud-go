@@ -1,5 +1,214 @@
 # Changes
 
+## [1.24.1](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.24.0...datacatalog/v1.24.1) (2024-12-18)
+
+
+### Documentation
+
+* **datacatalog:** Fix markdown reference in `TagTemplate.is_publicly_readable` comment ([4254053](https://github.com/googleapis/google-cloud-go/commit/42540530e44e5f331e66e0777c4aabf449f5fd90))
+
+## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.23.0...datacatalog/v1.24.0) (2024-11-21)
+
+
+### Features
+
+* **datacatalog:** A new enum `CatalogUIExperience` is added ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datacatalog:** A new enum `TagTemplateMigration` is added ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datacatalog:** A new field `dataplex_transfer_status` is added to message `.google.cloud.datacatalog.v1.Tag` ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datacatalog:** A new field `transferred_to_dataplex` is added to message `.google.cloud.datacatalog.v1.EntryGroup` ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datacatalog:** A new message `MigrationConfig` is added ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datacatalog:** A new message `OrganizationConfig` is added ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datacatalog:** A new message `RetrieveConfigRequest` is added ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datacatalog:** A new message `RetrieveEffectiveConfigRequest` is added ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datacatalog:** A new message `SetConfigRequest` is added ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datacatalog:** A new method `RetrieveConfig` is added to service `DataCatalog` ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datacatalog:** A new method `RetrieveEffectiveConfig` is added to service `DataCatalog` ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datacatalog:** A new method `SetConfig` is added to service `DataCatalog` ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datacatalog:** A new value `TRANSFERRED` is added to enum `DataplexTransferStatus` ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+
+
+### Documentation
+
+* **datacatalog:** A comment for message `EntryGroup` is changed ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+
+## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.22.2...datacatalog/v1.23.0) (2024-11-14)
+
+
+### Features
+
+* **datacatalog:** A new enum `DataplexTransferStatus` is added ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **datacatalog:** A new field `dataplex_transfer_status` is added to message `.google.cloud.datacatalog.v1.TagTemplate` ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **datacatalog:** A new field `feature_online_store_spec` is added to message `.google.cloud.datacatalog.v1.Entry` ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **datacatalog:** A new message `FeatureOnlineStoreSpec` is added ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **datacatalog:** A new value `CUSTOM_TEXT_EMBEDDING` is added to enum `ModelSourceType` ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **datacatalog:** A new value `FEATURE_GROUP` is added to enum `EntryType` ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **datacatalog:** A new value `FEATURE_ONLINE_STORE` is added to enum `EntryType` ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **datacatalog:** A new value `FEATURE_VIEW` is added to enum `EntryType` ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **datacatalog:** A new value `GENIE` is added to enum `ModelSourceType` ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **datacatalog:** A new value `MARKETPLACE` is added to enum `ModelSourceType` ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+
+
+### Documentation
+
+* **datacatalog:** A comment for field `name` in message `.google.cloud.datacatalog.v1.Entry` is changed ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **datacatalog:** A comment for field `name` in message `.google.cloud.datacatalog.v1.EntryGroup` is changed ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **datacatalog:** A comment for field `name` in message `.google.cloud.datacatalog.v1.Tag` is changed ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **datacatalog:** A comment for field `name` in message `.google.cloud.datacatalog.v1.TagTemplate` is changed ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **datacatalog:** A comment for field `name` in message `.google.cloud.datacatalog.v1.TagTemplateField` is changed ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+
+## [1.22.2](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.22.1...datacatalog/v1.22.2) (2024-10-23)
+
+
+### Bug Fixes
+
+* **datacatalog:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **datacatalog:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
+## [1.22.1](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.22.0...datacatalog/v1.22.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **datacatalog:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.21.1...datacatalog/v1.22.0) (2024-08-20)
+
+
+### Features
+
+* **datacatalog:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.21.1](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.21.0...datacatalog/v1.21.1) (2024-08-08)
+
+
+### Bug Fixes
+
+* **datacatalog:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.20.5...datacatalog/v1.21.0) (2024-08-01)
+
+
+### Features
+
+* **datacatalog:** Add DataplexTransferStatus enum and field to TagTemplate ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+
+
+### Documentation
+
+* **datacatalog:** Mark DataplexTransferStatus.MIGRATED as deprecated ([#10621](https://github.com/googleapis/google-cloud-go/issues/10621)) ([6b51942](https://github.com/googleapis/google-cloud-go/commit/6b519428182e8b17ff30fa09e0e3c18716269f1c))
+* **datacatalog:** Update field comments for updated IDENTIFIER field behavior ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+
+## [1.20.5](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.20.4...datacatalog/v1.20.5) (2024-07-24)
+
+
+### Bug Fixes
+
+* **datacatalog:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+## [1.20.4](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.20.3...datacatalog/v1.20.4) (2024-07-10)
+
+
+### Bug Fixes
+
+* **datacatalog:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.20.3](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.20.2...datacatalog/v1.20.3) (2024-07-01)
+
+
+### Bug Fixes
+
+* **datacatalog:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.20.2](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.20.1...datacatalog/v1.20.2) (2024-06-26)
+
+
+### Bug Fixes
+
+* **datacatalog:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
+## [1.20.1](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.20.0...datacatalog/v1.20.1) (2024-05-01)
+
+
+### Bug Fixes
+
+* **datacatalog:** Add internaloption.WithDefaultEndpointTemplate ([3b41408](https://github.com/googleapis/google-cloud-go/commit/3b414084450a5764a0248756e95e13383a645f90))
+* **datacatalog:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.19.3...datacatalog/v1.20.0) (2024-03-14)
+
+
+### Features
+
+* **datacatalog:** Add RANGE type to Data Catalog ([#9573](https://github.com/googleapis/google-cloud-go/issues/9573)) ([25c3f2d](https://github.com/googleapis/google-cloud-go/commit/25c3f2dfcf1e720df82b3ee236d8e6a1fe888318))
+
+
+### Bug Fixes
+
+* **datacatalog:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.19.3](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.19.2...datacatalog/v1.19.3) (2024-01-30)
+
+
+### Bug Fixes
+
+* **datacatalog:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.19.2](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.19.1...datacatalog/v1.19.2) (2024-01-11)
+
+
+### Bug Fixes
+
+* **datacatalog:** Change field behavior of the property "name" to IDENTIFIER ([c3f1174](https://github.com/googleapis/google-cloud-go/commit/c3f1174dc29d1c00d514a69590bd83f9b08a60d1))
+
+## [1.19.1](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.19.0...datacatalog/v1.19.1) (2024-01-08)
+
+
+### Documentation
+
+* **datacatalog:** Change field behavior of the property "name" to IDENTIFIER ([bd30055](https://github.com/googleapis/google-cloud-go/commit/bd3005532fbffa9894b11149e9693b7c33227d79))
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.18.3...datacatalog/v1.19.0) (2023-11-09)
+
+
+### Features
+
+* **datacatalog/lineage:** Add open lineage support ([#8974](https://github.com/googleapis/google-cloud-go/issues/8974)) ([1a16cbf](https://github.com/googleapis/google-cloud-go/commit/1a16cbf260bb673e07a05e1014868b236e510499))
+
+## [1.18.3](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.18.2...datacatalog/v1.18.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **datacatalog:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.18.2](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.18.1...datacatalog/v1.18.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **datacatalog:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.18.0...datacatalog/v1.18.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **datacatalog:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.17.1...datacatalog/v1.18.0) (2023-10-04)
+
+
+### Features
+
+* **datacatalog:** Enable Vertex AI Ingestion on DataPlex ([e9ae601](https://github.com/googleapis/google-cloud-go/commit/e9ae6018983ae09781740e4ff939e6e365863dbb))
+
+## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.17.0...datacatalog/v1.17.1) (2023-09-11)
+
+
+### Documentation
+
+* **datacatalog:** Fix typo ([20725c8](https://github.com/googleapis/google-cloud-go/commit/20725c86c970ad24efa18c056fc3aa71dc3a4f03))
+
 ## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.16.0...datacatalog/v1.17.0) (2023-08-08)
 
 

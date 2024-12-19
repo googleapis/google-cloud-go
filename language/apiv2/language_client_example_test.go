@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -57,6 +57,31 @@ func ExampleNewRESTClient() {
 	_ = c
 }
 
+func ExampleClient_AnalyzeEntities() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := language.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &languagepb.AnalyzeEntitiesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/language/apiv2/languagepb#AnalyzeEntitiesRequest.
+	}
+	resp, err := c.AnalyzeEntities(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_AnalyzeSentiment() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -82,7 +107,7 @@ func ExampleClient_AnalyzeSentiment() {
 	_ = resp
 }
 
-func ExampleClient_AnalyzeEntities() {
+func ExampleClient_AnnotateText() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -95,11 +120,11 @@ func ExampleClient_AnalyzeEntities() {
 	}
 	defer c.Close()
 
-	req := &languagepb.AnalyzeEntitiesRequest{
+	req := &languagepb.AnnotateTextRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/language/apiv2/languagepb#AnalyzeEntitiesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/language/apiv2/languagepb#AnnotateTextRequest.
 	}
-	resp, err := c.AnalyzeEntities(ctx, req)
+	resp, err := c.AnnotateText(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -150,31 +175,6 @@ func ExampleClient_ModerateText() {
 		// See https://pkg.go.dev/cloud.google.com/go/language/apiv2/languagepb#ModerateTextRequest.
 	}
 	resp, err := c.ModerateText(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_AnnotateText() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := language.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &languagepb.AnnotateTextRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/language/apiv2/languagepb#AnnotateTextRequest.
-	}
-	resp, err := c.AnnotateText(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

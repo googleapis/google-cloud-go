@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -56,10 +55,13 @@ type DomainMappingsCallOptions struct {
 func defaultDomainMappingsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("appengine.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("appengine.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("appengine.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://appengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -230,6 +232,8 @@ type domainMappingsGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewDomainMappingsClient creates a new domain mappings client based on gRPC.
@@ -256,6 +260,7 @@ func NewDomainMappingsClient(ctx context.Context, opts ...option.ClientOption) (
 		connPool:             connPool,
 		domainMappingsClient: appenginepb.NewDomainMappingsClient(connPool),
 		CallOptions:          &client.CallOptions,
+		logger:               internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -289,7 +294,9 @@ func (c *domainMappingsGRPCClient) Connection() *grpc.ClientConn {
 func (c *domainMappingsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -316,6 +323,8 @@ type domainMappingsRESTClient struct {
 
 	// Points back to the CallOptions field of the containing DomainMappingsClient
 	CallOptions **DomainMappingsCallOptions
+
+	logger *slog.Logger
 }
 
 // NewDomainMappingsRESTClient creates a new domain mappings rest client.
@@ -333,6 +342,7 @@ func NewDomainMappingsRESTClient(ctx context.Context, opts ...option.ClientOptio
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -352,9 +362,12 @@ func NewDomainMappingsRESTClient(ctx context.Context, opts ...option.ClientOptio
 func defaultDomainMappingsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://appengine.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://appengine.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://appengine.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://appengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -364,7 +377,9 @@ func defaultDomainMappingsRESTClientOptions() []option.ClientOption {
 func (c *domainMappingsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -401,7 +416,7 @@ func (c *domainMappingsGRPCClient) ListDomainMappings(ctx context.Context, req *
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.domainMappingsClient.ListDomainMappings(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.domainMappingsClient.ListDomainMappings, req, settings.GRPC, c.logger, "ListDomainMappings")
 			return err
 		}, opts...)
 		if err != nil {
@@ -436,7 +451,7 @@ func (c *domainMappingsGRPCClient) GetDomainMapping(ctx context.Context, req *ap
 	var resp *appenginepb.DomainMapping
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.domainMappingsClient.GetDomainMapping(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.domainMappingsClient.GetDomainMapping, req, settings.GRPC, c.logger, "GetDomainMapping")
 		return err
 	}, opts...)
 	if err != nil {
@@ -454,7 +469,7 @@ func (c *domainMappingsGRPCClient) CreateDomainMapping(ctx context.Context, req 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.domainMappingsClient.CreateDomainMapping(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.domainMappingsClient.CreateDomainMapping, req, settings.GRPC, c.logger, "CreateDomainMapping")
 		return err
 	}, opts...)
 	if err != nil {
@@ -474,7 +489,7 @@ func (c *domainMappingsGRPCClient) UpdateDomainMapping(ctx context.Context, req 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.domainMappingsClient.UpdateDomainMapping(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.domainMappingsClient.UpdateDomainMapping, req, settings.GRPC, c.logger, "UpdateDomainMapping")
 		return err
 	}, opts...)
 	if err != nil {
@@ -494,7 +509,7 @@ func (c *domainMappingsGRPCClient) DeleteDomainMapping(ctx context.Context, req 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.domainMappingsClient.DeleteDomainMapping(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.domainMappingsClient.DeleteDomainMapping, req, settings.GRPC, c.logger, "DeleteDomainMapping")
 		return err
 	}, opts...)
 	if err != nil {
@@ -550,21 +565,10 @@ func (c *domainMappingsRESTClient) ListDomainMappings(ctx context.Context, req *
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDomainMappings")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -627,17 +631,7 @@ func (c *domainMappingsRESTClient) GetDomainMapping(ctx context.Context, req *ap
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDomainMapping")
 		if err != nil {
 			return err
 		}
@@ -698,21 +692,10 @@ func (c *domainMappingsRESTClient) CreateDomainMapping(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDomainMapping")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -751,11 +734,11 @@ func (c *domainMappingsRESTClient) UpdateDomainMapping(ctx context.Context, req 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -779,21 +762,10 @@ func (c *domainMappingsRESTClient) UpdateDomainMapping(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateDomainMapping")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -845,21 +817,10 @@ func (c *domainMappingsRESTClient) DeleteDomainMapping(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDomainMapping")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -875,12 +836,6 @@ func (c *domainMappingsRESTClient) DeleteDomainMapping(ctx context.Context, req 
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
-}
-
-// CreateDomainMappingOperation manages a long-running operation from CreateDomainMapping.
-type CreateDomainMappingOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // CreateDomainMappingOperation returns a new CreateDomainMappingOperation from a given name.
@@ -901,70 +856,6 @@ func (c *domainMappingsRESTClient) CreateDomainMappingOperation(name string) *Cr
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateDomainMappingOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*appenginepb.DomainMapping, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp appenginepb.DomainMapping
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateDomainMappingOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*appenginepb.DomainMapping, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp appenginepb.DomainMapping
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateDomainMappingOperation) Metadata() (*appenginepb.OperationMetadataV1, error) {
-	var meta appenginepb.OperationMetadataV1
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateDomainMappingOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateDomainMappingOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteDomainMappingOperation manages a long-running operation from DeleteDomainMapping.
-type DeleteDomainMappingOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // DeleteDomainMappingOperation returns a new DeleteDomainMappingOperation from a given name.
 // The name must be that of a previously created DeleteDomainMappingOperation, possibly from a different process.
 func (c *domainMappingsGRPCClient) DeleteDomainMappingOperation(name string) *DeleteDomainMappingOperation {
@@ -983,59 +874,6 @@ func (c *domainMappingsRESTClient) DeleteDomainMappingOperation(name string) *De
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteDomainMappingOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteDomainMappingOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteDomainMappingOperation) Metadata() (*appenginepb.OperationMetadataV1, error) {
-	var meta appenginepb.OperationMetadataV1
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteDomainMappingOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteDomainMappingOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateDomainMappingOperation manages a long-running operation from UpdateDomainMapping.
-type UpdateDomainMappingOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdateDomainMappingOperation returns a new UpdateDomainMappingOperation from a given name.
 // The name must be that of a previously created UpdateDomainMappingOperation, possibly from a different process.
 func (c *domainMappingsGRPCClient) UpdateDomainMappingOperation(name string) *UpdateDomainMappingOperation {
@@ -1052,109 +890,4 @@ func (c *domainMappingsRESTClient) UpdateDomainMappingOperation(name string) *Up
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateDomainMappingOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*appenginepb.DomainMapping, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp appenginepb.DomainMapping
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateDomainMappingOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*appenginepb.DomainMapping, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp appenginepb.DomainMapping
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateDomainMappingOperation) Metadata() (*appenginepb.OperationMetadataV1, error) {
-	var meta appenginepb.OperationMetadataV1
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateDomainMappingOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateDomainMappingOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DomainMappingIterator manages a stream of *appenginepb.DomainMapping.
-type DomainMappingIterator struct {
-	items    []*appenginepb.DomainMapping
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*appenginepb.DomainMapping, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *DomainMappingIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *DomainMappingIterator) Next() (*appenginepb.DomainMapping, error) {
-	var item *appenginepb.DomainMapping
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *DomainMappingIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *DomainMappingIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

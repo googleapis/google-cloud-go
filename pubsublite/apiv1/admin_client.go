@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package pubsublite
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 	"time"
@@ -69,10 +70,13 @@ type AdminCallOptions struct {
 func defaultAdminGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("pubsublite.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("pubsublite.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("pubsublite.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://pubsublite.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -656,6 +660,8 @@ type adminGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewAdminClient creates a new admin service client based on gRPC.
@@ -683,6 +689,7 @@ func NewAdminClient(ctx context.Context, opts ...option.ClientOption) (*AdminCli
 		connPool:         connPool,
 		adminClient:      pubsublitepb.NewAdminServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -717,7 +724,9 @@ func (c *adminGRPCClient) Connection() *grpc.ClientConn {
 func (c *adminGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -735,7 +744,7 @@ func (c *adminGRPCClient) CreateTopic(ctx context.Context, req *pubsublitepb.Cre
 	var resp *pubsublitepb.Topic
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.adminClient.CreateTopic(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.adminClient.CreateTopic, req, settings.GRPC, c.logger, "CreateTopic")
 		return err
 	}, opts...)
 	if err != nil {
@@ -753,7 +762,7 @@ func (c *adminGRPCClient) GetTopic(ctx context.Context, req *pubsublitepb.GetTop
 	var resp *pubsublitepb.Topic
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.adminClient.GetTopic(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.adminClient.GetTopic, req, settings.GRPC, c.logger, "GetTopic")
 		return err
 	}, opts...)
 	if err != nil {
@@ -771,7 +780,7 @@ func (c *adminGRPCClient) GetTopicPartitions(ctx context.Context, req *pubsublit
 	var resp *pubsublitepb.TopicPartitions
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.adminClient.GetTopicPartitions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.adminClient.GetTopicPartitions, req, settings.GRPC, c.logger, "GetTopicPartitions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -800,7 +809,7 @@ func (c *adminGRPCClient) ListTopics(ctx context.Context, req *pubsublitepb.List
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.adminClient.ListTopics(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.adminClient.ListTopics, req, settings.GRPC, c.logger, "ListTopics")
 			return err
 		}, opts...)
 		if err != nil {
@@ -835,7 +844,7 @@ func (c *adminGRPCClient) UpdateTopic(ctx context.Context, req *pubsublitepb.Upd
 	var resp *pubsublitepb.Topic
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.adminClient.UpdateTopic(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.adminClient.UpdateTopic, req, settings.GRPC, c.logger, "UpdateTopic")
 		return err
 	}, opts...)
 	if err != nil {
@@ -852,7 +861,7 @@ func (c *adminGRPCClient) DeleteTopic(ctx context.Context, req *pubsublitepb.Del
 	opts = append((*c.CallOptions).DeleteTopic[0:len((*c.CallOptions).DeleteTopic):len((*c.CallOptions).DeleteTopic)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.adminClient.DeleteTopic(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.adminClient.DeleteTopic, req, settings.GRPC, c.logger, "DeleteTopic")
 		return err
 	}, opts...)
 	return err
@@ -878,7 +887,7 @@ func (c *adminGRPCClient) ListTopicSubscriptions(ctx context.Context, req *pubsu
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.adminClient.ListTopicSubscriptions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.adminClient.ListTopicSubscriptions, req, settings.GRPC, c.logger, "ListTopicSubscriptions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -913,7 +922,7 @@ func (c *adminGRPCClient) CreateSubscription(ctx context.Context, req *pubsublit
 	var resp *pubsublitepb.Subscription
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.adminClient.CreateSubscription(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.adminClient.CreateSubscription, req, settings.GRPC, c.logger, "CreateSubscription")
 		return err
 	}, opts...)
 	if err != nil {
@@ -931,7 +940,7 @@ func (c *adminGRPCClient) GetSubscription(ctx context.Context, req *pubsublitepb
 	var resp *pubsublitepb.Subscription
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.adminClient.GetSubscription(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.adminClient.GetSubscription, req, settings.GRPC, c.logger, "GetSubscription")
 		return err
 	}, opts...)
 	if err != nil {
@@ -960,7 +969,7 @@ func (c *adminGRPCClient) ListSubscriptions(ctx context.Context, req *pubsublite
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.adminClient.ListSubscriptions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.adminClient.ListSubscriptions, req, settings.GRPC, c.logger, "ListSubscriptions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -995,7 +1004,7 @@ func (c *adminGRPCClient) UpdateSubscription(ctx context.Context, req *pubsublit
 	var resp *pubsublitepb.Subscription
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.adminClient.UpdateSubscription(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.adminClient.UpdateSubscription, req, settings.GRPC, c.logger, "UpdateSubscription")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1012,7 +1021,7 @@ func (c *adminGRPCClient) DeleteSubscription(ctx context.Context, req *pubsublit
 	opts = append((*c.CallOptions).DeleteSubscription[0:len((*c.CallOptions).DeleteSubscription):len((*c.CallOptions).DeleteSubscription)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.adminClient.DeleteSubscription(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.adminClient.DeleteSubscription, req, settings.GRPC, c.logger, "DeleteSubscription")
 		return err
 	}, opts...)
 	return err
@@ -1027,7 +1036,7 @@ func (c *adminGRPCClient) SeekSubscription(ctx context.Context, req *pubsublitep
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.adminClient.SeekSubscription(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.adminClient.SeekSubscription, req, settings.GRPC, c.logger, "SeekSubscription")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1047,7 +1056,7 @@ func (c *adminGRPCClient) CreateReservation(ctx context.Context, req *pubsublite
 	var resp *pubsublitepb.Reservation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.adminClient.CreateReservation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.adminClient.CreateReservation, req, settings.GRPC, c.logger, "CreateReservation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1065,7 +1074,7 @@ func (c *adminGRPCClient) GetReservation(ctx context.Context, req *pubsublitepb.
 	var resp *pubsublitepb.Reservation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.adminClient.GetReservation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.adminClient.GetReservation, req, settings.GRPC, c.logger, "GetReservation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1094,7 +1103,7 @@ func (c *adminGRPCClient) ListReservations(ctx context.Context, req *pubsublitep
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.adminClient.ListReservations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.adminClient.ListReservations, req, settings.GRPC, c.logger, "ListReservations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1129,7 +1138,7 @@ func (c *adminGRPCClient) UpdateReservation(ctx context.Context, req *pubsublite
 	var resp *pubsublitepb.Reservation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.adminClient.UpdateReservation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.adminClient.UpdateReservation, req, settings.GRPC, c.logger, "UpdateReservation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1146,7 +1155,7 @@ func (c *adminGRPCClient) DeleteReservation(ctx context.Context, req *pubsublite
 	opts = append((*c.CallOptions).DeleteReservation[0:len((*c.CallOptions).DeleteReservation):len((*c.CallOptions).DeleteReservation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.adminClient.DeleteReservation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.adminClient.DeleteReservation, req, settings.GRPC, c.logger, "DeleteReservation")
 		return err
 	}, opts...)
 	return err
@@ -1172,7 +1181,7 @@ func (c *adminGRPCClient) ListReservationTopics(ctx context.Context, req *pubsub
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.adminClient.ListReservationTopics(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.adminClient.ListReservationTopics, req, settings.GRPC, c.logger, "ListReservationTopics")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1206,7 +1215,7 @@ func (c *adminGRPCClient) CancelOperation(ctx context.Context, req *longrunningp
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -1220,7 +1229,7 @@ func (c *adminGRPCClient) DeleteOperation(ctx context.Context, req *longrunningp
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -1235,7 +1244,7 @@ func (c *adminGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.G
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1264,7 +1273,7 @@ func (c *adminGRPCClient) ListOperations(ctx context.Context, req *longrunningpb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1290,306 +1299,10 @@ func (c *adminGRPCClient) ListOperations(ctx context.Context, req *longrunningpb
 	return it
 }
 
-// SeekSubscriptionOperation manages a long-running operation from SeekSubscription.
-type SeekSubscriptionOperation struct {
-	lro *longrunning.Operation
-}
-
 // SeekSubscriptionOperation returns a new SeekSubscriptionOperation from a given name.
 // The name must be that of a previously created SeekSubscriptionOperation, possibly from a different process.
 func (c *adminGRPCClient) SeekSubscriptionOperation(name string) *SeekSubscriptionOperation {
 	return &SeekSubscriptionOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *SeekSubscriptionOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*pubsublitepb.SeekSubscriptionResponse, error) {
-	var resp pubsublitepb.SeekSubscriptionResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *SeekSubscriptionOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*pubsublitepb.SeekSubscriptionResponse, error) {
-	var resp pubsublitepb.SeekSubscriptionResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *SeekSubscriptionOperation) Metadata() (*pubsublitepb.OperationMetadata, error) {
-	var meta pubsublitepb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *SeekSubscriptionOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *SeekSubscriptionOperation) Name() string {
-	return op.lro.Name()
-}
-
-// OperationIterator manages a stream of *longrunningpb.Operation.
-type OperationIterator struct {
-	items    []*longrunningpb.Operation
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *OperationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *OperationIterator) Next() (*longrunningpb.Operation, error) {
-	var item *longrunningpb.Operation
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *OperationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *OperationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ReservationIterator manages a stream of *pubsublitepb.Reservation.
-type ReservationIterator struct {
-	items    []*pubsublitepb.Reservation
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*pubsublitepb.Reservation, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ReservationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ReservationIterator) Next() (*pubsublitepb.Reservation, error) {
-	var item *pubsublitepb.Reservation
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ReservationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ReservationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// StringIterator manages a stream of string.
-type StringIterator struct {
-	items    []string
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []string, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *StringIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *StringIterator) Next() (string, error) {
-	var item string
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *StringIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *StringIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// SubscriptionIterator manages a stream of *pubsublitepb.Subscription.
-type SubscriptionIterator struct {
-	items    []*pubsublitepb.Subscription
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*pubsublitepb.Subscription, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *SubscriptionIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *SubscriptionIterator) Next() (*pubsublitepb.Subscription, error) {
-	var item *pubsublitepb.Subscription
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *SubscriptionIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *SubscriptionIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// TopicIterator manages a stream of *pubsublitepb.Topic.
-type TopicIterator struct {
-	items    []*pubsublitepb.Topic
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*pubsublitepb.Topic, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *TopicIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *TopicIterator) Next() (*pubsublitepb.Topic, error) {
-	var item *pubsublitepb.Topic
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *TopicIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *TopicIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -29,7 +29,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	retailpb "cloud.google.com/go/retail/apiv2alpha/retailpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -57,10 +56,13 @@ type ControlCallOptions struct {
 func defaultControlGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("retail.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("retail.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("retail.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -113,7 +115,7 @@ func defaultControlRESTCallOptions() *ControlCallOptions {
 	}
 }
 
-// internalControlClient is an interface that defines the methods available from Retail API.
+// internalControlClient is an interface that defines the methods available from Vertex AI Search for Retail API.
 type internalControlClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -127,7 +129,7 @@ type internalControlClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// ControlClient is a client for interacting with Retail API.
+// ControlClient is a client for interacting with Vertex AI Search for Retail API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Service for modifying Control.
@@ -209,7 +211,7 @@ func (c *ControlClient) ListOperations(ctx context.Context, req *longrunningpb.L
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// controlGRPCClient is a client for interacting with Retail API over gRPC transport.
+// controlGRPCClient is a client for interacting with Vertex AI Search for Retail API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type controlGRPCClient struct {
@@ -226,6 +228,8 @@ type controlGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewControlClient creates a new control service client based on gRPC.
@@ -252,6 +256,7 @@ func NewControlClient(ctx context.Context, opts ...option.ClientOption) (*Contro
 		connPool:         connPool,
 		controlClient:    retailpb.NewControlServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -275,7 +280,9 @@ func (c *controlGRPCClient) Connection() *grpc.ClientConn {
 func (c *controlGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -297,6 +304,8 @@ type controlRESTClient struct {
 
 	// Points back to the CallOptions field of the containing ControlClient
 	CallOptions **ControlCallOptions
+
+	logger *slog.Logger
 }
 
 // NewControlRESTClient creates a new control service rest client.
@@ -314,6 +323,7 @@ func NewControlRESTClient(ctx context.Context, opts ...option.ClientOption) (*Co
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -323,9 +333,12 @@ func NewControlRESTClient(ctx context.Context, opts ...option.ClientOption) (*Co
 func defaultControlRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://retail.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://retail.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://retail.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -335,7 +348,9 @@ func defaultControlRESTClientOptions() []option.ClientOption {
 func (c *controlRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -361,7 +376,7 @@ func (c *controlGRPCClient) CreateControl(ctx context.Context, req *retailpb.Cre
 	var resp *retailpb.Control
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.controlClient.CreateControl(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.controlClient.CreateControl, req, settings.GRPC, c.logger, "CreateControl")
 		return err
 	}, opts...)
 	if err != nil {
@@ -378,7 +393,7 @@ func (c *controlGRPCClient) DeleteControl(ctx context.Context, req *retailpb.Del
 	opts = append((*c.CallOptions).DeleteControl[0:len((*c.CallOptions).DeleteControl):len((*c.CallOptions).DeleteControl)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.controlClient.DeleteControl(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.controlClient.DeleteControl, req, settings.GRPC, c.logger, "DeleteControl")
 		return err
 	}, opts...)
 	return err
@@ -393,7 +408,7 @@ func (c *controlGRPCClient) UpdateControl(ctx context.Context, req *retailpb.Upd
 	var resp *retailpb.Control
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.controlClient.UpdateControl(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.controlClient.UpdateControl, req, settings.GRPC, c.logger, "UpdateControl")
 		return err
 	}, opts...)
 	if err != nil {
@@ -411,7 +426,7 @@ func (c *controlGRPCClient) GetControl(ctx context.Context, req *retailpb.GetCon
 	var resp *retailpb.Control
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.controlClient.GetControl(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.controlClient.GetControl, req, settings.GRPC, c.logger, "GetControl")
 		return err
 	}, opts...)
 	if err != nil {
@@ -440,7 +455,7 @@ func (c *controlGRPCClient) ListControls(ctx context.Context, req *retailpb.List
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.controlClient.ListControls(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.controlClient.ListControls, req, settings.GRPC, c.logger, "ListControls")
 			return err
 		}, opts...)
 		if err != nil {
@@ -475,7 +490,7 @@ func (c *controlGRPCClient) GetOperation(ctx context.Context, req *longrunningpb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -504,7 +519,7 @@ func (c *controlGRPCClient) ListOperations(ctx context.Context, req *longrunning
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -574,17 +589,7 @@ func (c *controlRESTClient) CreateControl(ctx context.Context, req *retailpb.Cre
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateControl")
 		if err != nil {
 			return err
 		}
@@ -634,15 +639,8 @@ func (c *controlRESTClient) DeleteControl(ctx context.Context, req *retailpb.Del
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteControl")
+		return err
 	}, opts...)
 }
 
@@ -669,11 +667,11 @@ func (c *controlRESTClient) UpdateControl(ctx context.Context, req *retailpb.Upd
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -698,17 +696,7 @@ func (c *controlRESTClient) UpdateControl(ctx context.Context, req *retailpb.Upd
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateControl")
 		if err != nil {
 			return err
 		}
@@ -758,17 +746,7 @@ func (c *controlRESTClient) GetControl(ctx context.Context, req *retailpb.GetCon
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetControl")
 		if err != nil {
 			return err
 		}
@@ -834,21 +812,10 @@ func (c *controlRESTClient) ListControls(ctx context.Context, req *retailpb.List
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListControls")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -911,17 +878,7 @@ func (c *controlRESTClient) GetOperation(ctx context.Context, req *longrunningpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -986,21 +943,10 @@ func (c *controlRESTClient) ListOperations(ctx context.Context, req *longrunning
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1028,51 +974,4 @@ func (c *controlRESTClient) ListOperations(ctx context.Context, req *longrunning
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
-}
-
-// ControlIterator manages a stream of *retailpb.Control.
-type ControlIterator struct {
-	items    []*retailpb.Control
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*retailpb.Control, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ControlIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ControlIterator) Next() (*retailpb.Control, error) {
-	var item *retailpb.Control
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ControlIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ControlIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

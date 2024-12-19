@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/pubsub/apiv1",
-    "version": "1.33.0",
+    "version": "1.45.3",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "pubsub_v1_generated_Publisher_CreateTopic_sync",
       "title": "pubsub CreateTopic Sample",
-      "description": "CreateTopic creates the given topic with the given name. See the [resource name rules]\n(https: //cloud.google.com/pubsub/docs/admin#resource_names).",
+      "description": "CreateTopic creates the given topic with the given name. See the [resource name rules]\n(https: //cloud.google.com/pubsub/docs/pubsub-basics#resource_names).",
       "file": "PublisherClient/CreateTopic/main.go",
       "language": "GO",
       "clientMethod": {
@@ -281,7 +281,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -327,7 +327,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -373,7 +373,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -519,7 +519,7 @@
     {
       "regionTag": "pubsub_v1_generated_Publisher_UpdateTopic_sync",
       "title": "pubsub UpdateTopic Sample",
-      "description": "UpdateTopic updates an existing topic. Note that certain properties of a\ntopic are not modifiable.",
+      "description": "UpdateTopic updates an existing topic by updating the fields specified in the update\nmask. Note that certain properties of a topic are not modifiable.",
       "file": "PublisherClient/UpdateTopic/main.go",
       "language": "GO",
       "clientMethod": {
@@ -878,7 +878,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -924,7 +924,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1207,7 +1207,7 @@
     {
       "regionTag": "pubsub_v1_generated_Subscriber_CreateSnapshot_sync",
       "title": "pubsub CreateSnapshot Sample",
-      "description": "CreateSnapshot creates a snapshot from the requested subscription. Snapshots are used in\n[Seek](https: //cloud.google.com/pubsub/docs/replay-overview) operations,\nwhich allow you to manage message acknowledgments in bulk. That is, you can\nset the acknowledgment state of messages in an existing subscription to the\nstate captured by a snapshot.\nIf the snapshot already exists, returns `ALREADY_EXISTS`.\nIf the requested subscription doesn't exist, returns `NOT_FOUND`.\nIf the backlog in the subscription is too old -- and the resulting snapshot\nwould expire in less than 1 hour -- then `FAILED_PRECONDITION` is returned.\nSee also the `Snapshot.expire_time` field. If the name is not provided in\nthe request, the server will assign a random\nname for this snapshot on the same project as the subscription, conforming\nto the [resource name format]\n(https: //cloud.google.com/pubsub/docs/admin#resource_names). The\ngenerated name is populated in the returned Snapshot object. Note that for\nREST API requests, you must specify a name in the request.",
+      "description": "CreateSnapshot creates a snapshot from the requested subscription. Snapshots are used in\n[Seek](https: //cloud.google.com/pubsub/docs/replay-overview) operations,\nwhich allow you to manage message acknowledgments in bulk. That is, you can\nset the acknowledgment state of messages in an existing subscription to the\nstate captured by a snapshot.\nIf the snapshot already exists, returns `ALREADY_EXISTS`.\nIf the requested subscription doesn't exist, returns `NOT_FOUND`.\nIf the backlog in the subscription is too old -- and the resulting snapshot\nwould expire in less than 1 hour -- then `FAILED_PRECONDITION` is returned.\nSee also the `Snapshot.expire_time` field. If the name is not provided in\nthe request, the server will assign a random\nname for this snapshot on the same project as the subscription, conforming\nto the [resource name format]\n(https: //cloud.google.com/pubsub/docs/pubsub-basics#resource_names). The\ngenerated name is populated in the returned Snapshot object. Note that for\nREST API requests, you must specify a name in the request.",
       "file": "SubscriberClient/CreateSnapshot/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1253,7 +1253,7 @@
     {
       "regionTag": "pubsub_v1_generated_Subscriber_CreateSubscription_sync",
       "title": "pubsub CreateSubscription Sample",
-      "description": "CreateSubscription creates a subscription to a given topic. See the [resource name rules]\n(https: //cloud.google.com/pubsub/docs/admin#resource_names).\nIf the subscription already exists, returns `ALREADY_EXISTS`.\nIf the corresponding topic doesn't exist, returns `NOT_FOUND`.\n\nIf the name is not provided in the request, the server will assign a random\nname for this subscription on the same project as the topic, conforming\nto the [resource name format]\n(https: //cloud.google.com/pubsub/docs/admin#resource_names). The generated\nname is populated in the returned Subscription object. Note that for REST\nAPI requests, you must specify a name in the request.",
+      "description": "CreateSubscription creates a subscription to a given topic. See the [resource name rules]\n(https: //cloud.google.com/pubsub/docs/pubsub-basics#resource_names).\nIf the subscription already exists, returns `ALREADY_EXISTS`.\nIf the corresponding topic doesn't exist, returns `NOT_FOUND`.\n\nIf the name is not provided in the request, the server will assign a random\nname for this subscription on the same project as the topic, conforming\nto the [resource name format]\n(https: //cloud.google.com/pubsub/docs/pubsub-basics#resource_names). The\ngenerated name is populated in the returned Subscription object. Note that\nfor REST API requests, you must specify a name in the request.",
       "file": "SubscriberClient/CreateSubscription/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1565,7 +1565,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1611,7 +1611,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1935,7 +1935,7 @@
     {
       "regionTag": "pubsub_v1_generated_Subscriber_UpdateSnapshot_sync",
       "title": "pubsub UpdateSnapshot Sample",
-      "description": "UpdateSnapshot updates an existing snapshot. Snapshots are used in\n[Seek](https: //cloud.google.com/pubsub/docs/replay-overview) operations,\nwhich allow you to manage message acknowledgments in bulk. That is, you can\nset the acknowledgment state of messages in an existing subscription to the\nstate captured by a snapshot.",
+      "description": "UpdateSnapshot updates an existing snapshot by updating the fields specified in the update\nmask. Snapshots are used in\n[Seek](https: //cloud.google.com/pubsub/docs/replay-overview) operations,\nwhich allow you to manage message acknowledgments in bulk. That is, you can\nset the acknowledgment state of messages in an existing subscription to the\nstate captured by a snapshot.",
       "file": "SubscriberClient/UpdateSnapshot/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1981,7 +1981,7 @@
     {
       "regionTag": "pubsub_v1_generated_Subscriber_UpdateSubscription_sync",
       "title": "pubsub UpdateSubscription Sample",
-      "description": "UpdateSubscription updates an existing subscription. Note that certain properties of a\nsubscription, such as its topic, are not modifiable.",
+      "description": "UpdateSubscription updates an existing subscription by updating the fields specified in the\nupdate mask. Note that certain properties of a subscription, such as its\ntopic, are not modifiable.",
       "file": "SubscriberClient/UpdateSubscription/main.go",
       "language": "GO",
       "clientMethod": {

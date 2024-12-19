@@ -10,14 +10,39 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "BatchDeleteVersions": {
+              "methods": [
+                "BatchDeleteVersions"
+              ]
+            },
+            "CreateAttachment": {
+              "methods": [
+                "CreateAttachment"
+              ]
+            },
             "CreateRepository": {
               "methods": [
                 "CreateRepository"
               ]
             },
+            "CreateRule": {
+              "methods": [
+                "CreateRule"
+              ]
+            },
             "CreateTag": {
               "methods": [
                 "CreateTag"
+              ]
+            },
+            "DeleteAttachment": {
+              "methods": [
+                "DeleteAttachment"
+              ]
+            },
+            "DeleteFile": {
+              "methods": [
+                "DeleteFile"
               ]
             },
             "DeletePackage": {
@@ -30,6 +55,11 @@
                 "DeleteRepository"
               ]
             },
+            "DeleteRule": {
+              "methods": [
+                "DeleteRule"
+              ]
+            },
             "DeleteTag": {
               "methods": [
                 "DeleteTag"
@@ -38,6 +68,11 @@
             "DeleteVersion": {
               "methods": [
                 "DeleteVersion"
+              ]
+            },
+            "GetAttachment": {
+              "methods": [
+                "GetAttachment"
               ]
             },
             "GetDockerImage": {
@@ -95,6 +130,11 @@
                 "GetRepository"
               ]
             },
+            "GetRule": {
+              "methods": [
+                "GetRule"
+              ]
+            },
             "GetTag": {
               "methods": [
                 "GetTag"
@@ -118,6 +158,11 @@
             "ImportYumArtifacts": {
               "methods": [
                 "ImportYumArtifacts"
+              ]
+            },
+            "ListAttachments": {
+              "methods": [
+                "ListAttachments"
               ]
             },
             "ListDockerImages": {
@@ -160,6 +205,11 @@
                 "ListRepositories"
               ]
             },
+            "ListRules": {
+              "methods": [
+                "ListRules"
+              ]
+            },
             "ListTags": {
               "methods": [
                 "ListTags"
@@ -180,6 +230,16 @@
                 "TestIamPermissions"
               ]
             },
+            "UpdateFile": {
+              "methods": [
+                "UpdateFile"
+              ]
+            },
+            "UpdatePackage": {
+              "methods": [
+                "UpdatePackage"
+              ]
+            },
             "UpdateProjectSettings": {
               "methods": [
                 "UpdateProjectSettings"
@@ -190,6 +250,11 @@
                 "UpdateRepository"
               ]
             },
+            "UpdateRule": {
+              "methods": [
+                "UpdateRule"
+              ]
+            },
             "UpdateTag": {
               "methods": [
                 "UpdateTag"
@@ -198,6 +263,11 @@
             "UpdateVPCSCConfig": {
               "methods": [
                 "UpdateVPCSCConfig"
+              ]
+            },
+            "UpdateVersion": {
+              "methods": [
+                "UpdateVersion"
               ]
             }
           }
@@ -205,14 +275,39 @@
         "rest": {
           "libraryClient": "Client",
           "rpcs": {
+            "BatchDeleteVersions": {
+              "methods": [
+                "BatchDeleteVersions"
+              ]
+            },
+            "CreateAttachment": {
+              "methods": [
+                "CreateAttachment"
+              ]
+            },
             "CreateRepository": {
               "methods": [
                 "CreateRepository"
               ]
             },
+            "CreateRule": {
+              "methods": [
+                "CreateRule"
+              ]
+            },
             "CreateTag": {
               "methods": [
                 "CreateTag"
+              ]
+            },
+            "DeleteAttachment": {
+              "methods": [
+                "DeleteAttachment"
+              ]
+            },
+            "DeleteFile": {
+              "methods": [
+                "DeleteFile"
               ]
             },
             "DeletePackage": {
@@ -225,6 +320,11 @@
                 "DeleteRepository"
               ]
             },
+            "DeleteRule": {
+              "methods": [
+                "DeleteRule"
+              ]
+            },
             "DeleteTag": {
               "methods": [
                 "DeleteTag"
@@ -233,6 +333,11 @@
             "DeleteVersion": {
               "methods": [
                 "DeleteVersion"
+              ]
+            },
+            "GetAttachment": {
+              "methods": [
+                "GetAttachment"
               ]
             },
             "GetDockerImage": {
@@ -290,6 +395,11 @@
                 "GetRepository"
               ]
             },
+            "GetRule": {
+              "methods": [
+                "GetRule"
+              ]
+            },
             "GetTag": {
               "methods": [
                 "GetTag"
@@ -313,6 +423,11 @@
             "ImportYumArtifacts": {
               "methods": [
                 "ImportYumArtifacts"
+              ]
+            },
+            "ListAttachments": {
+              "methods": [
+                "ListAttachments"
               ]
             },
             "ListDockerImages": {
@@ -355,6 +470,11 @@
                 "ListRepositories"
               ]
             },
+            "ListRules": {
+              "methods": [
+                "ListRules"
+              ]
+            },
             "ListTags": {
               "methods": [
                 "ListTags"
@@ -375,6 +495,16 @@
                 "TestIamPermissions"
               ]
             },
+            "UpdateFile": {
+              "methods": [
+                "UpdateFile"
+              ]
+            },
+            "UpdatePackage": {
+              "methods": [
+                "UpdatePackage"
+              ]
+            },
             "UpdateProjectSettings": {
               "methods": [
                 "UpdateProjectSettings"
@@ -385,6 +515,11 @@
                 "UpdateRepository"
               ]
             },
+            "UpdateRule": {
+              "methods": [
+                "UpdateRule"
+              ]
+            },
             "UpdateTag": {
               "methods": [
                 "UpdateTag"
@@ -393,6 +528,11 @@
             "UpdateVPCSCConfig": {
               "methods": [
                 "UpdateVPCSCConfig"
+              ]
+            },
+            "UpdateVersion": {
+              "methods": [
+                "UpdateVersion"
               ]
             }
           }

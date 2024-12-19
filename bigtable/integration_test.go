@@ -18,6 +18,7 @@ package bigtable
 
 import (
 	"context"
+	"encoding/binary"
 	"flag"
 	"fmt"
 	"log"
@@ -33,18 +34,22 @@ import (
 	"testing"
 	"time"
 
+	btapb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal"
+	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
-	"github.com/golang/protobuf/proto"
+	monitoring "cloud.google.com/go/monitoring/apiv3/v2"
+	"cloud.google.com/go/monitoring/apiv3/v2/monitoringpb"
 	"github.com/google/go-cmp/cmp"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
-	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 	grpc "google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (
@@ -52,6 +57,9 @@ const (
 	directPathIPV4Prefix      = "34.126"
 	timeUntilResourceCleanup  = time.Hour * 12 // 12 hours
 	prefixOfInstanceResources = "bt-it-"
+	prefixOfClusterResources  = "bt-c-"
+	maxCreateAttempts         = 3
+	retryCreateBackoff        = 10 * time.Second
 )
 
 var (
@@ -62,9 +70,10 @@ var (
 		"j§adams":     {"gwashington", "tjefferson"},
 	}
 
-	tableNameSpace   = uid.NewSpace("cbt-test", &uid.Options{Short: true})
-	myTableName      = fmt.Sprintf("mytable-%d", time.Now().Unix())
-	myOtherTableName = fmt.Sprintf("myothertable-%d", time.Now().Unix())
+	clusterUIDSpace       = uid.NewSpace(prefixOfClusterResources, &uid.Options{Short: true})
+	tableNameSpace        = uid.NewSpace("cbt-test", &uid.Options{Short: true})
+	myTableNameSpace      = uid.NewSpace("mytable", &uid.Options{Short: true})
+	myOtherTableNameSpace = uid.NewSpace("myothertable", &uid.Options{Short: true})
 )
 
 func populatePresidentsGraph(table *Table) error {
@@ -81,11 +90,15 @@ func populatePresidentsGraph(table *Table) error {
 	return nil
 }
 
+func generateNewInstanceName() string {
+	return fmt.Sprintf("%v%d", prefixOfInstanceResources, time.Now().Unix())
+}
+
 var instanceToCreate string
 
 func init() {
 	if runCreateInstanceTests {
-		instanceToCreate = fmt.Sprintf("bt-it-%d", time.Now().Unix())
+		instanceToCreate = generateNewInstanceName()
 	}
 }
 
@@ -127,16 +140,27 @@ func cleanup(c IntegrationTestConfig) error {
 		return err
 	}
 
-	for _, info := range instances {
-		if strings.HasPrefix(info.Name, prefixOfInstanceResources) {
-			timestamp := info.Name[len(prefixOfInstanceResources):]
+	for _, instanceInfo := range instances {
+		if strings.HasPrefix(instanceInfo.Name, prefixOfInstanceResources) {
+			timestamp := instanceInfo.Name[len(prefixOfInstanceResources):]
 			t, err := strconv.ParseInt(timestamp, 10, 64)
 			if err != nil {
 				return err
 			}
 			uT := time.Unix(t, 0)
 			if time.Now().After(uT.Add(timeUntilResourceCleanup)) {
-				iac.DeleteInstance(ctx, info.Name)
+				iac.DeleteInstance(ctx, instanceInfo.Name)
+			}
+		} else {
+			// Delete clusters created in existing instances
+			clusters, err := iac.Clusters(ctx, instanceInfo.Name)
+			if err != nil {
+				return err
+			}
+			for _, clusterInfo := range clusters {
+				if strings.HasPrefix(clusterInfo.Name, prefixOfClusterResources) {
+					iac.DeleteCluster(ctx, instanceInfo.Name, clusterInfo.Name)
+				}
 			}
 		}
 	}
@@ -208,7 +232,7 @@ func TestIntegration_PartialReadRows(t *testing.T) {
 	// Do a scan and stop part way through.
 	// Verify that the ReadRows callback doesn't keep running.
 	stopped := false
-	err = table.ReadRows(ctx, InfiniteRange(""), func(r Row) bool {
+	err = table.ReadRows(ctx, RowRange{}, func(r Row) bool {
 		if r.Key() < "h" {
 			return true
 		}
@@ -248,6 +272,159 @@ func TestIntegration_ReadRowList(t *testing.T) {
 		}
 		return true
 	})
+	if err != nil {
+		t.Fatalf("read RowList: %v", err)
+	}
+
+	if got := strings.Join(elt, ","); got != want {
+		t.Fatalf("bulk read: wrong reads.\n got %q\nwant %q", got, want)
+	}
+}
+
+func TestIntegration_UpdateFamilyValueType(t *testing.T) {
+	ctx := context.Background()
+	_, _, adminClient, _, tableName, cleanup, err := setupIntegration(ctx, t)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(cleanup)
+	familyName := "new_family"
+	// Create a new column family
+	if err = adminClient.CreateColumnFamily(ctx, tableName, familyName); err != nil {
+		t.Fatalf("Failed to create column family: %v", err)
+	}
+	// the type of the family is not aggregate
+	table, err := adminClient.getTable(ctx, tableName, btapb.Table_SCHEMA_VIEW)
+	if err != nil {
+		t.Fatalf("Failed to get table: %v", err)
+	}
+	family := table.GetColumnFamilies()[familyName]
+	if family.ValueType.GetAggregateType() != nil {
+		t.Fatalf("New column family cannot be aggregate type")
+	}
+
+	// Update column family type to string type should be successful
+	update := Family{
+		ValueType: StringType{
+			Encoding: StringUtf8BytesEncoding{},
+		},
+	}
+	err = adminClient.UpdateFamily(ctx, tableName, familyName, update)
+	if err != nil {
+		t.Fatalf("Failed to update value type of family %s with current type %v: %v", familyName, family.ValueType, err)
+	}
+	// Get FamilyInfo to check if the type is updated
+	table, err = adminClient.getTable(ctx, tableName, btapb.Table_SCHEMA_VIEW)
+	if err != nil {
+		t.Fatalf("Failed to get table info: %v", err)
+	}
+	family = table.GetColumnFamilies()[familyName]
+	if !testutil.Equal(family.ValueType, update.ValueType.proto()) {
+		t.Fatalf("got %v, want %v", family.ValueType, update.ValueType.proto())
+	}
+}
+
+func TestIntegration_Aggregates(t *testing.T) {
+	ctx := context.Background()
+	_, _, ac, table, tableName, cleanup, err := setupIntegration(ctx, t)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanup()
+	key := "some-key"
+	family := "sum"
+	column := "col"
+	mut := NewMutation()
+	mut.AddIntToCell(family, column, 1000, 5)
+
+	// Add 5 to empty cell.
+	if err := table.Apply(ctx, key, mut); err != nil {
+		t.Fatalf("Mutating row %q: %v", key, err)
+	}
+	row, err := table.ReadRow(ctx, key)
+	if err != nil {
+		t.Fatalf("Reading a row: %v", err)
+	}
+	wantRow := Row{
+		family: []ReadItem{
+			{Row: key, Column: fmt.Sprintf("%s:%s", family, column), Timestamp: 1000, Value: binary.BigEndian.AppendUint64([]byte{}, 5)},
+		},
+	}
+	if !testutil.Equal(row, wantRow) {
+		t.Fatalf("Read row mismatch.\n got %#v\nwant %#v", row, wantRow)
+	}
+
+	// Add 5 again.
+	if err := table.Apply(ctx, key, mut); err != nil {
+		t.Fatalf("Mutating row %q: %v", key, err)
+	}
+	row, err = table.ReadRow(ctx, key)
+	if err != nil {
+		t.Fatalf("Reading a row: %v", err)
+	}
+	wantRow = Row{
+		family: []ReadItem{
+			{Row: key, Column: fmt.Sprintf("%s:%s", family, column), Timestamp: 1000, Value: binary.BigEndian.AppendUint64([]byte{}, 10)},
+		},
+	}
+	if !testutil.Equal(row, wantRow) {
+		t.Fatalf("Read row mismatch.\n got %#v\nwant %#v", row, wantRow)
+	}
+
+	// Merge 5, which translates in the backend to adding 5 for sum column families.
+	mut2 := NewMutation()
+	mut2.MergeBytesToCell(family, column, 1000, binary.BigEndian.AppendUint64([]byte{}, 5))
+	if err := table.Apply(ctx, key, mut); err != nil {
+		t.Fatalf("Mutating row %q: %v", key, err)
+	}
+	row, err = table.ReadRow(ctx, key)
+	if err != nil {
+		t.Fatalf("Reading a row: %v", err)
+	}
+	wantRow = Row{
+		family: []ReadItem{
+			{Row: key, Column: fmt.Sprintf("%s:%s", family, column), Timestamp: 1000, Value: binary.BigEndian.AppendUint64([]byte{}, 15)},
+		},
+	}
+	if !testutil.Equal(row, wantRow) {
+		t.Fatalf("Read row mismatch.\n got %#v\nwant %#v", row, wantRow)
+	}
+
+	err = ac.UpdateFamily(ctx, tableName, family, Family{ValueType: StringType{}})
+	if err == nil {
+		t.Fatalf("Expected UpdateFamily to fail, but it didn't")
+	}
+	wantError := "Immutable fields 'value_type.aggregate_type' cannot be updated"
+	if !strings.Contains(err.Error(), wantError) {
+		t.Errorf("Wrong error. Expected to containt %q but was %v", wantError, err)
+	}
+}
+
+func TestIntegration_ReadRowListReverse(t *testing.T) {
+	ctx := context.Background()
+	_, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanup()
+
+	if err := populatePresidentsGraph(table); err != nil {
+		t.Fatal(err)
+	}
+
+	// Read a RowList
+	var elt []string
+	rowRange := NewOpenClosedRange("gwashington", "wmckinley")
+	want := "wmckinley-tjefferson-1,tjefferson-gwashington-1,tjefferson-j§adams-1,j§adams-gwashington-1,j§adams-tjefferson-1"
+	err = table.ReadRows(ctx, rowRange, func(r Row) bool {
+		for _, ris := range r {
+			for _, ri := range ris {
+				elt = append(elt, formatReadItem(ri))
+			}
+		}
+		return true
+	}, ReverseScan())
+
 	if err != nil {
 		t.Fatalf("read RowList: %v", err)
 	}
@@ -424,7 +601,7 @@ func TestIntegration_ArbitraryTimestamps(t *testing.T) {
 	if !testutil.Equal(r, wantRow) {
 		t.Fatalf("Cell with multiple versions and LatestNFilter(2),\n got %v\nwant %v", r, wantRow)
 	}
-	// Check cell offset / limit
+	// Check cell offset / end
 	r, err = table.ReadRow(ctx, "testrow", RowFilter(CellsPerRowLimitFilter(3)))
 	if err != nil {
 		t.Fatalf("Reading row: %v", err)
@@ -480,7 +657,8 @@ func TestIntegration_ArbitraryTimestamps(t *testing.T) {
 	}
 	// Delete non-existing cells, no such column family in this row
 	// Should not delete anything
-	if err := adminClient.CreateColumnFamily(ctx, tableName, "non-existing"); err != nil {
+
+	if err := createColumnFamilyWithRetry(ctx, t, adminClient, tableName, "non-existing"); err != nil {
 		t.Fatalf("Creating column family: %v", err)
 	}
 	mut = NewMutation()
@@ -531,7 +709,7 @@ func TestIntegration_ArbitraryTimestamps(t *testing.T) {
 	}
 
 	// Check DeleteCellsInFamily
-	if err := adminClient.CreateColumnFamily(ctx, tableName, "status"); err != nil {
+	if err := createColumnFamilyWithRetry(ctx, t, adminClient, tableName, "status"); err != nil {
 		t.Fatalf("Creating column family: %v", err)
 	}
 
@@ -695,6 +873,101 @@ func TestIntegration_HighlyConcurrentReadsAndWrites(t *testing.T) {
 	wg.Wait()
 }
 
+func TestIntegration_ExportBuiltInMetrics(t *testing.T) {
+	ctx := context.Background()
+
+	// Reduce sampling period for faster test runs
+	origSamplePeriod := defaultSamplePeriod
+	defaultSamplePeriod = time.Minute
+	defer func() {
+		defaultSamplePeriod = origSamplePeriod
+	}()
+
+	// record start time
+	testStartTime := time.Now()
+	tsListStart := &timestamppb.Timestamp{
+		Seconds: testStartTime.Unix(),
+		Nanos:   int32(testStartTime.Nanosecond()),
+	}
+
+	testEnv, _, adminClient, table, tableName, cleanup, err := setupIntegration(ctx, t)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanup()
+
+	if testing.Short() || !testEnv.Config().UseProd {
+		t.Skip("Skip long running tests in short mode or non-prod environments")
+	}
+
+	columnFamilyName := "export"
+	if err := adminClient.CreateColumnFamily(ctx, tableName, columnFamilyName); err != nil {
+		t.Fatalf("Creating column family: %v", err)
+	}
+
+	for i := 0; i < 10; i++ {
+		mut := NewMutation()
+		mut.Set(columnFamilyName, "col", 1000, []byte("test"))
+		if err := table.Apply(ctx, fmt.Sprintf("row-%v", i), mut); err != nil {
+			t.Fatalf("Apply: %v", err)
+		}
+	}
+	err = table.ReadRows(ctx, PrefixRange("row-"), func(r Row) bool {
+		return true
+	}, RowFilter(ColumnFilter("col")))
+	if err != nil {
+		t.Fatalf("ReadRows: %v", err)
+	}
+
+	// Validate that metrics are exported
+	elapsedTime := time.Since(testStartTime)
+	if elapsedTime < 2*defaultSamplePeriod {
+		// Ensure at least 2 datapoints are recorded
+		time.Sleep(2*defaultSamplePeriod - elapsedTime)
+	}
+
+	// Sleep some more
+	time.Sleep(30 * time.Second)
+
+	monitoringClient, err := monitoring.NewMetricClient(ctx)
+	if err != nil {
+		t.Errorf("Failed to create metric client: %v", err)
+	}
+	metricNamesValidate := []string{
+		metricNameOperationLatencies,
+		metricNameAttemptLatencies,
+		metricNameServerLatencies,
+	}
+
+	// Try for 5m with 10s sleep between retries
+	testutil.Retry(t, 10, 30*time.Second, func(r *testutil.R) {
+		for _, metricName := range metricNamesValidate {
+			timeListEnd := time.Now()
+			tsListEnd := &timestamppb.Timestamp{
+				Seconds: timeListEnd.Unix(),
+				Nanos:   int32(timeListEnd.Nanosecond()),
+			}
+
+			// ListTimeSeries can list only one metric type at a time.
+			// So, call ListTimeSeries with different metric names
+			iter := monitoringClient.ListTimeSeries(ctx, &monitoringpb.ListTimeSeriesRequest{
+				Name: fmt.Sprintf("projects/%s", testEnv.Config().Project),
+				Interval: &monitoringpb.TimeInterval{
+					StartTime: tsListStart,
+					EndTime:   tsListEnd,
+				},
+				Filter: fmt.Sprintf("metric.type = starts_with(\"bigtable.googleapis.com/client/%v\")", metricName),
+			})
+
+			// Assert at least 1 datapoint was exported
+			_, err := iter.Next()
+			if err != nil {
+				r.Errorf("%v not exported\n", metricName)
+			}
+		}
+	})
+}
+
 func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 	ctx := context.Background()
 	testEnv, _, adminClient, table, tableName, cleanup, err := setupIntegration(ctx, t)
@@ -702,6 +975,10 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer cleanup()
+
+	if testing.Short() {
+		t.Skip("Skip long running tests in short mode")
+	}
 
 	ts := uid.NewSpace("ts", &uid.Options{Short: true}).New()
 	if err := adminClient.CreateColumnFamily(ctx, tableName, ts); err != nil {
@@ -778,7 +1055,7 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 	}
 	verifyDirectPathRemoteAddress(testEnv, t)
 	if rc != wantRc {
-		t.Fatalf("Scan with row limit returned %d rows, want %d", rc, wantRc)
+		t.Fatalf("Scan with row end returned %d rows, want %d", rc, wantRc)
 	}
 
 	// Test bulk mutations
@@ -975,7 +1252,7 @@ func TestIntegration_Read(t *testing.T) {
 			want:   "",
 		},
 		{
-			desc:   "read with ColumnFilter + row limit",
+			desc:   "read with ColumnFilter + row end",
 			rr:     RowRange{},
 			filter: ColumnFilter(".*j.*"), // matches "j§adams" and "tjefferson"
 			limit:  LimitRows(2),
@@ -996,7 +1273,7 @@ func TestIntegration_Read(t *testing.T) {
 			want:   "gwashington-j§adams-,j§adams-gwashington-,j§adams-tjefferson-,tjefferson-gwashington-,tjefferson-j§adams-,tjefferson-wmckinley-,wmckinley-tjefferson-",
 		},
 		{
-			desc:   "read with ColumnFilter + row limit + strip values",
+			desc:   "read with ColumnFilter + row end + strip values",
 			rr:     RowRange{},
 			filter: ChainFilters(ColumnFilter(".*j.*"), StripValueFilter()), // matches "j§adams" and "tjefferson"
 			limit:  LimitRows(2),
@@ -1015,7 +1292,7 @@ func TestIntegration_Read(t *testing.T) {
 			want:   "gwashington-j§adams-,j§adams-gwashington-,j§adams-tjefferson-,tjefferson-gwashington-,tjefferson-j§adams-,tjefferson-wmckinley-,wmckinley-tjefferson-",
 		},
 		{
-			desc:   "read with ValueRangeFilter + row limit",
+			desc:   "read with ValueRangeFilter + row end",
 			rr:     RowRange{},
 			filter: ValueRangeFilter([]byte("1"), []byte("5")), // matches our value of "1"
 			limit:  LimitRows(2),
@@ -1128,10 +1405,11 @@ func TestIntegration_FullReadStats(t *testing.T) {
 	}
 
 	for _, test := range []struct {
-		desc   string
-		rr     RowSet
-		filter Filter     // may be nil
-		limit  ReadOption // may be nil
+		desc        string
+		rr          RowSet
+		filter      Filter     // may be nil
+		limit       ReadOption // may be nil
+		reverseScan bool
 
 		// We do the read and grab all the stats.
 		cellsReturnedCount int64
@@ -1251,7 +1529,7 @@ func TestIntegration_FullReadStats(t *testing.T) {
 			rowsReturnedCount:  0,
 		},
 		{
-			desc:               "read with ColumnFilter + row limit",
+			desc:               "read with ColumnFilter + row end",
 			rr:                 RowRange{},
 			filter:             ColumnFilter(".*j.*"), // matches "j§adams" and "tjefferson"
 			limit:              LimitRows(2),
@@ -1274,7 +1552,7 @@ func TestIntegration_FullReadStats(t *testing.T) {
 			rowsReturnedCount:  4,
 		},
 		{
-			desc:               "read with ColumnFilter + row limit + strip values",
+			desc:               "read with ColumnFilter + row end + strip values",
 			rr:                 RowRange{},
 			filter:             ChainFilters(ColumnFilter(".*j.*"), StripValueFilter()), // matches "j§adams" and "tjefferson"
 			limit:              LimitRows(2),
@@ -1296,7 +1574,7 @@ func TestIntegration_FullReadStats(t *testing.T) {
 			rowsReturnedCount:  4,
 		},
 		{
-			desc:               "read with ValueRangeFilter + row limit",
+			desc:               "read with ValueRangeFilter + row end",
 			rr:                 RowRange{},
 			filter:             ValueRangeFilter([]byte("1"), []byte("5")), // matches our value of "1"
 			limit:              LimitRows(2),
@@ -1358,6 +1636,20 @@ func TestIntegration_FullReadStats(t *testing.T) {
 			cellsReturnedCount: 0,
 			rowsReturnedCount:  0,
 		},
+		{
+			desc:               "reverse read all, unfiltered",
+			rr:                 RowRange{},
+			reverseScan:        true,
+			cellsReturnedCount: 7,
+			rowsReturnedCount:  4,
+		},
+		{
+			desc:               "reverse read with InfiniteRange, unfiltered",
+			rr:                 InfiniteReverseRange("wmckinley"),
+			reverseScan:        true,
+			cellsReturnedCount: 7,
+			rowsReturnedCount:  4,
+		},
 	} {
 		t.Run(test.desc, func(t *testing.T) {
 			var opts []ReadOption
@@ -1366,6 +1658,9 @@ func TestIntegration_FullReadStats(t *testing.T) {
 			}
 			if test.limit != nil {
 				opts = append(opts, test.limit)
+			}
+			if test.reverseScan {
+				opts = append(opts, ReverseScan())
 			}
 			// Define a callback for validating request stats.
 			callbackInvoked := false
@@ -1387,7 +1682,7 @@ func TestIntegration_FullReadStats(t *testing.T) {
 					// We use lenient checks for CellsSeenCount and RowsSeenCount. Exact checks would be brittle.
 					// Note that the emulator and prod sometimes yield different values:
 					// - Sometimes prod scans fewer cells due to optimizations that allow prod to skip cells.
-					// - Sometimes prod scans more cells due to to filters that must rescan cells.
+					// - Sometimes prod scans more cells due to filters that must rescan cells.
 					// Similar issues apply for RowsSeenCount.
 					if got, want := readStats.CellsSeenCount, readStats.CellsReturnedCount; got < want {
 						t.Errorf("CellsSeenCount should be greater than or equal to CellsReturnedCount. got: %d < want: %d",
@@ -1472,7 +1767,8 @@ func TestIntegration_TableDeletionProtection(t *testing.T) {
 	if testEnv.Config().UseProd {
 		timeout = 5 * time.Minute
 	}
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {
@@ -1480,6 +1776,7 @@ func TestIntegration_TableDeletionProtection(t *testing.T) {
 	}
 	defer adminClient.Close()
 
+	myTableName := myTableNameSpace.New()
 	tableConf := TableConf{
 		TableID: myTableName,
 		Families: map[string]GCPolicy{
@@ -1493,13 +1790,13 @@ func TestIntegration_TableDeletionProtection(t *testing.T) {
 		t.Fatalf("Create table from config: %v", err)
 	}
 
-	table, err := adminClient.TableInfo(ctx, myTableName)
+	table, err := adminClient.TableInfo(ctx, tableConf.TableID)
 	if err != nil {
 		t.Fatalf("Getting table info: %v", err)
 	}
 
 	if table.DeletionProtection != Protected {
-		t.Errorf("Expect table deletion protection to be enabled for table: %v", myTableName)
+		t.Errorf("Expect table deletion protection to be enabled for table: %v", tableConf.TableID)
 	}
 
 	// Check if the deletion protection works properly
@@ -1510,21 +1807,17 @@ func TestIntegration_TableDeletionProtection(t *testing.T) {
 		t.Errorf("We shouldn't be able to delete the table when the deletion protection is enabled for table %v", myTableName)
 	}
 
-	updateTableConf := UpdateTableConf{
-		tableID:            myTableName,
-		deletionProtection: Unprotected,
-	}
-	if err := adminClient.updateTableWithConf(ctx, &updateTableConf); err != nil {
+	if err := adminClient.UpdateTableWithDeletionProtection(ctx, tableConf.TableID, Unprotected); err != nil {
 		t.Fatalf("Update table from config: %v", err)
 	}
 
-	table, err = adminClient.TableInfo(ctx, myTableName)
+	table, err = adminClient.TableInfo(ctx, tableConf.TableID)
 	if err != nil {
 		t.Fatalf("Getting table info: %v", err)
 	}
 
 	if table.DeletionProtection != Unprotected {
-		t.Errorf("Expect table deletion protection to be disabled for table: %v", myTableName)
+		t.Errorf("Expect table deletion protection to be disabled for table: %v", tableConf.TableID)
 	}
 
 	if err := adminClient.DeleteColumnFamily(ctx, tableConf.TableID, "fam1"); err != nil {
@@ -1550,7 +1843,8 @@ func TestIntegration_EnableChangeStream(t *testing.T) {
 	if testEnv.Config().UseProd {
 		timeout = 5 * time.Minute
 	}
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {
@@ -1563,6 +1857,7 @@ func TestIntegration_EnableChangeStream(t *testing.T) {
 		t.Fatalf("ChangeStreamRetention not valid: %v", err)
 	}
 
+	myTableName := myTableNameSpace.New()
 	tableConf := TableConf{
 		TableID: myTableName,
 		Families: map[string]GCPolicy{
@@ -1576,13 +1871,13 @@ func TestIntegration_EnableChangeStream(t *testing.T) {
 		t.Fatalf("Create table from config: %v", err)
 	}
 
-	table, err := adminClient.TableInfo(ctx, myTableName)
+	table, err := adminClient.TableInfo(ctx, tableConf.TableID)
 	if err != nil {
 		t.Fatalf("Getting table info: %v", err)
 	}
 
 	if table.ChangeStreamRetention != changeStreamRetention {
-		t.Errorf("Expect table change stream to be enabled for table: %v has info: %v", myTableName, table)
+		t.Errorf("Expect table change stream to be enabled for table: %v has info: %v", tableConf.TableID, table)
 	}
 
 	// Update retention
@@ -1591,35 +1886,173 @@ func TestIntegration_EnableChangeStream(t *testing.T) {
 		t.Fatalf("ChangeStreamRetention not valid: %v", err)
 	}
 
-	if err := adminClient.UpdateTableWithChangeStream(ctx, myTableName, changeStreamRetention); err != nil {
+	if err := adminClient.UpdateTableWithChangeStream(ctx, tableConf.TableID, changeStreamRetention); err != nil {
 		t.Fatalf("Update table from config: %v", err)
 	}
 
-	table, err = adminClient.TableInfo(ctx, myTableName)
+	table, err = adminClient.TableInfo(ctx, tableConf.TableID)
 	if err != nil {
 		t.Fatalf("Getting table info: %v", err)
 	}
 
 	if table.ChangeStreamRetention != changeStreamRetention {
-		t.Errorf("Expect table change stream to be enabled for table: %v has info: %v", myTableName, table)
+		t.Errorf("Expect table change stream to be enabled for table: %v has info: %v", tableConf.TableID, table)
 	}
 
 	// Disable change stream
-	if err := adminClient.UpdateTableDisableChangeStream(ctx, myTableName); err != nil {
+	if err := adminClient.UpdateTableDisableChangeStream(ctx, tableConf.TableID); err != nil {
 		t.Fatalf("Update table from config: %v", err)
 	}
 
-	table, err = adminClient.TableInfo(ctx, myTableName)
+	table, err = adminClient.TableInfo(ctx, tableConf.TableID)
 	if err != nil {
 		t.Fatalf("Getting table info: %v", err)
 	}
 
 	if table.ChangeStreamRetention != nil {
-		t.Errorf("Expect table change stream to be disabled for table: %v has info: %v", myTableName, table)
+		t.Errorf("Expect table change stream to be disabled for table: %v has info: %v", tableConf.TableID, table)
 	}
 
 	if err = adminClient.DeleteTable(ctx, tableConf.TableID); err != nil {
 		t.Errorf("Deleting the table failed when change stream is disabled: %v", err)
+	}
+}
+
+func equalOptionalDuration(a, b optional.Duration) bool {
+	if a == nil && b == nil {
+		return true
+	}
+	if a == nil || b == nil {
+		return false
+	}
+	return int64(a.(time.Duration).Seconds()) == int64(b.(time.Duration).Seconds())
+}
+
+// Testing if automated backups works properly i.e.
+// - Can create table with Automated Backups configured
+// - Can update Automated Backup Policy on an existing table
+// - Can disable Automated Backups on an existing table
+func TestIntegration_AutomatedBackups(t *testing.T) {
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support Automated Backups")
+	}
+
+	timeout := 5 * time.Minute
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	retentionPeriod, err := time.ParseDuration("72h")
+	if err != nil {
+		t.Fatalf("RetentionPeriod not valid: %v", err)
+	}
+	frequency, err := time.ParseDuration("24h")
+	if err != nil {
+		t.Fatalf("Frequency not valid: %v", err)
+	}
+	automatedBackupPolicy := TableAutomatedBackupPolicy{RetentionPeriod: retentionPeriod, Frequency: frequency}
+
+	myTableName := myTableNameSpace.New()
+	tableConf := TableConf{
+		TableID: myTableName,
+		Families: map[string]GCPolicy{
+			"fam1": MaxVersionsPolicy(1),
+			"fam2": MaxVersionsPolicy(2),
+		},
+		AutomatedBackupConfig: &automatedBackupPolicy,
+	}
+
+	if err := adminClient.CreateTableFromConf(ctx, &tableConf); err != nil {
+		t.Fatalf("Create table from config: %v", err)
+	}
+	defer deleteTable(ctx, t, adminClient, tableConf.TableID)
+
+	table, err := adminClient.TableInfo(ctx, tableConf.TableID)
+	if err != nil {
+		t.Fatalf("Getting table info: %v", err)
+	}
+
+	if table.AutomatedBackupConfig == nil {
+		t.Errorf("Expect Automated Backup Policy to be enabled for table: %v has info: %v", tableConf.TableID, table)
+	}
+	tableAbp := table.AutomatedBackupConfig.(*TableAutomatedBackupPolicy)
+	if !equalOptionalDuration(tableAbp.Frequency, automatedBackupPolicy.Frequency) {
+		t.Errorf("Expect automated backup policy frequency to be set for table: %v has info: %v", tableConf.TableID, table)
+	}
+	if !equalOptionalDuration(tableAbp.RetentionPeriod, automatedBackupPolicy.RetentionPeriod) {
+		t.Errorf("Expect automated backup policy retention period to be set for table: %v has info: %v", tableConf.TableID, table)
+	}
+
+	// Test update automated backup policy
+	retentionPeriod, err = time.ParseDuration("72h")
+	if err != nil {
+		t.Fatalf("RetentionPeriod not valid: %v", err)
+	}
+	frequency, err = time.ParseDuration("24h")
+	if err != nil {
+		t.Fatalf("Frequency not valid: %v", err)
+	}
+	for _, testcase := range []struct {
+		desc      string
+		bkpPolicy TableAutomatedBackupPolicy
+	}{
+		{
+			desc:      "Update automated backup policy, just frequency",
+			bkpPolicy: TableAutomatedBackupPolicy{Frequency: frequency},
+		},
+		{
+			desc:      "Update automated backup policy, just retention period",
+			bkpPolicy: TableAutomatedBackupPolicy{RetentionPeriod: retentionPeriod},
+		},
+		{
+			desc:      "Update automated backup policy, all fields",
+			bkpPolicy: TableAutomatedBackupPolicy{RetentionPeriod: retentionPeriod, Frequency: frequency},
+		},
+	} {
+		if gotErr := adminClient.UpdateTableWithAutomatedBackupPolicy(ctx, tableConf.TableID, testcase.bkpPolicy); err != nil {
+			t.Fatalf("%v: Update table from config: %v", testcase.desc, gotErr)
+		}
+
+		gotTable, gotErr := adminClient.TableInfo(ctx, tableConf.TableID)
+		if gotErr != nil {
+			t.Fatalf("%v: Getting table info: %v", testcase.desc, gotErr)
+		}
+		if gotTable.AutomatedBackupConfig == nil {
+			t.Errorf("%v: Expect Automated Backup Policy to be enabled for table: %v has info: %v", testcase.desc, tableConf.TableID, gotTable)
+		}
+
+		gotTableAbp := gotTable.AutomatedBackupConfig.(*TableAutomatedBackupPolicy)
+		if testcase.bkpPolicy.Frequency != nil && !equalOptionalDuration(gotTableAbp.Frequency, testcase.bkpPolicy.Frequency) {
+			t.Errorf("%v: Expect automated backup policy frequency to be set for table: %v has info: %v", testcase.desc, tableConf.TableID, table)
+		}
+		if testcase.bkpPolicy.RetentionPeriod != nil && !equalOptionalDuration(gotTableAbp.RetentionPeriod, testcase.bkpPolicy.RetentionPeriod) {
+			t.Errorf("%v: Expect automated backup policy retention period to be set for table: %v has info: %v", testcase.desc, tableConf.TableID, table)
+		}
+	}
+
+	// Test disable automated backups
+	if err := adminClient.UpdateTableDisableAutomatedBackupPolicy(ctx, tableConf.TableID); err != nil {
+		t.Fatalf("Update table from config: %v", err)
+	}
+
+	table, err = adminClient.TableInfo(ctx, tableConf.TableID)
+	if err != nil {
+		t.Fatalf("Getting table info: %v", err)
+	}
+
+	if table.AutomatedBackupConfig != nil {
+		t.Errorf("Expect table automated backups to be disabled for table: %v has info: %v", tableConf.TableID, table)
 	}
 }
 
@@ -1634,7 +2067,8 @@ func TestIntegration_Admin(t *testing.T) {
 	if testEnv.Config().UseProd {
 		timeout = 5 * time.Minute
 	}
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {
@@ -1679,15 +2113,15 @@ func TestIntegration_Admin(t *testing.T) {
 		return true
 	}
 
+	myTableName := myTableNameSpace.New()
 	defer deleteTable(ctx, t, adminClient, myTableName)
-
-	if err := adminClient.CreateTable(ctx, myTableName); err != nil {
+	if err := createTableWithRetry(ctx, t, adminClient, myTableName); err != nil {
 		t.Fatalf("Creating table: %v", err)
 	}
 
+	myOtherTableName := myOtherTableNameSpace.New()
 	defer deleteTable(ctx, t, adminClient, myOtherTableName)
-
-	if err := adminClient.CreateTable(ctx, myOtherTableName); err != nil {
+	if err := createTableWithRetry(ctx, t, adminClient, myOtherTableName); err != nil {
 		t.Fatalf("Creating table: %v", err)
 	}
 
@@ -1799,7 +2233,12 @@ func TestIntegration_Admin(t *testing.T) {
 		if err != nil {
 			t.Fatalf("EncryptionInfo: %v", err)
 		}
-		if got, want := len(encryptionInfo), 1; !cmp.Equal(got, want) {
+		wantLen := 1
+		if testEnv.Config().Cluster2 != "" {
+			wantLen++
+		}
+
+		if got, want := len(encryptionInfo), wantLen; !cmp.Equal(got, want) {
 			t.Fatalf("Number of Clusters with Encryption Info: %v, want: %v", got, want)
 		}
 
@@ -1826,7 +2265,8 @@ func TestIntegration_TableIam(t *testing.T) {
 	}
 
 	timeout := 5 * time.Minute
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {
@@ -1834,8 +2274,9 @@ func TestIntegration_TableIam(t *testing.T) {
 	}
 	defer adminClient.Close()
 
+	myTableName := myTableNameSpace.New()
 	defer deleteTable(ctx, t, adminClient, myTableName)
-	if err := adminClient.CreateTable(ctx, myTableName); err != nil {
+	if err := createTableWithRetry(ctx, t, adminClient, myTableName); err != nil {
 		t.Fatalf("Creating table: %v", err)
 	}
 
@@ -1864,7 +2305,8 @@ func TestIntegration_BackupIAM(t *testing.T) {
 		t.Skip("emulator doesn't support IAM Policy creation")
 	}
 	timeout := 5 * time.Minute
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {
@@ -1876,7 +2318,7 @@ func TestIntegration_BackupIAM(t *testing.T) {
 	cluster := testEnv.Config().Cluster
 
 	defer deleteTable(ctx, t, adminClient, table)
-	if err := adminClient.CreateTable(ctx, table); err != nil {
+	if err := createTableWithRetry(ctx, t, adminClient, table); err != nil {
 		t.Fatalf("Creating table: %v", err)
 	}
 
@@ -1921,6 +2363,80 @@ func TestIntegration_BackupIAM(t *testing.T) {
 	}
 }
 
+func TestIntegration_AuthorizedViewIAM(t *testing.T) {
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support IAM Policy creation")
+	}
+	timeout := 5 * time.Minute
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	table := testEnv.Config().Table
+
+	defer deleteTable(ctx, t, adminClient, table)
+	if err := createTableWithRetry(ctx, t, adminClient, table); err != nil {
+		t.Fatalf("Creating table: %v", err)
+	}
+
+	// Create authorized view.
+	opts := &uid.Options{Sep: '_'}
+	authorizedViewUUID := uid.NewSpace("authorizedView", opts)
+	authorizedView := authorizedViewUUID.New()
+
+	defer adminClient.DeleteAuthorizedView(ctx, table, authorizedView)
+
+	if err = adminClient.CreateAuthorizedView(ctx, &AuthorizedViewConf{
+		TableID:            table,
+		AuthorizedViewID:   authorizedView,
+		AuthorizedView:     &SubsetViewConf{},
+		DeletionProtection: Unprotected,
+	}); err != nil {
+		t.Fatalf("Creating authorizedView: %v", err)
+	}
+	iamHandle := adminClient.AuthorizedViewIAM(table, authorizedView)
+	// Get authorized view policy.
+	p, err := iamHandle.Policy(ctx)
+	if err != nil {
+		t.Errorf("iamHandle.Policy: %v", err)
+	}
+	// The resource is new, so the policy should be empty.
+	if got := p.Roles(); len(got) > 0 {
+		t.Errorf("got roles %v, want none", got)
+	}
+	// Set authorized view policy.
+	member := "domain:google.com"
+	// Add a member, set the policy, then check that the member is present.
+	p.Add(member, iam.Viewer)
+	if err = iamHandle.SetPolicy(ctx, p); err != nil {
+		t.Errorf("iamHandle.SetPolicy: %v", err)
+	}
+	p, err = iamHandle.Policy(ctx)
+	if err != nil {
+		t.Errorf("iamHandle.Policy: %v", err)
+	}
+	if got, want := p.Members(iam.Viewer), []string{member}; !testutil.Equal(got, want) {
+		t.Errorf("iamHandle.Policy: got %v, want %v", got, want)
+	}
+	// Test authorized view permissions.
+	permissions := []string{"bigtable.authorizedViews.get", "bigtable.authorizedViews.update"}
+	_, err = iamHandle.TestPermissions(ctx, permissions)
+	if err != nil {
+		t.Errorf("iamHandle.TestPermissions: %v", err)
+	}
+}
+
 func TestIntegration_AdminCreateInstance(t *testing.T) {
 	if instanceToCreate == "" {
 		t.Skip("instanceToCreate not set, skipping instance creation testing")
@@ -1938,7 +2454,8 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 	}
 
 	timeout := 7 * time.Minute
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	iAdminClient, err := testEnv.NewInstanceAdminClient()
 	if err != nil {
@@ -2097,7 +2614,7 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 	// Delete the table at the end of the test. Schedule ahead of time
 	// in case the client fails
 	defer deleteTable(ctx, t, adminClient, table)
-	if err := adminClient.CreateTable(ctx, table); err != nil {
+	if err := createTableWithRetry(ctx, t, adminClient, table); err != nil {
 		t.Fatalf("Creating table: %v", err)
 	}
 
@@ -2119,7 +2636,7 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 		time.Sleep(time.Second * 10)
 	}
 	if encryptionKeyVersion == "" {
-		t.Fatalf("Encryption Key not created within alotted time limit")
+		t.Fatalf("Encryption Key not created within alotted time end")
 	}
 
 	// Validate Encryption Info under getTable
@@ -2223,7 +2740,9 @@ func TestIntegration_AdminUpdateInstanceLabels(t *testing.T) {
 
 	// Create an instance admin client
 	timeout := 7 * time.Minute
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
 	iAdminClient, err := testEnv.NewInstanceAdminClient()
 	if err != nil {
 		t.Fatalf("NewInstanceAdminClient: %v", err)
@@ -2319,7 +2838,8 @@ func TestIntegration_AdminUpdateInstanceAndSyncClusters(t *testing.T) {
 	}
 
 	timeout := 5 * time.Minute
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	iAdminClient, err := testEnv.NewInstanceAdminClient()
 	if err != nil {
@@ -2327,7 +2847,7 @@ func TestIntegration_AdminUpdateInstanceAndSyncClusters(t *testing.T) {
 	}
 	defer iAdminClient.Close()
 
-	clusterID := instanceToCreate + "-cluster"
+	clusterID := clusterUIDSpace.New()
 
 	// Create a development instance
 	conf := &InstanceConf{
@@ -2406,7 +2926,7 @@ func TestIntegration_AdminUpdateInstanceAndSyncClusters(t *testing.T) {
 
 	// Now add a second cluster as the only change. The first cluster must also be provided so
 	// it is not removed.
-	clusterID2 := clusterID + "-2"
+	clusterID2 := clusterUIDSpace.New()
 	confWithClusters = &InstanceWithClustersConfig{
 		InstanceID: instanceToCreate,
 		Clusters: []ClusterConfig{
@@ -2489,7 +3009,8 @@ func TestIntegration_Autoscaling(t *testing.T) {
 	}
 
 	timeout := 5 * time.Minute
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	iAdminClient, err := testEnv.NewInstanceAdminClient()
 	if err != nil {
@@ -2657,7 +3178,8 @@ func TestIntegration_Granularity(t *testing.T) {
 	if testEnv.Config().UseProd {
 		timeout = 5 * time.Minute
 	}
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {
@@ -2687,9 +3209,9 @@ func TestIntegration_Granularity(t *testing.T) {
 		return true
 	}
 
+	myTableName := myTableNameSpace.New()
 	defer deleteTable(ctx, t, adminClient, myTableName)
-
-	if err := adminClient.CreateTable(ctx, myTableName); err != nil {
+	if err := createTableWithRetry(ctx, t, adminClient, myTableName); err != nil {
 		t.Fatalf("Creating table: %v", err)
 	}
 
@@ -2704,7 +3226,7 @@ func TestIntegration_Granularity(t *testing.T) {
 		Name: prefix + "/tables/" + myTableName,
 		Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{{
 			Id:  "cf",
-			Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Create{&btapb.ColumnFamily{}},
+			Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Create{Create: &btapb.ColumnFamily{}},
 		}},
 	}
 	table, err := adminClient.tClient.ModifyColumnFamilies(ctx, req)
@@ -2770,6 +3292,13 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 		t.Fatalf("Get app profile: %v", err)
 	}
 
+	defer func() {
+		err = iAdminClient.DeleteAppProfile(ctx, adminClient.instance, profileID)
+		if err != nil {
+			t.Fatalf("Delete app profile: %v", err)
+		}
+	}()
+
 	if !proto.Equal(createdProfile, gotProfile) {
 		t.Fatalf("created profile: %s, got profile: %s", createdProfile.Name, gotProfile.Name)
 	}
@@ -2830,6 +3359,11 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 				Description:   "",
 				RoutingPolicy: gotProfile.RoutingPolicy,
 				Etag:          gotProfile.Etag,
+				Isolation: &btapb.AppProfile_StandardIsolation_{
+					StandardIsolation: &btapb.AppProfile_StandardIsolation{
+						Priority: btapb.AppProfile_PRIORITY_HIGH,
+					},
+				},
 			},
 		},
 		{
@@ -2847,6 +3381,11 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 						ClusterId: testEnv.Config().Cluster,
 					},
 				},
+				Isolation: &btapb.AppProfile_StandardIsolation_{
+					StandardIsolation: &btapb.AppProfile_StandardIsolation{
+						Priority: btapb.AppProfile_PRIORITY_HIGH,
+					},
+				},
 			},
 		},
 	} {
@@ -2862,17 +3401,15 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 			continue
 		}
 
-		got, _ := iAdminClient.GetAppProfile(ctx, adminClient.instance, profileID)
+		// Retry to see if the update has been completed
+		testutil.Retry(t, 10, 10*time.Second, func(r *testutil.R) {
+			got, _ := iAdminClient.GetAppProfile(ctx, adminClient.instance, profileID)
 
-		if !proto.Equal(got, test.want) {
-			t.Fatalf("%s : got profile : %v, want profile: %v", test.desc, gotProfile, test.want)
-		}
+			if !proto.Equal(got, test.want) {
+				r.Errorf("%s : got profile : %v, want profile: %v", test.desc, gotProfile, test.want)
+			}
+		})
 
-	}
-
-	err = iAdminClient.DeleteAppProfile(ctx, adminClient.instance, profileID)
-	if err != nil {
-		t.Fatalf("Delete app profile: %v", err)
 	}
 }
 
@@ -2936,6 +3473,204 @@ func TestIntegration_InstanceUpdate(t *testing.T) {
 	}
 }
 
+func createInstance(ctx context.Context, t *testing.T, iAdminClient *InstanceAdminClient) (string, string, error) {
+	// Last seen error
+	var err error
+
+	var diffInstance, diffCluster string
+	testutil.Retry(t, 3, 30*time.Second, func(r *testutil.R) {
+		diffInstance = generateNewInstanceName()
+		diffCluster = clusterUIDSpace.New()
+		conf := &InstanceConf{
+			InstanceId:   diffInstance,
+			ClusterId:    diffCluster,
+			DisplayName:  "different test sourceInstance",
+			Zone:         instanceToCreateZone2,
+			InstanceType: DEVELOPMENT,
+			Labels:       map[string]string{"test-label-key-diff": "test-label-value-diff"},
+		}
+		if createErr := iAdminClient.CreateInstance(ctx, conf); err != nil {
+			err = fmt.Errorf("CreateInstance: %v", createErr)
+			defer iAdminClient.DeleteInstance(ctx, diffInstance)
+			r.Errorf(createErr.Error())
+		}
+	})
+	return diffInstance, diffCluster, err
+}
+
+func TestIntegration_AdminCopyBackup(t *testing.T) {
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support backups")
+	}
+
+	timeout := 15 * time.Minute
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	// Create source clients
+	srcAdminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer srcAdminClient.Close()
+	srcIAdminClient, err := testEnv.NewInstanceAdminClient()
+	if err != nil {
+		t.Fatalf("NewInstanceAdminClient: %v", err)
+	}
+	defer srcIAdminClient.Close()
+
+	// Create table
+	tblConf := TableConf{
+		TableID: testEnv.Config().Table,
+		Families: map[string]GCPolicy{
+			"fam1": MaxVersionsPolicy(1),
+			"fam2": MaxVersionsPolicy(2),
+		},
+	}
+	defer deleteTable(ctx, t, srcAdminClient, tblConf.TableID)
+	if err := srcAdminClient.CreateTableFromConf(ctx, &tblConf); err != nil {
+		t.Fatalf("Creating table from TableConf: %v", err)
+	}
+
+	// Create source backup
+	copyBackupUID := uid.NewSpace(prefixOfInstanceResources, &uid.Options{})
+	backupUID := uid.NewSpace(prefixOfInstanceResources, &uid.Options{})
+	srcBackupName := backupUID.New()
+	srcCluster := testEnv.Config().Cluster
+	defer srcAdminClient.DeleteBackup(ctx, srcCluster, srcBackupName)
+	if err = srcAdminClient.CreateBackup(ctx, tblConf.TableID, srcCluster, srcBackupName, time.Now().Add(100*time.Hour)); err != nil {
+		t.Fatalf("Creating backup: %v", err)
+	}
+	wantSourceBackup := srcAdminClient.instancePrefix() + "/clusters/" + srcCluster + "/backups/" + srcBackupName
+
+	destProj1 := testEnv.Config().Project
+	destProj1Inst1 := testEnv.Config().Instance // 1st instance in 1st destination project
+	destProj1Inst1Cl1 := srcCluster             // 1st cluster in 1st instance in 1st destination project
+	destIAdminClient1 := srcIAdminClient
+
+	type testcase struct {
+		desc         string
+		destProject  string
+		destInstance string
+		destCluster  string
+	}
+	testcases := []testcase{
+		{
+			desc:         "Copy backup to same project, same instance, same cluster",
+			destProject:  destProj1,
+			destInstance: destProj1Inst1,
+			destCluster:  destProj1Inst1Cl1,
+		},
+	}
+
+	// testEnv.Config().Cluster2 will be non-empty if 'it.cluster2' flag is passed
+	// or 'GCLOUD_TESTS_BIGTABLE_PRI_PROJ_SEC_CLUSTER' environment variable is set
+	// Add more testcases if Cluster2 is non-empty string
+	if testEnv.Config().Cluster2 != "" {
+		testcases = append(testcases, testcase{
+			desc:         "Copy backup to same project, same instance, different cluster",
+			destProject:  destProj1,
+			destInstance: destProj1Inst1,
+			destCluster:  testEnv.Config().Cluster2,
+		})
+	}
+
+	// If 'it.run-create-instance-tests' flag is set while running the tests,
+	// instanceToCreate will be non-empty string.
+	// Add more testcases if instanceToCreate is non-empty string
+	if instanceToCreate != "" {
+		// Create a 2nd instance in 1st destination project
+		destProj1Inst2, destProj1Inst2Cl1, err := createInstance(ctx, t, destIAdminClient1)
+		if err != nil {
+			t.Fatalf("CreateInstance: %v", err)
+		}
+		defer destIAdminClient1.DeleteInstance(ctx, destProj1Inst2)
+		testcases = append(testcases, testcase{
+			desc:         "Copy backup to same project, different instance",
+			destProject:  destProj1,
+			destInstance: destProj1Inst2,
+			destCluster:  destProj1Inst2Cl1,
+		})
+	} else {
+		t.Logf("WARNING: run-create-instance-tests not set, skipping tests that require instance creation")
+	}
+
+	// testEnv.Config().Project2 will be non-empty if 'it.project2' flag is passed
+	// or 'GCLOUD_TESTS_GOLANG_SECONDARY_BIGTABLE_PROJECT_ID' environment variable is set
+	// Add more testcases if Project2 is non-empty string
+	if testEnv.Config().Project2 != "" {
+		// Create admin client for 2nd project in test environment
+		destProj2 := testEnv.Config().Project2
+		ctx, options, err := testEnv.AdminClientOptions()
+		if err != nil {
+			t.Fatalf("AdminClientOptions: %v", err)
+		}
+		destIAdminClient2, err := NewInstanceAdminClient(ctx, destProj2, options...)
+		if err != nil {
+			t.Fatalf("NewInstanceAdminClient: %v", err)
+		}
+		defer destIAdminClient2.Close()
+
+		// Create instance in 2nd project
+		destProj2Inst1, destProj2Inst1Cl1, err := createInstance(ctx, t, destIAdminClient2)
+		if err != nil {
+			t.Fatalf("CreateInstance: %v", err)
+		}
+		defer destIAdminClient2.DeleteInstance(ctx, destProj2Inst1)
+		testcases = append(testcases, testcase{
+			desc:         "Copy backup to different project",
+			destProject:  destProj2,
+			destInstance: destProj2Inst1,
+			destCluster:  destProj2Inst1Cl1,
+		})
+	} else {
+		t.Logf("WARNING: Secondary project not set, skipping copy backup to different project testing")
+	}
+
+	for _, testcase := range testcases {
+		// Create destination client
+		destCtx, destOpts, err := testEnv.AdminClientOptions()
+		if err != nil {
+			t.Fatalf("%v: AdminClientOptions: %v", testcase.desc, err)
+		}
+
+		desc := testcase.desc
+		destProject := testcase.destProject
+		destInstance := testcase.destInstance
+		destCluster := testcase.destCluster
+
+		destAdminClient, err := NewAdminClient(destCtx, destProject, destInstance, destOpts...)
+		if err != nil {
+			t.Fatalf("%v: NewAdminClient: %v", desc, err)
+		}
+		defer destAdminClient.Close()
+
+		// Copy Backup
+		destBackupName := copyBackupUID.New()
+		defer destAdminClient.DeleteBackup(destCtx, destCluster, destBackupName)
+		err = srcAdminClient.CopyBackup(destCtx, srcCluster, srcBackupName, destProject, destInstance, destCluster,
+			destBackupName, time.Now().Add(24*time.Hour))
+		if err != nil {
+			t.Fatalf("%v: CopyBackup: %v", desc, err)
+		}
+
+		// Verify source backup field in backup info
+		gotBackupInfo, err := destAdminClient.BackupInfo(ctx, destCluster, destBackupName)
+		if err != nil {
+			t.Fatalf("%v: BackupInfo: %v", desc, err)
+		}
+		if gotBackupInfo.SourceBackup != wantSourceBackup {
+			t.Fatalf("%v: SourceBackup: got: %v, want: %v", desc, gotBackupInfo.SourceBackup, wantSourceBackup)
+		}
+	}
+}
+
 func TestIntegration_AdminBackup(t *testing.T) {
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
@@ -2947,8 +3682,9 @@ func TestIntegration_AdminBackup(t *testing.T) {
 		t.Skip("emulator doesn't support backups")
 	}
 
-	timeout := 10 * time.Minute
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	timeout := 15 * time.Minute
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {
@@ -2978,23 +3714,13 @@ func TestIntegration_AdminBackup(t *testing.T) {
 		t.Fatalf("NewInstanceAdminClient: %v", err)
 	}
 	defer iAdminClient.Close()
-	prefix := "bt-it"
-	diffInstanceId := uid.NewSpace(prefix, &uid.Options{Short: true})
-	diffInstance := diffInstanceId.New()
-	diffCluster := sourceCluster + "-d"
-	conf := &InstanceConf{
-		InstanceId:   diffInstance,
-		ClusterId:    diffCluster,
-		DisplayName:  "different test sourceInstance",
-		Zone:         instanceToCreateZone2,
-		InstanceType: DEVELOPMENT,
-		Labels:       map[string]string{"test-label-key": "test-label-value"},
-	}
-	defer iAdminClient.DeleteInstance(ctx, diffInstance)
+
 	// Create different instance to restore table.
-	if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
+	diffInstance, diffCluster, err := createInstance(ctx, t, iAdminClient)
+	if err != nil {
 		t.Fatalf("CreateInstance: %v", err)
 	}
+	defer iAdminClient.DeleteInstance(ctx, diffInstance)
 
 	list := func(cluster string) ([]*BackupInfo, error) {
 		infos := []*BackupInfo(nil)
@@ -3141,6 +3867,335 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	}
 }
 
+func TestIntegration_AdminAuthorizedView(t *testing.T) {
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support authorizedViews")
+	}
+
+	timeout := 15 * time.Minute
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	tblConf := TableConf{
+		TableID: testEnv.Config().Table,
+		Families: map[string]GCPolicy{
+			"fam1": MaxVersionsPolicy(1),
+			"fam2": MaxVersionsPolicy(2),
+		},
+	}
+	if err := adminClient.CreateTableFromConf(ctx, &tblConf); err != nil {
+		t.Fatalf("Creating table from TableConf: %v", err)
+	}
+	// Delete the table at the end of the test. Schedule ahead of time
+	// in case the client fails
+	defer deleteTable(ctx, t, adminClient, tblConf.TableID)
+
+	// Create authorized view
+	authorizedViewUUID := uid.NewSpace("authorizedView-", &uid.Options{})
+	authorizedView := authorizedViewUUID.New()
+	defer adminClient.DeleteAuthorizedView(ctx, tblConf.TableID, authorizedView)
+
+	authorizedViewConf := AuthorizedViewConf{
+		TableID:          tblConf.TableID,
+		AuthorizedViewID: authorizedView,
+		AuthorizedView: &SubsetViewConf{
+			RowPrefixes: [][]byte{[]byte("r1")},
+		},
+		DeletionProtection: Protected,
+	}
+	if err = adminClient.CreateAuthorizedView(ctx, &authorizedViewConf); err != nil {
+		t.Fatalf("Creating authorized view: %v", err)
+	}
+
+	// List authorized views
+	authorizedViews, err := adminClient.AuthorizedViews(ctx, tblConf.TableID)
+	if err != nil {
+		t.Fatalf("Listing authorized views: %v", err)
+	}
+	if got, want := len(authorizedViews), 1; got != want {
+		t.Fatalf("Listing authorized views count: %d, want: != %d", got, want)
+	}
+	if got, want := authorizedViews[0], authorizedView; got != want {
+		t.Errorf("AuthorizedView Name: %s, want: %s", got, want)
+	}
+
+	// Get authorized view
+	avInfo, err := adminClient.AuthorizedViewInfo(ctx, tblConf.TableID, authorizedView)
+	if err != nil {
+		t.Fatalf("Getting authorized view: %v", err)
+	}
+	if got, want := avInfo.AuthorizedView.(*SubsetViewInfo), authorizedViewConf.AuthorizedView.(*SubsetViewConf); cmp.Equal(got, want) {
+		t.Errorf("SubsetViewConf: %v, want: %v", got, want)
+	}
+
+	// Cannot delete the authorized view because it is deletion protected
+	if err = adminClient.DeleteAuthorizedView(ctx, tblConf.TableID, authorizedView); err == nil {
+		t.Fatalf("Expect error when deleting authorized view")
+	}
+
+	// Update authorized view
+	newAuthorizedViewConf := AuthorizedViewConf{
+		TableID:            tblConf.TableID,
+		AuthorizedViewID:   authorizedView,
+		DeletionProtection: Unprotected,
+	}
+	err = adminClient.UpdateAuthorizedView(ctx, UpdateAuthorizedViewConf{
+		AuthorizedViewConf: newAuthorizedViewConf,
+	})
+	if err != nil {
+		t.Fatalf("UpdateAuthorizedView failed: %v", err)
+	}
+
+	// Check that updated authorized view has the correct deletion protection
+	avInfo, err = adminClient.AuthorizedViewInfo(ctx, tblConf.TableID, authorizedView)
+	if err != nil {
+		t.Fatalf("Getting authorized view: %v", err)
+	}
+	if got, want := avInfo.DeletionProtection, Unprotected; got != want {
+		t.Errorf("AuthorizedView deletion protection: %v, want: %v", got, want)
+	}
+	// Check that the subset_view field doesn't change
+	if got, want := avInfo.AuthorizedView.(*SubsetViewInfo), authorizedViewConf.AuthorizedView.(*SubsetViewConf); cmp.Equal(got, want) {
+		t.Errorf("SubsetViewConf: %v, want: %v", got, want)
+	}
+
+	// Delete authorized view
+	if err = adminClient.DeleteAuthorizedView(ctx, tblConf.TableID, authorizedView); err != nil {
+		t.Fatalf("DeleteAuthorizedView: %v", err)
+	}
+
+	// Verify the authorized view was deleted.
+	authorizedViews, err = adminClient.AuthorizedViews(ctx, tblConf.TableID)
+	if err != nil {
+		t.Fatalf("Listing authorized views: %v", err)
+	}
+	if got, want := len(authorizedViews), 0; got != want {
+		t.Fatalf("Listing authorized views count: %d, want: != %d", got, want)
+	}
+}
+
+func TestIntegration_DataAuthorizedView(t *testing.T) {
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support authorizedViews")
+	}
+
+	timeout := 15 * time.Minute
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	tblConf := TableConf{
+		TableID: testEnv.Config().Table,
+		Families: map[string]GCPolicy{
+			"fam1": MaxVersionsPolicy(1),
+			"fam2": MaxVersionsPolicy(2),
+		},
+	}
+	if err := adminClient.CreateTableFromConf(ctx, &tblConf); err != nil {
+		t.Fatalf("Creating table from TableConf: %v", err)
+	}
+	// Delete the table at the end of the test. Schedule ahead of time
+	// in case the client fails
+	defer deleteTable(ctx, t, adminClient, tblConf.TableID)
+
+	// Create authorized view
+	authorizedViewUUID := uid.NewSpace("authorizedView-", &uid.Options{})
+	authorizedView := authorizedViewUUID.New()
+	defer adminClient.DeleteAuthorizedView(ctx, tblConf.TableID, authorizedView)
+
+	authorizedViewConf := AuthorizedViewConf{
+		TableID:          tblConf.TableID,
+		AuthorizedViewID: authorizedView,
+		AuthorizedView: &SubsetViewConf{
+			RowPrefixes: [][]byte{[]byte("r1")},
+			FamilySubsets: map[string]FamilySubset{
+				"fam1": {
+					QualifierPrefixes: [][]byte{[]byte("col")},
+				},
+				"fam2": {
+					Qualifiers: [][]byte{[]byte("col")},
+				},
+			},
+		},
+		DeletionProtection: Unprotected,
+	}
+	if err = adminClient.CreateAuthorizedView(ctx, &authorizedViewConf); err != nil {
+		t.Fatalf("Creating authorized view: %v", err)
+	}
+
+	client, err := testEnv.NewClient()
+	if err != nil {
+		t.Fatalf("NewClient: %v", err)
+	}
+	defer client.Close()
+	av := client.OpenAuthorizedView(tblConf.TableID, authorizedView)
+	tbl := client.OpenTable(tblConf.TableID)
+
+	prefix1 := "r1"
+	prefix2 := "r2" // outside of the authorized view
+	mut1 := NewMutation()
+	mut1.Set("fam1", "col1", 1000, []byte("1"))
+	mut2 := NewMutation()
+	mut2.Set("fam1", "col2", 1000, []byte("1"))
+	mut3 := NewMutation()
+	mut3.Set("fam2", "column", 1000, []byte("1")) // outside of the authorized view
+
+	// Test mutation
+	if err := av.Apply(ctx, prefix1, mut1); err != nil {
+		t.Fatalf("Mutating row from an authorized view: %v", err)
+	}
+	if err := av.Apply(ctx, prefix2, mut1); err == nil {
+		t.Fatalf("Expect error when mutating a row outside of the authorized view: %v", err)
+	}
+	if err := tbl.Apply(ctx, prefix2, mut1); err != nil {
+		t.Fatalf("Mutating row from a table: %v", err)
+	}
+
+	// Test bulk mutations
+	status, err := av.ApplyBulk(ctx, []string{prefix1, prefix2, prefix1}, []*Mutation{mut2, mut2, mut3})
+	if err != nil {
+		t.Fatalf("Mutating rows from an authorized view: %v", err)
+	}
+	if status == nil {
+		t.Fatalf("Expect error for bad bulk mutation outside of the authorized view")
+	} else if status[0] != nil || status[1] == nil || status[2] == nil {
+		t.Fatalf("Expect error for bad bulk mutation outside of the authorized view")
+	}
+
+	// Test ReadRow
+	gotRow, err := av.ReadRow(ctx, "r1")
+	if err != nil {
+		t.Fatalf("Reading row from an authorized view: %v", err)
+	}
+	wantRow := Row{
+		"fam1": []ReadItem{
+			{Row: "r1", Column: "fam1:col1", Timestamp: 1000, Value: []byte("1")},
+			{Row: "r1", Column: "fam1:col2", Timestamp: 1000, Value: []byte("1")},
+		},
+	}
+	if !testutil.Equal(gotRow, wantRow) {
+		t.Fatalf("Error reading row from authorized view.\n Got %v\n Want %v", gotRow, wantRow)
+	}
+	gotRow, err = av.ReadRow(ctx, "r2")
+	if err != nil {
+		t.Fatalf("Reading row from an authorized view: %v", err)
+	}
+	if len(gotRow) != 0 {
+		t.Fatalf("Expect empty result when reading row from outside an authorized view")
+	}
+	gotRow, err = tbl.ReadRow(ctx, "r2")
+	if err != nil {
+		t.Fatalf("Reading row from a table: %v", err)
+	}
+	if len(gotRow) != 1 {
+		t.Fatalf("Invalid row count when reading from a table: %d, want: != %d", len(gotRow), 1)
+	}
+
+	// Test ReadRows
+	var elt []string
+	f := func(row Row) bool {
+		for _, ris := range row {
+			for _, ri := range ris {
+				elt = append(elt, formatReadItem(ri))
+			}
+		}
+		return true
+	}
+	if err = av.ReadRows(ctx, RowRange{}, f); err != nil {
+		t.Fatalf("Reading rows from an authorized view: %v", err)
+	}
+	want := "r1-col1-1,r1-col2-1"
+	if got := strings.Join(elt, ","); got != want {
+		t.Fatalf("Error bulk reading from authorized view.\n Got %v\n Want %v", got, want)
+	}
+	elt = nil
+	if err = tbl.ReadRows(ctx, RowRange{}, f); err != nil {
+		t.Fatalf("Reading rows from a table: %v", err)
+	}
+	want = "r1-col1-1,r1-col2-1,r2-col1-1"
+	if got := strings.Join(elt, ","); got != want {
+		t.Fatalf("Error bulk reading from table.\n Got %v\n Want %v", got, want)
+	}
+
+	// Test ReadModifyWrite
+	rmw := NewReadModifyWrite()
+	rmw.AppendValue("fam1", "col1", []byte("1"))
+	gotRow, err = av.ApplyReadModifyWrite(ctx, "r1", rmw)
+	if err != nil {
+		t.Fatalf("Applying ReadModifyWrite from an authorized view: %v", err)
+	}
+	wantRow = Row{
+		"fam1": []ReadItem{
+			{Row: "r1", Column: "fam1:col1", Value: []byte("11")},
+		},
+	}
+	// Make sure the modified cell returned by the RMW operation has a timestamp.
+	if gotRow["fam1"][0].Timestamp == 0 {
+		t.Fatalf("RMW returned cell timestamp: got %v, want > 0", gotRow["fam1"][0].Timestamp)
+	}
+	clearTimestamps(gotRow)
+	if !testutil.Equal(gotRow, wantRow) {
+		t.Fatalf("Error applying ReadModifyWrite from authorized view.\n Got %v\n Want %v", gotRow, wantRow)
+	}
+	if _, err = av.ApplyReadModifyWrite(ctx, "r2", rmw); err == nil {
+		t.Fatalf("Expect error applying ReadModifyWrite from outside an authorized view")
+	}
+
+	// Test SampleRowKeys
+	presplitTable := fmt.Sprintf("presplit-table-%d", time.Now().Unix())
+	if err := adminClient.CreatePresplitTable(ctx, presplitTable, []string{"r0", "r11", "r12", "r2"}); err != nil {
+		t.Fatal(err)
+	}
+	defer adminClient.DeleteTable(ctx, presplitTable)
+	if err := adminClient.CreateColumnFamily(ctx, presplitTable, "fam1"); err != nil {
+		t.Fatal(err)
+	}
+	defer adminClient.DeleteAuthorizedView(ctx, presplitTable, authorizedView)
+	if err = adminClient.CreateAuthorizedView(ctx, &AuthorizedViewConf{
+		TableID:          presplitTable,
+		AuthorizedViewID: authorizedView,
+		AuthorizedView: &SubsetViewConf{
+			RowPrefixes: [][]byte{[]byte("r1")},
+		},
+		DeletionProtection: Unprotected,
+	}); err != nil {
+		t.Fatalf("Creating authorized view: %v", err)
+	}
+
+	av = client.OpenAuthorizedView(presplitTable, authorizedView)
+	sampleKeys, err := av.SampleRowKeys(ctx)
+	if err != nil {
+		t.Fatalf("Sampling row keys from an authorized view: %v", err)
+	}
+	want = "r11,r12,r2"
+	if got := strings.Join(sampleKeys, ","); got != want {
+		t.Fatalf("Error sample row keys from an authorized view.\n Got %v\n Want %v", got, want)
+	}
+}
+
 // TestIntegration_DirectPathFallback tests the CFE fallback when the directpath net is blackholed.
 func TestIntegration_DirectPathFallback(t *testing.T) {
 	ctx := context.Background()
@@ -3248,6 +4303,7 @@ func setupIntegration(ctx context.Context, t *testing.T) (_ IntegrationEnv, _ *C
 		t.Logf("bttest.Server running on %s", testEnv.Config().AdminEndpoint)
 	}
 	ctx, cancel := context.WithTimeout(ctx, timeout)
+	_ = cancel // ignore for test
 
 	client, err := testEnv.NewClient()
 	if err != nil {
@@ -3270,7 +4326,7 @@ func setupIntegration(ctx context.Context, t *testing.T) (_ IntegrationEnv, _ *C
 		tableName = testEnv.Config().Table
 	}
 
-	if err := adminClient.CreateTable(ctx, tableName); err != nil {
+	if err := createTableWithRetry(ctx, t, adminClient, tableName); err != nil {
 		cancel()
 		t.Logf("Error creating table: %v", err)
 		return nil, nil, nil, nil, "", nil, err
@@ -3285,6 +4341,18 @@ func setupIntegration(ctx context.Context, t *testing.T) (_ IntegrationEnv, _ *C
 		return nil, nil, nil, nil, "", nil, err
 	}
 
+	err = retryOnUnavailable(ctx, func() error {
+		return adminClient.CreateColumnFamilyWithConfig(ctx, tableName, "sum", Family{ValueType: AggregateType{
+			Input:      Int64Type{},
+			Aggregator: SumAggregator{},
+		}})
+	})
+	if err != nil {
+		cancel()
+		t.Logf("Error creating aggregate column family: %v", err)
+		return nil, nil, nil, nil, "", nil, err
+	}
+
 	return testEnv, client, adminClient, client.Open(tableName), tableName, func() {
 		if err := adminClient.DeleteTable(ctx, tableName); err != nil {
 			t.Errorf("DeleteTable got error %v", err)
@@ -3293,6 +4361,36 @@ func setupIntegration(ctx context.Context, t *testing.T) (_ IntegrationEnv, _ *C
 		client.Close()
 		adminClient.Close()
 	}, nil
+}
+
+func createTableWithRetry(ctx context.Context, t *testing.T, adminClient *AdminClient, tableName string) error {
+	// Error seen on last create attempt
+	var err error
+
+	testutil.Retry(t, maxCreateAttempts, retryCreateBackoff, func(r *testutil.R) {
+		createErr := adminClient.CreateTable(ctx, tableName)
+		err = createErr
+
+		if createErr != nil {
+			r.Errorf(createErr.Error())
+		}
+	})
+	return err
+}
+
+func createColumnFamilyWithRetry(ctx context.Context, t *testing.T, adminClient *AdminClient, table, family string) error {
+	// Error seen on last create attempt
+	var err error
+
+	testutil.Retry(t, maxCreateAttempts, retryCreateBackoff, func(r *testutil.R) {
+		createErr := adminClient.CreateColumnFamily(ctx, table, family)
+		err = createErr
+
+		if createErr != nil {
+			r.Errorf(createErr.Error())
+		}
+	})
+	return err
 }
 
 func formatReadItem(ri ReadItem) string {
@@ -3322,7 +4420,8 @@ func deleteTable(ctx context.Context, t *testing.T, ac *AdminClient, name string
 		Max:        2 * time.Second,
 		Multiplier: 1.2,
 	}
-	ctx, _ = context.WithTimeout(ctx, time.Second*30)
+	ctx, cancel := context.WithTimeout(ctx, time.Second*60)
+	defer cancel()
 
 	err := internal.Retry(ctx, bo, func() (bool, error) {
 		err := ac.DeleteTable(ctx, name)

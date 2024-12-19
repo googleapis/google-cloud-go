@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	vmmigrationpb "cloud.google.com/go/vmmigration/apiv1/vmmigrationpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -104,10 +103,13 @@ type CallOptions struct {
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("vmmigration.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("vmmigration.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("vmmigration.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://vmmigration.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -1012,6 +1014,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new vm migration client based on gRPC.
@@ -1038,6 +1042,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:         connPool,
 		client:           vmmigrationpb.NewVmMigrationClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
@@ -1073,7 +1078,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1100,6 +1107,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new vm migration rest client.
@@ -1117,6 +1126,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -1136,9 +1146,12 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 func defaultRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://vmmigration.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://vmmigration.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://vmmigration.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://vmmigration.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -1148,7 +1161,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1185,7 +1200,7 @@ func (c *gRPCClient) ListSources(ctx context.Context, req *vmmigrationpb.ListSou
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListSources(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListSources, req, settings.GRPC, c.logger, "ListSources")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1220,7 +1235,7 @@ func (c *gRPCClient) GetSource(ctx context.Context, req *vmmigrationpb.GetSource
 	var resp *vmmigrationpb.Source
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetSource(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetSource, req, settings.GRPC, c.logger, "GetSource")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1238,7 +1253,7 @@ func (c *gRPCClient) CreateSource(ctx context.Context, req *vmmigrationpb.Create
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateSource(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateSource, req, settings.GRPC, c.logger, "CreateSource")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1258,7 +1273,7 @@ func (c *gRPCClient) UpdateSource(ctx context.Context, req *vmmigrationpb.Update
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateSource(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateSource, req, settings.GRPC, c.logger, "UpdateSource")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1278,7 +1293,7 @@ func (c *gRPCClient) DeleteSource(ctx context.Context, req *vmmigrationpb.Delete
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteSource(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteSource, req, settings.GRPC, c.logger, "DeleteSource")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1298,7 +1313,7 @@ func (c *gRPCClient) FetchInventory(ctx context.Context, req *vmmigrationpb.Fetc
 	var resp *vmmigrationpb.FetchInventoryResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.FetchInventory(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.FetchInventory, req, settings.GRPC, c.logger, "FetchInventory")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1327,7 +1342,7 @@ func (c *gRPCClient) ListUtilizationReports(ctx context.Context, req *vmmigratio
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListUtilizationReports(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListUtilizationReports, req, settings.GRPC, c.logger, "ListUtilizationReports")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1362,7 +1377,7 @@ func (c *gRPCClient) GetUtilizationReport(ctx context.Context, req *vmmigrationp
 	var resp *vmmigrationpb.UtilizationReport
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetUtilizationReport(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetUtilizationReport, req, settings.GRPC, c.logger, "GetUtilizationReport")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1380,7 +1395,7 @@ func (c *gRPCClient) CreateUtilizationReport(ctx context.Context, req *vmmigrati
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateUtilizationReport(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateUtilizationReport, req, settings.GRPC, c.logger, "CreateUtilizationReport")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1400,7 +1415,7 @@ func (c *gRPCClient) DeleteUtilizationReport(ctx context.Context, req *vmmigrati
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteUtilizationReport(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteUtilizationReport, req, settings.GRPC, c.logger, "DeleteUtilizationReport")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1431,7 +1446,7 @@ func (c *gRPCClient) ListDatacenterConnectors(ctx context.Context, req *vmmigrat
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListDatacenterConnectors(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListDatacenterConnectors, req, settings.GRPC, c.logger, "ListDatacenterConnectors")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1466,7 +1481,7 @@ func (c *gRPCClient) GetDatacenterConnector(ctx context.Context, req *vmmigratio
 	var resp *vmmigrationpb.DatacenterConnector
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetDatacenterConnector(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetDatacenterConnector, req, settings.GRPC, c.logger, "GetDatacenterConnector")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1484,7 +1499,7 @@ func (c *gRPCClient) CreateDatacenterConnector(ctx context.Context, req *vmmigra
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateDatacenterConnector(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateDatacenterConnector, req, settings.GRPC, c.logger, "CreateDatacenterConnector")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1504,7 +1519,7 @@ func (c *gRPCClient) DeleteDatacenterConnector(ctx context.Context, req *vmmigra
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteDatacenterConnector(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteDatacenterConnector, req, settings.GRPC, c.logger, "DeleteDatacenterConnector")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1524,7 +1539,7 @@ func (c *gRPCClient) UpgradeAppliance(ctx context.Context, req *vmmigrationpb.Up
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpgradeAppliance(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpgradeAppliance, req, settings.GRPC, c.logger, "UpgradeAppliance")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1544,7 +1559,7 @@ func (c *gRPCClient) CreateMigratingVm(ctx context.Context, req *vmmigrationpb.C
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateMigratingVm(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateMigratingVm, req, settings.GRPC, c.logger, "CreateMigratingVm")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1575,7 +1590,7 @@ func (c *gRPCClient) ListMigratingVms(ctx context.Context, req *vmmigrationpb.Li
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListMigratingVms(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListMigratingVms, req, settings.GRPC, c.logger, "ListMigratingVms")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1610,7 +1625,7 @@ func (c *gRPCClient) GetMigratingVm(ctx context.Context, req *vmmigrationpb.GetM
 	var resp *vmmigrationpb.MigratingVm
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetMigratingVm(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetMigratingVm, req, settings.GRPC, c.logger, "GetMigratingVm")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1628,7 +1643,7 @@ func (c *gRPCClient) UpdateMigratingVm(ctx context.Context, req *vmmigrationpb.U
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateMigratingVm(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateMigratingVm, req, settings.GRPC, c.logger, "UpdateMigratingVm")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1648,7 +1663,7 @@ func (c *gRPCClient) DeleteMigratingVm(ctx context.Context, req *vmmigrationpb.D
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteMigratingVm(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteMigratingVm, req, settings.GRPC, c.logger, "DeleteMigratingVm")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1668,7 +1683,7 @@ func (c *gRPCClient) StartMigration(ctx context.Context, req *vmmigrationpb.Star
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.StartMigration(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.StartMigration, req, settings.GRPC, c.logger, "StartMigration")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1688,7 +1703,7 @@ func (c *gRPCClient) ResumeMigration(ctx context.Context, req *vmmigrationpb.Res
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ResumeMigration(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ResumeMigration, req, settings.GRPC, c.logger, "ResumeMigration")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1708,7 +1723,7 @@ func (c *gRPCClient) PauseMigration(ctx context.Context, req *vmmigrationpb.Paus
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.PauseMigration(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.PauseMigration, req, settings.GRPC, c.logger, "PauseMigration")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1728,7 +1743,7 @@ func (c *gRPCClient) FinalizeMigration(ctx context.Context, req *vmmigrationpb.F
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.FinalizeMigration(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.FinalizeMigration, req, settings.GRPC, c.logger, "FinalizeMigration")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1748,7 +1763,7 @@ func (c *gRPCClient) CreateCloneJob(ctx context.Context, req *vmmigrationpb.Crea
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateCloneJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateCloneJob, req, settings.GRPC, c.logger, "CreateCloneJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1768,7 +1783,7 @@ func (c *gRPCClient) CancelCloneJob(ctx context.Context, req *vmmigrationpb.Canc
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CancelCloneJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CancelCloneJob, req, settings.GRPC, c.logger, "CancelCloneJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1799,7 +1814,7 @@ func (c *gRPCClient) ListCloneJobs(ctx context.Context, req *vmmigrationpb.ListC
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListCloneJobs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListCloneJobs, req, settings.GRPC, c.logger, "ListCloneJobs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1834,7 +1849,7 @@ func (c *gRPCClient) GetCloneJob(ctx context.Context, req *vmmigrationpb.GetClon
 	var resp *vmmigrationpb.CloneJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetCloneJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetCloneJob, req, settings.GRPC, c.logger, "GetCloneJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1852,7 +1867,7 @@ func (c *gRPCClient) CreateCutoverJob(ctx context.Context, req *vmmigrationpb.Cr
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateCutoverJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateCutoverJob, req, settings.GRPC, c.logger, "CreateCutoverJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1872,7 +1887,7 @@ func (c *gRPCClient) CancelCutoverJob(ctx context.Context, req *vmmigrationpb.Ca
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CancelCutoverJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CancelCutoverJob, req, settings.GRPC, c.logger, "CancelCutoverJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1903,7 +1918,7 @@ func (c *gRPCClient) ListCutoverJobs(ctx context.Context, req *vmmigrationpb.Lis
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListCutoverJobs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListCutoverJobs, req, settings.GRPC, c.logger, "ListCutoverJobs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1938,7 +1953,7 @@ func (c *gRPCClient) GetCutoverJob(ctx context.Context, req *vmmigrationpb.GetCu
 	var resp *vmmigrationpb.CutoverJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetCutoverJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetCutoverJob, req, settings.GRPC, c.logger, "GetCutoverJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1967,7 +1982,7 @@ func (c *gRPCClient) ListGroups(ctx context.Context, req *vmmigrationpb.ListGrou
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListGroups(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListGroups, req, settings.GRPC, c.logger, "ListGroups")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2002,7 +2017,7 @@ func (c *gRPCClient) GetGroup(ctx context.Context, req *vmmigrationpb.GetGroupRe
 	var resp *vmmigrationpb.Group
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetGroup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetGroup, req, settings.GRPC, c.logger, "GetGroup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2020,7 +2035,7 @@ func (c *gRPCClient) CreateGroup(ctx context.Context, req *vmmigrationpb.CreateG
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateGroup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateGroup, req, settings.GRPC, c.logger, "CreateGroup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2040,7 +2055,7 @@ func (c *gRPCClient) UpdateGroup(ctx context.Context, req *vmmigrationpb.UpdateG
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateGroup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateGroup, req, settings.GRPC, c.logger, "UpdateGroup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2060,7 +2075,7 @@ func (c *gRPCClient) DeleteGroup(ctx context.Context, req *vmmigrationpb.DeleteG
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteGroup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteGroup, req, settings.GRPC, c.logger, "DeleteGroup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2080,7 +2095,7 @@ func (c *gRPCClient) AddGroupMigration(ctx context.Context, req *vmmigrationpb.A
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.AddGroupMigration(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.AddGroupMigration, req, settings.GRPC, c.logger, "AddGroupMigration")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2100,7 +2115,7 @@ func (c *gRPCClient) RemoveGroupMigration(ctx context.Context, req *vmmigrationp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.RemoveGroupMigration(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.RemoveGroupMigration, req, settings.GRPC, c.logger, "RemoveGroupMigration")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2131,7 +2146,7 @@ func (c *gRPCClient) ListTargetProjects(ctx context.Context, req *vmmigrationpb.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListTargetProjects(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListTargetProjects, req, settings.GRPC, c.logger, "ListTargetProjects")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2166,7 +2181,7 @@ func (c *gRPCClient) GetTargetProject(ctx context.Context, req *vmmigrationpb.Ge
 	var resp *vmmigrationpb.TargetProject
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetTargetProject(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetTargetProject, req, settings.GRPC, c.logger, "GetTargetProject")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2184,7 +2199,7 @@ func (c *gRPCClient) CreateTargetProject(ctx context.Context, req *vmmigrationpb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateTargetProject(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateTargetProject, req, settings.GRPC, c.logger, "CreateTargetProject")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2204,7 +2219,7 @@ func (c *gRPCClient) UpdateTargetProject(ctx context.Context, req *vmmigrationpb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateTargetProject(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateTargetProject, req, settings.GRPC, c.logger, "UpdateTargetProject")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2224,7 +2239,7 @@ func (c *gRPCClient) DeleteTargetProject(ctx context.Context, req *vmmigrationpb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteTargetProject(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteTargetProject, req, settings.GRPC, c.logger, "DeleteTargetProject")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2255,7 +2270,7 @@ func (c *gRPCClient) ListReplicationCycles(ctx context.Context, req *vmmigration
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListReplicationCycles(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListReplicationCycles, req, settings.GRPC, c.logger, "ListReplicationCycles")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2290,7 +2305,7 @@ func (c *gRPCClient) GetReplicationCycle(ctx context.Context, req *vmmigrationpb
 	var resp *vmmigrationpb.ReplicationCycle
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetReplicationCycle(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetReplicationCycle, req, settings.GRPC, c.logger, "GetReplicationCycle")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2308,7 +2323,7 @@ func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2337,7 +2352,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2371,7 +2386,7 @@ func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -2385,7 +2400,7 @@ func (c *gRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -2400,7 +2415,7 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2429,7 +2444,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2504,21 +2519,10 @@ func (c *restClient) ListSources(ctx context.Context, req *vmmigrationpb.ListSou
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSources")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2581,17 +2585,7 @@ func (c *restClient) GetSource(ctx context.Context, req *vmmigrationpb.GetSource
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSource")
 		if err != nil {
 			return err
 		}
@@ -2651,21 +2645,10 @@ func (c *restClient) CreateSource(ctx context.Context, req *vmmigrationpb.Create
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateSource")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2704,11 +2687,11 @@ func (c *restClient) UpdateSource(ctx context.Context, req *vmmigrationpb.Update
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2732,21 +2715,10 @@ func (c *restClient) UpdateSource(ctx context.Context, req *vmmigrationpb.Update
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateSource")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2799,21 +2771,10 @@ func (c *restClient) DeleteSource(ctx context.Context, req *vmmigrationpb.Delete
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteSource")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2871,17 +2832,7 @@ func (c *restClient) FetchInventory(ctx context.Context, req *vmmigrationpb.Fetc
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FetchInventory")
 		if err != nil {
 			return err
 		}
@@ -2950,21 +2901,10 @@ func (c *restClient) ListUtilizationReports(ctx context.Context, req *vmmigratio
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListUtilizationReports")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3030,17 +2970,7 @@ func (c *restClient) GetUtilizationReport(ctx context.Context, req *vmmigrationp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetUtilizationReport")
 		if err != nil {
 			return err
 		}
@@ -3100,21 +3030,10 @@ func (c *restClient) CreateUtilizationReport(ctx context.Context, req *vmmigrati
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateUtilizationReport")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3167,21 +3086,10 @@ func (c *restClient) DeleteUtilizationReport(ctx context.Context, req *vmmigrati
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteUtilizationReport")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3248,21 +3156,10 @@ func (c *restClient) ListDatacenterConnectors(ctx context.Context, req *vmmigrat
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDatacenterConnectors")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3325,17 +3222,7 @@ func (c *restClient) GetDatacenterConnector(ctx context.Context, req *vmmigratio
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDatacenterConnector")
 		if err != nil {
 			return err
 		}
@@ -3395,21 +3282,10 @@ func (c *restClient) CreateDatacenterConnector(ctx context.Context, req *vmmigra
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDatacenterConnector")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3462,21 +3338,10 @@ func (c *restClient) DeleteDatacenterConnector(ctx context.Context, req *vmmigra
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDatacenterConnector")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3533,21 +3398,10 @@ func (c *restClient) UpgradeAppliance(ctx context.Context, req *vmmigrationpb.Up
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpgradeAppliance")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3608,21 +3462,10 @@ func (c *restClient) CreateMigratingVm(ctx context.Context, req *vmmigrationpb.C
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateMigratingVm")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3692,21 +3535,10 @@ func (c *restClient) ListMigratingVms(ctx context.Context, req *vmmigrationpb.Li
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListMigratingVms")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3772,17 +3604,7 @@ func (c *restClient) GetMigratingVm(ctx context.Context, req *vmmigrationpb.GetM
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetMigratingVm")
 		if err != nil {
 			return err
 		}
@@ -3820,11 +3642,11 @@ func (c *restClient) UpdateMigratingVm(ctx context.Context, req *vmmigrationpb.U
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3848,21 +3670,10 @@ func (c *restClient) UpdateMigratingVm(ctx context.Context, req *vmmigrationpb.U
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateMigratingVm")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3912,21 +3723,10 @@ func (c *restClient) DeleteMigratingVm(ctx context.Context, req *vmmigrationpb.D
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteMigratingVm")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3983,21 +3783,10 @@ func (c *restClient) StartMigration(ctx context.Context, req *vmmigrationpb.Star
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "StartMigration")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4056,21 +3845,10 @@ func (c *restClient) ResumeMigration(ctx context.Context, req *vmmigrationpb.Res
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ResumeMigration")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4128,21 +3906,10 @@ func (c *restClient) PauseMigration(ctx context.Context, req *vmmigrationpb.Paus
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PauseMigration")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4199,21 +3966,10 @@ func (c *restClient) FinalizeMigration(ctx context.Context, req *vmmigrationpb.F
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "FinalizeMigration")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4274,21 +4030,10 @@ func (c *restClient) CreateCloneJob(ctx context.Context, req *vmmigrationpb.Crea
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateCloneJob")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4344,21 +4089,10 @@ func (c *restClient) CancelCloneJob(ctx context.Context, req *vmmigrationpb.Canc
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelCloneJob")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4425,21 +4159,10 @@ func (c *restClient) ListCloneJobs(ctx context.Context, req *vmmigrationpb.ListC
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListCloneJobs")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4502,17 +4225,7 @@ func (c *restClient) GetCloneJob(ctx context.Context, req *vmmigrationpb.GetClon
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCloneJob")
 		if err != nil {
 			return err
 		}
@@ -4574,21 +4287,10 @@ func (c *restClient) CreateCutoverJob(ctx context.Context, req *vmmigrationpb.Cr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateCutoverJob")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4644,21 +4346,10 @@ func (c *restClient) CancelCutoverJob(ctx context.Context, req *vmmigrationpb.Ca
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelCutoverJob")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4725,21 +4416,10 @@ func (c *restClient) ListCutoverJobs(ctx context.Context, req *vmmigrationpb.Lis
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListCutoverJobs")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4802,17 +4482,7 @@ func (c *restClient) GetCutoverJob(ctx context.Context, req *vmmigrationpb.GetCu
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCutoverJob")
 		if err != nil {
 			return err
 		}
@@ -4878,21 +4548,10 @@ func (c *restClient) ListGroups(ctx context.Context, req *vmmigrationpb.ListGrou
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListGroups")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4955,17 +4614,7 @@ func (c *restClient) GetGroup(ctx context.Context, req *vmmigrationpb.GetGroupRe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetGroup")
 		if err != nil {
 			return err
 		}
@@ -5025,21 +4674,10 @@ func (c *restClient) CreateGroup(ctx context.Context, req *vmmigrationpb.CreateG
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateGroup")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5078,11 +4716,11 @@ func (c *restClient) UpdateGroup(ctx context.Context, req *vmmigrationpb.UpdateG
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -5106,21 +4744,10 @@ func (c *restClient) UpdateGroup(ctx context.Context, req *vmmigrationpb.UpdateG
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateGroup")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5173,21 +4800,10 @@ func (c *restClient) DeleteGroup(ctx context.Context, req *vmmigrationpb.DeleteG
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteGroup")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5243,21 +4859,10 @@ func (c *restClient) AddGroupMigration(ctx context.Context, req *vmmigrationpb.A
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AddGroupMigration")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5313,21 +4918,10 @@ func (c *restClient) RemoveGroupMigration(ctx context.Context, req *vmmigrationp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RemoveGroupMigration")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5397,21 +4991,10 @@ func (c *restClient) ListTargetProjects(ctx context.Context, req *vmmigrationpb.
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListTargetProjects")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -5477,17 +5060,7 @@ func (c *restClient) GetTargetProject(ctx context.Context, req *vmmigrationpb.Ge
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetTargetProject")
 		if err != nil {
 			return err
 		}
@@ -5550,21 +5123,10 @@ func (c *restClient) CreateTargetProject(ctx context.Context, req *vmmigrationpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateTargetProject")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5606,11 +5168,11 @@ func (c *restClient) UpdateTargetProject(ctx context.Context, req *vmmigrationpb
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -5634,21 +5196,10 @@ func (c *restClient) UpdateTargetProject(ctx context.Context, req *vmmigrationpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateTargetProject")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5704,21 +5255,10 @@ func (c *restClient) DeleteTargetProject(ctx context.Context, req *vmmigrationpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteTargetProject")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5785,21 +5325,10 @@ func (c *restClient) ListReplicationCycles(ctx context.Context, req *vmmigration
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListReplicationCycles")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -5862,17 +5391,7 @@ func (c *restClient) GetReplicationCycle(ctx context.Context, req *vmmigrationpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetReplicationCycle")
 		if err != nil {
 			return err
 		}
@@ -5922,17 +5441,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -5997,21 +5506,10 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -6077,15 +5575,8 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -6119,15 +5610,8 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOperation")
+		return err
 	}, opts...)
 }
 
@@ -6164,17 +5648,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -6239,21 +5713,10 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -6283,12 +5746,6 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	return it
 }
 
-// AddGroupMigrationOperation manages a long-running operation from AddGroupMigration.
-type AddGroupMigrationOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // AddGroupMigrationOperation returns a new AddGroupMigrationOperation from a given name.
 // The name must be that of a previously created AddGroupMigrationOperation, possibly from a different process.
 func (c *gRPCClient) AddGroupMigrationOperation(name string) *AddGroupMigrationOperation {
@@ -6305,70 +5762,6 @@ func (c *restClient) AddGroupMigrationOperation(name string) *AddGroupMigrationO
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *AddGroupMigrationOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.AddGroupMigrationResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.AddGroupMigrationResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *AddGroupMigrationOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.AddGroupMigrationResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.AddGroupMigrationResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *AddGroupMigrationOperation) Metadata() (*vmmigrationpb.OperationMetadata, error) {
-	var meta vmmigrationpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *AddGroupMigrationOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *AddGroupMigrationOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CancelCloneJobOperation manages a long-running operation from CancelCloneJob.
-type CancelCloneJobOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // CancelCloneJobOperation returns a new CancelCloneJobOperation from a given name.
@@ -6389,70 +5782,6 @@ func (c *restClient) CancelCloneJobOperation(name string) *CancelCloneJobOperati
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CancelCloneJobOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.CancelCloneJobResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.CancelCloneJobResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CancelCloneJobOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.CancelCloneJobResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.CancelCloneJobResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CancelCloneJobOperation) Metadata() (*vmmigrationpb.OperationMetadata, error) {
-	var meta vmmigrationpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CancelCloneJobOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CancelCloneJobOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CancelCutoverJobOperation manages a long-running operation from CancelCutoverJob.
-type CancelCutoverJobOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // CancelCutoverJobOperation returns a new CancelCutoverJobOperation from a given name.
 // The name must be that of a previously created CancelCutoverJobOperation, possibly from a different process.
 func (c *gRPCClient) CancelCutoverJobOperation(name string) *CancelCutoverJobOperation {
@@ -6469,70 +5798,6 @@ func (c *restClient) CancelCutoverJobOperation(name string) *CancelCutoverJobOpe
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CancelCutoverJobOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.CancelCutoverJobResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.CancelCutoverJobResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CancelCutoverJobOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.CancelCutoverJobResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.CancelCutoverJobResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CancelCutoverJobOperation) Metadata() (*vmmigrationpb.OperationMetadata, error) {
-	var meta vmmigrationpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CancelCutoverJobOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CancelCutoverJobOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateCloneJobOperation manages a long-running operation from CreateCloneJob.
-type CreateCloneJobOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // CreateCloneJobOperation returns a new CreateCloneJobOperation from a given name.
@@ -6553,70 +5818,6 @@ func (c *restClient) CreateCloneJobOperation(name string) *CreateCloneJobOperati
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateCloneJobOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.CloneJob, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.CloneJob
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateCloneJobOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.CloneJob, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.CloneJob
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateCloneJobOperation) Metadata() (*vmmigrationpb.OperationMetadata, error) {
-	var meta vmmigrationpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateCloneJobOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateCloneJobOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateCutoverJobOperation manages a long-running operation from CreateCutoverJob.
-type CreateCutoverJobOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // CreateCutoverJobOperation returns a new CreateCutoverJobOperation from a given name.
 // The name must be that of a previously created CreateCutoverJobOperation, possibly from a different process.
 func (c *gRPCClient) CreateCutoverJobOperation(name string) *CreateCutoverJobOperation {
@@ -6633,70 +5834,6 @@ func (c *restClient) CreateCutoverJobOperation(name string) *CreateCutoverJobOpe
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateCutoverJobOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.CutoverJob, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.CutoverJob
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateCutoverJobOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.CutoverJob, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.CutoverJob
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateCutoverJobOperation) Metadata() (*vmmigrationpb.OperationMetadata, error) {
-	var meta vmmigrationpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateCutoverJobOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateCutoverJobOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateDatacenterConnectorOperation manages a long-running operation from CreateDatacenterConnector.
-type CreateDatacenterConnectorOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // CreateDatacenterConnectorOperation returns a new CreateDatacenterConnectorOperation from a given name.
@@ -6717,70 +5854,6 @@ func (c *restClient) CreateDatacenterConnectorOperation(name string) *CreateData
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateDatacenterConnectorOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.DatacenterConnector, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.DatacenterConnector
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateDatacenterConnectorOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.DatacenterConnector, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.DatacenterConnector
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateDatacenterConnectorOperation) Metadata() (*vmmigrationpb.OperationMetadata, error) {
-	var meta vmmigrationpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateDatacenterConnectorOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateDatacenterConnectorOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateGroupOperation manages a long-running operation from CreateGroup.
-type CreateGroupOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // CreateGroupOperation returns a new CreateGroupOperation from a given name.
 // The name must be that of a previously created CreateGroupOperation, possibly from a different process.
 func (c *gRPCClient) CreateGroupOperation(name string) *CreateGroupOperation {
@@ -6797,70 +5870,6 @@ func (c *restClient) CreateGroupOperation(name string) *CreateGroupOperation {
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateGroupOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.Group, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.Group
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateGroupOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.Group, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.Group
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateGroupOperation) Metadata() (*vmmigrationpb.OperationMetadata, error) {
-	var meta vmmigrationpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateGroupOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateGroupOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateMigratingVmOperation manages a long-running operation from CreateMigratingVm.
-type CreateMigratingVmOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // CreateMigratingVmOperation returns a new CreateMigratingVmOperation from a given name.
@@ -6881,70 +5890,6 @@ func (c *restClient) CreateMigratingVmOperation(name string) *CreateMigratingVmO
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateMigratingVmOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.MigratingVm, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.MigratingVm
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateMigratingVmOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.MigratingVm, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.MigratingVm
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateMigratingVmOperation) Metadata() (*vmmigrationpb.OperationMetadata, error) {
-	var meta vmmigrationpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateMigratingVmOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateMigratingVmOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateSourceOperation manages a long-running operation from CreateSource.
-type CreateSourceOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // CreateSourceOperation returns a new CreateSourceOperation from a given name.
 // The name must be that of a previously created CreateSourceOperation, possibly from a different process.
 func (c *gRPCClient) CreateSourceOperation(name string) *CreateSourceOperation {
@@ -6961,70 +5906,6 @@ func (c *restClient) CreateSourceOperation(name string) *CreateSourceOperation {
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateSourceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.Source, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.Source
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateSourceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.Source, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.Source
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateSourceOperation) Metadata() (*vmmigrationpb.OperationMetadata, error) {
-	var meta vmmigrationpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateSourceOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateSourceOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateTargetProjectOperation manages a long-running operation from CreateTargetProject.
-type CreateTargetProjectOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // CreateTargetProjectOperation returns a new CreateTargetProjectOperation from a given name.
@@ -7045,70 +5926,6 @@ func (c *restClient) CreateTargetProjectOperation(name string) *CreateTargetProj
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateTargetProjectOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.TargetProject, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.TargetProject
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateTargetProjectOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.TargetProject, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.TargetProject
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateTargetProjectOperation) Metadata() (*vmmigrationpb.OperationMetadata, error) {
-	var meta vmmigrationpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateTargetProjectOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateTargetProjectOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateUtilizationReportOperation manages a long-running operation from CreateUtilizationReport.
-type CreateUtilizationReportOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // CreateUtilizationReportOperation returns a new CreateUtilizationReportOperation from a given name.
 // The name must be that of a previously created CreateUtilizationReportOperation, possibly from a different process.
 func (c *gRPCClient) CreateUtilizationReportOperation(name string) *CreateUtilizationReportOperation {
@@ -7125,70 +5942,6 @@ func (c *restClient) CreateUtilizationReportOperation(name string) *CreateUtiliz
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateUtilizationReportOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.UtilizationReport, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.UtilizationReport
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateUtilizationReportOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.UtilizationReport, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.UtilizationReport
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateUtilizationReportOperation) Metadata() (*vmmigrationpb.OperationMetadata, error) {
-	var meta vmmigrationpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateUtilizationReportOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateUtilizationReportOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteDatacenterConnectorOperation manages a long-running operation from DeleteDatacenterConnector.
-type DeleteDatacenterConnectorOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // DeleteDatacenterConnectorOperation returns a new DeleteDatacenterConnectorOperation from a given name.
@@ -7209,59 +5962,6 @@ func (c *restClient) DeleteDatacenterConnectorOperation(name string) *DeleteData
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteDatacenterConnectorOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteDatacenterConnectorOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteDatacenterConnectorOperation) Metadata() (*vmmigrationpb.OperationMetadata, error) {
-	var meta vmmigrationpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteDatacenterConnectorOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteDatacenterConnectorOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteGroupOperation manages a long-running operation from DeleteGroup.
-type DeleteGroupOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // DeleteGroupOperation returns a new DeleteGroupOperation from a given name.
 // The name must be that of a previously created DeleteGroupOperation, possibly from a different process.
 func (c *gRPCClient) DeleteGroupOperation(name string) *DeleteGroupOperation {
@@ -7278,59 +5978,6 @@ func (c *restClient) DeleteGroupOperation(name string) *DeleteGroupOperation {
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteGroupOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteGroupOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteGroupOperation) Metadata() (*vmmigrationpb.OperationMetadata, error) {
-	var meta vmmigrationpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteGroupOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteGroupOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteMigratingVmOperation manages a long-running operation from DeleteMigratingVm.
-type DeleteMigratingVmOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // DeleteMigratingVmOperation returns a new DeleteMigratingVmOperation from a given name.
@@ -7351,59 +5998,6 @@ func (c *restClient) DeleteMigratingVmOperation(name string) *DeleteMigratingVmO
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteMigratingVmOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteMigratingVmOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteMigratingVmOperation) Metadata() (*vmmigrationpb.OperationMetadata, error) {
-	var meta vmmigrationpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteMigratingVmOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteMigratingVmOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteSourceOperation manages a long-running operation from DeleteSource.
-type DeleteSourceOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // DeleteSourceOperation returns a new DeleteSourceOperation from a given name.
 // The name must be that of a previously created DeleteSourceOperation, possibly from a different process.
 func (c *gRPCClient) DeleteSourceOperation(name string) *DeleteSourceOperation {
@@ -7420,59 +6014,6 @@ func (c *restClient) DeleteSourceOperation(name string) *DeleteSourceOperation {
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteSourceOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteSourceOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteSourceOperation) Metadata() (*vmmigrationpb.OperationMetadata, error) {
-	var meta vmmigrationpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteSourceOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteSourceOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteTargetProjectOperation manages a long-running operation from DeleteTargetProject.
-type DeleteTargetProjectOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // DeleteTargetProjectOperation returns a new DeleteTargetProjectOperation from a given name.
@@ -7493,59 +6034,6 @@ func (c *restClient) DeleteTargetProjectOperation(name string) *DeleteTargetProj
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteTargetProjectOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteTargetProjectOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteTargetProjectOperation) Metadata() (*vmmigrationpb.OperationMetadata, error) {
-	var meta vmmigrationpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteTargetProjectOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteTargetProjectOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteUtilizationReportOperation manages a long-running operation from DeleteUtilizationReport.
-type DeleteUtilizationReportOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // DeleteUtilizationReportOperation returns a new DeleteUtilizationReportOperation from a given name.
 // The name must be that of a previously created DeleteUtilizationReportOperation, possibly from a different process.
 func (c *gRPCClient) DeleteUtilizationReportOperation(name string) *DeleteUtilizationReportOperation {
@@ -7562,59 +6050,6 @@ func (c *restClient) DeleteUtilizationReportOperation(name string) *DeleteUtiliz
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteUtilizationReportOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteUtilizationReportOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteUtilizationReportOperation) Metadata() (*vmmigrationpb.OperationMetadata, error) {
-	var meta vmmigrationpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteUtilizationReportOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteUtilizationReportOperation) Name() string {
-	return op.lro.Name()
-}
-
-// FinalizeMigrationOperation manages a long-running operation from FinalizeMigration.
-type FinalizeMigrationOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // FinalizeMigrationOperation returns a new FinalizeMigrationOperation from a given name.
@@ -7635,70 +6070,6 @@ func (c *restClient) FinalizeMigrationOperation(name string) *FinalizeMigrationO
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *FinalizeMigrationOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.FinalizeMigrationResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.FinalizeMigrationResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *FinalizeMigrationOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.FinalizeMigrationResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.FinalizeMigrationResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *FinalizeMigrationOperation) Metadata() (*vmmigrationpb.OperationMetadata, error) {
-	var meta vmmigrationpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *FinalizeMigrationOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *FinalizeMigrationOperation) Name() string {
-	return op.lro.Name()
-}
-
-// PauseMigrationOperation manages a long-running operation from PauseMigration.
-type PauseMigrationOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // PauseMigrationOperation returns a new PauseMigrationOperation from a given name.
 // The name must be that of a previously created PauseMigrationOperation, possibly from a different process.
 func (c *gRPCClient) PauseMigrationOperation(name string) *PauseMigrationOperation {
@@ -7715,70 +6086,6 @@ func (c *restClient) PauseMigrationOperation(name string) *PauseMigrationOperati
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *PauseMigrationOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.PauseMigrationResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.PauseMigrationResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *PauseMigrationOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.PauseMigrationResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.PauseMigrationResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *PauseMigrationOperation) Metadata() (*vmmigrationpb.OperationMetadata, error) {
-	var meta vmmigrationpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *PauseMigrationOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *PauseMigrationOperation) Name() string {
-	return op.lro.Name()
-}
-
-// RemoveGroupMigrationOperation manages a long-running operation from RemoveGroupMigration.
-type RemoveGroupMigrationOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // RemoveGroupMigrationOperation returns a new RemoveGroupMigrationOperation from a given name.
@@ -7799,70 +6106,6 @@ func (c *restClient) RemoveGroupMigrationOperation(name string) *RemoveGroupMigr
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *RemoveGroupMigrationOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.RemoveGroupMigrationResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.RemoveGroupMigrationResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *RemoveGroupMigrationOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.RemoveGroupMigrationResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.RemoveGroupMigrationResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *RemoveGroupMigrationOperation) Metadata() (*vmmigrationpb.OperationMetadata, error) {
-	var meta vmmigrationpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *RemoveGroupMigrationOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *RemoveGroupMigrationOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ResumeMigrationOperation manages a long-running operation from ResumeMigration.
-type ResumeMigrationOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // ResumeMigrationOperation returns a new ResumeMigrationOperation from a given name.
 // The name must be that of a previously created ResumeMigrationOperation, possibly from a different process.
 func (c *gRPCClient) ResumeMigrationOperation(name string) *ResumeMigrationOperation {
@@ -7879,70 +6122,6 @@ func (c *restClient) ResumeMigrationOperation(name string) *ResumeMigrationOpera
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ResumeMigrationOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.ResumeMigrationResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.ResumeMigrationResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ResumeMigrationOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.ResumeMigrationResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.ResumeMigrationResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ResumeMigrationOperation) Metadata() (*vmmigrationpb.OperationMetadata, error) {
-	var meta vmmigrationpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ResumeMigrationOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ResumeMigrationOperation) Name() string {
-	return op.lro.Name()
-}
-
-// StartMigrationOperation manages a long-running operation from StartMigration.
-type StartMigrationOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // StartMigrationOperation returns a new StartMigrationOperation from a given name.
@@ -7963,70 +6142,6 @@ func (c *restClient) StartMigrationOperation(name string) *StartMigrationOperati
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *StartMigrationOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.StartMigrationResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.StartMigrationResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *StartMigrationOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.StartMigrationResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.StartMigrationResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *StartMigrationOperation) Metadata() (*vmmigrationpb.OperationMetadata, error) {
-	var meta vmmigrationpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *StartMigrationOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *StartMigrationOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateGroupOperation manages a long-running operation from UpdateGroup.
-type UpdateGroupOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdateGroupOperation returns a new UpdateGroupOperation from a given name.
 // The name must be that of a previously created UpdateGroupOperation, possibly from a different process.
 func (c *gRPCClient) UpdateGroupOperation(name string) *UpdateGroupOperation {
@@ -8043,70 +6158,6 @@ func (c *restClient) UpdateGroupOperation(name string) *UpdateGroupOperation {
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateGroupOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.Group, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.Group
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateGroupOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.Group, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.Group
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateGroupOperation) Metadata() (*vmmigrationpb.OperationMetadata, error) {
-	var meta vmmigrationpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateGroupOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateGroupOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateMigratingVmOperation manages a long-running operation from UpdateMigratingVm.
-type UpdateMigratingVmOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // UpdateMigratingVmOperation returns a new UpdateMigratingVmOperation from a given name.
@@ -8127,70 +6178,6 @@ func (c *restClient) UpdateMigratingVmOperation(name string) *UpdateMigratingVmO
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateMigratingVmOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.MigratingVm, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.MigratingVm
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateMigratingVmOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.MigratingVm, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.MigratingVm
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateMigratingVmOperation) Metadata() (*vmmigrationpb.OperationMetadata, error) {
-	var meta vmmigrationpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateMigratingVmOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateMigratingVmOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateSourceOperation manages a long-running operation from UpdateSource.
-type UpdateSourceOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdateSourceOperation returns a new UpdateSourceOperation from a given name.
 // The name must be that of a previously created UpdateSourceOperation, possibly from a different process.
 func (c *gRPCClient) UpdateSourceOperation(name string) *UpdateSourceOperation {
@@ -8207,70 +6194,6 @@ func (c *restClient) UpdateSourceOperation(name string) *UpdateSourceOperation {
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateSourceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.Source, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.Source
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateSourceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.Source, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.Source
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateSourceOperation) Metadata() (*vmmigrationpb.OperationMetadata, error) {
-	var meta vmmigrationpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateSourceOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateSourceOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateTargetProjectOperation manages a long-running operation from UpdateTargetProject.
-type UpdateTargetProjectOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // UpdateTargetProjectOperation returns a new UpdateTargetProjectOperation from a given name.
@@ -8291,70 +6214,6 @@ func (c *restClient) UpdateTargetProjectOperation(name string) *UpdateTargetProj
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateTargetProjectOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.TargetProject, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.TargetProject
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateTargetProjectOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.TargetProject, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.TargetProject
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateTargetProjectOperation) Metadata() (*vmmigrationpb.OperationMetadata, error) {
-	var meta vmmigrationpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateTargetProjectOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateTargetProjectOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpgradeApplianceOperation manages a long-running operation from UpgradeAppliance.
-type UpgradeApplianceOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpgradeApplianceOperation returns a new UpgradeApplianceOperation from a given name.
 // The name must be that of a previously created UpgradeApplianceOperation, possibly from a different process.
 func (c *gRPCClient) UpgradeApplianceOperation(name string) *UpgradeApplianceOperation {
@@ -8371,579 +6230,4 @@ func (c *restClient) UpgradeApplianceOperation(name string) *UpgradeApplianceOpe
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpgradeApplianceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.UpgradeApplianceResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.UpgradeApplianceResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpgradeApplianceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.UpgradeApplianceResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp vmmigrationpb.UpgradeApplianceResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpgradeApplianceOperation) Metadata() (*vmmigrationpb.OperationMetadata, error) {
-	var meta vmmigrationpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpgradeApplianceOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpgradeApplianceOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CloneJobIterator manages a stream of *vmmigrationpb.CloneJob.
-type CloneJobIterator struct {
-	items    []*vmmigrationpb.CloneJob
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*vmmigrationpb.CloneJob, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *CloneJobIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *CloneJobIterator) Next() (*vmmigrationpb.CloneJob, error) {
-	var item *vmmigrationpb.CloneJob
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *CloneJobIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *CloneJobIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// CutoverJobIterator manages a stream of *vmmigrationpb.CutoverJob.
-type CutoverJobIterator struct {
-	items    []*vmmigrationpb.CutoverJob
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*vmmigrationpb.CutoverJob, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *CutoverJobIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *CutoverJobIterator) Next() (*vmmigrationpb.CutoverJob, error) {
-	var item *vmmigrationpb.CutoverJob
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *CutoverJobIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *CutoverJobIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// DatacenterConnectorIterator manages a stream of *vmmigrationpb.DatacenterConnector.
-type DatacenterConnectorIterator struct {
-	items    []*vmmigrationpb.DatacenterConnector
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*vmmigrationpb.DatacenterConnector, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *DatacenterConnectorIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *DatacenterConnectorIterator) Next() (*vmmigrationpb.DatacenterConnector, error) {
-	var item *vmmigrationpb.DatacenterConnector
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *DatacenterConnectorIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *DatacenterConnectorIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// GroupIterator manages a stream of *vmmigrationpb.Group.
-type GroupIterator struct {
-	items    []*vmmigrationpb.Group
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*vmmigrationpb.Group, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *GroupIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *GroupIterator) Next() (*vmmigrationpb.Group, error) {
-	var item *vmmigrationpb.Group
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *GroupIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *GroupIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// LocationIterator manages a stream of *locationpb.Location.
-type LocationIterator struct {
-	items    []*locationpb.Location
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *LocationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *LocationIterator) Next() (*locationpb.Location, error) {
-	var item *locationpb.Location
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *LocationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *LocationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// MigratingVmIterator manages a stream of *vmmigrationpb.MigratingVm.
-type MigratingVmIterator struct {
-	items    []*vmmigrationpb.MigratingVm
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*vmmigrationpb.MigratingVm, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *MigratingVmIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *MigratingVmIterator) Next() (*vmmigrationpb.MigratingVm, error) {
-	var item *vmmigrationpb.MigratingVm
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *MigratingVmIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *MigratingVmIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// OperationIterator manages a stream of *longrunningpb.Operation.
-type OperationIterator struct {
-	items    []*longrunningpb.Operation
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *OperationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *OperationIterator) Next() (*longrunningpb.Operation, error) {
-	var item *longrunningpb.Operation
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *OperationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *OperationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ReplicationCycleIterator manages a stream of *vmmigrationpb.ReplicationCycle.
-type ReplicationCycleIterator struct {
-	items    []*vmmigrationpb.ReplicationCycle
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*vmmigrationpb.ReplicationCycle, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ReplicationCycleIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ReplicationCycleIterator) Next() (*vmmigrationpb.ReplicationCycle, error) {
-	var item *vmmigrationpb.ReplicationCycle
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ReplicationCycleIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ReplicationCycleIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// SourceIterator manages a stream of *vmmigrationpb.Source.
-type SourceIterator struct {
-	items    []*vmmigrationpb.Source
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*vmmigrationpb.Source, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *SourceIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *SourceIterator) Next() (*vmmigrationpb.Source, error) {
-	var item *vmmigrationpb.Source
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *SourceIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *SourceIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// TargetProjectIterator manages a stream of *vmmigrationpb.TargetProject.
-type TargetProjectIterator struct {
-	items    []*vmmigrationpb.TargetProject
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*vmmigrationpb.TargetProject, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *TargetProjectIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *TargetProjectIterator) Next() (*vmmigrationpb.TargetProject, error) {
-	var item *vmmigrationpb.TargetProject
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *TargetProjectIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *TargetProjectIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// UtilizationReportIterator manages a stream of *vmmigrationpb.UtilizationReport.
-type UtilizationReportIterator struct {
-	items    []*vmmigrationpb.UtilizationReport
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*vmmigrationpb.UtilizationReport, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *UtilizationReportIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *UtilizationReportIterator) Next() (*vmmigrationpb.UtilizationReport, error) {
-	var item *vmmigrationpb.UtilizationReport
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *UtilizationReportIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *UtilizationReportIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

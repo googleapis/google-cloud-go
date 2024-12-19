@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/recommender/apiv1beta1",
-    "version": "1.10.1",
+    "version": "1.13.2",
     "language": "GO",
     "apis": [
       {
@@ -196,6 +196,52 @@
       ]
     },
     {
+      "regionTag": "recommender_v1beta1_generated_Recommender_ListInsightTypes_sync",
+      "title": "recommender ListInsightTypes Sample",
+      "description": "ListInsightTypes lists available InsightTypes.\nNo IAM permissions are required.",
+      "file": "Client/ListInsightTypes/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListInsightTypes",
+        "fullName": "google.cloud.recommender.v1beta1.Client.ListInsightTypes",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "recommenderpb.ListInsightTypesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "InsightTypeIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.recommender.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ListInsightTypes",
+          "fullName": "google.cloud.recommender.v1beta1.Recommender.ListInsightTypes",
+          "service": {
+            "shortName": "Recommender",
+            "fullName": "google.cloud.recommender.v1beta1.Recommender"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "recommender_v1beta1_generated_Recommender_ListInsights_sync",
       "title": "recommender ListInsights Sample",
       "description": "ListInsights lists insights for the specified Cloud Resource. Requires the\nrecommender.*.list IAM permission for the specified insight type.",
@@ -236,7 +282,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -282,7 +328,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "recommender_v1beta1_generated_Recommender_ListRecommenders_sync",
+      "title": "recommender ListRecommenders Sample",
+      "description": "ListRecommenders lists all available Recommenders.\nNo IAM permissions are required.",
+      "file": "Client/ListRecommenders/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRecommenders",
+        "fullName": "google.cloud.recommender.v1beta1.Client.ListRecommenders",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "recommenderpb.ListRecommendersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RecommenderTypeIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.recommender.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ListRecommenders",
+          "fullName": "google.cloud.recommender.v1beta1.Recommender.ListRecommenders",
+          "service": {
+            "shortName": "Recommender",
+            "fullName": "google.cloud.recommender.v1beta1.Recommender"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]

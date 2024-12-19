@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	biglakepb "cloud.google.com/go/bigquery/biglake/apiv1alpha1/biglakepb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -68,10 +67,13 @@ type MetastoreCallOptions struct {
 func defaultMetastoreGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("biglake.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("biglake.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("biglake.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://biglake.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -746,6 +748,8 @@ type metastoreGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewMetastoreClient creates a new metastore service client based on gRPC.
@@ -785,6 +789,7 @@ func NewMetastoreClient(ctx context.Context, opts ...option.ClientOption) (*Meta
 		connPool:        connPool,
 		metastoreClient: biglakepb.NewMetastoreServiceClient(connPool),
 		CallOptions:     &client.CallOptions,
+		logger:          internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -807,7 +812,9 @@ func (c *metastoreGRPCClient) Connection() *grpc.ClientConn {
 func (c *metastoreGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -829,6 +836,8 @@ type metastoreRESTClient struct {
 
 	// Points back to the CallOptions field of the containing MetastoreClient
 	CallOptions **MetastoreCallOptions
+
+	logger *slog.Logger
 }
 
 // NewMetastoreRESTClient creates a new metastore service rest client.
@@ -859,6 +868,7 @@ func NewMetastoreRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -868,9 +878,12 @@ func NewMetastoreRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 func defaultMetastoreRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://biglake.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://biglake.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://biglake.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://biglake.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -880,7 +893,9 @@ func defaultMetastoreRESTClientOptions() []option.ClientOption {
 func (c *metastoreRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -906,7 +921,7 @@ func (c *metastoreGRPCClient) CreateCatalog(ctx context.Context, req *biglakepb.
 	var resp *biglakepb.Catalog
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metastoreClient.CreateCatalog(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metastoreClient.CreateCatalog, req, settings.GRPC, c.logger, "CreateCatalog")
 		return err
 	}, opts...)
 	if err != nil {
@@ -924,7 +939,7 @@ func (c *metastoreGRPCClient) DeleteCatalog(ctx context.Context, req *biglakepb.
 	var resp *biglakepb.Catalog
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metastoreClient.DeleteCatalog(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metastoreClient.DeleteCatalog, req, settings.GRPC, c.logger, "DeleteCatalog")
 		return err
 	}, opts...)
 	if err != nil {
@@ -942,7 +957,7 @@ func (c *metastoreGRPCClient) GetCatalog(ctx context.Context, req *biglakepb.Get
 	var resp *biglakepb.Catalog
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metastoreClient.GetCatalog(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metastoreClient.GetCatalog, req, settings.GRPC, c.logger, "GetCatalog")
 		return err
 	}, opts...)
 	if err != nil {
@@ -971,7 +986,7 @@ func (c *metastoreGRPCClient) ListCatalogs(ctx context.Context, req *biglakepb.L
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.metastoreClient.ListCatalogs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.metastoreClient.ListCatalogs, req, settings.GRPC, c.logger, "ListCatalogs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1006,7 +1021,7 @@ func (c *metastoreGRPCClient) CreateDatabase(ctx context.Context, req *biglakepb
 	var resp *biglakepb.Database
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metastoreClient.CreateDatabase(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metastoreClient.CreateDatabase, req, settings.GRPC, c.logger, "CreateDatabase")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1024,7 +1039,7 @@ func (c *metastoreGRPCClient) DeleteDatabase(ctx context.Context, req *biglakepb
 	var resp *biglakepb.Database
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metastoreClient.DeleteDatabase(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metastoreClient.DeleteDatabase, req, settings.GRPC, c.logger, "DeleteDatabase")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1042,7 +1057,7 @@ func (c *metastoreGRPCClient) UpdateDatabase(ctx context.Context, req *biglakepb
 	var resp *biglakepb.Database
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metastoreClient.UpdateDatabase(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metastoreClient.UpdateDatabase, req, settings.GRPC, c.logger, "UpdateDatabase")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1060,7 +1075,7 @@ func (c *metastoreGRPCClient) GetDatabase(ctx context.Context, req *biglakepb.Ge
 	var resp *biglakepb.Database
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metastoreClient.GetDatabase(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metastoreClient.GetDatabase, req, settings.GRPC, c.logger, "GetDatabase")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1089,7 +1104,7 @@ func (c *metastoreGRPCClient) ListDatabases(ctx context.Context, req *biglakepb.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.metastoreClient.ListDatabases(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.metastoreClient.ListDatabases, req, settings.GRPC, c.logger, "ListDatabases")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1124,7 +1139,7 @@ func (c *metastoreGRPCClient) CreateTable(ctx context.Context, req *biglakepb.Cr
 	var resp *biglakepb.Table
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metastoreClient.CreateTable(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metastoreClient.CreateTable, req, settings.GRPC, c.logger, "CreateTable")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1142,7 +1157,7 @@ func (c *metastoreGRPCClient) DeleteTable(ctx context.Context, req *biglakepb.De
 	var resp *biglakepb.Table
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metastoreClient.DeleteTable(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metastoreClient.DeleteTable, req, settings.GRPC, c.logger, "DeleteTable")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1160,7 +1175,7 @@ func (c *metastoreGRPCClient) UpdateTable(ctx context.Context, req *biglakepb.Up
 	var resp *biglakepb.Table
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metastoreClient.UpdateTable(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metastoreClient.UpdateTable, req, settings.GRPC, c.logger, "UpdateTable")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1178,7 +1193,7 @@ func (c *metastoreGRPCClient) RenameTable(ctx context.Context, req *biglakepb.Re
 	var resp *biglakepb.Table
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metastoreClient.RenameTable(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metastoreClient.RenameTable, req, settings.GRPC, c.logger, "RenameTable")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1196,7 +1211,7 @@ func (c *metastoreGRPCClient) GetTable(ctx context.Context, req *biglakepb.GetTa
 	var resp *biglakepb.Table
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metastoreClient.GetTable(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metastoreClient.GetTable, req, settings.GRPC, c.logger, "GetTable")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1225,7 +1240,7 @@ func (c *metastoreGRPCClient) ListTables(ctx context.Context, req *biglakepb.Lis
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.metastoreClient.ListTables(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.metastoreClient.ListTables, req, settings.GRPC, c.logger, "ListTables")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1260,7 +1275,7 @@ func (c *metastoreGRPCClient) CreateLock(ctx context.Context, req *biglakepb.Cre
 	var resp *biglakepb.Lock
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metastoreClient.CreateLock(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metastoreClient.CreateLock, req, settings.GRPC, c.logger, "CreateLock")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1277,7 +1292,7 @@ func (c *metastoreGRPCClient) DeleteLock(ctx context.Context, req *biglakepb.Del
 	opts = append((*c.CallOptions).DeleteLock[0:len((*c.CallOptions).DeleteLock):len((*c.CallOptions).DeleteLock)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.metastoreClient.DeleteLock(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.metastoreClient.DeleteLock, req, settings.GRPC, c.logger, "DeleteLock")
 		return err
 	}, opts...)
 	return err
@@ -1292,7 +1307,7 @@ func (c *metastoreGRPCClient) CheckLock(ctx context.Context, req *biglakepb.Chec
 	var resp *biglakepb.Lock
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metastoreClient.CheckLock(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metastoreClient.CheckLock, req, settings.GRPC, c.logger, "CheckLock")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1321,7 +1336,7 @@ func (c *metastoreGRPCClient) ListLocks(ctx context.Context, req *biglakepb.List
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.metastoreClient.ListLocks(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.metastoreClient.ListLocks, req, settings.GRPC, c.logger, "ListLocks")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1388,17 +1403,7 @@ func (c *metastoreRESTClient) CreateCatalog(ctx context.Context, req *biglakepb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateCatalog")
 		if err != nil {
 			return err
 		}
@@ -1448,17 +1453,7 @@ func (c *metastoreRESTClient) DeleteCatalog(ctx context.Context, req *biglakepb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteCatalog")
 		if err != nil {
 			return err
 		}
@@ -1508,17 +1503,7 @@ func (c *metastoreRESTClient) GetCatalog(ctx context.Context, req *biglakepb.Get
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCatalog")
 		if err != nil {
 			return err
 		}
@@ -1580,21 +1565,10 @@ func (c *metastoreRESTClient) ListCatalogs(ctx context.Context, req *biglakepb.L
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListCatalogs")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1665,17 +1639,7 @@ func (c *metastoreRESTClient) CreateDatabase(ctx context.Context, req *biglakepb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDatabase")
 		if err != nil {
 			return err
 		}
@@ -1725,17 +1689,7 @@ func (c *metastoreRESTClient) DeleteDatabase(ctx context.Context, req *biglakepb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDatabase")
 		if err != nil {
 			return err
 		}
@@ -1770,11 +1724,11 @@ func (c *metastoreRESTClient) UpdateDatabase(ctx context.Context, req *biglakepb
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1799,17 +1753,7 @@ func (c *metastoreRESTClient) UpdateDatabase(ctx context.Context, req *biglakepb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateDatabase")
 		if err != nil {
 			return err
 		}
@@ -1859,17 +1803,7 @@ func (c *metastoreRESTClient) GetDatabase(ctx context.Context, req *biglakepb.Ge
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDatabase")
 		if err != nil {
 			return err
 		}
@@ -1931,21 +1865,10 @@ func (c *metastoreRESTClient) ListDatabases(ctx context.Context, req *biglakepb.
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDatabases")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2016,17 +1939,7 @@ func (c *metastoreRESTClient) CreateTable(ctx context.Context, req *biglakepb.Cr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateTable")
 		if err != nil {
 			return err
 		}
@@ -2076,17 +1989,7 @@ func (c *metastoreRESTClient) DeleteTable(ctx context.Context, req *biglakepb.De
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteTable")
 		if err != nil {
 			return err
 		}
@@ -2121,11 +2024,11 @@ func (c *metastoreRESTClient) UpdateTable(ctx context.Context, req *biglakepb.Up
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2150,17 +2053,7 @@ func (c *metastoreRESTClient) UpdateTable(ctx context.Context, req *biglakepb.Up
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateTable")
 		if err != nil {
 			return err
 		}
@@ -2216,17 +2109,7 @@ func (c *metastoreRESTClient) RenameTable(ctx context.Context, req *biglakepb.Re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RenameTable")
 		if err != nil {
 			return err
 		}
@@ -2276,17 +2159,7 @@ func (c *metastoreRESTClient) GetTable(ctx context.Context, req *biglakepb.GetTa
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetTable")
 		if err != nil {
 			return err
 		}
@@ -2351,21 +2224,10 @@ func (c *metastoreRESTClient) ListTables(ctx context.Context, req *biglakepb.Lis
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListTables")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2435,17 +2297,7 @@ func (c *metastoreRESTClient) CreateLock(ctx context.Context, req *biglakepb.Cre
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateLock")
 		if err != nil {
 			return err
 		}
@@ -2492,15 +2344,8 @@ func (c *metastoreRESTClient) DeleteLock(ctx context.Context, req *biglakepb.Del
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteLock")
+		return err
 	}, opts...)
 }
 
@@ -2543,17 +2388,7 @@ func (c *metastoreRESTClient) CheckLock(ctx context.Context, req *biglakepb.Chec
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CheckLock")
 		if err != nil {
 			return err
 		}
@@ -2615,21 +2450,10 @@ func (c *metastoreRESTClient) ListLocks(ctx context.Context, req *biglakepb.List
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocks")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2657,192 +2481,4 @@ func (c *metastoreRESTClient) ListLocks(ctx context.Context, req *biglakepb.List
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
-}
-
-// CatalogIterator manages a stream of *biglakepb.Catalog.
-type CatalogIterator struct {
-	items    []*biglakepb.Catalog
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*biglakepb.Catalog, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *CatalogIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *CatalogIterator) Next() (*biglakepb.Catalog, error) {
-	var item *biglakepb.Catalog
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *CatalogIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *CatalogIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// DatabaseIterator manages a stream of *biglakepb.Database.
-type DatabaseIterator struct {
-	items    []*biglakepb.Database
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*biglakepb.Database, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *DatabaseIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *DatabaseIterator) Next() (*biglakepb.Database, error) {
-	var item *biglakepb.Database
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *DatabaseIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *DatabaseIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// LockIterator manages a stream of *biglakepb.Lock.
-type LockIterator struct {
-	items    []*biglakepb.Lock
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*biglakepb.Lock, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *LockIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *LockIterator) Next() (*biglakepb.Lock, error) {
-	var item *biglakepb.Lock
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *LockIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *LockIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// TableIterator manages a stream of *biglakepb.Table.
-type TableIterator struct {
-	items    []*biglakepb.Table
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*biglakepb.Table, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *TableIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *TableIterator) Next() (*biglakepb.Table, error) {
-	var item *biglakepb.Table
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *TableIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *TableIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

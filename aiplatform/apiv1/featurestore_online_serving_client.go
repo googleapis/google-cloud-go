@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package aiplatform
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 
@@ -57,10 +58,13 @@ type FeaturestoreOnlineServingCallOptions struct {
 func defaultFeaturestoreOnlineServingGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("aiplatform.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("aiplatform.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("aiplatform.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -244,6 +248,8 @@ type featurestoreOnlineServingGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewFeaturestoreOnlineServingClient creates a new featurestore online serving service client based on gRPC.
@@ -270,6 +276,7 @@ func NewFeaturestoreOnlineServingClient(ctx context.Context, opts ...option.Clie
 		connPool:                        connPool,
 		featurestoreOnlineServingClient: aiplatformpb.NewFeaturestoreOnlineServingServiceClient(connPool),
 		CallOptions:                     &client.CallOptions,
+		logger:                          internaloption.GetLogger(opts),
 		operationsClient:                longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:                 iampb.NewIAMPolicyClient(connPool),
 		locationsClient:                 locationpb.NewLocationsClient(connPool),
@@ -295,7 +302,9 @@ func (c *featurestoreOnlineServingGRPCClient) Connection() *grpc.ClientConn {
 func (c *featurestoreOnlineServingGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -313,7 +322,7 @@ func (c *featurestoreOnlineServingGRPCClient) ReadFeatureValues(ctx context.Cont
 	var resp *aiplatformpb.ReadFeatureValuesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreOnlineServingClient.ReadFeatureValues(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreOnlineServingClient.ReadFeatureValues, req, settings.GRPC, c.logger, "ReadFeatureValues")
 		return err
 	}, opts...)
 	if err != nil {
@@ -331,7 +340,9 @@ func (c *featurestoreOnlineServingGRPCClient) StreamingReadFeatureValues(ctx con
 	var resp aiplatformpb.FeaturestoreOnlineServingService_StreamingReadFeatureValuesClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "StreamingReadFeatureValues")
 		resp, err = c.featurestoreOnlineServingClient.StreamingReadFeatureValues(ctx, req, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "StreamingReadFeatureValues")
 		return err
 	}, opts...)
 	if err != nil {
@@ -349,7 +360,7 @@ func (c *featurestoreOnlineServingGRPCClient) WriteFeatureValues(ctx context.Con
 	var resp *aiplatformpb.WriteFeatureValuesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreOnlineServingClient.WriteFeatureValues(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreOnlineServingClient.WriteFeatureValues, req, settings.GRPC, c.logger, "WriteFeatureValues")
 		return err
 	}, opts...)
 	if err != nil {
@@ -367,7 +378,7 @@ func (c *featurestoreOnlineServingGRPCClient) GetLocation(ctx context.Context, r
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -396,7 +407,7 @@ func (c *featurestoreOnlineServingGRPCClient) ListLocations(ctx context.Context,
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -431,7 +442,7 @@ func (c *featurestoreOnlineServingGRPCClient) GetIamPolicy(ctx context.Context, 
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -449,7 +460,7 @@ func (c *featurestoreOnlineServingGRPCClient) SetIamPolicy(ctx context.Context, 
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -467,7 +478,7 @@ func (c *featurestoreOnlineServingGRPCClient) TestIamPermissions(ctx context.Con
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -484,7 +495,7 @@ func (c *featurestoreOnlineServingGRPCClient) CancelOperation(ctx context.Contex
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -498,7 +509,7 @@ func (c *featurestoreOnlineServingGRPCClient) DeleteOperation(ctx context.Contex
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -513,7 +524,7 @@ func (c *featurestoreOnlineServingGRPCClient) GetOperation(ctx context.Context, 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -542,7 +553,7 @@ func (c *featurestoreOnlineServingGRPCClient) ListOperations(ctx context.Context
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -577,7 +588,7 @@ func (c *featurestoreOnlineServingGRPCClient) WaitOperation(ctx context.Context,
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.WaitOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.WaitOperation, req, settings.GRPC, c.logger, "WaitOperation")
 		return err
 	}, opts...)
 	if err != nil {

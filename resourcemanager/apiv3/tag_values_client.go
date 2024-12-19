@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	resourcemanagerpb "cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -63,10 +62,13 @@ type TagValuesCallOptions struct {
 func defaultTagValuesGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("cloudresourcemanager.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("cloudresourcemanager.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("cloudresourcemanager.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudresourcemanager.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -351,6 +353,8 @@ type tagValuesGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewTagValuesClient creates a new tag values client based on gRPC.
@@ -377,6 +381,7 @@ func NewTagValuesClient(ctx context.Context, opts ...option.ClientOption) (*TagV
 		connPool:         connPool,
 		tagValuesClient:  resourcemanagerpb.NewTagValuesClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -411,7 +416,9 @@ func (c *tagValuesGRPCClient) Connection() *grpc.ClientConn {
 func (c *tagValuesGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -438,6 +445,8 @@ type tagValuesRESTClient struct {
 
 	// Points back to the CallOptions field of the containing TagValuesClient
 	CallOptions **TagValuesCallOptions
+
+	logger *slog.Logger
 }
 
 // NewTagValuesRESTClient creates a new tag values rest client.
@@ -455,6 +464,7 @@ func NewTagValuesRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -474,9 +484,12 @@ func NewTagValuesRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 func defaultTagValuesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://cloudresourcemanager.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://cloudresourcemanager.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://cloudresourcemanager.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudresourcemanager.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -486,7 +499,9 @@ func defaultTagValuesRESTClientOptions() []option.ClientOption {
 func (c *tagValuesRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -520,7 +535,7 @@ func (c *tagValuesGRPCClient) ListTagValues(ctx context.Context, req *resourcema
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.tagValuesClient.ListTagValues(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.tagValuesClient.ListTagValues, req, settings.GRPC, c.logger, "ListTagValues")
 			return err
 		}, opts...)
 		if err != nil {
@@ -555,7 +570,7 @@ func (c *tagValuesGRPCClient) GetTagValue(ctx context.Context, req *resourcemana
 	var resp *resourcemanagerpb.TagValue
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tagValuesClient.GetTagValue(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tagValuesClient.GetTagValue, req, settings.GRPC, c.logger, "GetTagValue")
 		return err
 	}, opts...)
 	if err != nil {
@@ -570,7 +585,7 @@ func (c *tagValuesGRPCClient) GetNamespacedTagValue(ctx context.Context, req *re
 	var resp *resourcemanagerpb.TagValue
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tagValuesClient.GetNamespacedTagValue(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tagValuesClient.GetNamespacedTagValue, req, settings.GRPC, c.logger, "GetNamespacedTagValue")
 		return err
 	}, opts...)
 	if err != nil {
@@ -585,7 +600,7 @@ func (c *tagValuesGRPCClient) CreateTagValue(ctx context.Context, req *resourcem
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tagValuesClient.CreateTagValue(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tagValuesClient.CreateTagValue, req, settings.GRPC, c.logger, "CreateTagValue")
 		return err
 	}, opts...)
 	if err != nil {
@@ -605,7 +620,7 @@ func (c *tagValuesGRPCClient) UpdateTagValue(ctx context.Context, req *resourcem
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tagValuesClient.UpdateTagValue(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tagValuesClient.UpdateTagValue, req, settings.GRPC, c.logger, "UpdateTagValue")
 		return err
 	}, opts...)
 	if err != nil {
@@ -625,7 +640,7 @@ func (c *tagValuesGRPCClient) DeleteTagValue(ctx context.Context, req *resourcem
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tagValuesClient.DeleteTagValue(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tagValuesClient.DeleteTagValue, req, settings.GRPC, c.logger, "DeleteTagValue")
 		return err
 	}, opts...)
 	if err != nil {
@@ -645,7 +660,7 @@ func (c *tagValuesGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIa
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tagValuesClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tagValuesClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -663,7 +678,7 @@ func (c *tagValuesGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIa
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tagValuesClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tagValuesClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -681,7 +696,7 @@ func (c *tagValuesGRPCClient) TestIamPermissions(ctx context.Context, req *iampb
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tagValuesClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tagValuesClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -699,7 +714,7 @@ func (c *tagValuesGRPCClient) GetOperation(ctx context.Context, req *longrunning
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -754,21 +769,10 @@ func (c *tagValuesRESTClient) ListTagValues(ctx context.Context, req *resourcema
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListTagValues")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -832,17 +836,7 @@ func (c *tagValuesRESTClient) GetTagValue(ctx context.Context, req *resourcemana
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetTagValue")
 		if err != nil {
 			return err
 		}
@@ -892,17 +886,7 @@ func (c *tagValuesRESTClient) GetNamespacedTagValue(ctx context.Context, req *re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetNamespacedTagValue")
 		if err != nil {
 			return err
 		}
@@ -961,21 +945,10 @@ func (c *tagValuesRESTClient) CreateTagValue(ctx context.Context, req *resourcem
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateTagValue")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1011,11 +984,11 @@ func (c *tagValuesRESTClient) UpdateTagValue(ctx context.Context, req *resourcem
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 	if req.GetValidateOnly() {
 		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
@@ -1042,21 +1015,10 @@ func (c *tagValuesRESTClient) UpdateTagValue(ctx context.Context, req *resourcem
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateTagValue")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1113,21 +1075,10 @@ func (c *tagValuesRESTClient) DeleteTagValue(ctx context.Context, req *resourcem
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteTagValue")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1189,17 +1140,7 @@ func (c *tagValuesRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIa
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -1259,17 +1200,7 @@ func (c *tagValuesRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIa
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -1329,17 +1260,7 @@ func (c *tagValuesRESTClient) TestIamPermissions(ctx context.Context, req *iampb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
 		if err != nil {
 			return err
 		}
@@ -1389,17 +1310,7 @@ func (c *tagValuesRESTClient) GetOperation(ctx context.Context, req *longrunning
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -1414,12 +1325,6 @@ func (c *tagValuesRESTClient) GetOperation(ctx context.Context, req *longrunning
 		return nil, e
 	}
 	return resp, nil
-}
-
-// CreateTagValueOperation manages a long-running operation from CreateTagValue.
-type CreateTagValueOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // CreateTagValueOperation returns a new CreateTagValueOperation from a given name.
@@ -1440,70 +1345,6 @@ func (c *tagValuesRESTClient) CreateTagValueOperation(name string) *CreateTagVal
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateTagValueOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*resourcemanagerpb.TagValue, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp resourcemanagerpb.TagValue
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateTagValueOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*resourcemanagerpb.TagValue, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp resourcemanagerpb.TagValue
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateTagValueOperation) Metadata() (*resourcemanagerpb.CreateTagValueMetadata, error) {
-	var meta resourcemanagerpb.CreateTagValueMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateTagValueOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateTagValueOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteTagValueOperation manages a long-running operation from DeleteTagValue.
-type DeleteTagValueOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // DeleteTagValueOperation returns a new DeleteTagValueOperation from a given name.
 // The name must be that of a previously created DeleteTagValueOperation, possibly from a different process.
 func (c *tagValuesGRPCClient) DeleteTagValueOperation(name string) *DeleteTagValueOperation {
@@ -1522,70 +1363,6 @@ func (c *tagValuesRESTClient) DeleteTagValueOperation(name string) *DeleteTagVal
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteTagValueOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*resourcemanagerpb.TagValue, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp resourcemanagerpb.TagValue
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteTagValueOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*resourcemanagerpb.TagValue, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp resourcemanagerpb.TagValue
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteTagValueOperation) Metadata() (*resourcemanagerpb.DeleteTagValueMetadata, error) {
-	var meta resourcemanagerpb.DeleteTagValueMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteTagValueOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteTagValueOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateTagValueOperation manages a long-running operation from UpdateTagValue.
-type UpdateTagValueOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdateTagValueOperation returns a new UpdateTagValueOperation from a given name.
 // The name must be that of a previously created UpdateTagValueOperation, possibly from a different process.
 func (c *tagValuesGRPCClient) UpdateTagValueOperation(name string) *UpdateTagValueOperation {
@@ -1602,109 +1379,4 @@ func (c *tagValuesRESTClient) UpdateTagValueOperation(name string) *UpdateTagVal
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateTagValueOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*resourcemanagerpb.TagValue, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp resourcemanagerpb.TagValue
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateTagValueOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*resourcemanagerpb.TagValue, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp resourcemanagerpb.TagValue
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateTagValueOperation) Metadata() (*resourcemanagerpb.UpdateTagValueMetadata, error) {
-	var meta resourcemanagerpb.UpdateTagValueMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateTagValueOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateTagValueOperation) Name() string {
-	return op.lro.Name()
-}
-
-// TagValueIterator manages a stream of *resourcemanagerpb.TagValue.
-type TagValueIterator struct {
-	items    []*resourcemanagerpb.TagValue
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*resourcemanagerpb.TagValue, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *TagValueIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *TagValueIterator) Next() (*resourcemanagerpb.TagValue, error) {
-	var item *resourcemanagerpb.TagValue
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *TagValueIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *TagValueIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

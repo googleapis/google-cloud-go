@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package notebooks
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 	"time"
@@ -70,10 +71,13 @@ type ManagedNotebookCallOptions struct {
 func defaultManagedNotebookGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("notebooks.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("notebooks.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("notebooks.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://notebooks.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -467,6 +471,8 @@ type managedNotebookGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewManagedNotebookClient creates a new managed notebook service client based on gRPC.
@@ -493,6 +499,7 @@ func NewManagedNotebookClient(ctx context.Context, opts ...option.ClientOption) 
 		connPool:              connPool,
 		managedNotebookClient: notebookspb.NewManagedNotebookServiceClient(connPool),
 		CallOptions:           &client.CallOptions,
+		logger:                internaloption.GetLogger(opts),
 		operationsClient:      longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:       iampb.NewIAMPolicyClient(connPool),
 		locationsClient:       locationpb.NewLocationsClient(connPool),
@@ -529,7 +536,9 @@ func (c *managedNotebookGRPCClient) Connection() *grpc.ClientConn {
 func (c *managedNotebookGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -558,7 +567,7 @@ func (c *managedNotebookGRPCClient) ListRuntimes(ctx context.Context, req *noteb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.managedNotebookClient.ListRuntimes(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.managedNotebookClient.ListRuntimes, req, settings.GRPC, c.logger, "ListRuntimes")
 			return err
 		}, opts...)
 		if err != nil {
@@ -593,7 +602,7 @@ func (c *managedNotebookGRPCClient) GetRuntime(ctx context.Context, req *noteboo
 	var resp *notebookspb.Runtime
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.managedNotebookClient.GetRuntime(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.managedNotebookClient.GetRuntime, req, settings.GRPC, c.logger, "GetRuntime")
 		return err
 	}, opts...)
 	if err != nil {
@@ -611,7 +620,7 @@ func (c *managedNotebookGRPCClient) CreateRuntime(ctx context.Context, req *note
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.managedNotebookClient.CreateRuntime(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.managedNotebookClient.CreateRuntime, req, settings.GRPC, c.logger, "CreateRuntime")
 		return err
 	}, opts...)
 	if err != nil {
@@ -631,7 +640,7 @@ func (c *managedNotebookGRPCClient) UpdateRuntime(ctx context.Context, req *note
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.managedNotebookClient.UpdateRuntime(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.managedNotebookClient.UpdateRuntime, req, settings.GRPC, c.logger, "UpdateRuntime")
 		return err
 	}, opts...)
 	if err != nil {
@@ -651,7 +660,7 @@ func (c *managedNotebookGRPCClient) DeleteRuntime(ctx context.Context, req *note
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.managedNotebookClient.DeleteRuntime(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.managedNotebookClient.DeleteRuntime, req, settings.GRPC, c.logger, "DeleteRuntime")
 		return err
 	}, opts...)
 	if err != nil {
@@ -671,7 +680,7 @@ func (c *managedNotebookGRPCClient) StartRuntime(ctx context.Context, req *noteb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.managedNotebookClient.StartRuntime(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.managedNotebookClient.StartRuntime, req, settings.GRPC, c.logger, "StartRuntime")
 		return err
 	}, opts...)
 	if err != nil {
@@ -691,7 +700,7 @@ func (c *managedNotebookGRPCClient) StopRuntime(ctx context.Context, req *notebo
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.managedNotebookClient.StopRuntime(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.managedNotebookClient.StopRuntime, req, settings.GRPC, c.logger, "StopRuntime")
 		return err
 	}, opts...)
 	if err != nil {
@@ -711,7 +720,7 @@ func (c *managedNotebookGRPCClient) SwitchRuntime(ctx context.Context, req *note
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.managedNotebookClient.SwitchRuntime(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.managedNotebookClient.SwitchRuntime, req, settings.GRPC, c.logger, "SwitchRuntime")
 		return err
 	}, opts...)
 	if err != nil {
@@ -731,7 +740,7 @@ func (c *managedNotebookGRPCClient) ResetRuntime(ctx context.Context, req *noteb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.managedNotebookClient.ResetRuntime(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.managedNotebookClient.ResetRuntime, req, settings.GRPC, c.logger, "ResetRuntime")
 		return err
 	}, opts...)
 	if err != nil {
@@ -751,7 +760,7 @@ func (c *managedNotebookGRPCClient) UpgradeRuntime(ctx context.Context, req *not
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.managedNotebookClient.UpgradeRuntime(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.managedNotebookClient.UpgradeRuntime, req, settings.GRPC, c.logger, "UpgradeRuntime")
 		return err
 	}, opts...)
 	if err != nil {
@@ -771,7 +780,7 @@ func (c *managedNotebookGRPCClient) ReportRuntimeEvent(ctx context.Context, req 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.managedNotebookClient.ReportRuntimeEvent(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.managedNotebookClient.ReportRuntimeEvent, req, settings.GRPC, c.logger, "ReportRuntimeEvent")
 		return err
 	}, opts...)
 	if err != nil {
@@ -791,7 +800,7 @@ func (c *managedNotebookGRPCClient) RefreshRuntimeTokenInternal(ctx context.Cont
 	var resp *notebookspb.RefreshRuntimeTokenInternalResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.managedNotebookClient.RefreshRuntimeTokenInternal(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.managedNotebookClient.RefreshRuntimeTokenInternal, req, settings.GRPC, c.logger, "RefreshRuntimeTokenInternal")
 		return err
 	}, opts...)
 	if err != nil {
@@ -809,7 +818,7 @@ func (c *managedNotebookGRPCClient) DiagnoseRuntime(ctx context.Context, req *no
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.managedNotebookClient.DiagnoseRuntime(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.managedNotebookClient.DiagnoseRuntime, req, settings.GRPC, c.logger, "DiagnoseRuntime")
 		return err
 	}, opts...)
 	if err != nil {
@@ -829,7 +838,7 @@ func (c *managedNotebookGRPCClient) GetLocation(ctx context.Context, req *locati
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -858,7 +867,7 @@ func (c *managedNotebookGRPCClient) ListLocations(ctx context.Context, req *loca
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -893,7 +902,7 @@ func (c *managedNotebookGRPCClient) GetIamPolicy(ctx context.Context, req *iampb
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -911,7 +920,7 @@ func (c *managedNotebookGRPCClient) SetIamPolicy(ctx context.Context, req *iampb
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -929,7 +938,7 @@ func (c *managedNotebookGRPCClient) TestIamPermissions(ctx context.Context, req 
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -946,7 +955,7 @@ func (c *managedNotebookGRPCClient) CancelOperation(ctx context.Context, req *lo
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -960,7 +969,7 @@ func (c *managedNotebookGRPCClient) DeleteOperation(ctx context.Context, req *lo
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -975,7 +984,7 @@ func (c *managedNotebookGRPCClient) GetOperation(ctx context.Context, req *longr
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1004,7 +1013,7 @@ func (c *managedNotebookGRPCClient) ListOperations(ctx context.Context, req *lon
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1030,78 +1039,12 @@ func (c *managedNotebookGRPCClient) ListOperations(ctx context.Context, req *lon
 	return it
 }
 
-// CreateRuntimeOperation manages a long-running operation from CreateRuntime.
-type CreateRuntimeOperation struct {
-	lro *longrunning.Operation
-}
-
 // CreateRuntimeOperation returns a new CreateRuntimeOperation from a given name.
 // The name must be that of a previously created CreateRuntimeOperation, possibly from a different process.
 func (c *managedNotebookGRPCClient) CreateRuntimeOperation(name string) *CreateRuntimeOperation {
 	return &CreateRuntimeOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateRuntimeOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Runtime, error) {
-	var resp notebookspb.Runtime
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateRuntimeOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Runtime, error) {
-	var resp notebookspb.Runtime
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateRuntimeOperation) Metadata() (*notebookspb.OperationMetadata, error) {
-	var meta notebookspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateRuntimeOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateRuntimeOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteRuntimeOperation manages a long-running operation from DeleteRuntime.
-type DeleteRuntimeOperation struct {
-	lro *longrunning.Operation
 }
 
 // DeleteRuntimeOperation returns a new DeleteRuntimeOperation from a given name.
@@ -1112,123 +1055,12 @@ func (c *managedNotebookGRPCClient) DeleteRuntimeOperation(name string) *DeleteR
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteRuntimeOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteRuntimeOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteRuntimeOperation) Metadata() (*notebookspb.OperationMetadata, error) {
-	var meta notebookspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteRuntimeOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteRuntimeOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DiagnoseRuntimeOperation manages a long-running operation from DiagnoseRuntime.
-type DiagnoseRuntimeOperation struct {
-	lro *longrunning.Operation
-}
-
 // DiagnoseRuntimeOperation returns a new DiagnoseRuntimeOperation from a given name.
 // The name must be that of a previously created DiagnoseRuntimeOperation, possibly from a different process.
 func (c *managedNotebookGRPCClient) DiagnoseRuntimeOperation(name string) *DiagnoseRuntimeOperation {
 	return &DiagnoseRuntimeOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DiagnoseRuntimeOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Runtime, error) {
-	var resp notebookspb.Runtime
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DiagnoseRuntimeOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Runtime, error) {
-	var resp notebookspb.Runtime
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DiagnoseRuntimeOperation) Metadata() (*notebookspb.OperationMetadata, error) {
-	var meta notebookspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DiagnoseRuntimeOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DiagnoseRuntimeOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ReportRuntimeEventOperation manages a long-running operation from ReportRuntimeEvent.
-type ReportRuntimeEventOperation struct {
-	lro *longrunning.Operation
 }
 
 // ReportRuntimeEventOperation returns a new ReportRuntimeEventOperation from a given name.
@@ -1239,134 +1071,12 @@ func (c *managedNotebookGRPCClient) ReportRuntimeEventOperation(name string) *Re
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ReportRuntimeEventOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Runtime, error) {
-	var resp notebookspb.Runtime
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ReportRuntimeEventOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Runtime, error) {
-	var resp notebookspb.Runtime
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ReportRuntimeEventOperation) Metadata() (*notebookspb.OperationMetadata, error) {
-	var meta notebookspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ReportRuntimeEventOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ReportRuntimeEventOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ResetRuntimeOperation manages a long-running operation from ResetRuntime.
-type ResetRuntimeOperation struct {
-	lro *longrunning.Operation
-}
-
 // ResetRuntimeOperation returns a new ResetRuntimeOperation from a given name.
 // The name must be that of a previously created ResetRuntimeOperation, possibly from a different process.
 func (c *managedNotebookGRPCClient) ResetRuntimeOperation(name string) *ResetRuntimeOperation {
 	return &ResetRuntimeOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ResetRuntimeOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Runtime, error) {
-	var resp notebookspb.Runtime
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ResetRuntimeOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Runtime, error) {
-	var resp notebookspb.Runtime
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ResetRuntimeOperation) Metadata() (*notebookspb.OperationMetadata, error) {
-	var meta notebookspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ResetRuntimeOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ResetRuntimeOperation) Name() string {
-	return op.lro.Name()
-}
-
-// StartRuntimeOperation manages a long-running operation from StartRuntime.
-type StartRuntimeOperation struct {
-	lro *longrunning.Operation
 }
 
 // StartRuntimeOperation returns a new StartRuntimeOperation from a given name.
@@ -1377,134 +1087,12 @@ func (c *managedNotebookGRPCClient) StartRuntimeOperation(name string) *StartRun
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *StartRuntimeOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Runtime, error) {
-	var resp notebookspb.Runtime
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *StartRuntimeOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Runtime, error) {
-	var resp notebookspb.Runtime
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *StartRuntimeOperation) Metadata() (*notebookspb.OperationMetadata, error) {
-	var meta notebookspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *StartRuntimeOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *StartRuntimeOperation) Name() string {
-	return op.lro.Name()
-}
-
-// StopRuntimeOperation manages a long-running operation from StopRuntime.
-type StopRuntimeOperation struct {
-	lro *longrunning.Operation
-}
-
 // StopRuntimeOperation returns a new StopRuntimeOperation from a given name.
 // The name must be that of a previously created StopRuntimeOperation, possibly from a different process.
 func (c *managedNotebookGRPCClient) StopRuntimeOperation(name string) *StopRuntimeOperation {
 	return &StopRuntimeOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *StopRuntimeOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Runtime, error) {
-	var resp notebookspb.Runtime
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *StopRuntimeOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Runtime, error) {
-	var resp notebookspb.Runtime
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *StopRuntimeOperation) Metadata() (*notebookspb.OperationMetadata, error) {
-	var meta notebookspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *StopRuntimeOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *StopRuntimeOperation) Name() string {
-	return op.lro.Name()
-}
-
-// SwitchRuntimeOperation manages a long-running operation from SwitchRuntime.
-type SwitchRuntimeOperation struct {
-	lro *longrunning.Operation
 }
 
 // SwitchRuntimeOperation returns a new SwitchRuntimeOperation from a given name.
@@ -1515,67 +1103,6 @@ func (c *managedNotebookGRPCClient) SwitchRuntimeOperation(name string) *SwitchR
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *SwitchRuntimeOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Runtime, error) {
-	var resp notebookspb.Runtime
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *SwitchRuntimeOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Runtime, error) {
-	var resp notebookspb.Runtime
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *SwitchRuntimeOperation) Metadata() (*notebookspb.OperationMetadata, error) {
-	var meta notebookspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *SwitchRuntimeOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *SwitchRuntimeOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateRuntimeOperation manages a long-running operation from UpdateRuntime.
-type UpdateRuntimeOperation struct {
-	lro *longrunning.Operation
-}
-
 // UpdateRuntimeOperation returns a new UpdateRuntimeOperation from a given name.
 // The name must be that of a previously created UpdateRuntimeOperation, possibly from a different process.
 func (c *managedNotebookGRPCClient) UpdateRuntimeOperation(name string) *UpdateRuntimeOperation {
@@ -1584,268 +1111,10 @@ func (c *managedNotebookGRPCClient) UpdateRuntimeOperation(name string) *UpdateR
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateRuntimeOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Runtime, error) {
-	var resp notebookspb.Runtime
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateRuntimeOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Runtime, error) {
-	var resp notebookspb.Runtime
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateRuntimeOperation) Metadata() (*notebookspb.OperationMetadata, error) {
-	var meta notebookspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateRuntimeOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateRuntimeOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpgradeRuntimeOperation manages a long-running operation from UpgradeRuntime.
-type UpgradeRuntimeOperation struct {
-	lro *longrunning.Operation
-}
-
 // UpgradeRuntimeOperation returns a new UpgradeRuntimeOperation from a given name.
 // The name must be that of a previously created UpgradeRuntimeOperation, possibly from a different process.
 func (c *managedNotebookGRPCClient) UpgradeRuntimeOperation(name string) *UpgradeRuntimeOperation {
 	return &UpgradeRuntimeOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpgradeRuntimeOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Runtime, error) {
-	var resp notebookspb.Runtime
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpgradeRuntimeOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Runtime, error) {
-	var resp notebookspb.Runtime
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpgradeRuntimeOperation) Metadata() (*notebookspb.OperationMetadata, error) {
-	var meta notebookspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpgradeRuntimeOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpgradeRuntimeOperation) Name() string {
-	return op.lro.Name()
-}
-
-// LocationIterator manages a stream of *locationpb.Location.
-type LocationIterator struct {
-	items    []*locationpb.Location
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *LocationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *LocationIterator) Next() (*locationpb.Location, error) {
-	var item *locationpb.Location
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *LocationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *LocationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// OperationIterator manages a stream of *longrunningpb.Operation.
-type OperationIterator struct {
-	items    []*longrunningpb.Operation
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *OperationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *OperationIterator) Next() (*longrunningpb.Operation, error) {
-	var item *longrunningpb.Operation
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *OperationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *OperationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// RuntimeIterator manages a stream of *notebookspb.Runtime.
-type RuntimeIterator struct {
-	items    []*notebookspb.Runtime
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*notebookspb.Runtime, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *RuntimeIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *RuntimeIterator) Next() (*notebookspb.Runtime, error) {
-	var item *notebookspb.Runtime
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *RuntimeIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *RuntimeIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

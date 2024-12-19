@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@ package aiplatform
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
-	"time"
 
 	aiplatformpb "cloud.google.com/go/aiplatform/apiv1/aiplatformpb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
@@ -78,10 +78,13 @@ type FeaturestoreCallOptions struct {
 func defaultFeaturestoreGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("aiplatform.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("aiplatform.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("aiplatform.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -514,6 +517,8 @@ type featurestoreGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewFeaturestoreClient creates a new featurestore service client based on gRPC.
@@ -540,6 +545,7 @@ func NewFeaturestoreClient(ctx context.Context, opts ...option.ClientOption) (*F
 		connPool:           connPool,
 		featurestoreClient: aiplatformpb.NewFeaturestoreServiceClient(connPool),
 		CallOptions:        &client.CallOptions,
+		logger:             internaloption.GetLogger(opts),
 		operationsClient:   longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:    iampb.NewIAMPolicyClient(connPool),
 		locationsClient:    locationpb.NewLocationsClient(connPool),
@@ -576,7 +582,9 @@ func (c *featurestoreGRPCClient) Connection() *grpc.ClientConn {
 func (c *featurestoreGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -594,7 +602,7 @@ func (c *featurestoreGRPCClient) CreateFeaturestore(ctx context.Context, req *ai
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.CreateFeaturestore(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.CreateFeaturestore, req, settings.GRPC, c.logger, "CreateFeaturestore")
 		return err
 	}, opts...)
 	if err != nil {
@@ -614,7 +622,7 @@ func (c *featurestoreGRPCClient) GetFeaturestore(ctx context.Context, req *aipla
 	var resp *aiplatformpb.Featurestore
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.GetFeaturestore(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.GetFeaturestore, req, settings.GRPC, c.logger, "GetFeaturestore")
 		return err
 	}, opts...)
 	if err != nil {
@@ -643,7 +651,7 @@ func (c *featurestoreGRPCClient) ListFeaturestores(ctx context.Context, req *aip
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.featurestoreClient.ListFeaturestores(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.featurestoreClient.ListFeaturestores, req, settings.GRPC, c.logger, "ListFeaturestores")
 			return err
 		}, opts...)
 		if err != nil {
@@ -678,7 +686,7 @@ func (c *featurestoreGRPCClient) UpdateFeaturestore(ctx context.Context, req *ai
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.UpdateFeaturestore(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.UpdateFeaturestore, req, settings.GRPC, c.logger, "UpdateFeaturestore")
 		return err
 	}, opts...)
 	if err != nil {
@@ -698,7 +706,7 @@ func (c *featurestoreGRPCClient) DeleteFeaturestore(ctx context.Context, req *ai
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.DeleteFeaturestore(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.DeleteFeaturestore, req, settings.GRPC, c.logger, "DeleteFeaturestore")
 		return err
 	}, opts...)
 	if err != nil {
@@ -718,7 +726,7 @@ func (c *featurestoreGRPCClient) CreateEntityType(ctx context.Context, req *aipl
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.CreateEntityType(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.CreateEntityType, req, settings.GRPC, c.logger, "CreateEntityType")
 		return err
 	}, opts...)
 	if err != nil {
@@ -738,7 +746,7 @@ func (c *featurestoreGRPCClient) GetEntityType(ctx context.Context, req *aiplatf
 	var resp *aiplatformpb.EntityType
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.GetEntityType(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.GetEntityType, req, settings.GRPC, c.logger, "GetEntityType")
 		return err
 	}, opts...)
 	if err != nil {
@@ -767,7 +775,7 @@ func (c *featurestoreGRPCClient) ListEntityTypes(ctx context.Context, req *aipla
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.featurestoreClient.ListEntityTypes(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.featurestoreClient.ListEntityTypes, req, settings.GRPC, c.logger, "ListEntityTypes")
 			return err
 		}, opts...)
 		if err != nil {
@@ -802,7 +810,7 @@ func (c *featurestoreGRPCClient) UpdateEntityType(ctx context.Context, req *aipl
 	var resp *aiplatformpb.EntityType
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.UpdateEntityType(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.UpdateEntityType, req, settings.GRPC, c.logger, "UpdateEntityType")
 		return err
 	}, opts...)
 	if err != nil {
@@ -820,7 +828,7 @@ func (c *featurestoreGRPCClient) DeleteEntityType(ctx context.Context, req *aipl
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.DeleteEntityType(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.DeleteEntityType, req, settings.GRPC, c.logger, "DeleteEntityType")
 		return err
 	}, opts...)
 	if err != nil {
@@ -840,7 +848,7 @@ func (c *featurestoreGRPCClient) CreateFeature(ctx context.Context, req *aiplatf
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.CreateFeature(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.CreateFeature, req, settings.GRPC, c.logger, "CreateFeature")
 		return err
 	}, opts...)
 	if err != nil {
@@ -860,7 +868,7 @@ func (c *featurestoreGRPCClient) BatchCreateFeatures(ctx context.Context, req *a
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.BatchCreateFeatures(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.BatchCreateFeatures, req, settings.GRPC, c.logger, "BatchCreateFeatures")
 		return err
 	}, opts...)
 	if err != nil {
@@ -880,7 +888,7 @@ func (c *featurestoreGRPCClient) GetFeature(ctx context.Context, req *aiplatform
 	var resp *aiplatformpb.Feature
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.GetFeature(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.GetFeature, req, settings.GRPC, c.logger, "GetFeature")
 		return err
 	}, opts...)
 	if err != nil {
@@ -909,7 +917,7 @@ func (c *featurestoreGRPCClient) ListFeatures(ctx context.Context, req *aiplatfo
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.featurestoreClient.ListFeatures(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.featurestoreClient.ListFeatures, req, settings.GRPC, c.logger, "ListFeatures")
 			return err
 		}, opts...)
 		if err != nil {
@@ -944,7 +952,7 @@ func (c *featurestoreGRPCClient) UpdateFeature(ctx context.Context, req *aiplatf
 	var resp *aiplatformpb.Feature
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.UpdateFeature(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.UpdateFeature, req, settings.GRPC, c.logger, "UpdateFeature")
 		return err
 	}, opts...)
 	if err != nil {
@@ -962,7 +970,7 @@ func (c *featurestoreGRPCClient) DeleteFeature(ctx context.Context, req *aiplatf
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.DeleteFeature(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.DeleteFeature, req, settings.GRPC, c.logger, "DeleteFeature")
 		return err
 	}, opts...)
 	if err != nil {
@@ -982,7 +990,7 @@ func (c *featurestoreGRPCClient) ImportFeatureValues(ctx context.Context, req *a
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.ImportFeatureValues(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.ImportFeatureValues, req, settings.GRPC, c.logger, "ImportFeatureValues")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1002,7 +1010,7 @@ func (c *featurestoreGRPCClient) BatchReadFeatureValues(ctx context.Context, req
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.BatchReadFeatureValues(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.BatchReadFeatureValues, req, settings.GRPC, c.logger, "BatchReadFeatureValues")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1022,7 +1030,7 @@ func (c *featurestoreGRPCClient) ExportFeatureValues(ctx context.Context, req *a
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.ExportFeatureValues(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.ExportFeatureValues, req, settings.GRPC, c.logger, "ExportFeatureValues")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1042,7 +1050,7 @@ func (c *featurestoreGRPCClient) DeleteFeatureValues(ctx context.Context, req *a
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.DeleteFeatureValues(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.DeleteFeatureValues, req, settings.GRPC, c.logger, "DeleteFeatureValues")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1073,7 +1081,7 @@ func (c *featurestoreGRPCClient) SearchFeatures(ctx context.Context, req *aiplat
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.featurestoreClient.SearchFeatures(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.featurestoreClient.SearchFeatures, req, settings.GRPC, c.logger, "SearchFeatures")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1108,7 +1116,7 @@ func (c *featurestoreGRPCClient) GetLocation(ctx context.Context, req *locationp
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1137,7 +1145,7 @@ func (c *featurestoreGRPCClient) ListLocations(ctx context.Context, req *locatio
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1172,7 +1180,7 @@ func (c *featurestoreGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1190,7 +1198,7 @@ func (c *featurestoreGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1208,7 +1216,7 @@ func (c *featurestoreGRPCClient) TestIamPermissions(ctx context.Context, req *ia
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1225,7 +1233,7 @@ func (c *featurestoreGRPCClient) CancelOperation(ctx context.Context, req *longr
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -1239,7 +1247,7 @@ func (c *featurestoreGRPCClient) DeleteOperation(ctx context.Context, req *longr
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -1254,7 +1262,7 @@ func (c *featurestoreGRPCClient) GetOperation(ctx context.Context, req *longrunn
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1283,7 +1291,7 @@ func (c *featurestoreGRPCClient) ListOperations(ctx context.Context, req *longru
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1318,18 +1326,13 @@ func (c *featurestoreGRPCClient) WaitOperation(ctx context.Context, req *longrun
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.WaitOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.WaitOperation, req, settings.GRPC, c.logger, "WaitOperation")
 		return err
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return resp, nil
-}
-
-// BatchCreateFeaturesOperation manages a long-running operation from BatchCreateFeatures.
-type BatchCreateFeaturesOperation struct {
-	lro *longrunning.Operation
 }
 
 // BatchCreateFeaturesOperation returns a new BatchCreateFeaturesOperation from a given name.
@@ -1340,134 +1343,12 @@ func (c *featurestoreGRPCClient) BatchCreateFeaturesOperation(name string) *Batc
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *BatchCreateFeaturesOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.BatchCreateFeaturesResponse, error) {
-	var resp aiplatformpb.BatchCreateFeaturesResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *BatchCreateFeaturesOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.BatchCreateFeaturesResponse, error) {
-	var resp aiplatformpb.BatchCreateFeaturesResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *BatchCreateFeaturesOperation) Metadata() (*aiplatformpb.BatchCreateFeaturesOperationMetadata, error) {
-	var meta aiplatformpb.BatchCreateFeaturesOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *BatchCreateFeaturesOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *BatchCreateFeaturesOperation) Name() string {
-	return op.lro.Name()
-}
-
-// BatchReadFeatureValuesOperation manages a long-running operation from BatchReadFeatureValues.
-type BatchReadFeatureValuesOperation struct {
-	lro *longrunning.Operation
-}
-
 // BatchReadFeatureValuesOperation returns a new BatchReadFeatureValuesOperation from a given name.
 // The name must be that of a previously created BatchReadFeatureValuesOperation, possibly from a different process.
 func (c *featurestoreGRPCClient) BatchReadFeatureValuesOperation(name string) *BatchReadFeatureValuesOperation {
 	return &BatchReadFeatureValuesOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *BatchReadFeatureValuesOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.BatchReadFeatureValuesResponse, error) {
-	var resp aiplatformpb.BatchReadFeatureValuesResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *BatchReadFeatureValuesOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.BatchReadFeatureValuesResponse, error) {
-	var resp aiplatformpb.BatchReadFeatureValuesResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *BatchReadFeatureValuesOperation) Metadata() (*aiplatformpb.BatchReadFeatureValuesOperationMetadata, error) {
-	var meta aiplatformpb.BatchReadFeatureValuesOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *BatchReadFeatureValuesOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *BatchReadFeatureValuesOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateEntityTypeOperation manages a long-running operation from CreateEntityType.
-type CreateEntityTypeOperation struct {
-	lro *longrunning.Operation
 }
 
 // CreateEntityTypeOperation returns a new CreateEntityTypeOperation from a given name.
@@ -1478,134 +1359,12 @@ func (c *featurestoreGRPCClient) CreateEntityTypeOperation(name string) *CreateE
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateEntityTypeOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.EntityType, error) {
-	var resp aiplatformpb.EntityType
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateEntityTypeOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.EntityType, error) {
-	var resp aiplatformpb.EntityType
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateEntityTypeOperation) Metadata() (*aiplatformpb.CreateEntityTypeOperationMetadata, error) {
-	var meta aiplatformpb.CreateEntityTypeOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateEntityTypeOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateEntityTypeOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateFeatureOperation manages a long-running operation from CreateFeature.
-type CreateFeatureOperation struct {
-	lro *longrunning.Operation
-}
-
 // CreateFeatureOperation returns a new CreateFeatureOperation from a given name.
 // The name must be that of a previously created CreateFeatureOperation, possibly from a different process.
 func (c *featurestoreGRPCClient) CreateFeatureOperation(name string) *CreateFeatureOperation {
 	return &CreateFeatureOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateFeatureOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.Feature, error) {
-	var resp aiplatformpb.Feature
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateFeatureOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.Feature, error) {
-	var resp aiplatformpb.Feature
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateFeatureOperation) Metadata() (*aiplatformpb.CreateFeatureOperationMetadata, error) {
-	var meta aiplatformpb.CreateFeatureOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateFeatureOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateFeatureOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateFeaturestoreOperation manages a long-running operation from CreateFeaturestore.
-type CreateFeaturestoreOperation struct {
-	lro *longrunning.Operation
 }
 
 // CreateFeaturestoreOperation returns a new CreateFeaturestoreOperation from a given name.
@@ -1616,123 +1375,12 @@ func (c *featurestoreGRPCClient) CreateFeaturestoreOperation(name string) *Creat
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateFeaturestoreOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.Featurestore, error) {
-	var resp aiplatformpb.Featurestore
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateFeaturestoreOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.Featurestore, error) {
-	var resp aiplatformpb.Featurestore
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateFeaturestoreOperation) Metadata() (*aiplatformpb.CreateFeaturestoreOperationMetadata, error) {
-	var meta aiplatformpb.CreateFeaturestoreOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateFeaturestoreOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateFeaturestoreOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteEntityTypeOperation manages a long-running operation from DeleteEntityType.
-type DeleteEntityTypeOperation struct {
-	lro *longrunning.Operation
-}
-
 // DeleteEntityTypeOperation returns a new DeleteEntityTypeOperation from a given name.
 // The name must be that of a previously created DeleteEntityTypeOperation, possibly from a different process.
 func (c *featurestoreGRPCClient) DeleteEntityTypeOperation(name string) *DeleteEntityTypeOperation {
 	return &DeleteEntityTypeOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteEntityTypeOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteEntityTypeOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteEntityTypeOperation) Metadata() (*aiplatformpb.DeleteOperationMetadata, error) {
-	var meta aiplatformpb.DeleteOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteEntityTypeOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteEntityTypeOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteFeatureOperation manages a long-running operation from DeleteFeature.
-type DeleteFeatureOperation struct {
-	lro *longrunning.Operation
 }
 
 // DeleteFeatureOperation returns a new DeleteFeatureOperation from a given name.
@@ -1743,123 +1391,12 @@ func (c *featurestoreGRPCClient) DeleteFeatureOperation(name string) *DeleteFeat
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteFeatureOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteFeatureOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteFeatureOperation) Metadata() (*aiplatformpb.DeleteOperationMetadata, error) {
-	var meta aiplatformpb.DeleteOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteFeatureOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteFeatureOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteFeatureValuesOperation manages a long-running operation from DeleteFeatureValues.
-type DeleteFeatureValuesOperation struct {
-	lro *longrunning.Operation
-}
-
 // DeleteFeatureValuesOperation returns a new DeleteFeatureValuesOperation from a given name.
 // The name must be that of a previously created DeleteFeatureValuesOperation, possibly from a different process.
 func (c *featurestoreGRPCClient) DeleteFeatureValuesOperation(name string) *DeleteFeatureValuesOperation {
 	return &DeleteFeatureValuesOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteFeatureValuesOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.DeleteFeatureValuesResponse, error) {
-	var resp aiplatformpb.DeleteFeatureValuesResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteFeatureValuesOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.DeleteFeatureValuesResponse, error) {
-	var resp aiplatformpb.DeleteFeatureValuesResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteFeatureValuesOperation) Metadata() (*aiplatformpb.DeleteFeatureValuesOperationMetadata, error) {
-	var meta aiplatformpb.DeleteFeatureValuesOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteFeatureValuesOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteFeatureValuesOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteFeaturestoreOperation manages a long-running operation from DeleteFeaturestore.
-type DeleteFeaturestoreOperation struct {
-	lro *longrunning.Operation
 }
 
 // DeleteFeaturestoreOperation returns a new DeleteFeaturestoreOperation from a given name.
@@ -1870,123 +1407,12 @@ func (c *featurestoreGRPCClient) DeleteFeaturestoreOperation(name string) *Delet
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteFeaturestoreOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteFeaturestoreOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteFeaturestoreOperation) Metadata() (*aiplatformpb.DeleteOperationMetadata, error) {
-	var meta aiplatformpb.DeleteOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteFeaturestoreOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteFeaturestoreOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ExportFeatureValuesOperation manages a long-running operation from ExportFeatureValues.
-type ExportFeatureValuesOperation struct {
-	lro *longrunning.Operation
-}
-
 // ExportFeatureValuesOperation returns a new ExportFeatureValuesOperation from a given name.
 // The name must be that of a previously created ExportFeatureValuesOperation, possibly from a different process.
 func (c *featurestoreGRPCClient) ExportFeatureValuesOperation(name string) *ExportFeatureValuesOperation {
 	return &ExportFeatureValuesOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ExportFeatureValuesOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.ExportFeatureValuesResponse, error) {
-	var resp aiplatformpb.ExportFeatureValuesResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ExportFeatureValuesOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.ExportFeatureValuesResponse, error) {
-	var resp aiplatformpb.ExportFeatureValuesResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ExportFeatureValuesOperation) Metadata() (*aiplatformpb.ExportFeatureValuesOperationMetadata, error) {
-	var meta aiplatformpb.ExportFeatureValuesOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ExportFeatureValuesOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ExportFeatureValuesOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ImportFeatureValuesOperation manages a long-running operation from ImportFeatureValues.
-type ImportFeatureValuesOperation struct {
-	lro *longrunning.Operation
 }
 
 // ImportFeatureValuesOperation returns a new ImportFeatureValuesOperation from a given name.
@@ -1997,268 +1423,10 @@ func (c *featurestoreGRPCClient) ImportFeatureValuesOperation(name string) *Impo
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ImportFeatureValuesOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.ImportFeatureValuesResponse, error) {
-	var resp aiplatformpb.ImportFeatureValuesResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ImportFeatureValuesOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.ImportFeatureValuesResponse, error) {
-	var resp aiplatformpb.ImportFeatureValuesResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ImportFeatureValuesOperation) Metadata() (*aiplatformpb.ImportFeatureValuesOperationMetadata, error) {
-	var meta aiplatformpb.ImportFeatureValuesOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ImportFeatureValuesOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ImportFeatureValuesOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateFeaturestoreOperation manages a long-running operation from UpdateFeaturestore.
-type UpdateFeaturestoreOperation struct {
-	lro *longrunning.Operation
-}
-
 // UpdateFeaturestoreOperation returns a new UpdateFeaturestoreOperation from a given name.
 // The name must be that of a previously created UpdateFeaturestoreOperation, possibly from a different process.
 func (c *featurestoreGRPCClient) UpdateFeaturestoreOperation(name string) *UpdateFeaturestoreOperation {
 	return &UpdateFeaturestoreOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateFeaturestoreOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.Featurestore, error) {
-	var resp aiplatformpb.Featurestore
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateFeaturestoreOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.Featurestore, error) {
-	var resp aiplatformpb.Featurestore
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateFeaturestoreOperation) Metadata() (*aiplatformpb.UpdateFeaturestoreOperationMetadata, error) {
-	var meta aiplatformpb.UpdateFeaturestoreOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateFeaturestoreOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateFeaturestoreOperation) Name() string {
-	return op.lro.Name()
-}
-
-// EntityTypeIterator manages a stream of *aiplatformpb.EntityType.
-type EntityTypeIterator struct {
-	items    []*aiplatformpb.EntityType
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.EntityType, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *EntityTypeIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *EntityTypeIterator) Next() (*aiplatformpb.EntityType, error) {
-	var item *aiplatformpb.EntityType
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *EntityTypeIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *EntityTypeIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// FeatureIterator manages a stream of *aiplatformpb.Feature.
-type FeatureIterator struct {
-	items    []*aiplatformpb.Feature
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.Feature, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *FeatureIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *FeatureIterator) Next() (*aiplatformpb.Feature, error) {
-	var item *aiplatformpb.Feature
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *FeatureIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *FeatureIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// FeaturestoreIterator manages a stream of *aiplatformpb.Featurestore.
-type FeaturestoreIterator struct {
-	items    []*aiplatformpb.Featurestore
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.Featurestore, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *FeaturestoreIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *FeaturestoreIterator) Next() (*aiplatformpb.Featurestore, error) {
-	var item *aiplatformpb.Featurestore
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *FeaturestoreIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *FeaturestoreIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

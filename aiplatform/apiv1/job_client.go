@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@ package aiplatform
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
-	"time"
 
 	aiplatformpb "cloud.google.com/go/aiplatform/apiv1/aiplatformpb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
@@ -92,10 +92,13 @@ type JobCallOptions struct {
 func defaultJobGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("aiplatform.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("aiplatform.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("aiplatform.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -611,6 +614,8 @@ type jobGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewJobClient creates a new job service client based on gRPC.
@@ -637,6 +642,7 @@ func NewJobClient(ctx context.Context, opts ...option.ClientOption) (*JobClient,
 		connPool:         connPool,
 		jobClient:        aiplatformpb.NewJobServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:  iampb.NewIAMPolicyClient(connPool),
 		locationsClient:  locationpb.NewLocationsClient(connPool),
@@ -673,7 +679,9 @@ func (c *jobGRPCClient) Connection() *grpc.ClientConn {
 func (c *jobGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -691,7 +699,7 @@ func (c *jobGRPCClient) CreateCustomJob(ctx context.Context, req *aiplatformpb.C
 	var resp *aiplatformpb.CustomJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.CreateCustomJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.CreateCustomJob, req, settings.GRPC, c.logger, "CreateCustomJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -709,7 +717,7 @@ func (c *jobGRPCClient) GetCustomJob(ctx context.Context, req *aiplatformpb.GetC
 	var resp *aiplatformpb.CustomJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.GetCustomJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.GetCustomJob, req, settings.GRPC, c.logger, "GetCustomJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -738,7 +746,7 @@ func (c *jobGRPCClient) ListCustomJobs(ctx context.Context, req *aiplatformpb.Li
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.jobClient.ListCustomJobs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.jobClient.ListCustomJobs, req, settings.GRPC, c.logger, "ListCustomJobs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -773,7 +781,7 @@ func (c *jobGRPCClient) DeleteCustomJob(ctx context.Context, req *aiplatformpb.D
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.DeleteCustomJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.DeleteCustomJob, req, settings.GRPC, c.logger, "DeleteCustomJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -792,7 +800,7 @@ func (c *jobGRPCClient) CancelCustomJob(ctx context.Context, req *aiplatformpb.C
 	opts = append((*c.CallOptions).CancelCustomJob[0:len((*c.CallOptions).CancelCustomJob):len((*c.CallOptions).CancelCustomJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.jobClient.CancelCustomJob(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.jobClient.CancelCustomJob, req, settings.GRPC, c.logger, "CancelCustomJob")
 		return err
 	}, opts...)
 	return err
@@ -807,7 +815,7 @@ func (c *jobGRPCClient) CreateDataLabelingJob(ctx context.Context, req *aiplatfo
 	var resp *aiplatformpb.DataLabelingJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.CreateDataLabelingJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.CreateDataLabelingJob, req, settings.GRPC, c.logger, "CreateDataLabelingJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -825,7 +833,7 @@ func (c *jobGRPCClient) GetDataLabelingJob(ctx context.Context, req *aiplatformp
 	var resp *aiplatformpb.DataLabelingJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.GetDataLabelingJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.GetDataLabelingJob, req, settings.GRPC, c.logger, "GetDataLabelingJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -854,7 +862,7 @@ func (c *jobGRPCClient) ListDataLabelingJobs(ctx context.Context, req *aiplatfor
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.jobClient.ListDataLabelingJobs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.jobClient.ListDataLabelingJobs, req, settings.GRPC, c.logger, "ListDataLabelingJobs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -889,7 +897,7 @@ func (c *jobGRPCClient) DeleteDataLabelingJob(ctx context.Context, req *aiplatfo
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.DeleteDataLabelingJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.DeleteDataLabelingJob, req, settings.GRPC, c.logger, "DeleteDataLabelingJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -908,7 +916,7 @@ func (c *jobGRPCClient) CancelDataLabelingJob(ctx context.Context, req *aiplatfo
 	opts = append((*c.CallOptions).CancelDataLabelingJob[0:len((*c.CallOptions).CancelDataLabelingJob):len((*c.CallOptions).CancelDataLabelingJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.jobClient.CancelDataLabelingJob(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.jobClient.CancelDataLabelingJob, req, settings.GRPC, c.logger, "CancelDataLabelingJob")
 		return err
 	}, opts...)
 	return err
@@ -923,7 +931,7 @@ func (c *jobGRPCClient) CreateHyperparameterTuningJob(ctx context.Context, req *
 	var resp *aiplatformpb.HyperparameterTuningJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.CreateHyperparameterTuningJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.CreateHyperparameterTuningJob, req, settings.GRPC, c.logger, "CreateHyperparameterTuningJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -941,7 +949,7 @@ func (c *jobGRPCClient) GetHyperparameterTuningJob(ctx context.Context, req *aip
 	var resp *aiplatformpb.HyperparameterTuningJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.GetHyperparameterTuningJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.GetHyperparameterTuningJob, req, settings.GRPC, c.logger, "GetHyperparameterTuningJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -970,7 +978,7 @@ func (c *jobGRPCClient) ListHyperparameterTuningJobs(ctx context.Context, req *a
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.jobClient.ListHyperparameterTuningJobs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.jobClient.ListHyperparameterTuningJobs, req, settings.GRPC, c.logger, "ListHyperparameterTuningJobs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1005,7 +1013,7 @@ func (c *jobGRPCClient) DeleteHyperparameterTuningJob(ctx context.Context, req *
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.DeleteHyperparameterTuningJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.DeleteHyperparameterTuningJob, req, settings.GRPC, c.logger, "DeleteHyperparameterTuningJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1024,7 +1032,7 @@ func (c *jobGRPCClient) CancelHyperparameterTuningJob(ctx context.Context, req *
 	opts = append((*c.CallOptions).CancelHyperparameterTuningJob[0:len((*c.CallOptions).CancelHyperparameterTuningJob):len((*c.CallOptions).CancelHyperparameterTuningJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.jobClient.CancelHyperparameterTuningJob(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.jobClient.CancelHyperparameterTuningJob, req, settings.GRPC, c.logger, "CancelHyperparameterTuningJob")
 		return err
 	}, opts...)
 	return err
@@ -1039,7 +1047,7 @@ func (c *jobGRPCClient) CreateNasJob(ctx context.Context, req *aiplatformpb.Crea
 	var resp *aiplatformpb.NasJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.CreateNasJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.CreateNasJob, req, settings.GRPC, c.logger, "CreateNasJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1057,7 +1065,7 @@ func (c *jobGRPCClient) GetNasJob(ctx context.Context, req *aiplatformpb.GetNasJ
 	var resp *aiplatformpb.NasJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.GetNasJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.GetNasJob, req, settings.GRPC, c.logger, "GetNasJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1086,7 +1094,7 @@ func (c *jobGRPCClient) ListNasJobs(ctx context.Context, req *aiplatformpb.ListN
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.jobClient.ListNasJobs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.jobClient.ListNasJobs, req, settings.GRPC, c.logger, "ListNasJobs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1121,7 +1129,7 @@ func (c *jobGRPCClient) DeleteNasJob(ctx context.Context, req *aiplatformpb.Dele
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.DeleteNasJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.DeleteNasJob, req, settings.GRPC, c.logger, "DeleteNasJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1140,7 +1148,7 @@ func (c *jobGRPCClient) CancelNasJob(ctx context.Context, req *aiplatformpb.Canc
 	opts = append((*c.CallOptions).CancelNasJob[0:len((*c.CallOptions).CancelNasJob):len((*c.CallOptions).CancelNasJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.jobClient.CancelNasJob(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.jobClient.CancelNasJob, req, settings.GRPC, c.logger, "CancelNasJob")
 		return err
 	}, opts...)
 	return err
@@ -1155,7 +1163,7 @@ func (c *jobGRPCClient) GetNasTrialDetail(ctx context.Context, req *aiplatformpb
 	var resp *aiplatformpb.NasTrialDetail
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.GetNasTrialDetail(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.GetNasTrialDetail, req, settings.GRPC, c.logger, "GetNasTrialDetail")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1184,7 +1192,7 @@ func (c *jobGRPCClient) ListNasTrialDetails(ctx context.Context, req *aiplatform
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.jobClient.ListNasTrialDetails(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.jobClient.ListNasTrialDetails, req, settings.GRPC, c.logger, "ListNasTrialDetails")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1219,7 +1227,7 @@ func (c *jobGRPCClient) CreateBatchPredictionJob(ctx context.Context, req *aipla
 	var resp *aiplatformpb.BatchPredictionJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.CreateBatchPredictionJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.CreateBatchPredictionJob, req, settings.GRPC, c.logger, "CreateBatchPredictionJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1237,7 +1245,7 @@ func (c *jobGRPCClient) GetBatchPredictionJob(ctx context.Context, req *aiplatfo
 	var resp *aiplatformpb.BatchPredictionJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.GetBatchPredictionJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.GetBatchPredictionJob, req, settings.GRPC, c.logger, "GetBatchPredictionJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1266,7 +1274,7 @@ func (c *jobGRPCClient) ListBatchPredictionJobs(ctx context.Context, req *aiplat
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.jobClient.ListBatchPredictionJobs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.jobClient.ListBatchPredictionJobs, req, settings.GRPC, c.logger, "ListBatchPredictionJobs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1301,7 +1309,7 @@ func (c *jobGRPCClient) DeleteBatchPredictionJob(ctx context.Context, req *aipla
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.DeleteBatchPredictionJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.DeleteBatchPredictionJob, req, settings.GRPC, c.logger, "DeleteBatchPredictionJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1320,7 +1328,7 @@ func (c *jobGRPCClient) CancelBatchPredictionJob(ctx context.Context, req *aipla
 	opts = append((*c.CallOptions).CancelBatchPredictionJob[0:len((*c.CallOptions).CancelBatchPredictionJob):len((*c.CallOptions).CancelBatchPredictionJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.jobClient.CancelBatchPredictionJob(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.jobClient.CancelBatchPredictionJob, req, settings.GRPC, c.logger, "CancelBatchPredictionJob")
 		return err
 	}, opts...)
 	return err
@@ -1335,7 +1343,7 @@ func (c *jobGRPCClient) CreateModelDeploymentMonitoringJob(ctx context.Context, 
 	var resp *aiplatformpb.ModelDeploymentMonitoringJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.CreateModelDeploymentMonitoringJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.CreateModelDeploymentMonitoringJob, req, settings.GRPC, c.logger, "CreateModelDeploymentMonitoringJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1364,7 +1372,7 @@ func (c *jobGRPCClient) SearchModelDeploymentMonitoringStatsAnomalies(ctx contex
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.jobClient.SearchModelDeploymentMonitoringStatsAnomalies(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.jobClient.SearchModelDeploymentMonitoringStatsAnomalies, req, settings.GRPC, c.logger, "SearchModelDeploymentMonitoringStatsAnomalies")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1399,7 +1407,7 @@ func (c *jobGRPCClient) GetModelDeploymentMonitoringJob(ctx context.Context, req
 	var resp *aiplatformpb.ModelDeploymentMonitoringJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.GetModelDeploymentMonitoringJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.GetModelDeploymentMonitoringJob, req, settings.GRPC, c.logger, "GetModelDeploymentMonitoringJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1428,7 +1436,7 @@ func (c *jobGRPCClient) ListModelDeploymentMonitoringJobs(ctx context.Context, r
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.jobClient.ListModelDeploymentMonitoringJobs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.jobClient.ListModelDeploymentMonitoringJobs, req, settings.GRPC, c.logger, "ListModelDeploymentMonitoringJobs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1463,7 +1471,7 @@ func (c *jobGRPCClient) UpdateModelDeploymentMonitoringJob(ctx context.Context, 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.UpdateModelDeploymentMonitoringJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.UpdateModelDeploymentMonitoringJob, req, settings.GRPC, c.logger, "UpdateModelDeploymentMonitoringJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1483,7 +1491,7 @@ func (c *jobGRPCClient) DeleteModelDeploymentMonitoringJob(ctx context.Context, 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.DeleteModelDeploymentMonitoringJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.DeleteModelDeploymentMonitoringJob, req, settings.GRPC, c.logger, "DeleteModelDeploymentMonitoringJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1502,7 +1510,7 @@ func (c *jobGRPCClient) PauseModelDeploymentMonitoringJob(ctx context.Context, r
 	opts = append((*c.CallOptions).PauseModelDeploymentMonitoringJob[0:len((*c.CallOptions).PauseModelDeploymentMonitoringJob):len((*c.CallOptions).PauseModelDeploymentMonitoringJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.jobClient.PauseModelDeploymentMonitoringJob(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.jobClient.PauseModelDeploymentMonitoringJob, req, settings.GRPC, c.logger, "PauseModelDeploymentMonitoringJob")
 		return err
 	}, opts...)
 	return err
@@ -1516,7 +1524,7 @@ func (c *jobGRPCClient) ResumeModelDeploymentMonitoringJob(ctx context.Context, 
 	opts = append((*c.CallOptions).ResumeModelDeploymentMonitoringJob[0:len((*c.CallOptions).ResumeModelDeploymentMonitoringJob):len((*c.CallOptions).ResumeModelDeploymentMonitoringJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.jobClient.ResumeModelDeploymentMonitoringJob(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.jobClient.ResumeModelDeploymentMonitoringJob, req, settings.GRPC, c.logger, "ResumeModelDeploymentMonitoringJob")
 		return err
 	}, opts...)
 	return err
@@ -1531,7 +1539,7 @@ func (c *jobGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLoca
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1560,7 +1568,7 @@ func (c *jobGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListL
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1595,7 +1603,7 @@ func (c *jobGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolic
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1613,7 +1621,7 @@ func (c *jobGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolic
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1631,7 +1639,7 @@ func (c *jobGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestI
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1648,7 +1656,7 @@ func (c *jobGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -1662,7 +1670,7 @@ func (c *jobGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -1677,7 +1685,7 @@ func (c *jobGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.Get
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1706,7 +1714,7 @@ func (c *jobGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.L
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1741,18 +1749,13 @@ func (c *jobGRPCClient) WaitOperation(ctx context.Context, req *longrunningpb.Wa
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.WaitOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.WaitOperation, req, settings.GRPC, c.logger, "WaitOperation")
 		return err
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return resp, nil
-}
-
-// DeleteBatchPredictionJobOperation manages a long-running operation from DeleteBatchPredictionJob.
-type DeleteBatchPredictionJobOperation struct {
-	lro *longrunning.Operation
 }
 
 // DeleteBatchPredictionJobOperation returns a new DeleteBatchPredictionJobOperation from a given name.
@@ -1763,112 +1766,12 @@ func (c *jobGRPCClient) DeleteBatchPredictionJobOperation(name string) *DeleteBa
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteBatchPredictionJobOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteBatchPredictionJobOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteBatchPredictionJobOperation) Metadata() (*aiplatformpb.DeleteOperationMetadata, error) {
-	var meta aiplatformpb.DeleteOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteBatchPredictionJobOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteBatchPredictionJobOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteCustomJobOperation manages a long-running operation from DeleteCustomJob.
-type DeleteCustomJobOperation struct {
-	lro *longrunning.Operation
-}
-
 // DeleteCustomJobOperation returns a new DeleteCustomJobOperation from a given name.
 // The name must be that of a previously created DeleteCustomJobOperation, possibly from a different process.
 func (c *jobGRPCClient) DeleteCustomJobOperation(name string) *DeleteCustomJobOperation {
 	return &DeleteCustomJobOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteCustomJobOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteCustomJobOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteCustomJobOperation) Metadata() (*aiplatformpb.DeleteOperationMetadata, error) {
-	var meta aiplatformpb.DeleteOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteCustomJobOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteCustomJobOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteDataLabelingJobOperation manages a long-running operation from DeleteDataLabelingJob.
-type DeleteDataLabelingJobOperation struct {
-	lro *longrunning.Operation
 }
 
 // DeleteDataLabelingJobOperation returns a new DeleteDataLabelingJobOperation from a given name.
@@ -1879,112 +1782,12 @@ func (c *jobGRPCClient) DeleteDataLabelingJobOperation(name string) *DeleteDataL
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteDataLabelingJobOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteDataLabelingJobOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteDataLabelingJobOperation) Metadata() (*aiplatformpb.DeleteOperationMetadata, error) {
-	var meta aiplatformpb.DeleteOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteDataLabelingJobOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteDataLabelingJobOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteHyperparameterTuningJobOperation manages a long-running operation from DeleteHyperparameterTuningJob.
-type DeleteHyperparameterTuningJobOperation struct {
-	lro *longrunning.Operation
-}
-
 // DeleteHyperparameterTuningJobOperation returns a new DeleteHyperparameterTuningJobOperation from a given name.
 // The name must be that of a previously created DeleteHyperparameterTuningJobOperation, possibly from a different process.
 func (c *jobGRPCClient) DeleteHyperparameterTuningJobOperation(name string) *DeleteHyperparameterTuningJobOperation {
 	return &DeleteHyperparameterTuningJobOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteHyperparameterTuningJobOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteHyperparameterTuningJobOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteHyperparameterTuningJobOperation) Metadata() (*aiplatformpb.DeleteOperationMetadata, error) {
-	var meta aiplatformpb.DeleteOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteHyperparameterTuningJobOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteHyperparameterTuningJobOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteModelDeploymentMonitoringJobOperation manages a long-running operation from DeleteModelDeploymentMonitoringJob.
-type DeleteModelDeploymentMonitoringJobOperation struct {
-	lro *longrunning.Operation
 }
 
 // DeleteModelDeploymentMonitoringJobOperation returns a new DeleteModelDeploymentMonitoringJobOperation from a given name.
@@ -1995,56 +1798,6 @@ func (c *jobGRPCClient) DeleteModelDeploymentMonitoringJobOperation(name string)
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteModelDeploymentMonitoringJobOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteModelDeploymentMonitoringJobOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteModelDeploymentMonitoringJobOperation) Metadata() (*aiplatformpb.DeleteOperationMetadata, error) {
-	var meta aiplatformpb.DeleteOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteModelDeploymentMonitoringJobOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteModelDeploymentMonitoringJobOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteNasJobOperation manages a long-running operation from DeleteNasJob.
-type DeleteNasJobOperation struct {
-	lro *longrunning.Operation
-}
-
 // DeleteNasJobOperation returns a new DeleteNasJobOperation from a given name.
 // The name must be that of a previously created DeleteNasJobOperation, possibly from a different process.
 func (c *jobGRPCClient) DeleteNasJobOperation(name string) *DeleteNasJobOperation {
@@ -2053,492 +1806,10 @@ func (c *jobGRPCClient) DeleteNasJobOperation(name string) *DeleteNasJobOperatio
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteNasJobOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteNasJobOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteNasJobOperation) Metadata() (*aiplatformpb.DeleteOperationMetadata, error) {
-	var meta aiplatformpb.DeleteOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteNasJobOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteNasJobOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateModelDeploymentMonitoringJobOperation manages a long-running operation from UpdateModelDeploymentMonitoringJob.
-type UpdateModelDeploymentMonitoringJobOperation struct {
-	lro *longrunning.Operation
-}
-
 // UpdateModelDeploymentMonitoringJobOperation returns a new UpdateModelDeploymentMonitoringJobOperation from a given name.
 // The name must be that of a previously created UpdateModelDeploymentMonitoringJobOperation, possibly from a different process.
 func (c *jobGRPCClient) UpdateModelDeploymentMonitoringJobOperation(name string) *UpdateModelDeploymentMonitoringJobOperation {
 	return &UpdateModelDeploymentMonitoringJobOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateModelDeploymentMonitoringJobOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.ModelDeploymentMonitoringJob, error) {
-	var resp aiplatformpb.ModelDeploymentMonitoringJob
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateModelDeploymentMonitoringJobOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.ModelDeploymentMonitoringJob, error) {
-	var resp aiplatformpb.ModelDeploymentMonitoringJob
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateModelDeploymentMonitoringJobOperation) Metadata() (*aiplatformpb.UpdateModelDeploymentMonitoringJobOperationMetadata, error) {
-	var meta aiplatformpb.UpdateModelDeploymentMonitoringJobOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateModelDeploymentMonitoringJobOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateModelDeploymentMonitoringJobOperation) Name() string {
-	return op.lro.Name()
-}
-
-// BatchPredictionJobIterator manages a stream of *aiplatformpb.BatchPredictionJob.
-type BatchPredictionJobIterator struct {
-	items    []*aiplatformpb.BatchPredictionJob
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.BatchPredictionJob, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *BatchPredictionJobIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *BatchPredictionJobIterator) Next() (*aiplatformpb.BatchPredictionJob, error) {
-	var item *aiplatformpb.BatchPredictionJob
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *BatchPredictionJobIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *BatchPredictionJobIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// CustomJobIterator manages a stream of *aiplatformpb.CustomJob.
-type CustomJobIterator struct {
-	items    []*aiplatformpb.CustomJob
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.CustomJob, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *CustomJobIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *CustomJobIterator) Next() (*aiplatformpb.CustomJob, error) {
-	var item *aiplatformpb.CustomJob
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *CustomJobIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *CustomJobIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// DataLabelingJobIterator manages a stream of *aiplatformpb.DataLabelingJob.
-type DataLabelingJobIterator struct {
-	items    []*aiplatformpb.DataLabelingJob
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.DataLabelingJob, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *DataLabelingJobIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *DataLabelingJobIterator) Next() (*aiplatformpb.DataLabelingJob, error) {
-	var item *aiplatformpb.DataLabelingJob
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *DataLabelingJobIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *DataLabelingJobIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// HyperparameterTuningJobIterator manages a stream of *aiplatformpb.HyperparameterTuningJob.
-type HyperparameterTuningJobIterator struct {
-	items    []*aiplatformpb.HyperparameterTuningJob
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.HyperparameterTuningJob, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *HyperparameterTuningJobIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *HyperparameterTuningJobIterator) Next() (*aiplatformpb.HyperparameterTuningJob, error) {
-	var item *aiplatformpb.HyperparameterTuningJob
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *HyperparameterTuningJobIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *HyperparameterTuningJobIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ModelDeploymentMonitoringJobIterator manages a stream of *aiplatformpb.ModelDeploymentMonitoringJob.
-type ModelDeploymentMonitoringJobIterator struct {
-	items    []*aiplatformpb.ModelDeploymentMonitoringJob
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.ModelDeploymentMonitoringJob, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ModelDeploymentMonitoringJobIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ModelDeploymentMonitoringJobIterator) Next() (*aiplatformpb.ModelDeploymentMonitoringJob, error) {
-	var item *aiplatformpb.ModelDeploymentMonitoringJob
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ModelDeploymentMonitoringJobIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ModelDeploymentMonitoringJobIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ModelMonitoringStatsAnomaliesIterator manages a stream of *aiplatformpb.ModelMonitoringStatsAnomalies.
-type ModelMonitoringStatsAnomaliesIterator struct {
-	items    []*aiplatformpb.ModelMonitoringStatsAnomalies
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.ModelMonitoringStatsAnomalies, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ModelMonitoringStatsAnomaliesIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ModelMonitoringStatsAnomaliesIterator) Next() (*aiplatformpb.ModelMonitoringStatsAnomalies, error) {
-	var item *aiplatformpb.ModelMonitoringStatsAnomalies
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ModelMonitoringStatsAnomaliesIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ModelMonitoringStatsAnomaliesIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// NasJobIterator manages a stream of *aiplatformpb.NasJob.
-type NasJobIterator struct {
-	items    []*aiplatformpb.NasJob
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.NasJob, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *NasJobIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *NasJobIterator) Next() (*aiplatformpb.NasJob, error) {
-	var item *aiplatformpb.NasJob
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *NasJobIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *NasJobIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// NasTrialDetailIterator manages a stream of *aiplatformpb.NasTrialDetail.
-type NasTrialDetailIterator struct {
-	items    []*aiplatformpb.NasTrialDetail
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.NasTrialDetail, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *NasTrialDetailIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *NasTrialDetailIterator) Next() (*aiplatformpb.NasTrialDetail, error) {
-	var item *aiplatformpb.NasTrialDetail
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *NasTrialDetailIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *NasTrialDetailIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

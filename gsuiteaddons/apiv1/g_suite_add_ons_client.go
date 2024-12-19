@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	gsuiteaddonspb "cloud.google.com/go/gsuiteaddons/apiv1/gsuiteaddonspb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -58,10 +57,13 @@ type CallOptions struct {
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("gsuiteaddons.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("gsuiteaddons.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("gsuiteaddons.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://gsuiteaddons.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -387,6 +389,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new g suite add ons client based on gRPC.
@@ -440,6 +444,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      gsuiteaddonspb.NewGSuiteAddOnsClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -462,7 +467,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -484,6 +491,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new g suite add ons rest client.
@@ -528,6 +537,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -537,9 +547,12 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 func defaultRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://gsuiteaddons.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://gsuiteaddons.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://gsuiteaddons.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://gsuiteaddons.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -549,7 +562,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -575,7 +590,7 @@ func (c *gRPCClient) GetAuthorization(ctx context.Context, req *gsuiteaddonspb.G
 	var resp *gsuiteaddonspb.Authorization
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetAuthorization(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetAuthorization, req, settings.GRPC, c.logger, "GetAuthorization")
 		return err
 	}, opts...)
 	if err != nil {
@@ -593,7 +608,7 @@ func (c *gRPCClient) CreateDeployment(ctx context.Context, req *gsuiteaddonspb.C
 	var resp *gsuiteaddonspb.Deployment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateDeployment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateDeployment, req, settings.GRPC, c.logger, "CreateDeployment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -611,7 +626,7 @@ func (c *gRPCClient) ReplaceDeployment(ctx context.Context, req *gsuiteaddonspb.
 	var resp *gsuiteaddonspb.Deployment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ReplaceDeployment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ReplaceDeployment, req, settings.GRPC, c.logger, "ReplaceDeployment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -629,7 +644,7 @@ func (c *gRPCClient) GetDeployment(ctx context.Context, req *gsuiteaddonspb.GetD
 	var resp *gsuiteaddonspb.Deployment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetDeployment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetDeployment, req, settings.GRPC, c.logger, "GetDeployment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -658,7 +673,7 @@ func (c *gRPCClient) ListDeployments(ctx context.Context, req *gsuiteaddonspb.Li
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListDeployments(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListDeployments, req, settings.GRPC, c.logger, "ListDeployments")
 			return err
 		}, opts...)
 		if err != nil {
@@ -692,7 +707,7 @@ func (c *gRPCClient) DeleteDeployment(ctx context.Context, req *gsuiteaddonspb.D
 	opts = append((*c.CallOptions).DeleteDeployment[0:len((*c.CallOptions).DeleteDeployment):len((*c.CallOptions).DeleteDeployment)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteDeployment(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteDeployment, req, settings.GRPC, c.logger, "DeleteDeployment")
 		return err
 	}, opts...)
 	return err
@@ -706,7 +721,7 @@ func (c *gRPCClient) InstallDeployment(ctx context.Context, req *gsuiteaddonspb.
 	opts = append((*c.CallOptions).InstallDeployment[0:len((*c.CallOptions).InstallDeployment):len((*c.CallOptions).InstallDeployment)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.InstallDeployment(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.InstallDeployment, req, settings.GRPC, c.logger, "InstallDeployment")
 		return err
 	}, opts...)
 	return err
@@ -720,7 +735,7 @@ func (c *gRPCClient) UninstallDeployment(ctx context.Context, req *gsuiteaddonsp
 	opts = append((*c.CallOptions).UninstallDeployment[0:len((*c.CallOptions).UninstallDeployment):len((*c.CallOptions).UninstallDeployment)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.UninstallDeployment(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.UninstallDeployment, req, settings.GRPC, c.logger, "UninstallDeployment")
 		return err
 	}, opts...)
 	return err
@@ -735,7 +750,7 @@ func (c *gRPCClient) GetInstallStatus(ctx context.Context, req *gsuiteaddonspb.G
 	var resp *gsuiteaddonspb.InstallStatus
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetInstallStatus(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetInstallStatus, req, settings.GRPC, c.logger, "GetInstallStatus")
 		return err
 	}, opts...)
 	if err != nil {
@@ -777,17 +792,7 @@ func (c *restClient) GetAuthorization(ctx context.Context, req *gsuiteaddonspb.G
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAuthorization")
 		if err != nil {
 			return err
 		}
@@ -845,17 +850,7 @@ func (c *restClient) CreateDeployment(ctx context.Context, req *gsuiteaddonspb.C
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDeployment")
 		if err != nil {
 			return err
 		}
@@ -912,17 +907,7 @@ func (c *restClient) ReplaceDeployment(ctx context.Context, req *gsuiteaddonspb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ReplaceDeployment")
 		if err != nil {
 			return err
 		}
@@ -972,17 +957,7 @@ func (c *restClient) GetDeployment(ctx context.Context, req *gsuiteaddonspb.GetD
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDeployment")
 		if err != nil {
 			return err
 		}
@@ -1044,21 +1019,10 @@ func (c *restClient) ListDeployments(ctx context.Context, req *gsuiteaddonspb.Li
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDeployments")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1121,15 +1085,8 @@ func (c *restClient) DeleteDeployment(ctx context.Context, req *gsuiteaddonspb.D
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDeployment")
+		return err
 	}, opts...)
 }
 
@@ -1171,15 +1128,8 @@ func (c *restClient) InstallDeployment(ctx context.Context, req *gsuiteaddonspb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "InstallDeployment")
+		return err
 	}, opts...)
 }
 
@@ -1221,15 +1171,8 @@ func (c *restClient) UninstallDeployment(ctx context.Context, req *gsuiteaddonsp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UninstallDeployment")
+		return err
 	}, opts...)
 }
 
@@ -1266,17 +1209,7 @@ func (c *restClient) GetInstallStatus(ctx context.Context, req *gsuiteaddonspb.G
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetInstallStatus")
 		if err != nil {
 			return err
 		}
@@ -1291,51 +1224,4 @@ func (c *restClient) GetInstallStatus(ctx context.Context, req *gsuiteaddonspb.G
 		return nil, e
 	}
 	return resp, nil
-}
-
-// DeploymentIterator manages a stream of *gsuiteaddonspb.Deployment.
-type DeploymentIterator struct {
-	items    []*gsuiteaddonspb.Deployment
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*gsuiteaddonspb.Deployment, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *DeploymentIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *DeploymentIterator) Next() (*gsuiteaddonspb.Deployment, error) {
-	var item *gsuiteaddonspb.Deployment
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *DeploymentIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *DeploymentIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

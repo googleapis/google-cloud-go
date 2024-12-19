@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@ package aiplatform
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
-	"time"
 
 	aiplatformpb "cloud.google.com/go/aiplatform/apiv1/aiplatformpb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
@@ -87,10 +87,13 @@ type TensorboardCallOptions struct {
 func defaultTensorboardGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("aiplatform.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("aiplatform.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("aiplatform.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -521,6 +524,8 @@ type tensorboardGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewTensorboardClient creates a new tensorboard service client based on gRPC.
@@ -547,6 +552,7 @@ func NewTensorboardClient(ctx context.Context, opts ...option.ClientOption) (*Te
 		connPool:          connPool,
 		tensorboardClient: aiplatformpb.NewTensorboardServiceClient(connPool),
 		CallOptions:       &client.CallOptions,
+		logger:            internaloption.GetLogger(opts),
 		operationsClient:  longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:   iampb.NewIAMPolicyClient(connPool),
 		locationsClient:   locationpb.NewLocationsClient(connPool),
@@ -583,7 +589,9 @@ func (c *tensorboardGRPCClient) Connection() *grpc.ClientConn {
 func (c *tensorboardGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -601,7 +609,7 @@ func (c *tensorboardGRPCClient) CreateTensorboard(ctx context.Context, req *aipl
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.CreateTensorboard(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.CreateTensorboard, req, settings.GRPC, c.logger, "CreateTensorboard")
 		return err
 	}, opts...)
 	if err != nil {
@@ -621,7 +629,7 @@ func (c *tensorboardGRPCClient) GetTensorboard(ctx context.Context, req *aiplatf
 	var resp *aiplatformpb.Tensorboard
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.GetTensorboard(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.GetTensorboard, req, settings.GRPC, c.logger, "GetTensorboard")
 		return err
 	}, opts...)
 	if err != nil {
@@ -639,7 +647,7 @@ func (c *tensorboardGRPCClient) UpdateTensorboard(ctx context.Context, req *aipl
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.UpdateTensorboard(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.UpdateTensorboard, req, settings.GRPC, c.logger, "UpdateTensorboard")
 		return err
 	}, opts...)
 	if err != nil {
@@ -670,7 +678,7 @@ func (c *tensorboardGRPCClient) ListTensorboards(ctx context.Context, req *aipla
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.tensorboardClient.ListTensorboards(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.tensorboardClient.ListTensorboards, req, settings.GRPC, c.logger, "ListTensorboards")
 			return err
 		}, opts...)
 		if err != nil {
@@ -705,7 +713,7 @@ func (c *tensorboardGRPCClient) DeleteTensorboard(ctx context.Context, req *aipl
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.DeleteTensorboard(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.DeleteTensorboard, req, settings.GRPC, c.logger, "DeleteTensorboard")
 		return err
 	}, opts...)
 	if err != nil {
@@ -725,7 +733,7 @@ func (c *tensorboardGRPCClient) ReadTensorboardUsage(ctx context.Context, req *a
 	var resp *aiplatformpb.ReadTensorboardUsageResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.ReadTensorboardUsage(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.ReadTensorboardUsage, req, settings.GRPC, c.logger, "ReadTensorboardUsage")
 		return err
 	}, opts...)
 	if err != nil {
@@ -743,7 +751,7 @@ func (c *tensorboardGRPCClient) ReadTensorboardSize(ctx context.Context, req *ai
 	var resp *aiplatformpb.ReadTensorboardSizeResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.ReadTensorboardSize(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.ReadTensorboardSize, req, settings.GRPC, c.logger, "ReadTensorboardSize")
 		return err
 	}, opts...)
 	if err != nil {
@@ -761,7 +769,7 @@ func (c *tensorboardGRPCClient) CreateTensorboardExperiment(ctx context.Context,
 	var resp *aiplatformpb.TensorboardExperiment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.CreateTensorboardExperiment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.CreateTensorboardExperiment, req, settings.GRPC, c.logger, "CreateTensorboardExperiment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -779,7 +787,7 @@ func (c *tensorboardGRPCClient) GetTensorboardExperiment(ctx context.Context, re
 	var resp *aiplatformpb.TensorboardExperiment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.GetTensorboardExperiment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.GetTensorboardExperiment, req, settings.GRPC, c.logger, "GetTensorboardExperiment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -797,7 +805,7 @@ func (c *tensorboardGRPCClient) UpdateTensorboardExperiment(ctx context.Context,
 	var resp *aiplatformpb.TensorboardExperiment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.UpdateTensorboardExperiment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.UpdateTensorboardExperiment, req, settings.GRPC, c.logger, "UpdateTensorboardExperiment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -826,7 +834,7 @@ func (c *tensorboardGRPCClient) ListTensorboardExperiments(ctx context.Context, 
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.tensorboardClient.ListTensorboardExperiments(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.tensorboardClient.ListTensorboardExperiments, req, settings.GRPC, c.logger, "ListTensorboardExperiments")
 			return err
 		}, opts...)
 		if err != nil {
@@ -861,7 +869,7 @@ func (c *tensorboardGRPCClient) DeleteTensorboardExperiment(ctx context.Context,
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.DeleteTensorboardExperiment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.DeleteTensorboardExperiment, req, settings.GRPC, c.logger, "DeleteTensorboardExperiment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -881,7 +889,7 @@ func (c *tensorboardGRPCClient) CreateTensorboardRun(ctx context.Context, req *a
 	var resp *aiplatformpb.TensorboardRun
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.CreateTensorboardRun(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.CreateTensorboardRun, req, settings.GRPC, c.logger, "CreateTensorboardRun")
 		return err
 	}, opts...)
 	if err != nil {
@@ -899,7 +907,7 @@ func (c *tensorboardGRPCClient) BatchCreateTensorboardRuns(ctx context.Context, 
 	var resp *aiplatformpb.BatchCreateTensorboardRunsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.BatchCreateTensorboardRuns(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.BatchCreateTensorboardRuns, req, settings.GRPC, c.logger, "BatchCreateTensorboardRuns")
 		return err
 	}, opts...)
 	if err != nil {
@@ -917,7 +925,7 @@ func (c *tensorboardGRPCClient) GetTensorboardRun(ctx context.Context, req *aipl
 	var resp *aiplatformpb.TensorboardRun
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.GetTensorboardRun(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.GetTensorboardRun, req, settings.GRPC, c.logger, "GetTensorboardRun")
 		return err
 	}, opts...)
 	if err != nil {
@@ -935,7 +943,7 @@ func (c *tensorboardGRPCClient) UpdateTensorboardRun(ctx context.Context, req *a
 	var resp *aiplatformpb.TensorboardRun
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.UpdateTensorboardRun(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.UpdateTensorboardRun, req, settings.GRPC, c.logger, "UpdateTensorboardRun")
 		return err
 	}, opts...)
 	if err != nil {
@@ -964,7 +972,7 @@ func (c *tensorboardGRPCClient) ListTensorboardRuns(ctx context.Context, req *ai
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.tensorboardClient.ListTensorboardRuns(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.tensorboardClient.ListTensorboardRuns, req, settings.GRPC, c.logger, "ListTensorboardRuns")
 			return err
 		}, opts...)
 		if err != nil {
@@ -999,7 +1007,7 @@ func (c *tensorboardGRPCClient) DeleteTensorboardRun(ctx context.Context, req *a
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.DeleteTensorboardRun(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.DeleteTensorboardRun, req, settings.GRPC, c.logger, "DeleteTensorboardRun")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1019,7 +1027,7 @@ func (c *tensorboardGRPCClient) BatchCreateTensorboardTimeSeries(ctx context.Con
 	var resp *aiplatformpb.BatchCreateTensorboardTimeSeriesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.BatchCreateTensorboardTimeSeries(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.BatchCreateTensorboardTimeSeries, req, settings.GRPC, c.logger, "BatchCreateTensorboardTimeSeries")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1037,7 +1045,7 @@ func (c *tensorboardGRPCClient) CreateTensorboardTimeSeries(ctx context.Context,
 	var resp *aiplatformpb.TensorboardTimeSeries
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.CreateTensorboardTimeSeries(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.CreateTensorboardTimeSeries, req, settings.GRPC, c.logger, "CreateTensorboardTimeSeries")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1055,7 +1063,7 @@ func (c *tensorboardGRPCClient) GetTensorboardTimeSeries(ctx context.Context, re
 	var resp *aiplatformpb.TensorboardTimeSeries
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.GetTensorboardTimeSeries(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.GetTensorboardTimeSeries, req, settings.GRPC, c.logger, "GetTensorboardTimeSeries")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1073,7 +1081,7 @@ func (c *tensorboardGRPCClient) UpdateTensorboardTimeSeries(ctx context.Context,
 	var resp *aiplatformpb.TensorboardTimeSeries
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.UpdateTensorboardTimeSeries(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.UpdateTensorboardTimeSeries, req, settings.GRPC, c.logger, "UpdateTensorboardTimeSeries")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1102,7 +1110,7 @@ func (c *tensorboardGRPCClient) ListTensorboardTimeSeries(ctx context.Context, r
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.tensorboardClient.ListTensorboardTimeSeries(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.tensorboardClient.ListTensorboardTimeSeries, req, settings.GRPC, c.logger, "ListTensorboardTimeSeries")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1137,7 +1145,7 @@ func (c *tensorboardGRPCClient) DeleteTensorboardTimeSeries(ctx context.Context,
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.DeleteTensorboardTimeSeries(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.DeleteTensorboardTimeSeries, req, settings.GRPC, c.logger, "DeleteTensorboardTimeSeries")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1157,7 +1165,7 @@ func (c *tensorboardGRPCClient) BatchReadTensorboardTimeSeriesData(ctx context.C
 	var resp *aiplatformpb.BatchReadTensorboardTimeSeriesDataResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.BatchReadTensorboardTimeSeriesData(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.BatchReadTensorboardTimeSeriesData, req, settings.GRPC, c.logger, "BatchReadTensorboardTimeSeriesData")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1175,7 +1183,7 @@ func (c *tensorboardGRPCClient) ReadTensorboardTimeSeriesData(ctx context.Contex
 	var resp *aiplatformpb.ReadTensorboardTimeSeriesDataResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.ReadTensorboardTimeSeriesData(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.ReadTensorboardTimeSeriesData, req, settings.GRPC, c.logger, "ReadTensorboardTimeSeriesData")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1193,7 +1201,9 @@ func (c *tensorboardGRPCClient) ReadTensorboardBlobData(ctx context.Context, req
 	var resp aiplatformpb.TensorboardService_ReadTensorboardBlobDataClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "ReadTensorboardBlobData")
 		resp, err = c.tensorboardClient.ReadTensorboardBlobData(ctx, req, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "ReadTensorboardBlobData")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1211,7 +1221,7 @@ func (c *tensorboardGRPCClient) WriteTensorboardExperimentData(ctx context.Conte
 	var resp *aiplatformpb.WriteTensorboardExperimentDataResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.WriteTensorboardExperimentData(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.WriteTensorboardExperimentData, req, settings.GRPC, c.logger, "WriteTensorboardExperimentData")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1229,7 +1239,7 @@ func (c *tensorboardGRPCClient) WriteTensorboardRunData(ctx context.Context, req
 	var resp *aiplatformpb.WriteTensorboardRunDataResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.WriteTensorboardRunData(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.WriteTensorboardRunData, req, settings.GRPC, c.logger, "WriteTensorboardRunData")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1258,7 +1268,7 @@ func (c *tensorboardGRPCClient) ExportTensorboardTimeSeriesData(ctx context.Cont
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.tensorboardClient.ExportTensorboardTimeSeriesData(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.tensorboardClient.ExportTensorboardTimeSeriesData, req, settings.GRPC, c.logger, "ExportTensorboardTimeSeriesData")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1293,7 +1303,7 @@ func (c *tensorboardGRPCClient) GetLocation(ctx context.Context, req *locationpb
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1322,7 +1332,7 @@ func (c *tensorboardGRPCClient) ListLocations(ctx context.Context, req *location
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1357,7 +1367,7 @@ func (c *tensorboardGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.Get
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1375,7 +1385,7 @@ func (c *tensorboardGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.Set
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1393,7 +1403,7 @@ func (c *tensorboardGRPCClient) TestIamPermissions(ctx context.Context, req *iam
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1410,7 +1420,7 @@ func (c *tensorboardGRPCClient) CancelOperation(ctx context.Context, req *longru
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -1424,7 +1434,7 @@ func (c *tensorboardGRPCClient) DeleteOperation(ctx context.Context, req *longru
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -1439,7 +1449,7 @@ func (c *tensorboardGRPCClient) GetOperation(ctx context.Context, req *longrunni
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1468,7 +1478,7 @@ func (c *tensorboardGRPCClient) ListOperations(ctx context.Context, req *longrun
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1503,18 +1513,13 @@ func (c *tensorboardGRPCClient) WaitOperation(ctx context.Context, req *longrunn
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.WaitOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.WaitOperation, req, settings.GRPC, c.logger, "WaitOperation")
 		return err
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return resp, nil
-}
-
-// CreateTensorboardOperation manages a long-running operation from CreateTensorboard.
-type CreateTensorboardOperation struct {
-	lro *longrunning.Operation
 }
 
 // CreateTensorboardOperation returns a new CreateTensorboardOperation from a given name.
@@ -1525,123 +1530,12 @@ func (c *tensorboardGRPCClient) CreateTensorboardOperation(name string) *CreateT
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateTensorboardOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.Tensorboard, error) {
-	var resp aiplatformpb.Tensorboard
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateTensorboardOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.Tensorboard, error) {
-	var resp aiplatformpb.Tensorboard
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateTensorboardOperation) Metadata() (*aiplatformpb.CreateTensorboardOperationMetadata, error) {
-	var meta aiplatformpb.CreateTensorboardOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateTensorboardOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateTensorboardOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteTensorboardOperation manages a long-running operation from DeleteTensorboard.
-type DeleteTensorboardOperation struct {
-	lro *longrunning.Operation
-}
-
 // DeleteTensorboardOperation returns a new DeleteTensorboardOperation from a given name.
 // The name must be that of a previously created DeleteTensorboardOperation, possibly from a different process.
 func (c *tensorboardGRPCClient) DeleteTensorboardOperation(name string) *DeleteTensorboardOperation {
 	return &DeleteTensorboardOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteTensorboardOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteTensorboardOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteTensorboardOperation) Metadata() (*aiplatformpb.DeleteOperationMetadata, error) {
-	var meta aiplatformpb.DeleteOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteTensorboardOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteTensorboardOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteTensorboardExperimentOperation manages a long-running operation from DeleteTensorboardExperiment.
-type DeleteTensorboardExperimentOperation struct {
-	lro *longrunning.Operation
 }
 
 // DeleteTensorboardExperimentOperation returns a new DeleteTensorboardExperimentOperation from a given name.
@@ -1652,112 +1546,12 @@ func (c *tensorboardGRPCClient) DeleteTensorboardExperimentOperation(name string
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteTensorboardExperimentOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteTensorboardExperimentOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteTensorboardExperimentOperation) Metadata() (*aiplatformpb.DeleteOperationMetadata, error) {
-	var meta aiplatformpb.DeleteOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteTensorboardExperimentOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteTensorboardExperimentOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteTensorboardRunOperation manages a long-running operation from DeleteTensorboardRun.
-type DeleteTensorboardRunOperation struct {
-	lro *longrunning.Operation
-}
-
 // DeleteTensorboardRunOperation returns a new DeleteTensorboardRunOperation from a given name.
 // The name must be that of a previously created DeleteTensorboardRunOperation, possibly from a different process.
 func (c *tensorboardGRPCClient) DeleteTensorboardRunOperation(name string) *DeleteTensorboardRunOperation {
 	return &DeleteTensorboardRunOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteTensorboardRunOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteTensorboardRunOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteTensorboardRunOperation) Metadata() (*aiplatformpb.DeleteOperationMetadata, error) {
-	var meta aiplatformpb.DeleteOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteTensorboardRunOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteTensorboardRunOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteTensorboardTimeSeriesOperation manages a long-running operation from DeleteTensorboardTimeSeries.
-type DeleteTensorboardTimeSeriesOperation struct {
-	lro *longrunning.Operation
 }
 
 // DeleteTensorboardTimeSeriesOperation returns a new DeleteTensorboardTimeSeriesOperation from a given name.
@@ -1768,351 +1562,10 @@ func (c *tensorboardGRPCClient) DeleteTensorboardTimeSeriesOperation(name string
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteTensorboardTimeSeriesOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteTensorboardTimeSeriesOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteTensorboardTimeSeriesOperation) Metadata() (*aiplatformpb.DeleteOperationMetadata, error) {
-	var meta aiplatformpb.DeleteOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteTensorboardTimeSeriesOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteTensorboardTimeSeriesOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateTensorboardOperation manages a long-running operation from UpdateTensorboard.
-type UpdateTensorboardOperation struct {
-	lro *longrunning.Operation
-}
-
 // UpdateTensorboardOperation returns a new UpdateTensorboardOperation from a given name.
 // The name must be that of a previously created UpdateTensorboardOperation, possibly from a different process.
 func (c *tensorboardGRPCClient) UpdateTensorboardOperation(name string) *UpdateTensorboardOperation {
 	return &UpdateTensorboardOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateTensorboardOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.Tensorboard, error) {
-	var resp aiplatformpb.Tensorboard
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateTensorboardOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.Tensorboard, error) {
-	var resp aiplatformpb.Tensorboard
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateTensorboardOperation) Metadata() (*aiplatformpb.UpdateTensorboardOperationMetadata, error) {
-	var meta aiplatformpb.UpdateTensorboardOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateTensorboardOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateTensorboardOperation) Name() string {
-	return op.lro.Name()
-}
-
-// TensorboardExperimentIterator manages a stream of *aiplatformpb.TensorboardExperiment.
-type TensorboardExperimentIterator struct {
-	items    []*aiplatformpb.TensorboardExperiment
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.TensorboardExperiment, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *TensorboardExperimentIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *TensorboardExperimentIterator) Next() (*aiplatformpb.TensorboardExperiment, error) {
-	var item *aiplatformpb.TensorboardExperiment
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *TensorboardExperimentIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *TensorboardExperimentIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// TensorboardIterator manages a stream of *aiplatformpb.Tensorboard.
-type TensorboardIterator struct {
-	items    []*aiplatformpb.Tensorboard
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.Tensorboard, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *TensorboardIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *TensorboardIterator) Next() (*aiplatformpb.Tensorboard, error) {
-	var item *aiplatformpb.Tensorboard
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *TensorboardIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *TensorboardIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// TensorboardRunIterator manages a stream of *aiplatformpb.TensorboardRun.
-type TensorboardRunIterator struct {
-	items    []*aiplatformpb.TensorboardRun
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.TensorboardRun, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *TensorboardRunIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *TensorboardRunIterator) Next() (*aiplatformpb.TensorboardRun, error) {
-	var item *aiplatformpb.TensorboardRun
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *TensorboardRunIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *TensorboardRunIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// TensorboardTimeSeriesIterator manages a stream of *aiplatformpb.TensorboardTimeSeries.
-type TensorboardTimeSeriesIterator struct {
-	items    []*aiplatformpb.TensorboardTimeSeries
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.TensorboardTimeSeries, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *TensorboardTimeSeriesIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *TensorboardTimeSeriesIterator) Next() (*aiplatformpb.TensorboardTimeSeries, error) {
-	var item *aiplatformpb.TensorboardTimeSeries
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *TensorboardTimeSeriesIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *TensorboardTimeSeriesIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// TimeSeriesDataPointIterator manages a stream of *aiplatformpb.TimeSeriesDataPoint.
-type TimeSeriesDataPointIterator struct {
-	items    []*aiplatformpb.TimeSeriesDataPoint
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.TimeSeriesDataPoint, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *TimeSeriesDataPointIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *TimeSeriesDataPointIterator) Next() (*aiplatformpb.TimeSeriesDataPoint, error) {
-	var item *aiplatformpb.TimeSeriesDataPoint
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *TimeSeriesDataPointIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *TimeSeriesDataPointIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

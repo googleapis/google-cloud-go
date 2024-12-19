@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -72,7 +72,7 @@ func ExampleAttachedClustersClient_CreateAttachedCluster() {
 	_ = resp
 }
 
-func ExampleAttachedClustersClient_UpdateAttachedCluster() {
+func ExampleAttachedClustersClient_DeleteAttachedCluster() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -85,16 +85,114 @@ func ExampleAttachedClustersClient_UpdateAttachedCluster() {
 	}
 	defer c.Close()
 
-	req := &gkemulticloudpb.UpdateAttachedClusterRequest{
+	req := &gkemulticloudpb.DeleteAttachedClusterRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb#UpdateAttachedClusterRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb#DeleteAttachedClusterRequest.
 	}
-	op, err := c.UpdateAttachedCluster(ctx, req)
+	op, err := c.DeleteAttachedCluster(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	resp, err := op.Wait(ctx)
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleAttachedClustersClient_GenerateAttachedClusterAgentToken() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := gkemulticloud.NewAttachedClustersClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &gkemulticloudpb.GenerateAttachedClusterAgentTokenRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb#GenerateAttachedClusterAgentTokenRequest.
+	}
+	resp, err := c.GenerateAttachedClusterAgentToken(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAttachedClustersClient_GenerateAttachedClusterInstallManifest() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := gkemulticloud.NewAttachedClustersClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &gkemulticloudpb.GenerateAttachedClusterInstallManifestRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb#GenerateAttachedClusterInstallManifestRequest.
+	}
+	resp, err := c.GenerateAttachedClusterInstallManifest(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAttachedClustersClient_GetAttachedCluster() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := gkemulticloud.NewAttachedClustersClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &gkemulticloudpb.GetAttachedClusterRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb#GetAttachedClusterRequest.
+	}
+	resp, err := c.GetAttachedCluster(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAttachedClustersClient_GetAttachedServerConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := gkemulticloud.NewAttachedClustersClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &gkemulticloudpb.GetAttachedServerConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb#GetAttachedServerConfigRequest.
+	}
+	resp, err := c.GetAttachedServerConfig(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -132,31 +230,6 @@ func ExampleAttachedClustersClient_ImportAttachedCluster() {
 	_ = resp
 }
 
-func ExampleAttachedClustersClient_GetAttachedCluster() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := gkemulticloud.NewAttachedClustersClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &gkemulticloudpb.GetAttachedClusterRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb#GetAttachedClusterRequest.
-	}
-	resp, err := c.GetAttachedCluster(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleAttachedClustersClient_ListAttachedClusters() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -185,10 +258,16 @@ func ExampleAttachedClustersClient_ListAttachedClusters() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*gkemulticloudpb.ListAttachedClustersResponse)
 	}
 }
 
-func ExampleAttachedClustersClient_DeleteAttachedCluster() {
+func ExampleAttachedClustersClient_UpdateAttachedCluster() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -201,64 +280,16 @@ func ExampleAttachedClustersClient_DeleteAttachedCluster() {
 	}
 	defer c.Close()
 
-	req := &gkemulticloudpb.DeleteAttachedClusterRequest{
+	req := &gkemulticloudpb.UpdateAttachedClusterRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb#DeleteAttachedClusterRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb#UpdateAttachedClusterRequest.
 	}
-	op, err := c.DeleteAttachedCluster(ctx, req)
+	op, err := c.UpdateAttachedCluster(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	err = op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleAttachedClustersClient_GetAttachedServerConfig() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := gkemulticloud.NewAttachedClustersClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &gkemulticloudpb.GetAttachedServerConfigRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb#GetAttachedServerConfigRequest.
-	}
-	resp, err := c.GetAttachedServerConfig(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleAttachedClustersClient_GenerateAttachedClusterInstallManifest() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := gkemulticloud.NewAttachedClustersClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &gkemulticloudpb.GenerateAttachedClusterInstallManifestRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb#GenerateAttachedClusterInstallManifestRequest.
-	}
-	resp, err := c.GenerateAttachedClusterInstallManifest(ctx, req)
+	resp, err := op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -365,5 +396,11 @@ func ExampleAttachedClustersClient_ListOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
 }

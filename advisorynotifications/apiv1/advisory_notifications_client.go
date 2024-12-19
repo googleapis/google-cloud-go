@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,9 +17,10 @@
 package advisorynotifications
 
 import (
+	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -27,7 +28,6 @@ import (
 
 	advisorynotificationspb "cloud.google.com/go/advisorynotifications/apiv1/advisorynotificationspb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -45,15 +45,20 @@ var newClientHook clientHook
 type CallOptions struct {
 	ListNotifications []gax.CallOption
 	GetNotification   []gax.CallOption
+	GetSettings       []gax.CallOption
+	UpdateSettings    []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("advisorynotifications.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("advisorynotifications.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("advisorynotifications.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://advisorynotifications.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -85,6 +90,8 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		GetSettings:    []gax.CallOption{},
+		UpdateSettings: []gax.CallOption{},
 	}
 }
 
@@ -112,6 +119,8 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		GetSettings:    []gax.CallOption{},
+		UpdateSettings: []gax.CallOption{},
 	}
 }
 
@@ -122,6 +131,8 @@ type internalClient interface {
 	Connection() *grpc.ClientConn
 	ListNotifications(context.Context, *advisorynotificationspb.ListNotificationsRequest, ...gax.CallOption) *NotificationIterator
 	GetNotification(context.Context, *advisorynotificationspb.GetNotificationRequest, ...gax.CallOption) (*advisorynotificationspb.Notification, error)
+	GetSettings(context.Context, *advisorynotificationspb.GetSettingsRequest, ...gax.CallOption) (*advisorynotificationspb.Settings, error)
+	UpdateSettings(context.Context, *advisorynotificationspb.UpdateSettingsRequest, ...gax.CallOption) (*advisorynotificationspb.Settings, error)
 }
 
 // Client is a client for interacting with Advisory Notifications API.
@@ -169,6 +180,16 @@ func (c *Client) GetNotification(ctx context.Context, req *advisorynotifications
 	return c.internalClient.GetNotification(ctx, req, opts...)
 }
 
+// GetSettings get notification settings.
+func (c *Client) GetSettings(ctx context.Context, req *advisorynotificationspb.GetSettingsRequest, opts ...gax.CallOption) (*advisorynotificationspb.Settings, error) {
+	return c.internalClient.GetSettings(ctx, req, opts...)
+}
+
+// UpdateSettings update notification settings.
+func (c *Client) UpdateSettings(ctx context.Context, req *advisorynotificationspb.UpdateSettingsRequest, opts ...gax.CallOption) (*advisorynotificationspb.Settings, error) {
+	return c.internalClient.UpdateSettings(ctx, req, opts...)
+}
+
 // gRPCClient is a client for interacting with Advisory Notifications API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -184,6 +205,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new advisory notifications service client based on gRPC.
@@ -210,6 +233,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      advisorynotificationspb.NewAdvisoryNotificationsServiceClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -232,7 +256,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -254,6 +280,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new advisory notifications service rest client.
@@ -271,6 +299,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -280,9 +309,12 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 func defaultRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://advisorynotifications.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://advisorynotifications.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://advisorynotifications.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://advisorynotifications.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -292,7 +324,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -329,7 +363,7 @@ func (c *gRPCClient) ListNotifications(ctx context.Context, req *advisorynotific
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListNotifications(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListNotifications, req, settings.GRPC, c.logger, "ListNotifications")
 			return err
 		}, opts...)
 		if err != nil {
@@ -364,7 +398,43 @@ func (c *gRPCClient) GetNotification(ctx context.Context, req *advisorynotificat
 	var resp *advisorynotificationspb.Notification
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetNotification(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetNotification, req, settings.GRPC, c.logger, "GetNotification")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) GetSettings(ctx context.Context, req *advisorynotificationspb.GetSettingsRequest, opts ...gax.CallOption) (*advisorynotificationspb.Settings, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetSettings[0:len((*c.CallOptions).GetSettings):len((*c.CallOptions).GetSettings)], opts...)
+	var resp *advisorynotificationspb.Settings
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetSettings, req, settings.GRPC, c.logger, "GetSettings")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UpdateSettings(ctx context.Context, req *advisorynotificationspb.UpdateSettingsRequest, opts ...gax.CallOption) (*advisorynotificationspb.Settings, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "settings.name", url.QueryEscape(req.GetSettings().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateSettings[0:len((*c.CallOptions).UpdateSettings):len((*c.CallOptions).UpdateSettings)], opts...)
+	var resp *advisorynotificationspb.Settings
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateSettings, req, settings.GRPC, c.logger, "UpdateSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -424,21 +494,10 @@ func (c *restClient) ListNotifications(ctx context.Context, req *advisorynotific
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListNotifications")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -504,17 +563,7 @@ func (c *restClient) GetNotification(ctx context.Context, req *advisorynotificat
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetNotification")
 		if err != nil {
 			return err
 		}
@@ -531,49 +580,109 @@ func (c *restClient) GetNotification(ctx context.Context, req *advisorynotificat
 	return resp, nil
 }
 
-// NotificationIterator manages a stream of *advisorynotificationspb.Notification.
-type NotificationIterator struct {
-	items    []*advisorynotificationspb.Notification
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*advisorynotificationspb.Notification, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *NotificationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *NotificationIterator) Next() (*advisorynotificationspb.Notification, error) {
-	var item *advisorynotificationspb.Notification
-	if err := it.nextFunc(); err != nil {
-		return item, err
+// GetSettings get notification settings.
+func (c *restClient) GetSettings(ctx context.Context, req *advisorynotificationspb.GetSettingsRequest, opts ...gax.CallOption) (*advisorynotificationspb.Settings, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetSettings[0:len((*c.CallOptions).GetSettings):len((*c.CallOptions).GetSettings)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &advisorynotificationspb.Settings{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSettings")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
-func (it *NotificationIterator) bufLen() int {
-	return len(it.items)
-}
+// UpdateSettings update notification settings.
+func (c *restClient) UpdateSettings(ctx context.Context, req *advisorynotificationspb.UpdateSettingsRequest, opts ...gax.CallOption) (*advisorynotificationspb.Settings, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetSettings()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
 
-func (it *NotificationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetSettings().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "settings.name", url.QueryEscape(req.GetSettings().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateSettings[0:len((*c.CallOptions).UpdateSettings):len((*c.CallOptions).UpdateSettings)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &advisorynotificationspb.Settings{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateSettings")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }

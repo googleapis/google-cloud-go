@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package apigeeregistry
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 	"time"
@@ -91,10 +92,13 @@ type RegistryCallOptions struct {
 func defaultRegistryGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("apigeeregistry.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("apigeeregistry.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("apigeeregistry.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://apigeeregistry.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -968,6 +972,8 @@ type registryGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewRegistryClient creates a new registry client based on gRPC.
@@ -994,6 +1000,7 @@ func NewRegistryClient(ctx context.Context, opts ...option.ClientOption) (*Regis
 		connPool:         connPool,
 		registryClient:   apigeeregistrypb.NewRegistryClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:  iampb.NewIAMPolicyClient(connPool),
 		locationsClient:  locationpb.NewLocationsClient(connPool),
@@ -1019,7 +1026,9 @@ func (c *registryGRPCClient) Connection() *grpc.ClientConn {
 func (c *registryGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1048,7 +1057,7 @@ func (c *registryGRPCClient) ListApis(ctx context.Context, req *apigeeregistrypb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.registryClient.ListApis(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.registryClient.ListApis, req, settings.GRPC, c.logger, "ListApis")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1083,7 +1092,7 @@ func (c *registryGRPCClient) GetApi(ctx context.Context, req *apigeeregistrypb.G
 	var resp *apigeeregistrypb.Api
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.registryClient.GetApi(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.registryClient.GetApi, req, settings.GRPC, c.logger, "GetApi")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1101,7 +1110,7 @@ func (c *registryGRPCClient) CreateApi(ctx context.Context, req *apigeeregistryp
 	var resp *apigeeregistrypb.Api
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.registryClient.CreateApi(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.registryClient.CreateApi, req, settings.GRPC, c.logger, "CreateApi")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1119,7 +1128,7 @@ func (c *registryGRPCClient) UpdateApi(ctx context.Context, req *apigeeregistryp
 	var resp *apigeeregistrypb.Api
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.registryClient.UpdateApi(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.registryClient.UpdateApi, req, settings.GRPC, c.logger, "UpdateApi")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1136,7 +1145,7 @@ func (c *registryGRPCClient) DeleteApi(ctx context.Context, req *apigeeregistryp
 	opts = append((*c.CallOptions).DeleteApi[0:len((*c.CallOptions).DeleteApi):len((*c.CallOptions).DeleteApi)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.registryClient.DeleteApi(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.registryClient.DeleteApi, req, settings.GRPC, c.logger, "DeleteApi")
 		return err
 	}, opts...)
 	return err
@@ -1162,7 +1171,7 @@ func (c *registryGRPCClient) ListApiVersions(ctx context.Context, req *apigeereg
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.registryClient.ListApiVersions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.registryClient.ListApiVersions, req, settings.GRPC, c.logger, "ListApiVersions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1197,7 +1206,7 @@ func (c *registryGRPCClient) GetApiVersion(ctx context.Context, req *apigeeregis
 	var resp *apigeeregistrypb.ApiVersion
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.registryClient.GetApiVersion(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.registryClient.GetApiVersion, req, settings.GRPC, c.logger, "GetApiVersion")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1215,7 +1224,7 @@ func (c *registryGRPCClient) CreateApiVersion(ctx context.Context, req *apigeere
 	var resp *apigeeregistrypb.ApiVersion
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.registryClient.CreateApiVersion(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.registryClient.CreateApiVersion, req, settings.GRPC, c.logger, "CreateApiVersion")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1233,7 +1242,7 @@ func (c *registryGRPCClient) UpdateApiVersion(ctx context.Context, req *apigeere
 	var resp *apigeeregistrypb.ApiVersion
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.registryClient.UpdateApiVersion(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.registryClient.UpdateApiVersion, req, settings.GRPC, c.logger, "UpdateApiVersion")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1250,7 +1259,7 @@ func (c *registryGRPCClient) DeleteApiVersion(ctx context.Context, req *apigeere
 	opts = append((*c.CallOptions).DeleteApiVersion[0:len((*c.CallOptions).DeleteApiVersion):len((*c.CallOptions).DeleteApiVersion)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.registryClient.DeleteApiVersion(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.registryClient.DeleteApiVersion, req, settings.GRPC, c.logger, "DeleteApiVersion")
 		return err
 	}, opts...)
 	return err
@@ -1276,7 +1285,7 @@ func (c *registryGRPCClient) ListApiSpecs(ctx context.Context, req *apigeeregist
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.registryClient.ListApiSpecs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.registryClient.ListApiSpecs, req, settings.GRPC, c.logger, "ListApiSpecs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1311,7 +1320,7 @@ func (c *registryGRPCClient) GetApiSpec(ctx context.Context, req *apigeeregistry
 	var resp *apigeeregistrypb.ApiSpec
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.registryClient.GetApiSpec(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.registryClient.GetApiSpec, req, settings.GRPC, c.logger, "GetApiSpec")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1329,7 +1338,7 @@ func (c *registryGRPCClient) GetApiSpecContents(ctx context.Context, req *apigee
 	var resp *httpbodypb.HttpBody
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.registryClient.GetApiSpecContents(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.registryClient.GetApiSpecContents, req, settings.GRPC, c.logger, "GetApiSpecContents")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1347,7 +1356,7 @@ func (c *registryGRPCClient) CreateApiSpec(ctx context.Context, req *apigeeregis
 	var resp *apigeeregistrypb.ApiSpec
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.registryClient.CreateApiSpec(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.registryClient.CreateApiSpec, req, settings.GRPC, c.logger, "CreateApiSpec")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1365,7 +1374,7 @@ func (c *registryGRPCClient) UpdateApiSpec(ctx context.Context, req *apigeeregis
 	var resp *apigeeregistrypb.ApiSpec
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.registryClient.UpdateApiSpec(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.registryClient.UpdateApiSpec, req, settings.GRPC, c.logger, "UpdateApiSpec")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1382,7 +1391,7 @@ func (c *registryGRPCClient) DeleteApiSpec(ctx context.Context, req *apigeeregis
 	opts = append((*c.CallOptions).DeleteApiSpec[0:len((*c.CallOptions).DeleteApiSpec):len((*c.CallOptions).DeleteApiSpec)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.registryClient.DeleteApiSpec(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.registryClient.DeleteApiSpec, req, settings.GRPC, c.logger, "DeleteApiSpec")
 		return err
 	}, opts...)
 	return err
@@ -1397,7 +1406,7 @@ func (c *registryGRPCClient) TagApiSpecRevision(ctx context.Context, req *apigee
 	var resp *apigeeregistrypb.ApiSpec
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.registryClient.TagApiSpecRevision(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.registryClient.TagApiSpecRevision, req, settings.GRPC, c.logger, "TagApiSpecRevision")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1426,7 +1435,7 @@ func (c *registryGRPCClient) ListApiSpecRevisions(ctx context.Context, req *apig
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.registryClient.ListApiSpecRevisions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.registryClient.ListApiSpecRevisions, req, settings.GRPC, c.logger, "ListApiSpecRevisions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1461,7 +1470,7 @@ func (c *registryGRPCClient) RollbackApiSpec(ctx context.Context, req *apigeereg
 	var resp *apigeeregistrypb.ApiSpec
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.registryClient.RollbackApiSpec(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.registryClient.RollbackApiSpec, req, settings.GRPC, c.logger, "RollbackApiSpec")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1479,7 +1488,7 @@ func (c *registryGRPCClient) DeleteApiSpecRevision(ctx context.Context, req *api
 	var resp *apigeeregistrypb.ApiSpec
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.registryClient.DeleteApiSpecRevision(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.registryClient.DeleteApiSpecRevision, req, settings.GRPC, c.logger, "DeleteApiSpecRevision")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1508,7 +1517,7 @@ func (c *registryGRPCClient) ListApiDeployments(ctx context.Context, req *apigee
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.registryClient.ListApiDeployments(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.registryClient.ListApiDeployments, req, settings.GRPC, c.logger, "ListApiDeployments")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1543,7 +1552,7 @@ func (c *registryGRPCClient) GetApiDeployment(ctx context.Context, req *apigeere
 	var resp *apigeeregistrypb.ApiDeployment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.registryClient.GetApiDeployment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.registryClient.GetApiDeployment, req, settings.GRPC, c.logger, "GetApiDeployment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1561,7 +1570,7 @@ func (c *registryGRPCClient) CreateApiDeployment(ctx context.Context, req *apige
 	var resp *apigeeregistrypb.ApiDeployment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.registryClient.CreateApiDeployment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.registryClient.CreateApiDeployment, req, settings.GRPC, c.logger, "CreateApiDeployment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1579,7 +1588,7 @@ func (c *registryGRPCClient) UpdateApiDeployment(ctx context.Context, req *apige
 	var resp *apigeeregistrypb.ApiDeployment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.registryClient.UpdateApiDeployment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.registryClient.UpdateApiDeployment, req, settings.GRPC, c.logger, "UpdateApiDeployment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1596,7 +1605,7 @@ func (c *registryGRPCClient) DeleteApiDeployment(ctx context.Context, req *apige
 	opts = append((*c.CallOptions).DeleteApiDeployment[0:len((*c.CallOptions).DeleteApiDeployment):len((*c.CallOptions).DeleteApiDeployment)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.registryClient.DeleteApiDeployment(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.registryClient.DeleteApiDeployment, req, settings.GRPC, c.logger, "DeleteApiDeployment")
 		return err
 	}, opts...)
 	return err
@@ -1611,7 +1620,7 @@ func (c *registryGRPCClient) TagApiDeploymentRevision(ctx context.Context, req *
 	var resp *apigeeregistrypb.ApiDeployment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.registryClient.TagApiDeploymentRevision(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.registryClient.TagApiDeploymentRevision, req, settings.GRPC, c.logger, "TagApiDeploymentRevision")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1640,7 +1649,7 @@ func (c *registryGRPCClient) ListApiDeploymentRevisions(ctx context.Context, req
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.registryClient.ListApiDeploymentRevisions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.registryClient.ListApiDeploymentRevisions, req, settings.GRPC, c.logger, "ListApiDeploymentRevisions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1675,7 +1684,7 @@ func (c *registryGRPCClient) RollbackApiDeployment(ctx context.Context, req *api
 	var resp *apigeeregistrypb.ApiDeployment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.registryClient.RollbackApiDeployment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.registryClient.RollbackApiDeployment, req, settings.GRPC, c.logger, "RollbackApiDeployment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1693,7 +1702,7 @@ func (c *registryGRPCClient) DeleteApiDeploymentRevision(ctx context.Context, re
 	var resp *apigeeregistrypb.ApiDeployment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.registryClient.DeleteApiDeploymentRevision(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.registryClient.DeleteApiDeploymentRevision, req, settings.GRPC, c.logger, "DeleteApiDeploymentRevision")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1722,7 +1731,7 @@ func (c *registryGRPCClient) ListArtifacts(ctx context.Context, req *apigeeregis
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.registryClient.ListArtifacts(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.registryClient.ListArtifacts, req, settings.GRPC, c.logger, "ListArtifacts")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1757,7 +1766,7 @@ func (c *registryGRPCClient) GetArtifact(ctx context.Context, req *apigeeregistr
 	var resp *apigeeregistrypb.Artifact
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.registryClient.GetArtifact(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.registryClient.GetArtifact, req, settings.GRPC, c.logger, "GetArtifact")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1775,7 +1784,7 @@ func (c *registryGRPCClient) GetArtifactContents(ctx context.Context, req *apige
 	var resp *httpbodypb.HttpBody
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.registryClient.GetArtifactContents(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.registryClient.GetArtifactContents, req, settings.GRPC, c.logger, "GetArtifactContents")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1793,7 +1802,7 @@ func (c *registryGRPCClient) CreateArtifact(ctx context.Context, req *apigeeregi
 	var resp *apigeeregistrypb.Artifact
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.registryClient.CreateArtifact(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.registryClient.CreateArtifact, req, settings.GRPC, c.logger, "CreateArtifact")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1811,7 +1820,7 @@ func (c *registryGRPCClient) ReplaceArtifact(ctx context.Context, req *apigeereg
 	var resp *apigeeregistrypb.Artifact
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.registryClient.ReplaceArtifact(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.registryClient.ReplaceArtifact, req, settings.GRPC, c.logger, "ReplaceArtifact")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1828,7 +1837,7 @@ func (c *registryGRPCClient) DeleteArtifact(ctx context.Context, req *apigeeregi
 	opts = append((*c.CallOptions).DeleteArtifact[0:len((*c.CallOptions).DeleteArtifact):len((*c.CallOptions).DeleteArtifact)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.registryClient.DeleteArtifact(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.registryClient.DeleteArtifact, req, settings.GRPC, c.logger, "DeleteArtifact")
 		return err
 	}, opts...)
 	return err
@@ -1843,7 +1852,7 @@ func (c *registryGRPCClient) GetLocation(ctx context.Context, req *locationpb.Ge
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1872,7 +1881,7 @@ func (c *registryGRPCClient) ListLocations(ctx context.Context, req *locationpb.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1907,7 +1916,7 @@ func (c *registryGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIam
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1925,7 +1934,7 @@ func (c *registryGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIam
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1943,7 +1952,7 @@ func (c *registryGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1960,7 +1969,7 @@ func (c *registryGRPCClient) CancelOperation(ctx context.Context, req *longrunni
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -1974,7 +1983,7 @@ func (c *registryGRPCClient) DeleteOperation(ctx context.Context, req *longrunni
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -1989,7 +1998,7 @@ func (c *registryGRPCClient) GetOperation(ctx context.Context, req *longrunningp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2018,7 +2027,7 @@ func (c *registryGRPCClient) ListOperations(ctx context.Context, req *longrunnin
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2042,239 +2051,4 @@ func (c *registryGRPCClient) ListOperations(ctx context.Context, req *longrunnin
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
-}
-
-// ApiDeploymentIterator manages a stream of *apigeeregistrypb.ApiDeployment.
-type ApiDeploymentIterator struct {
-	items    []*apigeeregistrypb.ApiDeployment
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*apigeeregistrypb.ApiDeployment, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ApiDeploymentIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ApiDeploymentIterator) Next() (*apigeeregistrypb.ApiDeployment, error) {
-	var item *apigeeregistrypb.ApiDeployment
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ApiDeploymentIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ApiDeploymentIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ApiIterator manages a stream of *apigeeregistrypb.Api.
-type ApiIterator struct {
-	items    []*apigeeregistrypb.Api
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*apigeeregistrypb.Api, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ApiIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ApiIterator) Next() (*apigeeregistrypb.Api, error) {
-	var item *apigeeregistrypb.Api
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ApiIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ApiIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ApiSpecIterator manages a stream of *apigeeregistrypb.ApiSpec.
-type ApiSpecIterator struct {
-	items    []*apigeeregistrypb.ApiSpec
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*apigeeregistrypb.ApiSpec, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ApiSpecIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ApiSpecIterator) Next() (*apigeeregistrypb.ApiSpec, error) {
-	var item *apigeeregistrypb.ApiSpec
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ApiSpecIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ApiSpecIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ApiVersionIterator manages a stream of *apigeeregistrypb.ApiVersion.
-type ApiVersionIterator struct {
-	items    []*apigeeregistrypb.ApiVersion
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*apigeeregistrypb.ApiVersion, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ApiVersionIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ApiVersionIterator) Next() (*apigeeregistrypb.ApiVersion, error) {
-	var item *apigeeregistrypb.ApiVersion
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ApiVersionIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ApiVersionIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ArtifactIterator manages a stream of *apigeeregistrypb.Artifact.
-type ArtifactIterator struct {
-	items    []*apigeeregistrypb.Artifact
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*apigeeregistrypb.Artifact, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ArtifactIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ArtifactIterator) Next() (*apigeeregistrypb.Artifact, error) {
-	var item *apigeeregistrypb.Artifact
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ArtifactIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ArtifactIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

@@ -29,6 +29,11 @@
               "methods": [
                 "BatchAnnotateImages"
               ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
             }
           }
         },
@@ -53,6 +58,11 @@
             "BatchAnnotateImages": {
               "methods": [
                 "BatchAnnotateImages"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             }
           }
@@ -97,6 +107,11 @@
             "DeleteReferenceImage": {
               "methods": [
                 "DeleteReferenceImage"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "GetProduct": {
@@ -197,6 +212,11 @@
             "DeleteReferenceImage": {
               "methods": [
                 "DeleteReferenceImage"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "GetProduct": {

@@ -17,9 +17,11 @@ package storage
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"testing"
 	"time"
 
+	"cloud.google.com/go/compute/metadata"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/go-cmp/cmp"
@@ -62,10 +64,12 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 				ResponseHeaders: []string{"FOO"},
 			},
 		},
-		Encryption: &BucketEncryption{DefaultKMSKeyName: "key"},
-		Logging:    &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
-		Website:    &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
-		Autoclass:  &Autoclass{Enabled: true},
+		Encryption:            &BucketEncryption{DefaultKMSKeyName: "key"},
+		Logging:               &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
+		Website:               &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
+		Autoclass:             &Autoclass{Enabled: true, TerminalStorageClass: "NEARLINE"},
+		SoftDeletePolicy:      &SoftDeletePolicy{RetentionDuration: time.Hour},
+		HierarchicalNamespace: &HierarchicalNamespace{Enabled: true},
 		Lifecycle: Lifecycle{
 			Rules: []LifecycleRule{{
 				Action: LifecycleAction{
@@ -166,10 +170,12 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 				ResponseHeader: []string{"FOO"},
 			},
 		},
-		Encryption: &raw.BucketEncryption{DefaultKmsKeyName: "key"},
-		Logging:    &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
-		Website:    &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
-		Autoclass:  &raw.BucketAutoclass{Enabled: true},
+		Encryption:            &raw.BucketEncryption{DefaultKmsKeyName: "key"},
+		Logging:               &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
+		Website:               &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
+		Autoclass:             &raw.BucketAutoclass{Enabled: true, TerminalStorageClass: "NEARLINE"},
+		SoftDeletePolicy:      &raw.BucketSoftDeletePolicy{RetentionDurationSeconds: 60 * 60, ForceSendFields: []string{"RetentionDurationSeconds"}},
+		HierarchicalNamespace: &raw.BucketHierarchicalNamespace{Enabled: true},
 		Lifecycle: &raw.BucketLifecycle{
 			Rule: []*raw.BucketLifecycleRule{{
 				Action: &raw.BucketLifecycleRuleAction{
@@ -273,7 +279,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		PublicAccessPrevention: "enforced",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Set BucketPolicyOnly.Enabled = true --> UBLA should be set to enabled in
@@ -288,7 +294,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		PublicAccessPrevention: "enforced",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Set both BucketPolicyOnly.Enabled = true and
@@ -304,7 +310,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		PublicAccessPrevention: "enforced",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Set UBLA.Enabled=false and BucketPolicyOnly.Enabled=false --> UBLA
@@ -316,7 +322,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		PublicAccessPrevention: "enforced",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Test that setting PublicAccessPrevention to "unspecified" leads to the
@@ -327,7 +333,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		PublicAccessPrevention: "inherited",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Test that setting PublicAccessPrevention to "inherited" leads to the
@@ -338,7 +344,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		PublicAccessPrevention: "inherited",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Test that setting RPO to default is propagated in the proto.
@@ -346,7 +352,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 	got = attrs.toRawBucket()
 	want.Rpo = rpoDefault
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Re-enable UBLA and confirm that it does not affect the PAP setting.
@@ -359,7 +365,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		PublicAccessPrevention: "inherited",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Disable UBLA and reset PAP to default. Confirm that the IAM config is set
@@ -369,7 +375,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 	got = attrs.toRawBucket()
 	want.IamConfiguration = nil
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 }
 
@@ -395,10 +401,11 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 				},
 			},
 		},
-		Logging:      &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
-		Website:      &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
-		StorageClass: "NEARLINE",
-		Autoclass:    &Autoclass{Enabled: false},
+		Logging:          &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
+		Website:          &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
+		StorageClass:     "NEARLINE",
+		Autoclass:        &Autoclass{Enabled: true, TerminalStorageClass: "ARCHIVE"},
+		SoftDeletePolicy: &SoftDeletePolicy{RetentionDuration: time.Hour},
 	}
 	au.SetLabel("a", "foo")
 	au.DeleteLabel("b")
@@ -439,11 +446,12 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 				},
 			},
 		},
-		Logging:         &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
-		Website:         &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
-		StorageClass:    "NEARLINE",
-		Autoclass:       &raw.BucketAutoclass{Enabled: false, ForceSendFields: []string{"Enabled"}},
-		ForceSendFields: []string{"DefaultEventBasedHold", "Lifecycle"},
+		Logging:          &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
+		Website:          &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
+		StorageClass:     "NEARLINE",
+		Autoclass:        &raw.BucketAutoclass{Enabled: true, TerminalStorageClass: "ARCHIVE", ForceSendFields: []string{"Enabled"}},
+		SoftDeletePolicy: &raw.BucketSoftDeletePolicy{RetentionDurationSeconds: 3600, ForceSendFields: []string{"RetentionDurationSeconds"}},
+		ForceSendFields:  []string{"DefaultEventBasedHold", "Lifecycle", "Autoclass"},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
 		t.Error(msg)
@@ -463,14 +471,18 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 
 	// Test nulls.
 	au3 := &BucketAttrsToUpdate{
-		RetentionPolicy: &RetentionPolicy{},
-		Encryption:      &BucketEncryption{},
-		Logging:         &BucketLogging{},
-		Website:         &BucketWebsite{},
+		RetentionPolicy:  &RetentionPolicy{},
+		Encryption:       &BucketEncryption{},
+		Logging:          &BucketLogging{},
+		Website:          &BucketWebsite{},
+		SoftDeletePolicy: &SoftDeletePolicy{},
 	}
 	got = au3.toRawBucket()
 	want = &raw.Bucket{
 		NullFields: []string{"RetentionPolicy", "Encryption", "Logging", "Website"},
+		SoftDeletePolicy: &raw.BucketSoftDeletePolicy{
+			ForceSendFields: []string{"RetentionDurationSeconds"},
+		},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
 		t.Error(msg)
@@ -492,7 +504,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Set BucketPolicyOnly.Enabled = true --> UBLA should be set to enabled in
@@ -510,7 +522,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Set both BucketPolicyOnly.Enabled = true and
@@ -530,7 +542,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Set UBLA.Enabled=false and BucketPolicyOnly.Enabled=false --> UBLA
@@ -549,7 +561,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// UBLA.Enabled will have precedence above BucketPolicyOnly.Enabled if both
@@ -568,7 +580,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Set an empty Lifecycle and verify that it will be sent.
@@ -583,7 +595,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		ForceSendFields: []string{"Lifecycle"},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 }
 
@@ -598,6 +610,7 @@ func TestNewBucket(t *testing.T) {
 		Metageneration:        3,
 		StorageClass:          "sc",
 		TimeCreated:           "2017-10-23T04:05:06Z",
+		Updated:               "2024-08-21T17:24:53Z",
 		Versioning:            &raw.BucketVersioning{Enabled: true},
 		Labels:                labels,
 		Billing:               &raw.BucketBilling{RequesterPays: true},
@@ -620,6 +633,9 @@ func TestNewBucket(t *testing.T) {
 		RetentionPolicy: &raw.BucketRetentionPolicy{
 			RetentionPeriod: 3,
 			EffectiveTime:   aTime.Format(time.RFC3339),
+		},
+		ObjectRetention: &raw.BucketObjectRetention{
+			Mode: "Enabled",
 		},
 		IamConfiguration: &raw.BucketIamConfiguration{
 			BucketPolicyOnly: &raw.BucketIamConfigurationBucketPolicyOnly{
@@ -648,9 +664,16 @@ func TestNewBucket(t *testing.T) {
 		Website:       &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
 		ProjectNumber: 123231313,
 		Autoclass: &raw.BucketAutoclass{
-			Enabled:    true,
-			ToggleTime: "2017-10-23T04:05:06Z",
+			Enabled:                        true,
+			ToggleTime:                     "2017-10-23T04:05:06Z",
+			TerminalStorageClass:           "NEARLINE",
+			TerminalStorageClassUpdateTime: "2017-10-23T04:05:06Z",
 		},
+		SoftDeletePolicy: &raw.BucketSoftDeletePolicy{
+			EffectiveTime:            "2017-10-23T04:05:06Z",
+			RetentionDurationSeconds: 3600,
+		},
+		HierarchicalNamespace: &raw.BucketHierarchicalNamespace{Enabled: true},
 	}
 	want := &BucketAttrs{
 		Name:                  "name",
@@ -659,6 +682,7 @@ func TestNewBucket(t *testing.T) {
 		MetaGeneration:        3,
 		StorageClass:          "sc",
 		Created:               time.Date(2017, 10, 23, 4, 5, 6, 0, time.UTC),
+		Updated:               time.Date(2024, 8, 21, 17, 24, 53, 0, time.UTC),
 		VersioningEnabled:     true,
 		Labels:                labels,
 		Etag:                  "Zkyw9ACJZUvcYmlFaKGChzhmtnE/dt1zHSfweiWpwzdGsqXwuJZqiD0",
@@ -684,6 +708,7 @@ func TestNewBucket(t *testing.T) {
 			EffectiveTime:   aTime,
 			RetentionPeriod: 3 * time.Second,
 		},
+		ObjectRetentionMode:      "Enabled",
 		BucketPolicyOnly:         BucketPolicyOnly{Enabled: true, LockedTime: aTime},
 		UniformBucketLevelAccess: UniformBucketLevelAccess{Enabled: true, LockedTime: aTime},
 		CORS: []CORS{
@@ -702,20 +727,28 @@ func TestNewBucket(t *testing.T) {
 		LocationType:     "dual-region",
 		ProjectNumber:    123231313,
 		Autoclass: &Autoclass{
-			Enabled:    true,
-			ToggleTime: time.Date(2017, 10, 23, 4, 5, 6, 0, time.UTC),
+			Enabled:                        true,
+			ToggleTime:                     time.Date(2017, 10, 23, 4, 5, 6, 0, time.UTC),
+			TerminalStorageClass:           "NEARLINE",
+			TerminalStorageClassUpdateTime: time.Date(2017, 10, 23, 4, 5, 6, 0, time.UTC),
 		},
+		SoftDeletePolicy: &SoftDeletePolicy{
+			EffectiveTime:     time.Date(2017, 10, 23, 4, 5, 6, 0, time.UTC),
+			RetentionDuration: time.Hour,
+		},
+		HierarchicalNamespace: &HierarchicalNamespace{Enabled: true},
 	}
 	got, err := newBucket(rb)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if diff := testutil.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("got=-, want=+:\n%s", diff)
 	}
 }
 
 func TestNewBucketFromProto(t *testing.T) {
+	autoclassTSC := "NEARLINE"
 	pb := &storagepb.Bucket{
 		Name: "name",
 		Acl: []*storagepb.BucketAccessControl{
@@ -741,6 +774,7 @@ func TestNewBucketFromProto(t *testing.T) {
 		Rpo:            rpoAsyncTurbo,
 		Metageneration: int64(39),
 		CreateTime:     toProtoTimestamp(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
+		UpdateTime:     toProtoTimestamp(time.Date(2024, 1, 2, 3, 4, 5, 6, time.UTC)),
 		Labels:         map[string]string{"label": "value"},
 		Cors: []*storagepb.Bucket_Cors{
 			{
@@ -753,7 +787,19 @@ func TestNewBucketFromProto(t *testing.T) {
 		Encryption: &storagepb.Bucket_Encryption{DefaultKmsKey: "key"},
 		Logging:    &storagepb.Bucket_Logging{LogBucket: "projects/_/buckets/lb", LogObjectPrefix: "p"},
 		Website:    &storagepb.Bucket_Website{MainPageSuffix: "mps", NotFoundPage: "404"},
-		Autoclass:  &storagepb.Bucket_Autoclass{Enabled: true, ToggleTime: toProtoTimestamp(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC))},
+		Autoclass: &storagepb.Bucket_Autoclass{
+			Enabled:                        true,
+			ToggleTime:                     toProtoTimestamp(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
+			TerminalStorageClass:           &autoclassTSC,
+			TerminalStorageClassUpdateTime: toProtoTimestamp(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
+		},
+		SoftDeletePolicy: &storagepb.Bucket_SoftDeletePolicy{
+			RetentionDuration: durationpb.New(3 * time.Hour),
+			EffectiveTime:     toProtoTimestamp(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
+		},
+		HierarchicalNamespace: &storagepb.Bucket_HierarchicalNamespace{
+			Enabled: true,
+		},
 		Lifecycle: &storagepb.Bucket_Lifecycle{
 			Rule: []*storagepb.Bucket_Lifecycle_Rule{
 				{
@@ -782,6 +828,7 @@ func TestNewBucketFromProto(t *testing.T) {
 		RPO:                      RPOAsyncTurbo,
 		MetaGeneration:           39,
 		Created:                  time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+		Updated:                  time.Date(2024, 1, 2, 3, 4, 5, 6, time.UTC),
 		Labels:                   map[string]string{"label": "value"},
 		CORS: []CORS{
 			{
@@ -794,7 +841,14 @@ func TestNewBucketFromProto(t *testing.T) {
 		Encryption: &BucketEncryption{DefaultKMSKeyName: "key"},
 		Logging:    &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:    &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
-		Autoclass:  &Autoclass{Enabled: true, ToggleTime: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)},
+		Autoclass:  &Autoclass{Enabled: true, ToggleTime: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC), TerminalStorageClass: "NEARLINE", TerminalStorageClassUpdateTime: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)},
+		SoftDeletePolicy: &SoftDeletePolicy{
+			EffectiveTime:     time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+			RetentionDuration: time.Hour * 3,
+		},
+		HierarchicalNamespace: &HierarchicalNamespace{
+			Enabled: true,
+		},
 		Lifecycle: Lifecycle{
 			Rules: []LifecycleRule{{
 				Action: LifecycleAction{
@@ -807,7 +861,7 @@ func TestNewBucketFromProto(t *testing.T) {
 		},
 	}
 	got := newBucketFromProto(pb)
-	if diff := testutil.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("got=-, want=+:\n%s", diff)
 	}
 }
@@ -839,10 +893,12 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 				ResponseHeaders: []string{"FOO"},
 			},
 		},
-		Encryption: &BucketEncryption{DefaultKMSKeyName: "key"},
-		Logging:    &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
-		Website:    &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
-		Autoclass:  &Autoclass{Enabled: true},
+		Encryption:            &BucketEncryption{DefaultKMSKeyName: "key"},
+		Logging:               &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
+		Website:               &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
+		Autoclass:             &Autoclass{Enabled: true, TerminalStorageClass: "ARCHIVE"},
+		SoftDeletePolicy:      &SoftDeletePolicy{RetentionDuration: time.Hour * 2},
+		HierarchicalNamespace: &HierarchicalNamespace{Enabled: true},
 		Lifecycle: Lifecycle{
 			Rules: []LifecycleRule{{
 				Action: LifecycleAction{
@@ -858,6 +914,7 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 		Etag:           "Zkyw9ACJZUvcYmlFaKGChzhmtnE/dt1zHSfweiWpwzdGsqXwuJZqiD0",
 	}
 	got := attrs.toProtoBucket()
+	autoclassTSC := "ARCHIVE"
 	want := &storagepb.Bucket{
 		Name: "name",
 		Acl: []*storagepb.BucketAccessControl{
@@ -888,10 +945,12 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 				ResponseHeader: []string{"FOO"},
 			},
 		},
-		Encryption: &storagepb.Bucket_Encryption{DefaultKmsKey: "key"},
-		Logging:    &storagepb.Bucket_Logging{LogBucket: "projects/_/buckets/lb", LogObjectPrefix: "p"},
-		Website:    &storagepb.Bucket_Website{MainPageSuffix: "mps", NotFoundPage: "404"},
-		Autoclass:  &storagepb.Bucket_Autoclass{Enabled: true},
+		Encryption:            &storagepb.Bucket_Encryption{DefaultKmsKey: "key"},
+		Logging:               &storagepb.Bucket_Logging{LogBucket: "projects/_/buckets/lb", LogObjectPrefix: "p"},
+		Website:               &storagepb.Bucket_Website{MainPageSuffix: "mps", NotFoundPage: "404"},
+		Autoclass:             &storagepb.Bucket_Autoclass{Enabled: true, TerminalStorageClass: &autoclassTSC},
+		SoftDeletePolicy:      &storagepb.Bucket_SoftDeletePolicy{RetentionDuration: durationpb.New(2 * time.Hour)},
+		HierarchicalNamespace: &storagepb.Bucket_HierarchicalNamespace{Enabled: true},
 		Lifecycle: &storagepb.Bucket_Lifecycle{
 			Rule: []*storagepb.Bucket_Lifecycle_Rule{
 				{
@@ -933,7 +992,7 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 		PublicAccessPrevention: "enforced",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Set BucketPolicyOnly.Enabled = true --> UBLA should be set to enabled in
@@ -948,7 +1007,7 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 		PublicAccessPrevention: "enforced",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Set both BucketPolicyOnly.Enabled = true and
@@ -964,7 +1023,7 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 		PublicAccessPrevention: "enforced",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Set UBLA.Enabled=false and BucketPolicyOnly.Enabled=false --> UBLA
@@ -976,7 +1035,7 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 		PublicAccessPrevention: "enforced",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Test that setting PublicAccessPrevention to "unspecified" leads to the
@@ -987,7 +1046,7 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 		PublicAccessPrevention: "inherited",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Test that setting PublicAccessPrevention to "inherited" leads to the
@@ -998,7 +1057,7 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 		PublicAccessPrevention: "inherited",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Test that setting RPO to default is propagated in the proto.
@@ -1006,7 +1065,7 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 	got = attrs.toProtoBucket()
 	want.Rpo = rpoDefault
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Re-enable UBLA and confirm that it does not affect the PAP setting.
@@ -1019,7 +1078,7 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 		PublicAccessPrevention: "inherited",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Disable UBLA and reset PAP to default. Confirm that the IAM config is set
@@ -1029,7 +1088,7 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 	got = attrs.toProtoBucket()
 	want.IamConfig = nil
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 }
 
@@ -1056,15 +1115,17 @@ func TestBucketRetryer(t *testing.T) {
 						Multiplier: 3,
 					}),
 					WithPolicy(RetryAlways),
+					WithMaxAttempts(5),
 					WithErrorFunc(func(err error) bool { return false }))
 			},
 			want: &retryConfig{
-				backoff: &gax.Backoff{
+				backoff: gaxBackoffFromStruct(&gax.Backoff{
 					Initial:    2 * time.Second,
 					Max:        30 * time.Second,
 					Multiplier: 3,
-				},
+				}),
 				policy:      RetryAlways,
+				maxAttempts: expectedAttempts(5),
 				shouldRetry: func(err error) bool { return false },
 			},
 		},
@@ -1077,9 +1138,9 @@ func TestBucketRetryer(t *testing.T) {
 					}))
 			},
 			want: &retryConfig{
-				backoff: &gax.Backoff{
+				backoff: gaxBackoffFromStruct(&gax.Backoff{
 					Multiplier: 3,
-				}},
+				})},
 		},
 		{
 			name: "set policy only",
@@ -1088,6 +1149,15 @@ func TestBucketRetryer(t *testing.T) {
 			},
 			want: &retryConfig{
 				policy: RetryNever,
+			},
+		},
+		{
+			name: "set max retry attempts only",
+			call: func(b *BucketHandle) *BucketHandle {
+				return b.Retryer(WithMaxAttempts(5))
+			},
+			want: &retryConfig{
+				maxAttempts: expectedAttempts(5),
 			},
 		},
 		{
@@ -1185,6 +1255,41 @@ func TestDetectDefaultGoogleAccessID(t *testing.T) {
 			},
 			expectSuccess: false,
 		},
+		{
+			name:           "malformed creds",
+			serviceAccount: "default@my-project.iam.gserviceaccount.com",
+			creds: func(sa string) string {
+				return fmt.Sprintf(`{
+					"type": "service_account"
+					"project_id": "my-project",
+					"private_key_id": "my1",
+					"private_key": "-----BEGIN PRIVATE KEY-----\nkey\n-----END PRIVATE KEY-----\n",
+					"client_email": "%s",
+				}`, sa)
+			},
+			expectSuccess: false,
+		},
+		{
+			name:           "external creds",
+			serviceAccount: "default@my-project.iam.gserviceaccount.com",
+			creds: func(sa string) string {
+				return fmt.Sprintf(`{
+					"type": "external_account",
+					"audience": "//iam.googleapis.com/projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/$POOL_ID/providers/$PROVIDER_ID",
+					"subject_token_type": "urn:ietf:params:aws:token-type:aws4_request",
+					"service_account_impersonation_url": "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/%s:generateAccessToken",
+					"token_url": "https://sts.googleapis.com/v1/token",
+					"credential_source": {
+					  "environment_id": "id",
+					  "region_url": "region_url",
+					  "url": "url",
+					  "regional_cred_verification_url": "ver_url",
+					  "imdsv2_session_token_url": "tok_url"
+					}
+				  }`, sa)
+			},
+			expectSuccess: true,
+		},
 	}
 
 	for _, tc := range testCases {
@@ -1205,6 +1310,16 @@ func TestDetectDefaultGoogleAccessID(t *testing.T) {
 				}
 				if id != tc.serviceAccount {
 					t.Errorf("service account not found correctly; got: %s, want: %s", id, tc.serviceAccount)
+				}
+			} else if metadata.OnGCE() {
+				// On GCE, we fall back to the default service account. Check that's
+				// what happened.
+				defaultServiceAccount, err := metadata.Email("default")
+				if err != nil {
+					t.Errorf("could not load metadata service account for fallback: %v", err)
+				}
+				if id != defaultServiceAccount {
+					t.Errorf("service account not found correctly on fallback; got: %s, want: %s", id, defaultServiceAccount)
 				}
 			} else if err == nil {
 				t.Error("expected error but detectDefaultGoogleAccessID did not return one")
@@ -1253,7 +1368,7 @@ func TestBucketSignedURL_Endpoint_Emulator_Host(t *testing.T) {
 				"?X-Goog-Algorithm=GOOG4-RSA-SHA256" +
 				"&X-Goog-Credential=xxx%40clientid%2F20021001%2Fauto%2Fstorage%2Fgoog4_request" +
 				"&X-Goog-Date=20021001T100000Z&X-Goog-Expires=86400" +
-				"&X-Goog-Signature=2ff5ff0e5f336c4f2e4a44b93673ea22c6f94153da070206077328ce9f33b51d668549454668e6a784fe99110e506d504d7199015e34b22f8faa3e5eee294a71d8729e55debe7d24fbc336193e217373124ec69db19d447c8b649b6ca0734a76cebe33e9ccacbe462cdf2dacb30809846a81f1f48c654eed45ddd26eb787947760d82fb5098d34e3aaa6d4a0b0b8b444a12436d1456b96bcd8a2acc5b74a948a42216a1f842802a0d41391fe9acc97744eb1a848f596d3284f95a56f134cd6b78387efbd514ae7d2b98e62241cf6466e7493822184e0bd192dee62dad2d1449bc9c8fed2e84ddfa26996a0c5a9238cf675bb4ffec05cdcec07cc57d272357fd2" +
+				"&X-Goog-Signature=249c53142e57adf594b4f523a8a1f9c15f29b071e9abc0cf6665dbc5f692fc96fac4ab98bbea4c2397384367bc970a2e1771f2c86624475f3273970ecde8ff6df39d647e5c3f3263bf67a743e211c1958a96775edf53ece1f69ed337f0ab7fdc081c6c2b84e57b0922280d27f1da1bff47e77e3822fb1756e4c5cece9d220e6d0824ab9528e97e54f0cb09b352193b0e895344d894de11b3f5f9a2ec7d8fd6d0a4c487afd1896385a3ab9e8c3fcb3862ec0cad6ec10af1b574078eb7c79b558bcd85449a67079a0ee6da97fcbad074f1bf9fdfbdca12945336a8bd0a3b70b4c7708918cb83d10c7c4ff1f8b73275e9d1ba5d3db91069dffdf81eb7badf4e3c80" +
 				"&X-Goog-SignedHeaders=host",
 		},
 		{
@@ -1272,7 +1387,7 @@ func TestBucketSignedURL_Endpoint_Emulator_Host(t *testing.T) {
 				"?X-Goog-Algorithm=GOOG4-RSA-SHA256" +
 				"&X-Goog-Credential=xxx%40clientid%2F20021001%2Fauto%2Fstorage%2Fgoog4_request" +
 				"&X-Goog-Date=20021001T100000Z&X-Goog-Expires=86400" +
-				"&X-Goog-Signature=2ff5ff0e5f336c4f2e4a44b93673ea22c6f94153da070206077328ce9f33b51d668549454668e6a784fe99110e506d504d7199015e34b22f8faa3e5eee294a71d8729e55debe7d24fbc336193e217373124ec69db19d447c8b649b6ca0734a76cebe33e9ccacbe462cdf2dacb30809846a81f1f48c654eed45ddd26eb787947760d82fb5098d34e3aaa6d4a0b0b8b444a12436d1456b96bcd8a2acc5b74a948a42216a1f842802a0d41391fe9acc97744eb1a848f596d3284f95a56f134cd6b78387efbd514ae7d2b98e62241cf6466e7493822184e0bd192dee62dad2d1449bc9c8fed2e84ddfa26996a0c5a9238cf675bb4ffec05cdcec07cc57d272357fd2" +
+				"&X-Goog-Signature=249c53142e57adf594b4f523a8a1f9c15f29b071e9abc0cf6665dbc5f692fc96fac4ab98bbea4c2397384367bc970a2e1771f2c86624475f3273970ecde8ff6df39d647e5c3f3263bf67a743e211c1958a96775edf53ece1f69ed337f0ab7fdc081c6c2b84e57b0922280d27f1da1bff47e77e3822fb1756e4c5cece9d220e6d0824ab9528e97e54f0cb09b352193b0e895344d894de11b3f5f9a2ec7d8fd6d0a4c487afd1896385a3ab9e8c3fcb3862ec0cad6ec10af1b574078eb7c79b558bcd85449a67079a0ee6da97fcbad074f1bf9fdfbdca12945336a8bd0a3b70b4c7708918cb83d10c7c4ff1f8b73275e9d1ba5d3db91069dffdf81eb7badf4e3c80" +
 				"&X-Goog-SignedHeaders=host",
 		},
 		{
@@ -1292,7 +1407,7 @@ func TestBucketSignedURL_Endpoint_Emulator_Host(t *testing.T) {
 				"?X-Goog-Algorithm=GOOG4-RSA-SHA256" +
 				"&X-Goog-Credential=xxx%40clientid%2F20021001%2Fauto%2Fstorage%2Fgoog4_request" +
 				"&X-Goog-Date=20021001T100000Z&X-Goog-Expires=86400" +
-				"&X-Goog-Signature=2ff5ff0e5f336c4f2e4a44b93673ea22c6f94153da070206077328ce9f33b51d668549454668e6a784fe99110e506d504d7199015e34b22f8faa3e5eee294a71d8729e55debe7d24fbc336193e217373124ec69db19d447c8b649b6ca0734a76cebe33e9ccacbe462cdf2dacb30809846a81f1f48c654eed45ddd26eb787947760d82fb5098d34e3aaa6d4a0b0b8b444a12436d1456b96bcd8a2acc5b74a948a42216a1f842802a0d41391fe9acc97744eb1a848f596d3284f95a56f134cd6b78387efbd514ae7d2b98e62241cf6466e7493822184e0bd192dee62dad2d1449bc9c8fed2e84ddfa26996a0c5a9238cf675bb4ffec05cdcec07cc57d272357fd2" +
+				"&X-Goog-Signature=249c53142e57adf594b4f523a8a1f9c15f29b071e9abc0cf6665dbc5f692fc96fac4ab98bbea4c2397384367bc970a2e1771f2c86624475f3273970ecde8ff6df39d647e5c3f3263bf67a743e211c1958a96775edf53ece1f69ed337f0ab7fdc081c6c2b84e57b0922280d27f1da1bff47e77e3822fb1756e4c5cece9d220e6d0824ab9528e97e54f0cb09b352193b0e895344d894de11b3f5f9a2ec7d8fd6d0a4c487afd1896385a3ab9e8c3fcb3862ec0cad6ec10af1b574078eb7c79b558bcd85449a67079a0ee6da97fcbad074f1bf9fdfbdca12945336a8bd0a3b70b4c7708918cb83d10c7c4ff1f8b73275e9d1ba5d3db91069dffdf81eb7badf4e3c80" +
 				"&X-Goog-SignedHeaders=host",
 		},
 		{
@@ -1345,13 +1460,13 @@ func TestBucketSignedURL_Endpoint_Emulator_Host(t *testing.T) {
 				"?X-Goog-Algorithm=GOOG4-RSA-SHA256" +
 				"&X-Goog-Credential=xxx%40clientid%2F20021001%2Fauto%2Fstorage%2Fgoog4_request" +
 				"&X-Goog-Date=20021001T100000Z&X-Goog-Expires=86400" +
-				"&X-Goog-Signature=9163ad1bfb8ca4c70aff3bc6ee5b2895d8fc6946f28ade641824c40efed922ec1f42c100ab98192f6db955620bf35f660fa6da0974a35d5599d56583f4dd8f9f8441b8dd70ebb3557a742db5d619e9c950b8b397da76317aeee4409c25dd8ac1af0454d331d49b6c3fc4b6118ddcf570154f3455d616c737e0b5891de7758dea438f734e1124e78ebc7bad657d68f9003f282e14f8c5dceb97f441efad70ff2f76eab89537b05bdf0fbb50d87c34e7583028979b87793d9bc1902f44d6e4b4c4564bc457b430584881b8ee4e8995fcca4e6050c4c28609c5d0026a3a4b2fc0121dcb11833c872e5bf9f154f8be582a65ad6f52b5bd2cf052f23fadd293f8362e" +
+				"&X-Goog-Signature=35e0b9d33901a2518956821175f88c2c4eb3f4461b725af74b37c36d23f8bbe927558ac57b0be40d345f20bca55ba0652d38b7a620f8da68d4f733706ad104da468c3a039459acf35f3022e388760cd49893c998c33fe3ccc8c022d7034ab98bdbdcac4b680bb24ae5ed586a42ee9495a873ffc484e297853a8a3892d0d6385c980cb7e3c5c8bdd4939b4c17105f10fe8b5b9744017bf59431ff176c1550ae1c64ddd6628096eb6895c97c5da4d850aca72c14b7f5018c15b34d4b00ec63ff2ccb688ddbef2d32648e247ffd0137498080f320f293eb811a94fb526227324bbbd01335446388797803e67d802f97b52565deba3d2387ecabf4f3094662236017" +
 				"&X-Goog-SignedHeaders=host",
 		},
 		{
-			desc:         "VirtualHostedStyle - endpoint does not have effect",
-			emulatorHost: "localhost:9000",
-			endpoint:     &localhost6000Https,
+			desc:         "VirtualHostedStyle - endpoint overrides emulator",
+			emulatorHost: "localhost:8000",
+			endpoint:     &localhost9000,
 			now:          expires.Add(-24 * time.Hour),
 			opts: &SignedURLOptions{
 				GoogleAccessID: "xxx@clientid",
@@ -1366,7 +1481,7 @@ func TestBucketSignedURL_Endpoint_Emulator_Host(t *testing.T) {
 				"?X-Goog-Algorithm=GOOG4-RSA-SHA256" +
 				"&X-Goog-Credential=xxx%40clientid%2F20021001%2Fauto%2Fstorage%2Fgoog4_request" +
 				"&X-Goog-Date=20021001T100000Z&X-Goog-Expires=86400" +
-				"&X-Goog-Signature=59577491e93738f05f2442166c787fdf6f5ad70619cd87d7ac2590b78f31c01cd3cef1948fd9150de756a834de0e7cf843d82b36f744fe8cf3c095fbb35205f8db17ddaa72925a7aae9179ebf811519ab04a9e778cc1a388fa961869f01f0ab6b70e8c4e39730752f8874d29809db15209a062df90c42b536237d371f1397916008a97db70c9cd011965f843e8ddbaf2d20aed4a213e71938aeb5c88411bdf40444ae6b07f34ee2fa91825c32f136a7e7411d33dda3d34260d61694a50f5a13d1187490d1a9301aaef745ec78db7620beb4501fd76bf54d989d227ca29d01e76c50fbb3cf796e1987c18c732a14f1c4c36fa630514f6edf029546a129136d28c" +
+				"&X-Goog-Signature=35e0b9d33901a2518956821175f88c2c4eb3f4461b725af74b37c36d23f8bbe927558ac57b0be40d345f20bca55ba0652d38b7a620f8da68d4f733706ad104da468c3a039459acf35f3022e388760cd49893c998c33fe3ccc8c022d7034ab98bdbdcac4b680bb24ae5ed586a42ee9495a873ffc484e297853a8a3892d0d6385c980cb7e3c5c8bdd4939b4c17105f10fe8b5b9744017bf59431ff176c1550ae1c64ddd6628096eb6895c97c5da4d850aca72c14b7f5018c15b34d4b00ec63ff2ccb688ddbef2d32648e247ffd0137498080f320f293eb811a94fb526227324bbbd01335446388797803e67d802f97b52565deba3d2387ecabf4f3094662236017" +
 				"&X-Goog-SignedHeaders=host",
 		},
 		{
@@ -1416,14 +1531,14 @@ func TestBucketSignedURL_Endpoint_Emulator_Host(t *testing.T) {
 				PrivateKey:     dummyKey("rsa"),
 				Method:         "POST",
 				Expires:        expires,
-				Scheme:         SigningSchemeV4,
+				Scheme:         SigningSchemeV4, //do v2 here
 				Insecure:       true,
 			},
 			want: "http://localhost:6000/" + bucketName + "/" + objectName +
 				"?X-Goog-Algorithm=GOOG4-RSA-SHA256" +
 				"&X-Goog-Credential=xxx%40clientid%2F20021001%2Fauto%2Fstorage%2Fgoog4_request" +
 				"&X-Goog-Date=20021001T100000Z&X-Goog-Expires=86400" +
-				"&X-Goog-Signature=1bdbbc7e8db59e51ae2e6593fb326d9b1aa49a0905c6b94ee5bcb3be9e329656c07564a14e209275c95065f752695bd394d09afadb6874c0c0121799482f6f496593a87cdce48afd3c125b18054730273727075845e0b7d64e90503ffb20e6b02d2609bb596b081ce994ab4aafa35ee0a53350a994329e73a0125bb0edc955792f942ea8a9df5f5e87adcda4be5005dfb0d44915dee708815ac1d023c760379a22bc3d43983a672cf06c664b81bf1b724525bc1d0b2a89649c5ca396abf817ff5543f113933eb9f009fc655508656bf0d4017b2f5412028d144ef782c7b64162471c3a518053bf488ad382db3b3806316d903fa94d8b247b910aea4aa109cc55" +
+				"&X-Goog-Signature=249c53142e57adf594b4f523a8a1f9c15f29b071e9abc0cf6665dbc5f692fc96fac4ab98bbea4c2397384367bc970a2e1771f2c86624475f3273970ecde8ff6df39d647e5c3f3263bf67a743e211c1958a96775edf53ece1f69ed337f0ab7fdc081c6c2b84e57b0922280d27f1da1bff47e77e3822fb1756e4c5cece9d220e6d0824ab9528e97e54f0cb09b352193b0e895344d894de11b3f5f9a2ec7d8fd6d0a4c487afd1896385a3ab9e8c3fcb3862ec0cad6ec10af1b574078eb7c79b558bcd85449a67079a0ee6da97fcbad074f1bf9fdfbdca12945336a8bd0a3b70b4c7708918cb83d10c7c4ff1f8b73275e9d1ba5d3db91069dffdf81eb7badf4e3c80" +
 				"&X-Goog-SignedHeaders=host",
 		},
 		{
@@ -1442,7 +1557,7 @@ func TestBucketSignedURL_Endpoint_Emulator_Host(t *testing.T) {
 				"?X-Goog-Algorithm=GOOG4-RSA-SHA256" +
 				"&X-Goog-Credential=xxx%40clientid%2F20021001%2Fauto%2Fstorage%2Fgoog4_request" +
 				"&X-Goog-Date=20021001T100000Z&X-Goog-Expires=86400" +
-				"&X-Goog-Signature=1bdbbc7e8db59e51ae2e6593fb326d9b1aa49a0905c6b94ee5bcb3be9e329656c07564a14e209275c95065f752695bd394d09afadb6874c0c0121799482f6f496593a87cdce48afd3c125b18054730273727075845e0b7d64e90503ffb20e6b02d2609bb596b081ce994ab4aafa35ee0a53350a994329e73a0125bb0edc955792f942ea8a9df5f5e87adcda4be5005dfb0d44915dee708815ac1d023c760379a22bc3d43983a672cf06c664b81bf1b724525bc1d0b2a89649c5ca396abf817ff5543f113933eb9f009fc655508656bf0d4017b2f5412028d144ef782c7b64162471c3a518053bf488ad382db3b3806316d903fa94d8b247b910aea4aa109cc55" +
+				"&X-Goog-Signature=249c53142e57adf594b4f523a8a1f9c15f29b071e9abc0cf6665dbc5f692fc96fac4ab98bbea4c2397384367bc970a2e1771f2c86624475f3273970ecde8ff6df39d647e5c3f3263bf67a743e211c1958a96775edf53ece1f69ed337f0ab7fdc081c6c2b84e57b0922280d27f1da1bff47e77e3822fb1756e4c5cece9d220e6d0824ab9528e97e54f0cb09b352193b0e895344d894de11b3f5f9a2ec7d8fd6d0a4c487afd1896385a3ab9e8c3fcb3862ec0cad6ec10af1b574078eb7c79b558bcd85449a67079a0ee6da97fcbad074f1bf9fdfbdca12945336a8bd0a3b70b4c7708918cb83d10c7c4ff1f8b73275e9d1ba5d3db91069dffdf81eb7badf4e3c80" +
 				"&X-Goog-SignedHeaders=host",
 		},
 		{
@@ -1511,7 +1626,7 @@ func TestBucketSignedURL_Endpoint_Emulator_Host(t *testing.T) {
 
 			var opts []option.ClientOption
 			if test.endpoint != nil {
-				opts = append(opts, option.WithEndpoint(*test.endpoint))
+				opts = append(opts, option.WithEndpoint(*test.endpoint), option.WithoutAuthentication())
 			}
 			c, err := NewClient(context.Background(), opts...)
 			if err != nil {
@@ -1527,5 +1642,32 @@ func TestBucketSignedURL_Endpoint_Emulator_Host(t *testing.T) {
 				s.Fatalf("bucket.SidnedURL:\n\tgot:\t%v\n\twant:\t%v", got, test.want)
 			}
 		})
+	}
+}
+
+// Test retry logic for default SignBlob function used by BucketHandle.SignedURL.
+// This cannot be tested via the emulator so we use a mock.
+func TestDefaultSignBlobRetry(t *testing.T) {
+	ctx := context.Background()
+
+	// Use mock transport. Return 2 503 responses before succeeding.
+	mt := mockTransport{}
+	mt.addResult(&http.Response{StatusCode: 503, Body: bodyReader("")}, nil)
+	mt.addResult(&http.Response{StatusCode: 503, Body: bodyReader("")}, nil)
+	mt.addResult(&http.Response{StatusCode: 200, Body: bodyReader("{}")}, nil)
+
+	client, err := NewClient(ctx, option.WithHTTPClient(&http.Client{Transport: &mt}))
+	if err != nil {
+		t.Fatalf("NewClient: %v", err)
+	}
+
+	b := client.Bucket("fakebucket")
+
+	if _, err := b.SignedURL("fakeobj", &SignedURLOptions{
+		Method:    "GET",
+		Expires:   time.Now().Add(time.Hour),
+		SignBytes: b.defaultSignBytesFunc("example@example.com"),
+	}); err != nil {
+		t.Fatalf("BucketHandle.SignedURL: %v", err)
 	}
 }

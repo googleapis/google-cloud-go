@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -72,6 +71,11 @@ type CallOptions struct {
 	GetCertificateIssuanceConfig    []gax.CallOption
 	CreateCertificateIssuanceConfig []gax.CallOption
 	DeleteCertificateIssuanceConfig []gax.CallOption
+	ListTrustConfigs                []gax.CallOption
+	GetTrustConfig                  []gax.CallOption
+	CreateTrustConfig               []gax.CallOption
+	UpdateTrustConfig               []gax.CallOption
+	DeleteTrustConfig               []gax.CallOption
 	GetLocation                     []gax.CallOption
 	ListLocations                   []gax.CallOption
 	CancelOperation                 []gax.CallOption
@@ -83,10 +87,13 @@ type CallOptions struct {
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("certificatemanager.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("certificatemanager.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("certificatemanager.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://certificatemanager.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -382,6 +389,11 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		ListTrustConfigs:  []gax.CallOption{},
+		GetTrustConfig:    []gax.CallOption{},
+		CreateTrustConfig: []gax.CallOption{},
+		UpdateTrustConfig: []gax.CallOption{},
+		DeleteTrustConfig: []gax.CallOption{},
 		GetLocation: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -723,6 +735,11 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		ListTrustConfigs:  []gax.CallOption{},
+		GetTrustConfig:    []gax.CallOption{},
+		CreateTrustConfig: []gax.CallOption{},
+		UpdateTrustConfig: []gax.CallOption{},
+		DeleteTrustConfig: []gax.CallOption{},
 		GetLocation: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -835,6 +852,14 @@ type internalClient interface {
 	CreateCertificateIssuanceConfigOperation(name string) *CreateCertificateIssuanceConfigOperation
 	DeleteCertificateIssuanceConfig(context.Context, *certificatemanagerpb.DeleteCertificateIssuanceConfigRequest, ...gax.CallOption) (*DeleteCertificateIssuanceConfigOperation, error)
 	DeleteCertificateIssuanceConfigOperation(name string) *DeleteCertificateIssuanceConfigOperation
+	ListTrustConfigs(context.Context, *certificatemanagerpb.ListTrustConfigsRequest, ...gax.CallOption) *TrustConfigIterator
+	GetTrustConfig(context.Context, *certificatemanagerpb.GetTrustConfigRequest, ...gax.CallOption) (*certificatemanagerpb.TrustConfig, error)
+	CreateTrustConfig(context.Context, *certificatemanagerpb.CreateTrustConfigRequest, ...gax.CallOption) (*CreateTrustConfigOperation, error)
+	CreateTrustConfigOperation(name string) *CreateTrustConfigOperation
+	UpdateTrustConfig(context.Context, *certificatemanagerpb.UpdateTrustConfigRequest, ...gax.CallOption) (*UpdateTrustConfigOperation, error)
+	UpdateTrustConfigOperation(name string) *UpdateTrustConfigOperation
+	DeleteTrustConfig(context.Context, *certificatemanagerpb.DeleteTrustConfigRequest, ...gax.CallOption) (*DeleteTrustConfigOperation, error)
+	DeleteTrustConfigOperation(name string) *DeleteTrustConfigOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -1118,6 +1143,49 @@ func (c *Client) DeleteCertificateIssuanceConfigOperation(name string) *DeleteCe
 	return c.internalClient.DeleteCertificateIssuanceConfigOperation(name)
 }
 
+// ListTrustConfigs lists TrustConfigs in a given project and location.
+func (c *Client) ListTrustConfigs(ctx context.Context, req *certificatemanagerpb.ListTrustConfigsRequest, opts ...gax.CallOption) *TrustConfigIterator {
+	return c.internalClient.ListTrustConfigs(ctx, req, opts...)
+}
+
+// GetTrustConfig gets details of a single TrustConfig.
+func (c *Client) GetTrustConfig(ctx context.Context, req *certificatemanagerpb.GetTrustConfigRequest, opts ...gax.CallOption) (*certificatemanagerpb.TrustConfig, error) {
+	return c.internalClient.GetTrustConfig(ctx, req, opts...)
+}
+
+// CreateTrustConfig creates a new TrustConfig in a given project and location.
+func (c *Client) CreateTrustConfig(ctx context.Context, req *certificatemanagerpb.CreateTrustConfigRequest, opts ...gax.CallOption) (*CreateTrustConfigOperation, error) {
+	return c.internalClient.CreateTrustConfig(ctx, req, opts...)
+}
+
+// CreateTrustConfigOperation returns a new CreateTrustConfigOperation from a given name.
+// The name must be that of a previously created CreateTrustConfigOperation, possibly from a different process.
+func (c *Client) CreateTrustConfigOperation(name string) *CreateTrustConfigOperation {
+	return c.internalClient.CreateTrustConfigOperation(name)
+}
+
+// UpdateTrustConfig updates a TrustConfig.
+func (c *Client) UpdateTrustConfig(ctx context.Context, req *certificatemanagerpb.UpdateTrustConfigRequest, opts ...gax.CallOption) (*UpdateTrustConfigOperation, error) {
+	return c.internalClient.UpdateTrustConfig(ctx, req, opts...)
+}
+
+// UpdateTrustConfigOperation returns a new UpdateTrustConfigOperation from a given name.
+// The name must be that of a previously created UpdateTrustConfigOperation, possibly from a different process.
+func (c *Client) UpdateTrustConfigOperation(name string) *UpdateTrustConfigOperation {
+	return c.internalClient.UpdateTrustConfigOperation(name)
+}
+
+// DeleteTrustConfig deletes a single TrustConfig.
+func (c *Client) DeleteTrustConfig(ctx context.Context, req *certificatemanagerpb.DeleteTrustConfigRequest, opts ...gax.CallOption) (*DeleteTrustConfigOperation, error) {
+	return c.internalClient.DeleteTrustConfig(ctx, req, opts...)
+}
+
+// DeleteTrustConfigOperation returns a new DeleteTrustConfigOperation from a given name.
+// The name must be that of a previously created DeleteTrustConfigOperation, possibly from a different process.
+func (c *Client) DeleteTrustConfigOperation(name string) *DeleteTrustConfigOperation {
+	return c.internalClient.DeleteTrustConfigOperation(name)
+}
+
 // GetLocation gets information about a location.
 func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
@@ -1172,6 +1240,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new certificate manager client based on gRPC.
@@ -1227,6 +1297,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:         connPool,
 		client:           certificatemanagerpb.NewCertificateManagerClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
@@ -1262,7 +1333,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1289,6 +1362,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new certificate manager rest client.
@@ -1335,6 +1410,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -1354,9 +1430,12 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 func defaultRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://certificatemanager.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://certificatemanager.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://certificatemanager.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://certificatemanager.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -1366,7 +1445,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1403,7 +1484,7 @@ func (c *gRPCClient) ListCertificates(ctx context.Context, req *certificatemanag
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListCertificates(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListCertificates, req, settings.GRPC, c.logger, "ListCertificates")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1438,7 +1519,7 @@ func (c *gRPCClient) GetCertificate(ctx context.Context, req *certificatemanager
 	var resp *certificatemanagerpb.Certificate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetCertificate(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetCertificate, req, settings.GRPC, c.logger, "GetCertificate")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1456,7 +1537,7 @@ func (c *gRPCClient) CreateCertificate(ctx context.Context, req *certificatemana
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateCertificate(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateCertificate, req, settings.GRPC, c.logger, "CreateCertificate")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1476,7 +1557,7 @@ func (c *gRPCClient) UpdateCertificate(ctx context.Context, req *certificatemana
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateCertificate(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateCertificate, req, settings.GRPC, c.logger, "UpdateCertificate")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1496,7 +1577,7 @@ func (c *gRPCClient) DeleteCertificate(ctx context.Context, req *certificatemana
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteCertificate(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteCertificate, req, settings.GRPC, c.logger, "DeleteCertificate")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1527,7 +1608,7 @@ func (c *gRPCClient) ListCertificateMaps(ctx context.Context, req *certificatema
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListCertificateMaps(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListCertificateMaps, req, settings.GRPC, c.logger, "ListCertificateMaps")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1562,7 +1643,7 @@ func (c *gRPCClient) GetCertificateMap(ctx context.Context, req *certificatemana
 	var resp *certificatemanagerpb.CertificateMap
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetCertificateMap(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetCertificateMap, req, settings.GRPC, c.logger, "GetCertificateMap")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1580,7 +1661,7 @@ func (c *gRPCClient) CreateCertificateMap(ctx context.Context, req *certificatem
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateCertificateMap(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateCertificateMap, req, settings.GRPC, c.logger, "CreateCertificateMap")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1600,7 +1681,7 @@ func (c *gRPCClient) UpdateCertificateMap(ctx context.Context, req *certificatem
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateCertificateMap(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateCertificateMap, req, settings.GRPC, c.logger, "UpdateCertificateMap")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1620,7 +1701,7 @@ func (c *gRPCClient) DeleteCertificateMap(ctx context.Context, req *certificatem
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteCertificateMap(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteCertificateMap, req, settings.GRPC, c.logger, "DeleteCertificateMap")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1651,7 +1732,7 @@ func (c *gRPCClient) ListCertificateMapEntries(ctx context.Context, req *certifi
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListCertificateMapEntries(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListCertificateMapEntries, req, settings.GRPC, c.logger, "ListCertificateMapEntries")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1686,7 +1767,7 @@ func (c *gRPCClient) GetCertificateMapEntry(ctx context.Context, req *certificat
 	var resp *certificatemanagerpb.CertificateMapEntry
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetCertificateMapEntry(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetCertificateMapEntry, req, settings.GRPC, c.logger, "GetCertificateMapEntry")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1704,7 +1785,7 @@ func (c *gRPCClient) CreateCertificateMapEntry(ctx context.Context, req *certifi
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateCertificateMapEntry(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateCertificateMapEntry, req, settings.GRPC, c.logger, "CreateCertificateMapEntry")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1724,7 +1805,7 @@ func (c *gRPCClient) UpdateCertificateMapEntry(ctx context.Context, req *certifi
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateCertificateMapEntry(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateCertificateMapEntry, req, settings.GRPC, c.logger, "UpdateCertificateMapEntry")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1744,7 +1825,7 @@ func (c *gRPCClient) DeleteCertificateMapEntry(ctx context.Context, req *certifi
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteCertificateMapEntry(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteCertificateMapEntry, req, settings.GRPC, c.logger, "DeleteCertificateMapEntry")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1775,7 +1856,7 @@ func (c *gRPCClient) ListDnsAuthorizations(ctx context.Context, req *certificate
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListDnsAuthorizations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListDnsAuthorizations, req, settings.GRPC, c.logger, "ListDnsAuthorizations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1810,7 +1891,7 @@ func (c *gRPCClient) GetDnsAuthorization(ctx context.Context, req *certificatema
 	var resp *certificatemanagerpb.DnsAuthorization
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetDnsAuthorization(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetDnsAuthorization, req, settings.GRPC, c.logger, "GetDnsAuthorization")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1828,7 +1909,7 @@ func (c *gRPCClient) CreateDnsAuthorization(ctx context.Context, req *certificat
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateDnsAuthorization(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateDnsAuthorization, req, settings.GRPC, c.logger, "CreateDnsAuthorization")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1848,7 +1929,7 @@ func (c *gRPCClient) UpdateDnsAuthorization(ctx context.Context, req *certificat
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateDnsAuthorization(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateDnsAuthorization, req, settings.GRPC, c.logger, "UpdateDnsAuthorization")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1868,7 +1949,7 @@ func (c *gRPCClient) DeleteDnsAuthorization(ctx context.Context, req *certificat
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteDnsAuthorization(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteDnsAuthorization, req, settings.GRPC, c.logger, "DeleteDnsAuthorization")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1899,7 +1980,7 @@ func (c *gRPCClient) ListCertificateIssuanceConfigs(ctx context.Context, req *ce
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListCertificateIssuanceConfigs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListCertificateIssuanceConfigs, req, settings.GRPC, c.logger, "ListCertificateIssuanceConfigs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1934,7 +2015,7 @@ func (c *gRPCClient) GetCertificateIssuanceConfig(ctx context.Context, req *cert
 	var resp *certificatemanagerpb.CertificateIssuanceConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetCertificateIssuanceConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetCertificateIssuanceConfig, req, settings.GRPC, c.logger, "GetCertificateIssuanceConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1952,7 +2033,7 @@ func (c *gRPCClient) CreateCertificateIssuanceConfig(ctx context.Context, req *c
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateCertificateIssuanceConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateCertificateIssuanceConfig, req, settings.GRPC, c.logger, "CreateCertificateIssuanceConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1972,13 +2053,137 @@ func (c *gRPCClient) DeleteCertificateIssuanceConfig(ctx context.Context, req *c
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteCertificateIssuanceConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteCertificateIssuanceConfig, req, settings.GRPC, c.logger, "DeleteCertificateIssuanceConfig")
 		return err
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return &DeleteCertificateIssuanceConfigOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ListTrustConfigs(ctx context.Context, req *certificatemanagerpb.ListTrustConfigsRequest, opts ...gax.CallOption) *TrustConfigIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListTrustConfigs[0:len((*c.CallOptions).ListTrustConfigs):len((*c.CallOptions).ListTrustConfigs)], opts...)
+	it := &TrustConfigIterator{}
+	req = proto.Clone(req).(*certificatemanagerpb.ListTrustConfigsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*certificatemanagerpb.TrustConfig, string, error) {
+		resp := &certificatemanagerpb.ListTrustConfigsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListTrustConfigs, req, settings.GRPC, c.logger, "ListTrustConfigs")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetTrustConfigs(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetTrustConfig(ctx context.Context, req *certificatemanagerpb.GetTrustConfigRequest, opts ...gax.CallOption) (*certificatemanagerpb.TrustConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetTrustConfig[0:len((*c.CallOptions).GetTrustConfig):len((*c.CallOptions).GetTrustConfig)], opts...)
+	var resp *certificatemanagerpb.TrustConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetTrustConfig, req, settings.GRPC, c.logger, "GetTrustConfig")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CreateTrustConfig(ctx context.Context, req *certificatemanagerpb.CreateTrustConfigRequest, opts ...gax.CallOption) (*CreateTrustConfigOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateTrustConfig[0:len((*c.CallOptions).CreateTrustConfig):len((*c.CallOptions).CreateTrustConfig)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateTrustConfig, req, settings.GRPC, c.logger, "CreateTrustConfig")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateTrustConfigOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) UpdateTrustConfig(ctx context.Context, req *certificatemanagerpb.UpdateTrustConfigRequest, opts ...gax.CallOption) (*UpdateTrustConfigOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "trust_config.name", url.QueryEscape(req.GetTrustConfig().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateTrustConfig[0:len((*c.CallOptions).UpdateTrustConfig):len((*c.CallOptions).UpdateTrustConfig)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateTrustConfig, req, settings.GRPC, c.logger, "UpdateTrustConfig")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateTrustConfigOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeleteTrustConfig(ctx context.Context, req *certificatemanagerpb.DeleteTrustConfigRequest, opts ...gax.CallOption) (*DeleteTrustConfigOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteTrustConfig[0:len((*c.CallOptions).DeleteTrustConfig):len((*c.CallOptions).DeleteTrustConfig)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteTrustConfig, req, settings.GRPC, c.logger, "DeleteTrustConfig")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteTrustConfigOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -1992,7 +2197,7 @@ func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2021,7 +2226,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2055,7 +2260,7 @@ func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -2069,7 +2274,7 @@ func (c *gRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -2084,7 +2289,7 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2113,7 +2318,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2190,21 +2395,10 @@ func (c *restClient) ListCertificates(ctx context.Context, req *certificatemanag
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListCertificates")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2267,17 +2461,7 @@ func (c *restClient) GetCertificate(ctx context.Context, req *certificatemanager
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCertificate")
 		if err != nil {
 			return err
 		}
@@ -2334,21 +2518,10 @@ func (c *restClient) CreateCertificate(ctx context.Context, req *certificatemana
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateCertificate")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2384,11 +2557,11 @@ func (c *restClient) UpdateCertificate(ctx context.Context, req *certificatemana
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2412,21 +2585,10 @@ func (c *restClient) UpdateCertificate(ctx context.Context, req *certificatemana
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateCertificate")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2476,21 +2638,10 @@ func (c *restClient) DeleteCertificate(ctx context.Context, req *certificatemana
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteCertificate")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2559,21 +2710,10 @@ func (c *restClient) ListCertificateMaps(ctx context.Context, req *certificatema
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListCertificateMaps")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2636,17 +2776,7 @@ func (c *restClient) GetCertificateMap(ctx context.Context, req *certificatemana
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCertificateMap")
 		if err != nil {
 			return err
 		}
@@ -2703,21 +2833,10 @@ func (c *restClient) CreateCertificateMap(ctx context.Context, req *certificatem
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateCertificateMap")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2753,11 +2872,11 @@ func (c *restClient) UpdateCertificateMap(ctx context.Context, req *certificatem
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2781,21 +2900,10 @@ func (c *restClient) UpdateCertificateMap(ctx context.Context, req *certificatem
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateCertificateMap")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2847,21 +2955,10 @@ func (c *restClient) DeleteCertificateMap(ctx context.Context, req *certificatem
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteCertificateMap")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2930,21 +3027,10 @@ func (c *restClient) ListCertificateMapEntries(ctx context.Context, req *certifi
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListCertificateMapEntries")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3007,17 +3093,7 @@ func (c *restClient) GetCertificateMapEntry(ctx context.Context, req *certificat
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCertificateMapEntry")
 		if err != nil {
 			return err
 		}
@@ -3074,21 +3150,10 @@ func (c *restClient) CreateCertificateMapEntry(ctx context.Context, req *certifi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateCertificateMapEntry")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3124,11 +3189,11 @@ func (c *restClient) UpdateCertificateMapEntry(ctx context.Context, req *certifi
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3152,21 +3217,10 @@ func (c *restClient) UpdateCertificateMapEntry(ctx context.Context, req *certifi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateCertificateMapEntry")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3216,21 +3270,10 @@ func (c *restClient) DeleteCertificateMapEntry(ctx context.Context, req *certifi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteCertificateMapEntry")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3299,21 +3342,10 @@ func (c *restClient) ListDnsAuthorizations(ctx context.Context, req *certificate
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDnsAuthorizations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3376,17 +3408,7 @@ func (c *restClient) GetDnsAuthorization(ctx context.Context, req *certificatema
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDnsAuthorization")
 		if err != nil {
 			return err
 		}
@@ -3443,21 +3465,10 @@ func (c *restClient) CreateDnsAuthorization(ctx context.Context, req *certificat
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDnsAuthorization")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3493,11 +3504,11 @@ func (c *restClient) UpdateDnsAuthorization(ctx context.Context, req *certificat
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3521,21 +3532,10 @@ func (c *restClient) UpdateDnsAuthorization(ctx context.Context, req *certificat
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateDnsAuthorization")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3585,21 +3585,10 @@ func (c *restClient) DeleteDnsAuthorization(ctx context.Context, req *certificat
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDnsAuthorization")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3668,21 +3657,10 @@ func (c *restClient) ListCertificateIssuanceConfigs(ctx context.Context, req *ce
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListCertificateIssuanceConfigs")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3745,17 +3723,7 @@ func (c *restClient) GetCertificateIssuanceConfig(ctx context.Context, req *cert
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCertificateIssuanceConfig")
 		if err != nil {
 			return err
 		}
@@ -3812,21 +3780,10 @@ func (c *restClient) CreateCertificateIssuanceConfig(ctx context.Context, req *c
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateCertificateIssuanceConfig")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3876,17 +3833,145 @@ func (c *restClient) DeleteCertificateIssuanceConfig(ctx context.Context, req *c
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteCertificateIssuanceConfig")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
+		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
 
-		buf, err := io.ReadAll(httpRsp.Body)
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteCertificateIssuanceConfigOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ListTrustConfigs lists TrustConfigs in a given project and location.
+func (c *restClient) ListTrustConfigs(ctx context.Context, req *certificatemanagerpb.ListTrustConfigsRequest, opts ...gax.CallOption) *TrustConfigIterator {
+	it := &TrustConfigIterator{}
+	req = proto.Clone(req).(*certificatemanagerpb.ListTrustConfigsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*certificatemanagerpb.TrustConfig, string, error) {
+		resp := &certificatemanagerpb.ListTrustConfigsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/trustConfigs", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListTrustConfigs")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetTrustConfigs(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetTrustConfig gets details of a single TrustConfig.
+func (c *restClient) GetTrustConfig(ctx context.Context, req *certificatemanagerpb.GetTrustConfigRequest, opts ...gax.CallOption) (*certificatemanagerpb.TrustConfig, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetTrustConfig[0:len((*c.CallOptions).GetTrustConfig):len((*c.CallOptions).GetTrustConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &certificatemanagerpb.TrustConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetTrustConfig")
 		if err != nil {
 			return err
 		}
@@ -3900,9 +3985,188 @@ func (c *restClient) DeleteCertificateIssuanceConfig(ctx context.Context, req *c
 	if e != nil {
 		return nil, e
 	}
+	return resp, nil
+}
+
+// CreateTrustConfig creates a new TrustConfig in a given project and location.
+func (c *restClient) CreateTrustConfig(ctx context.Context, req *certificatemanagerpb.CreateTrustConfigRequest, opts ...gax.CallOption) (*CreateTrustConfigOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetTrustConfig()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/trustConfigs", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("trustConfigId", fmt.Sprintf("%v", req.GetTrustConfigId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateTrustConfig")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	return &DeleteCertificateIssuanceConfigOperation{
+	return &CreateTrustConfigOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateTrustConfig updates a TrustConfig.
+func (c *restClient) UpdateTrustConfig(ctx context.Context, req *certificatemanagerpb.UpdateTrustConfigRequest, opts ...gax.CallOption) (*UpdateTrustConfigOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetTrustConfig()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetTrustConfig().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "trust_config.name", url.QueryEscape(req.GetTrustConfig().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateTrustConfig")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateTrustConfigOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteTrustConfig deletes a single TrustConfig.
+func (c *restClient) DeleteTrustConfig(ctx context.Context, req *certificatemanagerpb.DeleteTrustConfigRequest, opts ...gax.CallOption) (*DeleteTrustConfigOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetEtag() != "" {
+		params.Add("etag", fmt.Sprintf("%v", req.GetEtag()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteTrustConfig")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteTrustConfigOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
@@ -3941,17 +4205,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -4016,21 +4270,10 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4096,15 +4339,8 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -4138,15 +4374,8 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOperation")
+		return err
 	}, opts...)
 }
 
@@ -4183,17 +4412,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -4258,21 +4477,10 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4302,12 +4510,6 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	return it
 }
 
-// CreateCertificateOperation manages a long-running operation from CreateCertificate.
-type CreateCertificateOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // CreateCertificateOperation returns a new CreateCertificateOperation from a given name.
 // The name must be that of a previously created CreateCertificateOperation, possibly from a different process.
 func (c *gRPCClient) CreateCertificateOperation(name string) *CreateCertificateOperation {
@@ -4324,70 +4526,6 @@ func (c *restClient) CreateCertificateOperation(name string) *CreateCertificateO
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateCertificateOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*certificatemanagerpb.Certificate, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp certificatemanagerpb.Certificate
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateCertificateOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*certificatemanagerpb.Certificate, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp certificatemanagerpb.Certificate
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateCertificateOperation) Metadata() (*certificatemanagerpb.OperationMetadata, error) {
-	var meta certificatemanagerpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateCertificateOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateCertificateOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateCertificateIssuanceConfigOperation manages a long-running operation from CreateCertificateIssuanceConfig.
-type CreateCertificateIssuanceConfigOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // CreateCertificateIssuanceConfigOperation returns a new CreateCertificateIssuanceConfigOperation from a given name.
@@ -4408,70 +4546,6 @@ func (c *restClient) CreateCertificateIssuanceConfigOperation(name string) *Crea
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateCertificateIssuanceConfigOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*certificatemanagerpb.CertificateIssuanceConfig, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp certificatemanagerpb.CertificateIssuanceConfig
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateCertificateIssuanceConfigOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*certificatemanagerpb.CertificateIssuanceConfig, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp certificatemanagerpb.CertificateIssuanceConfig
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateCertificateIssuanceConfigOperation) Metadata() (*certificatemanagerpb.OperationMetadata, error) {
-	var meta certificatemanagerpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateCertificateIssuanceConfigOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateCertificateIssuanceConfigOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateCertificateMapOperation manages a long-running operation from CreateCertificateMap.
-type CreateCertificateMapOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // CreateCertificateMapOperation returns a new CreateCertificateMapOperation from a given name.
 // The name must be that of a previously created CreateCertificateMapOperation, possibly from a different process.
 func (c *gRPCClient) CreateCertificateMapOperation(name string) *CreateCertificateMapOperation {
@@ -4488,70 +4562,6 @@ func (c *restClient) CreateCertificateMapOperation(name string) *CreateCertifica
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateCertificateMapOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*certificatemanagerpb.CertificateMap, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp certificatemanagerpb.CertificateMap
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateCertificateMapOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*certificatemanagerpb.CertificateMap, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp certificatemanagerpb.CertificateMap
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateCertificateMapOperation) Metadata() (*certificatemanagerpb.OperationMetadata, error) {
-	var meta certificatemanagerpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateCertificateMapOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateCertificateMapOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateCertificateMapEntryOperation manages a long-running operation from CreateCertificateMapEntry.
-type CreateCertificateMapEntryOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // CreateCertificateMapEntryOperation returns a new CreateCertificateMapEntryOperation from a given name.
@@ -4572,70 +4582,6 @@ func (c *restClient) CreateCertificateMapEntryOperation(name string) *CreateCert
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateCertificateMapEntryOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*certificatemanagerpb.CertificateMapEntry, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp certificatemanagerpb.CertificateMapEntry
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateCertificateMapEntryOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*certificatemanagerpb.CertificateMapEntry, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp certificatemanagerpb.CertificateMapEntry
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateCertificateMapEntryOperation) Metadata() (*certificatemanagerpb.OperationMetadata, error) {
-	var meta certificatemanagerpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateCertificateMapEntryOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateCertificateMapEntryOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateDnsAuthorizationOperation manages a long-running operation from CreateDnsAuthorization.
-type CreateDnsAuthorizationOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // CreateDnsAuthorizationOperation returns a new CreateDnsAuthorizationOperation from a given name.
 // The name must be that of a previously created CreateDnsAuthorizationOperation, possibly from a different process.
 func (c *gRPCClient) CreateDnsAuthorizationOperation(name string) *CreateDnsAuthorizationOperation {
@@ -4654,68 +4600,22 @@ func (c *restClient) CreateDnsAuthorizationOperation(name string) *CreateDnsAuth
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateDnsAuthorizationOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*certificatemanagerpb.DnsAuthorization, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp certificatemanagerpb.DnsAuthorization
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
+// CreateTrustConfigOperation returns a new CreateTrustConfigOperation from a given name.
+// The name must be that of a previously created CreateTrustConfigOperation, possibly from a different process.
+func (c *gRPCClient) CreateTrustConfigOperation(name string) *CreateTrustConfigOperation {
+	return &CreateTrustConfigOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-	return &resp, nil
 }
 
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateDnsAuthorizationOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*certificatemanagerpb.DnsAuthorization, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp certificatemanagerpb.DnsAuthorization
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
+// CreateTrustConfigOperation returns a new CreateTrustConfigOperation from a given name.
+// The name must be that of a previously created CreateTrustConfigOperation, possibly from a different process.
+func (c *restClient) CreateTrustConfigOperation(name string) *CreateTrustConfigOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateTrustConfigOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateDnsAuthorizationOperation) Metadata() (*certificatemanagerpb.OperationMetadata, error) {
-	var meta certificatemanagerpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateDnsAuthorizationOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateDnsAuthorizationOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteCertificateOperation manages a long-running operation from DeleteCertificate.
-type DeleteCertificateOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // DeleteCertificateOperation returns a new DeleteCertificateOperation from a given name.
@@ -4736,59 +4636,6 @@ func (c *restClient) DeleteCertificateOperation(name string) *DeleteCertificateO
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteCertificateOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteCertificateOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteCertificateOperation) Metadata() (*certificatemanagerpb.OperationMetadata, error) {
-	var meta certificatemanagerpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteCertificateOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteCertificateOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteCertificateIssuanceConfigOperation manages a long-running operation from DeleteCertificateIssuanceConfig.
-type DeleteCertificateIssuanceConfigOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // DeleteCertificateIssuanceConfigOperation returns a new DeleteCertificateIssuanceConfigOperation from a given name.
 // The name must be that of a previously created DeleteCertificateIssuanceConfigOperation, possibly from a different process.
 func (c *gRPCClient) DeleteCertificateIssuanceConfigOperation(name string) *DeleteCertificateIssuanceConfigOperation {
@@ -4805,59 +4652,6 @@ func (c *restClient) DeleteCertificateIssuanceConfigOperation(name string) *Dele
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteCertificateIssuanceConfigOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteCertificateIssuanceConfigOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteCertificateIssuanceConfigOperation) Metadata() (*certificatemanagerpb.OperationMetadata, error) {
-	var meta certificatemanagerpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteCertificateIssuanceConfigOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteCertificateIssuanceConfigOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteCertificateMapOperation manages a long-running operation from DeleteCertificateMap.
-type DeleteCertificateMapOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // DeleteCertificateMapOperation returns a new DeleteCertificateMapOperation from a given name.
@@ -4878,59 +4672,6 @@ func (c *restClient) DeleteCertificateMapOperation(name string) *DeleteCertifica
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteCertificateMapOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteCertificateMapOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteCertificateMapOperation) Metadata() (*certificatemanagerpb.OperationMetadata, error) {
-	var meta certificatemanagerpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteCertificateMapOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteCertificateMapOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteCertificateMapEntryOperation manages a long-running operation from DeleteCertificateMapEntry.
-type DeleteCertificateMapEntryOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // DeleteCertificateMapEntryOperation returns a new DeleteCertificateMapEntryOperation from a given name.
 // The name must be that of a previously created DeleteCertificateMapEntryOperation, possibly from a different process.
 func (c *gRPCClient) DeleteCertificateMapEntryOperation(name string) *DeleteCertificateMapEntryOperation {
@@ -4947,59 +4688,6 @@ func (c *restClient) DeleteCertificateMapEntryOperation(name string) *DeleteCert
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteCertificateMapEntryOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteCertificateMapEntryOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteCertificateMapEntryOperation) Metadata() (*certificatemanagerpb.OperationMetadata, error) {
-	var meta certificatemanagerpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteCertificateMapEntryOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteCertificateMapEntryOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteDnsAuthorizationOperation manages a long-running operation from DeleteDnsAuthorization.
-type DeleteDnsAuthorizationOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // DeleteDnsAuthorizationOperation returns a new DeleteDnsAuthorizationOperation from a given name.
@@ -5020,57 +4708,22 @@ func (c *restClient) DeleteDnsAuthorizationOperation(name string) *DeleteDnsAuth
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteDnsAuthorizationOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteDnsAuthorizationOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteDnsAuthorizationOperation) Metadata() (*certificatemanagerpb.OperationMetadata, error) {
-	var meta certificatemanagerpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
+// DeleteTrustConfigOperation returns a new DeleteTrustConfigOperation from a given name.
+// The name must be that of a previously created DeleteTrustConfigOperation, possibly from a different process.
+func (c *gRPCClient) DeleteTrustConfigOperation(name string) *DeleteTrustConfigOperation {
+	return &DeleteTrustConfigOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-	return &meta, nil
 }
 
-// Done reports whether the long-running operation has completed.
-func (op *DeleteDnsAuthorizationOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteDnsAuthorizationOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateCertificateOperation manages a long-running operation from UpdateCertificate.
-type UpdateCertificateOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
+// DeleteTrustConfigOperation returns a new DeleteTrustConfigOperation from a given name.
+// The name must be that of a previously created DeleteTrustConfigOperation, possibly from a different process.
+func (c *restClient) DeleteTrustConfigOperation(name string) *DeleteTrustConfigOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteTrustConfigOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
 }
 
 // UpdateCertificateOperation returns a new UpdateCertificateOperation from a given name.
@@ -5091,70 +4744,6 @@ func (c *restClient) UpdateCertificateOperation(name string) *UpdateCertificateO
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateCertificateOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*certificatemanagerpb.Certificate, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp certificatemanagerpb.Certificate
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateCertificateOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*certificatemanagerpb.Certificate, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp certificatemanagerpb.Certificate
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateCertificateOperation) Metadata() (*certificatemanagerpb.OperationMetadata, error) {
-	var meta certificatemanagerpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateCertificateOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateCertificateOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateCertificateMapOperation manages a long-running operation from UpdateCertificateMap.
-type UpdateCertificateMapOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdateCertificateMapOperation returns a new UpdateCertificateMapOperation from a given name.
 // The name must be that of a previously created UpdateCertificateMapOperation, possibly from a different process.
 func (c *gRPCClient) UpdateCertificateMapOperation(name string) *UpdateCertificateMapOperation {
@@ -5171,70 +4760,6 @@ func (c *restClient) UpdateCertificateMapOperation(name string) *UpdateCertifica
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateCertificateMapOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*certificatemanagerpb.CertificateMap, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp certificatemanagerpb.CertificateMap
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateCertificateMapOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*certificatemanagerpb.CertificateMap, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp certificatemanagerpb.CertificateMap
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateCertificateMapOperation) Metadata() (*certificatemanagerpb.OperationMetadata, error) {
-	var meta certificatemanagerpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateCertificateMapOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateCertificateMapOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateCertificateMapEntryOperation manages a long-running operation from UpdateCertificateMapEntry.
-type UpdateCertificateMapEntryOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // UpdateCertificateMapEntryOperation returns a new UpdateCertificateMapEntryOperation from a given name.
@@ -5255,70 +4780,6 @@ func (c *restClient) UpdateCertificateMapEntryOperation(name string) *UpdateCert
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateCertificateMapEntryOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*certificatemanagerpb.CertificateMapEntry, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp certificatemanagerpb.CertificateMapEntry
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateCertificateMapEntryOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*certificatemanagerpb.CertificateMapEntry, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp certificatemanagerpb.CertificateMapEntry
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateCertificateMapEntryOperation) Metadata() (*certificatemanagerpb.OperationMetadata, error) {
-	var meta certificatemanagerpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateCertificateMapEntryOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateCertificateMapEntryOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateDnsAuthorizationOperation manages a long-running operation from UpdateDnsAuthorization.
-type UpdateDnsAuthorizationOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdateDnsAuthorizationOperation returns a new UpdateDnsAuthorizationOperation from a given name.
 // The name must be that of a previously created UpdateDnsAuthorizationOperation, possibly from a different process.
 func (c *gRPCClient) UpdateDnsAuthorizationOperation(name string) *UpdateDnsAuthorizationOperation {
@@ -5337,389 +4798,20 @@ func (c *restClient) UpdateDnsAuthorizationOperation(name string) *UpdateDnsAuth
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateDnsAuthorizationOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*certificatemanagerpb.DnsAuthorization, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp certificatemanagerpb.DnsAuthorization
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
+// UpdateTrustConfigOperation returns a new UpdateTrustConfigOperation from a given name.
+// The name must be that of a previously created UpdateTrustConfigOperation, possibly from a different process.
+func (c *gRPCClient) UpdateTrustConfigOperation(name string) *UpdateTrustConfigOperation {
+	return &UpdateTrustConfigOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-	return &resp, nil
 }
 
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateDnsAuthorizationOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*certificatemanagerpb.DnsAuthorization, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp certificatemanagerpb.DnsAuthorization
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
+// UpdateTrustConfigOperation returns a new UpdateTrustConfigOperation from a given name.
+// The name must be that of a previously created UpdateTrustConfigOperation, possibly from a different process.
+func (c *restClient) UpdateTrustConfigOperation(name string) *UpdateTrustConfigOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateTrustConfigOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateDnsAuthorizationOperation) Metadata() (*certificatemanagerpb.OperationMetadata, error) {
-	var meta certificatemanagerpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateDnsAuthorizationOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateDnsAuthorizationOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CertificateIssuanceConfigIterator manages a stream of *certificatemanagerpb.CertificateIssuanceConfig.
-type CertificateIssuanceConfigIterator struct {
-	items    []*certificatemanagerpb.CertificateIssuanceConfig
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*certificatemanagerpb.CertificateIssuanceConfig, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *CertificateIssuanceConfigIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *CertificateIssuanceConfigIterator) Next() (*certificatemanagerpb.CertificateIssuanceConfig, error) {
-	var item *certificatemanagerpb.CertificateIssuanceConfig
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *CertificateIssuanceConfigIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *CertificateIssuanceConfigIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// CertificateIterator manages a stream of *certificatemanagerpb.Certificate.
-type CertificateIterator struct {
-	items    []*certificatemanagerpb.Certificate
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*certificatemanagerpb.Certificate, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *CertificateIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *CertificateIterator) Next() (*certificatemanagerpb.Certificate, error) {
-	var item *certificatemanagerpb.Certificate
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *CertificateIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *CertificateIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// CertificateMapEntryIterator manages a stream of *certificatemanagerpb.CertificateMapEntry.
-type CertificateMapEntryIterator struct {
-	items    []*certificatemanagerpb.CertificateMapEntry
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*certificatemanagerpb.CertificateMapEntry, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *CertificateMapEntryIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *CertificateMapEntryIterator) Next() (*certificatemanagerpb.CertificateMapEntry, error) {
-	var item *certificatemanagerpb.CertificateMapEntry
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *CertificateMapEntryIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *CertificateMapEntryIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// CertificateMapIterator manages a stream of *certificatemanagerpb.CertificateMap.
-type CertificateMapIterator struct {
-	items    []*certificatemanagerpb.CertificateMap
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*certificatemanagerpb.CertificateMap, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *CertificateMapIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *CertificateMapIterator) Next() (*certificatemanagerpb.CertificateMap, error) {
-	var item *certificatemanagerpb.CertificateMap
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *CertificateMapIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *CertificateMapIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// DnsAuthorizationIterator manages a stream of *certificatemanagerpb.DnsAuthorization.
-type DnsAuthorizationIterator struct {
-	items    []*certificatemanagerpb.DnsAuthorization
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*certificatemanagerpb.DnsAuthorization, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *DnsAuthorizationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *DnsAuthorizationIterator) Next() (*certificatemanagerpb.DnsAuthorization, error) {
-	var item *certificatemanagerpb.DnsAuthorization
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *DnsAuthorizationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *DnsAuthorizationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// LocationIterator manages a stream of *locationpb.Location.
-type LocationIterator struct {
-	items    []*locationpb.Location
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *LocationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *LocationIterator) Next() (*locationpb.Location, error) {
-	var item *locationpb.Location
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *LocationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *LocationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// OperationIterator manages a stream of *longrunningpb.Operation.
-type OperationIterator struct {
-	items    []*longrunningpb.Operation
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *OperationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *OperationIterator) Next() (*longrunningpb.Operation, error) {
-	var item *longrunningpb.Operation
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *OperationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *OperationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

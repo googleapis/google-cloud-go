@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@ package aiplatform
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
-	"time"
 
 	aiplatformpb "cloud.google.com/go/aiplatform/apiv1/aiplatformpb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
@@ -89,10 +89,13 @@ type MetadataCallOptions struct {
 func defaultMetadataGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("aiplatform.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("aiplatform.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("aiplatform.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -553,6 +556,8 @@ type metadataGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewMetadataClient creates a new metadata service client based on gRPC.
@@ -579,6 +584,7 @@ func NewMetadataClient(ctx context.Context, opts ...option.ClientOption) (*Metad
 		connPool:         connPool,
 		metadataClient:   aiplatformpb.NewMetadataServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:  iampb.NewIAMPolicyClient(connPool),
 		locationsClient:  locationpb.NewLocationsClient(connPool),
@@ -615,7 +621,9 @@ func (c *metadataGRPCClient) Connection() *grpc.ClientConn {
 func (c *metadataGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -633,7 +641,7 @@ func (c *metadataGRPCClient) CreateMetadataStore(ctx context.Context, req *aipla
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.CreateMetadataStore(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.CreateMetadataStore, req, settings.GRPC, c.logger, "CreateMetadataStore")
 		return err
 	}, opts...)
 	if err != nil {
@@ -653,7 +661,7 @@ func (c *metadataGRPCClient) GetMetadataStore(ctx context.Context, req *aiplatfo
 	var resp *aiplatformpb.MetadataStore
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.GetMetadataStore(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.GetMetadataStore, req, settings.GRPC, c.logger, "GetMetadataStore")
 		return err
 	}, opts...)
 	if err != nil {
@@ -682,7 +690,7 @@ func (c *metadataGRPCClient) ListMetadataStores(ctx context.Context, req *aiplat
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.metadataClient.ListMetadataStores(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.metadataClient.ListMetadataStores, req, settings.GRPC, c.logger, "ListMetadataStores")
 			return err
 		}, opts...)
 		if err != nil {
@@ -717,7 +725,7 @@ func (c *metadataGRPCClient) DeleteMetadataStore(ctx context.Context, req *aipla
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.DeleteMetadataStore(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.DeleteMetadataStore, req, settings.GRPC, c.logger, "DeleteMetadataStore")
 		return err
 	}, opts...)
 	if err != nil {
@@ -737,7 +745,7 @@ func (c *metadataGRPCClient) CreateArtifact(ctx context.Context, req *aiplatform
 	var resp *aiplatformpb.Artifact
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.CreateArtifact(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.CreateArtifact, req, settings.GRPC, c.logger, "CreateArtifact")
 		return err
 	}, opts...)
 	if err != nil {
@@ -755,7 +763,7 @@ func (c *metadataGRPCClient) GetArtifact(ctx context.Context, req *aiplatformpb.
 	var resp *aiplatformpb.Artifact
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.GetArtifact(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.GetArtifact, req, settings.GRPC, c.logger, "GetArtifact")
 		return err
 	}, opts...)
 	if err != nil {
@@ -784,7 +792,7 @@ func (c *metadataGRPCClient) ListArtifacts(ctx context.Context, req *aiplatformp
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.metadataClient.ListArtifacts(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.metadataClient.ListArtifacts, req, settings.GRPC, c.logger, "ListArtifacts")
 			return err
 		}, opts...)
 		if err != nil {
@@ -819,7 +827,7 @@ func (c *metadataGRPCClient) UpdateArtifact(ctx context.Context, req *aiplatform
 	var resp *aiplatformpb.Artifact
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.UpdateArtifact(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.UpdateArtifact, req, settings.GRPC, c.logger, "UpdateArtifact")
 		return err
 	}, opts...)
 	if err != nil {
@@ -837,7 +845,7 @@ func (c *metadataGRPCClient) DeleteArtifact(ctx context.Context, req *aiplatform
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.DeleteArtifact(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.DeleteArtifact, req, settings.GRPC, c.logger, "DeleteArtifact")
 		return err
 	}, opts...)
 	if err != nil {
@@ -857,7 +865,7 @@ func (c *metadataGRPCClient) PurgeArtifacts(ctx context.Context, req *aiplatform
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.PurgeArtifacts(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.PurgeArtifacts, req, settings.GRPC, c.logger, "PurgeArtifacts")
 		return err
 	}, opts...)
 	if err != nil {
@@ -877,7 +885,7 @@ func (c *metadataGRPCClient) CreateContext(ctx context.Context, req *aiplatformp
 	var resp *aiplatformpb.Context
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.CreateContext(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.CreateContext, req, settings.GRPC, c.logger, "CreateContext")
 		return err
 	}, opts...)
 	if err != nil {
@@ -895,7 +903,7 @@ func (c *metadataGRPCClient) GetContext(ctx context.Context, req *aiplatformpb.G
 	var resp *aiplatformpb.Context
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.GetContext(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.GetContext, req, settings.GRPC, c.logger, "GetContext")
 		return err
 	}, opts...)
 	if err != nil {
@@ -924,7 +932,7 @@ func (c *metadataGRPCClient) ListContexts(ctx context.Context, req *aiplatformpb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.metadataClient.ListContexts(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.metadataClient.ListContexts, req, settings.GRPC, c.logger, "ListContexts")
 			return err
 		}, opts...)
 		if err != nil {
@@ -959,7 +967,7 @@ func (c *metadataGRPCClient) UpdateContext(ctx context.Context, req *aiplatformp
 	var resp *aiplatformpb.Context
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.UpdateContext(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.UpdateContext, req, settings.GRPC, c.logger, "UpdateContext")
 		return err
 	}, opts...)
 	if err != nil {
@@ -977,7 +985,7 @@ func (c *metadataGRPCClient) DeleteContext(ctx context.Context, req *aiplatformp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.DeleteContext(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.DeleteContext, req, settings.GRPC, c.logger, "DeleteContext")
 		return err
 	}, opts...)
 	if err != nil {
@@ -997,7 +1005,7 @@ func (c *metadataGRPCClient) PurgeContexts(ctx context.Context, req *aiplatformp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.PurgeContexts(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.PurgeContexts, req, settings.GRPC, c.logger, "PurgeContexts")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1017,7 +1025,7 @@ func (c *metadataGRPCClient) AddContextArtifactsAndExecutions(ctx context.Contex
 	var resp *aiplatformpb.AddContextArtifactsAndExecutionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.AddContextArtifactsAndExecutions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.AddContextArtifactsAndExecutions, req, settings.GRPC, c.logger, "AddContextArtifactsAndExecutions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1035,7 +1043,7 @@ func (c *metadataGRPCClient) AddContextChildren(ctx context.Context, req *aiplat
 	var resp *aiplatformpb.AddContextChildrenResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.AddContextChildren(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.AddContextChildren, req, settings.GRPC, c.logger, "AddContextChildren")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1053,7 +1061,7 @@ func (c *metadataGRPCClient) RemoveContextChildren(ctx context.Context, req *aip
 	var resp *aiplatformpb.RemoveContextChildrenResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.RemoveContextChildren(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.RemoveContextChildren, req, settings.GRPC, c.logger, "RemoveContextChildren")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1071,7 +1079,7 @@ func (c *metadataGRPCClient) QueryContextLineageSubgraph(ctx context.Context, re
 	var resp *aiplatformpb.LineageSubgraph
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.QueryContextLineageSubgraph(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.QueryContextLineageSubgraph, req, settings.GRPC, c.logger, "QueryContextLineageSubgraph")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1089,7 +1097,7 @@ func (c *metadataGRPCClient) CreateExecution(ctx context.Context, req *aiplatfor
 	var resp *aiplatformpb.Execution
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.CreateExecution(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.CreateExecution, req, settings.GRPC, c.logger, "CreateExecution")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1107,7 +1115,7 @@ func (c *metadataGRPCClient) GetExecution(ctx context.Context, req *aiplatformpb
 	var resp *aiplatformpb.Execution
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.GetExecution(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.GetExecution, req, settings.GRPC, c.logger, "GetExecution")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1136,7 +1144,7 @@ func (c *metadataGRPCClient) ListExecutions(ctx context.Context, req *aiplatform
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.metadataClient.ListExecutions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.metadataClient.ListExecutions, req, settings.GRPC, c.logger, "ListExecutions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1171,7 +1179,7 @@ func (c *metadataGRPCClient) UpdateExecution(ctx context.Context, req *aiplatfor
 	var resp *aiplatformpb.Execution
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.UpdateExecution(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.UpdateExecution, req, settings.GRPC, c.logger, "UpdateExecution")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1189,7 +1197,7 @@ func (c *metadataGRPCClient) DeleteExecution(ctx context.Context, req *aiplatfor
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.DeleteExecution(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.DeleteExecution, req, settings.GRPC, c.logger, "DeleteExecution")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1209,7 +1217,7 @@ func (c *metadataGRPCClient) PurgeExecutions(ctx context.Context, req *aiplatfor
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.PurgeExecutions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.PurgeExecutions, req, settings.GRPC, c.logger, "PurgeExecutions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1229,7 +1237,7 @@ func (c *metadataGRPCClient) AddExecutionEvents(ctx context.Context, req *aiplat
 	var resp *aiplatformpb.AddExecutionEventsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.AddExecutionEvents(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.AddExecutionEvents, req, settings.GRPC, c.logger, "AddExecutionEvents")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1247,7 +1255,7 @@ func (c *metadataGRPCClient) QueryExecutionInputsAndOutputs(ctx context.Context,
 	var resp *aiplatformpb.LineageSubgraph
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.QueryExecutionInputsAndOutputs(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.QueryExecutionInputsAndOutputs, req, settings.GRPC, c.logger, "QueryExecutionInputsAndOutputs")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1265,7 +1273,7 @@ func (c *metadataGRPCClient) CreateMetadataSchema(ctx context.Context, req *aipl
 	var resp *aiplatformpb.MetadataSchema
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.CreateMetadataSchema(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.CreateMetadataSchema, req, settings.GRPC, c.logger, "CreateMetadataSchema")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1283,7 +1291,7 @@ func (c *metadataGRPCClient) GetMetadataSchema(ctx context.Context, req *aiplatf
 	var resp *aiplatformpb.MetadataSchema
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.GetMetadataSchema(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.GetMetadataSchema, req, settings.GRPC, c.logger, "GetMetadataSchema")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1312,7 +1320,7 @@ func (c *metadataGRPCClient) ListMetadataSchemas(ctx context.Context, req *aipla
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.metadataClient.ListMetadataSchemas(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.metadataClient.ListMetadataSchemas, req, settings.GRPC, c.logger, "ListMetadataSchemas")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1347,7 +1355,7 @@ func (c *metadataGRPCClient) QueryArtifactLineageSubgraph(ctx context.Context, r
 	var resp *aiplatformpb.LineageSubgraph
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.QueryArtifactLineageSubgraph(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.QueryArtifactLineageSubgraph, req, settings.GRPC, c.logger, "QueryArtifactLineageSubgraph")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1365,7 +1373,7 @@ func (c *metadataGRPCClient) GetLocation(ctx context.Context, req *locationpb.Ge
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1394,7 +1402,7 @@ func (c *metadataGRPCClient) ListLocations(ctx context.Context, req *locationpb.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1429,7 +1437,7 @@ func (c *metadataGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIam
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1447,7 +1455,7 @@ func (c *metadataGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIam
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1465,7 +1473,7 @@ func (c *metadataGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1482,7 +1490,7 @@ func (c *metadataGRPCClient) CancelOperation(ctx context.Context, req *longrunni
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -1496,7 +1504,7 @@ func (c *metadataGRPCClient) DeleteOperation(ctx context.Context, req *longrunni
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -1511,7 +1519,7 @@ func (c *metadataGRPCClient) GetOperation(ctx context.Context, req *longrunningp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1540,7 +1548,7 @@ func (c *metadataGRPCClient) ListOperations(ctx context.Context, req *longrunnin
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1575,18 +1583,13 @@ func (c *metadataGRPCClient) WaitOperation(ctx context.Context, req *longrunning
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.WaitOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.WaitOperation, req, settings.GRPC, c.logger, "WaitOperation")
 		return err
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return resp, nil
-}
-
-// CreateMetadataStoreOperation manages a long-running operation from CreateMetadataStore.
-type CreateMetadataStoreOperation struct {
-	lro *longrunning.Operation
 }
 
 // CreateMetadataStoreOperation returns a new CreateMetadataStoreOperation from a given name.
@@ -1597,123 +1600,12 @@ func (c *metadataGRPCClient) CreateMetadataStoreOperation(name string) *CreateMe
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateMetadataStoreOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.MetadataStore, error) {
-	var resp aiplatformpb.MetadataStore
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateMetadataStoreOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.MetadataStore, error) {
-	var resp aiplatformpb.MetadataStore
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateMetadataStoreOperation) Metadata() (*aiplatformpb.CreateMetadataStoreOperationMetadata, error) {
-	var meta aiplatformpb.CreateMetadataStoreOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateMetadataStoreOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateMetadataStoreOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteArtifactOperation manages a long-running operation from DeleteArtifact.
-type DeleteArtifactOperation struct {
-	lro *longrunning.Operation
-}
-
 // DeleteArtifactOperation returns a new DeleteArtifactOperation from a given name.
 // The name must be that of a previously created DeleteArtifactOperation, possibly from a different process.
 func (c *metadataGRPCClient) DeleteArtifactOperation(name string) *DeleteArtifactOperation {
 	return &DeleteArtifactOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteArtifactOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteArtifactOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteArtifactOperation) Metadata() (*aiplatformpb.DeleteOperationMetadata, error) {
-	var meta aiplatformpb.DeleteOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteArtifactOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteArtifactOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteContextOperation manages a long-running operation from DeleteContext.
-type DeleteContextOperation struct {
-	lro *longrunning.Operation
 }
 
 // DeleteContextOperation returns a new DeleteContextOperation from a given name.
@@ -1724,112 +1616,12 @@ func (c *metadataGRPCClient) DeleteContextOperation(name string) *DeleteContextO
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteContextOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteContextOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteContextOperation) Metadata() (*aiplatformpb.DeleteOperationMetadata, error) {
-	var meta aiplatformpb.DeleteOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteContextOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteContextOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteExecutionOperation manages a long-running operation from DeleteExecution.
-type DeleteExecutionOperation struct {
-	lro *longrunning.Operation
-}
-
 // DeleteExecutionOperation returns a new DeleteExecutionOperation from a given name.
 // The name must be that of a previously created DeleteExecutionOperation, possibly from a different process.
 func (c *metadataGRPCClient) DeleteExecutionOperation(name string) *DeleteExecutionOperation {
 	return &DeleteExecutionOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteExecutionOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteExecutionOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteExecutionOperation) Metadata() (*aiplatformpb.DeleteOperationMetadata, error) {
-	var meta aiplatformpb.DeleteOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteExecutionOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteExecutionOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteMetadataStoreOperation manages a long-running operation from DeleteMetadataStore.
-type DeleteMetadataStoreOperation struct {
-	lro *longrunning.Operation
 }
 
 // DeleteMetadataStoreOperation returns a new DeleteMetadataStoreOperation from a given name.
@@ -1840,123 +1632,12 @@ func (c *metadataGRPCClient) DeleteMetadataStoreOperation(name string) *DeleteMe
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteMetadataStoreOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteMetadataStoreOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteMetadataStoreOperation) Metadata() (*aiplatformpb.DeleteMetadataStoreOperationMetadata, error) {
-	var meta aiplatformpb.DeleteMetadataStoreOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteMetadataStoreOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteMetadataStoreOperation) Name() string {
-	return op.lro.Name()
-}
-
-// PurgeArtifactsOperation manages a long-running operation from PurgeArtifacts.
-type PurgeArtifactsOperation struct {
-	lro *longrunning.Operation
-}
-
 // PurgeArtifactsOperation returns a new PurgeArtifactsOperation from a given name.
 // The name must be that of a previously created PurgeArtifactsOperation, possibly from a different process.
 func (c *metadataGRPCClient) PurgeArtifactsOperation(name string) *PurgeArtifactsOperation {
 	return &PurgeArtifactsOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *PurgeArtifactsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.PurgeArtifactsResponse, error) {
-	var resp aiplatformpb.PurgeArtifactsResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *PurgeArtifactsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.PurgeArtifactsResponse, error) {
-	var resp aiplatformpb.PurgeArtifactsResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *PurgeArtifactsOperation) Metadata() (*aiplatformpb.PurgeArtifactsMetadata, error) {
-	var meta aiplatformpb.PurgeArtifactsMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *PurgeArtifactsOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *PurgeArtifactsOperation) Name() string {
-	return op.lro.Name()
-}
-
-// PurgeContextsOperation manages a long-running operation from PurgeContexts.
-type PurgeContextsOperation struct {
-	lro *longrunning.Operation
 }
 
 // PurgeContextsOperation returns a new PurgeContextsOperation from a given name.
@@ -1967,362 +1648,10 @@ func (c *metadataGRPCClient) PurgeContextsOperation(name string) *PurgeContextsO
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *PurgeContextsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.PurgeContextsResponse, error) {
-	var resp aiplatformpb.PurgeContextsResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *PurgeContextsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.PurgeContextsResponse, error) {
-	var resp aiplatformpb.PurgeContextsResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *PurgeContextsOperation) Metadata() (*aiplatformpb.PurgeContextsMetadata, error) {
-	var meta aiplatformpb.PurgeContextsMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *PurgeContextsOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *PurgeContextsOperation) Name() string {
-	return op.lro.Name()
-}
-
-// PurgeExecutionsOperation manages a long-running operation from PurgeExecutions.
-type PurgeExecutionsOperation struct {
-	lro *longrunning.Operation
-}
-
 // PurgeExecutionsOperation returns a new PurgeExecutionsOperation from a given name.
 // The name must be that of a previously created PurgeExecutionsOperation, possibly from a different process.
 func (c *metadataGRPCClient) PurgeExecutionsOperation(name string) *PurgeExecutionsOperation {
 	return &PurgeExecutionsOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *PurgeExecutionsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.PurgeExecutionsResponse, error) {
-	var resp aiplatformpb.PurgeExecutionsResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *PurgeExecutionsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.PurgeExecutionsResponse, error) {
-	var resp aiplatformpb.PurgeExecutionsResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *PurgeExecutionsOperation) Metadata() (*aiplatformpb.PurgeExecutionsMetadata, error) {
-	var meta aiplatformpb.PurgeExecutionsMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *PurgeExecutionsOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *PurgeExecutionsOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ArtifactIterator manages a stream of *aiplatformpb.Artifact.
-type ArtifactIterator struct {
-	items    []*aiplatformpb.Artifact
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.Artifact, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ArtifactIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ArtifactIterator) Next() (*aiplatformpb.Artifact, error) {
-	var item *aiplatformpb.Artifact
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ArtifactIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ArtifactIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ContextIterator manages a stream of *aiplatformpb.Context.
-type ContextIterator struct {
-	items    []*aiplatformpb.Context
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.Context, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ContextIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ContextIterator) Next() (*aiplatformpb.Context, error) {
-	var item *aiplatformpb.Context
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ContextIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ContextIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ExecutionIterator manages a stream of *aiplatformpb.Execution.
-type ExecutionIterator struct {
-	items    []*aiplatformpb.Execution
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.Execution, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ExecutionIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ExecutionIterator) Next() (*aiplatformpb.Execution, error) {
-	var item *aiplatformpb.Execution
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ExecutionIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ExecutionIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// MetadataSchemaIterator manages a stream of *aiplatformpb.MetadataSchema.
-type MetadataSchemaIterator struct {
-	items    []*aiplatformpb.MetadataSchema
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.MetadataSchema, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *MetadataSchemaIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *MetadataSchemaIterator) Next() (*aiplatformpb.MetadataSchema, error) {
-	var item *aiplatformpb.MetadataSchema
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *MetadataSchemaIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *MetadataSchemaIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// MetadataStoreIterator manages a stream of *aiplatformpb.MetadataStore.
-type MetadataStoreIterator struct {
-	items    []*aiplatformpb.MetadataStore
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.MetadataStore, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *MetadataStoreIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *MetadataStoreIterator) Next() (*aiplatformpb.MetadataStore, error) {
-	var item *aiplatformpb.MetadataStore
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *MetadataStoreIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *MetadataStoreIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

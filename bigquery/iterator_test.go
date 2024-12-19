@@ -141,7 +141,7 @@ func TestRowIteratorCacheBehavior(t *testing.T) {
 		},
 	}
 	for _, tc := range testCases {
-		gotResp, gotErr := fetchCachedPage(context.Background(), tc.inSource, tc.inSchema, tc.inStartIndex, tc.inPageSize, tc.inPageToken)
+		gotResp, gotErr := fetchCachedPage(tc.inSource, tc.inSchema, tc.inStartIndex, tc.inPageSize, tc.inPageToken)
 		if gotErr != tc.wantErr {
 			t.Errorf("err mismatch.  got %v, want %v", gotErr, tc.wantErr)
 		} else {
@@ -507,6 +507,39 @@ func TestIteratorSourceJob(t *testing.T) {
 		// AllowUnexported because of the embedded client reference, which we're ignoring.
 		if !cmp.Equal(got, tc.wantJob, cmp.AllowUnexported(Job{})) {
 			t.Errorf("%s: mismatch on SourceJob, got %v want %v", tc.description, got, tc.wantJob)
+		}
+	}
+}
+
+func TestIteratorQueryID(t *testing.T) {
+	testcases := []struct {
+		description string
+		src         *rowSource
+		want        string
+	}{
+		{
+			description: "nil source",
+			src:         nil,
+			want:        "",
+		},
+		{
+			description: "empty source",
+			src:         &rowSource{},
+			want:        "",
+		},
+		{
+			description: "populated id",
+			src:         &rowSource{queryID: "foo"},
+			want:        "foo",
+		},
+	}
+
+	for _, tc := range testcases {
+		// Don't pass a page func, we're not reading from the iterator.
+		it := newRowIterator(context.Background(), tc.src, nil)
+		got := it.QueryID()
+		if got != tc.want {
+			t.Errorf("%s: mismatch queryid, got %q want %q", tc.description, got, tc.want)
 		}
 	}
 }

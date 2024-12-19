@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -29,7 +29,6 @@ import (
 	datapoliciespb "cloud.google.com/go/bigquery/datapolicies/apiv1beta1/datapoliciespb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -58,10 +57,13 @@ type DataPolicyCallOptions struct {
 func defaultDataPolicyGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("bigquerydatapolicy.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("bigquerydatapolicy.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("bigquerydatapolicy.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://bigquerydatapolicy.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -368,6 +370,8 @@ type dataPolicyGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewDataPolicyClient creates a new data policy service client based on gRPC.
@@ -394,6 +398,7 @@ func NewDataPolicyClient(ctx context.Context, opts ...option.ClientOption) (*Dat
 		connPool:         connPool,
 		dataPolicyClient: datapoliciespb.NewDataPolicyServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -416,7 +421,9 @@ func (c *dataPolicyGRPCClient) Connection() *grpc.ClientConn {
 func (c *dataPolicyGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -438,6 +445,8 @@ type dataPolicyRESTClient struct {
 
 	// Points back to the CallOptions field of the containing DataPolicyClient
 	CallOptions **DataPolicyCallOptions
+
+	logger *slog.Logger
 }
 
 // NewDataPolicyRESTClient creates a new data policy service rest client.
@@ -455,6 +464,7 @@ func NewDataPolicyRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -464,9 +474,12 @@ func NewDataPolicyRESTClient(ctx context.Context, opts ...option.ClientOption) (
 func defaultDataPolicyRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://bigquerydatapolicy.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://bigquerydatapolicy.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://bigquerydatapolicy.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://bigquerydatapolicy.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -476,7 +489,9 @@ func defaultDataPolicyRESTClientOptions() []option.ClientOption {
 func (c *dataPolicyRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -502,7 +517,7 @@ func (c *dataPolicyGRPCClient) CreateDataPolicy(ctx context.Context, req *datapo
 	var resp *datapoliciespb.DataPolicy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataPolicyClient.CreateDataPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataPolicyClient.CreateDataPolicy, req, settings.GRPC, c.logger, "CreateDataPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -520,7 +535,7 @@ func (c *dataPolicyGRPCClient) UpdateDataPolicy(ctx context.Context, req *datapo
 	var resp *datapoliciespb.DataPolicy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataPolicyClient.UpdateDataPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataPolicyClient.UpdateDataPolicy, req, settings.GRPC, c.logger, "UpdateDataPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -537,7 +552,7 @@ func (c *dataPolicyGRPCClient) DeleteDataPolicy(ctx context.Context, req *datapo
 	opts = append((*c.CallOptions).DeleteDataPolicy[0:len((*c.CallOptions).DeleteDataPolicy):len((*c.CallOptions).DeleteDataPolicy)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.dataPolicyClient.DeleteDataPolicy(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.dataPolicyClient.DeleteDataPolicy, req, settings.GRPC, c.logger, "DeleteDataPolicy")
 		return err
 	}, opts...)
 	return err
@@ -552,7 +567,7 @@ func (c *dataPolicyGRPCClient) GetDataPolicy(ctx context.Context, req *datapolic
 	var resp *datapoliciespb.DataPolicy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataPolicyClient.GetDataPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataPolicyClient.GetDataPolicy, req, settings.GRPC, c.logger, "GetDataPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -581,7 +596,7 @@ func (c *dataPolicyGRPCClient) ListDataPolicies(ctx context.Context, req *datapo
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.dataPolicyClient.ListDataPolicies(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.dataPolicyClient.ListDataPolicies, req, settings.GRPC, c.logger, "ListDataPolicies")
 			return err
 		}, opts...)
 		if err != nil {
@@ -616,7 +631,7 @@ func (c *dataPolicyGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetI
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -634,7 +649,7 @@ func (c *dataPolicyGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetI
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -652,7 +667,7 @@ func (c *dataPolicyGRPCClient) TestIamPermissions(ctx context.Context, req *iamp
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -697,17 +712,7 @@ func (c *dataPolicyRESTClient) CreateDataPolicy(ctx context.Context, req *datapo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDataPolicy")
 		if err != nil {
 			return err
 		}
@@ -742,11 +747,11 @@ func (c *dataPolicyRESTClient) UpdateDataPolicy(ctx context.Context, req *datapo
 
 	params := url.Values{}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -771,17 +776,7 @@ func (c *dataPolicyRESTClient) UpdateDataPolicy(ctx context.Context, req *datapo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateDataPolicy")
 		if err != nil {
 			return err
 		}
@@ -823,15 +818,8 @@ func (c *dataPolicyRESTClient) DeleteDataPolicy(ctx context.Context, req *datapo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDataPolicy")
+		return err
 	}, opts...)
 }
 
@@ -863,17 +851,7 @@ func (c *dataPolicyRESTClient) GetDataPolicy(ctx context.Context, req *datapolic
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDataPolicy")
 		if err != nil {
 			return err
 		}
@@ -934,21 +912,10 @@ func (c *dataPolicyRESTClient) ListDataPolicies(ctx context.Context, req *datapo
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDataPolicies")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1012,17 +979,7 @@ func (c *dataPolicyRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetI
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -1073,17 +1030,7 @@ func (c *dataPolicyRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetI
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -1134,17 +1081,7 @@ func (c *dataPolicyRESTClient) TestIamPermissions(ctx context.Context, req *iamp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
 		if err != nil {
 			return err
 		}
@@ -1159,51 +1096,4 @@ func (c *dataPolicyRESTClient) TestIamPermissions(ctx context.Context, req *iamp
 		return nil, e
 	}
 	return resp, nil
-}
-
-// DataPolicyIterator manages a stream of *datapoliciespb.DataPolicy.
-type DataPolicyIterator struct {
-	items    []*datapoliciespb.DataPolicy
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*datapoliciespb.DataPolicy, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *DataPolicyIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *DataPolicyIterator) Next() (*datapoliciespb.DataPolicy, error) {
-	var item *datapoliciespb.DataPolicy
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *DataPolicyIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *DataPolicyIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

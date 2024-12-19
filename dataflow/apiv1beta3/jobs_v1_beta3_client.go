@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	dataflowpb "cloud.google.com/go/dataflow/apiv1beta3/dataflowpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -55,10 +54,13 @@ type JobsV1Beta3CallOptions struct {
 func defaultJobsV1Beta3GRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("dataflow.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("dataflow.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("dataflow.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://dataflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -241,6 +243,8 @@ type jobsV1Beta3GRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewJobsV1Beta3Client creates a new jobs v1 beta3 client based on gRPC.
@@ -268,6 +272,7 @@ func NewJobsV1Beta3Client(ctx context.Context, opts ...option.ClientOption) (*Jo
 		connPool:          connPool,
 		jobsV1Beta3Client: dataflowpb.NewJobsV1Beta3Client(connPool),
 		CallOptions:       &client.CallOptions,
+		logger:            internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -290,7 +295,9 @@ func (c *jobsV1Beta3GRPCClient) Connection() *grpc.ClientConn {
 func (c *jobsV1Beta3GRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -312,6 +319,8 @@ type jobsV1Beta3RESTClient struct {
 
 	// Points back to the CallOptions field of the containing JobsV1Beta3Client
 	CallOptions **JobsV1Beta3CallOptions
+
+	logger *slog.Logger
 }
 
 // NewJobsV1Beta3RESTClient creates a new jobs v1 beta3 rest client.
@@ -330,6 +339,7 @@ func NewJobsV1Beta3RESTClient(ctx context.Context, opts ...option.ClientOption) 
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -339,9 +349,12 @@ func NewJobsV1Beta3RESTClient(ctx context.Context, opts ...option.ClientOption) 
 func defaultJobsV1Beta3RESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://dataflow.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://dataflow.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://dataflow.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://dataflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -351,7 +364,9 @@ func defaultJobsV1Beta3RESTClientOptions() []option.ClientOption {
 func (c *jobsV1Beta3RESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -377,7 +392,7 @@ func (c *jobsV1Beta3GRPCClient) CreateJob(ctx context.Context, req *dataflowpb.C
 	var resp *dataflowpb.Job
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobsV1Beta3Client.CreateJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobsV1Beta3Client.CreateJob, req, settings.GRPC, c.logger, "CreateJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -395,7 +410,7 @@ func (c *jobsV1Beta3GRPCClient) GetJob(ctx context.Context, req *dataflowpb.GetJ
 	var resp *dataflowpb.Job
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobsV1Beta3Client.GetJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobsV1Beta3Client.GetJob, req, settings.GRPC, c.logger, "GetJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -413,7 +428,7 @@ func (c *jobsV1Beta3GRPCClient) UpdateJob(ctx context.Context, req *dataflowpb.U
 	var resp *dataflowpb.Job
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobsV1Beta3Client.UpdateJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobsV1Beta3Client.UpdateJob, req, settings.GRPC, c.logger, "UpdateJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -442,7 +457,7 @@ func (c *jobsV1Beta3GRPCClient) ListJobs(ctx context.Context, req *dataflowpb.Li
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.jobsV1Beta3Client.ListJobs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.jobsV1Beta3Client.ListJobs, req, settings.GRPC, c.logger, "ListJobs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -488,7 +503,7 @@ func (c *jobsV1Beta3GRPCClient) AggregatedListJobs(ctx context.Context, req *dat
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.jobsV1Beta3Client.AggregatedListJobs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.jobsV1Beta3Client.AggregatedListJobs, req, settings.GRPC, c.logger, "AggregatedListJobs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -520,7 +535,7 @@ func (c *jobsV1Beta3GRPCClient) CheckActiveJobs(ctx context.Context, req *datafl
 	var resp *dataflowpb.CheckActiveJobsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobsV1Beta3Client.CheckActiveJobs(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobsV1Beta3Client.CheckActiveJobs, req, settings.GRPC, c.logger, "CheckActiveJobs")
 		return err
 	}, opts...)
 	if err != nil {
@@ -538,7 +553,7 @@ func (c *jobsV1Beta3GRPCClient) SnapshotJob(ctx context.Context, req *dataflowpb
 	var resp *dataflowpb.Snapshot
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobsV1Beta3Client.SnapshotJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobsV1Beta3Client.SnapshotJob, req, settings.GRPC, c.logger, "SnapshotJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -599,17 +614,7 @@ func (c *jobsV1Beta3RESTClient) CreateJob(ctx context.Context, req *dataflowpb.C
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateJob")
 		if err != nil {
 			return err
 		}
@@ -668,17 +673,7 @@ func (c *jobsV1Beta3RESTClient) GetJob(ctx context.Context, req *dataflowpb.GetJ
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetJob")
 		if err != nil {
 			return err
 		}
@@ -741,17 +736,7 @@ func (c *jobsV1Beta3RESTClient) UpdateJob(ctx context.Context, req *dataflowpb.U
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateJob")
 		if err != nil {
 			return err
 		}
@@ -826,21 +811,10 @@ func (c *jobsV1Beta3RESTClient) ListJobs(ctx context.Context, req *dataflowpb.Li
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListJobs")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -924,21 +898,10 @@ func (c *jobsV1Beta3RESTClient) AggregatedListJobs(ctx context.Context, req *dat
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "AggregatedListJobs")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1001,17 +964,7 @@ func (c *jobsV1Beta3RESTClient) CheckActiveJobs(ctx context.Context, req *datafl
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "CheckActiveJobs")
 		if err != nil {
 			return err
 		}
@@ -1067,17 +1020,7 @@ func (c *jobsV1Beta3RESTClient) SnapshotJob(ctx context.Context, req *dataflowpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SnapshotJob")
 		if err != nil {
 			return err
 		}
@@ -1092,51 +1035,4 @@ func (c *jobsV1Beta3RESTClient) SnapshotJob(ctx context.Context, req *dataflowpb
 		return nil, e
 	}
 	return resp, nil
-}
-
-// JobIterator manages a stream of *dataflowpb.Job.
-type JobIterator struct {
-	items    []*dataflowpb.Job
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*dataflowpb.Job, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *JobIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *JobIterator) Next() (*dataflowpb.Job, error) {
-	var item *dataflowpb.Job
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *JobIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *JobIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

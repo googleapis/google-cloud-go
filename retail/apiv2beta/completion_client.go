@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	retailpb "cloud.google.com/go/retail/apiv2beta/retailpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -56,10 +55,13 @@ type CompletionCallOptions struct {
 func defaultCompletionGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("retail.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("retail.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("retail.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -152,7 +154,7 @@ func defaultCompletionRESTCallOptions() *CompletionCallOptions {
 	}
 }
 
-// internalCompletionClient is an interface that defines the methods available from Retail API.
+// internalCompletionClient is an interface that defines the methods available from Vertex AI Search for Retail API.
 type internalCompletionClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -164,7 +166,7 @@ type internalCompletionClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// CompletionClient is a client for interacting with Retail API.
+// CompletionClient is a client for interacting with Vertex AI Search for Retail API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Autocomplete service for retail.
@@ -244,7 +246,7 @@ func (c *CompletionClient) ListOperations(ctx context.Context, req *longrunningp
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// completionGRPCClient is a client for interacting with Retail API over gRPC transport.
+// completionGRPCClient is a client for interacting with Vertex AI Search for Retail API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type completionGRPCClient struct {
@@ -266,6 +268,8 @@ type completionGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewCompletionClient creates a new completion service client based on gRPC.
@@ -295,6 +299,7 @@ func NewCompletionClient(ctx context.Context, opts ...option.ClientOption) (*Com
 		connPool:         connPool,
 		completionClient: retailpb.NewCompletionServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -329,7 +334,9 @@ func (c *completionGRPCClient) Connection() *grpc.ClientConn {
 func (c *completionGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -356,6 +363,8 @@ type completionRESTClient struct {
 
 	// Points back to the CallOptions field of the containing CompletionClient
 	CallOptions **CompletionCallOptions
+
+	logger *slog.Logger
 }
 
 // NewCompletionRESTClient creates a new completion service rest client.
@@ -376,6 +385,7 @@ func NewCompletionRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -395,9 +405,12 @@ func NewCompletionRESTClient(ctx context.Context, opts ...option.ClientOption) (
 func defaultCompletionRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://retail.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://retail.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://retail.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -407,7 +420,9 @@ func defaultCompletionRESTClientOptions() []option.ClientOption {
 func (c *completionRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -433,7 +448,7 @@ func (c *completionGRPCClient) CompleteQuery(ctx context.Context, req *retailpb.
 	var resp *retailpb.CompleteQueryResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.completionClient.CompleteQuery(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.completionClient.CompleteQuery, req, settings.GRPC, c.logger, "CompleteQuery")
 		return err
 	}, opts...)
 	if err != nil {
@@ -451,7 +466,7 @@ func (c *completionGRPCClient) ImportCompletionData(ctx context.Context, req *re
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.completionClient.ImportCompletionData(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.completionClient.ImportCompletionData, req, settings.GRPC, c.logger, "ImportCompletionData")
 		return err
 	}, opts...)
 	if err != nil {
@@ -471,7 +486,7 @@ func (c *completionGRPCClient) GetOperation(ctx context.Context, req *longrunnin
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -500,7 +515,7 @@ func (c *completionGRPCClient) ListOperations(ctx context.Context, req *longrunn
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -545,6 +560,9 @@ func (c *completionRESTClient) CompleteQuery(ctx context.Context, req *retailpb.
 	if req.GetDeviceType() != "" {
 		params.Add("deviceType", fmt.Sprintf("%v", req.GetDeviceType()))
 	}
+	if req.GetEnableAttributeSuggestions() {
+		params.Add("enableAttributeSuggestions", fmt.Sprintf("%v", req.GetEnableAttributeSuggestions()))
+	}
 	if req.GetEntity() != "" {
 		params.Add("entity", fmt.Sprintf("%v", req.GetEntity()))
 	}
@@ -583,17 +601,7 @@ func (c *completionRESTClient) CompleteQuery(ctx context.Context, req *retailpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "CompleteQuery")
 		if err != nil {
 			return err
 		}
@@ -656,21 +664,10 @@ func (c *completionRESTClient) ImportCompletionData(ctx context.Context, req *re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ImportCompletionData")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -721,17 +718,7 @@ func (c *completionRESTClient) GetOperation(ctx context.Context, req *longrunnin
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -796,21 +783,10 @@ func (c *completionRESTClient) ListOperations(ctx context.Context, req *longrunn
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -840,12 +816,6 @@ func (c *completionRESTClient) ListOperations(ctx context.Context, req *longrunn
 	return it
 }
 
-// ImportCompletionDataOperation manages a long-running operation from ImportCompletionData.
-type ImportCompletionDataOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // ImportCompletionDataOperation returns a new ImportCompletionDataOperation from a given name.
 // The name must be that of a previously created ImportCompletionDataOperation, possibly from a different process.
 func (c *completionGRPCClient) ImportCompletionDataOperation(name string) *ImportCompletionDataOperation {
@@ -862,62 +832,4 @@ func (c *completionRESTClient) ImportCompletionDataOperation(name string) *Impor
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ImportCompletionDataOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*retailpb.ImportCompletionDataResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp retailpb.ImportCompletionDataResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ImportCompletionDataOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*retailpb.ImportCompletionDataResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp retailpb.ImportCompletionDataResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ImportCompletionDataOperation) Metadata() (*retailpb.ImportMetadata, error) {
-	var meta retailpb.ImportMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ImportCompletionDataOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ImportCompletionDataOperation) Name() string {
-	return op.lro.Name()
 }

@@ -35,8 +35,6 @@ import (
 	"cloud.google.com/go/profiler/mocks"
 	"cloud.google.com/go/profiler/testdata"
 	"github.com/golang/mock/gomock"
-	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
 	"github.com/google/pprof/profile"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
@@ -47,6 +45,8 @@ import (
 	"google.golang.org/grpc/codes"
 	grpcmd "google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/durationpb"
 )
 
 const (
@@ -82,7 +82,7 @@ func createTestAgent(psc pb.ProfilerServiceClient) *agent {
 
 func createTrailers(dur time.Duration) map[string]string {
 	b, _ := proto.Marshal(&edpb.RetryInfo{
-		RetryDelay: ptypes.DurationProto(dur),
+		RetryDelay: durationpb.New(dur),
 	})
 	return map[string]string{
 		retryInfoMetadata: string(b),
@@ -238,7 +238,7 @@ func TestProfileAndUpload(t *testing.T) {
 		}
 		p := &pb.Profile{ProfileType: tt.profileType}
 		if tt.duration != nil {
-			p.Duration = ptypes.DurationProto(*tt.duration)
+			p.Duration = durationpb.New(*tt.duration)
 		}
 		if tt.wantBytes != nil {
 			wantProfile := &pb.Profile{
@@ -777,7 +777,7 @@ func (fs *fakeProfilerServer) CreateProfile(ctx context.Context, in *pb.CreatePr
 	fs.count++
 	switch fs.count % 2 {
 	case 1:
-		return &pb.Profile{Name: "testCPU", ProfileType: pb.ProfileType_CPU, Duration: ptypes.DurationProto(testProfileDuration)}, nil
+		return &pb.Profile{Name: "testCPU", ProfileType: pb.ProfileType_CPU, Duration: durationpb.New(testProfileDuration)}, nil
 	default:
 		return &pb.Profile{Name: "testHeap", ProfileType: pb.ProfileType_HEAP}, nil
 	}

@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@ package dataplex
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
-	"time"
 
 	dataplexpb "cloud.google.com/go/dataplex/apiv1/dataplexpb"
 	"cloud.google.com/go/longrunning"
@@ -67,10 +67,13 @@ type DataTaxonomyCallOptions struct {
 func defaultDataTaxonomyGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("dataplex.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("dataplex.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("dataplex.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://dataplex.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -366,6 +369,8 @@ type dataTaxonomyGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewDataTaxonomyClient creates a new data taxonomy service client based on gRPC.
@@ -393,6 +398,7 @@ func NewDataTaxonomyClient(ctx context.Context, opts ...option.ClientOption) (*D
 		connPool:           connPool,
 		dataTaxonomyClient: dataplexpb.NewDataTaxonomyServiceClient(connPool),
 		CallOptions:        &client.CallOptions,
+		logger:             internaloption.GetLogger(opts),
 		operationsClient:   longrunningpb.NewOperationsClient(connPool),
 		locationsClient:    locationpb.NewLocationsClient(connPool),
 	}
@@ -428,7 +434,9 @@ func (c *dataTaxonomyGRPCClient) Connection() *grpc.ClientConn {
 func (c *dataTaxonomyGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -446,7 +454,7 @@ func (c *dataTaxonomyGRPCClient) CreateDataTaxonomy(ctx context.Context, req *da
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataTaxonomyClient.CreateDataTaxonomy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataTaxonomyClient.CreateDataTaxonomy, req, settings.GRPC, c.logger, "CreateDataTaxonomy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -466,7 +474,7 @@ func (c *dataTaxonomyGRPCClient) UpdateDataTaxonomy(ctx context.Context, req *da
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataTaxonomyClient.UpdateDataTaxonomy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataTaxonomyClient.UpdateDataTaxonomy, req, settings.GRPC, c.logger, "UpdateDataTaxonomy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -486,7 +494,7 @@ func (c *dataTaxonomyGRPCClient) DeleteDataTaxonomy(ctx context.Context, req *da
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataTaxonomyClient.DeleteDataTaxonomy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataTaxonomyClient.DeleteDataTaxonomy, req, settings.GRPC, c.logger, "DeleteDataTaxonomy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -517,7 +525,7 @@ func (c *dataTaxonomyGRPCClient) ListDataTaxonomies(ctx context.Context, req *da
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.dataTaxonomyClient.ListDataTaxonomies(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.dataTaxonomyClient.ListDataTaxonomies, req, settings.GRPC, c.logger, "ListDataTaxonomies")
 			return err
 		}, opts...)
 		if err != nil {
@@ -552,7 +560,7 @@ func (c *dataTaxonomyGRPCClient) GetDataTaxonomy(ctx context.Context, req *datap
 	var resp *dataplexpb.DataTaxonomy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataTaxonomyClient.GetDataTaxonomy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataTaxonomyClient.GetDataTaxonomy, req, settings.GRPC, c.logger, "GetDataTaxonomy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -570,7 +578,7 @@ func (c *dataTaxonomyGRPCClient) CreateDataAttributeBinding(ctx context.Context,
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataTaxonomyClient.CreateDataAttributeBinding(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataTaxonomyClient.CreateDataAttributeBinding, req, settings.GRPC, c.logger, "CreateDataAttributeBinding")
 		return err
 	}, opts...)
 	if err != nil {
@@ -590,7 +598,7 @@ func (c *dataTaxonomyGRPCClient) UpdateDataAttributeBinding(ctx context.Context,
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataTaxonomyClient.UpdateDataAttributeBinding(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataTaxonomyClient.UpdateDataAttributeBinding, req, settings.GRPC, c.logger, "UpdateDataAttributeBinding")
 		return err
 	}, opts...)
 	if err != nil {
@@ -610,7 +618,7 @@ func (c *dataTaxonomyGRPCClient) DeleteDataAttributeBinding(ctx context.Context,
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataTaxonomyClient.DeleteDataAttributeBinding(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataTaxonomyClient.DeleteDataAttributeBinding, req, settings.GRPC, c.logger, "DeleteDataAttributeBinding")
 		return err
 	}, opts...)
 	if err != nil {
@@ -641,7 +649,7 @@ func (c *dataTaxonomyGRPCClient) ListDataAttributeBindings(ctx context.Context, 
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.dataTaxonomyClient.ListDataAttributeBindings(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.dataTaxonomyClient.ListDataAttributeBindings, req, settings.GRPC, c.logger, "ListDataAttributeBindings")
 			return err
 		}, opts...)
 		if err != nil {
@@ -676,7 +684,7 @@ func (c *dataTaxonomyGRPCClient) GetDataAttributeBinding(ctx context.Context, re
 	var resp *dataplexpb.DataAttributeBinding
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataTaxonomyClient.GetDataAttributeBinding(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataTaxonomyClient.GetDataAttributeBinding, req, settings.GRPC, c.logger, "GetDataAttributeBinding")
 		return err
 	}, opts...)
 	if err != nil {
@@ -694,7 +702,7 @@ func (c *dataTaxonomyGRPCClient) CreateDataAttribute(ctx context.Context, req *d
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataTaxonomyClient.CreateDataAttribute(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataTaxonomyClient.CreateDataAttribute, req, settings.GRPC, c.logger, "CreateDataAttribute")
 		return err
 	}, opts...)
 	if err != nil {
@@ -714,7 +722,7 @@ func (c *dataTaxonomyGRPCClient) UpdateDataAttribute(ctx context.Context, req *d
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataTaxonomyClient.UpdateDataAttribute(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataTaxonomyClient.UpdateDataAttribute, req, settings.GRPC, c.logger, "UpdateDataAttribute")
 		return err
 	}, opts...)
 	if err != nil {
@@ -734,7 +742,7 @@ func (c *dataTaxonomyGRPCClient) DeleteDataAttribute(ctx context.Context, req *d
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataTaxonomyClient.DeleteDataAttribute(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataTaxonomyClient.DeleteDataAttribute, req, settings.GRPC, c.logger, "DeleteDataAttribute")
 		return err
 	}, opts...)
 	if err != nil {
@@ -765,7 +773,7 @@ func (c *dataTaxonomyGRPCClient) ListDataAttributes(ctx context.Context, req *da
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.dataTaxonomyClient.ListDataAttributes(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.dataTaxonomyClient.ListDataAttributes, req, settings.GRPC, c.logger, "ListDataAttributes")
 			return err
 		}, opts...)
 		if err != nil {
@@ -800,7 +808,7 @@ func (c *dataTaxonomyGRPCClient) GetDataAttribute(ctx context.Context, req *data
 	var resp *dataplexpb.DataAttribute
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataTaxonomyClient.GetDataAttribute(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataTaxonomyClient.GetDataAttribute, req, settings.GRPC, c.logger, "GetDataAttribute")
 		return err
 	}, opts...)
 	if err != nil {
@@ -818,7 +826,7 @@ func (c *dataTaxonomyGRPCClient) GetLocation(ctx context.Context, req *locationp
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -847,7 +855,7 @@ func (c *dataTaxonomyGRPCClient) ListLocations(ctx context.Context, req *locatio
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -881,7 +889,7 @@ func (c *dataTaxonomyGRPCClient) CancelOperation(ctx context.Context, req *longr
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -895,7 +903,7 @@ func (c *dataTaxonomyGRPCClient) DeleteOperation(ctx context.Context, req *longr
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -910,7 +918,7 @@ func (c *dataTaxonomyGRPCClient) GetOperation(ctx context.Context, req *longrunn
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -939,7 +947,7 @@ func (c *dataTaxonomyGRPCClient) ListOperations(ctx context.Context, req *longru
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -965,78 +973,12 @@ func (c *dataTaxonomyGRPCClient) ListOperations(ctx context.Context, req *longru
 	return it
 }
 
-// CreateDataAttributeOperation manages a long-running operation from CreateDataAttribute.
-type CreateDataAttributeOperation struct {
-	lro *longrunning.Operation
-}
-
 // CreateDataAttributeOperation returns a new CreateDataAttributeOperation from a given name.
 // The name must be that of a previously created CreateDataAttributeOperation, possibly from a different process.
 func (c *dataTaxonomyGRPCClient) CreateDataAttributeOperation(name string) *CreateDataAttributeOperation {
 	return &CreateDataAttributeOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateDataAttributeOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*dataplexpb.DataAttribute, error) {
-	var resp dataplexpb.DataAttribute
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateDataAttributeOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*dataplexpb.DataAttribute, error) {
-	var resp dataplexpb.DataAttribute
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateDataAttributeOperation) Metadata() (*dataplexpb.OperationMetadata, error) {
-	var meta dataplexpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateDataAttributeOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateDataAttributeOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateDataAttributeBindingOperation manages a long-running operation from CreateDataAttributeBinding.
-type CreateDataAttributeBindingOperation struct {
-	lro *longrunning.Operation
 }
 
 // CreateDataAttributeBindingOperation returns a new CreateDataAttributeBindingOperation from a given name.
@@ -1047,134 +989,12 @@ func (c *dataTaxonomyGRPCClient) CreateDataAttributeBindingOperation(name string
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateDataAttributeBindingOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*dataplexpb.DataAttributeBinding, error) {
-	var resp dataplexpb.DataAttributeBinding
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateDataAttributeBindingOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*dataplexpb.DataAttributeBinding, error) {
-	var resp dataplexpb.DataAttributeBinding
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateDataAttributeBindingOperation) Metadata() (*dataplexpb.OperationMetadata, error) {
-	var meta dataplexpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateDataAttributeBindingOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateDataAttributeBindingOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateDataTaxonomyOperation manages a long-running operation from CreateDataTaxonomy.
-type CreateDataTaxonomyOperation struct {
-	lro *longrunning.Operation
-}
-
 // CreateDataTaxonomyOperation returns a new CreateDataTaxonomyOperation from a given name.
 // The name must be that of a previously created CreateDataTaxonomyOperation, possibly from a different process.
 func (c *dataTaxonomyGRPCClient) CreateDataTaxonomyOperation(name string) *CreateDataTaxonomyOperation {
 	return &CreateDataTaxonomyOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateDataTaxonomyOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*dataplexpb.DataTaxonomy, error) {
-	var resp dataplexpb.DataTaxonomy
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateDataTaxonomyOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*dataplexpb.DataTaxonomy, error) {
-	var resp dataplexpb.DataTaxonomy
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateDataTaxonomyOperation) Metadata() (*dataplexpb.OperationMetadata, error) {
-	var meta dataplexpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateDataTaxonomyOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateDataTaxonomyOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteDataAttributeOperation manages a long-running operation from DeleteDataAttribute.
-type DeleteDataAttributeOperation struct {
-	lro *longrunning.Operation
 }
 
 // DeleteDataAttributeOperation returns a new DeleteDataAttributeOperation from a given name.
@@ -1185,112 +1005,12 @@ func (c *dataTaxonomyGRPCClient) DeleteDataAttributeOperation(name string) *Dele
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteDataAttributeOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteDataAttributeOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteDataAttributeOperation) Metadata() (*dataplexpb.OperationMetadata, error) {
-	var meta dataplexpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteDataAttributeOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteDataAttributeOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteDataAttributeBindingOperation manages a long-running operation from DeleteDataAttributeBinding.
-type DeleteDataAttributeBindingOperation struct {
-	lro *longrunning.Operation
-}
-
 // DeleteDataAttributeBindingOperation returns a new DeleteDataAttributeBindingOperation from a given name.
 // The name must be that of a previously created DeleteDataAttributeBindingOperation, possibly from a different process.
 func (c *dataTaxonomyGRPCClient) DeleteDataAttributeBindingOperation(name string) *DeleteDataAttributeBindingOperation {
 	return &DeleteDataAttributeBindingOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteDataAttributeBindingOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteDataAttributeBindingOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteDataAttributeBindingOperation) Metadata() (*dataplexpb.OperationMetadata, error) {
-	var meta dataplexpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteDataAttributeBindingOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteDataAttributeBindingOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteDataTaxonomyOperation manages a long-running operation from DeleteDataTaxonomy.
-type DeleteDataTaxonomyOperation struct {
-	lro *longrunning.Operation
 }
 
 // DeleteDataTaxonomyOperation returns a new DeleteDataTaxonomyOperation from a given name.
@@ -1301,123 +1021,12 @@ func (c *dataTaxonomyGRPCClient) DeleteDataTaxonomyOperation(name string) *Delet
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteDataTaxonomyOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteDataTaxonomyOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteDataTaxonomyOperation) Metadata() (*dataplexpb.OperationMetadata, error) {
-	var meta dataplexpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteDataTaxonomyOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteDataTaxonomyOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateDataAttributeOperation manages a long-running operation from UpdateDataAttribute.
-type UpdateDataAttributeOperation struct {
-	lro *longrunning.Operation
-}
-
 // UpdateDataAttributeOperation returns a new UpdateDataAttributeOperation from a given name.
 // The name must be that of a previously created UpdateDataAttributeOperation, possibly from a different process.
 func (c *dataTaxonomyGRPCClient) UpdateDataAttributeOperation(name string) *UpdateDataAttributeOperation {
 	return &UpdateDataAttributeOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateDataAttributeOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*dataplexpb.DataAttribute, error) {
-	var resp dataplexpb.DataAttribute
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateDataAttributeOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*dataplexpb.DataAttribute, error) {
-	var resp dataplexpb.DataAttribute
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateDataAttributeOperation) Metadata() (*dataplexpb.OperationMetadata, error) {
-	var meta dataplexpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateDataAttributeOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateDataAttributeOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateDataAttributeBindingOperation manages a long-running operation from UpdateDataAttributeBinding.
-type UpdateDataAttributeBindingOperation struct {
-	lro *longrunning.Operation
 }
 
 // UpdateDataAttributeBindingOperation returns a new UpdateDataAttributeBindingOperation from a given name.
@@ -1428,268 +1037,10 @@ func (c *dataTaxonomyGRPCClient) UpdateDataAttributeBindingOperation(name string
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateDataAttributeBindingOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*dataplexpb.DataAttributeBinding, error) {
-	var resp dataplexpb.DataAttributeBinding
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateDataAttributeBindingOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*dataplexpb.DataAttributeBinding, error) {
-	var resp dataplexpb.DataAttributeBinding
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateDataAttributeBindingOperation) Metadata() (*dataplexpb.OperationMetadata, error) {
-	var meta dataplexpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateDataAttributeBindingOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateDataAttributeBindingOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateDataTaxonomyOperation manages a long-running operation from UpdateDataTaxonomy.
-type UpdateDataTaxonomyOperation struct {
-	lro *longrunning.Operation
-}
-
 // UpdateDataTaxonomyOperation returns a new UpdateDataTaxonomyOperation from a given name.
 // The name must be that of a previously created UpdateDataTaxonomyOperation, possibly from a different process.
 func (c *dataTaxonomyGRPCClient) UpdateDataTaxonomyOperation(name string) *UpdateDataTaxonomyOperation {
 	return &UpdateDataTaxonomyOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateDataTaxonomyOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*dataplexpb.DataTaxonomy, error) {
-	var resp dataplexpb.DataTaxonomy
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateDataTaxonomyOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*dataplexpb.DataTaxonomy, error) {
-	var resp dataplexpb.DataTaxonomy
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateDataTaxonomyOperation) Metadata() (*dataplexpb.OperationMetadata, error) {
-	var meta dataplexpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateDataTaxonomyOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateDataTaxonomyOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DataAttributeBindingIterator manages a stream of *dataplexpb.DataAttributeBinding.
-type DataAttributeBindingIterator struct {
-	items    []*dataplexpb.DataAttributeBinding
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*dataplexpb.DataAttributeBinding, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *DataAttributeBindingIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *DataAttributeBindingIterator) Next() (*dataplexpb.DataAttributeBinding, error) {
-	var item *dataplexpb.DataAttributeBinding
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *DataAttributeBindingIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *DataAttributeBindingIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// DataAttributeIterator manages a stream of *dataplexpb.DataAttribute.
-type DataAttributeIterator struct {
-	items    []*dataplexpb.DataAttribute
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*dataplexpb.DataAttribute, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *DataAttributeIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *DataAttributeIterator) Next() (*dataplexpb.DataAttribute, error) {
-	var item *dataplexpb.DataAttribute
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *DataAttributeIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *DataAttributeIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// DataTaxonomyIterator manages a stream of *dataplexpb.DataTaxonomy.
-type DataTaxonomyIterator struct {
-	items    []*dataplexpb.DataTaxonomy
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*dataplexpb.DataTaxonomy, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *DataTaxonomyIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *DataTaxonomyIterator) Next() (*dataplexpb.DataTaxonomy, error) {
-	var item *dataplexpb.DataTaxonomy
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *DataTaxonomyIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *DataTaxonomyIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

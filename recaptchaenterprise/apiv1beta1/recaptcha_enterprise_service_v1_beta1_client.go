@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	recaptchaenterprisepb "cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1/recaptchaenterprisepb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -48,10 +47,13 @@ type RecaptchaEnterpriseServiceV1Beta1CallOptions struct {
 func defaultRecaptchaEnterpriseServiceV1Beta1GRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("recaptchaenterprise.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("recaptchaenterprise.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("recaptchaenterprise.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://recaptchaenterprise.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -149,6 +151,8 @@ type recaptchaEnterpriseServiceV1Beta1GRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewRecaptchaEnterpriseServiceV1Beta1Client creates a new recaptcha enterprise service v1 beta1 client based on gRPC.
@@ -175,6 +179,7 @@ func NewRecaptchaEnterpriseServiceV1Beta1Client(ctx context.Context, opts ...opt
 		connPool:                                connPool,
 		recaptchaEnterpriseServiceV1Beta1Client: recaptchaenterprisepb.NewRecaptchaEnterpriseServiceV1Beta1Client(connPool),
 		CallOptions:                             &client.CallOptions,
+		logger:                                  internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -197,7 +202,9 @@ func (c *recaptchaEnterpriseServiceV1Beta1GRPCClient) Connection() *grpc.ClientC
 func (c *recaptchaEnterpriseServiceV1Beta1GRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -219,6 +226,8 @@ type recaptchaEnterpriseServiceV1Beta1RESTClient struct {
 
 	// Points back to the CallOptions field of the containing RecaptchaEnterpriseServiceV1Beta1Client
 	CallOptions **RecaptchaEnterpriseServiceV1Beta1CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRecaptchaEnterpriseServiceV1Beta1RESTClient creates a new recaptcha enterprise service v1 beta1 rest client.
@@ -236,6 +245,7 @@ func NewRecaptchaEnterpriseServiceV1Beta1RESTClient(ctx context.Context, opts ..
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -245,9 +255,12 @@ func NewRecaptchaEnterpriseServiceV1Beta1RESTClient(ctx context.Context, opts ..
 func defaultRecaptchaEnterpriseServiceV1Beta1RESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://recaptchaenterprise.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://recaptchaenterprise.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://recaptchaenterprise.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://recaptchaenterprise.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -257,7 +270,9 @@ func defaultRecaptchaEnterpriseServiceV1Beta1RESTClientOptions() []option.Client
 func (c *recaptchaEnterpriseServiceV1Beta1RESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -283,7 +298,7 @@ func (c *recaptchaEnterpriseServiceV1Beta1GRPCClient) CreateAssessment(ctx conte
 	var resp *recaptchaenterprisepb.Assessment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.recaptchaEnterpriseServiceV1Beta1Client.CreateAssessment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.recaptchaEnterpriseServiceV1Beta1Client.CreateAssessment, req, settings.GRPC, c.logger, "CreateAssessment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -301,7 +316,7 @@ func (c *recaptchaEnterpriseServiceV1Beta1GRPCClient) AnnotateAssessment(ctx con
 	var resp *recaptchaenterprisepb.AnnotateAssessmentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.recaptchaEnterpriseServiceV1Beta1Client.AnnotateAssessment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.recaptchaEnterpriseServiceV1Beta1Client.AnnotateAssessment, req, settings.GRPC, c.logger, "AnnotateAssessment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -350,17 +365,7 @@ func (c *recaptchaEnterpriseServiceV1Beta1RESTClient) CreateAssessment(ctx conte
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateAssessment")
 		if err != nil {
 			return err
 		}
@@ -417,17 +422,7 @@ func (c *recaptchaEnterpriseServiceV1Beta1RESTClient) AnnotateAssessment(ctx con
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AnnotateAssessment")
 		if err != nil {
 			return err
 		}

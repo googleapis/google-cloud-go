@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/documentai/apiv1beta3",
-    "version": "1.22.0",
+    "version": "1.35.0",
     "language": "GO",
     "apis": [
       {
@@ -105,7 +105,7 @@
     {
       "regionTag": "documentai_v1beta3_generated_DocumentProcessorService_CreateProcessor_sync",
       "title": "documentai CreateProcessor Sample",
-      "description": "CreateProcessor creates a processor from the\n[ProcessorType][google.cloud.documentai.v1beta3.ProcessorType] provided.\nThe processor will be at `ENABLED` state by default after its creation.",
+      "description": "CreateProcessor creates a processor from the\n[ProcessorType][google.cloud.documentai.v1beta3.ProcessorType] provided.\nThe processor will be at `ENABLED` state by default after its creation.\nNote that this method requires the `documentai.processors.create`\npermission on the project, which is highly privileged. A user or service\naccount with this permission can create new processors that can interact\nwith any gcs bucket in your project.",
       "file": "DocumentProcessorClient/CreateProcessor/main.go",
       "language": "GO",
       "clientMethod": {
@@ -833,7 +833,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -879,7 +879,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -925,7 +925,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -971,7 +971,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1017,7 +1017,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1063,7 +1063,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1620,6 +1620,52 @@
       ]
     },
     {
+      "regionTag": "documentai_v1beta3_generated_DocumentService_ListDocuments_sync",
+      "title": "documentai ListDocuments Sample",
+      "description": "ListDocuments returns a list of documents present in the dataset.",
+      "file": "DocumentClient/ListDocuments/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDocuments",
+        "fullName": "google.cloud.documentai.v1beta3.DocumentClient.ListDocuments",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "documentaipb.ListDocumentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DocumentMetadataIterator",
+        "client": {
+          "shortName": "DocumentClient",
+          "fullName": "google.cloud.documentai.v1beta3.DocumentClient"
+        },
+        "method": {
+          "shortName": "ListDocuments",
+          "fullName": "google.cloud.documentai.v1beta3.DocumentService.ListDocuments",
+          "service": {
+            "shortName": "DocumentService",
+            "fullName": "google.cloud.documentai.v1beta3.DocumentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "documentai_v1beta3_generated_DocumentService_ListLocations_sync",
       "title": "documentai ListLocations Sample",
       "description": "ListLocations lists information about the supported locations for this service.",
@@ -1660,7 +1706,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1706,7 +1752,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1714,7 +1760,7 @@
     {
       "regionTag": "documentai_v1beta3_generated_DocumentService_UpdateDataset_sync",
       "title": "documentai UpdateDataset Sample",
-      "description": "UpdateDataset updates metadata associated with a dataset.",
+      "description": "UpdateDataset updates metadata associated with a dataset.\nNote that this method requires the\n`documentai.googleapis.com/datasets.update` permission on the project,\nwhich is highly privileged. A user or service account with this permission\ncan create new processors that can interact with any gcs bucket in your\nproject.",
       "file": "DocumentClient/UpdateDataset/main.go",
       "language": "GO",
       "clientMethod": {

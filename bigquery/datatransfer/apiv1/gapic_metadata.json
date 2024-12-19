@@ -90,6 +90,11 @@
                 "StartManualTransferRuns"
               ]
             },
+            "UnenrollDataSources": {
+              "methods": [
+                "UnenrollDataSources"
+              ]
+            },
             "UpdateTransferConfig": {
               "methods": [
                 "UpdateTransferConfig"
@@ -178,6 +183,11 @@
             "StartManualTransferRuns": {
               "methods": [
                 "StartManualTransferRuns"
+              ]
+            },
+            "UnenrollDataSources": {
+              "methods": [
+                "UnenrollDataSources"
               ]
             },
             "UpdateTransferConfig": {

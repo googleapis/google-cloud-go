@@ -37,7 +37,7 @@ import (
 
 	vkit "cloud.google.com/go/pubsublite/apiv1"
 	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
-	tspb "github.com/golang/protobuf/ptypes/timestamp"
+	tspb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (
@@ -427,7 +427,8 @@ func TestIntegration_PublishSubscribeSinglePartition(t *testing.T) {
 		publishMessages(t, DefaultPublishSettings, topicPath, msg1, msg2)
 
 		// Case A: Default nack handler. Terminates subscriber.
-		cctx, _ := context.WithTimeout(context.Background(), defaultTestTimeout)
+		cctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
+		defer cancel()
 		messageReceiver1 := func(ctx context.Context, got *pubsub.Message) {
 			if diff := messageDiff(got, msg1); diff != "" {
 				t.Errorf("Received message got: -, want: +\n%s", diff)
@@ -495,6 +496,7 @@ func TestIntegration_PublishSubscribeSinglePartition(t *testing.T) {
 			// New cctx must be created for each iteration as it is cancelled each
 			// time stopSubscriber is called.
 			cctx, stopSubscriber = context.WithTimeout(context.Background(), defaultTestTimeout)
+			defer stopSubscriber()
 			if err := subscriber.Receive(cctx, messageReceiver); err != nil {
 				t.Errorf("Receive() got err: %v", err)
 			}
@@ -852,7 +854,7 @@ func TestIntegration_SubscribeFanOut(t *testing.T) {
 	}
 }
 
-func validateNewSeekOperation(t *testing.T, subscription wire.SubscriptionPath, seekOp *pubsublite.SeekSubscriptionOperation) {
+func validateNewSeekOperation(t *testing.T, _ wire.SubscriptionPath, seekOp *pubsublite.SeekSubscriptionOperation) {
 	t.Helper()
 
 	if len(seekOp.Name()) == 0 {
@@ -870,7 +872,7 @@ func validateNewSeekOperation(t *testing.T, subscription wire.SubscriptionPath, 
 	t.Logf("Seek operation initiated: %s, metadata: %v", seekOp.Name(), m)
 }
 
-func validateCompleteSeekOperation(ctx context.Context, t *testing.T, subscription wire.SubscriptionPath, seekOp *pubsublite.SeekSubscriptionOperation) {
+func validateCompleteSeekOperation(ctx context.Context, t *testing.T, _ wire.SubscriptionPath, seekOp *pubsublite.SeekSubscriptionOperation) {
 	t.Helper()
 
 	_, err := seekOp.Wait(ctx)
@@ -916,9 +918,6 @@ func TestIntegration_SeekSubscription(t *testing.T) {
 	defer cleanUpTopic(ctx, t, admin, topicPath)
 	createSubscription(ctx, t, admin, subscriptionPath, topicPath)
 	defer cleanUpSubscription(ctx, t, admin, subscriptionPath)
-
-	var msgBatch3 []string
-	var publishTimes3 *publishTimeRange
 
 	// Note: Subtests need to be run sequentially.
 
@@ -996,25 +995,8 @@ func TestIntegration_SeekSubscription(t *testing.T) {
 
 		// Publish batch 3 and verify that messages are only received from batch 3
 		// (batch 2 skipped).
-		msgBatch3 = publishPrefixedMessages(t, DefaultPublishSettings, topicPath, "seek-batch3", messageCount, 0)
-		publishTimes3 = receiveAllMessages(t, makeMsgTracker(msgBatch3), recvSettings, subscriptionPath)
-
-		if seekOp != nil {
-			validateCompleteSeekOperation(ctx, t, subscriptionPath, seekOp)
-		}
-	})
-
-	t.Run("SeekToPublishTime", func(t *testing.T) {
-		// Seek to min publish time of batch 3.
-		seekOp, err := admin.SeekSubscription(ctx, subscriptionPath.String(), pubsublite.PublishTime(publishTimes3.Min()))
-		if err != nil {
-			t.Errorf("SeekSubscription() got err: %v", err)
-		} else {
-			validateNewSeekOperation(t, subscriptionPath, seekOp)
-		}
-
-		// Verify that messages are received from batch 3.
-		receiveAllMessages(t, makeMsgTracker(msgBatch3), recvSettings, subscriptionPath)
+		msgBatch := publishPrefixedMessages(t, DefaultPublishSettings, topicPath, "seek-batch3", messageCount, 0)
+		receiveAllMessages(t, makeMsgTracker(msgBatch), recvSettings, subscriptionPath)
 
 		if seekOp != nil {
 			validateCompleteSeekOperation(ctx, t, subscriptionPath, seekOp)

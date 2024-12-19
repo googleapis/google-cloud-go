@@ -1,0 +1,158 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.oracledatabase.v1",
+  "libraryPackage": "cloud.google.com/go/oracledatabase/apiv1",
+  "services": {
+    "OracleDatabase": {
+      "clients": {
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateAutonomousDatabase": {
+              "methods": [
+                "CreateAutonomousDatabase"
+              ]
+            },
+            "CreateCloudExadataInfrastructure": {
+              "methods": [
+                "CreateCloudExadataInfrastructure"
+              ]
+            },
+            "CreateCloudVmCluster": {
+              "methods": [
+                "CreateCloudVmCluster"
+              ]
+            },
+            "DeleteAutonomousDatabase": {
+              "methods": [
+                "DeleteAutonomousDatabase"
+              ]
+            },
+            "DeleteCloudExadataInfrastructure": {
+              "methods": [
+                "DeleteCloudExadataInfrastructure"
+              ]
+            },
+            "DeleteCloudVmCluster": {
+              "methods": [
+                "DeleteCloudVmCluster"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GenerateAutonomousDatabaseWallet": {
+              "methods": [
+                "GenerateAutonomousDatabaseWallet"
+              ]
+            },
+            "GetAutonomousDatabase": {
+              "methods": [
+                "GetAutonomousDatabase"
+              ]
+            },
+            "GetCloudExadataInfrastructure": {
+              "methods": [
+                "GetCloudExadataInfrastructure"
+              ]
+            },
+            "GetCloudVmCluster": {
+              "methods": [
+                "GetCloudVmCluster"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListAutonomousDatabaseBackups": {
+              "methods": [
+                "ListAutonomousDatabaseBackups"
+              ]
+            },
+            "ListAutonomousDatabaseCharacterSets": {
+              "methods": [
+                "ListAutonomousDatabaseCharacterSets"
+              ]
+            },
+            "ListAutonomousDatabases": {
+              "methods": [
+                "ListAutonomousDatabases"
+              ]
+            },
+            "ListAutonomousDbVersions": {
+              "methods": [
+                "ListAutonomousDbVersions"
+              ]
+            },
+            "ListCloudExadataInfrastructures": {
+              "methods": [
+                "ListCloudExadataInfrastructures"
+              ]
+            },
+            "ListCloudVmClusters": {
+              "methods": [
+                "ListCloudVmClusters"
+              ]
+            },
+            "ListDbNodes": {
+              "methods": [
+                "ListDbNodes"
+              ]
+            },
+            "ListDbServers": {
+              "methods": [
+                "ListDbServers"
+              ]
+            },
+            "ListDbSystemShapes": {
+              "methods": [
+                "ListDbSystemShapes"
+              ]
+            },
+            "ListEntitlements": {
+              "methods": [
+                "ListEntitlements"
+              ]
+            },
+            "ListGiVersions": {
+              "methods": [
+                "ListGiVersions"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RestoreAutonomousDatabase": {
+              "methods": [
+                "RestoreAutonomousDatabase"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

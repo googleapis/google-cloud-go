@@ -1,0 +1,83 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.api.cloudquotas.v1",
+  "libraryPackage": "cloud.google.com/go/cloudquotas/apiv1",
+  "services": {
+    "CloudQuotas": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateQuotaPreference": {
+              "methods": [
+                "CreateQuotaPreference"
+              ]
+            },
+            "GetQuotaInfo": {
+              "methods": [
+                "GetQuotaInfo"
+              ]
+            },
+            "GetQuotaPreference": {
+              "methods": [
+                "GetQuotaPreference"
+              ]
+            },
+            "ListQuotaInfos": {
+              "methods": [
+                "ListQuotaInfos"
+              ]
+            },
+            "ListQuotaPreferences": {
+              "methods": [
+                "ListQuotaPreferences"
+              ]
+            },
+            "UpdateQuotaPreference": {
+              "methods": [
+                "UpdateQuotaPreference"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateQuotaPreference": {
+              "methods": [
+                "CreateQuotaPreference"
+              ]
+            },
+            "GetQuotaInfo": {
+              "methods": [
+                "GetQuotaInfo"
+              ]
+            },
+            "GetQuotaPreference": {
+              "methods": [
+                "GetQuotaPreference"
+              ]
+            },
+            "ListQuotaInfos": {
+              "methods": [
+                "ListQuotaInfos"
+              ]
+            },
+            "ListQuotaPreferences": {
+              "methods": [
+                "ListQuotaPreferences"
+              ]
+            },
+            "UpdateQuotaPreference": {
+              "methods": [
+                "UpdateQuotaPreference"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

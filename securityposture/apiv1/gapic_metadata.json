@@ -1,0 +1,223 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.securityposture.v1",
+  "libraryPackage": "cloud.google.com/go/securityposture/apiv1",
+  "services": {
+    "SecurityPosture": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreatePosture": {
+              "methods": [
+                "CreatePosture"
+              ]
+            },
+            "CreatePostureDeployment": {
+              "methods": [
+                "CreatePostureDeployment"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeletePosture": {
+              "methods": [
+                "DeletePosture"
+              ]
+            },
+            "DeletePostureDeployment": {
+              "methods": [
+                "DeletePostureDeployment"
+              ]
+            },
+            "ExtractPosture": {
+              "methods": [
+                "ExtractPosture"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetPosture": {
+              "methods": [
+                "GetPosture"
+              ]
+            },
+            "GetPostureDeployment": {
+              "methods": [
+                "GetPostureDeployment"
+              ]
+            },
+            "GetPostureTemplate": {
+              "methods": [
+                "GetPostureTemplate"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListPostureDeployments": {
+              "methods": [
+                "ListPostureDeployments"
+              ]
+            },
+            "ListPostureRevisions": {
+              "methods": [
+                "ListPostureRevisions"
+              ]
+            },
+            "ListPostureTemplates": {
+              "methods": [
+                "ListPostureTemplates"
+              ]
+            },
+            "ListPostures": {
+              "methods": [
+                "ListPostures"
+              ]
+            },
+            "UpdatePosture": {
+              "methods": [
+                "UpdatePosture"
+              ]
+            },
+            "UpdatePostureDeployment": {
+              "methods": [
+                "UpdatePostureDeployment"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreatePosture": {
+              "methods": [
+                "CreatePosture"
+              ]
+            },
+            "CreatePostureDeployment": {
+              "methods": [
+                "CreatePostureDeployment"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeletePosture": {
+              "methods": [
+                "DeletePosture"
+              ]
+            },
+            "DeletePostureDeployment": {
+              "methods": [
+                "DeletePostureDeployment"
+              ]
+            },
+            "ExtractPosture": {
+              "methods": [
+                "ExtractPosture"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetPosture": {
+              "methods": [
+                "GetPosture"
+              ]
+            },
+            "GetPostureDeployment": {
+              "methods": [
+                "GetPostureDeployment"
+              ]
+            },
+            "GetPostureTemplate": {
+              "methods": [
+                "GetPostureTemplate"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListPostureDeployments": {
+              "methods": [
+                "ListPostureDeployments"
+              ]
+            },
+            "ListPostureRevisions": {
+              "methods": [
+                "ListPostureRevisions"
+              ]
+            },
+            "ListPostureTemplates": {
+              "methods": [
+                "ListPostureTemplates"
+              ]
+            },
+            "ListPostures": {
+              "methods": [
+                "ListPostures"
+              ]
+            },
+            "UpdatePosture": {
+              "methods": [
+                "UpdatePosture"
+              ]
+            },
+            "UpdatePostureDeployment": {
+              "methods": [
+                "UpdatePostureDeployment"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

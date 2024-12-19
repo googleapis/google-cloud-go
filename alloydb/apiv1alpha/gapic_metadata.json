@@ -75,6 +75,11 @@
                 "DeleteUser"
               ]
             },
+            "ExecuteSql": {
+              "methods": [
+                "ExecuteSql"
+              ]
+            },
             "FailoverInstance": {
               "methods": [
                 "FailoverInstance"
@@ -135,6 +140,11 @@
                 "ListClusters"
               ]
             },
+            "ListDatabases": {
+              "methods": [
+                "ListDatabases"
+              ]
+            },
             "ListInstances": {
               "methods": [
                 "ListInstances"
@@ -175,6 +185,11 @@
                 "RestoreCluster"
               ]
             },
+            "SwitchoverCluster": {
+              "methods": [
+                "SwitchoverCluster"
+              ]
+            },
             "UpdateBackup": {
               "methods": [
                 "UpdateBackup"
@@ -193,6 +208,11 @@
             "UpdateUser": {
               "methods": [
                 "UpdateUser"
+              ]
+            },
+            "UpgradeCluster": {
+              "methods": [
+                "UpgradeCluster"
               ]
             }
           }
@@ -265,6 +285,11 @@
                 "DeleteUser"
               ]
             },
+            "ExecuteSql": {
+              "methods": [
+                "ExecuteSql"
+              ]
+            },
             "FailoverInstance": {
               "methods": [
                 "FailoverInstance"
@@ -325,6 +350,11 @@
                 "ListClusters"
               ]
             },
+            "ListDatabases": {
+              "methods": [
+                "ListDatabases"
+              ]
+            },
             "ListInstances": {
               "methods": [
                 "ListInstances"
@@ -365,6 +395,11 @@
                 "RestoreCluster"
               ]
             },
+            "SwitchoverCluster": {
+              "methods": [
+                "SwitchoverCluster"
+              ]
+            },
             "UpdateBackup": {
               "methods": [
                 "UpdateBackup"
@@ -383,6 +418,11 @@
             "UpdateUser": {
               "methods": [
                 "UpdateUser"
+              ]
+            },
+            "UpgradeCluster": {
+              "methods": [
+                "UpgradeCluster"
               ]
             }
           }

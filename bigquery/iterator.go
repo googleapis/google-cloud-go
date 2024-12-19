@@ -44,7 +44,8 @@ type RowIterator struct {
 	ctx context.Context
 	src *rowSource
 
-	arrowIterator *arrowIterator
+	arrowIterator ArrowIterator
+	arrowDecoder  *arrowDecoder
 
 	pageInfo *iterator.PageInfo
 	nextFunc func() error
@@ -90,6 +91,14 @@ func (ri *RowIterator) SourceJob() *Job {
 	}
 }
 
+// QueryID returns a query ID if available, or an empty string.
+func (ri *RowIterator) QueryID() string {
+	if ri.src == nil {
+		return ""
+	}
+	return ri.src.queryID
+}
+
 // We declare a function signature for fetching results.  The primary reason
 // for this is to enable us to swap out the fetch function with alternate
 // implementations (e.g. to enable testing).
@@ -131,8 +140,12 @@ type pageFetcher func(ctx context.Context, _ *rowSource, _ Schema, startIndex ui
 // See https://cloud.google.com/bigquery/docs/reference/standard-sql/data-types#numeric-type
 // for more on NUMERIC.
 //
-// A repeated field corresponds to a slice or array of the element type. A STRUCT
-// type (RECORD or nested schema) corresponds to a nested struct or struct pointer.
+// A repeated field corresponds to a slice or array of the element type. BigQuery translates
+// NULL arrays into an empty array, so we follow that behavior.
+// See https://cloud.google.com/bigquery/docs/reference/standard-sql/data-types#array_nulls
+// for more about NULL and empty arrays.
+//
+// A STRUCT type (RECORD or nested schema) corresponds to a nested struct or struct pointer.
 // All calls to Next on the same iterator must use the same struct type.
 //
 // It is an error to attempt to read a BigQuery NULL value into a struct field,
@@ -209,8 +222,9 @@ func (it *RowIterator) fetch(pageSize int, pageToken string) (string, error) {
 //     want to retain the data unnecessarily, and we expect that the backend
 //     can always provide them if needed.
 type rowSource struct {
-	j *Job
-	t *Table
+	j       *Job
+	t       *Table
+	queryID string
 
 	cachedRows      []*bq.TableRow
 	cachedSchema    *bq.TableSchema
@@ -229,7 +243,7 @@ type fetchPageResult struct {
 // then dispatches to either the appropriate job or table-based backend mechanism
 // as needed.
 func fetchPage(ctx context.Context, src *rowSource, schema Schema, startIndex uint64, pageSize int64, pageToken string) (*fetchPageResult, error) {
-	result, err := fetchCachedPage(ctx, src, schema, startIndex, pageSize, pageToken)
+	result, err := fetchCachedPage(src, schema, startIndex, pageSize, pageToken)
 	if err != nil {
 		if err != errNoCacheData {
 			// This likely means something more severe, like a problem with schema.
@@ -239,7 +253,16 @@ func fetchPage(ctx context.Context, src *rowSource, schema Schema, startIndex ui
 		if src.j != nil {
 			return fetchJobResultPage(ctx, src, schema, startIndex, pageSize, pageToken)
 		}
-		return fetchTableResultPage(ctx, src, schema, startIndex, pageSize, pageToken)
+		if src.t != nil {
+			return fetchTableResultPage(ctx, src, schema, startIndex, pageSize, pageToken)
+		}
+		// No rows, but no table or job reference.  Return an empty result set.
+		if schema == nil {
+			schema = bqToSchema(src.cachedSchema)
+		}
+		return &fetchPageResult{
+			schema: schema,
+		}, nil
 	}
 	return result, nil
 }
@@ -266,6 +289,7 @@ func fetchTableResultPage(ctx context.Context, src *rowSource, schema Schema, st
 		}()
 	}
 	call := src.t.c.bqs.Tabledata.List(src.t.ProjectID, src.t.DatasetID, src.t.TableID)
+	call = call.FormatOptionsUseInt64Timestamp(true)
 	setClientHeader(call.Header())
 	if pageToken != "" {
 		call.PageToken(pageToken)
@@ -300,9 +324,10 @@ func fetchTableResultPage(ctx context.Context, src *rowSource, schema Schema, st
 }
 
 func fetchJobResultPage(ctx context.Context, src *rowSource, schema Schema, startIndex uint64, pageSize int64, pageToken string) (*fetchPageResult, error) {
-	// reduce data transfered by leveraging api projections
+	// reduce data transferred by leveraging api projections
 	projectedFields := []googleapi.Field{"rows", "pageToken", "totalRows"}
 	call := src.j.c.bqs.Jobs.GetQueryResults(src.j.projectID, src.j.jobID).Location(src.j.location).Context(ctx)
+	call = call.FormatOptionsUseInt64Timestamp(true)
 	if schema == nil {
 		// only project schema if we weren't supplied one.
 		projectedFields = append(projectedFields, "schema")
@@ -346,7 +371,7 @@ var errNoCacheData = errors.New("no rows in rowSource cache")
 // fetchCachedPage attempts to service the first page of results.  For the jobs path specifically, we have an
 // opportunity to fetch rows before the iterator is constructed, and thus serve that data as the first request
 // without an unnecessary network round trip.
-func fetchCachedPage(ctx context.Context, src *rowSource, schema Schema, startIndex uint64, pageSize int64, pageToken string) (*fetchPageResult, error) {
+func fetchCachedPage(src *rowSource, schema Schema, startIndex uint64, pageSize int64, pageToken string) (*fetchPageResult, error) {
 	// we have no cached data
 	if src.cachedRows == nil {
 		return nil, errNoCacheData

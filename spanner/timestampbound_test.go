@@ -21,8 +21,8 @@ import (
 	"time"
 
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
-	pbd "github.com/golang/protobuf/ptypes/duration"
-	pbt "github.com/golang/protobuf/ptypes/timestamp"
+	pbd "google.golang.org/protobuf/types/known/durationpb"
+	pbt "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Test generating TimestampBound for strong reads.
@@ -112,18 +112,18 @@ func TestTimestampBoundString(t *testing.T) {
 func TestDurationProto(t *testing.T) {
 	var tests = []struct {
 		d    time.Duration
-		want pbd.Duration
+		want *pbd.Duration
 	}{
-		{time.Duration(0), pbd.Duration{Seconds: 0, Nanos: 0}},
-		{time.Second, pbd.Duration{Seconds: 1, Nanos: 0}},
-		{time.Millisecond, pbd.Duration{Seconds: 0, Nanos: 1e6}},
-		{15 * time.Nanosecond, pbd.Duration{Seconds: 0, Nanos: 15}},
-		{42 * time.Hour, pbd.Duration{Seconds: 151200}},
-		{-(1*time.Hour + 4*time.Millisecond), pbd.Duration{Seconds: -3600, Nanos: -4e6}},
+		{time.Duration(0), &pbd.Duration{Seconds: 0, Nanos: 0}},
+		{time.Second, &pbd.Duration{Seconds: 1, Nanos: 0}},
+		{time.Millisecond, &pbd.Duration{Seconds: 0, Nanos: 1e6}},
+		{15 * time.Nanosecond, &pbd.Duration{Seconds: 0, Nanos: 15}},
+		{42 * time.Hour, &pbd.Duration{Seconds: 151200}},
+		{-(1*time.Hour + 4*time.Millisecond), &pbd.Duration{Seconds: -3600, Nanos: -4e6}},
 	}
 	for _, test := range tests {
 		got := durationProto(test.d)
-		if !testEqual(got, &test.want) {
+		if !testEqual(got, test.want) {
 			t.Errorf("durationProto(%v) = %v; want %v", test.d, got, test.want)
 		}
 	}
@@ -133,15 +133,15 @@ func TestDurationProto(t *testing.T) {
 func TestTimeProto(t *testing.T) {
 	var tests = []struct {
 		t    time.Time
-		want pbt.Timestamp
+		want *pbt.Timestamp
 	}{
-		{time.Unix(0, 0), pbt.Timestamp{}},
-		{time.Unix(1136239445, 12345), pbt.Timestamp{Seconds: 1136239445, Nanos: 12345}},
-		{time.Unix(-1000, 12345), pbt.Timestamp{Seconds: -1000, Nanos: 12345}},
+		{time.Unix(0, 0), &pbt.Timestamp{}},
+		{time.Unix(1136239445, 12345), &pbt.Timestamp{Seconds: 1136239445, Nanos: 12345}},
+		{time.Unix(-1000, 12345), &pbt.Timestamp{Seconds: -1000, Nanos: 12345}},
 	}
 	for _, test := range tests {
 		got := timestampProto(test.t)
-		if !testEqual(got, &test.want) {
+		if !testEqual(got, test.want) {
 			t.Errorf("timestampProto(%v) = %v; want %v", test.t, got, test.want)
 		}
 	}
@@ -153,11 +153,11 @@ func TestBuildTransactionOptionsReadOnly(t *testing.T) {
 	var tests = []struct {
 		tb   TimestampBound
 		ts   bool
-		want sppb.TransactionOptions_ReadOnly
+		want *sppb.TransactionOptions_ReadOnly
 	}{
 		{
 			StrongRead(), false,
-			sppb.TransactionOptions_ReadOnly{
+			&sppb.TransactionOptions_ReadOnly{
 				TimestampBound: &sppb.TransactionOptions_ReadOnly_Strong{
 					Strong: true},
 				ReturnReadTimestamp: false,
@@ -165,7 +165,7 @@ func TestBuildTransactionOptionsReadOnly(t *testing.T) {
 		},
 		{
 			ExactStaleness(10 * time.Second), true,
-			sppb.TransactionOptions_ReadOnly{
+			&sppb.TransactionOptions_ReadOnly{
 				TimestampBound: &sppb.TransactionOptions_ReadOnly_ExactStaleness{
 					ExactStaleness: &pbd.Duration{Seconds: 10}},
 				ReturnReadTimestamp: true,
@@ -173,7 +173,7 @@ func TestBuildTransactionOptionsReadOnly(t *testing.T) {
 		},
 		{
 			MaxStaleness(10 * time.Second), true,
-			sppb.TransactionOptions_ReadOnly{
+			&sppb.TransactionOptions_ReadOnly{
 				TimestampBound: &sppb.TransactionOptions_ReadOnly_MaxStaleness{
 					MaxStaleness: &pbd.Duration{Seconds: 10}},
 				ReturnReadTimestamp: true,
@@ -182,7 +182,7 @@ func TestBuildTransactionOptionsReadOnly(t *testing.T) {
 
 		{
 			MinReadTimestamp(ts), true,
-			sppb.TransactionOptions_ReadOnly{
+			&sppb.TransactionOptions_ReadOnly{
 				TimestampBound: &sppb.TransactionOptions_ReadOnly_MinReadTimestamp{
 					MinReadTimestamp: &pbt.Timestamp{Seconds: 1136239445, Nanos: 12345}},
 				ReturnReadTimestamp: true,
@@ -190,7 +190,7 @@ func TestBuildTransactionOptionsReadOnly(t *testing.T) {
 		},
 		{
 			ReadTimestamp(ts), true,
-			sppb.TransactionOptions_ReadOnly{
+			&sppb.TransactionOptions_ReadOnly{
 				TimestampBound: &sppb.TransactionOptions_ReadOnly_ReadTimestamp{
 					ReadTimestamp: &pbt.Timestamp{Seconds: 1136239445, Nanos: 12345}},
 				ReturnReadTimestamp: true,
@@ -199,7 +199,7 @@ func TestBuildTransactionOptionsReadOnly(t *testing.T) {
 	}
 	for _, test := range tests {
 		got := buildTransactionOptionsReadOnly(test.tb, test.ts)
-		if !testEqual(got, &test.want) {
+		if !testEqual(got, test.want) {
 			t.Errorf("buildTransactionOptionsReadOnly(%v,%v) = %v; want %v", test.tb, test.ts, got, test.want)
 		}
 	}

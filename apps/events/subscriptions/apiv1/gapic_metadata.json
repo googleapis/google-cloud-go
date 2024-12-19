@@ -1,0 +1,93 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.apps.events.subscriptions.v1",
+  "libraryPackage": "cloud.google.com/go/apps/events/subscriptions/apiv1",
+  "services": {
+    "SubscriptionsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateSubscription": {
+              "methods": [
+                "CreateSubscription"
+              ]
+            },
+            "DeleteSubscription": {
+              "methods": [
+                "DeleteSubscription"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSubscription": {
+              "methods": [
+                "GetSubscription"
+              ]
+            },
+            "ListSubscriptions": {
+              "methods": [
+                "ListSubscriptions"
+              ]
+            },
+            "ReactivateSubscription": {
+              "methods": [
+                "ReactivateSubscription"
+              ]
+            },
+            "UpdateSubscription": {
+              "methods": [
+                "UpdateSubscription"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateSubscription": {
+              "methods": [
+                "CreateSubscription"
+              ]
+            },
+            "DeleteSubscription": {
+              "methods": [
+                "DeleteSubscription"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSubscription": {
+              "methods": [
+                "GetSubscription"
+              ]
+            },
+            "ListSubscriptions": {
+              "methods": [
+                "ListSubscriptions"
+              ]
+            },
+            "ReactivateSubscription": {
+              "methods": [
+                "ReactivateSubscription"
+              ]
+            },
+            "UpdateSubscription": {
+              "methods": [
+                "UpdateSubscription"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

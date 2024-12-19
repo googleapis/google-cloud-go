@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -32,7 +32,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -40,6 +39,7 @@ import (
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -66,6 +66,27 @@ type CallOptions struct {
 	DeleteChannelConnection   []gax.CallOption
 	GetGoogleChannelConfig    []gax.CallOption
 	UpdateGoogleChannelConfig []gax.CallOption
+	GetMessageBus             []gax.CallOption
+	ListMessageBuses          []gax.CallOption
+	ListMessageBusEnrollments []gax.CallOption
+	CreateMessageBus          []gax.CallOption
+	UpdateMessageBus          []gax.CallOption
+	DeleteMessageBus          []gax.CallOption
+	GetEnrollment             []gax.CallOption
+	ListEnrollments           []gax.CallOption
+	CreateEnrollment          []gax.CallOption
+	UpdateEnrollment          []gax.CallOption
+	DeleteEnrollment          []gax.CallOption
+	GetPipeline               []gax.CallOption
+	ListPipelines             []gax.CallOption
+	CreatePipeline            []gax.CallOption
+	UpdatePipeline            []gax.CallOption
+	DeletePipeline            []gax.CallOption
+	GetGoogleApiSource        []gax.CallOption
+	ListGoogleApiSources      []gax.CallOption
+	CreateGoogleApiSource     []gax.CallOption
+	UpdateGoogleApiSource     []gax.CallOption
+	DeleteGoogleApiSource     []gax.CallOption
 	GetLocation               []gax.CallOption
 	ListLocations             []gax.CallOption
 	GetIamPolicy              []gax.CallOption
@@ -80,10 +101,13 @@ type CallOptions struct {
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("eventarc.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("eventarc.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("eventarc.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://eventarc.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -91,65 +115,605 @@ func defaultGRPCClientOptions() []option.ClientOption {
 
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
-		GetTrigger:                []gax.CallOption{},
-		ListTriggers:              []gax.CallOption{},
-		CreateTrigger:             []gax.CallOption{},
-		UpdateTrigger:             []gax.CallOption{},
-		DeleteTrigger:             []gax.CallOption{},
-		GetChannel:                []gax.CallOption{},
-		ListChannels:              []gax.CallOption{},
-		CreateChannel:             []gax.CallOption{},
-		UpdateChannel:             []gax.CallOption{},
-		DeleteChannel:             []gax.CallOption{},
-		GetProvider:               []gax.CallOption{},
-		ListProviders:             []gax.CallOption{},
-		GetChannelConnection:      []gax.CallOption{},
-		ListChannelConnections:    []gax.CallOption{},
-		CreateChannelConnection:   []gax.CallOption{},
-		DeleteChannelConnection:   []gax.CallOption{},
-		GetGoogleChannelConfig:    []gax.CallOption{},
-		UpdateGoogleChannelConfig: []gax.CallOption{},
-		GetLocation:               []gax.CallOption{},
-		ListLocations:             []gax.CallOption{},
-		GetIamPolicy:              []gax.CallOption{},
-		SetIamPolicy:              []gax.CallOption{},
-		TestIamPermissions:        []gax.CallOption{},
-		CancelOperation:           []gax.CallOption{},
-		DeleteOperation:           []gax.CallOption{},
-		GetOperation:              []gax.CallOption{},
-		ListOperations:            []gax.CallOption{},
+		GetTrigger: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListTriggers: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateTrigger: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateTrigger: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteTrigger: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetChannel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListChannels: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateChannel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateChannel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteChannel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetProvider: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListProviders: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetChannelConnection: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListChannelConnections: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateChannelConnection: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteChannelConnection: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetGoogleChannelConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateGoogleChannelConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetMessageBus: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListMessageBuses: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListMessageBusEnrollments: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateMessageBus: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateMessageBus: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteMessageBus: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetEnrollment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListEnrollments: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateEnrollment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateEnrollment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteEnrollment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetPipeline: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListPipelines: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreatePipeline: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdatePipeline: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeletePipeline: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetGoogleApiSource: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListGoogleApiSources: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateGoogleApiSource: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateGoogleApiSource: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteGoogleApiSource: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetLocation:        []gax.CallOption{},
+		ListLocations:      []gax.CallOption{},
+		GetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+		CancelOperation:    []gax.CallOption{},
+		DeleteOperation:    []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
+		ListOperations:     []gax.CallOption{},
 	}
 }
 
 func defaultRESTCallOptions() *CallOptions {
 	return &CallOptions{
-		GetTrigger:                []gax.CallOption{},
-		ListTriggers:              []gax.CallOption{},
-		CreateTrigger:             []gax.CallOption{},
-		UpdateTrigger:             []gax.CallOption{},
-		DeleteTrigger:             []gax.CallOption{},
-		GetChannel:                []gax.CallOption{},
-		ListChannels:              []gax.CallOption{},
-		CreateChannel:             []gax.CallOption{},
-		UpdateChannel:             []gax.CallOption{},
-		DeleteChannel:             []gax.CallOption{},
-		GetProvider:               []gax.CallOption{},
-		ListProviders:             []gax.CallOption{},
-		GetChannelConnection:      []gax.CallOption{},
-		ListChannelConnections:    []gax.CallOption{},
-		CreateChannelConnection:   []gax.CallOption{},
-		DeleteChannelConnection:   []gax.CallOption{},
-		GetGoogleChannelConfig:    []gax.CallOption{},
-		UpdateGoogleChannelConfig: []gax.CallOption{},
-		GetLocation:               []gax.CallOption{},
-		ListLocations:             []gax.CallOption{},
-		GetIamPolicy:              []gax.CallOption{},
-		SetIamPolicy:              []gax.CallOption{},
-		TestIamPermissions:        []gax.CallOption{},
-		CancelOperation:           []gax.CallOption{},
-		DeleteOperation:           []gax.CallOption{},
-		GetOperation:              []gax.CallOption{},
-		ListOperations:            []gax.CallOption{},
+		GetTrigger: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		ListTriggers: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		CreateTrigger: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateTrigger: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteTrigger: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetChannel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		ListChannels: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		CreateChannel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateChannel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteChannel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetProvider: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		ListProviders: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		GetChannelConnection: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		ListChannelConnections: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		CreateChannelConnection: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteChannelConnection: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetGoogleChannelConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		UpdateGoogleChannelConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetMessageBus: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		ListMessageBuses: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		ListMessageBusEnrollments: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		CreateMessageBus: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateMessageBus: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteMessageBus: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetEnrollment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		ListEnrollments: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		CreateEnrollment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateEnrollment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteEnrollment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetPipeline: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		ListPipelines: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		CreatePipeline: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdatePipeline: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeletePipeline: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetGoogleApiSource: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		ListGoogleApiSources: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		CreateGoogleApiSource: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateGoogleApiSource: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteGoogleApiSource: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetLocation:        []gax.CallOption{},
+		ListLocations:      []gax.CallOption{},
+		GetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+		CancelOperation:    []gax.CallOption{},
+		DeleteOperation:    []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
+		ListOperations:     []gax.CallOption{},
 	}
 }
 
@@ -184,6 +748,39 @@ type internalClient interface {
 	DeleteChannelConnectionOperation(name string) *DeleteChannelConnectionOperation
 	GetGoogleChannelConfig(context.Context, *eventarcpb.GetGoogleChannelConfigRequest, ...gax.CallOption) (*eventarcpb.GoogleChannelConfig, error)
 	UpdateGoogleChannelConfig(context.Context, *eventarcpb.UpdateGoogleChannelConfigRequest, ...gax.CallOption) (*eventarcpb.GoogleChannelConfig, error)
+	GetMessageBus(context.Context, *eventarcpb.GetMessageBusRequest, ...gax.CallOption) (*eventarcpb.MessageBus, error)
+	ListMessageBuses(context.Context, *eventarcpb.ListMessageBusesRequest, ...gax.CallOption) *MessageBusIterator
+	ListMessageBusEnrollments(context.Context, *eventarcpb.ListMessageBusEnrollmentsRequest, ...gax.CallOption) *StringIterator
+	CreateMessageBus(context.Context, *eventarcpb.CreateMessageBusRequest, ...gax.CallOption) (*CreateMessageBusOperation, error)
+	CreateMessageBusOperation(name string) *CreateMessageBusOperation
+	UpdateMessageBus(context.Context, *eventarcpb.UpdateMessageBusRequest, ...gax.CallOption) (*UpdateMessageBusOperation, error)
+	UpdateMessageBusOperation(name string) *UpdateMessageBusOperation
+	DeleteMessageBus(context.Context, *eventarcpb.DeleteMessageBusRequest, ...gax.CallOption) (*DeleteMessageBusOperation, error)
+	DeleteMessageBusOperation(name string) *DeleteMessageBusOperation
+	GetEnrollment(context.Context, *eventarcpb.GetEnrollmentRequest, ...gax.CallOption) (*eventarcpb.Enrollment, error)
+	ListEnrollments(context.Context, *eventarcpb.ListEnrollmentsRequest, ...gax.CallOption) *EnrollmentIterator
+	CreateEnrollment(context.Context, *eventarcpb.CreateEnrollmentRequest, ...gax.CallOption) (*CreateEnrollmentOperation, error)
+	CreateEnrollmentOperation(name string) *CreateEnrollmentOperation
+	UpdateEnrollment(context.Context, *eventarcpb.UpdateEnrollmentRequest, ...gax.CallOption) (*UpdateEnrollmentOperation, error)
+	UpdateEnrollmentOperation(name string) *UpdateEnrollmentOperation
+	DeleteEnrollment(context.Context, *eventarcpb.DeleteEnrollmentRequest, ...gax.CallOption) (*DeleteEnrollmentOperation, error)
+	DeleteEnrollmentOperation(name string) *DeleteEnrollmentOperation
+	GetPipeline(context.Context, *eventarcpb.GetPipelineRequest, ...gax.CallOption) (*eventarcpb.Pipeline, error)
+	ListPipelines(context.Context, *eventarcpb.ListPipelinesRequest, ...gax.CallOption) *PipelineIterator
+	CreatePipeline(context.Context, *eventarcpb.CreatePipelineRequest, ...gax.CallOption) (*CreatePipelineOperation, error)
+	CreatePipelineOperation(name string) *CreatePipelineOperation
+	UpdatePipeline(context.Context, *eventarcpb.UpdatePipelineRequest, ...gax.CallOption) (*UpdatePipelineOperation, error)
+	UpdatePipelineOperation(name string) *UpdatePipelineOperation
+	DeletePipeline(context.Context, *eventarcpb.DeletePipelineRequest, ...gax.CallOption) (*DeletePipelineOperation, error)
+	DeletePipelineOperation(name string) *DeletePipelineOperation
+	GetGoogleApiSource(context.Context, *eventarcpb.GetGoogleApiSourceRequest, ...gax.CallOption) (*eventarcpb.GoogleApiSource, error)
+	ListGoogleApiSources(context.Context, *eventarcpb.ListGoogleApiSourcesRequest, ...gax.CallOption) *GoogleApiSourceIterator
+	CreateGoogleApiSource(context.Context, *eventarcpb.CreateGoogleApiSourceRequest, ...gax.CallOption) (*CreateGoogleApiSourceOperation, error)
+	CreateGoogleApiSourceOperation(name string) *CreateGoogleApiSourceOperation
+	UpdateGoogleApiSource(context.Context, *eventarcpb.UpdateGoogleApiSourceRequest, ...gax.CallOption) (*UpdateGoogleApiSourceOperation, error)
+	UpdateGoogleApiSourceOperation(name string) *UpdateGoogleApiSourceOperation
+	DeleteGoogleApiSource(context.Context, *eventarcpb.DeleteGoogleApiSourceRequest, ...gax.CallOption) (*DeleteGoogleApiSourceOperation, error)
+	DeleteGoogleApiSourceOperation(name string) *DeleteGoogleApiSourceOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -374,6 +971,183 @@ func (c *Client) UpdateGoogleChannelConfig(ctx context.Context, req *eventarcpb.
 	return c.internalClient.UpdateGoogleChannelConfig(ctx, req, opts...)
 }
 
+// GetMessageBus get a single MessageBus.
+func (c *Client) GetMessageBus(ctx context.Context, req *eventarcpb.GetMessageBusRequest, opts ...gax.CallOption) (*eventarcpb.MessageBus, error) {
+	return c.internalClient.GetMessageBus(ctx, req, opts...)
+}
+
+// ListMessageBuses list message buses.
+func (c *Client) ListMessageBuses(ctx context.Context, req *eventarcpb.ListMessageBusesRequest, opts ...gax.CallOption) *MessageBusIterator {
+	return c.internalClient.ListMessageBuses(ctx, req, opts...)
+}
+
+// ListMessageBusEnrollments list message bus enrollments.
+func (c *Client) ListMessageBusEnrollments(ctx context.Context, req *eventarcpb.ListMessageBusEnrollmentsRequest, opts ...gax.CallOption) *StringIterator {
+	return c.internalClient.ListMessageBusEnrollments(ctx, req, opts...)
+}
+
+// CreateMessageBus create a new MessageBus in a particular project and location.
+func (c *Client) CreateMessageBus(ctx context.Context, req *eventarcpb.CreateMessageBusRequest, opts ...gax.CallOption) (*CreateMessageBusOperation, error) {
+	return c.internalClient.CreateMessageBus(ctx, req, opts...)
+}
+
+// CreateMessageBusOperation returns a new CreateMessageBusOperation from a given name.
+// The name must be that of a previously created CreateMessageBusOperation, possibly from a different process.
+func (c *Client) CreateMessageBusOperation(name string) *CreateMessageBusOperation {
+	return c.internalClient.CreateMessageBusOperation(name)
+}
+
+// UpdateMessageBus update a single message bus.
+func (c *Client) UpdateMessageBus(ctx context.Context, req *eventarcpb.UpdateMessageBusRequest, opts ...gax.CallOption) (*UpdateMessageBusOperation, error) {
+	return c.internalClient.UpdateMessageBus(ctx, req, opts...)
+}
+
+// UpdateMessageBusOperation returns a new UpdateMessageBusOperation from a given name.
+// The name must be that of a previously created UpdateMessageBusOperation, possibly from a different process.
+func (c *Client) UpdateMessageBusOperation(name string) *UpdateMessageBusOperation {
+	return c.internalClient.UpdateMessageBusOperation(name)
+}
+
+// DeleteMessageBus delete a single message bus.
+func (c *Client) DeleteMessageBus(ctx context.Context, req *eventarcpb.DeleteMessageBusRequest, opts ...gax.CallOption) (*DeleteMessageBusOperation, error) {
+	return c.internalClient.DeleteMessageBus(ctx, req, opts...)
+}
+
+// DeleteMessageBusOperation returns a new DeleteMessageBusOperation from a given name.
+// The name must be that of a previously created DeleteMessageBusOperation, possibly from a different process.
+func (c *Client) DeleteMessageBusOperation(name string) *DeleteMessageBusOperation {
+	return c.internalClient.DeleteMessageBusOperation(name)
+}
+
+// GetEnrollment get a single Enrollment.
+func (c *Client) GetEnrollment(ctx context.Context, req *eventarcpb.GetEnrollmentRequest, opts ...gax.CallOption) (*eventarcpb.Enrollment, error) {
+	return c.internalClient.GetEnrollment(ctx, req, opts...)
+}
+
+// ListEnrollments list Enrollments.
+func (c *Client) ListEnrollments(ctx context.Context, req *eventarcpb.ListEnrollmentsRequest, opts ...gax.CallOption) *EnrollmentIterator {
+	return c.internalClient.ListEnrollments(ctx, req, opts...)
+}
+
+// CreateEnrollment create a new Enrollment in a particular project and location.
+func (c *Client) CreateEnrollment(ctx context.Context, req *eventarcpb.CreateEnrollmentRequest, opts ...gax.CallOption) (*CreateEnrollmentOperation, error) {
+	return c.internalClient.CreateEnrollment(ctx, req, opts...)
+}
+
+// CreateEnrollmentOperation returns a new CreateEnrollmentOperation from a given name.
+// The name must be that of a previously created CreateEnrollmentOperation, possibly from a different process.
+func (c *Client) CreateEnrollmentOperation(name string) *CreateEnrollmentOperation {
+	return c.internalClient.CreateEnrollmentOperation(name)
+}
+
+// UpdateEnrollment update a single Enrollment.
+func (c *Client) UpdateEnrollment(ctx context.Context, req *eventarcpb.UpdateEnrollmentRequest, opts ...gax.CallOption) (*UpdateEnrollmentOperation, error) {
+	return c.internalClient.UpdateEnrollment(ctx, req, opts...)
+}
+
+// UpdateEnrollmentOperation returns a new UpdateEnrollmentOperation from a given name.
+// The name must be that of a previously created UpdateEnrollmentOperation, possibly from a different process.
+func (c *Client) UpdateEnrollmentOperation(name string) *UpdateEnrollmentOperation {
+	return c.internalClient.UpdateEnrollmentOperation(name)
+}
+
+// DeleteEnrollment delete a single Enrollment.
+func (c *Client) DeleteEnrollment(ctx context.Context, req *eventarcpb.DeleteEnrollmentRequest, opts ...gax.CallOption) (*DeleteEnrollmentOperation, error) {
+	return c.internalClient.DeleteEnrollment(ctx, req, opts...)
+}
+
+// DeleteEnrollmentOperation returns a new DeleteEnrollmentOperation from a given name.
+// The name must be that of a previously created DeleteEnrollmentOperation, possibly from a different process.
+func (c *Client) DeleteEnrollmentOperation(name string) *DeleteEnrollmentOperation {
+	return c.internalClient.DeleteEnrollmentOperation(name)
+}
+
+// GetPipeline get a single Pipeline.
+func (c *Client) GetPipeline(ctx context.Context, req *eventarcpb.GetPipelineRequest, opts ...gax.CallOption) (*eventarcpb.Pipeline, error) {
+	return c.internalClient.GetPipeline(ctx, req, opts...)
+}
+
+// ListPipelines list pipelines.
+func (c *Client) ListPipelines(ctx context.Context, req *eventarcpb.ListPipelinesRequest, opts ...gax.CallOption) *PipelineIterator {
+	return c.internalClient.ListPipelines(ctx, req, opts...)
+}
+
+// CreatePipeline create a new Pipeline in a particular project and location.
+func (c *Client) CreatePipeline(ctx context.Context, req *eventarcpb.CreatePipelineRequest, opts ...gax.CallOption) (*CreatePipelineOperation, error) {
+	return c.internalClient.CreatePipeline(ctx, req, opts...)
+}
+
+// CreatePipelineOperation returns a new CreatePipelineOperation from a given name.
+// The name must be that of a previously created CreatePipelineOperation, possibly from a different process.
+func (c *Client) CreatePipelineOperation(name string) *CreatePipelineOperation {
+	return c.internalClient.CreatePipelineOperation(name)
+}
+
+// UpdatePipeline update a single pipeline.
+func (c *Client) UpdatePipeline(ctx context.Context, req *eventarcpb.UpdatePipelineRequest, opts ...gax.CallOption) (*UpdatePipelineOperation, error) {
+	return c.internalClient.UpdatePipeline(ctx, req, opts...)
+}
+
+// UpdatePipelineOperation returns a new UpdatePipelineOperation from a given name.
+// The name must be that of a previously created UpdatePipelineOperation, possibly from a different process.
+func (c *Client) UpdatePipelineOperation(name string) *UpdatePipelineOperation {
+	return c.internalClient.UpdatePipelineOperation(name)
+}
+
+// DeletePipeline delete a single pipeline.
+func (c *Client) DeletePipeline(ctx context.Context, req *eventarcpb.DeletePipelineRequest, opts ...gax.CallOption) (*DeletePipelineOperation, error) {
+	return c.internalClient.DeletePipeline(ctx, req, opts...)
+}
+
+// DeletePipelineOperation returns a new DeletePipelineOperation from a given name.
+// The name must be that of a previously created DeletePipelineOperation, possibly from a different process.
+func (c *Client) DeletePipelineOperation(name string) *DeletePipelineOperation {
+	return c.internalClient.DeletePipelineOperation(name)
+}
+
+// GetGoogleApiSource get a single GoogleApiSource.
+func (c *Client) GetGoogleApiSource(ctx context.Context, req *eventarcpb.GetGoogleApiSourceRequest, opts ...gax.CallOption) (*eventarcpb.GoogleApiSource, error) {
+	return c.internalClient.GetGoogleApiSource(ctx, req, opts...)
+}
+
+// ListGoogleApiSources list GoogleApiSources.
+func (c *Client) ListGoogleApiSources(ctx context.Context, req *eventarcpb.ListGoogleApiSourcesRequest, opts ...gax.CallOption) *GoogleApiSourceIterator {
+	return c.internalClient.ListGoogleApiSources(ctx, req, opts...)
+}
+
+// CreateGoogleApiSource create a new GoogleApiSource in a particular project and location.
+func (c *Client) CreateGoogleApiSource(ctx context.Context, req *eventarcpb.CreateGoogleApiSourceRequest, opts ...gax.CallOption) (*CreateGoogleApiSourceOperation, error) {
+	return c.internalClient.CreateGoogleApiSource(ctx, req, opts...)
+}
+
+// CreateGoogleApiSourceOperation returns a new CreateGoogleApiSourceOperation from a given name.
+// The name must be that of a previously created CreateGoogleApiSourceOperation, possibly from a different process.
+func (c *Client) CreateGoogleApiSourceOperation(name string) *CreateGoogleApiSourceOperation {
+	return c.internalClient.CreateGoogleApiSourceOperation(name)
+}
+
+// UpdateGoogleApiSource update a single GoogleApiSource.
+func (c *Client) UpdateGoogleApiSource(ctx context.Context, req *eventarcpb.UpdateGoogleApiSourceRequest, opts ...gax.CallOption) (*UpdateGoogleApiSourceOperation, error) {
+	return c.internalClient.UpdateGoogleApiSource(ctx, req, opts...)
+}
+
+// UpdateGoogleApiSourceOperation returns a new UpdateGoogleApiSourceOperation from a given name.
+// The name must be that of a previously created UpdateGoogleApiSourceOperation, possibly from a different process.
+func (c *Client) UpdateGoogleApiSourceOperation(name string) *UpdateGoogleApiSourceOperation {
+	return c.internalClient.UpdateGoogleApiSourceOperation(name)
+}
+
+// DeleteGoogleApiSource delete a single GoogleApiSource.
+func (c *Client) DeleteGoogleApiSource(ctx context.Context, req *eventarcpb.DeleteGoogleApiSourceRequest, opts ...gax.CallOption) (*DeleteGoogleApiSourceOperation, error) {
+	return c.internalClient.DeleteGoogleApiSource(ctx, req, opts...)
+}
+
+// DeleteGoogleApiSourceOperation returns a new DeleteGoogleApiSourceOperation from a given name.
+// The name must be that of a previously created DeleteGoogleApiSourceOperation, possibly from a different process.
+func (c *Client) DeleteGoogleApiSourceOperation(name string) *DeleteGoogleApiSourceOperation {
+	return c.internalClient.DeleteGoogleApiSourceOperation(name)
+}
+
 // GetLocation gets information about a location.
 func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
@@ -456,6 +1230,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new eventarc client based on gRPC.
@@ -483,6 +1259,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:         connPool,
 		client:           eventarcpb.NewEventarcClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:  iampb.NewIAMPolicyClient(connPool),
 		locationsClient:  locationpb.NewLocationsClient(connPool),
@@ -519,7 +1296,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -546,6 +1325,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new eventarc rest client.
@@ -564,6 +1345,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -583,9 +1365,12 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 func defaultRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://eventarc.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://eventarc.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://eventarc.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://eventarc.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -595,7 +1380,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -621,7 +1408,7 @@ func (c *gRPCClient) GetTrigger(ctx context.Context, req *eventarcpb.GetTriggerR
 	var resp *eventarcpb.Trigger
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetTrigger(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetTrigger, req, settings.GRPC, c.logger, "GetTrigger")
 		return err
 	}, opts...)
 	if err != nil {
@@ -650,7 +1437,7 @@ func (c *gRPCClient) ListTriggers(ctx context.Context, req *eventarcpb.ListTrigg
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListTriggers(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListTriggers, req, settings.GRPC, c.logger, "ListTriggers")
 			return err
 		}, opts...)
 		if err != nil {
@@ -685,7 +1472,7 @@ func (c *gRPCClient) CreateTrigger(ctx context.Context, req *eventarcpb.CreateTr
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateTrigger(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateTrigger, req, settings.GRPC, c.logger, "CreateTrigger")
 		return err
 	}, opts...)
 	if err != nil {
@@ -705,7 +1492,7 @@ func (c *gRPCClient) UpdateTrigger(ctx context.Context, req *eventarcpb.UpdateTr
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateTrigger(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateTrigger, req, settings.GRPC, c.logger, "UpdateTrigger")
 		return err
 	}, opts...)
 	if err != nil {
@@ -725,7 +1512,7 @@ func (c *gRPCClient) DeleteTrigger(ctx context.Context, req *eventarcpb.DeleteTr
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteTrigger(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteTrigger, req, settings.GRPC, c.logger, "DeleteTrigger")
 		return err
 	}, opts...)
 	if err != nil {
@@ -745,7 +1532,7 @@ func (c *gRPCClient) GetChannel(ctx context.Context, req *eventarcpb.GetChannelR
 	var resp *eventarcpb.Channel
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetChannel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetChannel, req, settings.GRPC, c.logger, "GetChannel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -774,7 +1561,7 @@ func (c *gRPCClient) ListChannels(ctx context.Context, req *eventarcpb.ListChann
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListChannels(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListChannels, req, settings.GRPC, c.logger, "ListChannels")
 			return err
 		}, opts...)
 		if err != nil {
@@ -809,7 +1596,7 @@ func (c *gRPCClient) CreateChannel(ctx context.Context, req *eventarcpb.CreateCh
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateChannel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateChannel, req, settings.GRPC, c.logger, "CreateChannel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -829,7 +1616,7 @@ func (c *gRPCClient) UpdateChannel(ctx context.Context, req *eventarcpb.UpdateCh
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateChannel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateChannel, req, settings.GRPC, c.logger, "UpdateChannel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -849,7 +1636,7 @@ func (c *gRPCClient) DeleteChannel(ctx context.Context, req *eventarcpb.DeleteCh
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteChannel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteChannel, req, settings.GRPC, c.logger, "DeleteChannel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -869,7 +1656,7 @@ func (c *gRPCClient) GetProvider(ctx context.Context, req *eventarcpb.GetProvide
 	var resp *eventarcpb.Provider
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetProvider(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetProvider, req, settings.GRPC, c.logger, "GetProvider")
 		return err
 	}, opts...)
 	if err != nil {
@@ -898,7 +1685,7 @@ func (c *gRPCClient) ListProviders(ctx context.Context, req *eventarcpb.ListProv
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListProviders(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListProviders, req, settings.GRPC, c.logger, "ListProviders")
 			return err
 		}, opts...)
 		if err != nil {
@@ -933,7 +1720,7 @@ func (c *gRPCClient) GetChannelConnection(ctx context.Context, req *eventarcpb.G
 	var resp *eventarcpb.ChannelConnection
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetChannelConnection(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetChannelConnection, req, settings.GRPC, c.logger, "GetChannelConnection")
 		return err
 	}, opts...)
 	if err != nil {
@@ -962,7 +1749,7 @@ func (c *gRPCClient) ListChannelConnections(ctx context.Context, req *eventarcpb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListChannelConnections(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListChannelConnections, req, settings.GRPC, c.logger, "ListChannelConnections")
 			return err
 		}, opts...)
 		if err != nil {
@@ -997,7 +1784,7 @@ func (c *gRPCClient) CreateChannelConnection(ctx context.Context, req *eventarcp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateChannelConnection(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateChannelConnection, req, settings.GRPC, c.logger, "CreateChannelConnection")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1017,7 +1804,7 @@ func (c *gRPCClient) DeleteChannelConnection(ctx context.Context, req *eventarcp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteChannelConnection(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteChannelConnection, req, settings.GRPC, c.logger, "DeleteChannelConnection")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1037,7 +1824,7 @@ func (c *gRPCClient) GetGoogleChannelConfig(ctx context.Context, req *eventarcpb
 	var resp *eventarcpb.GoogleChannelConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetGoogleChannelConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetGoogleChannelConfig, req, settings.GRPC, c.logger, "GetGoogleChannelConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1055,13 +1842,555 @@ func (c *gRPCClient) UpdateGoogleChannelConfig(ctx context.Context, req *eventar
 	var resp *eventarcpb.GoogleChannelConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateGoogleChannelConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateGoogleChannelConfig, req, settings.GRPC, c.logger, "UpdateGoogleChannelConfig")
 		return err
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *gRPCClient) GetMessageBus(ctx context.Context, req *eventarcpb.GetMessageBusRequest, opts ...gax.CallOption) (*eventarcpb.MessageBus, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetMessageBus[0:len((*c.CallOptions).GetMessageBus):len((*c.CallOptions).GetMessageBus)], opts...)
+	var resp *eventarcpb.MessageBus
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetMessageBus, req, settings.GRPC, c.logger, "GetMessageBus")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListMessageBuses(ctx context.Context, req *eventarcpb.ListMessageBusesRequest, opts ...gax.CallOption) *MessageBusIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListMessageBuses[0:len((*c.CallOptions).ListMessageBuses):len((*c.CallOptions).ListMessageBuses)], opts...)
+	it := &MessageBusIterator{}
+	req = proto.Clone(req).(*eventarcpb.ListMessageBusesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.MessageBus, string, error) {
+		resp := &eventarcpb.ListMessageBusesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListMessageBuses, req, settings.GRPC, c.logger, "ListMessageBuses")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetMessageBuses(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) ListMessageBusEnrollments(ctx context.Context, req *eventarcpb.ListMessageBusEnrollmentsRequest, opts ...gax.CallOption) *StringIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListMessageBusEnrollments[0:len((*c.CallOptions).ListMessageBusEnrollments):len((*c.CallOptions).ListMessageBusEnrollments)], opts...)
+	it := &StringIterator{}
+	req = proto.Clone(req).(*eventarcpb.ListMessageBusEnrollmentsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
+		resp := &eventarcpb.ListMessageBusEnrollmentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListMessageBusEnrollments, req, settings.GRPC, c.logger, "ListMessageBusEnrollments")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetEnrollments(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) CreateMessageBus(ctx context.Context, req *eventarcpb.CreateMessageBusRequest, opts ...gax.CallOption) (*CreateMessageBusOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateMessageBus[0:len((*c.CallOptions).CreateMessageBus):len((*c.CallOptions).CreateMessageBus)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateMessageBus, req, settings.GRPC, c.logger, "CreateMessageBus")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateMessageBusOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) UpdateMessageBus(ctx context.Context, req *eventarcpb.UpdateMessageBusRequest, opts ...gax.CallOption) (*UpdateMessageBusOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "message_bus.name", url.QueryEscape(req.GetMessageBus().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateMessageBus[0:len((*c.CallOptions).UpdateMessageBus):len((*c.CallOptions).UpdateMessageBus)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateMessageBus, req, settings.GRPC, c.logger, "UpdateMessageBus")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateMessageBusOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeleteMessageBus(ctx context.Context, req *eventarcpb.DeleteMessageBusRequest, opts ...gax.CallOption) (*DeleteMessageBusOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteMessageBus[0:len((*c.CallOptions).DeleteMessageBus):len((*c.CallOptions).DeleteMessageBus)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteMessageBus, req, settings.GRPC, c.logger, "DeleteMessageBus")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteMessageBusOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) GetEnrollment(ctx context.Context, req *eventarcpb.GetEnrollmentRequest, opts ...gax.CallOption) (*eventarcpb.Enrollment, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetEnrollment[0:len((*c.CallOptions).GetEnrollment):len((*c.CallOptions).GetEnrollment)], opts...)
+	var resp *eventarcpb.Enrollment
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetEnrollment, req, settings.GRPC, c.logger, "GetEnrollment")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListEnrollments(ctx context.Context, req *eventarcpb.ListEnrollmentsRequest, opts ...gax.CallOption) *EnrollmentIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListEnrollments[0:len((*c.CallOptions).ListEnrollments):len((*c.CallOptions).ListEnrollments)], opts...)
+	it := &EnrollmentIterator{}
+	req = proto.Clone(req).(*eventarcpb.ListEnrollmentsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.Enrollment, string, error) {
+		resp := &eventarcpb.ListEnrollmentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListEnrollments, req, settings.GRPC, c.logger, "ListEnrollments")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetEnrollments(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) CreateEnrollment(ctx context.Context, req *eventarcpb.CreateEnrollmentRequest, opts ...gax.CallOption) (*CreateEnrollmentOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateEnrollment[0:len((*c.CallOptions).CreateEnrollment):len((*c.CallOptions).CreateEnrollment)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateEnrollment, req, settings.GRPC, c.logger, "CreateEnrollment")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateEnrollmentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) UpdateEnrollment(ctx context.Context, req *eventarcpb.UpdateEnrollmentRequest, opts ...gax.CallOption) (*UpdateEnrollmentOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "enrollment.name", url.QueryEscape(req.GetEnrollment().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateEnrollment[0:len((*c.CallOptions).UpdateEnrollment):len((*c.CallOptions).UpdateEnrollment)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateEnrollment, req, settings.GRPC, c.logger, "UpdateEnrollment")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateEnrollmentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeleteEnrollment(ctx context.Context, req *eventarcpb.DeleteEnrollmentRequest, opts ...gax.CallOption) (*DeleteEnrollmentOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteEnrollment[0:len((*c.CallOptions).DeleteEnrollment):len((*c.CallOptions).DeleteEnrollment)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteEnrollment, req, settings.GRPC, c.logger, "DeleteEnrollment")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteEnrollmentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) GetPipeline(ctx context.Context, req *eventarcpb.GetPipelineRequest, opts ...gax.CallOption) (*eventarcpb.Pipeline, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetPipeline[0:len((*c.CallOptions).GetPipeline):len((*c.CallOptions).GetPipeline)], opts...)
+	var resp *eventarcpb.Pipeline
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetPipeline, req, settings.GRPC, c.logger, "GetPipeline")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListPipelines(ctx context.Context, req *eventarcpb.ListPipelinesRequest, opts ...gax.CallOption) *PipelineIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListPipelines[0:len((*c.CallOptions).ListPipelines):len((*c.CallOptions).ListPipelines)], opts...)
+	it := &PipelineIterator{}
+	req = proto.Clone(req).(*eventarcpb.ListPipelinesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.Pipeline, string, error) {
+		resp := &eventarcpb.ListPipelinesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListPipelines, req, settings.GRPC, c.logger, "ListPipelines")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetPipelines(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) CreatePipeline(ctx context.Context, req *eventarcpb.CreatePipelineRequest, opts ...gax.CallOption) (*CreatePipelineOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreatePipeline[0:len((*c.CallOptions).CreatePipeline):len((*c.CallOptions).CreatePipeline)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreatePipeline, req, settings.GRPC, c.logger, "CreatePipeline")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreatePipelineOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) UpdatePipeline(ctx context.Context, req *eventarcpb.UpdatePipelineRequest, opts ...gax.CallOption) (*UpdatePipelineOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "pipeline.name", url.QueryEscape(req.GetPipeline().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdatePipeline[0:len((*c.CallOptions).UpdatePipeline):len((*c.CallOptions).UpdatePipeline)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdatePipeline, req, settings.GRPC, c.logger, "UpdatePipeline")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdatePipelineOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeletePipeline(ctx context.Context, req *eventarcpb.DeletePipelineRequest, opts ...gax.CallOption) (*DeletePipelineOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeletePipeline[0:len((*c.CallOptions).DeletePipeline):len((*c.CallOptions).DeletePipeline)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeletePipeline, req, settings.GRPC, c.logger, "DeletePipeline")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeletePipelineOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) GetGoogleApiSource(ctx context.Context, req *eventarcpb.GetGoogleApiSourceRequest, opts ...gax.CallOption) (*eventarcpb.GoogleApiSource, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetGoogleApiSource[0:len((*c.CallOptions).GetGoogleApiSource):len((*c.CallOptions).GetGoogleApiSource)], opts...)
+	var resp *eventarcpb.GoogleApiSource
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetGoogleApiSource, req, settings.GRPC, c.logger, "GetGoogleApiSource")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListGoogleApiSources(ctx context.Context, req *eventarcpb.ListGoogleApiSourcesRequest, opts ...gax.CallOption) *GoogleApiSourceIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListGoogleApiSources[0:len((*c.CallOptions).ListGoogleApiSources):len((*c.CallOptions).ListGoogleApiSources)], opts...)
+	it := &GoogleApiSourceIterator{}
+	req = proto.Clone(req).(*eventarcpb.ListGoogleApiSourcesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.GoogleApiSource, string, error) {
+		resp := &eventarcpb.ListGoogleApiSourcesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListGoogleApiSources, req, settings.GRPC, c.logger, "ListGoogleApiSources")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetGoogleApiSources(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) CreateGoogleApiSource(ctx context.Context, req *eventarcpb.CreateGoogleApiSourceRequest, opts ...gax.CallOption) (*CreateGoogleApiSourceOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateGoogleApiSource[0:len((*c.CallOptions).CreateGoogleApiSource):len((*c.CallOptions).CreateGoogleApiSource)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateGoogleApiSource, req, settings.GRPC, c.logger, "CreateGoogleApiSource")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateGoogleApiSourceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) UpdateGoogleApiSource(ctx context.Context, req *eventarcpb.UpdateGoogleApiSourceRequest, opts ...gax.CallOption) (*UpdateGoogleApiSourceOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "google_api_source.name", url.QueryEscape(req.GetGoogleApiSource().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateGoogleApiSource[0:len((*c.CallOptions).UpdateGoogleApiSource):len((*c.CallOptions).UpdateGoogleApiSource)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateGoogleApiSource, req, settings.GRPC, c.logger, "UpdateGoogleApiSource")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateGoogleApiSourceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeleteGoogleApiSource(ctx context.Context, req *eventarcpb.DeleteGoogleApiSourceRequest, opts ...gax.CallOption) (*DeleteGoogleApiSourceOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteGoogleApiSource[0:len((*c.CallOptions).DeleteGoogleApiSource):len((*c.CallOptions).DeleteGoogleApiSource)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteGoogleApiSource, req, settings.GRPC, c.logger, "DeleteGoogleApiSource")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteGoogleApiSourceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -1073,7 +2402,7 @@ func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1102,7 +2431,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1137,7 +2466,7 @@ func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1155,7 +2484,7 @@ func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1173,7 +2502,7 @@ func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1190,7 +2519,7 @@ func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -1204,7 +2533,7 @@ func (c *gRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -1219,7 +2548,7 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1248,7 +2577,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1307,17 +2636,7 @@ func (c *restClient) GetTrigger(ctx context.Context, req *eventarcpb.GetTriggerR
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetTrigger")
 		if err != nil {
 			return err
 		}
@@ -1385,21 +2704,10 @@ func (c *restClient) ListTriggers(ctx context.Context, req *eventarcpb.ListTrigg
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListTriggers")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1447,7 +2755,9 @@ func (c *restClient) CreateTrigger(ctx context.Context, req *eventarcpb.CreateTr
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("triggerId", fmt.Sprintf("%v", req.GetTriggerId()))
-	params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -1470,21 +2780,10 @@ func (c *restClient) CreateTrigger(ctx context.Context, req *eventarcpb.CreateTr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateTrigger")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1523,13 +2822,15 @@ func (c *restClient) UpdateTrigger(ctx context.Context, req *eventarcpb.UpdateTr
 		params.Add("allowMissing", fmt.Sprintf("%v", req.GetAllowMissing()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
-	params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -1552,21 +2853,10 @@ func (c *restClient) UpdateTrigger(ctx context.Context, req *eventarcpb.UpdateTr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateTrigger")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1600,7 +2890,9 @@ func (c *restClient) DeleteTrigger(ctx context.Context, req *eventarcpb.DeleteTr
 	if req.GetEtag() != "" {
 		params.Add("etag", fmt.Sprintf("%v", req.GetEtag()))
 	}
-	params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -1623,21 +2915,10 @@ func (c *restClient) DeleteTrigger(ctx context.Context, req *eventarcpb.DeleteTr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteTrigger")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1688,17 +2969,7 @@ func (c *restClient) GetChannel(ctx context.Context, req *eventarcpb.GetChannelR
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetChannel")
 		if err != nil {
 			return err
 		}
@@ -1763,21 +3034,10 @@ func (c *restClient) ListChannels(ctx context.Context, req *eventarcpb.ListChann
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListChannels")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1825,7 +3085,9 @@ func (c *restClient) CreateChannel(ctx context.Context, req *eventarcpb.CreateCh
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("channelId", fmt.Sprintf("%v", req.GetChannelId()))
-	params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -1848,21 +3110,10 @@ func (c *restClient) CreateChannel(ctx context.Context, req *eventarcpb.CreateCh
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateChannel")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1898,13 +3149,15 @@ func (c *restClient) UpdateChannel(ctx context.Context, req *eventarcpb.UpdateCh
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
-	params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -1927,21 +3180,10 @@ func (c *restClient) UpdateChannel(ctx context.Context, req *eventarcpb.UpdateCh
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateChannel")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1969,7 +3211,9 @@ func (c *restClient) DeleteChannel(ctx context.Context, req *eventarcpb.DeleteCh
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
-	params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -1992,21 +3236,10 @@ func (c *restClient) DeleteChannel(ctx context.Context, req *eventarcpb.DeleteCh
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteChannel")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2057,17 +3290,7 @@ func (c *restClient) GetProvider(ctx context.Context, req *eventarcpb.GetProvide
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetProvider")
 		if err != nil {
 			return err
 		}
@@ -2135,21 +3358,10 @@ func (c *restClient) ListProviders(ctx context.Context, req *eventarcpb.ListProv
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListProviders")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2212,17 +3424,7 @@ func (c *restClient) GetChannelConnection(ctx context.Context, req *eventarcpb.G
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetChannelConnection")
 		if err != nil {
 			return err
 		}
@@ -2284,21 +3486,10 @@ func (c *restClient) ListChannelConnections(ctx context.Context, req *eventarcpb
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListChannelConnections")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2368,21 +3559,10 @@ func (c *restClient) CreateChannelConnection(ctx context.Context, req *eventarcp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateChannelConnection")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2432,21 +3612,10 @@ func (c *restClient) DeleteChannelConnection(ctx context.Context, req *eventarcp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteChannelConnection")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2497,17 +3666,7 @@ func (c *restClient) GetGoogleChannelConfig(ctx context.Context, req *eventarcpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetGoogleChannelConfig")
 		if err != nil {
 			return err
 		}
@@ -2542,11 +3701,11 @@ func (c *restClient) UpdateGoogleChannelConfig(ctx context.Context, req *eventar
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2571,17 +3730,7 @@ func (c *restClient) UpdateGoogleChannelConfig(ctx context.Context, req *eventar
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateGoogleChannelConfig")
 		if err != nil {
 			return err
 		}
@@ -2596,6 +3745,1416 @@ func (c *restClient) UpdateGoogleChannelConfig(ctx context.Context, req *eventar
 		return nil, e
 	}
 	return resp, nil
+}
+
+// GetMessageBus get a single MessageBus.
+func (c *restClient) GetMessageBus(ctx context.Context, req *eventarcpb.GetMessageBusRequest, opts ...gax.CallOption) (*eventarcpb.MessageBus, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetMessageBus[0:len((*c.CallOptions).GetMessageBus):len((*c.CallOptions).GetMessageBus)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &eventarcpb.MessageBus{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetMessageBus")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListMessageBuses list message buses.
+func (c *restClient) ListMessageBuses(ctx context.Context, req *eventarcpb.ListMessageBusesRequest, opts ...gax.CallOption) *MessageBusIterator {
+	it := &MessageBusIterator{}
+	req = proto.Clone(req).(*eventarcpb.ListMessageBusesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.MessageBus, string, error) {
+		resp := &eventarcpb.ListMessageBusesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/messageBuses", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListMessageBuses")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetMessageBuses(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ListMessageBusEnrollments list message bus enrollments.
+func (c *restClient) ListMessageBusEnrollments(ctx context.Context, req *eventarcpb.ListMessageBusEnrollmentsRequest, opts ...gax.CallOption) *StringIterator {
+	it := &StringIterator{}
+	req = proto.Clone(req).(*eventarcpb.ListMessageBusEnrollmentsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
+		resp := &eventarcpb.ListMessageBusEnrollmentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v:listEnrollments", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListMessageBusEnrollments")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetEnrollments(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// CreateMessageBus create a new MessageBus in a particular project and location.
+func (c *restClient) CreateMessageBus(ctx context.Context, req *eventarcpb.CreateMessageBusRequest, opts ...gax.CallOption) (*CreateMessageBusOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetMessageBus()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/messageBuses", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("messageBusId", fmt.Sprintf("%v", req.GetMessageBusId()))
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateMessageBus")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateMessageBusOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateMessageBus update a single message bus.
+func (c *restClient) UpdateMessageBus(ctx context.Context, req *eventarcpb.UpdateMessageBusRequest, opts ...gax.CallOption) (*UpdateMessageBusOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetMessageBus()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetMessageBus().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetAllowMissing() {
+		params.Add("allowMissing", fmt.Sprintf("%v", req.GetAllowMissing()))
+	}
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "message_bus.name", url.QueryEscape(req.GetMessageBus().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateMessageBus")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateMessageBusOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteMessageBus delete a single message bus.
+func (c *restClient) DeleteMessageBus(ctx context.Context, req *eventarcpb.DeleteMessageBusRequest, opts ...gax.CallOption) (*DeleteMessageBusOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetAllowMissing() {
+		params.Add("allowMissing", fmt.Sprintf("%v", req.GetAllowMissing()))
+	}
+	if req.GetEtag() != "" {
+		params.Add("etag", fmt.Sprintf("%v", req.GetEtag()))
+	}
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteMessageBus")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteMessageBusOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// GetEnrollment get a single Enrollment.
+func (c *restClient) GetEnrollment(ctx context.Context, req *eventarcpb.GetEnrollmentRequest, opts ...gax.CallOption) (*eventarcpb.Enrollment, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetEnrollment[0:len((*c.CallOptions).GetEnrollment):len((*c.CallOptions).GetEnrollment)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &eventarcpb.Enrollment{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetEnrollment")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListEnrollments list Enrollments.
+func (c *restClient) ListEnrollments(ctx context.Context, req *eventarcpb.ListEnrollmentsRequest, opts ...gax.CallOption) *EnrollmentIterator {
+	it := &EnrollmentIterator{}
+	req = proto.Clone(req).(*eventarcpb.ListEnrollmentsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.Enrollment, string, error) {
+		resp := &eventarcpb.ListEnrollmentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/enrollments", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListEnrollments")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetEnrollments(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// CreateEnrollment create a new Enrollment in a particular project and location.
+func (c *restClient) CreateEnrollment(ctx context.Context, req *eventarcpb.CreateEnrollmentRequest, opts ...gax.CallOption) (*CreateEnrollmentOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetEnrollment()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/enrollments", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("enrollmentId", fmt.Sprintf("%v", req.GetEnrollmentId()))
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateEnrollment")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateEnrollmentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateEnrollment update a single Enrollment.
+func (c *restClient) UpdateEnrollment(ctx context.Context, req *eventarcpb.UpdateEnrollmentRequest, opts ...gax.CallOption) (*UpdateEnrollmentOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetEnrollment()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetEnrollment().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetAllowMissing() {
+		params.Add("allowMissing", fmt.Sprintf("%v", req.GetAllowMissing()))
+	}
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "enrollment.name", url.QueryEscape(req.GetEnrollment().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateEnrollment")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateEnrollmentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteEnrollment delete a single Enrollment.
+func (c *restClient) DeleteEnrollment(ctx context.Context, req *eventarcpb.DeleteEnrollmentRequest, opts ...gax.CallOption) (*DeleteEnrollmentOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetAllowMissing() {
+		params.Add("allowMissing", fmt.Sprintf("%v", req.GetAllowMissing()))
+	}
+	if req.GetEtag() != "" {
+		params.Add("etag", fmt.Sprintf("%v", req.GetEtag()))
+	}
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteEnrollment")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteEnrollmentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// GetPipeline get a single Pipeline.
+func (c *restClient) GetPipeline(ctx context.Context, req *eventarcpb.GetPipelineRequest, opts ...gax.CallOption) (*eventarcpb.Pipeline, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetPipeline[0:len((*c.CallOptions).GetPipeline):len((*c.CallOptions).GetPipeline)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &eventarcpb.Pipeline{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetPipeline")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListPipelines list pipelines.
+func (c *restClient) ListPipelines(ctx context.Context, req *eventarcpb.ListPipelinesRequest, opts ...gax.CallOption) *PipelineIterator {
+	it := &PipelineIterator{}
+	req = proto.Clone(req).(*eventarcpb.ListPipelinesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.Pipeline, string, error) {
+		resp := &eventarcpb.ListPipelinesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/pipelines", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListPipelines")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetPipelines(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// CreatePipeline create a new Pipeline in a particular project and location.
+func (c *restClient) CreatePipeline(ctx context.Context, req *eventarcpb.CreatePipelineRequest, opts ...gax.CallOption) (*CreatePipelineOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetPipeline()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/pipelines", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("pipelineId", fmt.Sprintf("%v", req.GetPipelineId()))
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreatePipeline")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreatePipelineOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdatePipeline update a single pipeline.
+func (c *restClient) UpdatePipeline(ctx context.Context, req *eventarcpb.UpdatePipelineRequest, opts ...gax.CallOption) (*UpdatePipelineOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetPipeline()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetPipeline().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetAllowMissing() {
+		params.Add("allowMissing", fmt.Sprintf("%v", req.GetAllowMissing()))
+	}
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "pipeline.name", url.QueryEscape(req.GetPipeline().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdatePipeline")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdatePipelineOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeletePipeline delete a single pipeline.
+func (c *restClient) DeletePipeline(ctx context.Context, req *eventarcpb.DeletePipelineRequest, opts ...gax.CallOption) (*DeletePipelineOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetAllowMissing() {
+		params.Add("allowMissing", fmt.Sprintf("%v", req.GetAllowMissing()))
+	}
+	if req.GetEtag() != "" {
+		params.Add("etag", fmt.Sprintf("%v", req.GetEtag()))
+	}
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeletePipeline")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeletePipelineOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// GetGoogleApiSource get a single GoogleApiSource.
+func (c *restClient) GetGoogleApiSource(ctx context.Context, req *eventarcpb.GetGoogleApiSourceRequest, opts ...gax.CallOption) (*eventarcpb.GoogleApiSource, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetGoogleApiSource[0:len((*c.CallOptions).GetGoogleApiSource):len((*c.CallOptions).GetGoogleApiSource)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &eventarcpb.GoogleApiSource{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetGoogleApiSource")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListGoogleApiSources list GoogleApiSources.
+func (c *restClient) ListGoogleApiSources(ctx context.Context, req *eventarcpb.ListGoogleApiSourcesRequest, opts ...gax.CallOption) *GoogleApiSourceIterator {
+	it := &GoogleApiSourceIterator{}
+	req = proto.Clone(req).(*eventarcpb.ListGoogleApiSourcesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.GoogleApiSource, string, error) {
+		resp := &eventarcpb.ListGoogleApiSourcesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/googleApiSources", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListGoogleApiSources")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetGoogleApiSources(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// CreateGoogleApiSource create a new GoogleApiSource in a particular project and location.
+func (c *restClient) CreateGoogleApiSource(ctx context.Context, req *eventarcpb.CreateGoogleApiSourceRequest, opts ...gax.CallOption) (*CreateGoogleApiSourceOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetGoogleApiSource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/googleApiSources", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("googleApiSourceId", fmt.Sprintf("%v", req.GetGoogleApiSourceId()))
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateGoogleApiSource")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateGoogleApiSourceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateGoogleApiSource update a single GoogleApiSource.
+func (c *restClient) UpdateGoogleApiSource(ctx context.Context, req *eventarcpb.UpdateGoogleApiSourceRequest, opts ...gax.CallOption) (*UpdateGoogleApiSourceOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetGoogleApiSource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetGoogleApiSource().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetAllowMissing() {
+		params.Add("allowMissing", fmt.Sprintf("%v", req.GetAllowMissing()))
+	}
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "google_api_source.name", url.QueryEscape(req.GetGoogleApiSource().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateGoogleApiSource")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateGoogleApiSourceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteGoogleApiSource delete a single GoogleApiSource.
+func (c *restClient) DeleteGoogleApiSource(ctx context.Context, req *eventarcpb.DeleteGoogleApiSourceRequest, opts ...gax.CallOption) (*DeleteGoogleApiSourceOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetAllowMissing() {
+		params.Add("allowMissing", fmt.Sprintf("%v", req.GetAllowMissing()))
+	}
+	if req.GetEtag() != "" {
+		params.Add("etag", fmt.Sprintf("%v", req.GetEtag()))
+	}
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteGoogleApiSource")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteGoogleApiSourceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
 }
 
 // GetLocation gets information about a location.
@@ -2631,17 +5190,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -2706,21 +5255,10 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2787,17 +5325,7 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -2857,17 +5385,7 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -2929,17 +5447,7 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
 		if err != nil {
 			return err
 		}
@@ -2992,15 +5500,8 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -3034,15 +5535,8 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOperation")
+		return err
 	}, opts...)
 }
 
@@ -3079,17 +5573,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -3154,21 +5638,10 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3198,12 +5671,6 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	return it
 }
 
-// CreateChannelOperation manages a long-running operation from CreateChannel.
-type CreateChannelOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // CreateChannelOperation returns a new CreateChannelOperation from a given name.
 // The name must be that of a previously created CreateChannelOperation, possibly from a different process.
 func (c *gRPCClient) CreateChannelOperation(name string) *CreateChannelOperation {
@@ -3220,70 +5687,6 @@ func (c *restClient) CreateChannelOperation(name string) *CreateChannelOperation
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateChannelOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*eventarcpb.Channel, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp eventarcpb.Channel
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateChannelOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*eventarcpb.Channel, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp eventarcpb.Channel
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateChannelOperation) Metadata() (*eventarcpb.OperationMetadata, error) {
-	var meta eventarcpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateChannelOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateChannelOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateChannelConnectionOperation manages a long-running operation from CreateChannelConnection.
-type CreateChannelConnectionOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // CreateChannelConnectionOperation returns a new CreateChannelConnectionOperation from a given name.
@@ -3304,68 +5707,76 @@ func (c *restClient) CreateChannelConnectionOperation(name string) *CreateChanne
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateChannelConnectionOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*eventarcpb.ChannelConnection, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp eventarcpb.ChannelConnection
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
+// CreateEnrollmentOperation returns a new CreateEnrollmentOperation from a given name.
+// The name must be that of a previously created CreateEnrollmentOperation, possibly from a different process.
+func (c *gRPCClient) CreateEnrollmentOperation(name string) *CreateEnrollmentOperation {
+	return &CreateEnrollmentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-	return &resp, nil
 }
 
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateChannelConnectionOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*eventarcpb.ChannelConnection, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp eventarcpb.ChannelConnection
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
+// CreateEnrollmentOperation returns a new CreateEnrollmentOperation from a given name.
+// The name must be that of a previously created CreateEnrollmentOperation, possibly from a different process.
+func (c *restClient) CreateEnrollmentOperation(name string) *CreateEnrollmentOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateEnrollmentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	if !op.Done() {
-		return nil, nil
+}
+
+// CreateGoogleApiSourceOperation returns a new CreateGoogleApiSourceOperation from a given name.
+// The name must be that of a previously created CreateGoogleApiSourceOperation, possibly from a different process.
+func (c *gRPCClient) CreateGoogleApiSourceOperation(name string) *CreateGoogleApiSourceOperation {
+	return &CreateGoogleApiSourceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-	return &resp, nil
 }
 
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateChannelConnectionOperation) Metadata() (*eventarcpb.OperationMetadata, error) {
-	var meta eventarcpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
+// CreateGoogleApiSourceOperation returns a new CreateGoogleApiSourceOperation from a given name.
+// The name must be that of a previously created CreateGoogleApiSourceOperation, possibly from a different process.
+func (c *restClient) CreateGoogleApiSourceOperation(name string) *CreateGoogleApiSourceOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateGoogleApiSourceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	return &meta, nil
 }
 
-// Done reports whether the long-running operation has completed.
-func (op *CreateChannelConnectionOperation) Done() bool {
-	return op.lro.Done()
+// CreateMessageBusOperation returns a new CreateMessageBusOperation from a given name.
+// The name must be that of a previously created CreateMessageBusOperation, possibly from a different process.
+func (c *gRPCClient) CreateMessageBusOperation(name string) *CreateMessageBusOperation {
+	return &CreateMessageBusOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
 }
 
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateChannelConnectionOperation) Name() string {
-	return op.lro.Name()
+// CreateMessageBusOperation returns a new CreateMessageBusOperation from a given name.
+// The name must be that of a previously created CreateMessageBusOperation, possibly from a different process.
+func (c *restClient) CreateMessageBusOperation(name string) *CreateMessageBusOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateMessageBusOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
 }
 
-// CreateTriggerOperation manages a long-running operation from CreateTrigger.
-type CreateTriggerOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
+// CreatePipelineOperation returns a new CreatePipelineOperation from a given name.
+// The name must be that of a previously created CreatePipelineOperation, possibly from a different process.
+func (c *gRPCClient) CreatePipelineOperation(name string) *CreatePipelineOperation {
+	return &CreatePipelineOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreatePipelineOperation returns a new CreatePipelineOperation from a given name.
+// The name must be that of a previously created CreatePipelineOperation, possibly from a different process.
+func (c *restClient) CreatePipelineOperation(name string) *CreatePipelineOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreatePipelineOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
 }
 
 // CreateTriggerOperation returns a new CreateTriggerOperation from a given name.
@@ -3386,70 +5797,6 @@ func (c *restClient) CreateTriggerOperation(name string) *CreateTriggerOperation
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateTriggerOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*eventarcpb.Trigger, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp eventarcpb.Trigger
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateTriggerOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*eventarcpb.Trigger, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp eventarcpb.Trigger
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateTriggerOperation) Metadata() (*eventarcpb.OperationMetadata, error) {
-	var meta eventarcpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateTriggerOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateTriggerOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteChannelOperation manages a long-running operation from DeleteChannel.
-type DeleteChannelOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // DeleteChannelOperation returns a new DeleteChannelOperation from a given name.
 // The name must be that of a previously created DeleteChannelOperation, possibly from a different process.
 func (c *gRPCClient) DeleteChannelOperation(name string) *DeleteChannelOperation {
@@ -3466,70 +5813,6 @@ func (c *restClient) DeleteChannelOperation(name string) *DeleteChannelOperation
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteChannelOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*eventarcpb.Channel, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp eventarcpb.Channel
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteChannelOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*eventarcpb.Channel, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp eventarcpb.Channel
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteChannelOperation) Metadata() (*eventarcpb.OperationMetadata, error) {
-	var meta eventarcpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteChannelOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteChannelOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteChannelConnectionOperation manages a long-running operation from DeleteChannelConnection.
-type DeleteChannelConnectionOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // DeleteChannelConnectionOperation returns a new DeleteChannelConnectionOperation from a given name.
@@ -3550,68 +5833,76 @@ func (c *restClient) DeleteChannelConnectionOperation(name string) *DeleteChanne
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteChannelConnectionOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*eventarcpb.ChannelConnection, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp eventarcpb.ChannelConnection
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
+// DeleteEnrollmentOperation returns a new DeleteEnrollmentOperation from a given name.
+// The name must be that of a previously created DeleteEnrollmentOperation, possibly from a different process.
+func (c *gRPCClient) DeleteEnrollmentOperation(name string) *DeleteEnrollmentOperation {
+	return &DeleteEnrollmentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-	return &resp, nil
 }
 
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteChannelConnectionOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*eventarcpb.ChannelConnection, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp eventarcpb.ChannelConnection
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
+// DeleteEnrollmentOperation returns a new DeleteEnrollmentOperation from a given name.
+// The name must be that of a previously created DeleteEnrollmentOperation, possibly from a different process.
+func (c *restClient) DeleteEnrollmentOperation(name string) *DeleteEnrollmentOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteEnrollmentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	if !op.Done() {
-		return nil, nil
+}
+
+// DeleteGoogleApiSourceOperation returns a new DeleteGoogleApiSourceOperation from a given name.
+// The name must be that of a previously created DeleteGoogleApiSourceOperation, possibly from a different process.
+func (c *gRPCClient) DeleteGoogleApiSourceOperation(name string) *DeleteGoogleApiSourceOperation {
+	return &DeleteGoogleApiSourceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-	return &resp, nil
 }
 
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteChannelConnectionOperation) Metadata() (*eventarcpb.OperationMetadata, error) {
-	var meta eventarcpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
+// DeleteGoogleApiSourceOperation returns a new DeleteGoogleApiSourceOperation from a given name.
+// The name must be that of a previously created DeleteGoogleApiSourceOperation, possibly from a different process.
+func (c *restClient) DeleteGoogleApiSourceOperation(name string) *DeleteGoogleApiSourceOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteGoogleApiSourceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	return &meta, nil
 }
 
-// Done reports whether the long-running operation has completed.
-func (op *DeleteChannelConnectionOperation) Done() bool {
-	return op.lro.Done()
+// DeleteMessageBusOperation returns a new DeleteMessageBusOperation from a given name.
+// The name must be that of a previously created DeleteMessageBusOperation, possibly from a different process.
+func (c *gRPCClient) DeleteMessageBusOperation(name string) *DeleteMessageBusOperation {
+	return &DeleteMessageBusOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
 }
 
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteChannelConnectionOperation) Name() string {
-	return op.lro.Name()
+// DeleteMessageBusOperation returns a new DeleteMessageBusOperation from a given name.
+// The name must be that of a previously created DeleteMessageBusOperation, possibly from a different process.
+func (c *restClient) DeleteMessageBusOperation(name string) *DeleteMessageBusOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteMessageBusOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
 }
 
-// DeleteTriggerOperation manages a long-running operation from DeleteTrigger.
-type DeleteTriggerOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
+// DeletePipelineOperation returns a new DeletePipelineOperation from a given name.
+// The name must be that of a previously created DeletePipelineOperation, possibly from a different process.
+func (c *gRPCClient) DeletePipelineOperation(name string) *DeletePipelineOperation {
+	return &DeletePipelineOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeletePipelineOperation returns a new DeletePipelineOperation from a given name.
+// The name must be that of a previously created DeletePipelineOperation, possibly from a different process.
+func (c *restClient) DeletePipelineOperation(name string) *DeletePipelineOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeletePipelineOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
 }
 
 // DeleteTriggerOperation returns a new DeleteTriggerOperation from a given name.
@@ -3632,70 +5923,6 @@ func (c *restClient) DeleteTriggerOperation(name string) *DeleteTriggerOperation
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteTriggerOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*eventarcpb.Trigger, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp eventarcpb.Trigger
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteTriggerOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*eventarcpb.Trigger, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp eventarcpb.Trigger
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteTriggerOperation) Metadata() (*eventarcpb.OperationMetadata, error) {
-	var meta eventarcpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteTriggerOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteTriggerOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateChannelOperation manages a long-running operation from UpdateChannel.
-type UpdateChannelOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdateChannelOperation returns a new UpdateChannelOperation from a given name.
 // The name must be that of a previously created UpdateChannelOperation, possibly from a different process.
 func (c *gRPCClient) UpdateChannelOperation(name string) *UpdateChannelOperation {
@@ -3714,68 +5941,76 @@ func (c *restClient) UpdateChannelOperation(name string) *UpdateChannelOperation
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateChannelOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*eventarcpb.Channel, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp eventarcpb.Channel
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
+// UpdateEnrollmentOperation returns a new UpdateEnrollmentOperation from a given name.
+// The name must be that of a previously created UpdateEnrollmentOperation, possibly from a different process.
+func (c *gRPCClient) UpdateEnrollmentOperation(name string) *UpdateEnrollmentOperation {
+	return &UpdateEnrollmentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-	return &resp, nil
 }
 
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateChannelOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*eventarcpb.Channel, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp eventarcpb.Channel
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
+// UpdateEnrollmentOperation returns a new UpdateEnrollmentOperation from a given name.
+// The name must be that of a previously created UpdateEnrollmentOperation, possibly from a different process.
+func (c *restClient) UpdateEnrollmentOperation(name string) *UpdateEnrollmentOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateEnrollmentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	if !op.Done() {
-		return nil, nil
+}
+
+// UpdateGoogleApiSourceOperation returns a new UpdateGoogleApiSourceOperation from a given name.
+// The name must be that of a previously created UpdateGoogleApiSourceOperation, possibly from a different process.
+func (c *gRPCClient) UpdateGoogleApiSourceOperation(name string) *UpdateGoogleApiSourceOperation {
+	return &UpdateGoogleApiSourceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-	return &resp, nil
 }
 
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateChannelOperation) Metadata() (*eventarcpb.OperationMetadata, error) {
-	var meta eventarcpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
+// UpdateGoogleApiSourceOperation returns a new UpdateGoogleApiSourceOperation from a given name.
+// The name must be that of a previously created UpdateGoogleApiSourceOperation, possibly from a different process.
+func (c *restClient) UpdateGoogleApiSourceOperation(name string) *UpdateGoogleApiSourceOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateGoogleApiSourceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	return &meta, nil
 }
 
-// Done reports whether the long-running operation has completed.
-func (op *UpdateChannelOperation) Done() bool {
-	return op.lro.Done()
+// UpdateMessageBusOperation returns a new UpdateMessageBusOperation from a given name.
+// The name must be that of a previously created UpdateMessageBusOperation, possibly from a different process.
+func (c *gRPCClient) UpdateMessageBusOperation(name string) *UpdateMessageBusOperation {
+	return &UpdateMessageBusOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
 }
 
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateChannelOperation) Name() string {
-	return op.lro.Name()
+// UpdateMessageBusOperation returns a new UpdateMessageBusOperation from a given name.
+// The name must be that of a previously created UpdateMessageBusOperation, possibly from a different process.
+func (c *restClient) UpdateMessageBusOperation(name string) *UpdateMessageBusOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateMessageBusOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
 }
 
-// UpdateTriggerOperation manages a long-running operation from UpdateTrigger.
-type UpdateTriggerOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
+// UpdatePipelineOperation returns a new UpdatePipelineOperation from a given name.
+// The name must be that of a previously created UpdatePipelineOperation, possibly from a different process.
+func (c *gRPCClient) UpdatePipelineOperation(name string) *UpdatePipelineOperation {
+	return &UpdatePipelineOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdatePipelineOperation returns a new UpdatePipelineOperation from a given name.
+// The name must be that of a previously created UpdatePipelineOperation, possibly from a different process.
+func (c *restClient) UpdatePipelineOperation(name string) *UpdatePipelineOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdatePipelineOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
 }
 
 // UpdateTriggerOperation returns a new UpdateTriggerOperation from a given name.
@@ -3794,344 +6029,4 @@ func (c *restClient) UpdateTriggerOperation(name string) *UpdateTriggerOperation
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateTriggerOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*eventarcpb.Trigger, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp eventarcpb.Trigger
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateTriggerOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*eventarcpb.Trigger, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp eventarcpb.Trigger
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateTriggerOperation) Metadata() (*eventarcpb.OperationMetadata, error) {
-	var meta eventarcpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateTriggerOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateTriggerOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ChannelConnectionIterator manages a stream of *eventarcpb.ChannelConnection.
-type ChannelConnectionIterator struct {
-	items    []*eventarcpb.ChannelConnection
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*eventarcpb.ChannelConnection, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ChannelConnectionIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ChannelConnectionIterator) Next() (*eventarcpb.ChannelConnection, error) {
-	var item *eventarcpb.ChannelConnection
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ChannelConnectionIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ChannelConnectionIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ChannelIterator manages a stream of *eventarcpb.Channel.
-type ChannelIterator struct {
-	items    []*eventarcpb.Channel
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*eventarcpb.Channel, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ChannelIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ChannelIterator) Next() (*eventarcpb.Channel, error) {
-	var item *eventarcpb.Channel
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ChannelIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ChannelIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// LocationIterator manages a stream of *locationpb.Location.
-type LocationIterator struct {
-	items    []*locationpb.Location
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *LocationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *LocationIterator) Next() (*locationpb.Location, error) {
-	var item *locationpb.Location
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *LocationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *LocationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// OperationIterator manages a stream of *longrunningpb.Operation.
-type OperationIterator struct {
-	items    []*longrunningpb.Operation
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *OperationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *OperationIterator) Next() (*longrunningpb.Operation, error) {
-	var item *longrunningpb.Operation
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *OperationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *OperationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ProviderIterator manages a stream of *eventarcpb.Provider.
-type ProviderIterator struct {
-	items    []*eventarcpb.Provider
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*eventarcpb.Provider, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ProviderIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ProviderIterator) Next() (*eventarcpb.Provider, error) {
-	var item *eventarcpb.Provider
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ProviderIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ProviderIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// TriggerIterator manages a stream of *eventarcpb.Trigger.
-type TriggerIterator struct {
-	items    []*eventarcpb.Trigger
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*eventarcpb.Trigger, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *TriggerIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *TriggerIterator) Next() (*eventarcpb.Trigger, error) {
-	var item *eventarcpb.Trigger
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *TriggerIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *TriggerIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

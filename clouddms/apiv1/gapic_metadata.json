@@ -40,6 +40,11 @@
                 "CreateConversionWorkspace"
               ]
             },
+            "CreateMappingRule": {
+              "methods": [
+                "CreateMappingRule"
+              ]
+            },
             "CreateMigrationJob": {
               "methods": [
                 "CreateMigrationJob"
@@ -58,6 +63,11 @@
             "DeleteConversionWorkspace": {
               "methods": [
                 "DeleteConversionWorkspace"
+              ]
+            },
+            "DeleteMappingRule": {
+              "methods": [
+                "DeleteMappingRule"
               ]
             },
             "DeleteMigrationJob": {
@@ -95,6 +105,11 @@
                 "GenerateSshScript"
               ]
             },
+            "GenerateTcpProxyScript": {
+              "methods": [
+                "GenerateTcpProxyScript"
+              ]
+            },
             "GetConnectionProfile": {
               "methods": [
                 "GetConnectionProfile"
@@ -113,6 +128,11 @@
             "GetLocation": {
               "methods": [
                 "GetLocation"
+              ]
+            },
+            "GetMappingRule": {
+              "methods": [
+                "GetMappingRule"
               ]
             },
             "GetMigrationJob": {
@@ -148,6 +168,11 @@
             "ListLocations": {
               "methods": [
                 "ListLocations"
+              ]
+            },
+            "ListMappingRules": {
+              "methods": [
+                "ListMappingRules"
               ]
             },
             "ListMigrationJobs": {

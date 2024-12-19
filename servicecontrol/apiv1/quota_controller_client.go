@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,14 +20,13 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
 
 	servicecontrolpb "cloud.google.com/go/servicecontrol/apiv1/servicecontrolpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -46,10 +45,13 @@ type QuotaControllerCallOptions struct {
 func defaultQuotaControllerGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("servicecontrol.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("servicecontrol.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("servicecontrol.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://servicecontrol.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -143,6 +145,8 @@ type quotaControllerGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewQuotaControllerClient creates a new quota controller client based on gRPC.
@@ -172,6 +176,7 @@ func NewQuotaControllerClient(ctx context.Context, opts ...option.ClientOption) 
 		connPool:              connPool,
 		quotaControllerClient: servicecontrolpb.NewQuotaControllerClient(connPool),
 		CallOptions:           &client.CallOptions,
+		logger:                internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -194,7 +199,9 @@ func (c *quotaControllerGRPCClient) Connection() *grpc.ClientConn {
 func (c *quotaControllerGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -216,6 +223,8 @@ type quotaControllerRESTClient struct {
 
 	// Points back to the CallOptions field of the containing QuotaControllerClient
 	CallOptions **QuotaControllerCallOptions
+
+	logger *slog.Logger
 }
 
 // NewQuotaControllerRESTClient creates a new quota controller rest client.
@@ -236,6 +245,7 @@ func NewQuotaControllerRESTClient(ctx context.Context, opts ...option.ClientOpti
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -245,9 +255,12 @@ func NewQuotaControllerRESTClient(ctx context.Context, opts ...option.ClientOpti
 func defaultQuotaControllerRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://servicecontrol.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://servicecontrol.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://servicecontrol.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://servicecontrol.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -257,7 +270,9 @@ func defaultQuotaControllerRESTClientOptions() []option.ClientOption {
 func (c *quotaControllerRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -283,7 +298,7 @@ func (c *quotaControllerGRPCClient) AllocateQuota(ctx context.Context, req *serv
 	var resp *servicecontrolpb.AllocateQuotaResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.quotaControllerClient.AllocateQuota(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.quotaControllerClient.AllocateQuota, req, settings.GRPC, c.logger, "AllocateQuota")
 		return err
 	}, opts...)
 	if err != nil {
@@ -341,17 +356,7 @@ func (c *quotaControllerRESTClient) AllocateQuota(ctx context.Context, req *serv
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AllocateQuota")
 		if err != nil {
 			return err
 		}

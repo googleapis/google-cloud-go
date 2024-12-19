@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package monitoring
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 	"time"
@@ -54,10 +55,13 @@ type MetricCallOptions struct {
 func defaultMetricGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("monitoring.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("monitoring.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("monitoring.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://monitoring.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -199,31 +203,32 @@ func (c *MetricClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// ListMonitoredResourceDescriptors lists monitored resource descriptors that match a filter. This method does not require a Workspace.
+// ListMonitoredResourceDescriptors lists monitored resource descriptors that match a filter.
 func (c *MetricClient) ListMonitoredResourceDescriptors(ctx context.Context, req *monitoringpb.ListMonitoredResourceDescriptorsRequest, opts ...gax.CallOption) *MonitoredResourceDescriptorIterator {
 	return c.internalClient.ListMonitoredResourceDescriptors(ctx, req, opts...)
 }
 
-// GetMonitoredResourceDescriptor gets a single monitored resource descriptor. This method does not require a Workspace.
+// GetMonitoredResourceDescriptor gets a single monitored resource descriptor.
 func (c *MetricClient) GetMonitoredResourceDescriptor(ctx context.Context, req *monitoringpb.GetMonitoredResourceDescriptorRequest, opts ...gax.CallOption) (*monitoredrespb.MonitoredResourceDescriptor, error) {
 	return c.internalClient.GetMonitoredResourceDescriptor(ctx, req, opts...)
 }
 
-// ListMetricDescriptors lists metric descriptors that match a filter. This method does not require a Workspace.
+// ListMetricDescriptors lists metric descriptors that match a filter.
 func (c *MetricClient) ListMetricDescriptors(ctx context.Context, req *monitoringpb.ListMetricDescriptorsRequest, opts ...gax.CallOption) *MetricDescriptorIterator {
 	return c.internalClient.ListMetricDescriptors(ctx, req, opts...)
 }
 
-// GetMetricDescriptor gets a single metric descriptor. This method does not require a Workspace.
+// GetMetricDescriptor gets a single metric descriptor.
 func (c *MetricClient) GetMetricDescriptor(ctx context.Context, req *monitoringpb.GetMetricDescriptorRequest, opts ...gax.CallOption) (*metricpb.MetricDescriptor, error) {
 	return c.internalClient.GetMetricDescriptor(ctx, req, opts...)
 }
 
 // CreateMetricDescriptor creates a new metric descriptor.
-// The creation is executed asynchronously and callers may check the returned
-// operation to track its progress.
+// The creation is executed asynchronously.
 // User-created metric descriptors define
 // custom metrics (at https://cloud.google.com/monitoring/custom-metrics).
+// The metric descriptor is updated if it already exists,
+// except that metric labels are never removed.
 func (c *MetricClient) CreateMetricDescriptor(ctx context.Context, req *monitoringpb.CreateMetricDescriptorRequest, opts ...gax.CallOption) (*metricpb.MetricDescriptor, error) {
 	return c.internalClient.CreateMetricDescriptor(ctx, req, opts...)
 }
@@ -235,7 +240,7 @@ func (c *MetricClient) DeleteMetricDescriptor(ctx context.Context, req *monitori
 	return c.internalClient.DeleteMetricDescriptor(ctx, req, opts...)
 }
 
-// ListTimeSeries lists time series that match a filter. This method does not require a Workspace.
+// ListTimeSeries lists time series that match a filter.
 func (c *MetricClient) ListTimeSeries(ctx context.Context, req *monitoringpb.ListTimeSeriesRequest, opts ...gax.CallOption) *TimeSeriesIterator {
 	return c.internalClient.ListTimeSeries(ctx, req, opts...)
 }
@@ -244,6 +249,9 @@ func (c *MetricClient) ListTimeSeries(ctx context.Context, req *monitoringpb.Lis
 // The response is empty if all time series in the request were written.
 // If any time series could not be written, a corresponding failure message is
 // included in the error response.
+// This method does not support
+// resource locations constraint of an organization
+// policy (at https://cloud.google.com/resource-manager/docs/organization-policy/defining-locations#setting_the_organization_policy).
 func (c *MetricClient) CreateTimeSeries(ctx context.Context, req *monitoringpb.CreateTimeSeriesRequest, opts ...gax.CallOption) error {
 	return c.internalClient.CreateTimeSeries(ctx, req, opts...)
 }
@@ -276,6 +284,8 @@ type metricGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewMetricClient creates a new metric service client based on gRPC.
@@ -303,6 +313,7 @@ func NewMetricClient(ctx context.Context, opts ...option.ClientOption) (*MetricC
 		connPool:     connPool,
 		metricClient: monitoringpb.NewMetricServiceClient(connPool),
 		CallOptions:  &client.CallOptions,
+		logger:       internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -325,7 +336,9 @@ func (c *metricGRPCClient) Connection() *grpc.ClientConn {
 func (c *metricGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -354,7 +367,7 @@ func (c *metricGRPCClient) ListMonitoredResourceDescriptors(ctx context.Context,
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.metricClient.ListMonitoredResourceDescriptors(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.metricClient.ListMonitoredResourceDescriptors, req, settings.GRPC, c.logger, "ListMonitoredResourceDescriptors")
 			return err
 		}, opts...)
 		if err != nil {
@@ -389,7 +402,7 @@ func (c *metricGRPCClient) GetMonitoredResourceDescriptor(ctx context.Context, r
 	var resp *monitoredrespb.MonitoredResourceDescriptor
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metricClient.GetMonitoredResourceDescriptor(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metricClient.GetMonitoredResourceDescriptor, req, settings.GRPC, c.logger, "GetMonitoredResourceDescriptor")
 		return err
 	}, opts...)
 	if err != nil {
@@ -418,7 +431,7 @@ func (c *metricGRPCClient) ListMetricDescriptors(ctx context.Context, req *monit
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.metricClient.ListMetricDescriptors(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.metricClient.ListMetricDescriptors, req, settings.GRPC, c.logger, "ListMetricDescriptors")
 			return err
 		}, opts...)
 		if err != nil {
@@ -453,7 +466,7 @@ func (c *metricGRPCClient) GetMetricDescriptor(ctx context.Context, req *monitor
 	var resp *metricpb.MetricDescriptor
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metricClient.GetMetricDescriptor(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metricClient.GetMetricDescriptor, req, settings.GRPC, c.logger, "GetMetricDescriptor")
 		return err
 	}, opts...)
 	if err != nil {
@@ -471,7 +484,7 @@ func (c *metricGRPCClient) CreateMetricDescriptor(ctx context.Context, req *moni
 	var resp *metricpb.MetricDescriptor
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metricClient.CreateMetricDescriptor(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metricClient.CreateMetricDescriptor, req, settings.GRPC, c.logger, "CreateMetricDescriptor")
 		return err
 	}, opts...)
 	if err != nil {
@@ -488,7 +501,7 @@ func (c *metricGRPCClient) DeleteMetricDescriptor(ctx context.Context, req *moni
 	opts = append((*c.CallOptions).DeleteMetricDescriptor[0:len((*c.CallOptions).DeleteMetricDescriptor):len((*c.CallOptions).DeleteMetricDescriptor)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.metricClient.DeleteMetricDescriptor(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.metricClient.DeleteMetricDescriptor, req, settings.GRPC, c.logger, "DeleteMetricDescriptor")
 		return err
 	}, opts...)
 	return err
@@ -514,7 +527,7 @@ func (c *metricGRPCClient) ListTimeSeries(ctx context.Context, req *monitoringpb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.metricClient.ListTimeSeries(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.metricClient.ListTimeSeries, req, settings.GRPC, c.logger, "ListTimeSeries")
 			return err
 		}, opts...)
 		if err != nil {
@@ -548,7 +561,7 @@ func (c *metricGRPCClient) CreateTimeSeries(ctx context.Context, req *monitoring
 	opts = append((*c.CallOptions).CreateTimeSeries[0:len((*c.CallOptions).CreateTimeSeries):len((*c.CallOptions).CreateTimeSeries)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.metricClient.CreateTimeSeries(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.metricClient.CreateTimeSeries, req, settings.GRPC, c.logger, "CreateTimeSeries")
 		return err
 	}, opts...)
 	return err
@@ -562,149 +575,8 @@ func (c *metricGRPCClient) CreateServiceTimeSeries(ctx context.Context, req *mon
 	opts = append((*c.CallOptions).CreateServiceTimeSeries[0:len((*c.CallOptions).CreateServiceTimeSeries):len((*c.CallOptions).CreateServiceTimeSeries)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.metricClient.CreateServiceTimeSeries(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.metricClient.CreateServiceTimeSeries, req, settings.GRPC, c.logger, "CreateServiceTimeSeries")
 		return err
 	}, opts...)
 	return err
-}
-
-// MetricDescriptorIterator manages a stream of *metricpb.MetricDescriptor.
-type MetricDescriptorIterator struct {
-	items    []*metricpb.MetricDescriptor
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*metricpb.MetricDescriptor, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *MetricDescriptorIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *MetricDescriptorIterator) Next() (*metricpb.MetricDescriptor, error) {
-	var item *metricpb.MetricDescriptor
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *MetricDescriptorIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *MetricDescriptorIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// MonitoredResourceDescriptorIterator manages a stream of *monitoredrespb.MonitoredResourceDescriptor.
-type MonitoredResourceDescriptorIterator struct {
-	items    []*monitoredrespb.MonitoredResourceDescriptor
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*monitoredrespb.MonitoredResourceDescriptor, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *MonitoredResourceDescriptorIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *MonitoredResourceDescriptorIterator) Next() (*monitoredrespb.MonitoredResourceDescriptor, error) {
-	var item *monitoredrespb.MonitoredResourceDescriptor
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *MonitoredResourceDescriptorIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *MonitoredResourceDescriptorIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// TimeSeriesIterator manages a stream of *monitoringpb.TimeSeries.
-type TimeSeriesIterator struct {
-	items    []*monitoringpb.TimeSeries
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*monitoringpb.TimeSeries, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *TimeSeriesIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *TimeSeriesIterator) Next() (*monitoringpb.TimeSeries, error) {
-	var item *monitoringpb.TimeSeries
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *TimeSeriesIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *TimeSeriesIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

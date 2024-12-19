@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	networkconnectivitypb "cloud.google.com/go/networkconnectivity/apiv1alpha1/networkconnectivitypb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -62,10 +61,13 @@ type HubCallOptions struct {
 func defaultHubGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("networkconnectivity.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("networkconnectivity.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("networkconnectivity.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://networkconnectivity.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -381,6 +383,8 @@ type hubGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewHubClient creates a new hub service client based on gRPC.
@@ -410,6 +414,7 @@ func NewHubClient(ctx context.Context, opts ...option.ClientOption) (*HubClient,
 		connPool:    connPool,
 		hubClient:   networkconnectivitypb.NewHubServiceClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -443,7 +448,9 @@ func (c *hubGRPCClient) Connection() *grpc.ClientConn {
 func (c *hubGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -470,6 +477,8 @@ type hubRESTClient struct {
 
 	// Points back to the CallOptions field of the containing HubClient
 	CallOptions **HubCallOptions
+
+	logger *slog.Logger
 }
 
 // NewHubRESTClient creates a new hub service rest client.
@@ -490,6 +499,7 @@ func NewHubRESTClient(ctx context.Context, opts ...option.ClientOption) (*HubCli
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -509,9 +519,12 @@ func NewHubRESTClient(ctx context.Context, opts ...option.ClientOption) (*HubCli
 func defaultHubRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://networkconnectivity.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://networkconnectivity.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://networkconnectivity.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://networkconnectivity.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -521,7 +534,9 @@ func defaultHubRESTClientOptions() []option.ClientOption {
 func (c *hubRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -558,7 +573,7 @@ func (c *hubGRPCClient) ListHubs(ctx context.Context, req *networkconnectivitypb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.hubClient.ListHubs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.hubClient.ListHubs, req, settings.GRPC, c.logger, "ListHubs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -593,7 +608,7 @@ func (c *hubGRPCClient) GetHub(ctx context.Context, req *networkconnectivitypb.G
 	var resp *networkconnectivitypb.Hub
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.GetHub(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.GetHub, req, settings.GRPC, c.logger, "GetHub")
 		return err
 	}, opts...)
 	if err != nil {
@@ -611,7 +626,7 @@ func (c *hubGRPCClient) CreateHub(ctx context.Context, req *networkconnectivityp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.CreateHub(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.CreateHub, req, settings.GRPC, c.logger, "CreateHub")
 		return err
 	}, opts...)
 	if err != nil {
@@ -631,7 +646,7 @@ func (c *hubGRPCClient) UpdateHub(ctx context.Context, req *networkconnectivityp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.UpdateHub(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.UpdateHub, req, settings.GRPC, c.logger, "UpdateHub")
 		return err
 	}, opts...)
 	if err != nil {
@@ -651,7 +666,7 @@ func (c *hubGRPCClient) DeleteHub(ctx context.Context, req *networkconnectivityp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.DeleteHub(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.DeleteHub, req, settings.GRPC, c.logger, "DeleteHub")
 		return err
 	}, opts...)
 	if err != nil {
@@ -682,7 +697,7 @@ func (c *hubGRPCClient) ListSpokes(ctx context.Context, req *networkconnectivity
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.hubClient.ListSpokes(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.hubClient.ListSpokes, req, settings.GRPC, c.logger, "ListSpokes")
 			return err
 		}, opts...)
 		if err != nil {
@@ -717,7 +732,7 @@ func (c *hubGRPCClient) GetSpoke(ctx context.Context, req *networkconnectivitypb
 	var resp *networkconnectivitypb.Spoke
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.GetSpoke(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.GetSpoke, req, settings.GRPC, c.logger, "GetSpoke")
 		return err
 	}, opts...)
 	if err != nil {
@@ -735,7 +750,7 @@ func (c *hubGRPCClient) CreateSpoke(ctx context.Context, req *networkconnectivit
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.CreateSpoke(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.CreateSpoke, req, settings.GRPC, c.logger, "CreateSpoke")
 		return err
 	}, opts...)
 	if err != nil {
@@ -755,7 +770,7 @@ func (c *hubGRPCClient) UpdateSpoke(ctx context.Context, req *networkconnectivit
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.UpdateSpoke(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.UpdateSpoke, req, settings.GRPC, c.logger, "UpdateSpoke")
 		return err
 	}, opts...)
 	if err != nil {
@@ -775,7 +790,7 @@ func (c *hubGRPCClient) DeleteSpoke(ctx context.Context, req *networkconnectivit
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.hubClient.DeleteSpoke(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.hubClient.DeleteSpoke, req, settings.GRPC, c.logger, "DeleteSpoke")
 		return err
 	}, opts...)
 	if err != nil {
@@ -837,21 +852,10 @@ func (c *hubRESTClient) ListHubs(ctx context.Context, req *networkconnectivitypb
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListHubs")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -914,17 +918,7 @@ func (c *hubRESTClient) GetHub(ctx context.Context, req *networkconnectivitypb.G
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetHub")
 		if err != nil {
 			return err
 		}
@@ -986,21 +980,10 @@ func (c *hubRESTClient) CreateHub(ctx context.Context, req *networkconnectivityp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateHub")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1039,11 +1022,11 @@ func (c *hubRESTClient) UpdateHub(ctx context.Context, req *networkconnectivityp
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1067,21 +1050,10 @@ func (c *hubRESTClient) UpdateHub(ctx context.Context, req *networkconnectivityp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateHub")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1134,21 +1106,10 @@ func (c *hubRESTClient) DeleteHub(ctx context.Context, req *networkconnectivityp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteHub")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1217,21 +1178,10 @@ func (c *hubRESTClient) ListSpokes(ctx context.Context, req *networkconnectivity
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSpokes")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1294,17 +1244,7 @@ func (c *hubRESTClient) GetSpoke(ctx context.Context, req *networkconnectivitypb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSpoke")
 		if err != nil {
 			return err
 		}
@@ -1366,21 +1306,10 @@ func (c *hubRESTClient) CreateSpoke(ctx context.Context, req *networkconnectivit
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateSpoke")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1419,11 +1348,11 @@ func (c *hubRESTClient) UpdateSpoke(ctx context.Context, req *networkconnectivit
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1447,21 +1376,10 @@ func (c *hubRESTClient) UpdateSpoke(ctx context.Context, req *networkconnectivit
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateSpoke")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1514,21 +1432,10 @@ func (c *hubRESTClient) DeleteSpoke(ctx context.Context, req *networkconnectivit
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteSpoke")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1544,12 +1451,6 @@ func (c *hubRESTClient) DeleteSpoke(ctx context.Context, req *networkconnectivit
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
-}
-
-// CreateHubOperation manages a long-running operation from CreateHub.
-type CreateHubOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // CreateHubOperation returns a new CreateHubOperation from a given name.
@@ -1570,70 +1471,6 @@ func (c *hubRESTClient) CreateHubOperation(name string) *CreateHubOperation {
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateHubOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*networkconnectivitypb.Hub, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp networkconnectivitypb.Hub
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateHubOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*networkconnectivitypb.Hub, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp networkconnectivitypb.Hub
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateHubOperation) Metadata() (*networkconnectivitypb.OperationMetadata, error) {
-	var meta networkconnectivitypb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateHubOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateHubOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateSpokeOperation manages a long-running operation from CreateSpoke.
-type CreateSpokeOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // CreateSpokeOperation returns a new CreateSpokeOperation from a given name.
 // The name must be that of a previously created CreateSpokeOperation, possibly from a different process.
 func (c *hubGRPCClient) CreateSpokeOperation(name string) *CreateSpokeOperation {
@@ -1650,70 +1487,6 @@ func (c *hubRESTClient) CreateSpokeOperation(name string) *CreateSpokeOperation 
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateSpokeOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*networkconnectivitypb.Spoke, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp networkconnectivitypb.Spoke
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateSpokeOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*networkconnectivitypb.Spoke, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp networkconnectivitypb.Spoke
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateSpokeOperation) Metadata() (*networkconnectivitypb.OperationMetadata, error) {
-	var meta networkconnectivitypb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateSpokeOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateSpokeOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteHubOperation manages a long-running operation from DeleteHub.
-type DeleteHubOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // DeleteHubOperation returns a new DeleteHubOperation from a given name.
@@ -1734,59 +1507,6 @@ func (c *hubRESTClient) DeleteHubOperation(name string) *DeleteHubOperation {
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteHubOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteHubOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteHubOperation) Metadata() (*networkconnectivitypb.OperationMetadata, error) {
-	var meta networkconnectivitypb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteHubOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteHubOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteSpokeOperation manages a long-running operation from DeleteSpoke.
-type DeleteSpokeOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // DeleteSpokeOperation returns a new DeleteSpokeOperation from a given name.
 // The name must be that of a previously created DeleteSpokeOperation, possibly from a different process.
 func (c *hubGRPCClient) DeleteSpokeOperation(name string) *DeleteSpokeOperation {
@@ -1803,59 +1523,6 @@ func (c *hubRESTClient) DeleteSpokeOperation(name string) *DeleteSpokeOperation 
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteSpokeOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteSpokeOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteSpokeOperation) Metadata() (*networkconnectivitypb.OperationMetadata, error) {
-	var meta networkconnectivitypb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteSpokeOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteSpokeOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateHubOperation manages a long-running operation from UpdateHub.
-type UpdateHubOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // UpdateHubOperation returns a new UpdateHubOperation from a given name.
@@ -1876,70 +1543,6 @@ func (c *hubRESTClient) UpdateHubOperation(name string) *UpdateHubOperation {
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateHubOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*networkconnectivitypb.Hub, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp networkconnectivitypb.Hub
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateHubOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*networkconnectivitypb.Hub, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp networkconnectivitypb.Hub
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateHubOperation) Metadata() (*networkconnectivitypb.OperationMetadata, error) {
-	var meta networkconnectivitypb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateHubOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateHubOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateSpokeOperation manages a long-running operation from UpdateSpoke.
-type UpdateSpokeOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdateSpokeOperation returns a new UpdateSpokeOperation from a given name.
 // The name must be that of a previously created UpdateSpokeOperation, possibly from a different process.
 func (c *hubGRPCClient) UpdateSpokeOperation(name string) *UpdateSpokeOperation {
@@ -1956,156 +1559,4 @@ func (c *hubRESTClient) UpdateSpokeOperation(name string) *UpdateSpokeOperation 
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateSpokeOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*networkconnectivitypb.Spoke, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp networkconnectivitypb.Spoke
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateSpokeOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*networkconnectivitypb.Spoke, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp networkconnectivitypb.Spoke
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateSpokeOperation) Metadata() (*networkconnectivitypb.OperationMetadata, error) {
-	var meta networkconnectivitypb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateSpokeOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateSpokeOperation) Name() string {
-	return op.lro.Name()
-}
-
-// HubIterator manages a stream of *networkconnectivitypb.Hub.
-type HubIterator struct {
-	items    []*networkconnectivitypb.Hub
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*networkconnectivitypb.Hub, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *HubIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *HubIterator) Next() (*networkconnectivitypb.Hub, error) {
-	var item *networkconnectivitypb.Hub
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *HubIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *HubIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// SpokeIterator manages a stream of *networkconnectivitypb.Spoke.
-type SpokeIterator struct {
-	items    []*networkconnectivitypb.Spoke
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*networkconnectivitypb.Spoke, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *SpokeIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *SpokeIterator) Next() (*networkconnectivitypb.Spoke, error) {
-	var item *networkconnectivitypb.Spoke
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *SpokeIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *SpokeIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

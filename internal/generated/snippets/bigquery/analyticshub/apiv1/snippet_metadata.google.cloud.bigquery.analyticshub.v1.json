@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/bigquery/analyticshub/apiv1",
-    "version": "1.54.0",
+    "version": "1.65.0",
     "language": "GO",
     "apis": [
       {
@@ -194,6 +194,52 @@
       ]
     },
     {
+      "regionTag": "analyticshub_v1_generated_AnalyticsHubService_DeleteSubscription_sync",
+      "title": "analyticshub DeleteSubscription Sample",
+      "description": "DeleteSubscription deletes a subscription.",
+      "file": "Client/DeleteSubscription/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteSubscription",
+        "fullName": "google.cloud.bigquery.analyticshub.v1.Client.DeleteSubscription",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "analyticshubpb.DeleteSubscriptionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteSubscriptionOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteSubscription",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService.DeleteSubscription",
+          "service": {
+            "shortName": "AnalyticsHubService",
+            "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticshub_v1_generated_AnalyticsHubService_GetDataExchange_sync",
       "title": "analyticshub GetDataExchange Sample",
       "description": "GetDataExchange gets the details of a data exchange.",
@@ -332,6 +378,52 @@
       ]
     },
     {
+      "regionTag": "analyticshub_v1_generated_AnalyticsHubService_GetSubscription_sync",
+      "title": "analyticshub GetSubscription Sample",
+      "description": "GetSubscription gets the details of a Subscription.",
+      "file": "Client/GetSubscription/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSubscription",
+        "fullName": "google.cloud.bigquery.analyticshub.v1.Client.GetSubscription",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "analyticshubpb.GetSubscriptionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*analyticshubpb.Subscription",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.Client"
+        },
+        "method": {
+          "shortName": "GetSubscription",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService.GetSubscription",
+          "service": {
+            "shortName": "AnalyticsHubService",
+            "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticshub_v1_generated_AnalyticsHubService_ListDataExchanges_sync",
       "title": "analyticshub ListDataExchanges Sample",
       "description": "ListDataExchanges lists all data exchanges in a given project and location.",
@@ -372,7 +464,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -418,7 +510,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -464,7 +556,191 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticshub_v1_generated_AnalyticsHubService_ListSharedResourceSubscriptions_sync",
+      "title": "analyticshub ListSharedResourceSubscriptions Sample",
+      "description": "ListSharedResourceSubscriptions lists all subscriptions on a given Data Exchange or Listing.",
+      "file": "Client/ListSharedResourceSubscriptions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSharedResourceSubscriptions",
+        "fullName": "google.cloud.bigquery.analyticshub.v1.Client.ListSharedResourceSubscriptions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "analyticshubpb.ListSharedResourceSubscriptionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SubscriptionIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.Client"
+        },
+        "method": {
+          "shortName": "ListSharedResourceSubscriptions",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService.ListSharedResourceSubscriptions",
+          "service": {
+            "shortName": "AnalyticsHubService",
+            "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticshub_v1_generated_AnalyticsHubService_ListSubscriptions_sync",
+      "title": "analyticshub ListSubscriptions Sample",
+      "description": "ListSubscriptions lists all subscriptions in a given project and location.",
+      "file": "Client/ListSubscriptions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSubscriptions",
+        "fullName": "google.cloud.bigquery.analyticshub.v1.Client.ListSubscriptions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "analyticshubpb.ListSubscriptionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SubscriptionIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.Client"
+        },
+        "method": {
+          "shortName": "ListSubscriptions",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService.ListSubscriptions",
+          "service": {
+            "shortName": "AnalyticsHubService",
+            "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticshub_v1_generated_AnalyticsHubService_RefreshSubscription_sync",
+      "title": "analyticshub RefreshSubscription Sample",
+      "description": "RefreshSubscription refreshes a Subscription to a Data Exchange. A Data Exchange can become\nstale when a publisher adds or removes data. This is a long-running\noperation as it may create many linked datasets.",
+      "file": "Client/RefreshSubscription/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RefreshSubscription",
+        "fullName": "google.cloud.bigquery.analyticshub.v1.Client.RefreshSubscription",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "analyticshubpb.RefreshSubscriptionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RefreshSubscriptionOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.Client"
+        },
+        "method": {
+          "shortName": "RefreshSubscription",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService.RefreshSubscription",
+          "service": {
+            "shortName": "AnalyticsHubService",
+            "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticshub_v1_generated_AnalyticsHubService_RevokeSubscription_sync",
+      "title": "analyticshub RevokeSubscription Sample",
+      "description": "RevokeSubscription revokes a given subscription.",
+      "file": "Client/RevokeSubscription/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RevokeSubscription",
+        "fullName": "google.cloud.bigquery.analyticshub.v1.Client.RevokeSubscription",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "analyticshubpb.RevokeSubscriptionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*analyticshubpb.RevokeSubscriptionResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.Client"
+        },
+        "method": {
+          "shortName": "RevokeSubscription",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService.RevokeSubscription",
+          "service": {
+            "shortName": "AnalyticsHubService",
+            "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -511,6 +787,52 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticshub_v1_generated_AnalyticsHubService_SubscribeDataExchange_sync",
+      "title": "analyticshub SubscribeDataExchange Sample",
+      "description": "SubscribeDataExchange creates a Subscription to a Data Exchange. This is a long-running operation\nas it will create one or more linked datasets.",
+      "file": "Client/SubscribeDataExchange/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SubscribeDataExchange",
+        "fullName": "google.cloud.bigquery.analyticshub.v1.Client.SubscribeDataExchange",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "analyticshubpb.SubscribeDataExchangeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SubscribeDataExchangeOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.Client"
+        },
+        "method": {
+          "shortName": "SubscribeDataExchange",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService.SubscribeDataExchange",
+          "service": {
+            "shortName": "AnalyticsHubService",
+            "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]

@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -29,7 +29,6 @@ import (
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	pubsubpb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -62,10 +61,13 @@ type PublisherCallOptions struct {
 func defaultPublisherGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("pubsub.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("pubsub.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("pubsub.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://pubsub.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -378,13 +380,13 @@ func (c *PublisherClient) Connection() *grpc.ClientConn {
 }
 
 // CreateTopic creates the given topic with the given name. See the [resource name rules]
-// (https://cloud.google.com/pubsub/docs/admin#resource_names (at https://cloud.google.com/pubsub/docs/admin#resource_names)).
+// (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names (at https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names)).
 func (c *PublisherClient) CreateTopic(ctx context.Context, req *pubsubpb.Topic, opts ...gax.CallOption) (*pubsubpb.Topic, error) {
 	return c.internalClient.CreateTopic(ctx, req, opts...)
 }
 
-// UpdateTopic updates an existing topic. Note that certain properties of a
-// topic are not modifiable.
+// UpdateTopic updates an existing topic by updating the fields specified in the update
+// mask. Note that certain properties of a topic are not modifiable.
 func (c *PublisherClient) UpdateTopic(ctx context.Context, req *pubsubpb.UpdateTopicRequest, opts ...gax.CallOption) (*pubsubpb.Topic, error) {
 	return c.internalClient.UpdateTopic(ctx, req, opts...)
 }
@@ -479,6 +481,8 @@ type publisherGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewPublisherClient creates a new publisher client based on gRPC.
@@ -506,6 +510,7 @@ func NewPublisherClient(ctx context.Context, opts ...option.ClientOption) (*Publ
 		connPool:        connPool,
 		publisherClient: pubsubpb.NewPublisherClient(connPool),
 		CallOptions:     &client.CallOptions,
+		logger:          internaloption.GetLogger(opts),
 		iamPolicyClient: iampb.NewIAMPolicyClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -529,7 +534,9 @@ func (c *publisherGRPCClient) Connection() *grpc.ClientConn {
 func (c *publisherGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -551,6 +558,8 @@ type publisherRESTClient struct {
 
 	// Points back to the CallOptions field of the containing PublisherClient
 	CallOptions **PublisherCallOptions
+
+	logger *slog.Logger
 }
 
 // NewPublisherRESTClient creates a new publisher rest client.
@@ -569,6 +578,7 @@ func NewPublisherRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -578,9 +588,12 @@ func NewPublisherRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 func defaultPublisherRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://pubsub.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://pubsub.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://pubsub.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://pubsub.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -590,7 +603,9 @@ func defaultPublisherRESTClientOptions() []option.ClientOption {
 func (c *publisherRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -616,7 +631,7 @@ func (c *publisherGRPCClient) CreateTopic(ctx context.Context, req *pubsubpb.Top
 	var resp *pubsubpb.Topic
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.publisherClient.CreateTopic(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.publisherClient.CreateTopic, req, settings.GRPC, c.logger, "CreateTopic")
 		return err
 	}, opts...)
 	if err != nil {
@@ -634,7 +649,7 @@ func (c *publisherGRPCClient) UpdateTopic(ctx context.Context, req *pubsubpb.Upd
 	var resp *pubsubpb.Topic
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.publisherClient.UpdateTopic(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.publisherClient.UpdateTopic, req, settings.GRPC, c.logger, "UpdateTopic")
 		return err
 	}, opts...)
 	if err != nil {
@@ -652,7 +667,7 @@ func (c *publisherGRPCClient) Publish(ctx context.Context, req *pubsubpb.Publish
 	var resp *pubsubpb.PublishResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.publisherClient.Publish(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.publisherClient.Publish, req, settings.GRPC, c.logger, "Publish")
 		return err
 	}, opts...)
 	if err != nil {
@@ -670,7 +685,7 @@ func (c *publisherGRPCClient) GetTopic(ctx context.Context, req *pubsubpb.GetTop
 	var resp *pubsubpb.Topic
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.publisherClient.GetTopic(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.publisherClient.GetTopic, req, settings.GRPC, c.logger, "GetTopic")
 		return err
 	}, opts...)
 	if err != nil {
@@ -699,7 +714,7 @@ func (c *publisherGRPCClient) ListTopics(ctx context.Context, req *pubsubpb.List
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.publisherClient.ListTopics(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.publisherClient.ListTopics, req, settings.GRPC, c.logger, "ListTopics")
 			return err
 		}, opts...)
 		if err != nil {
@@ -745,7 +760,7 @@ func (c *publisherGRPCClient) ListTopicSubscriptions(ctx context.Context, req *p
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.publisherClient.ListTopicSubscriptions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.publisherClient.ListTopicSubscriptions, req, settings.GRPC, c.logger, "ListTopicSubscriptions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -791,7 +806,7 @@ func (c *publisherGRPCClient) ListTopicSnapshots(ctx context.Context, req *pubsu
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.publisherClient.ListTopicSnapshots(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.publisherClient.ListTopicSnapshots, req, settings.GRPC, c.logger, "ListTopicSnapshots")
 			return err
 		}, opts...)
 		if err != nil {
@@ -825,7 +840,7 @@ func (c *publisherGRPCClient) DeleteTopic(ctx context.Context, req *pubsubpb.Del
 	opts = append((*c.CallOptions).DeleteTopic[0:len((*c.CallOptions).DeleteTopic):len((*c.CallOptions).DeleteTopic)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.publisherClient.DeleteTopic(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.publisherClient.DeleteTopic, req, settings.GRPC, c.logger, "DeleteTopic")
 		return err
 	}, opts...)
 	return err
@@ -840,7 +855,7 @@ func (c *publisherGRPCClient) DetachSubscription(ctx context.Context, req *pubsu
 	var resp *pubsubpb.DetachSubscriptionResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.publisherClient.DetachSubscription(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.publisherClient.DetachSubscription, req, settings.GRPC, c.logger, "DetachSubscription")
 		return err
 	}, opts...)
 	if err != nil {
@@ -858,7 +873,7 @@ func (c *publisherGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIa
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -876,7 +891,7 @@ func (c *publisherGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIa
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -894,7 +909,7 @@ func (c *publisherGRPCClient) TestIamPermissions(ctx context.Context, req *iampb
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -904,7 +919,7 @@ func (c *publisherGRPCClient) TestIamPermissions(ctx context.Context, req *iampb
 }
 
 // CreateTopic creates the given topic with the given name. See the [resource name rules]
-// (https://cloud.google.com/pubsub/docs/admin#resource_names (at https://cloud.google.com/pubsub/docs/admin#resource_names)).
+// (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names (at https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names)).
 func (c *publisherRESTClient) CreateTopic(ctx context.Context, req *pubsubpb.Topic, opts ...gax.CallOption) (*pubsubpb.Topic, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -943,17 +958,7 @@ func (c *publisherRESTClient) CreateTopic(ctx context.Context, req *pubsubpb.Top
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateTopic")
 		if err != nil {
 			return err
 		}
@@ -970,8 +975,8 @@ func (c *publisherRESTClient) CreateTopic(ctx context.Context, req *pubsubpb.Top
 	return resp, nil
 }
 
-// UpdateTopic updates an existing topic. Note that certain properties of a
-// topic are not modifiable.
+// UpdateTopic updates an existing topic by updating the fields specified in the update
+// mask. Note that certain properties of a topic are not modifiable.
 func (c *publisherRESTClient) UpdateTopic(ctx context.Context, req *pubsubpb.UpdateTopicRequest, opts ...gax.CallOption) (*pubsubpb.Topic, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1010,17 +1015,7 @@ func (c *publisherRESTClient) UpdateTopic(ctx context.Context, req *pubsubpb.Upd
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateTopic")
 		if err != nil {
 			return err
 		}
@@ -1077,17 +1072,7 @@ func (c *publisherRESTClient) Publish(ctx context.Context, req *pubsubpb.Publish
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "Publish")
 		if err != nil {
 			return err
 		}
@@ -1137,17 +1122,7 @@ func (c *publisherRESTClient) GetTopic(ctx context.Context, req *pubsubpb.GetTop
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetTopic")
 		if err != nil {
 			return err
 		}
@@ -1209,21 +1184,10 @@ func (c *publisherRESTClient) ListTopics(ctx context.Context, req *pubsubpb.List
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListTopics")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1298,21 +1262,10 @@ func (c *publisherRESTClient) ListTopicSubscriptions(ctx context.Context, req *p
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListTopicSubscriptions")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1391,21 +1344,10 @@ func (c *publisherRESTClient) ListTopicSnapshots(ctx context.Context, req *pubsu
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListTopicSnapshots")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1469,15 +1411,8 @@ func (c *publisherRESTClient) DeleteTopic(ctx context.Context, req *pubsubpb.Del
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteTopic")
+		return err
 	}, opts...)
 }
 
@@ -1517,17 +1452,7 @@ func (c *publisherRESTClient) DetachSubscription(ctx context.Context, req *pubsu
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DetachSubscription")
 		if err != nil {
 			return err
 		}
@@ -1581,17 +1506,7 @@ func (c *publisherRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIa
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -1651,17 +1566,7 @@ func (c *publisherRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIa
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -1723,17 +1628,7 @@ func (c *publisherRESTClient) TestIamPermissions(ctx context.Context, req *iampb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
 		if err != nil {
 			return err
 		}
@@ -1748,98 +1643,4 @@ func (c *publisherRESTClient) TestIamPermissions(ctx context.Context, req *iampb
 		return nil, e
 	}
 	return resp, nil
-}
-
-// StringIterator manages a stream of string.
-type StringIterator struct {
-	items    []string
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []string, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *StringIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *StringIterator) Next() (string, error) {
-	var item string
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *StringIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *StringIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// TopicIterator manages a stream of *pubsubpb.Topic.
-type TopicIterator struct {
-	items    []*pubsubpb.Topic
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*pubsubpb.Topic, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *TopicIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *TopicIterator) Next() (*pubsubpb.Topic, error) {
-	var item *pubsubpb.Topic
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *TopicIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *TopicIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

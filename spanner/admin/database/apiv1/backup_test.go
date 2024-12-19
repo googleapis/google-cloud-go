@@ -24,13 +24,13 @@ import (
 
 	"cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"cloud.google.com/go/spanner/admin/database/apiv1/databasepb"
-	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
-	"github.com/golang/protobuf/ptypes/timestamp"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	gstatus "google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/anypb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // CreateBackup is an extension to mockDatabaseAdminServer for managing backups.
@@ -56,7 +56,7 @@ func TestDatabaseAdminClient_StartBackupOperation(t *testing.T) {
 		BackupId: backupID,
 		Backup: &databasepb.Backup{
 			Database: databasePath,
-			ExpireTime: &timestamp.Timestamp{
+			ExpireTime: &timestamppb.Timestamp{
 				Seconds: 221688000,
 				Nanos:   500,
 			},
@@ -71,7 +71,7 @@ func TestDatabaseAdminClient_StartBackupOperation(t *testing.T) {
 	mockDatabaseAdmin.reqs = nil
 
 	ctx := context.Background()
-	any, err := ptypes.MarshalAny(expectedResponse)
+	any, err := anypb.New(expectedResponse)
 	if err != nil {
 		t.Fatal(err)
 	}

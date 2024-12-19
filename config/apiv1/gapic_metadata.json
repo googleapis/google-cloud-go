@@ -1,0 +1,343 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.config.v1",
+  "libraryPackage": "cloud.google.com/go/config/apiv1",
+  "services": {
+    "Config": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateDeployment": {
+              "methods": [
+                "CreateDeployment"
+              ]
+            },
+            "CreatePreview": {
+              "methods": [
+                "CreatePreview"
+              ]
+            },
+            "DeleteDeployment": {
+              "methods": [
+                "DeleteDeployment"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeletePreview": {
+              "methods": [
+                "DeletePreview"
+              ]
+            },
+            "DeleteStatefile": {
+              "methods": [
+                "DeleteStatefile"
+              ]
+            },
+            "ExportDeploymentStatefile": {
+              "methods": [
+                "ExportDeploymentStatefile"
+              ]
+            },
+            "ExportLockInfo": {
+              "methods": [
+                "ExportLockInfo"
+              ]
+            },
+            "ExportPreviewResult": {
+              "methods": [
+                "ExportPreviewResult"
+              ]
+            },
+            "ExportRevisionStatefile": {
+              "methods": [
+                "ExportRevisionStatefile"
+              ]
+            },
+            "GetDeployment": {
+              "methods": [
+                "GetDeployment"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetPreview": {
+              "methods": [
+                "GetPreview"
+              ]
+            },
+            "GetResource": {
+              "methods": [
+                "GetResource"
+              ]
+            },
+            "GetRevision": {
+              "methods": [
+                "GetRevision"
+              ]
+            },
+            "GetTerraformVersion": {
+              "methods": [
+                "GetTerraformVersion"
+              ]
+            },
+            "ImportStatefile": {
+              "methods": [
+                "ImportStatefile"
+              ]
+            },
+            "ListDeployments": {
+              "methods": [
+                "ListDeployments"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListPreviews": {
+              "methods": [
+                "ListPreviews"
+              ]
+            },
+            "ListResources": {
+              "methods": [
+                "ListResources"
+              ]
+            },
+            "ListRevisions": {
+              "methods": [
+                "ListRevisions"
+              ]
+            },
+            "ListTerraformVersions": {
+              "methods": [
+                "ListTerraformVersions"
+              ]
+            },
+            "LockDeployment": {
+              "methods": [
+                "LockDeployment"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UnlockDeployment": {
+              "methods": [
+                "UnlockDeployment"
+              ]
+            },
+            "UpdateDeployment": {
+              "methods": [
+                "UpdateDeployment"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateDeployment": {
+              "methods": [
+                "CreateDeployment"
+              ]
+            },
+            "CreatePreview": {
+              "methods": [
+                "CreatePreview"
+              ]
+            },
+            "DeleteDeployment": {
+              "methods": [
+                "DeleteDeployment"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeletePreview": {
+              "methods": [
+                "DeletePreview"
+              ]
+            },
+            "DeleteStatefile": {
+              "methods": [
+                "DeleteStatefile"
+              ]
+            },
+            "ExportDeploymentStatefile": {
+              "methods": [
+                "ExportDeploymentStatefile"
+              ]
+            },
+            "ExportLockInfo": {
+              "methods": [
+                "ExportLockInfo"
+              ]
+            },
+            "ExportPreviewResult": {
+              "methods": [
+                "ExportPreviewResult"
+              ]
+            },
+            "ExportRevisionStatefile": {
+              "methods": [
+                "ExportRevisionStatefile"
+              ]
+            },
+            "GetDeployment": {
+              "methods": [
+                "GetDeployment"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetPreview": {
+              "methods": [
+                "GetPreview"
+              ]
+            },
+            "GetResource": {
+              "methods": [
+                "GetResource"
+              ]
+            },
+            "GetRevision": {
+              "methods": [
+                "GetRevision"
+              ]
+            },
+            "GetTerraformVersion": {
+              "methods": [
+                "GetTerraformVersion"
+              ]
+            },
+            "ImportStatefile": {
+              "methods": [
+                "ImportStatefile"
+              ]
+            },
+            "ListDeployments": {
+              "methods": [
+                "ListDeployments"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListPreviews": {
+              "methods": [
+                "ListPreviews"
+              ]
+            },
+            "ListResources": {
+              "methods": [
+                "ListResources"
+              ]
+            },
+            "ListRevisions": {
+              "methods": [
+                "ListRevisions"
+              ]
+            },
+            "ListTerraformVersions": {
+              "methods": [
+                "ListTerraformVersions"
+              ]
+            },
+            "LockDeployment": {
+              "methods": [
+                "LockDeployment"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UnlockDeployment": {
+              "methods": [
+                "UnlockDeployment"
+              ]
+            },
+            "UpdateDeployment": {
+              "methods": [
+                "UpdateDeployment"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

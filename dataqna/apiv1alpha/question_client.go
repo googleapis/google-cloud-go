@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	dataqnapb "cloud.google.com/go/dataqna/apiv1alpha/dataqnapb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -52,10 +51,13 @@ type QuestionCallOptions struct {
 func defaultQuestionGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("dataqna.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("dataqna.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("dataqna.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://dataqna.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -237,6 +239,8 @@ type questionGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewQuestionClient creates a new question service client based on gRPC.
@@ -277,6 +281,7 @@ func NewQuestionClient(ctx context.Context, opts ...option.ClientOption) (*Quest
 		connPool:       connPool,
 		questionClient: dataqnapb.NewQuestionServiceClient(connPool),
 		CallOptions:    &client.CallOptions,
+		logger:         internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -299,7 +304,9 @@ func (c *questionGRPCClient) Connection() *grpc.ClientConn {
 func (c *questionGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -321,6 +328,8 @@ type questionRESTClient struct {
 
 	// Points back to the CallOptions field of the containing QuestionClient
 	CallOptions **QuestionCallOptions
+
+	logger *slog.Logger
 }
 
 // NewQuestionRESTClient creates a new question service rest client.
@@ -352,6 +361,7 @@ func NewQuestionRESTClient(ctx context.Context, opts ...option.ClientOption) (*Q
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -361,9 +371,12 @@ func NewQuestionRESTClient(ctx context.Context, opts ...option.ClientOption) (*Q
 func defaultQuestionRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://dataqna.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://dataqna.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://dataqna.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://dataqna.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -373,7 +386,9 @@ func defaultQuestionRESTClientOptions() []option.ClientOption {
 func (c *questionRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -399,7 +414,7 @@ func (c *questionGRPCClient) GetQuestion(ctx context.Context, req *dataqnapb.Get
 	var resp *dataqnapb.Question
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.questionClient.GetQuestion(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.questionClient.GetQuestion, req, settings.GRPC, c.logger, "GetQuestion")
 		return err
 	}, opts...)
 	if err != nil {
@@ -417,7 +432,7 @@ func (c *questionGRPCClient) CreateQuestion(ctx context.Context, req *dataqnapb.
 	var resp *dataqnapb.Question
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.questionClient.CreateQuestion(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.questionClient.CreateQuestion, req, settings.GRPC, c.logger, "CreateQuestion")
 		return err
 	}, opts...)
 	if err != nil {
@@ -435,7 +450,7 @@ func (c *questionGRPCClient) ExecuteQuestion(ctx context.Context, req *dataqnapb
 	var resp *dataqnapb.Question
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.questionClient.ExecuteQuestion(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.questionClient.ExecuteQuestion, req, settings.GRPC, c.logger, "ExecuteQuestion")
 		return err
 	}, opts...)
 	if err != nil {
@@ -453,7 +468,7 @@ func (c *questionGRPCClient) GetUserFeedback(ctx context.Context, req *dataqnapb
 	var resp *dataqnapb.UserFeedback
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.questionClient.GetUserFeedback(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.questionClient.GetUserFeedback, req, settings.GRPC, c.logger, "GetUserFeedback")
 		return err
 	}, opts...)
 	if err != nil {
@@ -471,7 +486,7 @@ func (c *questionGRPCClient) UpdateUserFeedback(ctx context.Context, req *dataqn
 	var resp *dataqnapb.UserFeedback
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.questionClient.UpdateUserFeedback(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.questionClient.UpdateUserFeedback, req, settings.GRPC, c.logger, "UpdateUserFeedback")
 		return err
 	}, opts...)
 	if err != nil {
@@ -490,11 +505,11 @@ func (c *questionRESTClient) GetQuestion(ctx context.Context, req *dataqnapb.Get
 
 	params := url.Values{}
 	if req.GetReadMask() != nil {
-		readMask, err := protojson.Marshal(req.GetReadMask())
+		field, err := protojson.Marshal(req.GetReadMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("readMask", string(readMask[1:len(readMask)-1]))
+		params.Add("readMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -519,17 +534,7 @@ func (c *questionRESTClient) GetQuestion(ctx context.Context, req *dataqnapb.Get
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetQuestion")
 		if err != nil {
 			return err
 		}
@@ -581,17 +586,7 @@ func (c *questionRESTClient) CreateQuestion(ctx context.Context, req *dataqnapb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateQuestion")
 		if err != nil {
 			return err
 		}
@@ -642,17 +637,7 @@ func (c *questionRESTClient) ExecuteQuestion(ctx context.Context, req *dataqnapb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExecuteQuestion")
 		if err != nil {
 			return err
 		}
@@ -697,17 +682,7 @@ func (c *questionRESTClient) GetUserFeedback(ctx context.Context, req *dataqnapb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetUserFeedback")
 		if err != nil {
 			return err
 		}
@@ -742,11 +717,11 @@ func (c *questionRESTClient) UpdateUserFeedback(ctx context.Context, req *dataqn
 
 	params := url.Values{}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -771,17 +746,7 @@ func (c *questionRESTClient) UpdateUserFeedback(ctx context.Context, req *dataqn
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateUserFeedback")
 		if err != nil {
 			return err
 		}

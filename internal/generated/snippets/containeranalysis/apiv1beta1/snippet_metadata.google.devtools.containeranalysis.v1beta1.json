@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/containeranalysis/apiv1beta1",
-    "version": "0.10.1",
+    "version": "0.13.2",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,52 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "containeranalysis_v1beta1_generated_ContainerAnalysisV1Beta1_ExportSBOM_sync",
+      "title": "containeranalysis ExportSBOM Sample",
+      "description": "ExportSBOM generates an SBOM and other dependency information for the given resource.",
+      "file": "ContainerAnalysisV1Beta1Client/ExportSBOM/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportSBOM",
+        "fullName": "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1Client.ExportSBOM",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "containeranalysispb.ExportSBOMRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*containeranalysispb.ExportSBOMResponse",
+        "client": {
+          "shortName": "ContainerAnalysisV1Beta1Client",
+          "fullName": "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1Client"
+        },
+        "method": {
+          "shortName": "ExportSBOM",
+          "fullName": "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1.ExportSBOM",
+          "service": {
+            "shortName": "ContainerAnalysisV1Beta1",
+            "fullName": "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "containeranalysis_v1beta1_generated_ContainerAnalysisV1Beta1_GeneratePackagesSummary_sync",
       "title": "containeranalysis GeneratePackagesSummary Sample",
@@ -694,7 +740,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -740,7 +786,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -786,7 +832,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]

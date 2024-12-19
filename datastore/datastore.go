@@ -23,18 +23,21 @@ import (
 	"reflect"
 	"time"
 
+	pb "cloud.google.com/go/datastore/apiv1/datastorepb"
 	"cloud.google.com/go/internal/trace"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	"google.golang.org/api/transport"
 	gtransport "google.golang.org/api/transport/grpc"
-	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (
-	prodAddr  = "datastore.googleapis.com:443"
-	userAgent = "gcloud-golang-datastore/20160401"
+	prodEndpointTemplate = "datastore.UNIVERSE_DOMAIN:443"
+	prodUniverseDomain   = "googleapis.com"
+	prodMtlsAddr         = "datastore.mtls.googleapis.com:443"
+	userAgent            = "gcloud-golang-datastore/20160401"
 )
 
 // ScopeDatastore grants permissions to view and/or manage datastore entities
@@ -53,6 +56,9 @@ const DetectProjectID = "*detect-project-id*"
 // the resource being operated on.
 const resourcePrefixHeader = "google-cloud-resource-prefix"
 
+// reqParamsHeader is routing header required to access named databases
+const reqParamsHeader = "x-goog-request-params"
+
 // DefaultDatabaseID is ID of the default database denoted by an empty string
 const DefaultDatabaseID = ""
 
@@ -68,6 +74,7 @@ type Client struct {
 	dataset      string // Called dataset by the datastore API, synonym for project ID.
 	databaseID   string // Default value is empty string
 	readSettings *readSettings
+	config       *datastoreConfig
 }
 
 // NewClient creates a new Client for a given dataset.  If the project ID is
@@ -111,7 +118,9 @@ func NewClientWithDatabase(ctx context.Context, projectID, databaseID string, op
 		}
 	} else {
 		o = []option.ClientOption{
-			option.WithEndpoint(prodAddr),
+			internaloption.WithDefaultEndpointTemplate(prodEndpointTemplate),
+			internaloption.WithDefaultUniverseDomain(prodUniverseDomain),
+			internaloption.WithDefaultMTLSEndpoint(prodMtlsAddr),
 			option.WithScopes(ScopeDatastore),
 			option.WithUserAgent(userAgent),
 		}
@@ -144,12 +153,15 @@ func NewClientWithDatabase(ctx context.Context, projectID, databaseID string, op
 	if err != nil {
 		return nil, fmt.Errorf("dialing: %w", err)
 	}
+
+	config := newDatastoreConfig(o...)
 	return &Client{
 		connPool:     connPool,
 		client:       newDatastoreClient(connPool, projectID, databaseID),
 		dataset:      projectID,
 		readSettings: &readSettings{},
 		databaseID:   databaseID,
+		config:       &config,
 	}, nil
 }
 
@@ -354,6 +366,48 @@ func checkMultiArg(v reflect.Value) (m multiArgType, elemType reflect.Type) {
 	return multiArgTypeInvalid, nil
 }
 
+// processFieldMismatchError ignore FieldMismatchErr if WithIgnoreFieldMismatch client option is provided by user
+func (c *Client) processFieldMismatchError(err error) error {
+	if c.config == nil || !c.config.ignoreFieldMismatchErrors {
+		return err
+	}
+	return ignoreFieldMismatchErrs(err)
+}
+
+func ignoreFieldMismatchErrs(err error) error {
+	if err == nil {
+		return err
+	}
+
+	multiErr, isMultiErr := err.(MultiError)
+	if isMultiErr {
+		foundErr := false
+		for i, e := range multiErr {
+			multiErr[i] = ignoreFieldMismatchErr(e)
+			if multiErr[i] != nil {
+				foundErr = true
+			}
+		}
+		if !foundErr {
+			return nil
+		}
+		return multiErr
+	}
+
+	return ignoreFieldMismatchErr(err)
+}
+
+func ignoreFieldMismatchErr(err error) error {
+	if err == nil {
+		return err
+	}
+	_, isFieldMismatchErr := err.(*ErrFieldMismatch)
+	if isFieldMismatchErr {
+		return nil
+	}
+	return err
+}
+
 // Close closes the Client. Call Close to clean up resources when done with the
 // Client.
 func (c *Client) Close() error {
@@ -390,11 +444,13 @@ func (c *Client) Get(ctx context.Context, key *Key, dst interface{}) (err error)
 		}
 	}
 
-	err = c.get(ctx, []*Key{key}, []interface{}{dst}, opts)
+	// Since opts does not contain Transaction option, 'get' call below will return nil
+	// as transaction id which can be ignored
+	_, err = c.get(ctx, []*Key{key}, []interface{}{dst}, opts)
 	if me, ok := err.(MultiError); ok {
-		return me[0]
+		return c.processFieldMismatchError(me[0])
 	}
-	return err
+	return c.processFieldMismatchError(err)
 }
 
 // GetMulti is a batch version of Get.
@@ -423,22 +479,25 @@ func (c *Client) GetMulti(ctx context.Context, keys []*Key, dst interface{}) (er
 		}
 	}
 
-	return c.get(ctx, keys, dst, opts)
+	// Since opts does not contain Transaction option, 'get' call below will return nil
+	// as transaction id which can be ignored
+	_, err = c.get(ctx, keys, dst, opts)
+	return c.processFieldMismatchError(err)
 }
 
-func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb.ReadOptions) error {
+func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb.ReadOptions) ([]byte, error) {
 	v := reflect.ValueOf(dst)
 
 	var multiArgType multiArgType
 
 	// If kind is of type slice, return error
 	if kind := v.Kind(); kind != reflect.Slice {
-		return fmt.Errorf("%w: dst: expected slice got %v", ErrInvalidEntityType, kind.String())
+		return nil, fmt.Errorf("%w: dst: expected slice got %v", ErrInvalidEntityType, kind.String())
 	}
 
 	// if type is a type which implements PropertyList, return error
 	if argType := v.Type(); argType == typeOfPropertyList {
-		return fmt.Errorf("%w: dst: cannot be PropertyListType", ErrInvalidEntityType)
+		return nil, fmt.Errorf("%w: dst: cannot be PropertyListType", ErrInvalidEntityType)
 	}
 
 	elemType := v.Type().Elem()
@@ -461,11 +520,11 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 	dstLen := v.Len()
 
 	if keysLen := len(keys); keysLen != dstLen {
-		return fmt.Errorf("%w: key length = %d, dst length = %d", ErrDifferentKeyAndDstLength, keysLen, v.Len())
+		return nil, fmt.Errorf("%w: key length = %d, dst length = %d", ErrDifferentKeyAndDstLength, keysLen, v.Len())
 	}
 
 	if len(keys) == 0 {
-		return nil
+		return nil, nil
 	}
 
 	// Go through keys, validate them, serialize then, and create a dict mapping them to their indices.
@@ -481,7 +540,7 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 			multiErr[i] = fmt.Errorf("datastore: can't get the incomplete key: %v", k)
 			any = true
 		} else {
-			ks := k.String()
+			ks := k.stringInternal()
 			if _, ok := keyMap[ks]; !ok {
 				pbKeys = append(pbKeys, keyToProto(k))
 			}
@@ -489,7 +548,7 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 		}
 	}
 	if any {
-		return multiErr
+		return nil, multiErr
 	}
 	req := &pb.LookupRequest{
 		ProjectId:   c.dataset,
@@ -498,9 +557,11 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 		ReadOptions: opts,
 	}
 	resp, err := c.client.Lookup(ctx, req)
+
 	if err != nil {
-		return err
+		return nil, err
 	}
+	txnID := resp.Transaction
 	found := resp.Found
 	missing := resp.Missing
 	// Upper bound 1000 iterations to prevent infinite loop. This matches the max
@@ -511,7 +572,7 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 		req.Keys = resp.Deferred
 		resp, err = c.client.Lookup(ctx, req)
 		if err != nil {
-			return err
+			return txnID, err
 		}
 		found = append(found, resp.Found...)
 		missing = append(missing, resp.Missing...)
@@ -521,10 +582,10 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 	for _, e := range found {
 		k, err := protoToKey(e.Entity.Key)
 		if err != nil {
-			return errors.New("datastore: internal error: server returned an invalid key")
+			return txnID, errors.New("datastore: internal error: server returned an invalid key")
 		}
-		filled += len(keyMap[k.String()])
-		for _, index := range keyMap[k.String()] {
+		filled += len(keyMap[k.stringInternal()])
+		for _, index := range keyMap[k.stringInternal()] {
 			elem := v.Index(index)
 			if multiArgType == multiArgTypePropertyLoadSaver || multiArgType == multiArgTypeStruct {
 				elem = elem.Addr()
@@ -541,23 +602,23 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 	for _, e := range missing {
 		k, err := protoToKey(e.Entity.Key)
 		if err != nil {
-			return errors.New("datastore: internal error: server returned an invalid key")
+			return txnID, errors.New("datastore: internal error: server returned an invalid key")
 		}
-		filled += len(keyMap[k.String()])
-		for _, index := range keyMap[k.String()] {
+		filled += len(keyMap[k.stringInternal()])
+		for _, index := range keyMap[k.stringInternal()] {
 			multiErr[index] = ErrNoSuchEntity
 		}
 		any = true
 	}
 
 	if filled != len(keys) {
-		return errors.New("datastore: internal error: server returned the wrong number of entities")
+		return txnID, errors.New("datastore: internal error: server returned the wrong number of entities")
 	}
 
 	if any {
-		return multiErr
+		return txnID, multiErr
 	}
-	return nil
+	return txnID, nil
 }
 
 // Put saves the entity src into the datastore with the given key. src must be
@@ -737,7 +798,7 @@ func deleteMutations(keys []*Key) ([]*pb.Mutation, error) {
 			multiErr[i] = fmt.Errorf("datastore: can't delete the incomplete key: %v", k)
 			hasErr = true
 		} else {
-			ks := k.String()
+			ks := k.stringInternal()
 			if !set[ks] {
 				mutations = append(mutations, &pb.Mutation{
 					Operation: &pb.Mutation_Delete{Delete: keyToProto(k)},

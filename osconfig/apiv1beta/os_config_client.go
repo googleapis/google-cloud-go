@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	osconfigpb "cloud.google.com/go/osconfig/apiv1beta/osconfigpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -67,10 +66,13 @@ type CallOptions struct {
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("osconfig.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("osconfig.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("osconfig.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://osconfig.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -673,6 +675,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new os config service client based on gRPC.
@@ -702,6 +706,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      osconfigpb.NewOsConfigServiceClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -724,7 +729,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -746,6 +753,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new os config service rest client.
@@ -766,6 +775,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -775,9 +785,12 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 func defaultRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://osconfig.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://osconfig.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://osconfig.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://osconfig.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -787,7 +800,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -813,7 +828,7 @@ func (c *gRPCClient) ExecutePatchJob(ctx context.Context, req *osconfigpb.Execut
 	var resp *osconfigpb.PatchJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ExecutePatchJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ExecutePatchJob, req, settings.GRPC, c.logger, "ExecutePatchJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -831,7 +846,7 @@ func (c *gRPCClient) GetPatchJob(ctx context.Context, req *osconfigpb.GetPatchJo
 	var resp *osconfigpb.PatchJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetPatchJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetPatchJob, req, settings.GRPC, c.logger, "GetPatchJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -849,7 +864,7 @@ func (c *gRPCClient) CancelPatchJob(ctx context.Context, req *osconfigpb.CancelP
 	var resp *osconfigpb.PatchJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CancelPatchJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CancelPatchJob, req, settings.GRPC, c.logger, "CancelPatchJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -878,7 +893,7 @@ func (c *gRPCClient) ListPatchJobs(ctx context.Context, req *osconfigpb.ListPatc
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListPatchJobs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListPatchJobs, req, settings.GRPC, c.logger, "ListPatchJobs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -924,7 +939,7 @@ func (c *gRPCClient) ListPatchJobInstanceDetails(ctx context.Context, req *oscon
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListPatchJobInstanceDetails(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListPatchJobInstanceDetails, req, settings.GRPC, c.logger, "ListPatchJobInstanceDetails")
 			return err
 		}, opts...)
 		if err != nil {
@@ -959,7 +974,7 @@ func (c *gRPCClient) CreatePatchDeployment(ctx context.Context, req *osconfigpb.
 	var resp *osconfigpb.PatchDeployment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreatePatchDeployment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreatePatchDeployment, req, settings.GRPC, c.logger, "CreatePatchDeployment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -977,7 +992,7 @@ func (c *gRPCClient) GetPatchDeployment(ctx context.Context, req *osconfigpb.Get
 	var resp *osconfigpb.PatchDeployment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetPatchDeployment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetPatchDeployment, req, settings.GRPC, c.logger, "GetPatchDeployment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1006,7 +1021,7 @@ func (c *gRPCClient) ListPatchDeployments(ctx context.Context, req *osconfigpb.L
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListPatchDeployments(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListPatchDeployments, req, settings.GRPC, c.logger, "ListPatchDeployments")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1040,7 +1055,7 @@ func (c *gRPCClient) DeletePatchDeployment(ctx context.Context, req *osconfigpb.
 	opts = append((*c.CallOptions).DeletePatchDeployment[0:len((*c.CallOptions).DeletePatchDeployment):len((*c.CallOptions).DeletePatchDeployment)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeletePatchDeployment(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeletePatchDeployment, req, settings.GRPC, c.logger, "DeletePatchDeployment")
 		return err
 	}, opts...)
 	return err
@@ -1055,7 +1070,7 @@ func (c *gRPCClient) UpdatePatchDeployment(ctx context.Context, req *osconfigpb.
 	var resp *osconfigpb.PatchDeployment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdatePatchDeployment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdatePatchDeployment, req, settings.GRPC, c.logger, "UpdatePatchDeployment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1073,7 +1088,7 @@ func (c *gRPCClient) PausePatchDeployment(ctx context.Context, req *osconfigpb.P
 	var resp *osconfigpb.PatchDeployment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.PausePatchDeployment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.PausePatchDeployment, req, settings.GRPC, c.logger, "PausePatchDeployment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1091,7 +1106,7 @@ func (c *gRPCClient) ResumePatchDeployment(ctx context.Context, req *osconfigpb.
 	var resp *osconfigpb.PatchDeployment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ResumePatchDeployment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ResumePatchDeployment, req, settings.GRPC, c.logger, "ResumePatchDeployment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1109,7 +1124,7 @@ func (c *gRPCClient) CreateGuestPolicy(ctx context.Context, req *osconfigpb.Crea
 	var resp *osconfigpb.GuestPolicy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateGuestPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateGuestPolicy, req, settings.GRPC, c.logger, "CreateGuestPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1127,7 +1142,7 @@ func (c *gRPCClient) GetGuestPolicy(ctx context.Context, req *osconfigpb.GetGues
 	var resp *osconfigpb.GuestPolicy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetGuestPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetGuestPolicy, req, settings.GRPC, c.logger, "GetGuestPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1156,7 +1171,7 @@ func (c *gRPCClient) ListGuestPolicies(ctx context.Context, req *osconfigpb.List
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListGuestPolicies(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListGuestPolicies, req, settings.GRPC, c.logger, "ListGuestPolicies")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1191,7 +1206,7 @@ func (c *gRPCClient) UpdateGuestPolicy(ctx context.Context, req *osconfigpb.Upda
 	var resp *osconfigpb.GuestPolicy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateGuestPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateGuestPolicy, req, settings.GRPC, c.logger, "UpdateGuestPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1208,7 +1223,7 @@ func (c *gRPCClient) DeleteGuestPolicy(ctx context.Context, req *osconfigpb.Dele
 	opts = append((*c.CallOptions).DeleteGuestPolicy[0:len((*c.CallOptions).DeleteGuestPolicy):len((*c.CallOptions).DeleteGuestPolicy)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteGuestPolicy(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteGuestPolicy, req, settings.GRPC, c.logger, "DeleteGuestPolicy")
 		return err
 	}, opts...)
 	return err
@@ -1223,7 +1238,7 @@ func (c *gRPCClient) LookupEffectiveGuestPolicy(ctx context.Context, req *osconf
 	var resp *osconfigpb.EffectiveGuestPolicy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.LookupEffectiveGuestPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.LookupEffectiveGuestPolicy, req, settings.GRPC, c.logger, "LookupEffectiveGuestPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1271,17 +1286,7 @@ func (c *restClient) ExecutePatchJob(ctx context.Context, req *osconfigpb.Execut
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExecutePatchJob")
 		if err != nil {
 			return err
 		}
@@ -1332,17 +1337,7 @@ func (c *restClient) GetPatchJob(ctx context.Context, req *osconfigpb.GetPatchJo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetPatchJob")
 		if err != nil {
 			return err
 		}
@@ -1399,17 +1394,7 @@ func (c *restClient) CancelPatchJob(ctx context.Context, req *osconfigpb.CancelP
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelPatchJob")
 		if err != nil {
 			return err
 		}
@@ -1474,21 +1459,10 @@ func (c *restClient) ListPatchJobs(ctx context.Context, req *osconfigpb.ListPatc
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListPatchJobs")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1566,21 +1540,10 @@ func (c *restClient) ListPatchJobInstanceDetails(ctx context.Context, req *oscon
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListPatchJobInstanceDetails")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1651,17 +1614,7 @@ func (c *restClient) CreatePatchDeployment(ctx context.Context, req *osconfigpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreatePatchDeployment")
 		if err != nil {
 			return err
 		}
@@ -1711,17 +1664,7 @@ func (c *restClient) GetPatchDeployment(ctx context.Context, req *osconfigpb.Get
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetPatchDeployment")
 		if err != nil {
 			return err
 		}
@@ -1783,21 +1726,10 @@ func (c *restClient) ListPatchDeployments(ctx context.Context, req *osconfigpb.L
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListPatchDeployments")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1857,15 +1789,8 @@ func (c *restClient) DeletePatchDeployment(ctx context.Context, req *osconfigpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeletePatchDeployment")
+		return err
 	}, opts...)
 }
 
@@ -1887,11 +1812,11 @@ func (c *restClient) UpdatePatchDeployment(ctx context.Context, req *osconfigpb.
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1916,17 +1841,7 @@ func (c *restClient) UpdatePatchDeployment(ctx context.Context, req *osconfigpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdatePatchDeployment")
 		if err != nil {
 			return err
 		}
@@ -1983,17 +1898,7 @@ func (c *restClient) PausePatchDeployment(ctx context.Context, req *osconfigpb.P
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PausePatchDeployment")
 		if err != nil {
 			return err
 		}
@@ -2050,17 +1955,7 @@ func (c *restClient) ResumePatchDeployment(ctx context.Context, req *osconfigpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ResumePatchDeployment")
 		if err != nil {
 			return err
 		}
@@ -2118,17 +2013,7 @@ func (c *restClient) CreateGuestPolicy(ctx context.Context, req *osconfigpb.Crea
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateGuestPolicy")
 		if err != nil {
 			return err
 		}
@@ -2178,17 +2063,7 @@ func (c *restClient) GetGuestPolicy(ctx context.Context, req *osconfigpb.GetGues
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetGuestPolicy")
 		if err != nil {
 			return err
 		}
@@ -2250,21 +2125,10 @@ func (c *restClient) ListGuestPolicies(ctx context.Context, req *osconfigpb.List
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListGuestPolicies")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2312,11 +2176,11 @@ func (c *restClient) UpdateGuestPolicy(ctx context.Context, req *osconfigpb.Upda
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2341,17 +2205,7 @@ func (c *restClient) UpdateGuestPolicy(ctx context.Context, req *osconfigpb.Upda
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateGuestPolicy")
 		if err != nil {
 			return err
 		}
@@ -2398,15 +2252,8 @@ func (c *restClient) DeleteGuestPolicy(ctx context.Context, req *osconfigpb.Dele
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteGuestPolicy")
+		return err
 	}, opts...)
 }
 
@@ -2450,17 +2297,7 @@ func (c *restClient) LookupEffectiveGuestPolicy(ctx context.Context, req *osconf
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "LookupEffectiveGuestPolicy")
 		if err != nil {
 			return err
 		}
@@ -2475,192 +2312,4 @@ func (c *restClient) LookupEffectiveGuestPolicy(ctx context.Context, req *osconf
 		return nil, e
 	}
 	return resp, nil
-}
-
-// GuestPolicyIterator manages a stream of *osconfigpb.GuestPolicy.
-type GuestPolicyIterator struct {
-	items    []*osconfigpb.GuestPolicy
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*osconfigpb.GuestPolicy, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *GuestPolicyIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *GuestPolicyIterator) Next() (*osconfigpb.GuestPolicy, error) {
-	var item *osconfigpb.GuestPolicy
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *GuestPolicyIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *GuestPolicyIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// PatchDeploymentIterator manages a stream of *osconfigpb.PatchDeployment.
-type PatchDeploymentIterator struct {
-	items    []*osconfigpb.PatchDeployment
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*osconfigpb.PatchDeployment, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *PatchDeploymentIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *PatchDeploymentIterator) Next() (*osconfigpb.PatchDeployment, error) {
-	var item *osconfigpb.PatchDeployment
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *PatchDeploymentIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *PatchDeploymentIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// PatchJobInstanceDetailsIterator manages a stream of *osconfigpb.PatchJobInstanceDetails.
-type PatchJobInstanceDetailsIterator struct {
-	items    []*osconfigpb.PatchJobInstanceDetails
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*osconfigpb.PatchJobInstanceDetails, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *PatchJobInstanceDetailsIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *PatchJobInstanceDetailsIterator) Next() (*osconfigpb.PatchJobInstanceDetails, error) {
-	var item *osconfigpb.PatchJobInstanceDetails
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *PatchJobInstanceDetailsIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *PatchJobInstanceDetailsIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// PatchJobIterator manages a stream of *osconfigpb.PatchJob.
-type PatchJobIterator struct {
-	items    []*osconfigpb.PatchJob
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*osconfigpb.PatchJob, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *PatchJobIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *PatchJobIterator) Next() (*osconfigpb.PatchJob, error) {
-	var item *osconfigpb.PatchJob
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *PatchJobIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *PatchJobIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

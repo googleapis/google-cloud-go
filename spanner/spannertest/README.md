@@ -33,7 +33,6 @@ by ascending esotericism:
 - case insensitivity of table and column names and query aliases
 - transaction simulation
 - FOREIGN KEY and CHECK constraints
-- INSERT DML statements
 - set operations (UNION, INTERSECT, EXCEPT)
 - STRUCT types
 - partition support

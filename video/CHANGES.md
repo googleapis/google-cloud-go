@@ -1,5 +1,141 @@
 # Changes
 
+
+## [1.23.2](https://github.com/googleapis/google-cloud-go/compare/video/v1.23.1...video/v1.23.2) (2024-10-23)
+
+
+### Bug Fixes
+
+* **video:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **video:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([2b8ca4b](https://github.com/googleapis/google-cloud-go/commit/2b8ca4b4127ce3025c7a21cc7247510e07cc5625))
+
+## [1.23.1](https://github.com/googleapis/google-cloud-go/compare/video/v1.23.0...video/v1.23.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **video:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.22.1...video/v1.23.0) (2024-08-20)
+
+
+### Features
+
+* **video:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.22.1](https://github.com/googleapis/google-cloud-go/compare/video/v1.22.0...video/v1.22.1) (2024-08-08)
+
+
+### Bug Fixes
+
+* **video:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.21.3...video/v1.22.0) (2024-07-24)
+
+
+### Features
+
+* **video/livestream:** Added Clip resource for performing clip cutting jobs ([eb63f0d](https://github.com/googleapis/google-cloud-go/commit/eb63f0d4f42a06581e1425f99c2a03d52d6cb404))
+* **video/livestream:** Added RetentionConfig for enabling retention of output media segments ([eb63f0d](https://github.com/googleapis/google-cloud-go/commit/eb63f0d4f42a06581e1425f99c2a03d52d6cb404))
+* **video/livestream:** Added StaticOverlay for embedding images the whole duration of the live stream ([eb63f0d](https://github.com/googleapis/google-cloud-go/commit/eb63f0d4f42a06581e1425f99c2a03d52d6cb404))
+
+
+### Bug Fixes
+
+* **video:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+
+### Documentation
+
+* **video/livestream:** Clarify the format of key/id fields ([eb63f0d](https://github.com/googleapis/google-cloud-go/commit/eb63f0d4f42a06581e1425f99c2a03d52d6cb404))
+
+## [1.21.3](https://github.com/googleapis/google-cloud-go/compare/video/v1.21.2...video/v1.21.3) (2024-07-10)
+
+
+### Bug Fixes
+
+* **video:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.21.2](https://github.com/googleapis/google-cloud-go/compare/video/v1.21.1...video/v1.21.2) (2024-07-01)
+
+
+### Bug Fixes
+
+* **video:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.21.1](https://github.com/googleapis/google-cloud-go/compare/video/v1.21.0...video/v1.21.1) (2024-06-26)
+
+
+### Bug Fixes
+
+* **video:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.20.6...video/v1.21.0) (2024-05-29)
+
+
+### Features
+
+* **video/stitcher:** Add apis for Create, Read, Update, Delete for VODConfigs ([3df3c04](https://github.com/googleapis/google-cloud-go/commit/3df3c04f0dffad3fa2fe272eb7b2c263801b9ada))
+* **video/stitcher:** Added adtracking to Livesession ([3df3c04](https://github.com/googleapis/google-cloud-go/commit/3df3c04f0dffad3fa2fe272eb7b2c263801b9ada))
+* **video/stitcher:** Added fetchoptions with custom headers for Live and VODConfigs ([3df3c04](https://github.com/googleapis/google-cloud-go/commit/3df3c04f0dffad3fa2fe272eb7b2c263801b9ada))
+* **video/stitcher:** Added targetting parameter support to Livesession ([3df3c04](https://github.com/googleapis/google-cloud-go/commit/3df3c04f0dffad3fa2fe272eb7b2c263801b9ada))
+* **video/stitcher:** Added token config for MediaCdnKey ([3df3c04](https://github.com/googleapis/google-cloud-go/commit/3df3c04f0dffad3fa2fe272eb7b2c263801b9ada))
+* **video/stitcher:** Allowed usage for VODConfigs in VODSession ([3df3c04](https://github.com/googleapis/google-cloud-go/commit/3df3c04f0dffad3fa2fe272eb7b2c263801b9ada))
+
+
+### Documentation
+
+* **video/stitcher:** Added apis for Create, Read, Update, Delete For VODConfigs. Added vodConfig usage in VODSession. Added TokenConfig for MediaCdnKey. Added targeting_parameter and ad_tracking for Livesession. Added FetchOptions for Live and VOD configs. ([3df3c04](https://github.com/googleapis/google-cloud-go/commit/3df3c04f0dffad3fa2fe272eb7b2c263801b9ada))
+
+## [1.20.6](https://github.com/googleapis/google-cloud-go/compare/video/v1.20.5...video/v1.20.6) (2024-05-01)
+
+
+### Bug Fixes
+
+* **video:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.20.5](https://github.com/googleapis/google-cloud-go/compare/video/v1.20.4...video/v1.20.5) (2024-03-14)
+
+
+### Bug Fixes
+
+* **video:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.20.4](https://github.com/googleapis/google-cloud-go/compare/video/v1.20.3...video/v1.20.4) (2024-01-30)
+
+
+### Bug Fixes
+
+* **video:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.20.3](https://github.com/googleapis/google-cloud-go/compare/video/v1.20.2...video/v1.20.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **video:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.20.2](https://github.com/googleapis/google-cloud-go/compare/video/v1.20.1...video/v1.20.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **video:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.20.1](https://github.com/googleapis/google-cloud-go/compare/video/v1.20.0...video/v1.20.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **video:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.19.0...video/v1.20.0) (2023-09-12)
+
+
+### Features
+
+* **video/stitcher:** Refactor RPCs to use LRO ([#8561](https://github.com/googleapis/google-cloud-go/issues/8561)) ([aaebe09](https://github.com/googleapis/google-cloud-go/commit/aaebe097413bd38a969476253e951b7f5274cbbf))
+
 ## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.18.0...video/v1.19.0) (2023-07-24)
 
 

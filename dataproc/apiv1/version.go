@@ -16,7 +16,7 @@
 
 package dataproc
 
-import "cloud.google.com/go/dataproc/internal"
+import "cloud.google.com/go/dataproc/v2/internal"
 
 func init() {
 	versionClient = internal.Version

@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package pubsublite
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 	"time"
@@ -51,10 +52,13 @@ type CursorCallOptions struct {
 func defaultCursorGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("pubsublite.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("pubsublite.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("pubsublite.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://pubsublite.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -235,6 +239,8 @@ type cursorGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewCursorClient creates a new cursor service client based on gRPC.
@@ -263,6 +269,7 @@ func NewCursorClient(ctx context.Context, opts ...option.ClientOption) (*CursorC
 		connPool:         connPool,
 		cursorClient:     pubsublitepb.NewCursorServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -286,7 +293,9 @@ func (c *cursorGRPCClient) Connection() *grpc.ClientConn {
 func (c *cursorGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -301,7 +310,9 @@ func (c *cursorGRPCClient) StreamingCommitCursor(ctx context.Context, opts ...ga
 	opts = append((*c.CallOptions).StreamingCommitCursor[0:len((*c.CallOptions).StreamingCommitCursor):len((*c.CallOptions).StreamingCommitCursor)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "StreamingCommitCursor")
 		resp, err = c.cursorClient.StreamingCommitCursor(ctx, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "StreamingCommitCursor")
 		return err
 	}, opts...)
 	if err != nil {
@@ -319,7 +330,7 @@ func (c *cursorGRPCClient) CommitCursor(ctx context.Context, req *pubsublitepb.C
 	var resp *pubsublitepb.CommitCursorResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cursorClient.CommitCursor(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cursorClient.CommitCursor, req, settings.GRPC, c.logger, "CommitCursor")
 		return err
 	}, opts...)
 	if err != nil {
@@ -348,7 +359,7 @@ func (c *cursorGRPCClient) ListPartitionCursors(ctx context.Context, req *pubsub
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cursorClient.ListPartitionCursors(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cursorClient.ListPartitionCursors, req, settings.GRPC, c.logger, "ListPartitionCursors")
 			return err
 		}, opts...)
 		if err != nil {
@@ -382,7 +393,7 @@ func (c *cursorGRPCClient) CancelOperation(ctx context.Context, req *longrunning
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -396,7 +407,7 @@ func (c *cursorGRPCClient) DeleteOperation(ctx context.Context, req *longrunning
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -411,7 +422,7 @@ func (c *cursorGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -440,7 +451,7 @@ func (c *cursorGRPCClient) ListOperations(ctx context.Context, req *longrunningp
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -464,51 +475,4 @@ func (c *cursorGRPCClient) ListOperations(ctx context.Context, req *longrunningp
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
-}
-
-// PartitionCursorIterator manages a stream of *pubsublitepb.PartitionCursor.
-type PartitionCursorIterator struct {
-	items    []*pubsublitepb.PartitionCursor
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*pubsublitepb.PartitionCursor, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *PartitionCursorIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *PartitionCursorIterator) Next() (*pubsublitepb.PartitionCursor, error) {
-	var item *pubsublitepb.PartitionCursor
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *PartitionCursorIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *PartitionCursorIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

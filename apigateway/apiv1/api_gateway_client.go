@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -67,10 +66,13 @@ type CallOptions struct {
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("apigateway.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("apigateway.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("apigateway.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://apigateway.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -543,6 +545,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new api gateway service client based on gRPC.
@@ -569,6 +573,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      apigatewaypb.NewApiGatewayServiceClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -602,7 +607,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -629,6 +636,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new api gateway service rest client.
@@ -646,6 +655,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -665,9 +675,12 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 func defaultRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://apigateway.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://apigateway.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://apigateway.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://apigateway.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -677,7 +690,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -714,7 +729,7 @@ func (c *gRPCClient) ListGateways(ctx context.Context, req *apigatewaypb.ListGat
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListGateways(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListGateways, req, settings.GRPC, c.logger, "ListGateways")
 			return err
 		}, opts...)
 		if err != nil {
@@ -749,7 +764,7 @@ func (c *gRPCClient) GetGateway(ctx context.Context, req *apigatewaypb.GetGatewa
 	var resp *apigatewaypb.Gateway
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetGateway(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetGateway, req, settings.GRPC, c.logger, "GetGateway")
 		return err
 	}, opts...)
 	if err != nil {
@@ -767,7 +782,7 @@ func (c *gRPCClient) CreateGateway(ctx context.Context, req *apigatewaypb.Create
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateGateway(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateGateway, req, settings.GRPC, c.logger, "CreateGateway")
 		return err
 	}, opts...)
 	if err != nil {
@@ -787,7 +802,7 @@ func (c *gRPCClient) UpdateGateway(ctx context.Context, req *apigatewaypb.Update
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateGateway(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateGateway, req, settings.GRPC, c.logger, "UpdateGateway")
 		return err
 	}, opts...)
 	if err != nil {
@@ -807,7 +822,7 @@ func (c *gRPCClient) DeleteGateway(ctx context.Context, req *apigatewaypb.Delete
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteGateway(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteGateway, req, settings.GRPC, c.logger, "DeleteGateway")
 		return err
 	}, opts...)
 	if err != nil {
@@ -838,7 +853,7 @@ func (c *gRPCClient) ListApis(ctx context.Context, req *apigatewaypb.ListApisReq
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListApis(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListApis, req, settings.GRPC, c.logger, "ListApis")
 			return err
 		}, opts...)
 		if err != nil {
@@ -873,7 +888,7 @@ func (c *gRPCClient) GetApi(ctx context.Context, req *apigatewaypb.GetApiRequest
 	var resp *apigatewaypb.Api
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetApi(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetApi, req, settings.GRPC, c.logger, "GetApi")
 		return err
 	}, opts...)
 	if err != nil {
@@ -891,7 +906,7 @@ func (c *gRPCClient) CreateApi(ctx context.Context, req *apigatewaypb.CreateApiR
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateApi(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateApi, req, settings.GRPC, c.logger, "CreateApi")
 		return err
 	}, opts...)
 	if err != nil {
@@ -911,7 +926,7 @@ func (c *gRPCClient) UpdateApi(ctx context.Context, req *apigatewaypb.UpdateApiR
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateApi(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateApi, req, settings.GRPC, c.logger, "UpdateApi")
 		return err
 	}, opts...)
 	if err != nil {
@@ -931,7 +946,7 @@ func (c *gRPCClient) DeleteApi(ctx context.Context, req *apigatewaypb.DeleteApiR
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteApi(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteApi, req, settings.GRPC, c.logger, "DeleteApi")
 		return err
 	}, opts...)
 	if err != nil {
@@ -962,7 +977,7 @@ func (c *gRPCClient) ListApiConfigs(ctx context.Context, req *apigatewaypb.ListA
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListApiConfigs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListApiConfigs, req, settings.GRPC, c.logger, "ListApiConfigs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -997,7 +1012,7 @@ func (c *gRPCClient) GetApiConfig(ctx context.Context, req *apigatewaypb.GetApiC
 	var resp *apigatewaypb.ApiConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetApiConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetApiConfig, req, settings.GRPC, c.logger, "GetApiConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1015,7 +1030,7 @@ func (c *gRPCClient) CreateApiConfig(ctx context.Context, req *apigatewaypb.Crea
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateApiConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateApiConfig, req, settings.GRPC, c.logger, "CreateApiConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1035,7 +1050,7 @@ func (c *gRPCClient) UpdateApiConfig(ctx context.Context, req *apigatewaypb.Upda
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateApiConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateApiConfig, req, settings.GRPC, c.logger, "UpdateApiConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1055,7 +1070,7 @@ func (c *gRPCClient) DeleteApiConfig(ctx context.Context, req *apigatewaypb.Dele
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteApiConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteApiConfig, req, settings.GRPC, c.logger, "DeleteApiConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1117,21 +1132,10 @@ func (c *restClient) ListGateways(ctx context.Context, req *apigatewaypb.ListGat
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListGateways")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1194,17 +1198,7 @@ func (c *restClient) GetGateway(ctx context.Context, req *apigatewaypb.GetGatewa
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetGateway")
 		if err != nil {
 			return err
 		}
@@ -1261,21 +1255,10 @@ func (c *restClient) CreateGateway(ctx context.Context, req *apigatewaypb.Create
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateGateway")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1311,11 +1294,11 @@ func (c *restClient) UpdateGateway(ctx context.Context, req *apigatewaypb.Update
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1339,21 +1322,10 @@ func (c *restClient) UpdateGateway(ctx context.Context, req *apigatewaypb.Update
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateGateway")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1403,21 +1375,10 @@ func (c *restClient) DeleteGateway(ctx context.Context, req *apigatewaypb.Delete
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteGateway")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1486,21 +1447,10 @@ func (c *restClient) ListApis(ctx context.Context, req *apigatewaypb.ListApisReq
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListApis")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1563,17 +1513,7 @@ func (c *restClient) GetApi(ctx context.Context, req *apigatewaypb.GetApiRequest
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetApi")
 		if err != nil {
 			return err
 		}
@@ -1630,21 +1570,10 @@ func (c *restClient) CreateApi(ctx context.Context, req *apigatewaypb.CreateApiR
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateApi")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1680,11 +1609,11 @@ func (c *restClient) UpdateApi(ctx context.Context, req *apigatewaypb.UpdateApiR
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1708,21 +1637,10 @@ func (c *restClient) UpdateApi(ctx context.Context, req *apigatewaypb.UpdateApiR
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateApi")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1772,21 +1690,10 @@ func (c *restClient) DeleteApi(ctx context.Context, req *apigatewaypb.DeleteApiR
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteApi")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1855,21 +1762,10 @@ func (c *restClient) ListApiConfigs(ctx context.Context, req *apigatewaypb.ListA
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListApiConfigs")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1935,17 +1831,7 @@ func (c *restClient) GetApiConfig(ctx context.Context, req *apigatewaypb.GetApiC
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetApiConfig")
 		if err != nil {
 			return err
 		}
@@ -2002,21 +1888,10 @@ func (c *restClient) CreateApiConfig(ctx context.Context, req *apigatewaypb.Crea
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateApiConfig")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2052,11 +1927,11 @@ func (c *restClient) UpdateApiConfig(ctx context.Context, req *apigatewaypb.Upda
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2080,21 +1955,10 @@ func (c *restClient) UpdateApiConfig(ctx context.Context, req *apigatewaypb.Upda
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateApiConfig")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2144,21 +2008,10 @@ func (c *restClient) DeleteApiConfig(ctx context.Context, req *apigatewaypb.Dele
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteApiConfig")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2174,12 +2027,6 @@ func (c *restClient) DeleteApiConfig(ctx context.Context, req *apigatewaypb.Dele
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
-}
-
-// CreateApiOperation manages a long-running operation from CreateApi.
-type CreateApiOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // CreateApiOperation returns a new CreateApiOperation from a given name.
@@ -2200,70 +2047,6 @@ func (c *restClient) CreateApiOperation(name string) *CreateApiOperation {
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateApiOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*apigatewaypb.Api, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp apigatewaypb.Api
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateApiOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*apigatewaypb.Api, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp apigatewaypb.Api
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateApiOperation) Metadata() (*apigatewaypb.OperationMetadata, error) {
-	var meta apigatewaypb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateApiOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateApiOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateApiConfigOperation manages a long-running operation from CreateApiConfig.
-type CreateApiConfigOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // CreateApiConfigOperation returns a new CreateApiConfigOperation from a given name.
 // The name must be that of a previously created CreateApiConfigOperation, possibly from a different process.
 func (c *gRPCClient) CreateApiConfigOperation(name string) *CreateApiConfigOperation {
@@ -2280,70 +2063,6 @@ func (c *restClient) CreateApiConfigOperation(name string) *CreateApiConfigOpera
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateApiConfigOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*apigatewaypb.ApiConfig, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp apigatewaypb.ApiConfig
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateApiConfigOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*apigatewaypb.ApiConfig, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp apigatewaypb.ApiConfig
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateApiConfigOperation) Metadata() (*apigatewaypb.OperationMetadata, error) {
-	var meta apigatewaypb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateApiConfigOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateApiConfigOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateGatewayOperation manages a long-running operation from CreateGateway.
-type CreateGatewayOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // CreateGatewayOperation returns a new CreateGatewayOperation from a given name.
@@ -2364,70 +2083,6 @@ func (c *restClient) CreateGatewayOperation(name string) *CreateGatewayOperation
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateGatewayOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*apigatewaypb.Gateway, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp apigatewaypb.Gateway
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateGatewayOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*apigatewaypb.Gateway, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp apigatewaypb.Gateway
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateGatewayOperation) Metadata() (*apigatewaypb.OperationMetadata, error) {
-	var meta apigatewaypb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateGatewayOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateGatewayOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteApiOperation manages a long-running operation from DeleteApi.
-type DeleteApiOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // DeleteApiOperation returns a new DeleteApiOperation from a given name.
 // The name must be that of a previously created DeleteApiOperation, possibly from a different process.
 func (c *gRPCClient) DeleteApiOperation(name string) *DeleteApiOperation {
@@ -2444,59 +2099,6 @@ func (c *restClient) DeleteApiOperation(name string) *DeleteApiOperation {
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteApiOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteApiOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteApiOperation) Metadata() (*apigatewaypb.OperationMetadata, error) {
-	var meta apigatewaypb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteApiOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteApiOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteApiConfigOperation manages a long-running operation from DeleteApiConfig.
-type DeleteApiConfigOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // DeleteApiConfigOperation returns a new DeleteApiConfigOperation from a given name.
@@ -2517,59 +2119,6 @@ func (c *restClient) DeleteApiConfigOperation(name string) *DeleteApiConfigOpera
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteApiConfigOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteApiConfigOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteApiConfigOperation) Metadata() (*apigatewaypb.OperationMetadata, error) {
-	var meta apigatewaypb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteApiConfigOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteApiConfigOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteGatewayOperation manages a long-running operation from DeleteGateway.
-type DeleteGatewayOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // DeleteGatewayOperation returns a new DeleteGatewayOperation from a given name.
 // The name must be that of a previously created DeleteGatewayOperation, possibly from a different process.
 func (c *gRPCClient) DeleteGatewayOperation(name string) *DeleteGatewayOperation {
@@ -2586,59 +2135,6 @@ func (c *restClient) DeleteGatewayOperation(name string) *DeleteGatewayOperation
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteGatewayOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteGatewayOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteGatewayOperation) Metadata() (*apigatewaypb.OperationMetadata, error) {
-	var meta apigatewaypb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteGatewayOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteGatewayOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateApiOperation manages a long-running operation from UpdateApi.
-type UpdateApiOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // UpdateApiOperation returns a new UpdateApiOperation from a given name.
@@ -2659,70 +2155,6 @@ func (c *restClient) UpdateApiOperation(name string) *UpdateApiOperation {
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateApiOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*apigatewaypb.Api, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp apigatewaypb.Api
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateApiOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*apigatewaypb.Api, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp apigatewaypb.Api
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateApiOperation) Metadata() (*apigatewaypb.OperationMetadata, error) {
-	var meta apigatewaypb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateApiOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateApiOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateApiConfigOperation manages a long-running operation from UpdateApiConfig.
-type UpdateApiConfigOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdateApiConfigOperation returns a new UpdateApiConfigOperation from a given name.
 // The name must be that of a previously created UpdateApiConfigOperation, possibly from a different process.
 func (c *gRPCClient) UpdateApiConfigOperation(name string) *UpdateApiConfigOperation {
@@ -2741,70 +2173,6 @@ func (c *restClient) UpdateApiConfigOperation(name string) *UpdateApiConfigOpera
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateApiConfigOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*apigatewaypb.ApiConfig, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp apigatewaypb.ApiConfig
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateApiConfigOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*apigatewaypb.ApiConfig, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp apigatewaypb.ApiConfig
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateApiConfigOperation) Metadata() (*apigatewaypb.OperationMetadata, error) {
-	var meta apigatewaypb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateApiConfigOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateApiConfigOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateGatewayOperation manages a long-running operation from UpdateGateway.
-type UpdateGatewayOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdateGatewayOperation returns a new UpdateGatewayOperation from a given name.
 // The name must be that of a previously created UpdateGatewayOperation, possibly from a different process.
 func (c *gRPCClient) UpdateGatewayOperation(name string) *UpdateGatewayOperation {
@@ -2821,203 +2189,4 @@ func (c *restClient) UpdateGatewayOperation(name string) *UpdateGatewayOperation
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateGatewayOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*apigatewaypb.Gateway, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp apigatewaypb.Gateway
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateGatewayOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*apigatewaypb.Gateway, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp apigatewaypb.Gateway
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateGatewayOperation) Metadata() (*apigatewaypb.OperationMetadata, error) {
-	var meta apigatewaypb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateGatewayOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateGatewayOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ApiConfigIterator manages a stream of *apigatewaypb.ApiConfig.
-type ApiConfigIterator struct {
-	items    []*apigatewaypb.ApiConfig
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*apigatewaypb.ApiConfig, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ApiConfigIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ApiConfigIterator) Next() (*apigatewaypb.ApiConfig, error) {
-	var item *apigatewaypb.ApiConfig
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ApiConfigIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ApiConfigIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ApiIterator manages a stream of *apigatewaypb.Api.
-type ApiIterator struct {
-	items    []*apigatewaypb.Api
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*apigatewaypb.Api, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ApiIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ApiIterator) Next() (*apigatewaypb.Api, error) {
-	var item *apigatewaypb.Api
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ApiIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ApiIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// GatewayIterator manages a stream of *apigatewaypb.Gateway.
-type GatewayIterator struct {
-	items    []*apigatewaypb.Gateway
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*apigatewaypb.Gateway, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *GatewayIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *GatewayIterator) Next() (*apigatewaypb.Gateway, error) {
-	var item *apigatewaypb.Gateway
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *GatewayIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *GatewayIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

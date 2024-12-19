@@ -49,6 +49,9 @@ func (ct CreateTable) SQL() string {
 	for _, tc := range ct.Constraints {
 		str += "  " + tc.SQL() + ",\n"
 	}
+	if len(ct.Synonym) > 0 {
+		str += "  SYNONYM(" + ct.Synonym.SQL() + "),\n"
+	}
 	str += ") PRIMARY KEY("
 	for i, c := range ct.PrimaryKey {
 		if i > 0 {
@@ -95,13 +98,28 @@ func (ci CreateIndex) SQL() string {
 	return str
 }
 
+func (cp CreateProtoBundle) SQL() string {
+	// Backtick-quote all the types so we don't need to check for SQL keywords
+	return "CREATE PROTO BUNDLE (`" + strings.Join(cp.Types, "`, `") + "`)"
+}
+
 func (cv CreateView) SQL() string {
 	str := "CREATE"
 	if cv.OrReplace {
 		str += " OR REPLACE"
 	}
-	str += " VIEW " + cv.Name.SQL() + " SQL SECURITY INVOKER AS " + cv.Query.SQL()
+	str += " VIEW " + cv.Name.SQL() + " SQL SECURITY " + cv.SecurityType.SQL() + " AS " + cv.Query.SQL()
 	return str
+}
+
+func (st SecurityType) SQL() string {
+	switch st {
+	case Invoker:
+		return "INVOKER"
+	case Definer:
+		return "DEFINER"
+	}
+	panic("unknown SecurityType")
 }
 
 func (cr CreateRole) SQL() string {
@@ -296,6 +314,22 @@ func (dc DropConstraint) SQL() string {
 	return "DROP CONSTRAINT " + dc.Name.SQL()
 }
 
+func (rt RenameTo) SQL() string {
+	str := "RENAME TO " + rt.ToName.SQL()
+	if len(rt.Synonym) > 0 {
+		str += ", ADD SYNONYM " + rt.Synonym.SQL()
+	}
+	return str
+}
+
+func (as AddSynonym) SQL() string {
+	return "ADD SYNONYM " + as.Name.SQL()
+}
+
+func (ds DropSynonym) SQL() string {
+	return "DROP SYNONYM " + ds.Name.SQL()
+}
+
 func (sod SetOnDelete) SQL() string {
 	return "SET ON DELETE " + sod.Action.SQL()
 }
@@ -360,6 +394,17 @@ func (co ColumnOptions) SQL() string {
 		}
 	}
 	str += ")"
+	return str
+}
+
+func (rt RenameTable) SQL() string {
+	str := "RENAME TABLE "
+	for i, op := range rt.TableRenameOps {
+		if i > 0 {
+			str += ", "
+		}
+		str += op.FromName.SQL() + " TO " + op.ToName.SQL()
+	}
 	return str
 }
 
@@ -459,8 +504,80 @@ func (dsc DropStoredColumn) SQL() string {
 	return "DROP STORED COLUMN " + dsc.Name.SQL()
 }
 
+func (cs CreateSequence) SQL() string {
+	str := "CREATE SEQUENCE "
+	if cs.IfNotExists {
+		str += "IF NOT EXISTS "
+	}
+	return str + cs.Name.SQL() + " " + cs.Options.SQL()
+}
+
+func (as AlterSequence) SQL() string {
+	return "ALTER SEQUENCE " + as.Name.SQL() + " " + as.Alteration.SQL()
+}
+
+func (sa SetSequenceOptions) SQL() string {
+	return "SET " + sa.Options.SQL()
+}
+
+func (so SequenceOptions) SQL() string {
+	str := "OPTIONS ("
+	hasOpt := false
+	if so.SequenceKind != nil {
+		hasOpt = true
+		str += fmt.Sprintf("sequence_kind='%s'", *so.SequenceKind)
+	}
+	if so.SkipRangeMin != nil {
+		if hasOpt {
+			str += ", "
+		}
+		hasOpt = true
+		str += fmt.Sprintf("skip_range_min=%v", *so.SkipRangeMin)
+	}
+	if so.SkipRangeMax != nil {
+		if hasOpt {
+			str += ", "
+		}
+		hasOpt = true
+		str += fmt.Sprintf("skip_range_max=%v", *so.SkipRangeMax)
+	}
+	if so.StartWithCounter != nil {
+		if hasOpt {
+			str += ", "
+		}
+		hasOpt = true
+		str += fmt.Sprintf("start_with_counter=%v", *so.StartWithCounter)
+	}
+	return str + ")"
+}
+
+func (do DropSequence) SQL() string {
+	str := "DROP SEQUENCE "
+	if do.IfExists {
+		str += "IF EXISTS "
+	}
+	return str + do.Name.SQL()
+}
+
 func (d *Delete) SQL() string {
 	return "DELETE FROM " + d.Table.SQL() + " WHERE " + d.Where.SQL()
+}
+
+func (do DropProtoBundle) SQL() string {
+	return "DROP PROTO BUNDLE"
+}
+func (ap AlterProtoBundle) SQL() string {
+	str := "ALTER PROTO BUNDLE"
+	if len(ap.AddTypes) > 0 {
+		str += " INSERT (`" + strings.Join(ap.AddTypes, "`, `") + "`)"
+	}
+	if len(ap.UpdateTypes) > 0 {
+		str += " UPDATE (`" + strings.Join(ap.UpdateTypes, "`, `") + "`)"
+	}
+	if len(ap.DeleteTypes) > 0 {
+		str += " DELETE (`" + strings.Join(ap.DeleteTypes, "`, `") + "`)"
+	}
+	return str
 }
 
 func (u *Update) SQL() string {
@@ -556,6 +673,14 @@ func (c Check) SQL() string {
 
 func (t Type) SQL() string {
 	str := t.Base.SQL()
+
+	// If ProtoRef is empty, and Base is an Enum or Proto, we're probably
+	// in an expression where PROTO or ENUM are valid type names, in which
+	// case we can just fall through.
+	if t.Base == Proto || t.Base == Enum && t.ProtoRef != "" {
+		// If ProtoRef is non-empty, backtick-quote that and declare victory.
+		return "`" + t.ProtoRef + "`"
+	}
 	if t.Len > 0 && (t.Base == String || t.Base == Bytes) {
 		str += "("
 		if t.Len == MaxLen {
@@ -591,6 +716,10 @@ func (tb TypeBase) SQL() string {
 		return "TIMESTAMP"
 	case JSON:
 		return "JSON"
+	case Proto:
+		return "PROTO"
+	case Enum:
+		return "ENUM"
 	}
 	panic("unknown TypeBase")
 }
@@ -858,7 +987,27 @@ func (f Func) SQL() string { return buildSQL(f) }
 func (f Func) addSQL(sb *strings.Builder) {
 	sb.WriteString(f.Name)
 	sb.WriteString("(")
+	if f.Distinct {
+		sb.WriteString("DISTINCT ")
+	}
 	addExprList(sb, f.Args, ", ")
+	switch f.NullsHandling {
+	case RespectNulls:
+		sb.WriteString(" RESPECT NULLS")
+	case IgnoreNulls:
+		sb.WriteString(" IGNORE NULLS")
+	}
+	if ah := f.Having; ah != nil {
+		sb.WriteString(" HAVING")
+		switch ah.Condition {
+		case HavingMax:
+			sb.WriteString(" MAX")
+		case HavingMin:
+			sb.WriteString(" MIN")
+		}
+		sb.WriteString(" ")
+		sb.WriteString(ah.Expr.SQL())
+	}
 	sb.WriteString(")")
 }
 
@@ -890,6 +1039,12 @@ func (ie IntervalExpr) addSQL(sb *strings.Builder) {
 	ie.Expr.addSQL(sb)
 	sb.WriteString(" ")
 	sb.WriteString(ie.DatePart)
+}
+
+func (se SequenceExpr) SQL() string { return buildSQL(se) }
+func (se SequenceExpr) addSQL(sb *strings.Builder) {
+	sb.WriteString("SEQUENCE ")
+	sb.WriteString(se.Name.SQL())
 }
 
 func idList(l []ID, join string) string {

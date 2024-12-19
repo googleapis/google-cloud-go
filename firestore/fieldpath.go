@@ -28,6 +28,8 @@ import (
 	"cloud.google.com/go/internal/fields"
 )
 
+const invalidRunes = "~*/[]"
+
 // A FieldPath is a non-empty sequence of non-empty fields that reference a value.
 //
 // A FieldPath value should only be necessary if one of the field names contains
@@ -54,9 +56,8 @@ type FieldPath []string
 // including attempts to quote field path compontents. So "a.`b.c`.d" is parsed into
 // four parts, "a", "`b", "c`" and "d".
 func parseDotSeparatedString(s string) (FieldPath, error) {
-	const invalidRunes = "~*/[]"
 	if strings.ContainsAny(s, invalidRunes) {
-		return nil, fmt.Errorf("firestore: %q contains an invalid rune (one of %s)", s, invalidRunes)
+		return nil, errInvalidRunesField(s)
 	}
 	fp := FieldPath(strings.Split(s, "."))
 	if err := fp.validate(); err != nil {
@@ -149,7 +150,7 @@ func setAtPath(m map[string]*pb.Value, fp FieldPath, val *pb.Value) {
 	} else {
 		v, ok := m[fp[0]]
 		if !ok {
-			v = &pb.Value{ValueType: &pb.Value_MapValue{&pb.MapValue{Fields: map[string]*pb.Value{}}}}
+			v = &pb.Value{ValueType: &pb.Value_MapValue{MapValue: &pb.MapValue{Fields: map[string]*pb.Value{}}}}
 			m[fp[0]] = v
 		}
 		// The type assertion below cannot fail, because setAtPath is only called

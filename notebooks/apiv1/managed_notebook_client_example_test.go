@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -44,62 +44,6 @@ func ExampleNewManagedNotebookClient() {
 	_ = c
 }
 
-func ExampleManagedNotebookClient_ListRuntimes() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := notebooks.NewManagedNotebookClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &notebookspb.ListRuntimesRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1/notebookspb#ListRuntimesRequest.
-	}
-	it := c.ListRuntimes(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleManagedNotebookClient_GetRuntime() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := notebooks.NewManagedNotebookClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &notebookspb.GetRuntimeRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1/notebookspb#GetRuntimeRequest.
-	}
-	resp, err := c.GetRuntime(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleManagedNotebookClient_CreateRuntime() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -118,36 +62,6 @@ func ExampleManagedNotebookClient_CreateRuntime() {
 		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1/notebookspb#CreateRuntimeRequest.
 	}
 	op, err := c.CreateRuntime(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleManagedNotebookClient_UpdateRuntime() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := notebooks.NewManagedNotebookClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &notebookspb.UpdateRuntimeRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1/notebookspb#UpdateRuntimeRequest.
-	}
-	op, err := c.UpdateRuntime(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -186,6 +100,183 @@ func ExampleManagedNotebookClient_DeleteRuntime() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+}
+
+func ExampleManagedNotebookClient_DiagnoseRuntime() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := notebooks.NewManagedNotebookClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &notebookspb.DiagnoseRuntimeRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1/notebookspb#DiagnoseRuntimeRequest.
+	}
+	op, err := c.DiagnoseRuntime(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleManagedNotebookClient_GetRuntime() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := notebooks.NewManagedNotebookClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &notebookspb.GetRuntimeRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1/notebookspb#GetRuntimeRequest.
+	}
+	resp, err := c.GetRuntime(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleManagedNotebookClient_ListRuntimes() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := notebooks.NewManagedNotebookClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &notebookspb.ListRuntimesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1/notebookspb#ListRuntimesRequest.
+	}
+	it := c.ListRuntimes(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*notebookspb.ListRuntimesResponse)
+	}
+}
+
+func ExampleManagedNotebookClient_RefreshRuntimeTokenInternal() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := notebooks.NewManagedNotebookClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &notebookspb.RefreshRuntimeTokenInternalRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1/notebookspb#RefreshRuntimeTokenInternalRequest.
+	}
+	resp, err := c.RefreshRuntimeTokenInternal(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleManagedNotebookClient_ReportRuntimeEvent() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := notebooks.NewManagedNotebookClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &notebookspb.ReportRuntimeEventRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1/notebookspb#ReportRuntimeEventRequest.
+	}
+	op, err := c.ReportRuntimeEvent(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleManagedNotebookClient_ResetRuntime() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := notebooks.NewManagedNotebookClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &notebookspb.ResetRuntimeRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1/notebookspb#ResetRuntimeRequest.
+	}
+	op, err := c.ResetRuntime(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleManagedNotebookClient_StartRuntime() {
@@ -278,7 +369,7 @@ func ExampleManagedNotebookClient_SwitchRuntime() {
 	_ = resp
 }
 
-func ExampleManagedNotebookClient_ResetRuntime() {
+func ExampleManagedNotebookClient_UpdateRuntime() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -291,11 +382,11 @@ func ExampleManagedNotebookClient_ResetRuntime() {
 	}
 	defer c.Close()
 
-	req := &notebookspb.ResetRuntimeRequest{
+	req := &notebookspb.UpdateRuntimeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1/notebookspb#ResetRuntimeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1/notebookspb#UpdateRuntimeRequest.
 	}
-	op, err := c.ResetRuntime(ctx, req)
+	op, err := c.UpdateRuntime(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -326,91 +417,6 @@ func ExampleManagedNotebookClient_UpgradeRuntime() {
 		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1/notebookspb#UpgradeRuntimeRequest.
 	}
 	op, err := c.UpgradeRuntime(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleManagedNotebookClient_ReportRuntimeEvent() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := notebooks.NewManagedNotebookClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &notebookspb.ReportRuntimeEventRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1/notebookspb#ReportRuntimeEventRequest.
-	}
-	op, err := c.ReportRuntimeEvent(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleManagedNotebookClient_RefreshRuntimeTokenInternal() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := notebooks.NewManagedNotebookClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &notebookspb.RefreshRuntimeTokenInternalRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1/notebookspb#RefreshRuntimeTokenInternalRequest.
-	}
-	resp, err := c.RefreshRuntimeTokenInternal(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleManagedNotebookClient_DiagnoseRuntime() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := notebooks.NewManagedNotebookClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &notebookspb.DiagnoseRuntimeRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1/notebookspb#DiagnoseRuntimeRequest.
-	}
-	op, err := c.DiagnoseRuntime(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -476,6 +482,12 @@ func ExampleManagedNotebookClient_ListLocations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*locationpb.ListLocationsResponse)
 	}
 }
 
@@ -653,5 +665,11 @@ func ExampleManagedNotebookClient_ListOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
 }

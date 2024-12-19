@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -62,10 +61,13 @@ type CallOptions struct {
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("assuredworkloads.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("assuredworkloads.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("assuredworkloads.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://assuredworkloads.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -298,6 +300,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new assured workloads service client based on gRPC.
@@ -324,6 +328,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:         connPool,
 		client:           assuredworkloadspb.NewAssuredWorkloadsServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -358,7 +363,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -385,6 +392,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new assured workloads service rest client.
@@ -402,6 +411,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -421,9 +431,12 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 func defaultRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://assuredworkloads.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://assuredworkloads.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://assuredworkloads.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://assuredworkloads.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -433,7 +446,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -459,7 +474,7 @@ func (c *gRPCClient) CreateWorkload(ctx context.Context, req *assuredworkloadspb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateWorkload(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateWorkload, req, settings.GRPC, c.logger, "CreateWorkload")
 		return err
 	}, opts...)
 	if err != nil {
@@ -479,7 +494,7 @@ func (c *gRPCClient) UpdateWorkload(ctx context.Context, req *assuredworkloadspb
 	var resp *assuredworkloadspb.Workload
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateWorkload(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateWorkload, req, settings.GRPC, c.logger, "UpdateWorkload")
 		return err
 	}, opts...)
 	if err != nil {
@@ -497,7 +512,7 @@ func (c *gRPCClient) RestrictAllowedResources(ctx context.Context, req *assuredw
 	var resp *assuredworkloadspb.RestrictAllowedResourcesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.RestrictAllowedResources(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.RestrictAllowedResources, req, settings.GRPC, c.logger, "RestrictAllowedResources")
 		return err
 	}, opts...)
 	if err != nil {
@@ -514,7 +529,7 @@ func (c *gRPCClient) DeleteWorkload(ctx context.Context, req *assuredworkloadspb
 	opts = append((*c.CallOptions).DeleteWorkload[0:len((*c.CallOptions).DeleteWorkload):len((*c.CallOptions).DeleteWorkload)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteWorkload(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteWorkload, req, settings.GRPC, c.logger, "DeleteWorkload")
 		return err
 	}, opts...)
 	return err
@@ -529,7 +544,7 @@ func (c *gRPCClient) GetWorkload(ctx context.Context, req *assuredworkloadspb.Ge
 	var resp *assuredworkloadspb.Workload
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetWorkload(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetWorkload, req, settings.GRPC, c.logger, "GetWorkload")
 		return err
 	}, opts...)
 	if err != nil {
@@ -558,7 +573,7 @@ func (c *gRPCClient) ListWorkloads(ctx context.Context, req *assuredworkloadspb.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListWorkloads(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListWorkloads, req, settings.GRPC, c.logger, "ListWorkloads")
 			return err
 		}, opts...)
 		if err != nil {
@@ -601,7 +616,7 @@ func (c *gRPCClient) ListViolations(ctx context.Context, req *assuredworkloadspb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListViolations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListViolations, req, settings.GRPC, c.logger, "ListViolations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -633,7 +648,7 @@ func (c *gRPCClient) GetViolation(ctx context.Context, req *assuredworkloadspb.G
 	var resp *assuredworkloadspb.Violation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetViolation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetViolation, req, settings.GRPC, c.logger, "GetViolation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -648,7 +663,7 @@ func (c *gRPCClient) AcknowledgeViolation(ctx context.Context, req *assuredworkl
 	var resp *assuredworkloadspb.AcknowledgeViolationResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.AcknowledgeViolation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.AcknowledgeViolation, req, settings.GRPC, c.logger, "AcknowledgeViolation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -666,7 +681,7 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -695,7 +710,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -763,21 +778,10 @@ func (c *restClient) CreateWorkload(ctx context.Context, req *assuredworkloadspb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateWorkload")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -816,11 +820,11 @@ func (c *restClient) UpdateWorkload(ctx context.Context, req *assuredworkloadspb
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -845,17 +849,7 @@ func (c *restClient) UpdateWorkload(ctx context.Context, req *assuredworkloadspb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateWorkload")
 		if err != nil {
 			return err
 		}
@@ -916,17 +910,7 @@ func (c *restClient) RestrictAllowedResources(ctx context.Context, req *assuredw
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RestrictAllowedResources")
 		if err != nil {
 			return err
 		}
@@ -978,15 +962,8 @@ func (c *restClient) DeleteWorkload(ctx context.Context, req *assuredworkloadspb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteWorkload")
+		return err
 	}, opts...)
 }
 
@@ -1023,17 +1000,7 @@ func (c *restClient) GetWorkload(ctx context.Context, req *assuredworkloadspb.Ge
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetWorkload")
 		if err != nil {
 			return err
 		}
@@ -1098,21 +1065,10 @@ func (c *restClient) ListWorkloads(ctx context.Context, req *assuredworkloadspb.
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListWorkloads")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1173,18 +1129,18 @@ func (c *restClient) ListViolations(ctx context.Context, req *assuredworkloadspb
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
 		if req.GetInterval().GetEndTime() != nil {
-			endTime, err := protojson.Marshal(req.GetInterval().GetEndTime())
+			field, err := protojson.Marshal(req.GetInterval().GetEndTime())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("interval.endTime", string(endTime[1:len(endTime)-1]))
+			params.Add("interval.endTime", string(field[1:len(field)-1]))
 		}
 		if req.GetInterval().GetStartTime() != nil {
-			startTime, err := protojson.Marshal(req.GetInterval().GetStartTime())
+			field, err := protojson.Marshal(req.GetInterval().GetStartTime())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("interval.startTime", string(startTime[1:len(startTime)-1]))
+			params.Add("interval.startTime", string(field[1:len(field)-1]))
 		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
@@ -1209,21 +1165,10 @@ func (c *restClient) ListViolations(ctx context.Context, req *assuredworkloadspb
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListViolations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1284,17 +1229,7 @@ func (c *restClient) GetViolation(ctx context.Context, req *assuredworkloadspb.G
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetViolation")
 		if err != nil {
 			return err
 		}
@@ -1349,17 +1284,7 @@ func (c *restClient) AcknowledgeViolation(ctx context.Context, req *assuredworkl
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "AcknowledgeViolation")
 		if err != nil {
 			return err
 		}
@@ -1409,17 +1334,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -1484,21 +1399,10 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1528,12 +1432,6 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	return it
 }
 
-// CreateWorkloadOperation manages a long-running operation from CreateWorkload.
-type CreateWorkloadOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // CreateWorkloadOperation returns a new CreateWorkloadOperation from a given name.
 // The name must be that of a previously created CreateWorkloadOperation, possibly from a different process.
 func (c *gRPCClient) CreateWorkloadOperation(name string) *CreateWorkloadOperation {
@@ -1550,203 +1448,4 @@ func (c *restClient) CreateWorkloadOperation(name string) *CreateWorkloadOperati
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateWorkloadOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*assuredworkloadspb.Workload, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp assuredworkloadspb.Workload
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateWorkloadOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*assuredworkloadspb.Workload, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp assuredworkloadspb.Workload
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateWorkloadOperation) Metadata() (*assuredworkloadspb.CreateWorkloadOperationMetadata, error) {
-	var meta assuredworkloadspb.CreateWorkloadOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateWorkloadOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateWorkloadOperation) Name() string {
-	return op.lro.Name()
-}
-
-// OperationIterator manages a stream of *longrunningpb.Operation.
-type OperationIterator struct {
-	items    []*longrunningpb.Operation
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *OperationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *OperationIterator) Next() (*longrunningpb.Operation, error) {
-	var item *longrunningpb.Operation
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *OperationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *OperationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ViolationIterator manages a stream of *assuredworkloadspb.Violation.
-type ViolationIterator struct {
-	items    []*assuredworkloadspb.Violation
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*assuredworkloadspb.Violation, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ViolationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ViolationIterator) Next() (*assuredworkloadspb.Violation, error) {
-	var item *assuredworkloadspb.Violation
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ViolationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ViolationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// WorkloadIterator manages a stream of *assuredworkloadspb.Workload.
-type WorkloadIterator struct {
-	items    []*assuredworkloadspb.Workload
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*assuredworkloadspb.Workload, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *WorkloadIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *WorkloadIterator) Next() (*assuredworkloadspb.Workload, error) {
-	var item *assuredworkloadspb.Workload
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *WorkloadIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *WorkloadIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

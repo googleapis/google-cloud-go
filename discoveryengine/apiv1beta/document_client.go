@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -47,24 +46,29 @@ var newDocumentClientHook clientHook
 
 // DocumentCallOptions contains the retry settings for each method of DocumentClient.
 type DocumentCallOptions struct {
-	GetDocument     []gax.CallOption
-	ListDocuments   []gax.CallOption
-	CreateDocument  []gax.CallOption
-	UpdateDocument  []gax.CallOption
-	DeleteDocument  []gax.CallOption
-	ImportDocuments []gax.CallOption
-	PurgeDocuments  []gax.CallOption
-	GetOperation    []gax.CallOption
-	ListOperations  []gax.CallOption
+	GetDocument               []gax.CallOption
+	ListDocuments             []gax.CallOption
+	CreateDocument            []gax.CallOption
+	UpdateDocument            []gax.CallOption
+	DeleteDocument            []gax.CallOption
+	ImportDocuments           []gax.CallOption
+	PurgeDocuments            []gax.CallOption
+	BatchGetDocumentsMetadata []gax.CallOption
+	CancelOperation           []gax.CallOption
+	GetOperation              []gax.CallOption
+	ListOperations            []gax.CallOption
 }
 
 func defaultDocumentGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("discoveryengine.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("discoveryengine.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("discoveryengine.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://discoveryengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -145,6 +149,30 @@ func defaultDocumentCallOptions() *DocumentCallOptions {
 			}),
 		},
 		PurgeDocuments: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		BatchGetDocumentsMetadata: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CancelOperation: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -262,6 +290,28 @@ func defaultDocumentRESTCallOptions() *DocumentCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		BatchGetDocumentsMetadata: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		CancelOperation: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetOperation: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -301,6 +351,8 @@ type internalDocumentClient interface {
 	ImportDocumentsOperation(name string) *ImportDocumentsOperation
 	PurgeDocuments(context.Context, *discoveryenginepb.PurgeDocumentsRequest, ...gax.CallOption) (*PurgeDocumentsOperation, error)
 	PurgeDocumentsOperation(name string) *PurgeDocumentsOperation
+	BatchGetDocumentsMetadata(context.Context, *discoveryenginepb.BatchGetDocumentsMetadataRequest, ...gax.CallOption) (*discoveryenginepb.BatchGetDocumentsMetadataResponse, error)
+	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
@@ -374,7 +426,7 @@ func (c *DocumentClient) DeleteDocument(ctx context.Context, req *discoveryengin
 
 // ImportDocuments bulk import of multiple
 // Documents. Request
-// processing may be synchronous. Non-existing items will be created.
+// processing may be synchronous. Non-existing items are created.
 //
 // Note: It is possible for a subset of the
 // Documents to be
@@ -416,6 +468,18 @@ func (c *DocumentClient) PurgeDocumentsOperation(name string) *PurgeDocumentsOpe
 	return c.internalClient.PurgeDocumentsOperation(name)
 }
 
+// BatchGetDocumentsMetadata gets index freshness metadata for
+// Documents. Supported for
+// website search only.
+func (c *DocumentClient) BatchGetDocumentsMetadata(ctx context.Context, req *discoveryenginepb.BatchGetDocumentsMetadataRequest, opts ...gax.CallOption) (*discoveryenginepb.BatchGetDocumentsMetadataResponse, error) {
+	return c.internalClient.BatchGetDocumentsMetadata(ctx, req, opts...)
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *DocumentClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.CancelOperation(ctx, req, opts...)
+}
+
 // GetOperation is a utility method from google.longrunning.Operations.
 func (c *DocumentClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	return c.internalClient.GetOperation(ctx, req, opts...)
@@ -448,6 +512,8 @@ type documentGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewDocumentClient creates a new document service client based on gRPC.
@@ -476,6 +542,7 @@ func NewDocumentClient(ctx context.Context, opts ...option.ClientOption) (*Docum
 		connPool:         connPool,
 		documentClient:   discoveryenginepb.NewDocumentServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -510,7 +577,9 @@ func (c *documentGRPCClient) Connection() *grpc.ClientConn {
 func (c *documentGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -537,6 +606,8 @@ type documentRESTClient struct {
 
 	// Points back to the CallOptions field of the containing DocumentClient
 	CallOptions **DocumentCallOptions
+
+	logger *slog.Logger
 }
 
 // NewDocumentRESTClient creates a new document service rest client.
@@ -556,6 +627,7 @@ func NewDocumentRESTClient(ctx context.Context, opts ...option.ClientOption) (*D
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -575,9 +647,12 @@ func NewDocumentRESTClient(ctx context.Context, opts ...option.ClientOption) (*D
 func defaultDocumentRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://discoveryengine.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://discoveryengine.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://discoveryengine.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://discoveryengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -587,7 +662,9 @@ func defaultDocumentRESTClientOptions() []option.ClientOption {
 func (c *documentRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -613,7 +690,7 @@ func (c *documentGRPCClient) GetDocument(ctx context.Context, req *discoveryengi
 	var resp *discoveryenginepb.Document
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.documentClient.GetDocument(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.documentClient.GetDocument, req, settings.GRPC, c.logger, "GetDocument")
 		return err
 	}, opts...)
 	if err != nil {
@@ -642,7 +719,7 @@ func (c *documentGRPCClient) ListDocuments(ctx context.Context, req *discoveryen
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.documentClient.ListDocuments(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.documentClient.ListDocuments, req, settings.GRPC, c.logger, "ListDocuments")
 			return err
 		}, opts...)
 		if err != nil {
@@ -677,7 +754,7 @@ func (c *documentGRPCClient) CreateDocument(ctx context.Context, req *discoverye
 	var resp *discoveryenginepb.Document
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.documentClient.CreateDocument(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.documentClient.CreateDocument, req, settings.GRPC, c.logger, "CreateDocument")
 		return err
 	}, opts...)
 	if err != nil {
@@ -695,7 +772,7 @@ func (c *documentGRPCClient) UpdateDocument(ctx context.Context, req *discoverye
 	var resp *discoveryenginepb.Document
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.documentClient.UpdateDocument(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.documentClient.UpdateDocument, req, settings.GRPC, c.logger, "UpdateDocument")
 		return err
 	}, opts...)
 	if err != nil {
@@ -712,7 +789,7 @@ func (c *documentGRPCClient) DeleteDocument(ctx context.Context, req *discoverye
 	opts = append((*c.CallOptions).DeleteDocument[0:len((*c.CallOptions).DeleteDocument):len((*c.CallOptions).DeleteDocument)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.documentClient.DeleteDocument(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.documentClient.DeleteDocument, req, settings.GRPC, c.logger, "DeleteDocument")
 		return err
 	}, opts...)
 	return err
@@ -727,7 +804,7 @@ func (c *documentGRPCClient) ImportDocuments(ctx context.Context, req *discovery
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.documentClient.ImportDocuments(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.documentClient.ImportDocuments, req, settings.GRPC, c.logger, "ImportDocuments")
 		return err
 	}, opts...)
 	if err != nil {
@@ -747,7 +824,7 @@ func (c *documentGRPCClient) PurgeDocuments(ctx context.Context, req *discoverye
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.documentClient.PurgeDocuments(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.documentClient.PurgeDocuments, req, settings.GRPC, c.logger, "PurgeDocuments")
 		return err
 	}, opts...)
 	if err != nil {
@@ -756,6 +833,38 @@ func (c *documentGRPCClient) PurgeDocuments(ctx context.Context, req *discoverye
 	return &PurgeDocumentsOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *documentGRPCClient) BatchGetDocumentsMetadata(ctx context.Context, req *discoveryenginepb.BatchGetDocumentsMetadataRequest, opts ...gax.CallOption) (*discoveryenginepb.BatchGetDocumentsMetadataResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).BatchGetDocumentsMetadata[0:len((*c.CallOptions).BatchGetDocumentsMetadata):len((*c.CallOptions).BatchGetDocumentsMetadata)], opts...)
+	var resp *discoveryenginepb.BatchGetDocumentsMetadataResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.documentClient.BatchGetDocumentsMetadata, req, settings.GRPC, c.logger, "BatchGetDocumentsMetadata")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *documentGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
+		return err
+	}, opts...)
+	return err
 }
 
 func (c *documentGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
@@ -767,7 +876,7 @@ func (c *documentGRPCClient) GetOperation(ctx context.Context, req *longrunningp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -796,7 +905,7 @@ func (c *documentGRPCClient) ListOperations(ctx context.Context, req *longrunnin
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -855,17 +964,7 @@ func (c *documentRESTClient) GetDocument(ctx context.Context, req *discoveryengi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDocument")
 		if err != nil {
 			return err
 		}
@@ -927,21 +1026,10 @@ func (c *documentRESTClient) ListDocuments(ctx context.Context, req *discoveryen
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDocuments")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1012,17 +1100,7 @@ func (c *documentRESTClient) CreateDocument(ctx context.Context, req *discoverye
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDocument")
 		if err != nil {
 			return err
 		}
@@ -1059,6 +1137,13 @@ func (c *documentRESTClient) UpdateDocument(ctx context.Context, req *discoverye
 	if req.GetAllowMissing() {
 		params.Add("allowMissing", fmt.Sprintf("%v", req.GetAllowMissing()))
 	}
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -1082,17 +1167,7 @@ func (c *documentRESTClient) UpdateDocument(ctx context.Context, req *discoverye
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateDocument")
 		if err != nil {
 			return err
 		}
@@ -1139,21 +1214,14 @@ func (c *documentRESTClient) DeleteDocument(ctx context.Context, req *discoverye
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDocument")
+		return err
 	}, opts...)
 }
 
 // ImportDocuments bulk import of multiple
 // Documents. Request
-// processing may be synchronous. Non-existing items will be created.
+// processing may be synchronous. Non-existing items are created.
 //
 // Note: It is possible for a subset of the
 // Documents to be
@@ -1195,21 +1263,10 @@ func (c *documentRESTClient) ImportDocuments(ctx context.Context, req *discovery
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ImportDocuments")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1281,21 +1338,10 @@ func (c *documentRESTClient) PurgeDocuments(ctx context.Context, req *discoverye
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PurgeDocuments")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1311,6 +1357,109 @@ func (c *documentRESTClient) PurgeDocuments(ctx context.Context, req *discoverye
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
+}
+
+// BatchGetDocumentsMetadata gets index freshness metadata for
+// Documents. Supported for
+// website search only.
+func (c *documentRESTClient) BatchGetDocumentsMetadata(ctx context.Context, req *discoveryenginepb.BatchGetDocumentsMetadataRequest, opts ...gax.CallOption) (*discoveryenginepb.BatchGetDocumentsMetadataResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v/batchGetDocumentsMetadata", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if items := req.GetMatcher().GetFhirMatcher().GetFhirResources(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("matcher.fhirMatcher.fhirResources", fmt.Sprintf("%v", item))
+		}
+	}
+	if items := req.GetMatcher().GetUrisMatcher().GetUris(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("matcher.urisMatcher.uris", fmt.Sprintf("%v", item))
+		}
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).BatchGetDocumentsMetadata[0:len((*c.CallOptions).BatchGetDocumentsMetadata):len((*c.CallOptions).BatchGetDocumentsMetadata)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &discoveryenginepb.BatchGetDocumentsMetadataResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "BatchGetDocumentsMetadata")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *documentRESTClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v:cancel", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelOperation")
+		return err
+	}, opts...)
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.
@@ -1346,17 +1495,7 @@ func (c *documentRESTClient) GetOperation(ctx context.Context, req *longrunningp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -1421,21 +1560,10 @@ func (c *documentRESTClient) ListOperations(ctx context.Context, req *longrunnin
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1465,12 +1593,6 @@ func (c *documentRESTClient) ListOperations(ctx context.Context, req *longrunnin
 	return it
 }
 
-// ImportDocumentsOperation manages a long-running operation from ImportDocuments.
-type ImportDocumentsOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // ImportDocumentsOperation returns a new ImportDocumentsOperation from a given name.
 // The name must be that of a previously created ImportDocumentsOperation, possibly from a different process.
 func (c *documentGRPCClient) ImportDocumentsOperation(name string) *ImportDocumentsOperation {
@@ -1489,70 +1611,6 @@ func (c *documentRESTClient) ImportDocumentsOperation(name string) *ImportDocume
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ImportDocumentsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*discoveryenginepb.ImportDocumentsResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp discoveryenginepb.ImportDocumentsResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ImportDocumentsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*discoveryenginepb.ImportDocumentsResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp discoveryenginepb.ImportDocumentsResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ImportDocumentsOperation) Metadata() (*discoveryenginepb.ImportDocumentsMetadata, error) {
-	var meta discoveryenginepb.ImportDocumentsMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ImportDocumentsOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ImportDocumentsOperation) Name() string {
-	return op.lro.Name()
-}
-
-// PurgeDocumentsOperation manages a long-running operation from PurgeDocuments.
-type PurgeDocumentsOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // PurgeDocumentsOperation returns a new PurgeDocumentsOperation from a given name.
 // The name must be that of a previously created PurgeDocumentsOperation, possibly from a different process.
 func (c *documentGRPCClient) PurgeDocumentsOperation(name string) *PurgeDocumentsOperation {
@@ -1569,109 +1627,4 @@ func (c *documentRESTClient) PurgeDocumentsOperation(name string) *PurgeDocument
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *PurgeDocumentsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*discoveryenginepb.PurgeDocumentsResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp discoveryenginepb.PurgeDocumentsResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *PurgeDocumentsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*discoveryenginepb.PurgeDocumentsResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp discoveryenginepb.PurgeDocumentsResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *PurgeDocumentsOperation) Metadata() (*discoveryenginepb.PurgeDocumentsMetadata, error) {
-	var meta discoveryenginepb.PurgeDocumentsMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *PurgeDocumentsOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *PurgeDocumentsOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DocumentIterator manages a stream of *discoveryenginepb.Document.
-type DocumentIterator struct {
-	items    []*discoveryenginepb.Document
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*discoveryenginepb.Document, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *DocumentIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *DocumentIterator) Next() (*discoveryenginepb.Document, error) {
-	var item *discoveryenginepb.Document
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *DocumentIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *DocumentIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

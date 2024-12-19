@@ -30,6 +30,11 @@
                 "DeleteOperation"
               ]
             },
+            "GenerateAttachedClusterAgentToken": {
+              "methods": [
+                "GenerateAttachedClusterAgentToken"
+              ]
+            },
             "GenerateAttachedClusterInstallManifest": {
               "methods": [
                 "GenerateAttachedClusterInstallManifest"
@@ -114,14 +119,29 @@
                 "GenerateAwsAccessToken"
               ]
             },
+            "GenerateAwsClusterAgentToken": {
+              "methods": [
+                "GenerateAwsClusterAgentToken"
+              ]
+            },
             "GetAwsCluster": {
               "methods": [
                 "GetAwsCluster"
               ]
             },
+            "GetAwsJsonWebKeys": {
+              "methods": [
+                "GetAwsJsonWebKeys"
+              ]
+            },
             "GetAwsNodePool": {
               "methods": [
                 "GetAwsNodePool"
+              ]
+            },
+            "GetAwsOpenIdConfig": {
+              "methods": [
+                "GetAwsOpenIdConfig"
               ]
             },
             "GetAwsServerConfig": {
@@ -147,6 +167,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "RollbackAwsNodePoolUpdate": {
+              "methods": [
+                "RollbackAwsNodePoolUpdate"
               ]
             },
             "UpdateAwsCluster": {
@@ -213,6 +238,11 @@
                 "GenerateAzureAccessToken"
               ]
             },
+            "GenerateAzureClusterAgentToken": {
+              "methods": [
+                "GenerateAzureClusterAgentToken"
+              ]
+            },
             "GetAzureClient": {
               "methods": [
                 "GetAzureClient"
@@ -223,9 +253,19 @@
                 "GetAzureCluster"
               ]
             },
+            "GetAzureJsonWebKeys": {
+              "methods": [
+                "GetAzureJsonWebKeys"
+              ]
+            },
             "GetAzureNodePool": {
               "methods": [
                 "GetAzureNodePool"
+              ]
+            },
+            "GetAzureOpenIdConfig": {
+              "methods": [
+                "GetAzureOpenIdConfig"
               ]
             },
             "GetAzureServerConfig": {

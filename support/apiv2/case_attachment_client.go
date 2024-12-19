@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package support
 import (
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -27,7 +27,6 @@ import (
 
 	supportpb "cloud.google.com/go/support/apiv2/supportpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -49,10 +48,13 @@ type CaseAttachmentCallOptions struct {
 func defaultCaseAttachmentGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("cloudsupport.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("cloudsupport.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("cloudsupport.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudsupport.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -154,6 +156,8 @@ type caseAttachmentGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewCaseAttachmentClient creates a new case attachment service client based on gRPC.
@@ -180,6 +184,7 @@ func NewCaseAttachmentClient(ctx context.Context, opts ...option.ClientOption) (
 		connPool:             connPool,
 		caseAttachmentClient: supportpb.NewCaseAttachmentServiceClient(connPool),
 		CallOptions:          &client.CallOptions,
+		logger:               internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -202,7 +207,9 @@ func (c *caseAttachmentGRPCClient) Connection() *grpc.ClientConn {
 func (c *caseAttachmentGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -224,6 +231,8 @@ type caseAttachmentRESTClient struct {
 
 	// Points back to the CallOptions field of the containing CaseAttachmentClient
 	CallOptions **CaseAttachmentCallOptions
+
+	logger *slog.Logger
 }
 
 // NewCaseAttachmentRESTClient creates a new case attachment service rest client.
@@ -241,6 +250,7 @@ func NewCaseAttachmentRESTClient(ctx context.Context, opts ...option.ClientOptio
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -250,9 +260,12 @@ func NewCaseAttachmentRESTClient(ctx context.Context, opts ...option.ClientOptio
 func defaultCaseAttachmentRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://cloudsupport.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://cloudsupport.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://cloudsupport.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudsupport.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -262,7 +275,9 @@ func defaultCaseAttachmentRESTClientOptions() []option.ClientOption {
 func (c *caseAttachmentRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -299,7 +314,7 @@ func (c *caseAttachmentGRPCClient) ListAttachments(ctx context.Context, req *sup
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.caseAttachmentClient.ListAttachments(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.caseAttachmentClient.ListAttachments, req, settings.GRPC, c.logger, "ListAttachments")
 			return err
 		}, opts...)
 		if err != nil {
@@ -370,21 +385,10 @@ func (c *caseAttachmentRESTClient) ListAttachments(ctx context.Context, req *sup
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAttachments")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -412,51 +416,4 @@ func (c *caseAttachmentRESTClient) ListAttachments(ctx context.Context, req *sup
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
-}
-
-// AttachmentIterator manages a stream of *supportpb.Attachment.
-type AttachmentIterator struct {
-	items    []*supportpb.Attachment
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*supportpb.Attachment, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *AttachmentIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *AttachmentIterator) Next() (*supportpb.Attachment, error) {
-	var item *supportpb.Attachment
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *AttachmentIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *AttachmentIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package monitoring
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 	"time"
@@ -53,10 +54,13 @@ type NotificationChannelCallOptions struct {
 func defaultNotificationChannelGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("monitoring.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("monitoring.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("monitoring.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://monitoring.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -226,6 +230,8 @@ func (c *NotificationChannelClient) GetNotificationChannelDescriptor(ctx context
 }
 
 // ListNotificationChannels lists the notification channels that have been created for the project.
+// To list the types of notification channels that are supported, use
+// the ListNotificationChannelDescriptors method.
 func (c *NotificationChannelClient) ListNotificationChannels(ctx context.Context, req *monitoringpb.ListNotificationChannelsRequest, opts ...gax.CallOption) *NotificationChannelIterator {
 	return c.internalClient.ListNotificationChannels(ctx, req, opts...)
 }
@@ -241,17 +247,32 @@ func (c *NotificationChannelClient) GetNotificationChannel(ctx context.Context, 
 
 // CreateNotificationChannel creates a new notification channel, representing a single notification
 // endpoint such as an email address, SMS number, or PagerDuty service.
+//
+// Design your application to single-thread API calls that modify the state of
+// notification channels in a single project. This includes calls to
+// CreateNotificationChannel, DeleteNotificationChannel and
+// UpdateNotificationChannel.
 func (c *NotificationChannelClient) CreateNotificationChannel(ctx context.Context, req *monitoringpb.CreateNotificationChannelRequest, opts ...gax.CallOption) (*monitoringpb.NotificationChannel, error) {
 	return c.internalClient.CreateNotificationChannel(ctx, req, opts...)
 }
 
 // UpdateNotificationChannel updates a notification channel. Fields not specified in the field mask
 // remain unchanged.
+//
+// Design your application to single-thread API calls that modify the state of
+// notification channels in a single project. This includes calls to
+// CreateNotificationChannel, DeleteNotificationChannel and
+// UpdateNotificationChannel.
 func (c *NotificationChannelClient) UpdateNotificationChannel(ctx context.Context, req *monitoringpb.UpdateNotificationChannelRequest, opts ...gax.CallOption) (*monitoringpb.NotificationChannel, error) {
 	return c.internalClient.UpdateNotificationChannel(ctx, req, opts...)
 }
 
 // DeleteNotificationChannel deletes a notification channel.
+//
+// Design your application to single-thread API calls that modify the state of
+// notification channels in a single project. This includes calls to
+// CreateNotificationChannel, DeleteNotificationChannel and
+// UpdateNotificationChannel.
 func (c *NotificationChannelClient) DeleteNotificationChannel(ctx context.Context, req *monitoringpb.DeleteNotificationChannelRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteNotificationChannel(ctx, req, opts...)
 }
@@ -309,6 +330,8 @@ type notificationChannelGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewNotificationChannelClient creates a new notification channel service client based on gRPC.
@@ -336,6 +359,7 @@ func NewNotificationChannelClient(ctx context.Context, opts ...option.ClientOpti
 		connPool:                  connPool,
 		notificationChannelClient: monitoringpb.NewNotificationChannelServiceClient(connPool),
 		CallOptions:               &client.CallOptions,
+		logger:                    internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -358,7 +382,9 @@ func (c *notificationChannelGRPCClient) Connection() *grpc.ClientConn {
 func (c *notificationChannelGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -387,7 +413,7 @@ func (c *notificationChannelGRPCClient) ListNotificationChannelDescriptors(ctx c
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.notificationChannelClient.ListNotificationChannelDescriptors(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.notificationChannelClient.ListNotificationChannelDescriptors, req, settings.GRPC, c.logger, "ListNotificationChannelDescriptors")
 			return err
 		}, opts...)
 		if err != nil {
@@ -422,7 +448,7 @@ func (c *notificationChannelGRPCClient) GetNotificationChannelDescriptor(ctx con
 	var resp *monitoringpb.NotificationChannelDescriptor
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.notificationChannelClient.GetNotificationChannelDescriptor(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.notificationChannelClient.GetNotificationChannelDescriptor, req, settings.GRPC, c.logger, "GetNotificationChannelDescriptor")
 		return err
 	}, opts...)
 	if err != nil {
@@ -451,7 +477,7 @@ func (c *notificationChannelGRPCClient) ListNotificationChannels(ctx context.Con
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.notificationChannelClient.ListNotificationChannels(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.notificationChannelClient.ListNotificationChannels, req, settings.GRPC, c.logger, "ListNotificationChannels")
 			return err
 		}, opts...)
 		if err != nil {
@@ -486,7 +512,7 @@ func (c *notificationChannelGRPCClient) GetNotificationChannel(ctx context.Conte
 	var resp *monitoringpb.NotificationChannel
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.notificationChannelClient.GetNotificationChannel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.notificationChannelClient.GetNotificationChannel, req, settings.GRPC, c.logger, "GetNotificationChannel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -504,7 +530,7 @@ func (c *notificationChannelGRPCClient) CreateNotificationChannel(ctx context.Co
 	var resp *monitoringpb.NotificationChannel
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.notificationChannelClient.CreateNotificationChannel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.notificationChannelClient.CreateNotificationChannel, req, settings.GRPC, c.logger, "CreateNotificationChannel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -522,7 +548,7 @@ func (c *notificationChannelGRPCClient) UpdateNotificationChannel(ctx context.Co
 	var resp *monitoringpb.NotificationChannel
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.notificationChannelClient.UpdateNotificationChannel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.notificationChannelClient.UpdateNotificationChannel, req, settings.GRPC, c.logger, "UpdateNotificationChannel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -539,7 +565,7 @@ func (c *notificationChannelGRPCClient) DeleteNotificationChannel(ctx context.Co
 	opts = append((*c.CallOptions).DeleteNotificationChannel[0:len((*c.CallOptions).DeleteNotificationChannel):len((*c.CallOptions).DeleteNotificationChannel)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.notificationChannelClient.DeleteNotificationChannel(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.notificationChannelClient.DeleteNotificationChannel, req, settings.GRPC, c.logger, "DeleteNotificationChannel")
 		return err
 	}, opts...)
 	return err
@@ -553,7 +579,7 @@ func (c *notificationChannelGRPCClient) SendNotificationChannelVerificationCode(
 	opts = append((*c.CallOptions).SendNotificationChannelVerificationCode[0:len((*c.CallOptions).SendNotificationChannelVerificationCode):len((*c.CallOptions).SendNotificationChannelVerificationCode)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.notificationChannelClient.SendNotificationChannelVerificationCode(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.notificationChannelClient.SendNotificationChannelVerificationCode, req, settings.GRPC, c.logger, "SendNotificationChannelVerificationCode")
 		return err
 	}, opts...)
 	return err
@@ -568,7 +594,7 @@ func (c *notificationChannelGRPCClient) GetNotificationChannelVerificationCode(c
 	var resp *monitoringpb.GetNotificationChannelVerificationCodeResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.notificationChannelClient.GetNotificationChannelVerificationCode(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.notificationChannelClient.GetNotificationChannelVerificationCode, req, settings.GRPC, c.logger, "GetNotificationChannelVerificationCode")
 		return err
 	}, opts...)
 	if err != nil {
@@ -586,105 +612,11 @@ func (c *notificationChannelGRPCClient) VerifyNotificationChannel(ctx context.Co
 	var resp *monitoringpb.NotificationChannel
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.notificationChannelClient.VerifyNotificationChannel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.notificationChannelClient.VerifyNotificationChannel, req, settings.GRPC, c.logger, "VerifyNotificationChannel")
 		return err
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return resp, nil
-}
-
-// NotificationChannelDescriptorIterator manages a stream of *monitoringpb.NotificationChannelDescriptor.
-type NotificationChannelDescriptorIterator struct {
-	items    []*monitoringpb.NotificationChannelDescriptor
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*monitoringpb.NotificationChannelDescriptor, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *NotificationChannelDescriptorIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *NotificationChannelDescriptorIterator) Next() (*monitoringpb.NotificationChannelDescriptor, error) {
-	var item *monitoringpb.NotificationChannelDescriptor
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *NotificationChannelDescriptorIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *NotificationChannelDescriptorIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// NotificationChannelIterator manages a stream of *monitoringpb.NotificationChannel.
-type NotificationChannelIterator struct {
-	items    []*monitoringpb.NotificationChannel
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*monitoringpb.NotificationChannel, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *NotificationChannelIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *NotificationChannelIterator) Next() (*monitoringpb.NotificationChannel, error) {
-	var item *monitoringpb.NotificationChannel
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *NotificationChannelIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *NotificationChannelIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

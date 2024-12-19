@@ -75,9 +75,19 @@
                 "DeleteUser"
               ]
             },
+            "ExecuteSql": {
+              "methods": [
+                "ExecuteSql"
+              ]
+            },
             "FailoverInstance": {
               "methods": [
                 "FailoverInstance"
+              ]
+            },
+            "GenerateClientCertificate": {
+              "methods": [
+                "GenerateClientCertificate"
               ]
             },
             "GetBackup": {
@@ -88,6 +98,11 @@
             "GetCluster": {
               "methods": [
                 "GetCluster"
+              ]
+            },
+            "GetConnectionInfo": {
+              "methods": [
+                "GetConnectionInfo"
               ]
             },
             "GetInstance": {
@@ -123,6 +138,11 @@
             "ListClusters": {
               "methods": [
                 "ListClusters"
+              ]
+            },
+            "ListDatabases": {
+              "methods": [
+                "ListDatabases"
               ]
             },
             "ListInstances": {
@@ -163,6 +183,11 @@
             "RestoreCluster": {
               "methods": [
                 "RestoreCluster"
+              ]
+            },
+            "SwitchoverCluster": {
+              "methods": [
+                "SwitchoverCluster"
               ]
             },
             "UpdateBackup": {
@@ -255,9 +280,19 @@
                 "DeleteUser"
               ]
             },
+            "ExecuteSql": {
+              "methods": [
+                "ExecuteSql"
+              ]
+            },
             "FailoverInstance": {
               "methods": [
                 "FailoverInstance"
+              ]
+            },
+            "GenerateClientCertificate": {
+              "methods": [
+                "GenerateClientCertificate"
               ]
             },
             "GetBackup": {
@@ -268,6 +303,11 @@
             "GetCluster": {
               "methods": [
                 "GetCluster"
+              ]
+            },
+            "GetConnectionInfo": {
+              "methods": [
+                "GetConnectionInfo"
               ]
             },
             "GetInstance": {
@@ -303,6 +343,11 @@
             "ListClusters": {
               "methods": [
                 "ListClusters"
+              ]
+            },
+            "ListDatabases": {
+              "methods": [
+                "ListDatabases"
               ]
             },
             "ListInstances": {
@@ -343,6 +388,11 @@
             "RestoreCluster": {
               "methods": [
                 "RestoreCluster"
+              ]
+            },
+            "SwitchoverCluster": {
+              "methods": [
+                "SwitchoverCluster"
               ]
             },
             "UpdateBackup": {

@@ -271,7 +271,7 @@ func ExampleClient_Run() {
 	}
 	// List the posts published since yesterday.
 	yesterday := time.Now().Add(-24 * time.Hour)
-	q := datastore.NewQuery("Post").Filter("PublishedAt >", yesterday)
+	q := datastore.NewQuery("Post").FilterField("PublishedAt", ">", yesterday)
 	it := client.Run(ctx, q)
 	_ = it // TODO: iterate using Next.
 }

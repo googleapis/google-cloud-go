@@ -15,6 +15,7 @@
 package managedwriter
 
 import (
+	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -234,7 +235,53 @@ func WithTraceID(traceID string) WriterOption {
 // AppendRows calls on the stream.
 func WithSchemaDescriptor(dp *descriptorpb.DescriptorProto) WriterOption {
 	return func(ms *ManagedStream) {
-		ms.curDescVersion = newDescriptorVersion(dp)
+		ms.curTemplate = ms.curTemplate.revise(reviseProtoSchema(dp))
+	}
+}
+
+// WithMissingValueInterpretations controls how missing values are interpreted
+// for individual columns.
+//
+// You must provide a map to indicate how to interpret missing value for some fields. Missing
+// values are fields present in user schema but missing in rows. The key is
+// the field name. The value is the interpretation of missing values for the
+// field.
+//
+// For example, the following option would indicate that missing values in the "foo"
+// column are interpreted as null, whereas missing values in the "bar" column are
+// treated as the default value:
+//
+//	   WithMissingValueInterpretations(map[string]storagepb.AppendRowsRequest_MissingValueInterpretation{
+//					"foo": storagepb.AppendRowsRequest_DEFAULT_VALUE,
+//					"bar": storagepb.AppendRowsRequest_NULL_VALUE,
+//		  })
+//
+// If a field is not in this map and has missing values, the missing values
+// in this field are interpreted as NULL unless overridden with a default missing
+// value interpretation.
+//
+// Currently, field name can only be top-level column name, can't be a struct
+// field path like 'foo.bar'.
+func WithMissingValueInterpretations(mvi map[string]storagepb.AppendRowsRequest_MissingValueInterpretation) WriterOption {
+	return func(ms *ManagedStream) {
+		ms.curTemplate = ms.curTemplate.revise(reviseMissingValueInterpretations(mvi))
+	}
+}
+
+// WithDefaultMissingValueInterpretation controls how missing values are interpreted by
+// for a given stream.  See WithMissingValueIntepretations for more information about
+// missing values.
+//
+// WithMissingValueIntepretations set for individual colums can override the default chosen
+// with this option.
+//
+// For example, if you want to write
+// `NULL` instead of using default values for some columns, you can set
+// `default_missing_value_interpretation` to `DEFAULT_VALUE` and at the same
+// time, set `missing_value_interpretations` to `NULL_VALUE` on those columns.
+func WithDefaultMissingValueInterpretation(def storagepb.AppendRowsRequest_MissingValueInterpretation) WriterOption {
+	return func(ms *ManagedStream) {
+		ms.curTemplate = ms.curTemplate.revise(reviseDefaultMissingValueInterpretation(def))
 	}
 }
 
@@ -278,8 +325,25 @@ type AppendOption func(*pendingWrite)
 // with a given stream.
 func UpdateSchemaDescriptor(schema *descriptorpb.DescriptorProto) AppendOption {
 	return func(pw *pendingWrite) {
-		// create a new descriptorVersion and attach it to the pending write.
-		pw.descVersion = newDescriptorVersion(schema)
+		pw.reqTmpl = pw.reqTmpl.revise(reviseProtoSchema(schema))
+	}
+}
+
+// UpdateMissingValueInterpretations updates the per-column missing-value intepretations settings,
+// and is retained for subsequent writes.  See the WithMissingValueInterpretations WriterOption for
+// more details.
+func UpdateMissingValueInterpretations(mvi map[string]storagepb.AppendRowsRequest_MissingValueInterpretation) AppendOption {
+	return func(pw *pendingWrite) {
+		pw.reqTmpl = pw.reqTmpl.revise(reviseMissingValueInterpretations(mvi))
+	}
+}
+
+// UpdateDefaultMissingValueInterpretation updates the default intepretations setting for the stream,
+// and is retained for subsequent writes.  See the WithDefaultMissingValueInterpretations WriterOption for
+// more details.
+func UpdateDefaultMissingValueInterpretation(def storagepb.AppendRowsRequest_MissingValueInterpretation) AppendOption {
+	return func(pw *pendingWrite) {
+		pw.reqTmpl = pw.reqTmpl.revise(reviseDefaultMissingValueInterpretation(def))
 	}
 }
 
