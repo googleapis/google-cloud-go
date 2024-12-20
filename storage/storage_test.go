@@ -789,7 +789,6 @@ func TestObjectNames(t *testing.T) {
 }
 
 func TestCondition(t *testing.T) {
-	t.Skip("mock broken, needs investigation. Integration test with conditions pass.")
 	t.Parallel()
 	gotReq := make(chan *http.Request, 1)
 	hc, close := newTestServer(func(w http.ResponseWriter, r *http.Request) {
