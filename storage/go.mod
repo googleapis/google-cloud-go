@@ -4,6 +4,8 @@ go 1.21
 
 retract [v1.25.0, v1.27.0] // due to https://github.com/googleapis/google-cloud-go/issues/6857
 
+replace cloud.google.com/go/auth => ../auth
+
 require (
 	cloud.google.com/go v0.116.0
 	cloud.google.com/go/compute/metadata v0.6.0
