@@ -4187,12 +4187,16 @@ func TestReadWriteTransaction_ContextTimeoutDuringCommit(t *testing.T) {
 	if se.GRPCStatus().Code() != w.GRPCStatus().Code() {
 		t.Fatalf("Error status mismatch:\nGot: %v\nWant: %v", se.GRPCStatus(), w.GRPCStatus())
 	}
-	if se.Error() != w.Error() {
-		t.Fatalf("Error message mismatch:\nGot %s\nWant: %s", se.Error(), w.Error())
+	if !testEqual(se, w) {
+		t.Fatalf("Error message mismatch:\nGot:  %s\nWant: %s", se.Error(), w.Error())
 	}
 	var outcome *TransactionOutcomeUnknownError
 	if !errors.As(err, &outcome) {
 		t.Fatalf("Missing wrapped TransactionOutcomeUnknownError error")
+	}
+
+	if w.RequestID != "" {
+		t.Fatal("Missing .RequestID")
 	}
 }
 
@@ -5028,6 +5032,7 @@ func transactionOptionsTestCases() []TransactionOptionsTestCase {
 }
 
 func TestClient_DoForEachRow_ShouldNotEndSpanWithIteratorDoneError(t *testing.T) {
+	t.Skip("open census spans are no longer exported by gapics")
 	// This test cannot be parallel, as the TestExporter does not support that.
 	te := itestutil.NewTestExporter()
 	defer te.Unregister()
@@ -5072,6 +5077,7 @@ func TestClient_DoForEachRow_ShouldNotEndSpanWithIteratorDoneError(t *testing.T)
 }
 
 func TestClient_DoForEachRow_ShouldEndSpanWithQueryError(t *testing.T) {
+	t.Skip("open census spans are no longer exported by gapics")
 	// This test cannot be parallel, as the TestExporter does not support that.
 	te := itestutil.NewTestExporter()
 	defer te.Unregister()
@@ -5902,6 +5908,7 @@ func checkBatchWriteSpan(t *testing.T, errors []error, code codes.Code) {
 	}
 }
 func TestClient_BatchWrite_SpanExported(t *testing.T) {
+	t.Skip("open census spans are no longer exported by gapics")
 	testcases := []struct {
 		name   string
 		code   codes.Code

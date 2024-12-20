@@ -44,7 +44,7 @@ func ExampleClient_ListAccessLevels_all() {
 	}
 	for resp, err := range c.ListAccessLevels(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -70,7 +70,7 @@ func ExampleClient_ListAccessPolicies_all() {
 	}
 	for resp, err := range c.ListAccessPolicies(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -96,7 +96,7 @@ func ExampleClient_ListGcpUserAccessBindings_all() {
 	}
 	for resp, err := range c.ListGcpUserAccessBindings(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -122,7 +122,7 @@ func ExampleClient_ListServicePerimeters_all() {
 	}
 	for resp, err := range c.ListServicePerimeters(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp

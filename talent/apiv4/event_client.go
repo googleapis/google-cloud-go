@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -29,7 +29,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	talentpb "cloud.google.com/go/talent/apiv4/talentpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -156,6 +155,8 @@ type eventGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewEventClient creates a new event service client based on gRPC.
@@ -182,6 +183,7 @@ func NewEventClient(ctx context.Context, opts ...option.ClientOption) (*EventCli
 		connPool:         connPool,
 		eventClient:      talentpb.NewEventServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -229,6 +231,8 @@ type eventRESTClient struct {
 
 	// Points back to the CallOptions field of the containing EventClient
 	CallOptions **EventCallOptions
+
+	logger *slog.Logger
 }
 
 // NewEventRESTClient creates a new event service rest client.
@@ -246,6 +250,7 @@ func NewEventRESTClient(ctx context.Context, opts ...option.ClientOption) (*Even
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -298,7 +303,7 @@ func (c *eventGRPCClient) CreateClientEvent(ctx context.Context, req *talentpb.C
 	var resp *talentpb.ClientEvent
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.eventClient.CreateClientEvent(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.eventClient.CreateClientEvent, req, settings.GRPC, c.logger, "CreateClientEvent")
 		return err
 	}, opts...)
 	if err != nil {
@@ -316,7 +321,7 @@ func (c *eventGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.G
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -371,17 +376,7 @@ func (c *eventRESTClient) CreateClientEvent(ctx context.Context, req *talentpb.C
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateClientEvent")
 		if err != nil {
 			return err
 		}
@@ -431,17 +426,7 @@ func (c *eventRESTClient) GetOperation(ctx context.Context, req *longrunningpb.G
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}

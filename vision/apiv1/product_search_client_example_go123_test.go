@@ -44,7 +44,7 @@ func ExampleProductSearchClient_ListProductSets_all() {
 	}
 	for resp, err := range c.ListProductSets(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -70,7 +70,7 @@ func ExampleProductSearchClient_ListProducts_all() {
 	}
 	for resp, err := range c.ListProducts(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -96,7 +96,7 @@ func ExampleProductSearchClient_ListProductsInProductSet_all() {
 	}
 	for resp, err := range c.ListProductsInProductSet(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -122,7 +122,7 @@ func ExampleProductSearchClient_ListReferenceImages_all() {
 	}
 	for resp, err := range c.ListReferenceImages(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp

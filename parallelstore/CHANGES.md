@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.9.0](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.8.0...parallelstore/v0.9.0) (2024-12-11)
+
+
+### Features
+
+* **parallelstore:** A new enum `DeploymentType` is added ([57fdec7](https://github.com/googleapis/google-cloud-go/commit/57fdec7ce3792753c419298b9e526c4889f4101d))
+* **parallelstore:** A new field `deployment_type` is added to message `.google.cloud.parallelstore.v1beta.Instance` ([57fdec7](https://github.com/googleapis/google-cloud-go/commit/57fdec7ce3792753c419298b9e526c4889f4101d))
+
 ## [0.8.0](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.7.1...parallelstore/v0.8.0) (2024-11-06)
 
 

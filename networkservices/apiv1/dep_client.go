@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	networkservicespb "cloud.google.com/go/networkservices/apiv1/networkservicespb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -413,6 +412,8 @@ type depGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewDepClient creates a new dep service client based on gRPC.
@@ -439,6 +440,7 @@ func NewDepClient(ctx context.Context, opts ...option.ClientOption) (*DepClient,
 		connPool:         connPool,
 		depClient:        networkservicespb.NewDepServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:  iampb.NewIAMPolicyClient(connPool),
 		locationsClient:  locationpb.NewLocationsClient(connPool),
@@ -504,6 +506,8 @@ type depRESTClient struct {
 
 	// Points back to the CallOptions field of the containing DepClient
 	CallOptions **DepCallOptions
+
+	logger *slog.Logger
 }
 
 // NewDepRESTClient creates a new dep service rest client.
@@ -521,6 +525,7 @@ func NewDepRESTClient(ctx context.Context, opts ...option.ClientOption) (*DepCli
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -594,7 +599,7 @@ func (c *depGRPCClient) ListLbTrafficExtensions(ctx context.Context, req *networ
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.depClient.ListLbTrafficExtensions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.depClient.ListLbTrafficExtensions, req, settings.GRPC, c.logger, "ListLbTrafficExtensions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -629,7 +634,7 @@ func (c *depGRPCClient) GetLbTrafficExtension(ctx context.Context, req *networks
 	var resp *networkservicespb.LbTrafficExtension
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.depClient.GetLbTrafficExtension(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.depClient.GetLbTrafficExtension, req, settings.GRPC, c.logger, "GetLbTrafficExtension")
 		return err
 	}, opts...)
 	if err != nil {
@@ -647,7 +652,7 @@ func (c *depGRPCClient) CreateLbTrafficExtension(ctx context.Context, req *netwo
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.depClient.CreateLbTrafficExtension(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.depClient.CreateLbTrafficExtension, req, settings.GRPC, c.logger, "CreateLbTrafficExtension")
 		return err
 	}, opts...)
 	if err != nil {
@@ -667,7 +672,7 @@ func (c *depGRPCClient) UpdateLbTrafficExtension(ctx context.Context, req *netwo
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.depClient.UpdateLbTrafficExtension(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.depClient.UpdateLbTrafficExtension, req, settings.GRPC, c.logger, "UpdateLbTrafficExtension")
 		return err
 	}, opts...)
 	if err != nil {
@@ -687,7 +692,7 @@ func (c *depGRPCClient) DeleteLbTrafficExtension(ctx context.Context, req *netwo
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.depClient.DeleteLbTrafficExtension(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.depClient.DeleteLbTrafficExtension, req, settings.GRPC, c.logger, "DeleteLbTrafficExtension")
 		return err
 	}, opts...)
 	if err != nil {
@@ -718,7 +723,7 @@ func (c *depGRPCClient) ListLbRouteExtensions(ctx context.Context, req *networks
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.depClient.ListLbRouteExtensions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.depClient.ListLbRouteExtensions, req, settings.GRPC, c.logger, "ListLbRouteExtensions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -753,7 +758,7 @@ func (c *depGRPCClient) GetLbRouteExtension(ctx context.Context, req *networkser
 	var resp *networkservicespb.LbRouteExtension
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.depClient.GetLbRouteExtension(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.depClient.GetLbRouteExtension, req, settings.GRPC, c.logger, "GetLbRouteExtension")
 		return err
 	}, opts...)
 	if err != nil {
@@ -771,7 +776,7 @@ func (c *depGRPCClient) CreateLbRouteExtension(ctx context.Context, req *network
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.depClient.CreateLbRouteExtension(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.depClient.CreateLbRouteExtension, req, settings.GRPC, c.logger, "CreateLbRouteExtension")
 		return err
 	}, opts...)
 	if err != nil {
@@ -791,7 +796,7 @@ func (c *depGRPCClient) UpdateLbRouteExtension(ctx context.Context, req *network
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.depClient.UpdateLbRouteExtension(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.depClient.UpdateLbRouteExtension, req, settings.GRPC, c.logger, "UpdateLbRouteExtension")
 		return err
 	}, opts...)
 	if err != nil {
@@ -811,7 +816,7 @@ func (c *depGRPCClient) DeleteLbRouteExtension(ctx context.Context, req *network
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.depClient.DeleteLbRouteExtension(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.depClient.DeleteLbRouteExtension, req, settings.GRPC, c.logger, "DeleteLbRouteExtension")
 		return err
 	}, opts...)
 	if err != nil {
@@ -831,7 +836,7 @@ func (c *depGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLoca
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -860,7 +865,7 @@ func (c *depGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListL
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -895,7 +900,7 @@ func (c *depGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolic
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -913,7 +918,7 @@ func (c *depGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolic
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -931,7 +936,7 @@ func (c *depGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestI
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -948,7 +953,7 @@ func (c *depGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -962,7 +967,7 @@ func (c *depGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -977,7 +982,7 @@ func (c *depGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.Get
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1006,7 +1011,7 @@ func (c *depGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.L
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1083,21 +1088,10 @@ func (c *depRESTClient) ListLbTrafficExtensions(ctx context.Context, req *networ
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLbTrafficExtensions")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1160,17 +1154,7 @@ func (c *depRESTClient) GetLbTrafficExtension(ctx context.Context, req *networks
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLbTrafficExtension")
 		if err != nil {
 			return err
 		}
@@ -1231,21 +1215,10 @@ func (c *depRESTClient) CreateLbTrafficExtension(ctx context.Context, req *netwo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateLbTrafficExtension")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1312,21 +1285,10 @@ func (c *depRESTClient) UpdateLbTrafficExtension(ctx context.Context, req *netwo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateLbTrafficExtension")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1379,21 +1341,10 @@ func (c *depRESTClient) DeleteLbTrafficExtension(ctx context.Context, req *netwo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteLbTrafficExtension")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1462,21 +1413,10 @@ func (c *depRESTClient) ListLbRouteExtensions(ctx context.Context, req *networks
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLbRouteExtensions")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1539,17 +1479,7 @@ func (c *depRESTClient) GetLbRouteExtension(ctx context.Context, req *networkser
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLbRouteExtension")
 		if err != nil {
 			return err
 		}
@@ -1609,21 +1539,10 @@ func (c *depRESTClient) CreateLbRouteExtension(ctx context.Context, req *network
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateLbRouteExtension")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1690,21 +1609,10 @@ func (c *depRESTClient) UpdateLbRouteExtension(ctx context.Context, req *network
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateLbRouteExtension")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1757,21 +1665,10 @@ func (c *depRESTClient) DeleteLbRouteExtension(ctx context.Context, req *network
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteLbRouteExtension")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1822,17 +1719,7 @@ func (c *depRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLoca
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -1897,21 +1784,10 @@ func (c *depRESTClient) ListLocations(ctx context.Context, req *locationpb.ListL
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1978,17 +1854,7 @@ func (c *depRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolic
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -2048,17 +1914,7 @@ func (c *depRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolic
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -2120,17 +1976,7 @@ func (c *depRESTClient) TestIamPermissions(ctx context.Context, req *iampb.TestI
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
 		if err != nil {
 			return err
 		}
@@ -2183,15 +2029,8 @@ func (c *depRESTClient) CancelOperation(ctx context.Context, req *longrunningpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -2225,15 +2064,8 @@ func (c *depRESTClient) DeleteOperation(ctx context.Context, req *longrunningpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOperation")
+		return err
 	}, opts...)
 }
 
@@ -2270,17 +2102,7 @@ func (c *depRESTClient) GetOperation(ctx context.Context, req *longrunningpb.Get
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -2345,21 +2167,10 @@ func (c *depRESTClient) ListOperations(ctx context.Context, req *longrunningpb.L
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

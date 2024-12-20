@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	visionpb "cloud.google.com/go/vision/v2/apiv1p1beta1/visionpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -160,6 +159,8 @@ type imageAnnotatorGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewImageAnnotatorClient creates a new image annotator client based on gRPC.
@@ -188,6 +189,7 @@ func NewImageAnnotatorClient(ctx context.Context, opts ...option.ClientOption) (
 		connPool:             connPool,
 		imageAnnotatorClient: visionpb.NewImageAnnotatorClient(connPool),
 		CallOptions:          &client.CallOptions,
+		logger:               internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -234,6 +236,8 @@ type imageAnnotatorRESTClient struct {
 
 	// Points back to the CallOptions field of the containing ImageAnnotatorClient
 	CallOptions **ImageAnnotatorCallOptions
+
+	logger *slog.Logger
 }
 
 // NewImageAnnotatorRESTClient creates a new image annotator rest client.
@@ -253,6 +257,7 @@ func NewImageAnnotatorRESTClient(ctx context.Context, opts ...option.ClientOptio
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -302,7 +307,7 @@ func (c *imageAnnotatorGRPCClient) BatchAnnotateImages(ctx context.Context, req 
 	var resp *visionpb.BatchAnnotateImagesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.imageAnnotatorClient.BatchAnnotateImages(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.imageAnnotatorClient.BatchAnnotateImages, req, settings.GRPC, c.logger, "BatchAnnotateImages")
 		return err
 	}, opts...)
 	if err != nil {
@@ -347,17 +352,7 @@ func (c *imageAnnotatorRESTClient) BatchAnnotateImages(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchAnnotateImages")
 		if err != nil {
 			return err
 		}

@@ -21,7 +21,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -29,7 +29,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	visionaipb "cloud.google.com/go/visionai/apiv1/visionaipb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -226,6 +225,8 @@ type streamingGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewStreamingClient creates a new streaming service client based on gRPC.
@@ -252,6 +253,7 @@ func NewStreamingClient(ctx context.Context, opts ...option.ClientOption) (*Stre
 		connPool:         connPool,
 		streamingClient:  visionaipb.NewStreamingServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -299,6 +301,8 @@ type streamingRESTClient struct {
 
 	// Points back to the CallOptions field of the containing StreamingClient
 	CallOptions **StreamingCallOptions
+
+	logger *slog.Logger
 }
 
 // NewStreamingRESTClient creates a new streaming service rest client.
@@ -316,6 +320,7 @@ func NewStreamingRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -365,7 +370,9 @@ func (c *streamingGRPCClient) SendPackets(ctx context.Context, opts ...gax.CallO
 	opts = append((*c.CallOptions).SendPackets[0:len((*c.CallOptions).SendPackets):len((*c.CallOptions).SendPackets)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "SendPackets")
 		resp, err = c.streamingClient.SendPackets(ctx, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "SendPackets")
 		return err
 	}, opts...)
 	if err != nil {
@@ -380,7 +387,9 @@ func (c *streamingGRPCClient) ReceivePackets(ctx context.Context, opts ...gax.Ca
 	opts = append((*c.CallOptions).ReceivePackets[0:len((*c.CallOptions).ReceivePackets):len((*c.CallOptions).ReceivePackets)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "ReceivePackets")
 		resp, err = c.streamingClient.ReceivePackets(ctx, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "ReceivePackets")
 		return err
 	}, opts...)
 	if err != nil {
@@ -395,7 +404,9 @@ func (c *streamingGRPCClient) ReceiveEvents(ctx context.Context, opts ...gax.Cal
 	opts = append((*c.CallOptions).ReceiveEvents[0:len((*c.CallOptions).ReceiveEvents):len((*c.CallOptions).ReceiveEvents)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "ReceiveEvents")
 		resp, err = c.streamingClient.ReceiveEvents(ctx, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "ReceiveEvents")
 		return err
 	}, opts...)
 	if err != nil {
@@ -413,7 +424,7 @@ func (c *streamingGRPCClient) AcquireLease(ctx context.Context, req *visionaipb.
 	var resp *visionaipb.Lease
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.streamingClient.AcquireLease(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.streamingClient.AcquireLease, req, settings.GRPC, c.logger, "AcquireLease")
 		return err
 	}, opts...)
 	if err != nil {
@@ -431,7 +442,7 @@ func (c *streamingGRPCClient) RenewLease(ctx context.Context, req *visionaipb.Re
 	var resp *visionaipb.Lease
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.streamingClient.RenewLease(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.streamingClient.RenewLease, req, settings.GRPC, c.logger, "RenewLease")
 		return err
 	}, opts...)
 	if err != nil {
@@ -449,7 +460,7 @@ func (c *streamingGRPCClient) ReleaseLease(ctx context.Context, req *visionaipb.
 	var resp *visionaipb.ReleaseLeaseResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.streamingClient.ReleaseLease(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.streamingClient.ReleaseLease, req, settings.GRPC, c.logger, "ReleaseLease")
 		return err
 	}, opts...)
 	if err != nil {
@@ -466,7 +477,7 @@ func (c *streamingGRPCClient) CancelOperation(ctx context.Context, req *longrunn
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -480,7 +491,7 @@ func (c *streamingGRPCClient) DeleteOperation(ctx context.Context, req *longrunn
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -495,7 +506,7 @@ func (c *streamingGRPCClient) GetOperation(ctx context.Context, req *longrunning
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -524,7 +535,7 @@ func (c *streamingGRPCClient) ListOperations(ctx context.Context, req *longrunni
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -610,17 +621,7 @@ func (c *streamingRESTClient) AcquireLease(ctx context.Context, req *visionaipb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AcquireLease")
 		if err != nil {
 			return err
 		}
@@ -676,17 +677,7 @@ func (c *streamingRESTClient) RenewLease(ctx context.Context, req *visionaipb.Re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RenewLease")
 		if err != nil {
 			return err
 		}
@@ -742,17 +733,7 @@ func (c *streamingRESTClient) ReleaseLease(ctx context.Context, req *visionaipb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ReleaseLease")
 		if err != nil {
 			return err
 		}
@@ -805,15 +786,8 @@ func (c *streamingRESTClient) CancelOperation(ctx context.Context, req *longrunn
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -847,15 +821,8 @@ func (c *streamingRESTClient) DeleteOperation(ctx context.Context, req *longrunn
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOperation")
+		return err
 	}, opts...)
 }
 
@@ -892,17 +859,7 @@ func (c *streamingRESTClient) GetOperation(ctx context.Context, req *longrunning
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -967,21 +924,10 @@ func (c *streamingRESTClient) ListOperations(ctx context.Context, req *longrunni
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

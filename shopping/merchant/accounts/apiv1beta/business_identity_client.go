@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	accountspb "cloud.google.com/go/shopping/merchant/accounts/apiv1beta/accountspb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -188,6 +187,8 @@ type businessIdentityGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewBusinessIdentityClient creates a new business identity service client based on gRPC.
@@ -215,6 +216,7 @@ func NewBusinessIdentityClient(ctx context.Context, opts ...option.ClientOption)
 		connPool:               connPool,
 		businessIdentityClient: accountspb.NewBusinessIdentityServiceClient(connPool),
 		CallOptions:            &client.CallOptions,
+		logger:                 internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -261,6 +263,8 @@ type businessIdentityRESTClient struct {
 
 	// Points back to the CallOptions field of the containing BusinessIdentityClient
 	CallOptions **BusinessIdentityCallOptions
+
+	logger *slog.Logger
 }
 
 // NewBusinessIdentityRESTClient creates a new business identity service rest client.
@@ -279,6 +283,7 @@ func NewBusinessIdentityRESTClient(ctx context.Context, opts ...option.ClientOpt
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -331,7 +336,7 @@ func (c *businessIdentityGRPCClient) GetBusinessIdentity(ctx context.Context, re
 	var resp *accountspb.BusinessIdentity
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.businessIdentityClient.GetBusinessIdentity(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.businessIdentityClient.GetBusinessIdentity, req, settings.GRPC, c.logger, "GetBusinessIdentity")
 		return err
 	}, opts...)
 	if err != nil {
@@ -349,7 +354,7 @@ func (c *businessIdentityGRPCClient) UpdateBusinessIdentity(ctx context.Context,
 	var resp *accountspb.BusinessIdentity
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.businessIdentityClient.UpdateBusinessIdentity(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.businessIdentityClient.UpdateBusinessIdentity, req, settings.GRPC, c.logger, "UpdateBusinessIdentity")
 		return err
 	}, opts...)
 	if err != nil {
@@ -391,17 +396,7 @@ func (c *businessIdentityRESTClient) GetBusinessIdentity(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetBusinessIdentity")
 		if err != nil {
 			return err
 		}
@@ -466,17 +461,7 @@ func (c *businessIdentityRESTClient) UpdateBusinessIdentity(ctx context.Context,
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateBusinessIdentity")
 		if err != nil {
 			return err
 		}

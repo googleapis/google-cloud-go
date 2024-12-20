@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	recommendationenginepb "cloud.google.com/go/recommendationengine/apiv1beta1/recommendationenginepb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -329,6 +328,8 @@ type userEventGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewUserEventClient creates a new user event service client based on gRPC.
@@ -355,6 +356,7 @@ func NewUserEventClient(ctx context.Context, opts ...option.ClientOption) (*User
 		connPool:        connPool,
 		userEventClient: recommendationenginepb.NewUserEventServiceClient(connPool),
 		CallOptions:     &client.CallOptions,
+		logger:          internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -417,6 +419,8 @@ type userEventRESTClient struct {
 
 	// Points back to the CallOptions field of the containing UserEventClient
 	CallOptions **UserEventCallOptions
+
+	logger *slog.Logger
 }
 
 // NewUserEventRESTClient creates a new user event service rest client.
@@ -434,6 +438,7 @@ func NewUserEventRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -496,7 +501,7 @@ func (c *userEventGRPCClient) WriteUserEvent(ctx context.Context, req *recommend
 	var resp *recommendationenginepb.UserEvent
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.userEventClient.WriteUserEvent(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.userEventClient.WriteUserEvent, req, settings.GRPC, c.logger, "WriteUserEvent")
 		return err
 	}, opts...)
 	if err != nil {
@@ -514,7 +519,7 @@ func (c *userEventGRPCClient) CollectUserEvent(ctx context.Context, req *recomme
 	var resp *httpbodypb.HttpBody
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.userEventClient.CollectUserEvent(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.userEventClient.CollectUserEvent, req, settings.GRPC, c.logger, "CollectUserEvent")
 		return err
 	}, opts...)
 	if err != nil {
@@ -543,7 +548,7 @@ func (c *userEventGRPCClient) ListUserEvents(ctx context.Context, req *recommend
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.userEventClient.ListUserEvents(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.userEventClient.ListUserEvents, req, settings.GRPC, c.logger, "ListUserEvents")
 			return err
 		}, opts...)
 		if err != nil {
@@ -578,7 +583,7 @@ func (c *userEventGRPCClient) PurgeUserEvents(ctx context.Context, req *recommen
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.userEventClient.PurgeUserEvents(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.userEventClient.PurgeUserEvents, req, settings.GRPC, c.logger, "PurgeUserEvents")
 		return err
 	}, opts...)
 	if err != nil {
@@ -598,7 +603,7 @@ func (c *userEventGRPCClient) ImportUserEvents(ctx context.Context, req *recomme
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.userEventClient.ImportUserEvents(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.userEventClient.ImportUserEvents, req, settings.GRPC, c.logger, "ImportUserEvents")
 		return err
 	}, opts...)
 	if err != nil {
@@ -649,17 +654,7 @@ func (c *userEventRESTClient) WriteUserEvent(ctx context.Context, req *recommend
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "WriteUserEvent")
 		if err != nil {
 			return err
 		}
@@ -719,17 +714,7 @@ func (c *userEventRESTClient) CollectUserEvent(ctx context.Context, req *recomme
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, httpRsp, err := executeHTTPRequestWithResponse(ctx, c.httpClient, httpReq, c.logger, nil, "CollectUserEvent")
 		if err != nil {
 			return err
 		}
@@ -795,21 +780,10 @@ func (c *userEventRESTClient) ListUserEvents(ctx context.Context, req *recommend
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListUserEvents")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -880,21 +854,10 @@ func (c *userEventRESTClient) PurgeUserEvents(ctx context.Context, req *recommen
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PurgeUserEvents")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -956,21 +919,10 @@ func (c *userEventRESTClient) ImportUserEvents(ctx context.Context, req *recomme
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ImportUserEvents")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}

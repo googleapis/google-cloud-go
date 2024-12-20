@@ -44,7 +44,7 @@ func ExampleInstanceAdminClient_ListInstanceConfigOperations_all() {
 	}
 	for resp, err := range c.ListInstanceConfigOperations(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -70,7 +70,7 @@ func ExampleInstanceAdminClient_ListInstanceConfigs_all() {
 	}
 	for resp, err := range c.ListInstanceConfigs(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -96,7 +96,7 @@ func ExampleInstanceAdminClient_ListInstancePartitionOperations_all() {
 	}
 	for resp, err := range c.ListInstancePartitionOperations(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -122,7 +122,7 @@ func ExampleInstanceAdminClient_ListInstancePartitions_all() {
 	}
 	for resp, err := range c.ListInstancePartitions(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -148,7 +148,7 @@ func ExampleInstanceAdminClient_ListInstances_all() {
 	}
 	for resp, err := range c.ListInstances(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp

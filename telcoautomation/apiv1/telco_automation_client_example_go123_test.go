@@ -46,7 +46,7 @@ func ExampleClient_ListBlueprintRevisions_all() {
 	}
 	for resp, err := range c.ListBlueprintRevisions(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -72,7 +72,7 @@ func ExampleClient_ListBlueprints_all() {
 	}
 	for resp, err := range c.ListBlueprints(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -98,7 +98,7 @@ func ExampleClient_ListDeploymentRevisions_all() {
 	}
 	for resp, err := range c.ListDeploymentRevisions(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -124,7 +124,7 @@ func ExampleClient_ListDeployments_all() {
 	}
 	for resp, err := range c.ListDeployments(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -150,7 +150,7 @@ func ExampleClient_ListEdgeSlms_all() {
 	}
 	for resp, err := range c.ListEdgeSlms(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -176,7 +176,7 @@ func ExampleClient_ListHydratedDeployments_all() {
 	}
 	for resp, err := range c.ListHydratedDeployments(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -202,7 +202,7 @@ func ExampleClient_ListOrchestrationClusters_all() {
 	}
 	for resp, err := range c.ListOrchestrationClusters(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -228,7 +228,7 @@ func ExampleClient_ListPublicBlueprints_all() {
 	}
 	for resp, err := range c.ListPublicBlueprints(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -254,7 +254,7 @@ func ExampleClient_SearchBlueprintRevisions_all() {
 	}
 	for resp, err := range c.SearchBlueprintRevisions(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -280,7 +280,7 @@ func ExampleClient_SearchDeploymentRevisions_all() {
 	}
 	for resp, err := range c.SearchDeploymentRevisions(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -306,7 +306,7 @@ func ExampleClient_ListLocations_all() {
 	}
 	for resp, err := range c.ListLocations(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -332,7 +332,7 @@ func ExampleClient_ListOperations_all() {
 	}
 	for resp, err := range c.ListOperations(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp

@@ -54,9 +54,12 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/googleapis/gax-go/v2/apierror"
 	"go.opentelemetry.io/contrib/detectors/gcp"
+	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"go.opentelemetry.io/otel/sdk/resource"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	"go.opentelemetry.io/otel/sdk/trace/tracetest"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -4710,6 +4713,78 @@ func TestIntegration_SoftDelete(t *testing.T) {
 	})
 }
 
+func TestIntegration_ObjectMove(t *testing.T) {
+	multiTransportTest(skipJSONReads(context.Background(), "no reads in test"), t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
+		h := testHelper{t}
+		srcObj := "move-src-obj"
+		dstObj := "move-dst-obj"
+
+		// Create bucket with HNS enabled
+		bkt := client.Bucket(prefix + uidSpace.New())
+		attrs := &BucketAttrs{
+			HierarchicalNamespace:    &HierarchicalNamespace{Enabled: true},
+			UniformBucketLevelAccess: UniformBucketLevelAccess{Enabled: true},
+			SoftDeletePolicy:         &SoftDeletePolicy{RetentionDuration: 0},
+		}
+		if err := bkt.Create(ctx, testutil.ProjID(), attrs); err != nil {
+			t.Fatalf("error creating bucket with soft delete policy set: %v", err)
+		}
+		t.Cleanup(func() { h.mustDeleteBucket(bkt) })
+
+		// Create source object
+		obj := bkt.Object(srcObj)
+		w := obj.NewWriter(ctx)
+		h.mustWrite(w, randomContents())
+		t.Cleanup(func() { h.mustDeleteObject(bkt.Object(dstObj)) })
+
+		// Move object
+		objAttrs, err := obj.Move(ctx, MoveObjectDestination{Object: dstObj})
+		if err != nil {
+			t.Fatalf("ObjectHandle.Move: %v", err)
+		}
+		// Check attrs are populated.
+		if objAttrs == nil || objAttrs.Name == "" {
+			t.Errorf("wanted object attrs to be populated; got %+v", objAttrs)
+		}
+		// Check source object is no longer present.
+		if _, err := obj.Attrs(ctx); !errors.Is(err, ErrObjectNotExist) {
+			t.Errorf("source object: got err %v, want ErrObjectNotExist", err)
+		}
+
+		// Test that source and destination preconditions are applied appropriately.
+		srcObj2 := "move-src-obj2"
+		dstObj2 := "move-dst-obj2"
+
+		obj2 := bkt.Object(srcObj2)
+		w2 := obj2.NewWriter(ctx)
+		h.mustWrite(w2, randomContents())
+		t.Cleanup(func() { h.mustDeleteObject(bkt.Object(dstObj2)) })
+
+		// Bad source generation should cause 412.
+		_, err = obj2.If(Conditions{
+			GenerationMatch: 123,
+		}).Move(ctx, MoveObjectDestination{Object: dstObj2})
+		if err == nil || !(status.Code(err) == codes.FailedPrecondition || extractErrCode(err) == http.StatusPreconditionFailed) {
+			t.Errorf("ObjectHandle.Move: got err %v, want failed precondition (412)", err)
+		}
+
+		// Bad dest generation should also cause 412.
+		_, err = obj2.Move(ctx, MoveObjectDestination{Object: dstObj2, Conditions: &Conditions{GenerationMatch: 123}})
+		if err == nil || !(status.Code(err) == codes.FailedPrecondition || extractErrCode(err) == http.StatusPreconditionFailed) {
+			t.Errorf("ObjectHandle.Move: got err %v, want failed precondition (412)", err)
+		}
+
+		// Correctly applied preconditions should work.
+		_, err = obj2.If(Conditions{
+			GenerationMatch:     w2.Attrs().Generation,
+			MetagenerationMatch: w2.Attrs().Metageneration,
+		}).Move(ctx, MoveObjectDestination{Object: dstObj2, Conditions: &Conditions{DoesNotExist: true}})
+		if err != nil {
+			t.Fatalf("ObjectHandle.Move: %v", err)
+		}
+	})
+}
+
 func TestIntegration_KMS(t *testing.T) {
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, prefix string, client *Client) {
 		h := testHelper{t}
@@ -5151,8 +5226,48 @@ func TestIntegration_ReaderAttrs(t *testing.T) {
 			Metageneration:  attrs.Metageneration,
 			CRC32C:          crc32c(c),
 		}
-		if got != want {
-			t.Fatalf("got\t%v,\nwanted\t%v", got, want)
+		if diff := cmp.Diff(got, want); diff != "" {
+			t.Fatalf("diff got vs want: %v", diff)
+		}
+	})
+}
+
+func TestIntegration_ReaderAttrs_Metadata(t *testing.T) {
+	multiTransportTest(skipJSONReads(context.Background(), "metadata on read not supported on JSON api"), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
+		bkt := client.Bucket(bucket)
+
+		const defaultType = "text/plain"
+		o := bkt.Object("reader-attrs-metadata-obj")
+		c := randomContents()
+		if err := writeObject(ctx, o, defaultType, c); err != nil {
+			t.Errorf("Write for %v failed with %v", o.ObjectName(), err)
+		}
+		t.Cleanup(func() {
+			if err := o.Delete(ctx); err != nil {
+				log.Printf("failed to delete test object: %v", err)
+			}
+		})
+
+		oa, err := o.Update(ctx, ObjectAttrsToUpdate{Metadata: map[string]string{"Custom-Key": "custom-value", "Other-Key": "other-value"}})
+		if err != nil {
+			t.Fatal(err)
+		}
+		_ = oa
+
+		o = o.Generation(oa.Generation)
+		rc, err := o.NewReader(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		got := rc.Metadata()
+		want := map[string]string{
+			"Custom-Key": "custom-value",
+			"Other-Key":  "other-value",
+		}
+
+		if diff := cmp.Diff(got, want); diff != "" {
+			t.Fatalf("diff got vs want: %v", diff)
 		}
 	})
 }
@@ -5969,10 +6084,10 @@ func TestIntegration_PostPolicyV4_SignedURL_WithSignBytes(t *testing.T) {
 	})
 }
 
-func TestIntegration_OCTracing(t *testing.T) {
+func TestIntegration_OTelTracing(t *testing.T) {
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
-		te := testutil.NewTestExporter()
-		defer te.Unregister()
+		te := newOpenTelemetryTestExporter()
+		defer te.Unregister(ctx)
 
 		bkt := client.Bucket(bucket)
 		bkt.Attrs(ctx)
@@ -5981,6 +6096,38 @@ func TestIntegration_OCTracing(t *testing.T) {
 			t.Fatalf("Expected some spans to be created, but got %d", 0)
 		}
 	})
+}
+
+// openTelemetryTestExporter is a test utility exporter. It should be created
+// with NewopenTelemetryTestExporter.
+type openTelemetryTestExporter struct {
+	exporter *tracetest.InMemoryExporter
+	tp       *sdktrace.TracerProvider
+}
+
+// newOpenTelemetryTestExporter creates a openTelemetryTestExporter with
+// underlying InMemoryExporter and TracerProvider from OpenTelemetry.
+func newOpenTelemetryTestExporter() *openTelemetryTestExporter {
+	exporter := tracetest.NewInMemoryExporter()
+	tp := sdktrace.NewTracerProvider(
+		sdktrace.WithSyncer(exporter),
+		sdktrace.WithSampler(sdktrace.AlwaysSample()),
+	)
+	otel.SetTracerProvider(tp)
+	return &openTelemetryTestExporter{
+		exporter: exporter,
+		tp:       tp,
+	}
+}
+
+// Spans returns the current in-memory stored spans.
+func (te *openTelemetryTestExporter) Spans() tracetest.SpanStubs {
+	return te.exporter.GetSpans()
+}
+
+// Unregister shuts down the underlying OpenTelemetry TracerProvider.
+func (te *openTelemetryTestExporter) Unregister(ctx context.Context) {
+	te.tp.Shutdown(ctx)
 }
 
 // verifySignedURL gets the bytes at the provided url and verifies them against the

@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -29,7 +29,6 @@ import (
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	iotpb "cloud.google.com/go/iot/apiv1/iotpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -593,6 +592,8 @@ type deviceManagerGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewDeviceManagerClient creates a new device manager client based on gRPC.
@@ -619,6 +620,7 @@ func NewDeviceManagerClient(ctx context.Context, opts ...option.ClientOption) (*
 		connPool:            connPool,
 		deviceManagerClient: iotpb.NewDeviceManagerClient(connPool),
 		CallOptions:         &client.CallOptions,
+		logger:              internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -665,6 +667,8 @@ type deviceManagerRESTClient struct {
 
 	// Points back to the CallOptions field of the containing DeviceManagerClient
 	CallOptions **DeviceManagerCallOptions
+
+	logger *slog.Logger
 }
 
 // NewDeviceManagerRESTClient creates a new device manager rest client.
@@ -682,6 +686,7 @@ func NewDeviceManagerRESTClient(ctx context.Context, opts ...option.ClientOption
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -734,7 +739,7 @@ func (c *deviceManagerGRPCClient) CreateDeviceRegistry(ctx context.Context, req 
 	var resp *iotpb.DeviceRegistry
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.deviceManagerClient.CreateDeviceRegistry(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.deviceManagerClient.CreateDeviceRegistry, req, settings.GRPC, c.logger, "CreateDeviceRegistry")
 		return err
 	}, opts...)
 	if err != nil {
@@ -752,7 +757,7 @@ func (c *deviceManagerGRPCClient) GetDeviceRegistry(ctx context.Context, req *io
 	var resp *iotpb.DeviceRegistry
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.deviceManagerClient.GetDeviceRegistry(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.deviceManagerClient.GetDeviceRegistry, req, settings.GRPC, c.logger, "GetDeviceRegistry")
 		return err
 	}, opts...)
 	if err != nil {
@@ -770,7 +775,7 @@ func (c *deviceManagerGRPCClient) UpdateDeviceRegistry(ctx context.Context, req 
 	var resp *iotpb.DeviceRegistry
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.deviceManagerClient.UpdateDeviceRegistry(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.deviceManagerClient.UpdateDeviceRegistry, req, settings.GRPC, c.logger, "UpdateDeviceRegistry")
 		return err
 	}, opts...)
 	if err != nil {
@@ -787,7 +792,7 @@ func (c *deviceManagerGRPCClient) DeleteDeviceRegistry(ctx context.Context, req 
 	opts = append((*c.CallOptions).DeleteDeviceRegistry[0:len((*c.CallOptions).DeleteDeviceRegistry):len((*c.CallOptions).DeleteDeviceRegistry)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.deviceManagerClient.DeleteDeviceRegistry(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.deviceManagerClient.DeleteDeviceRegistry, req, settings.GRPC, c.logger, "DeleteDeviceRegistry")
 		return err
 	}, opts...)
 	return err
@@ -813,7 +818,7 @@ func (c *deviceManagerGRPCClient) ListDeviceRegistries(ctx context.Context, req 
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.deviceManagerClient.ListDeviceRegistries(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.deviceManagerClient.ListDeviceRegistries, req, settings.GRPC, c.logger, "ListDeviceRegistries")
 			return err
 		}, opts...)
 		if err != nil {
@@ -848,7 +853,7 @@ func (c *deviceManagerGRPCClient) CreateDevice(ctx context.Context, req *iotpb.C
 	var resp *iotpb.Device
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.deviceManagerClient.CreateDevice(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.deviceManagerClient.CreateDevice, req, settings.GRPC, c.logger, "CreateDevice")
 		return err
 	}, opts...)
 	if err != nil {
@@ -866,7 +871,7 @@ func (c *deviceManagerGRPCClient) GetDevice(ctx context.Context, req *iotpb.GetD
 	var resp *iotpb.Device
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.deviceManagerClient.GetDevice(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.deviceManagerClient.GetDevice, req, settings.GRPC, c.logger, "GetDevice")
 		return err
 	}, opts...)
 	if err != nil {
@@ -884,7 +889,7 @@ func (c *deviceManagerGRPCClient) UpdateDevice(ctx context.Context, req *iotpb.U
 	var resp *iotpb.Device
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.deviceManagerClient.UpdateDevice(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.deviceManagerClient.UpdateDevice, req, settings.GRPC, c.logger, "UpdateDevice")
 		return err
 	}, opts...)
 	if err != nil {
@@ -901,7 +906,7 @@ func (c *deviceManagerGRPCClient) DeleteDevice(ctx context.Context, req *iotpb.D
 	opts = append((*c.CallOptions).DeleteDevice[0:len((*c.CallOptions).DeleteDevice):len((*c.CallOptions).DeleteDevice)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.deviceManagerClient.DeleteDevice(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.deviceManagerClient.DeleteDevice, req, settings.GRPC, c.logger, "DeleteDevice")
 		return err
 	}, opts...)
 	return err
@@ -927,7 +932,7 @@ func (c *deviceManagerGRPCClient) ListDevices(ctx context.Context, req *iotpb.Li
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.deviceManagerClient.ListDevices(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.deviceManagerClient.ListDevices, req, settings.GRPC, c.logger, "ListDevices")
 			return err
 		}, opts...)
 		if err != nil {
@@ -962,7 +967,7 @@ func (c *deviceManagerGRPCClient) ModifyCloudToDeviceConfig(ctx context.Context,
 	var resp *iotpb.DeviceConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.deviceManagerClient.ModifyCloudToDeviceConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.deviceManagerClient.ModifyCloudToDeviceConfig, req, settings.GRPC, c.logger, "ModifyCloudToDeviceConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -980,7 +985,7 @@ func (c *deviceManagerGRPCClient) ListDeviceConfigVersions(ctx context.Context, 
 	var resp *iotpb.ListDeviceConfigVersionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.deviceManagerClient.ListDeviceConfigVersions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.deviceManagerClient.ListDeviceConfigVersions, req, settings.GRPC, c.logger, "ListDeviceConfigVersions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -998,7 +1003,7 @@ func (c *deviceManagerGRPCClient) ListDeviceStates(ctx context.Context, req *iot
 	var resp *iotpb.ListDeviceStatesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.deviceManagerClient.ListDeviceStates(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.deviceManagerClient.ListDeviceStates, req, settings.GRPC, c.logger, "ListDeviceStates")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1016,7 +1021,7 @@ func (c *deviceManagerGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.S
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.deviceManagerClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.deviceManagerClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1034,7 +1039,7 @@ func (c *deviceManagerGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.G
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.deviceManagerClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.deviceManagerClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1052,7 +1057,7 @@ func (c *deviceManagerGRPCClient) TestIamPermissions(ctx context.Context, req *i
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.deviceManagerClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.deviceManagerClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1070,7 +1075,7 @@ func (c *deviceManagerGRPCClient) SendCommandToDevice(ctx context.Context, req *
 	var resp *iotpb.SendCommandToDeviceResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.deviceManagerClient.SendCommandToDevice(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.deviceManagerClient.SendCommandToDevice, req, settings.GRPC, c.logger, "SendCommandToDevice")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1088,7 +1093,7 @@ func (c *deviceManagerGRPCClient) BindDeviceToGateway(ctx context.Context, req *
 	var resp *iotpb.BindDeviceToGatewayResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.deviceManagerClient.BindDeviceToGateway(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.deviceManagerClient.BindDeviceToGateway, req, settings.GRPC, c.logger, "BindDeviceToGateway")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1106,7 +1111,7 @@ func (c *deviceManagerGRPCClient) UnbindDeviceFromGateway(ctx context.Context, r
 	var resp *iotpb.UnbindDeviceFromGatewayResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.deviceManagerClient.UnbindDeviceFromGateway(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.deviceManagerClient.UnbindDeviceFromGateway, req, settings.GRPC, c.logger, "UnbindDeviceFromGateway")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1155,17 +1160,7 @@ func (c *deviceManagerRESTClient) CreateDeviceRegistry(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDeviceRegistry")
 		if err != nil {
 			return err
 		}
@@ -1215,17 +1210,7 @@ func (c *deviceManagerRESTClient) GetDeviceRegistry(ctx context.Context, req *io
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDeviceRegistry")
 		if err != nil {
 			return err
 		}
@@ -1289,17 +1274,7 @@ func (c *deviceManagerRESTClient) UpdateDeviceRegistry(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateDeviceRegistry")
 		if err != nil {
 			return err
 		}
@@ -1346,15 +1321,8 @@ func (c *deviceManagerRESTClient) DeleteDeviceRegistry(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDeviceRegistry")
+		return err
 	}, opts...)
 }
 
@@ -1403,21 +1371,10 @@ func (c *deviceManagerRESTClient) ListDeviceRegistries(ctx context.Context, req 
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDeviceRegistries")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1487,17 +1444,7 @@ func (c *deviceManagerRESTClient) CreateDevice(ctx context.Context, req *iotpb.C
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDevice")
 		if err != nil {
 			return err
 		}
@@ -1554,17 +1501,7 @@ func (c *deviceManagerRESTClient) GetDevice(ctx context.Context, req *iotpb.GetD
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDevice")
 		if err != nil {
 			return err
 		}
@@ -1628,17 +1565,7 @@ func (c *deviceManagerRESTClient) UpdateDevice(ctx context.Context, req *iotpb.U
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateDevice")
 		if err != nil {
 			return err
 		}
@@ -1685,15 +1612,8 @@ func (c *deviceManagerRESTClient) DeleteDevice(ctx context.Context, req *iotpb.D
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDevice")
+		return err
 	}, opts...)
 }
 
@@ -1768,21 +1688,10 @@ func (c *deviceManagerRESTClient) ListDevices(ctx context.Context, req *iotpb.Li
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDevices")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1853,17 +1762,7 @@ func (c *deviceManagerRESTClient) ModifyCloudToDeviceConfig(ctx context.Context,
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ModifyCloudToDeviceConfig")
 		if err != nil {
 			return err
 		}
@@ -1917,17 +1816,7 @@ func (c *deviceManagerRESTClient) ListDeviceConfigVersions(ctx context.Context, 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDeviceConfigVersions")
 		if err != nil {
 			return err
 		}
@@ -1981,17 +1870,7 @@ func (c *deviceManagerRESTClient) ListDeviceStates(ctx context.Context, req *iot
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDeviceStates")
 		if err != nil {
 			return err
 		}
@@ -2048,17 +1927,7 @@ func (c *deviceManagerRESTClient) SetIamPolicy(ctx context.Context, req *iampb.S
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -2116,17 +1985,7 @@ func (c *deviceManagerRESTClient) GetIamPolicy(ctx context.Context, req *iampb.G
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -2184,17 +2043,7 @@ func (c *deviceManagerRESTClient) TestIamPermissions(ctx context.Context, req *i
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
 		if err != nil {
 			return err
 		}
@@ -2264,17 +2113,7 @@ func (c *deviceManagerRESTClient) SendCommandToDevice(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SendCommandToDevice")
 		if err != nil {
 			return err
 		}
@@ -2330,17 +2169,7 @@ func (c *deviceManagerRESTClient) BindDeviceToGateway(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BindDeviceToGateway")
 		if err != nil {
 			return err
 		}
@@ -2396,17 +2225,7 @@ func (c *deviceManagerRESTClient) UnbindDeviceFromGateway(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UnbindDeviceFromGateway")
 		if err != nil {
 			return err
 		}

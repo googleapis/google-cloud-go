@@ -328,6 +328,8 @@ func (rs *rangeSplitter) convertStringRangeToMinimalIntRange(
 
 // charPosition returns the index of the character in the alphabet set.
 func (rs *rangeSplitter) charPosition(ch rune) (int, error) {
+	rs.mu.Lock()         // Acquire the lock
+	defer rs.mu.Unlock() // Release the lock when the function exits
 	if idx, ok := rs.alphabetMap[ch]; ok {
 		return idx, nil
 	}
@@ -337,6 +339,8 @@ func (rs *rangeSplitter) charPosition(ch rune) (int, error) {
 // convertRangeStringToArray transforms the range string into a rune slice while
 // verifying the presence of each character in the alphabets.
 func (rs *rangeSplitter) convertRangeStringToArray(rangeString string) ([]rune, error) {
+	rs.mu.Lock()         // Acquire the lock
+	defer rs.mu.Unlock() // Release the lock when the function exits
 	for _, char := range rangeString {
 		if _, exists := rs.alphabetMap[char]; !exists {
 			return nil, fmt.Errorf("character %c in range string %q is not found in the alphabet array", char, rangeString)
