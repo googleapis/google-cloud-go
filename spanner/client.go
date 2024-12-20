@@ -487,12 +487,20 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	if config.EnableEndToEndTracing || endToEndTracingEnvironmentVariable == "true" {
 		md.Append(endToEndTracingHeader, "true")
 	}
+
+	if isMultiplexed := strings.ToLower(os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS")); isMultiplexed != "" {
+		config.SessionPoolConfig.enableMultiplexSession, err = strconv.ParseBool(isMultiplexed)
+		if err != nil {
+			return nil, spannerErrorf(codes.InvalidArgument, "GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS must be either true or false")
+		}
+	}
 	//TODO: Uncomment this once the feature is enabled.
 	//if isMultiplexForRW := os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_FOR_RW"); isMultiplexForRW != "" {
 	//	config.enableMultiplexSessionForRW, err = strconv.ParseBool(isMultiplexForRW)
 	//	if err != nil {
 	//		return nil, spannerErrorf(codes.InvalidArgument, "GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_FOR_RW must be either true or false")
 	//	}
+	//  config.enableMultiplexSessionForRW = config.enableMultiplexSessionForRW && config.SessionPoolConfig.enableMultiplexSession
 	//}
 
 	// Create a session client.
@@ -1063,6 +1071,9 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 		resp, err = t.runInTransaction(ctx, f)
 		return err
 	})
+	if isUnimplementedError(err) {
+		c.enableMultiplexSessionForRW = false
+	}
 	return resp, err
 }
 

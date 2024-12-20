@@ -24,7 +24,6 @@ import (
 	"log"
 	"math"
 	"math/rand"
-	"os"
 	"runtime/debug"
 	"strings"
 	"sync"
@@ -507,7 +506,9 @@ type SessionPoolConfig struct {
 	// Defaults to false.
 	TrackSessionHandles bool
 
-	// enableMultiplexSessionForRW is a flag to enable multiplexed session for read/write transactions.
+	enableMultiplexSession bool
+
+	// enableMultiplexSessionForRW is a flag to enable multiplexed session for read/write transactions, is used in testing
 	enableMultiplexSessionForRW bool
 
 	// healthCheckSampleInterval is how often the health checker samples live
@@ -702,10 +703,6 @@ func newSessionPool(sc *sessionClient, config SessionPoolConfig) (*sessionPool, 
 	if config.MultiplexSessionCheckInterval == 0 {
 		config.MultiplexSessionCheckInterval = 10 * time.Minute
 	}
-	isMultiplexed := strings.ToLower(os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS"))
-	if isMultiplexed != "" && isMultiplexed != "true" && isMultiplexed != "false" {
-		return nil, spannerErrorf(codes.InvalidArgument, "GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS must be either true or false")
-	}
 
 	pool := &sessionPool{
 		sc:                       sc,
@@ -717,7 +714,7 @@ func newSessionPool(sc *sessionClient, config SessionPoolConfig) (*sessionPool, 
 		mw:                       newMaintenanceWindow(config.MaxOpened),
 		rand:                     rand.New(rand.NewSource(time.Now().UnixNano())),
 		otConfig:                 sc.otConfig,
-		enableMultiplexSession:   isMultiplexed == "true" || config.enableMultiplexSessionForRW,
+		enableMultiplexSession:   config.enableMultiplexSession,
 	}
 
 	_, instance, database, err := parseDatabaseName(sc.database)
@@ -1295,7 +1292,6 @@ func (p *sessionPool) takeMultiplexed(ctx context.Context) (*sessionHandle, erro
 				if isUnimplementedError(err) {
 					logf(p.sc.logger, "Multiplexed session is not enabled on this project, continuing with regular sessions")
 					p.enableMultiplexSession = false
-					p.enableMultiplexSessionForRW = false
 				} else {
 					p.mu.Unlock()
 					// If the error is a timeout, there is a chance that the session was
