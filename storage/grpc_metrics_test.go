@@ -116,7 +116,7 @@ func TestStorageMonitoredResource(t *testing.T) {
 		},
 	} {
 		t.Run(test.desc, func(t *testing.T) {
-			smr, err := newStorageMonitoredResource(ctx, "project_id", "grpc", resource.WithAttributes(test.detectedAttributes...))
+			smr, err := newStorageMonitoredResource(ctx, "project-id", "grpc", resource.WithAttributes(test.detectedAttributes...))
 			if err != nil {
 				t.Errorf("newStorageMonitoredResource: %v", err)
 			}
