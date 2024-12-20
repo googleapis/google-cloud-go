@@ -38,15 +38,11 @@ func TestStorageMonitoredResource(t *testing.T) {
 	ctx := context.Background()
 	for _, test := range []struct {
 		desc               string
-		project            string
-		api                string
 		detectedAttributes []attribute.KeyValue
 		wantAttributes     attribute.Set
 	}{
 		{
-			desc:    "default values set when GCP attributes are not detected",
-			project: "project-id",
-			api:     "grpc",
+			desc: "default values set when GCP attributes are not detected",
 			wantAttributes: attribute.NewSet(attribute.KeyValue{
 				Key:   "location",
 				Value: attribute.StringValue("global"),
@@ -65,9 +61,7 @@ func TestStorageMonitoredResource(t *testing.T) {
 			}),
 		},
 		{
-			desc:    "use detected values when GCE attributes are detected",
-			project: "project-id",
-			api:     "grpc",
+			desc: "use detected values when GCE attributes are detected",
 			detectedAttributes: []attribute.KeyValue{
 				{Key: "cloud.region",
 					Value: attribute.StringValue("us-central1")},
@@ -94,9 +88,7 @@ func TestStorageMonitoredResource(t *testing.T) {
 			}),
 		},
 		{
-			desc:    "use detected values when FAAS attributes are detected",
-			project: "project-id",
-			api:     "grpc",
+			desc: "use detected values when FAAS attributes are detected",
 			detectedAttributes: []attribute.KeyValue{
 				{Key: "cloud.region",
 					Value: attribute.StringValue("us-central1")},
@@ -124,7 +116,7 @@ func TestStorageMonitoredResource(t *testing.T) {
 		},
 	} {
 		t.Run(test.desc, func(t *testing.T) {
-			smr, err := newStorageMonitoredResource(ctx, test.project, test.api, resource.WithAttributes(test.detectedAttributes...))
+			smr, err := newStorageMonitoredResource(ctx, "project_id", "grpc", resource.WithAttributes(test.detectedAttributes...))
 			if err != nil {
 				t.Errorf("newStorageMonitoredResource: %v", err)
 			}

@@ -505,13 +505,6 @@ func TestIntegration_MetricsEnablementInGCE(t *testing.T) {
 			"grpc.lb.rls.cache_entries":                              false,
 			"grpc.lb.rls.cache_size":                                 false,
 			"grpc.lb.rls.default_target_picks":                       false,
-			// TODO: determine a way to force these metrics to be collected
-			// "grpc.lb.wrr.rr_fallback":                                false,
-			// "grpc.lb.wrr.endpoint_weight_not_yet_usable":             false,
-			// "grpc.lb.wrr.endpoint_weight_stale":                      false,
-			// "grpc.lb.wrr.endpoint_weights":                           false,
-			// "grpc.lb.rls.target_picks":                               false,
-			// "grpc.lb.rls.failed_picks":                               false,
 		}
 		for _, sm := range rm.ScopeMetrics {
 			for _, m := range sm.Metrics {

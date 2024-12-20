@@ -58,7 +58,7 @@ func (smr *storageMonitoredResource) exporter() (metric.Exporter, error) {
 		mexporter.WithMonitoredResourceDescription(monitoredResourceName, []string{"project_id", "location", "cloud_platform", "host_id", "instance_id", "api"}),
 	)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("storage: creating metrics exporter: %w", err)
 	}
 	return exporter, nil
 }
@@ -74,6 +74,8 @@ func newStorageMonitoredResource(ctx context.Context, project, api string, opts 
 		project:  project,
 	}
 	s := detectedAttrs.Set()
+	// Attempt to use resource detector project id if project id wasn't
+	// identified using ADC as a last resort. Otherwise metrics cannot be started.
 	if p, present := s.Value("cloud.account.id"); present && smr.project == "" {
 		smr.project = p.AsString()
 	} else if !present && smr.project == "" {
