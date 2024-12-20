@@ -152,6 +152,7 @@ require (
 	cloud.google.com/go/edgenetwork v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/identitytoolkit v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/managedkafka v0.0.0-00010101000000-000000000000
+	cloud.google.com/go/memorystore v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/migrationcenter v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/netapp v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/networkservices v0.0.0-00010101000000-000000000000
@@ -189,7 +190,7 @@ require (
 	go.opentelemetry.io/otel/metric v1.29.0 // indirect
 	go.opentelemetry.io/otel/trace v1.29.0 // indirect
 	golang.org/x/crypto v0.31.0 // indirect
-	golang.org/x/net v0.32.0 // indirect
+	golang.org/x/net v0.33.0 // indirect
 	golang.org/x/oauth2 v0.24.0 // indirect
 	golang.org/x/sync v0.10.0 // indirect
 	golang.org/x/sys v0.28.0 // indirect
@@ -525,3 +526,5 @@ replace cloud.google.com/go/privilegedaccessmanager => ../../../privilegedaccess
 replace cloud.google.com/go/apihub => ../../../apihub
 
 replace cloud.google.com/go/oracledatabase => ../../../oracledatabase
+
+replace cloud.google.com/go/memorystore => ../../../memorystore

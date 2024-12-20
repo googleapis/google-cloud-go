@@ -3,7 +3,7 @@ module cloud.google.com/go/firestore
 go 1.21
 
 require (
-	cloud.google.com/go v0.116.0
+	cloud.google.com/go v0.117.0
 	cloud.google.com/go/longrunning v0.6.2
 	github.com/google/go-cmp v0.6.0
 	github.com/googleapis/gax-go/v2 v2.14.0
@@ -35,7 +35,7 @@ require (
 	go.opentelemetry.io/otel/sdk v1.29.0 // indirect
 	go.opentelemetry.io/otel/trace v1.29.0 // indirect
 	golang.org/x/crypto v0.31.0 // indirect
-	golang.org/x/net v0.32.0 // indirect
+	golang.org/x/net v0.33.0 // indirect
 	golang.org/x/oauth2 v0.24.0 // indirect
 	golang.org/x/sync v0.10.0 // indirect
 	golang.org/x/sys v0.28.0 // indirect
