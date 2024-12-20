@@ -3,7 +3,7 @@ module cloud.google.com/go/firestore
 go 1.21
 
 require (
-	cloud.google.com/go v0.116.0
+	cloud.google.com/go v0.117.0
 	cloud.google.com/go/longrunning v0.6.2
 	github.com/google/go-cmp v0.6.0
 	github.com/googleapis/gax-go/v2 v2.14.0

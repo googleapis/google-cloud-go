@@ -73,6 +73,7 @@ const (
 	envPrivateKey = "GCLOUD_TESTS_GOLANG_FIRESTORE_KEY"
 	envDatabases  = "GCLOUD_TESTS_GOLANG_FIRESTORE_DATABASES"
 	envEmulator   = "FIRESTORE_EMULATOR_HOST"
+	indexBuilding = "index is currently building"
 )
 
 var (
@@ -260,12 +261,14 @@ func handleCreateIndexResp(ctx context.Context, indexNames []string, wg *sync.Wa
 // deleteIndexes deletes composite indexes created in createIndexes function
 func deleteIndexes(ctx context.Context, indexNames []string) {
 	for _, indexName := range indexNames {
-		err := iAdminClient.DeleteIndex(ctx, &adminpb.DeleteIndexRequest{
-			Name: indexName,
+		testutil.RetryWithoutTest(5, 5*time.Second, func(r *testutil.R) {
+			err := iAdminClient.DeleteIndex(ctx, &adminpb.DeleteIndexRequest{
+				Name: indexName,
+			})
+			if err != nil {
+				r.Errorf("Failed to delete index \"%s\": %+v\n", indexName, err)
+			}
 		})
-		if err != nil {
-			log.Printf("Failed to delete index \"%s\": %+v\n", indexName, err)
-		}
 	}
 }
 
@@ -2437,7 +2440,7 @@ func TestDetectProjectID(t *testing.T) {
 	ts := testutil.ErroringTokenSource{}
 	// Try to use creds without project ID.
 	_, err := NewClient(ctx, DetectProjectID, option.WithTokenSource(ts))
-	if err == nil || err.Error() != "firestore: see the docs on DetectProjectID" {
+	if err == nil || err.Error() != "unable to detect projectID, please refer to docs for DetectProjectID" {
 		t.Errorf("expected an error while using TokenSource that does not have a project ID")
 	}
 }
@@ -2931,28 +2934,39 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	}
 
 	for _, tc := range testcases {
-		var aggResult AggregationResult
-		var err error
-		if tc.runInTransaction {
-			client.RunTransaction(ctx, func(ctx context.Context, tx *Transaction) error {
-				aggResult, err = tc.aggregationQuery.Transaction(tx).Get(ctx)
-				return err
+		t.Run(tc.desc, func(t *testing.T) {
+			testutil.Retry(t, 5, 5*time.Second, func(r *testutil.R) {
+				var aggResult AggregationResult
+				var err error
+				if tc.runInTransaction {
+					client.RunTransaction(ctx, func(ctx context.Context, tx *Transaction) error {
+						aggResult, err = tc.aggregationQuery.Transaction(tx).Get(ctx)
+						return err
+					})
+				} else {
+					aggResult, err = tc.aggregationQuery.Get(ctx)
+				}
+
+				// Retry only if index building is in progress
+				s, ok := status.FromError(err)
+				if err != nil && ok && s != nil && s.Code() != codes.FailedPrecondition &&
+					strings.Contains(s.Message(), indexBuilding) {
+					r.Errorf("Get: %v", err)
+					return
+				}
+
+				// Compare expected and actual results
+				if err != nil && !tc.wantErr {
+					r.Fatalf("got: %v, want: nil", err)
+				}
+				if err == nil && tc.wantErr {
+					r.Fatalf("got: %v, wanted error", err)
+				}
+				if !reflect.DeepEqual(aggResult, tc.result) {
+					r.Fatalf("got: %v, want: %v", aggResult, tc.result)
+				}
 			})
-		} else {
-			aggResult, err = tc.aggregationQuery.Get(ctx)
-		}
-		if err != nil && !tc.wantErr {
-			t.Errorf("%s: got: %v, want: nil", tc.desc, err)
-			continue
-		}
-		if err == nil && tc.wantErr {
-			t.Errorf("%s: got: %v, wanted error", tc.desc, err)
-			continue
-		}
-		if !reflect.DeepEqual(aggResult, tc.result) {
-			t.Errorf("%s: got: %v, want: %v", tc.desc, aggResult, tc.result)
-			continue
-		}
+		})
 	}
 }
 
@@ -3313,33 +3327,51 @@ func TestIntegration_FindNearest(t *testing.T) {
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
-			iter := tc.vq.Documents(ctx)
-			gotDocs, err := iter.GetAll()
-			if err != nil {
-				t.Fatalf("GetAll: %+v", err)
-			}
+			testutil.Retry(t, 5, 5*time.Second, func(r *testutil.R) {
+				// Get all documents
+				iter := tc.vq.Documents(ctx)
+				gotDocs, err := iter.GetAll()
 
-			if len(gotDocs) != len(tc.wantBeans) {
-				t.Fatalf("Expected %v results, got %d", len(tc.wantBeans), len(gotDocs))
-			}
+				// Retry only if index building is in progress
+				s, ok := status.FromError(err)
+				if err != nil && ok && s != nil && s.Code() != codes.FailedPrecondition &&
+					strings.Contains(s.Message(), indexBuilding) {
+					r.Errorf("GetAll: %v", err)
+					return
+				}
 
-			for i, doc := range gotDocs {
-				var gotBean coffeeBean
-				if len(tc.wantResField) != 0 {
-					_, ok := doc.Data()[tc.wantResField]
-					if !ok {
-						t.Errorf("Expected %v field to exist in %v", tc.wantResField, doc.Data())
+				if err != nil {
+					t.Fatalf("GetAll: %+v", err)
+				}
+
+				// Compare expected and actual results length
+				if len(gotDocs) != len(tc.wantBeans) {
+					t.Fatalf("Expected %v results, got %d", len(tc.wantBeans), len(gotDocs))
+				}
+
+				// Compare results
+				for i, doc := range gotDocs {
+					var gotBean coffeeBean
+
+					// Compare expected and actual result field
+					if len(tc.wantResField) != 0 {
+						_, ok := doc.Data()[tc.wantResField]
+						if !ok {
+							t.Errorf("Expected %v field to exist in %v", tc.wantResField, doc.Data())
+						}
+					}
+
+					// Compare expected and actual document ID
+					err := doc.DataTo(&gotBean)
+					if err != nil {
+						t.Errorf("#%v: DataTo: %+v", doc.Ref.ID, err)
+						continue
+					}
+					if tc.wantBeans[i].ID != gotBean.ID {
+						t.Errorf("#%v: want: %v, got: %v", i, beans[i].ID, gotBean.ID)
 					}
 				}
-				err := doc.DataTo(&gotBean)
-				if err != nil {
-					t.Errorf("#%v: DataTo: %+v", doc.Ref.ID, err)
-					continue
-				}
-				if tc.wantBeans[i].ID != gotBean.ID {
-					t.Errorf("#%v: want: %v, got: %v", i, beans[i].ID, gotBean.ID)
-				}
-			}
+			})
 		})
 	}
 }
