@@ -5,7 +5,7 @@ go 1.21.13
 toolchain go1.23.0
 
 require (
-	cloud.google.com/go v0.116.0
+	cloud.google.com/go v0.117.0
 	cloud.google.com/go/accessapproval v1.8.2
 	cloud.google.com/go/accesscontextmanager v1.9.2
 	cloud.google.com/go/advisorynotifications v0.0.0-00010101000000-000000000000
