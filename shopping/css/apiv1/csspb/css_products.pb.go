@@ -21,17 +21,16 @@
 package csspb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	typepb "cloud.google.com/go/shopping/type/typepb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -88,7 +87,7 @@ func (x *GetCssProductRequest) GetName() string {
 	return ""
 }
 
-// The processed CSS Product(a.k.a Aggregate Offer internally).
+// The processed CSS Product.
 type CssProduct struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
