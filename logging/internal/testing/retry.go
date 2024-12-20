@@ -32,6 +32,9 @@ var defaultRetryableCodes = map[codes.Code]bool{
 	codes.Unavailable: true,
 }
 
+// Iterator is a wrapper interface type for iterators in the logadmin
+// library that have a Next function that gets the next item/error, or returns
+// nil/iterator.Done if the object has no next item.
 type Iterator[T any] interface {
 	Next() (*T, error)
 }
