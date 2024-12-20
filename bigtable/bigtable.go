@@ -1637,18 +1637,9 @@ func gaxInvokeWithRecorder(ctx context.Context, mt *builtinMetricsTracer, method
 			// f makes calls to CBT service
 			err := f(ctx, &attemptHeaderMD, &attempTrailerMD, callSettings)
 
-<<<<<<< HEAD
-		// Get location attributes from metadata and set it in tracer
-		// Ignore get location error since the metric can still be recorded with rest of the attributes
-		clusterID, zoneID, locationErr := extractLocation(attemptHeaderMD, attempTrailerMD)
-		mt.currOp.currAttempt.setLocationErr(locationErr)
-		mt.currOp.currAttempt.setClusterID(clusterID)
-		mt.currOp.currAttempt.setZoneID(zoneID)
-=======
 			// Set attempt status
 			statusCode, _ := convertToGrpcStatusErr(err)
 			mt.currOp.currAttempt.setStatus(statusCode.String())
->>>>>>> main
 
 			// Get location attributes from metadata and set it in tracer
 			// Ignore get location error since the metric can still be recorded with rest of the attributes
