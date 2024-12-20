@@ -343,6 +343,7 @@ var readCases = []readCase{
 // 3. DC not detected with dual region bucket in EUR4
 // 4. DC not detected with regional bucket in EUROPE-WEST1
 func TestIntegration_DetectDirectConnectivityInGCE(t *testing.T) {
+	t.Skip("Does not work in kokoro yet")
 	ctx := skipHTTP("grpc only test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
 		h := testHelper{t}
