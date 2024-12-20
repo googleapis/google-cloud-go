@@ -452,6 +452,7 @@ func TestIntegration_MetricsEnablement(t *testing.T) {
 }
 
 func TestIntegration_MetricsEnablementInGCE(t *testing.T) {
+	t.Skip("flaky test for rls metrics; other metrics are tested TestIntegration_MetricsEnablement")
 	ctx := skipHTTP("grpc only test")
 	mr := metric.NewManualReader()
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
