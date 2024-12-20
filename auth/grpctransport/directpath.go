@@ -58,13 +58,16 @@ func checkDirectPathEndPoint(endpoint string) bool {
 
 func isTokenProviderDirectPathCompatible(tp auth.TokenProvider, o *Options) bool {
 	if tp == nil {
+		log.Println("isTokenProviderDirectPathCompatible: tp is nil")
 		return false
 	}
 	tok, err := tp.Token(context.Background())
 	if err != nil {
+		log.Printf("isTokenProviderDirectPathCompatible err: %v", err)
 		return false
 	}
 	if tok == nil {
+		log.Println("isTokenProviderDirectPathCompatible: tok is nil")
 		return false
 	}
 	if val := tok.MetadataString("auth.google.tokenSource"); val != "compute-metadata" {
@@ -97,7 +100,9 @@ func isDirectPathXdsUsed(o *Options) bool {
 // configuration allows the use of direct path. If it does not the provided
 // grpcOpts and endpoint are returned.
 func configureDirectPath(grpcOpts []grpc.DialOption, opts *Options, endpoint string, creds *auth.Credentials) ([]grpc.DialOption, string) {
+	log.Println("Checking if DirectPath can be enabled")
 	if isDirectPathEnabled(endpoint, opts) && compute.OnComputeEngine() && isTokenProviderDirectPathCompatible(creds, opts) {
+		log.Println("DirectPath can be enabled")
 		// Overwrite all of the previously specific DialOptions, DirectPath uses its own set of credentials and certificates.
 		grpcOpts = []grpc.DialOption{
 			grpc.WithCredentialsBundle(grpcgoogle.NewDefaultCredentialsWithOptions(grpcgoogle.DefaultCredentialsOptions{PerRPCCreds: &grpcCredentialsProvider{creds: creds}}))}
@@ -124,6 +129,8 @@ func configureDirectPath(grpcOpts []grpc.DialOption, opts *Options, endpoint str
 				grpc.WithDefaultServiceConfig(`{"loadBalancingConfig":[{"grpclb":{"childPolicy":[{"pick_first":{}}]}}]}`))
 		}
 		// TODO: add support for system parameters (quota project, request reason) via chained interceptor.
+	} else {
+		log.Println("DirectPath could not be enabled")
 	}
 	return grpcOpts, endpoint
 }
