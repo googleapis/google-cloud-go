@@ -3,7 +3,7 @@ module cloud.google.com/go/logging
 go 1.21
 
 require (
-	cloud.google.com/go v0.116.0
+	cloud.google.com/go v0.117.0
 	cloud.google.com/go/compute/metadata v0.5.2
 	cloud.google.com/go/iam v1.2.2
 	cloud.google.com/go/longrunning v0.6.2
