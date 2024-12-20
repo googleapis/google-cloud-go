@@ -508,8 +508,8 @@ type SessionPoolConfig struct {
 
 	enableMultiplexSession bool
 
-	// enableMultiplexSessionForRW is a flag to enable multiplexed session for read/write transactions, is used in testing
-	enableMultiplexSessionForRW bool
+	// enableMultiplexedSessionForRW is a flag to enable multiplexed session for read/write transactions, is used in testing
+	enableMultiplexedSessionForRW bool
 
 	// healthCheckSampleInterval is how often the health checker samples live
 	// session (for use in maintaining session pool size).
@@ -1945,15 +1945,19 @@ func isSessionNotFoundError(err error) bool {
 	return strings.Contains(err.Error(), "Session not found")
 }
 
-// isUnimplementedError returns true if the gRPC error code is Unimplemented.
 func isUnimplementedError(err error) bool {
 	if err == nil {
 		return false
 	}
-	if ErrCode(err) == codes.Unimplemented {
-		return true
+	return ErrCode(err) == codes.Unimplemented
+}
+
+// isUnimplementedErrorForMultiplexedRW returns true if the gRPC error code is Unimplemented and related to use of multiplexed session with ReadWrite txn.
+func isUnimplementedErrorForMultiplexedRW(err error) bool {
+	if err == nil {
+		return false
 	}
-	return false
+	return ErrCode(err) == codes.Unimplemented && strings.Contains(err.Error(), "Transaction type read_write not supported with multiplexed sessions")
 }
 
 func isFailedInlineBeginTransaction(err error) bool {

@@ -307,59 +307,58 @@ func TestClient_ReadWriteTransaction_UnimplementedErrorWithMultiplexedSessionSwi
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
 		DisableNativeMetrics: true,
 		SessionPoolConfig: SessionPoolConfig{
-			MinOpened:                   1,
-			MaxOpened:                   1,
-			enableMultiplexSession:      true,
-			enableMultiplexSessionForRW: true,
+			MinOpened:                     1,
+			MaxOpened:                     1,
+			enableMultiplexSession:        true,
+			enableMultiplexedSessionForRW: true,
 		},
 	})
 	defer teardown()
 
-	// Simulate an unimplemented error for the first transaction attempt.
-	server.TestSpanner.PutExecutionTime(
-		MethodExecuteStreamingSql,
-		SimulatedExecutionTime{Errors: []error{status.Error(codes.Unimplemented, "Unimplemented method")}},
-	)
-
-	// Attempt the first read-write transaction, which should return an Unimplemented error.
-	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
-		iter := tx.Query(ctx, NewStatement(SelectFooFromBar))
-		defer iter.Stop()
-		for {
-			_, err := iter.Next()
-			if err == iterator.Done {
-				break
+	for _, sumulatdError := range []error{
+		status.Error(codes.Unimplemented, "other Unimplemented error which should not turn off multiplexed session"),
+		status.Error(codes.Unimplemented, "Transaction type read_write not supported with multiplexed sessions")} {
+		server.TestSpanner.PutExecutionTime(
+			MethodExecuteStreamingSql,
+			SimulatedExecutionTime{Errors: []error{sumulatdError}},
+		)
+		_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+			iter := tx.Query(ctx, NewStatement(SelectFooFromBar))
+			defer iter.Stop()
+			for {
+				_, err := iter.Next()
+				if err == iterator.Done {
+					break
+				}
+				if err != nil {
+					return err
+				}
 			}
-			if err != nil {
-				return err
+			return nil
+		})
+		requests := drainRequestsFromServer(server.TestSpanner)
+		foundMultiplexedSession := false
+		for _, req := range requests {
+			if sqlReq, ok := req.(*sppb.ExecuteSqlRequest); ok {
+				if strings.Contains(sqlReq.Session, "multiplexed") {
+					foundMultiplexedSession = true
+					break
+				}
 			}
 		}
-		return nil
-	})
 
-	requests := drainRequestsFromServer(server.TestSpanner)
-	foundMultiplexedSession := false
-	for _, req := range requests {
-		if sqlReq, ok := req.(*sppb.ExecuteSqlRequest); ok {
-			if strings.Contains(sqlReq.Session, "multiplexed") {
-				foundMultiplexedSession = true
-				break
-			}
+		// Assert that the error is an Unimplemented error.
+		if status.Code(err) != codes.Unimplemented {
+			t.Fatalf("Expected Unimplemented error, got: %v", err)
 		}
+		if !foundMultiplexedSession {
+			t.Fatalf("Expected first transaction to use a multiplexed session, but it did not")
+		}
+		server.TestSpanner.Reset()
 	}
-
-	// Assert that the error is an Unimplemented error.
-	if status.Code(err) != codes.Unimplemented {
-		t.Fatalf("Expected Unimplemented error, got: %v", err)
-	}
-	if !foundMultiplexedSession {
-		t.Fatalf("Expected first transaction to use a multiplexed session, but it did not")
-	}
-
-	server.TestSpanner.Reset()
 
 	// Attempt a second read-write transaction.
-	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
 		iter := tx.Query(ctx, NewStatement(SelectFooFromBar))
 		defer iter.Stop()
 		for {
@@ -378,9 +377,9 @@ func TestClient_ReadWriteTransaction_UnimplementedErrorWithMultiplexedSessionSwi
 		t.Fatalf("Unexpected error in second transaction: %v", err)
 	}
 
-	// Check that the second transaction used a multiplexed session.
-	requests = drainRequestsFromServer(server.TestSpanner)
-	foundMultiplexedSession = false
+	// Check that the second transaction used a regular session.
+	requests := drainRequestsFromServer(server.TestSpanner)
+	foundMultiplexedSession := false
 	for _, req := range requests {
 		if sqlReq, ok := req.(*sppb.CommitRequest); ok {
 			if strings.Contains(sqlReq.Session, "multiplexed") {
@@ -401,10 +400,10 @@ func TestReadWriteTransaction_PrecommitToken(t *testing.T) {
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
 		DisableNativeMetrics: true,
 		SessionPoolConfig: SessionPoolConfig{
-			MinOpened:                   1,
-			MaxOpened:                   1,
-			enableMultiplexSession:      true,
-			enableMultiplexSessionForRW: true,
+			MinOpened:                     1,
+			MaxOpened:                     1,
+			enableMultiplexSession:        true,
+			enableMultiplexedSessionForRW: true,
 		},
 	})
 	defer teardown()

@@ -334,8 +334,8 @@ type inMemSpannerServer struct {
 	// counters.
 	transactionCounters map[string]*uint64
 	// The transactions that have been created on this mock server.
-	transactions                   map[string]*spannerpb.Transaction
-	multiplexedSessionTransactions map[string]*atomic.Int32
+	transactions                          map[string]*spannerpb.Transaction
+	multiplexedSessionTransactionsToSeqNo map[string]*atomic.Int32
 	// The transactions that have been (manually) aborted on the server.
 	abortedTransactions map[string]bool
 	// The transactions that are marked as PartitionedDMLTransaction
@@ -359,20 +359,6 @@ type inMemSpannerServer struct {
 
 	// Server will stall on any requests.
 	freezed chan struct{}
-}
-
-// Transaction is a wrapper around a spannerpb.Transaction that also contains
-// a sequence number that is used to generate precommit tokens.
-type Transaction struct {
-	sequence    *atomic.Int32
-	transaction *spannerpb.Transaction
-}
-
-func (t *Transaction) getPreCommitToken(operation string) *spannerpb.MultiplexedSessionPrecommitToken {
-	return &spannerpb.MultiplexedSessionPrecommitToken{
-		SeqNum:         t.sequence.Add(1),
-		PrecommitToken: []byte(fmt.Sprintf("precommit-token-%v-%v", operation, t.sequence.Load())),
-	}
 }
 
 // NewInMemSpannerServer creates a new in-mem test server.
@@ -537,10 +523,23 @@ func (s *inMemSpannerServer) initDefaults() {
 	s.sessions = make(map[string]*spannerpb.Session)
 	s.sessionLastUseTime = make(map[string]time.Time)
 	s.transactions = make(map[string]*spannerpb.Transaction)
-	s.multiplexedSessionTransactions = make(map[string]*atomic.Int32)
+	s.multiplexedSessionTransactionsToSeqNo = make(map[string]*atomic.Int32)
 	s.abortedTransactions = make(map[string]bool)
 	s.partitionedDmlTransactions = make(map[string]bool)
 	s.transactionCounters = make(map[string]*uint64)
+}
+
+func (s *inMemSpannerServer) getPreCommitToken(transactionID, operation string) *spannerpb.MultiplexedSessionPrecommitToken {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	sequence, ok := s.multiplexedSessionTransactionsToSeqNo[transactionID]
+	if !ok {
+		return nil
+	}
+	return &spannerpb.MultiplexedSessionPrecommitToken{
+		SeqNum:         sequence.Add(1),
+		PrecommitToken: []byte(fmt.Sprintf("precommit-token-%v-%v", operation, sequence.Load())),
+	}
 }
 
 func (s *inMemSpannerServer) generateSessionNameLocked(database string, isMultiplexed bool) string {
@@ -615,7 +614,7 @@ func (s *inMemSpannerServer) beginTransaction(session *spannerpb.Session, option
 	}
 	s.mu.Lock()
 	if options.GetReadWrite() != nil && session.Multiplexed {
-		s.multiplexedSessionTransactions[id] = new(atomic.Int32)
+		s.multiplexedSessionTransactionsToSeqNo[id] = new(atomic.Int32)
 	}
 	s.transactions[id] = res
 	s.partitionedDmlTransactions[id] = options.GetPartitionedDml() != nil
@@ -654,7 +653,7 @@ func (s *inMemSpannerServer) removeTransaction(tx *spannerpb.Transaction) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	delete(s.transactions, string(tx.Id))
-	delete(s.multiplexedSessionTransactions, string(tx.Id))
+	delete(s.multiplexedSessionTransactionsToSeqNo, string(tx.Id))
 	delete(s.partitionedDmlTransactions, string(tx.Id))
 }
 
@@ -894,29 +893,12 @@ func (s *inMemSpannerServer) ExecuteSql(ctx context.Context, req *spannerpb.Exec
 
 		// if request's session is multiplexed and transaction is Read/Write then add Pre-commit Token in Metadata
 		if statementResult.ResultSet != nil {
-			s.mu.Lock()
-			sequence, ok := s.multiplexedSessionTransactions[string(id)]
-			if ok {
-				statementResult.ResultSet.PrecommitToken = &spannerpb.MultiplexedSessionPrecommitToken{
-					SeqNum:         sequence.Add(1),
-					PrecommitToken: []byte(fmt.Sprintf("precommit-token-ResultSetPrecommitToken-%v", sequence.Load())),
-				}
-			}
-			s.mu.Unlock()
+			statementResult.ResultSet.PrecommitToken = s.getPreCommitToken(string(id), "ResultSetPrecommitToken")
 		}
 		return statementResult.ResultSet, nil
 	case StatementResultUpdateCount:
 		res := statementResult.convertUpdateCountToResultSet(!isPartitionedDml)
-		// if request's session is multiplexed and transaction is Read/Write then add Pre-commit Token in Metadata
-		s.mu.Lock()
-		sequence, ok := s.multiplexedSessionTransactions[string(id)]
-		if ok {
-			res.PrecommitToken = &spannerpb.MultiplexedSessionPrecommitToken{
-				SeqNum:         sequence.Add(1),
-				PrecommitToken: []byte(fmt.Sprintf("precommit-token-ResultSetPrecommitToken-%v", sequence.Load())),
-			}
-		}
-		s.mu.Unlock()
+		res.PrecommitToken = s.getPreCommitToken(string(id), "ResultSetPrecommitToken")
 		return res, nil
 	}
 	return nil, gstatus.Error(codes.Internal, "Unknown result type")
@@ -985,15 +967,7 @@ func (s *inMemSpannerServer) executeStreamingSQL(req *spannerpb.ExecuteSqlReques
 			}
 			// For every PartialResultSet, if request's session is multiplexed and transaction is Read/Write then add Pre-commit Token in Metadata
 			// and increment the sequence number
-			s.mu.Lock()
-			sequence, ok := s.multiplexedSessionTransactions[string(id)]
-			if ok {
-				part.PrecommitToken = &spannerpb.MultiplexedSessionPrecommitToken{
-					SeqNum:         sequence.Add(1),
-					PrecommitToken: []byte(fmt.Sprintf("precommit-token-PartialResultSetPrecommitToken-%v", sequence.Load())),
-				}
-			}
-			s.mu.Unlock()
+			part.PrecommitToken = s.getPreCommitToken(string(id), "PartialResultSetPrecommitToken")
 			if err := stream.Send(part); err != nil {
 				return err
 			}
@@ -1053,15 +1027,7 @@ func (s *inMemSpannerServer) ExecuteBatchDml(ctx context.Context, req *spannerpb
 			resp.ResultSets[idx] = statementResult.convertUpdateCountToResultSet(!isPartitionedDml)
 		}
 	}
-	s.mu.Lock()
-	sequence, ok := s.multiplexedSessionTransactions[string(id)]
-	if ok {
-		resp.PrecommitToken = &spannerpb.MultiplexedSessionPrecommitToken{
-			SeqNum:         sequence.Add(1),
-			PrecommitToken: []byte(fmt.Sprintf("precommit-token-ExecuteBatchDmlResponsePrecommitToken-%v", sequence.Load())),
-		}
-	}
-	s.mu.Unlock()
+	resp.PrecommitToken = s.getPreCommitToken(string(id), "ExecuteBatchDmlResponsePrecommitToken")
 	return resp, nil
 }
 
