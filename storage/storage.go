@@ -27,6 +27,7 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -280,10 +281,12 @@ func CheckDirectConnectivitySupported(ctx context.Context, bucket string, opts .
 	}
 	for _, sm := range rm.ScopeMetrics {
 		for _, m := range sm.Metrics {
+			log.Printf("Metric seen: %v", m.Name)
 			if m.Name == "grpc.client.attempt.duration" {
 				hist := m.Data.(metricdata.Histogram[float64])
 				for _, d := range hist.DataPoints {
 					v, present := d.Attributes.Value("grpc.lb.locality")
+					log.Printf("Attributes: %v", d.Attributes)
 					if present && v.AsString() != "" && v.AsString() != "{}" {
 						return nil
 					}
