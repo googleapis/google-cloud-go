@@ -387,6 +387,7 @@ func TestIntegration_DetectDirectConnectivityInGCE(t *testing.T) {
 			t.Run(test.name, func(t *testing.T) {
 				newBucketName := prefix + uidSpace.New()
 				newBucket := client.Bucket(newBucketName)
+				log.Printf("Created bucket: %v", newBucket)
 				h.mustCreate(newBucket, testutil.ProjID(), test.attrs)
 				defer h.mustDeleteBucket(newBucket)
 				err := CheckDirectConnectivitySupported(ctx, newBucketName)
