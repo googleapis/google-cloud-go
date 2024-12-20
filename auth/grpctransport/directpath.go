@@ -16,6 +16,7 @@ package grpctransport
 
 import (
 	"context"
+	"log"
 	"net"
 	"os"
 	"strconv"
@@ -66,9 +67,11 @@ func isTokenProviderDirectPathCompatible(tp auth.TokenProvider, o *Options) bool
 	if tok == nil {
 		return false
 	}
-	if tok.MetadataString("auth.google.tokenSource") != "compute-metadata" {
+	if val := tok.MetadataString("auth.google.tokenSource"); val != "compute-metadata" {
+		log.Printf("Metadata String: %v", val)
 		return false
 	}
+	log.Printf("MADE HERE WOHO!!")
 	if o.InternalOptions != nil && o.InternalOptions.EnableNonDefaultSAForDirectPath {
 		return true
 	}
