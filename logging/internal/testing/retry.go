@@ -26,9 +26,9 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-var DefaultMaxAttempts = 10
-var DefaultSleep = 10 * time.Second
-var DefaultRetryableCodes = map[codes.Code]bool{
+var defaultMaxAttempts = 10
+var defaultSleep = 10 * time.Second
+var defaultRetryableCodes = map[codes.Code]bool{
 	codes.Unavailable: true,
 }
 
@@ -43,7 +43,7 @@ func handleError(r *testutil.R, err error) {
 
 		// Throw a fatal error if the error is not retryable or if it cannot be converted into
 		// a status object.
-		if ok && !DefaultRetryableCodes[s.Code()] {
+		if ok && !defaultRetryableCodes[s.Code()] {
 			r.Fatalf("%+v\n", err)
 		} else if ok {
 			r.Errorf("%+v\n", err)
@@ -59,7 +59,7 @@ func Retry(t *testing.T, f func(r *testutil.R) error) bool {
 		err := f(r)
 		handleError(r, err)
 	}
-	return testutil.Retry(t, DefaultMaxAttempts, DefaultSleep, retryFunc)
+	return testutil.Retry(t, defaultMaxAttempts, defaultSleep, retryFunc)
 }
 
 // RetryAndExpectError retries the test function on Unavailable errors, otherwise passes
@@ -72,7 +72,7 @@ func RetryAndExpectError(t *testing.T, f func(r *testutil.R) error) bool {
 			s, ok := status.FromError(err)
 
 			// Only retry on retryable errors, otherwise pass.
-			if ok && DefaultRetryableCodes[s.Code()] {
+			if ok && defaultRetryableCodes[s.Code()] {
 				r.Errorf("%+v\n", err)
 			}
 		} else {
@@ -80,7 +80,7 @@ func RetryAndExpectError(t *testing.T, f func(r *testutil.R) error) bool {
 		}
 	}
 
-	return testutil.Retry(t, DefaultMaxAttempts, DefaultSleep, retryFunc)
+	return testutil.Retry(t, defaultMaxAttempts, defaultSleep, retryFunc)
 }
 
 // RetryIteratorNext is a wrapper around testutil.Retry that retries the given iterator's Next function
@@ -99,7 +99,7 @@ func RetryIteratorNext[T any](t *testing.T, it Iterator[T]) (*T, bool) {
 			handleError(r, err)
 		}
 	}
-	testutil.Retry(t, DefaultMaxAttempts, DefaultSleep, retryFunc)
+	testutil.Retry(t, defaultMaxAttempts, defaultSleep, retryFunc)
 	if err == iterator.Done {
 		return nil, true
 	}
