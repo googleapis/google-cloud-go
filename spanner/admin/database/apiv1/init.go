@@ -18,6 +18,7 @@ package database
 import (
 	"context"
 	"os"
+	"regexp"
 
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
@@ -27,8 +28,9 @@ import (
 func init() {
 	newDatabaseAdminClientHook = func(ctx context.Context, p clientHookParams) ([]option.ClientOption, error) {
 		if emulator := os.Getenv("SPANNER_EMULATOR_HOST"); emulator != "" {
+			schemeRemoved := regexp.MustCompile("^(http://|https://|passthrough:///)").ReplaceAllString(emulator, "")
 			return []option.ClientOption{
-				option.WithEndpoint(emulator),
+				option.WithEndpoint("passthrough:///" + schemeRemoved),
 				option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
 				option.WithoutAuthentication(),
 			}, nil

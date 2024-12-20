@@ -44,7 +44,7 @@ func ExampleOrganizationsClient_SearchOrganizations_all() {
 	}
 	for resp, err := range c.SearchOrganizations(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp

@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	containerpb "cloud.google.com/go/container/apiv1/containerpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -760,6 +759,8 @@ type clusterManagerGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClusterManagerClient creates a new cluster manager client based on gRPC.
@@ -786,6 +787,7 @@ func NewClusterManagerClient(ctx context.Context, opts ...option.ClientOption) (
 		connPool:             connPool,
 		clusterManagerClient: containerpb.NewClusterManagerClient(connPool),
 		CallOptions:          &client.CallOptions,
+		logger:               internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -832,6 +834,8 @@ type clusterManagerRESTClient struct {
 
 	// Points back to the CallOptions field of the containing ClusterManagerClient
 	CallOptions **ClusterManagerCallOptions
+
+	logger *slog.Logger
 }
 
 // NewClusterManagerRESTClient creates a new cluster manager rest client.
@@ -849,6 +853,7 @@ func NewClusterManagerRESTClient(ctx context.Context, opts ...option.ClientOptio
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -901,7 +906,7 @@ func (c *clusterManagerGRPCClient) ListClusters(ctx context.Context, req *contai
 	var resp *containerpb.ListClustersResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.clusterManagerClient.ListClusters(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.clusterManagerClient.ListClusters, req, settings.GRPC, c.logger, "ListClusters")
 		return err
 	}, opts...)
 	if err != nil {
@@ -919,7 +924,7 @@ func (c *clusterManagerGRPCClient) GetCluster(ctx context.Context, req *containe
 	var resp *containerpb.Cluster
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.clusterManagerClient.GetCluster(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.clusterManagerClient.GetCluster, req, settings.GRPC, c.logger, "GetCluster")
 		return err
 	}, opts...)
 	if err != nil {
@@ -937,7 +942,7 @@ func (c *clusterManagerGRPCClient) CreateCluster(ctx context.Context, req *conta
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.clusterManagerClient.CreateCluster(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.clusterManagerClient.CreateCluster, req, settings.GRPC, c.logger, "CreateCluster")
 		return err
 	}, opts...)
 	if err != nil {
@@ -955,7 +960,7 @@ func (c *clusterManagerGRPCClient) UpdateCluster(ctx context.Context, req *conta
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.clusterManagerClient.UpdateCluster(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.clusterManagerClient.UpdateCluster, req, settings.GRPC, c.logger, "UpdateCluster")
 		return err
 	}, opts...)
 	if err != nil {
@@ -973,7 +978,7 @@ func (c *clusterManagerGRPCClient) UpdateNodePool(ctx context.Context, req *cont
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.clusterManagerClient.UpdateNodePool(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.clusterManagerClient.UpdateNodePool, req, settings.GRPC, c.logger, "UpdateNodePool")
 		return err
 	}, opts...)
 	if err != nil {
@@ -991,7 +996,7 @@ func (c *clusterManagerGRPCClient) SetNodePoolAutoscaling(ctx context.Context, r
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.clusterManagerClient.SetNodePoolAutoscaling(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.clusterManagerClient.SetNodePoolAutoscaling, req, settings.GRPC, c.logger, "SetNodePoolAutoscaling")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1009,7 +1014,7 @@ func (c *clusterManagerGRPCClient) SetLoggingService(ctx context.Context, req *c
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.clusterManagerClient.SetLoggingService(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.clusterManagerClient.SetLoggingService, req, settings.GRPC, c.logger, "SetLoggingService")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1027,7 +1032,7 @@ func (c *clusterManagerGRPCClient) SetMonitoringService(ctx context.Context, req
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.clusterManagerClient.SetMonitoringService(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.clusterManagerClient.SetMonitoringService, req, settings.GRPC, c.logger, "SetMonitoringService")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1045,7 +1050,7 @@ func (c *clusterManagerGRPCClient) SetAddonsConfig(ctx context.Context, req *con
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.clusterManagerClient.SetAddonsConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.clusterManagerClient.SetAddonsConfig, req, settings.GRPC, c.logger, "SetAddonsConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1063,7 +1068,7 @@ func (c *clusterManagerGRPCClient) SetLocations(ctx context.Context, req *contai
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.clusterManagerClient.SetLocations(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.clusterManagerClient.SetLocations, req, settings.GRPC, c.logger, "SetLocations")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1081,7 +1086,7 @@ func (c *clusterManagerGRPCClient) UpdateMaster(ctx context.Context, req *contai
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.clusterManagerClient.UpdateMaster(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.clusterManagerClient.UpdateMaster, req, settings.GRPC, c.logger, "UpdateMaster")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1099,7 +1104,7 @@ func (c *clusterManagerGRPCClient) SetMasterAuth(ctx context.Context, req *conta
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.clusterManagerClient.SetMasterAuth(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.clusterManagerClient.SetMasterAuth, req, settings.GRPC, c.logger, "SetMasterAuth")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1117,7 +1122,7 @@ func (c *clusterManagerGRPCClient) DeleteCluster(ctx context.Context, req *conta
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.clusterManagerClient.DeleteCluster(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.clusterManagerClient.DeleteCluster, req, settings.GRPC, c.logger, "DeleteCluster")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1135,7 +1140,7 @@ func (c *clusterManagerGRPCClient) ListOperations(ctx context.Context, req *cont
 	var resp *containerpb.ListOperationsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.clusterManagerClient.ListOperations(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.clusterManagerClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1153,7 +1158,7 @@ func (c *clusterManagerGRPCClient) GetOperation(ctx context.Context, req *contai
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.clusterManagerClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.clusterManagerClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1170,7 +1175,7 @@ func (c *clusterManagerGRPCClient) CancelOperation(ctx context.Context, req *con
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.clusterManagerClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.clusterManagerClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -1185,7 +1190,7 @@ func (c *clusterManagerGRPCClient) GetServerConfig(ctx context.Context, req *con
 	var resp *containerpb.ServerConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.clusterManagerClient.GetServerConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.clusterManagerClient.GetServerConfig, req, settings.GRPC, c.logger, "GetServerConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1203,7 +1208,7 @@ func (c *clusterManagerGRPCClient) GetJSONWebKeys(ctx context.Context, req *cont
 	var resp *containerpb.GetJSONWebKeysResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.clusterManagerClient.GetJSONWebKeys(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.clusterManagerClient.GetJSONWebKeys, req, settings.GRPC, c.logger, "GetJSONWebKeys")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1221,7 +1226,7 @@ func (c *clusterManagerGRPCClient) ListNodePools(ctx context.Context, req *conta
 	var resp *containerpb.ListNodePoolsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.clusterManagerClient.ListNodePools(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.clusterManagerClient.ListNodePools, req, settings.GRPC, c.logger, "ListNodePools")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1239,7 +1244,7 @@ func (c *clusterManagerGRPCClient) GetNodePool(ctx context.Context, req *contain
 	var resp *containerpb.NodePool
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.clusterManagerClient.GetNodePool(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.clusterManagerClient.GetNodePool, req, settings.GRPC, c.logger, "GetNodePool")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1257,7 +1262,7 @@ func (c *clusterManagerGRPCClient) CreateNodePool(ctx context.Context, req *cont
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.clusterManagerClient.CreateNodePool(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.clusterManagerClient.CreateNodePool, req, settings.GRPC, c.logger, "CreateNodePool")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1275,7 +1280,7 @@ func (c *clusterManagerGRPCClient) DeleteNodePool(ctx context.Context, req *cont
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.clusterManagerClient.DeleteNodePool(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.clusterManagerClient.DeleteNodePool, req, settings.GRPC, c.logger, "DeleteNodePool")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1292,7 +1297,7 @@ func (c *clusterManagerGRPCClient) CompleteNodePoolUpgrade(ctx context.Context, 
 	opts = append((*c.CallOptions).CompleteNodePoolUpgrade[0:len((*c.CallOptions).CompleteNodePoolUpgrade):len((*c.CallOptions).CompleteNodePoolUpgrade)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.clusterManagerClient.CompleteNodePoolUpgrade(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.clusterManagerClient.CompleteNodePoolUpgrade, req, settings.GRPC, c.logger, "CompleteNodePoolUpgrade")
 		return err
 	}, opts...)
 	return err
@@ -1307,7 +1312,7 @@ func (c *clusterManagerGRPCClient) RollbackNodePoolUpgrade(ctx context.Context, 
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.clusterManagerClient.RollbackNodePoolUpgrade(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.clusterManagerClient.RollbackNodePoolUpgrade, req, settings.GRPC, c.logger, "RollbackNodePoolUpgrade")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1325,7 +1330,7 @@ func (c *clusterManagerGRPCClient) SetNodePoolManagement(ctx context.Context, re
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.clusterManagerClient.SetNodePoolManagement(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.clusterManagerClient.SetNodePoolManagement, req, settings.GRPC, c.logger, "SetNodePoolManagement")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1343,7 +1348,7 @@ func (c *clusterManagerGRPCClient) SetLabels(ctx context.Context, req *container
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.clusterManagerClient.SetLabels(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.clusterManagerClient.SetLabels, req, settings.GRPC, c.logger, "SetLabels")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1361,7 +1366,7 @@ func (c *clusterManagerGRPCClient) SetLegacyAbac(ctx context.Context, req *conta
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.clusterManagerClient.SetLegacyAbac(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.clusterManagerClient.SetLegacyAbac, req, settings.GRPC, c.logger, "SetLegacyAbac")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1379,7 +1384,7 @@ func (c *clusterManagerGRPCClient) StartIPRotation(ctx context.Context, req *con
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.clusterManagerClient.StartIPRotation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.clusterManagerClient.StartIPRotation, req, settings.GRPC, c.logger, "StartIPRotation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1397,7 +1402,7 @@ func (c *clusterManagerGRPCClient) CompleteIPRotation(ctx context.Context, req *
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.clusterManagerClient.CompleteIPRotation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.clusterManagerClient.CompleteIPRotation, req, settings.GRPC, c.logger, "CompleteIPRotation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1415,7 +1420,7 @@ func (c *clusterManagerGRPCClient) SetNodePoolSize(ctx context.Context, req *con
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.clusterManagerClient.SetNodePoolSize(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.clusterManagerClient.SetNodePoolSize, req, settings.GRPC, c.logger, "SetNodePoolSize")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1433,7 +1438,7 @@ func (c *clusterManagerGRPCClient) SetNetworkPolicy(ctx context.Context, req *co
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.clusterManagerClient.SetNetworkPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.clusterManagerClient.SetNetworkPolicy, req, settings.GRPC, c.logger, "SetNetworkPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1451,7 +1456,7 @@ func (c *clusterManagerGRPCClient) SetMaintenancePolicy(ctx context.Context, req
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.clusterManagerClient.SetMaintenancePolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.clusterManagerClient.SetMaintenancePolicy, req, settings.GRPC, c.logger, "SetMaintenancePolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1480,7 +1485,7 @@ func (c *clusterManagerGRPCClient) ListUsableSubnetworks(ctx context.Context, re
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.clusterManagerClient.ListUsableSubnetworks(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.clusterManagerClient.ListUsableSubnetworks, req, settings.GRPC, c.logger, "ListUsableSubnetworks")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1515,7 +1520,7 @@ func (c *clusterManagerGRPCClient) CheckAutopilotCompatibility(ctx context.Conte
 	var resp *containerpb.CheckAutopilotCompatibilityResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.clusterManagerClient.CheckAutopilotCompatibility(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.clusterManagerClient.CheckAutopilotCompatibility, req, settings.GRPC, c.logger, "CheckAutopilotCompatibility")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1564,17 +1569,7 @@ func (c *clusterManagerRESTClient) ListClusters(ctx context.Context, req *contai
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListClusters")
 		if err != nil {
 			return err
 		}
@@ -1633,17 +1628,7 @@ func (c *clusterManagerRESTClient) GetCluster(ctx context.Context, req *containe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCluster")
 		if err != nil {
 			return err
 		}
@@ -1712,17 +1697,7 @@ func (c *clusterManagerRESTClient) CreateCluster(ctx context.Context, req *conta
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateCluster")
 		if err != nil {
 			return err
 		}
@@ -1778,17 +1753,7 @@ func (c *clusterManagerRESTClient) UpdateCluster(ctx context.Context, req *conta
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateCluster")
 		if err != nil {
 			return err
 		}
@@ -1844,17 +1809,7 @@ func (c *clusterManagerRESTClient) UpdateNodePool(ctx context.Context, req *cont
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateNodePool")
 		if err != nil {
 			return err
 		}
@@ -1910,17 +1865,7 @@ func (c *clusterManagerRESTClient) SetNodePoolAutoscaling(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetNodePoolAutoscaling")
 		if err != nil {
 			return err
 		}
@@ -1976,17 +1921,7 @@ func (c *clusterManagerRESTClient) SetLoggingService(ctx context.Context, req *c
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetLoggingService")
 		if err != nil {
 			return err
 		}
@@ -2042,17 +1977,7 @@ func (c *clusterManagerRESTClient) SetMonitoringService(ctx context.Context, req
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetMonitoringService")
 		if err != nil {
 			return err
 		}
@@ -2108,17 +2033,7 @@ func (c *clusterManagerRESTClient) SetAddonsConfig(ctx context.Context, req *con
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetAddonsConfig")
 		if err != nil {
 			return err
 		}
@@ -2179,17 +2094,7 @@ func (c *clusterManagerRESTClient) SetLocations(ctx context.Context, req *contai
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetLocations")
 		if err != nil {
 			return err
 		}
@@ -2245,17 +2150,7 @@ func (c *clusterManagerRESTClient) UpdateMaster(ctx context.Context, req *contai
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateMaster")
 		if err != nil {
 			return err
 		}
@@ -2313,17 +2208,7 @@ func (c *clusterManagerRESTClient) SetMasterAuth(ctx context.Context, req *conta
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetMasterAuth")
 		if err != nil {
 			return err
 		}
@@ -2390,17 +2275,7 @@ func (c *clusterManagerRESTClient) DeleteCluster(ctx context.Context, req *conta
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteCluster")
 		if err != nil {
 			return err
 		}
@@ -2456,17 +2331,7 @@ func (c *clusterManagerRESTClient) ListOperations(ctx context.Context, req *cont
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 		if err != nil {
 			return err
 		}
@@ -2525,17 +2390,7 @@ func (c *clusterManagerRESTClient) GetOperation(ctx context.Context, req *contai
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -2588,15 +2443,8 @@ func (c *clusterManagerRESTClient) CancelOperation(ctx context.Context, req *con
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -2639,17 +2487,7 @@ func (c *clusterManagerRESTClient) GetServerConfig(ctx context.Context, req *con
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetServerConfig")
 		if err != nil {
 			return err
 		}
@@ -2700,17 +2538,7 @@ func (c *clusterManagerRESTClient) GetJSONWebKeys(ctx context.Context, req *cont
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetJSONWebKeys")
 		if err != nil {
 			return err
 		}
@@ -2769,17 +2597,7 @@ func (c *clusterManagerRESTClient) ListNodePools(ctx context.Context, req *conta
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListNodePools")
 		if err != nil {
 			return err
 		}
@@ -2841,17 +2659,7 @@ func (c *clusterManagerRESTClient) GetNodePool(ctx context.Context, req *contain
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetNodePool")
 		if err != nil {
 			return err
 		}
@@ -2907,17 +2715,7 @@ func (c *clusterManagerRESTClient) CreateNodePool(ctx context.Context, req *cont
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateNodePool")
 		if err != nil {
 			return err
 		}
@@ -2979,17 +2777,7 @@ func (c *clusterManagerRESTClient) DeleteNodePool(ctx context.Context, req *cont
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteNodePool")
 		if err != nil {
 			return err
 		}
@@ -3043,15 +2831,8 @@ func (c *clusterManagerRESTClient) CompleteNodePoolUpgrade(ctx context.Context, 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CompleteNodePoolUpgrade")
+		return err
 	}, opts...)
 }
 
@@ -3095,17 +2876,7 @@ func (c *clusterManagerRESTClient) RollbackNodePoolUpgrade(ctx context.Context, 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RollbackNodePoolUpgrade")
 		if err != nil {
 			return err
 		}
@@ -3161,17 +2932,7 @@ func (c *clusterManagerRESTClient) SetNodePoolManagement(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetNodePoolManagement")
 		if err != nil {
 			return err
 		}
@@ -3227,17 +2988,7 @@ func (c *clusterManagerRESTClient) SetLabels(ctx context.Context, req *container
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetLabels")
 		if err != nil {
 			return err
 		}
@@ -3293,17 +3044,7 @@ func (c *clusterManagerRESTClient) SetLegacyAbac(ctx context.Context, req *conta
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetLegacyAbac")
 		if err != nil {
 			return err
 		}
@@ -3359,17 +3100,7 @@ func (c *clusterManagerRESTClient) StartIPRotation(ctx context.Context, req *con
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "StartIPRotation")
 		if err != nil {
 			return err
 		}
@@ -3425,17 +3156,7 @@ func (c *clusterManagerRESTClient) CompleteIPRotation(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CompleteIPRotation")
 		if err != nil {
 			return err
 		}
@@ -3493,17 +3214,7 @@ func (c *clusterManagerRESTClient) SetNodePoolSize(ctx context.Context, req *con
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetNodePoolSize")
 		if err != nil {
 			return err
 		}
@@ -3559,17 +3270,7 @@ func (c *clusterManagerRESTClient) SetNetworkPolicy(ctx context.Context, req *co
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetNetworkPolicy")
 		if err != nil {
 			return err
 		}
@@ -3625,17 +3326,7 @@ func (c *clusterManagerRESTClient) SetMaintenancePolicy(ctx context.Context, req
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetMaintenancePolicy")
 		if err != nil {
 			return err
 		}
@@ -3700,21 +3391,10 @@ func (c *clusterManagerRESTClient) ListUsableSubnetworks(ctx context.Context, re
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListUsableSubnetworks")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3778,17 +3458,7 @@ func (c *clusterManagerRESTClient) CheckAutopilotCompatibility(ctx context.Conte
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "CheckAutopilotCompatibility")
 		if err != nil {
 			return err
 		}

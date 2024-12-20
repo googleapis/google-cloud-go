@@ -45,7 +45,7 @@ func ExampleAdminClient_ListReservationTopics_all() {
 	}
 	for resp, err := range c.ListReservationTopics(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -71,7 +71,7 @@ func ExampleAdminClient_ListReservations_all() {
 	}
 	for resp, err := range c.ListReservations(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -97,7 +97,7 @@ func ExampleAdminClient_ListSubscriptions_all() {
 	}
 	for resp, err := range c.ListSubscriptions(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -123,7 +123,7 @@ func ExampleAdminClient_ListTopicSubscriptions_all() {
 	}
 	for resp, err := range c.ListTopicSubscriptions(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -149,7 +149,7 @@ func ExampleAdminClient_ListTopics_all() {
 	}
 	for resp, err := range c.ListTopics(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -175,7 +175,7 @@ func ExampleAdminClient_ListOperations_all() {
 	}
 	for resp, err := range c.ListOperations(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp

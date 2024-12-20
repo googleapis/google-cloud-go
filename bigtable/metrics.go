@@ -20,7 +20,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"os"
 	"sync"
 	"time"
@@ -52,6 +51,7 @@ const (
 	metricLabelKeyAppProfile         = "app_profile"
 	metricLabelKeyMethod             = "method"
 	metricLabelKeyStatus             = "status"
+	metricLabelKeyTag                = "tag"
 	metricLabelKeyStreamingOperation = "streaming"
 	metricLabelKeyClientName         = "client_name"
 	metricLabelKeyClientUID          = "client_uid"
@@ -63,16 +63,19 @@ const (
 	metricNameFirstRespLatencies = "first_response_latencies"
 	metricNameRetryCount         = "retry_count"
 	metricNameConnErrCount       = "connectivity_error_count"
+	metricNameDebugTags          = "debug_tags"
 
 	// Metric units
 	metricUnitMS    = "ms"
 	metricUnitCount = "1"
 )
 
-// These are effectively const, but for testing purposes they are mutable
+// These are effectively constant, but for testing purposes they are mutable
 var (
 	// duration between two metric exports
-	defaultSamplePeriod = 5 * time.Minute
+	defaultSamplePeriod = time.Minute
+
+	metricsErrorPrefix = "bigtable-metrics: "
 
 	clientName = fmt.Sprintf("go-bigtable/%v", internal.Version)
 
@@ -81,7 +84,7 @@ var (
 		800.0, 1000.0, 2000.0, 5000.0, 10000.0, 20000.0, 50000.0, 100000.0, 200000.0,
 		400000.0, 800000.0, 1600000.0, 3200000.0}
 
-	// All the built-in metrics have same attributes except 'status' and 'streaming'
+	// All the built-in metrics have same attributes except 'tag', 'status' and 'streaming'
 	// These attributes need to be added to only few of the metrics
 	metricsDetails = map[string]metricInfo{
 		metricNameOperationLatencies: {
@@ -135,7 +138,12 @@ var (
 		return "go-" + uuid.NewString() + "@" + hostname, nil
 	}
 
-	exporterOpts = []option.ClientOption{}
+	// GCM exporter should use the same options as Bigtable client
+	// createExporterOptions takes Bigtable client options and returns exporter options
+	// Overwritten in tests
+	createExporterOptions = func(btOpts ...option.ClientOption) []option.ClientOption {
+		return btOpts
+	}
 )
 
 type metricInfo struct {
@@ -160,12 +168,13 @@ type builtinMetricsTracerFactory struct {
 
 	retryCount   metric.Int64Counter
 	connErrCount metric.Int64Counter
+	debugTags    metric.Int64Counter
 }
 
-func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appProfile string, metricsProvider MetricsProvider) (*builtinMetricsTracerFactory, error) {
+func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appProfile string, metricsProvider MetricsProvider, opts ...option.ClientOption) (*builtinMetricsTracerFactory, error) {
 	clientUID, err := generateClientUID()
 	if err != nil {
-		log.Printf("built-in metrics: generateClientUID failed: %v. Using empty string in the %v metric atteribute", err, metricLabelKeyClientUID)
+		return nil, err
 	}
 
 	tracerFactory := &builtinMetricsTracerFactory{
@@ -183,7 +192,7 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appP
 	var meterProvider *sdkmetric.MeterProvider
 	if metricsProvider == nil {
 		// Create default meter provider
-		mpOptions, err := builtInMeterProviderOptions(project)
+		mpOptions, err := builtInMeterProviderOptions(project, opts...)
 		if err != nil {
 			return tracerFactory, err
 		}
@@ -208,8 +217,9 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appP
 	return tracerFactory, err
 }
 
-func builtInMeterProviderOptions(project string) ([]sdkmetric.Option, error) {
-	defaultExporter, err := newMonitoringExporter(context.Background(), project, exporterOpts...)
+func builtInMeterProviderOptions(project string, opts ...option.ClientOption) ([]sdkmetric.Option, error) {
+	allOpts := createExporterOptions(opts...)
+	defaultExporter, err := newMonitoringExporter(context.Background(), project, allOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -282,6 +292,16 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 		metric.WithDescription("Number of requests that failed to reach the Google datacenter. (Requests without google response headers"),
 		metric.WithUnit(metricUnitCount),
 	)
+	if err != nil {
+		return err
+	}
+
+	// Create debug_tags
+	tf.debugTags, err = meter.Int64Counter(
+		metricNameDebugTags,
+		metric.WithDescription("A counter of internal client events used for debugging."),
+		metric.WithUnit(metricUnitCount),
+	)
 	return err
 }
 
@@ -302,6 +322,7 @@ type builtinMetricsTracer struct {
 	instrumentFirstRespLatencies metric.Float64Histogram
 	instrumentRetryCount         metric.Int64Counter
 	instrumentConnErrCount       metric.Int64Counter
+	instrumentDebugTags          metric.Int64Counter
 
 	tableName   string
 	method      string
@@ -413,6 +434,7 @@ func (tf *builtinMetricsTracerFactory) createBuiltinMetricsTracer(ctx context.Co
 		instrumentFirstRespLatencies: tf.firstRespLatencies,
 		instrumentRetryCount:         tf.retryCount,
 		instrumentConnErrCount:       tf.connErrCount,
+		instrumentDebugTags:          tf.debugTags,
 
 		tableName:   tableName,
 		isStreaming: isStreaming,

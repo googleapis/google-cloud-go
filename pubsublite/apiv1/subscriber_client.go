@@ -19,6 +19,7 @@ package pubsublite
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 	"time"
@@ -55,6 +56,7 @@ func defaultSubscriberGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://pubsublite.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -190,6 +192,8 @@ type subscriberGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewSubscriberClient creates a new subscriber service client based on gRPC.
@@ -217,6 +221,7 @@ func NewSubscriberClient(ctx context.Context, opts ...option.ClientOption) (*Sub
 		connPool:         connPool,
 		subscriberClient: pubsublitepb.NewSubscriberServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -257,7 +262,9 @@ func (c *subscriberGRPCClient) Subscribe(ctx context.Context, opts ...gax.CallOp
 	opts = append((*c.CallOptions).Subscribe[0:len((*c.CallOptions).Subscribe):len((*c.CallOptions).Subscribe)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "Subscribe")
 		resp, err = c.subscriberClient.Subscribe(ctx, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "Subscribe")
 		return err
 	}, opts...)
 	if err != nil {
@@ -274,7 +281,7 @@ func (c *subscriberGRPCClient) CancelOperation(ctx context.Context, req *longrun
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -288,7 +295,7 @@ func (c *subscriberGRPCClient) DeleteOperation(ctx context.Context, req *longrun
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -303,7 +310,7 @@ func (c *subscriberGRPCClient) GetOperation(ctx context.Context, req *longrunnin
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -332,7 +339,7 @@ func (c *subscriberGRPCClient) ListOperations(ctx context.Context, req *longrunn
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {

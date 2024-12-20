@@ -694,6 +694,11 @@
                 "CheckGrounding"
               ]
             },
+            "GenerateGroundedContent": {
+              "methods": [
+                "GenerateGroundedContent"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
@@ -702,6 +707,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "StreamGenerateGroundedContent": {
+              "methods": [
+                "StreamGenerateGroundedContent"
               ]
             }
           }
@@ -719,6 +729,11 @@
                 "CheckGrounding"
               ]
             },
+            "GenerateGroundedContent": {
+              "methods": [
+                "GenerateGroundedContent"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
@@ -727,6 +742,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "StreamGenerateGroundedContent": {
+              "methods": [
+                "StreamGenerateGroundedContent"
               ]
             }
           }
@@ -1013,6 +1033,11 @@
               "methods": [
                 "Search"
               ]
+            },
+            "SearchLite": {
+              "methods": [
+                "SearchLite"
+              ]
             }
           }
         },
@@ -1037,6 +1062,11 @@
             "Search": {
               "methods": [
                 "Search"
+              ]
+            },
+            "SearchLite": {
+              "methods": [
+                "SearchLite"
               ]
             }
           }

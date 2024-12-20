@@ -20,6 +20,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -27,6 +28,7 @@ import (
 	"cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/auth/httptransport"
 	"cloud.google.com/go/auth/internal"
+	"github.com/googleapis/gax-go/v2/internallog"
 )
 
 // IDTokenOptions for generating an impersonated ID token.
@@ -47,14 +49,19 @@ type IDTokenOptions struct {
 	// chain. Optional.
 	Delegates []string
 
-	// Credentials used to fetch the ID token. If not provided, and a Client is
-	// also not provided, base credentials will try to be detected from the
-	// environment. Optional.
+	// Credentials used in generating the impersonated ID token. If empty, an
+	// attempt will be made to detect credentials from the environment (see
+	// [cloud.google.com/go/auth/credentials.DetectDefault]). Optional.
 	Credentials *auth.Credentials
 	// Client configures the underlying client used to make network requests
-	// when fetching tokens. If provided the client should provide it's own
-	// base credentials at call time. Optional.
+	// when fetching tokens. If provided this should be a fully-authenticated
+	// client. Optional.
 	Client *http.Client
+	// Logger is used for debug logging. If provided, logging will be enabled
+	// at the loggers configured level. By default logging is disabled unless
+	// enabled by setting GOOGLE_SDK_GO_LOGGING_LEVEL in which case a default
+	// logger will be used. Optional.
+	Logger *slog.Logger
 }
 
 func (o *IDTokenOptions) validate() error {
@@ -83,32 +90,30 @@ func NewIDTokenCredentials(opts *IDTokenOptions) (*auth.Credentials, error) {
 	if err := opts.validate(); err != nil {
 		return nil, err
 	}
-	var client *http.Client
-	var creds *auth.Credentials
-	if opts.Client == nil && opts.Credentials == nil {
+
+	client := opts.Client
+	creds := opts.Credentials
+	logger := internallog.New(opts.Logger)
+	if client == nil {
 		var err error
-		// TODO: test not signed jwt more
-		creds, err = credentials.DetectDefault(&credentials.DetectOptions{
-			Scopes:           []string{defaultScope},
-			UseSelfSignedJWT: true,
-		})
-		if err != nil {
-			return nil, err
+		if creds == nil {
+			// TODO: test not signed jwt more
+			creds, err = credentials.DetectDefault(&credentials.DetectOptions{
+				Scopes:           []string{defaultScope},
+				UseSelfSignedJWT: true,
+				Logger:           logger,
+			})
+			if err != nil {
+				return nil, err
+			}
 		}
 		client, err = httptransport.NewClient(&httptransport.Options{
 			Credentials: creds,
+			Logger:      logger,
 		})
 		if err != nil {
 			return nil, err
 		}
-	} else if opts.Client == nil {
-		creds = opts.Credentials
-		client = internal.DefaultClient()
-		if err := httptransport.AddAuthorizationMiddleware(client, opts.Credentials); err != nil {
-			return nil, err
-		}
-	} else {
-		client = opts.Client
 	}
 
 	itp := impersonatedIDTokenProvider{
@@ -116,6 +121,7 @@ func NewIDTokenCredentials(opts *IDTokenOptions) (*auth.Credentials, error) {
 		targetPrincipal: opts.TargetPrincipal,
 		audience:        opts.Audience,
 		includeEmail:    opts.IncludeEmail,
+		logger:          logger,
 	}
 	for _, v := range opts.Delegates {
 		itp.delegates = append(itp.delegates, formatIAMServiceAccountName(v))
@@ -143,6 +149,7 @@ type generateIDTokenResponse struct {
 
 type impersonatedIDTokenProvider struct {
 	client *http.Client
+	logger *slog.Logger
 
 	targetPrincipal string
 	audience        string
@@ -167,10 +174,12 @@ func (i impersonatedIDTokenProvider) Token(ctx context.Context) (*auth.Token, er
 		return nil, fmt.Errorf("impersonate: unable to create request: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
+	i.logger.DebugContext(ctx, "impersonated idtoken request", "request", internallog.HTTPRequest(req, bodyBytes))
 	resp, body, err := internal.DoRequest(i.client, req)
 	if err != nil {
 		return nil, fmt.Errorf("impersonate: unable to generate ID token: %w", err)
 	}
+	i.logger.DebugContext(ctx, "impersonated idtoken response", "response", internallog.HTTPResponse(resp, body))
 	if c := resp.StatusCode; c < 200 || c > 299 {
 		return nil, fmt.Errorf("impersonate: status code %d: %s", c, body)
 	}

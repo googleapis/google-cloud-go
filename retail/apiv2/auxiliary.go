@@ -29,13 +29,15 @@ import (
 
 // AddFulfillmentPlacesOperation manages a long-running operation from AddFulfillmentPlaces.
 type AddFulfillmentPlacesOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *AddFulfillmentPlacesOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*retailpb.AddFulfillmentPlacesResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp retailpb.AddFulfillmentPlacesResponse
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -53,6 +55,7 @@ func (op *AddFulfillmentPlacesOperation) Wait(ctx context.Context, opts ...gax.C
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *AddFulfillmentPlacesOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*retailpb.AddFulfillmentPlacesResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp retailpb.AddFulfillmentPlacesResponse
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -90,13 +93,15 @@ func (op *AddFulfillmentPlacesOperation) Name() string {
 
 // AddLocalInventoriesOperation manages a long-running operation from AddLocalInventories.
 type AddLocalInventoriesOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *AddLocalInventoriesOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*retailpb.AddLocalInventoriesResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp retailpb.AddLocalInventoriesResponse
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -114,6 +119,7 @@ func (op *AddLocalInventoriesOperation) Wait(ctx context.Context, opts ...gax.Ca
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *AddLocalInventoriesOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*retailpb.AddLocalInventoriesResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp retailpb.AddLocalInventoriesResponse
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -151,13 +157,15 @@ func (op *AddLocalInventoriesOperation) Name() string {
 
 // CreateModelOperation manages a long-running operation from CreateModel.
 type CreateModelOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *CreateModelOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*retailpb.Model, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp retailpb.Model
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -175,6 +183,7 @@ func (op *CreateModelOperation) Wait(ctx context.Context, opts ...gax.CallOption
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *CreateModelOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*retailpb.Model, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp retailpb.Model
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -212,13 +221,15 @@ func (op *CreateModelOperation) Name() string {
 
 // ExportAnalyticsMetricsOperation manages a long-running operation from ExportAnalyticsMetrics.
 type ExportAnalyticsMetricsOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *ExportAnalyticsMetricsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*retailpb.ExportAnalyticsMetricsResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp retailpb.ExportAnalyticsMetricsResponse
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -236,6 +247,7 @@ func (op *ExportAnalyticsMetricsOperation) Wait(ctx context.Context, opts ...gax
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *ExportAnalyticsMetricsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*retailpb.ExportAnalyticsMetricsResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp retailpb.ExportAnalyticsMetricsResponse
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -273,13 +285,15 @@ func (op *ExportAnalyticsMetricsOperation) Name() string {
 
 // ImportCompletionDataOperation manages a long-running operation from ImportCompletionData.
 type ImportCompletionDataOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *ImportCompletionDataOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*retailpb.ImportCompletionDataResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp retailpb.ImportCompletionDataResponse
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -297,6 +311,7 @@ func (op *ImportCompletionDataOperation) Wait(ctx context.Context, opts ...gax.C
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *ImportCompletionDataOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*retailpb.ImportCompletionDataResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp retailpb.ImportCompletionDataResponse
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -334,13 +349,15 @@ func (op *ImportCompletionDataOperation) Name() string {
 
 // ImportProductsOperation manages a long-running operation from ImportProducts.
 type ImportProductsOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *ImportProductsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*retailpb.ImportProductsResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp retailpb.ImportProductsResponse
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -358,6 +375,7 @@ func (op *ImportProductsOperation) Wait(ctx context.Context, opts ...gax.CallOpt
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *ImportProductsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*retailpb.ImportProductsResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp retailpb.ImportProductsResponse
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -395,13 +413,15 @@ func (op *ImportProductsOperation) Name() string {
 
 // ImportUserEventsOperation manages a long-running operation from ImportUserEvents.
 type ImportUserEventsOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *ImportUserEventsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*retailpb.ImportUserEventsResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp retailpb.ImportUserEventsResponse
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -419,6 +439,7 @@ func (op *ImportUserEventsOperation) Wait(ctx context.Context, opts ...gax.CallO
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *ImportUserEventsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*retailpb.ImportUserEventsResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp retailpb.ImportUserEventsResponse
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -456,13 +477,15 @@ func (op *ImportUserEventsOperation) Name() string {
 
 // PurgeProductsOperation manages a long-running operation from PurgeProducts.
 type PurgeProductsOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *PurgeProductsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*retailpb.PurgeProductsResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp retailpb.PurgeProductsResponse
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -480,6 +503,7 @@ func (op *PurgeProductsOperation) Wait(ctx context.Context, opts ...gax.CallOpti
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *PurgeProductsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*retailpb.PurgeProductsResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp retailpb.PurgeProductsResponse
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -517,13 +541,15 @@ func (op *PurgeProductsOperation) Name() string {
 
 // PurgeUserEventsOperation manages a long-running operation from PurgeUserEvents.
 type PurgeUserEventsOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *PurgeUserEventsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*retailpb.PurgeUserEventsResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp retailpb.PurgeUserEventsResponse
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -541,6 +567,7 @@ func (op *PurgeUserEventsOperation) Wait(ctx context.Context, opts ...gax.CallOp
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *PurgeUserEventsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*retailpb.PurgeUserEventsResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp retailpb.PurgeUserEventsResponse
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -578,13 +605,15 @@ func (op *PurgeUserEventsOperation) Name() string {
 
 // RejoinUserEventsOperation manages a long-running operation from RejoinUserEvents.
 type RejoinUserEventsOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *RejoinUserEventsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*retailpb.RejoinUserEventsResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp retailpb.RejoinUserEventsResponse
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -602,6 +631,7 @@ func (op *RejoinUserEventsOperation) Wait(ctx context.Context, opts ...gax.CallO
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *RejoinUserEventsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*retailpb.RejoinUserEventsResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp retailpb.RejoinUserEventsResponse
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -639,13 +669,15 @@ func (op *RejoinUserEventsOperation) Name() string {
 
 // RemoveFulfillmentPlacesOperation manages a long-running operation from RemoveFulfillmentPlaces.
 type RemoveFulfillmentPlacesOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *RemoveFulfillmentPlacesOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*retailpb.RemoveFulfillmentPlacesResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp retailpb.RemoveFulfillmentPlacesResponse
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -663,6 +695,7 @@ func (op *RemoveFulfillmentPlacesOperation) Wait(ctx context.Context, opts ...ga
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *RemoveFulfillmentPlacesOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*retailpb.RemoveFulfillmentPlacesResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp retailpb.RemoveFulfillmentPlacesResponse
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -700,13 +733,15 @@ func (op *RemoveFulfillmentPlacesOperation) Name() string {
 
 // RemoveLocalInventoriesOperation manages a long-running operation from RemoveLocalInventories.
 type RemoveLocalInventoriesOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *RemoveLocalInventoriesOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*retailpb.RemoveLocalInventoriesResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp retailpb.RemoveLocalInventoriesResponse
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -724,6 +759,7 @@ func (op *RemoveLocalInventoriesOperation) Wait(ctx context.Context, opts ...gax
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *RemoveLocalInventoriesOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*retailpb.RemoveLocalInventoriesResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp retailpb.RemoveLocalInventoriesResponse
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -761,13 +797,15 @@ func (op *RemoveLocalInventoriesOperation) Name() string {
 
 // SetInventoryOperation manages a long-running operation from SetInventory.
 type SetInventoryOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *SetInventoryOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*retailpb.SetInventoryResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp retailpb.SetInventoryResponse
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -785,6 +823,7 @@ func (op *SetInventoryOperation) Wait(ctx context.Context, opts ...gax.CallOptio
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *SetInventoryOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*retailpb.SetInventoryResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp retailpb.SetInventoryResponse
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -822,13 +861,15 @@ func (op *SetInventoryOperation) Name() string {
 
 // TuneModelOperation manages a long-running operation from TuneModel.
 type TuneModelOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *TuneModelOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*retailpb.TuneModelResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp retailpb.TuneModelResponse
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -846,6 +887,7 @@ func (op *TuneModelOperation) Wait(ctx context.Context, opts ...gax.CallOption) 
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *TuneModelOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*retailpb.TuneModelResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp retailpb.TuneModelResponse
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -901,7 +943,7 @@ type CatalogIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*retailpb.Catalog, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *CatalogIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -948,7 +990,7 @@ type ControlIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*retailpb.Control, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ControlIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -995,7 +1037,7 @@ type ModelIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*retailpb.Model, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ModelIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1042,7 +1084,7 @@ type OperationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *OperationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1089,7 +1131,7 @@ type ProductIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*retailpb.Product, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ProductIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1136,7 +1178,7 @@ type SearchResponse_SearchResultIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*retailpb.SearchResponse_SearchResult, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *SearchResponse_SearchResultIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1183,7 +1225,7 @@ type ServingConfigIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*retailpb.ServingConfig, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ServingConfigIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

@@ -1,6 +1,50 @@
 # Changelog
 
 
+## [1.11.4](https://github.com/googleapis/google-cloud-go/compare/batch/v1.11.3...batch/v1.11.4) (2024-12-11)
+
+
+### Documentation
+
+* **batch:** Clarify options for logs ([38385d4](https://github.com/googleapis/google-cloud-go/commit/38385d441ba43e7bf6166ee5507a70e77c0b01f5))
+* **batch:** Clarify the custom instance template needs to be in the same project ([38385d4](https://github.com/googleapis/google-cloud-go/commit/38385d441ba43e7bf6166ee5507a70e77c0b01f5))
+
+## [1.11.3](https://github.com/googleapis/google-cloud-go/compare/batch/v1.11.2...batch/v1.11.3) (2024-12-04)
+
+
+### Documentation
+
+* **batch:** Clarify that user provided labels will also be applied to Cloud Logging ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+* **batch:** Rephrase reservation field doc ([#11180](https://github.com/googleapis/google-cloud-go/issues/11180)) ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+* **batch:** Update reservation field to include NO_RESERVATION ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+
+## [1.11.2](https://github.com/googleapis/google-cloud-go/compare/batch/v1.11.1...batch/v1.11.2) (2024-10-23)
+
+
+### Bug Fixes
+
+* **batch:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **batch:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
+## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/batch/v1.11.0...batch/v1.11.1) (2024-10-09)
+
+
+### Documentation
+
+* **batch:** Clarify Batch only supports global custom instance template now ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.10.0...batch/v1.11.0) (2024-09-12)
+
+
+### Features
+
+* **batch:** Promote block_project_ssh_keys support to batch v1 API ([2710d0f](https://github.com/googleapis/google-cloud-go/commit/2710d0f8c66c17f1ddb1d4cc287f7aeb701c0f72))
+
+
+### Bug Fixes
+
+* **batch:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
 ## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.9.4...batch/v1.10.0) (2024-08-20)
 
 

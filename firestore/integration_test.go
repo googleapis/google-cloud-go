@@ -73,6 +73,7 @@ const (
 	envPrivateKey = "GCLOUD_TESTS_GOLANG_FIRESTORE_KEY"
 	envDatabases  = "GCLOUD_TESTS_GOLANG_FIRESTORE_DATABASES"
 	envEmulator   = "FIRESTORE_EMULATOR_HOST"
+	indexBuilding = "index is currently building"
 )
 
 var (
@@ -260,12 +261,14 @@ func handleCreateIndexResp(ctx context.Context, indexNames []string, wg *sync.Wa
 // deleteIndexes deletes composite indexes created in createIndexes function
 func deleteIndexes(ctx context.Context, indexNames []string) {
 	for _, indexName := range indexNames {
-		err := iAdminClient.DeleteIndex(ctx, &adminpb.DeleteIndexRequest{
-			Name: indexName,
+		testutil.RetryWithoutTest(5, 5*time.Second, func(r *testutil.R) {
+			err := iAdminClient.DeleteIndex(ctx, &adminpb.DeleteIndexRequest{
+				Name: indexName,
+			})
+			if err != nil {
+				r.Errorf("Failed to delete index \"%s\": %+v\n", indexName, err)
+			}
 		})
-		if err != nil {
-			log.Printf("Failed to delete index \"%s\": %+v\n", indexName, err)
-		}
 	}
 }
 
@@ -1394,6 +1397,7 @@ func TestIntegration_QueryUnary(t *testing.T) {
 		want map[string]interface{}
 	}{
 		{base.Where("q", "==", nil), wantNull},
+		{base.Where("q", "!=", nil), wantNull},
 		{base.Where("q", "==", math.NaN()), wantNaN},
 	} {
 		got, err := test.q.Documents(ctx).GetAll()
@@ -2436,7 +2440,7 @@ func TestDetectProjectID(t *testing.T) {
 	ts := testutil.ErroringTokenSource{}
 	// Try to use creds without project ID.
 	_, err := NewClient(ctx, DetectProjectID, option.WithTokenSource(ts))
-	if err == nil || err.Error() != "firestore: see the docs on DetectProjectID" {
+	if err == nil || err.Error() != "unable to detect projectID, please refer to docs for DetectProjectID" {
 		t.Errorf("expected an error while using TokenSource that does not have a project ID")
 	}
 }
@@ -2930,28 +2934,39 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	}
 
 	for _, tc := range testcases {
-		var aggResult AggregationResult
-		var err error
-		if tc.runInTransaction {
-			client.RunTransaction(ctx, func(ctx context.Context, tx *Transaction) error {
-				aggResult, err = tc.aggregationQuery.Transaction(tx).Get(ctx)
-				return err
+		t.Run(tc.desc, func(t *testing.T) {
+			testutil.Retry(t, 5, 5*time.Second, func(r *testutil.R) {
+				var aggResult AggregationResult
+				var err error
+				if tc.runInTransaction {
+					client.RunTransaction(ctx, func(ctx context.Context, tx *Transaction) error {
+						aggResult, err = tc.aggregationQuery.Transaction(tx).Get(ctx)
+						return err
+					})
+				} else {
+					aggResult, err = tc.aggregationQuery.Get(ctx)
+				}
+
+				// Retry only if index building is in progress
+				s, ok := status.FromError(err)
+				if err != nil && ok && s != nil && s.Code() != codes.FailedPrecondition &&
+					strings.Contains(s.Message(), indexBuilding) {
+					r.Errorf("Get: %v", err)
+					return
+				}
+
+				// Compare expected and actual results
+				if err != nil && !tc.wantErr {
+					r.Fatalf("got: %v, want: nil", err)
+				}
+				if err == nil && tc.wantErr {
+					r.Fatalf("got: %v, wanted error", err)
+				}
+				if !reflect.DeepEqual(aggResult, tc.result) {
+					r.Fatalf("got: %v, want: %v", aggResult, tc.result)
+				}
 			})
-		} else {
-			aggResult, err = tc.aggregationQuery.Get(ctx)
-		}
-		if err != nil && !tc.wantErr {
-			t.Errorf("%s: got: %v, want: nil", tc.desc, err)
-			continue
-		}
-		if err == nil && tc.wantErr {
-			t.Errorf("%s: got: %v, wanted error", tc.desc, err)
-			continue
-		}
-		if !reflect.DeepEqual(aggResult, tc.result) {
-			t.Errorf("%s: got: %v, want: %v", tc.desc, aggResult, tc.result)
-			continue
-		}
+		})
 	}
 }
 
@@ -3218,6 +3233,7 @@ func TestIntegration_FindNearest(t *testing.T) {
 		cancel()
 	})
 	queryField := "EmbeddedField64"
+	resultField := "vector_distance"
 	indexNames := createVectorIndexes(adminCtx, t, wantDBPath, []vectorIndex{
 		{
 			fieldPath: queryField,
@@ -3229,34 +3245,46 @@ func TestIntegration_FindNearest(t *testing.T) {
 	})
 
 	type coffeeBean struct {
-		ID              string
+		ID              int
 		EmbeddedField64 Vector64
 		EmbeddedField32 Vector32
 		Float32s        []float32 // When querying, saving and retrieving, this should be retrieved as []float32 and not Vector32
 	}
 
 	beans := []coffeeBean{
-		{
-			ID:              "Robusta",
+		{ // Euclidean Distance from {1, 2, 3} = 0
+			ID:              0,
 			EmbeddedField64: []float64{1, 2, 3},
 			EmbeddedField32: []float32{1, 2, 3},
 			Float32s:        []float32{1, 2, 3},
 		},
-		{
-			ID:              "Excelsa",
+		{ // Euclidean Distance from {1, 2, 3} = 5.19
+			ID:              1,
 			EmbeddedField64: []float64{4, 5, 6},
 			EmbeddedField32: []float32{4, 5, 6},
 			Float32s:        []float32{4, 5, 6},
 		},
+		{ // Euclidean Distance from {1, 2, 3} = 10.39
+			ID:              2,
+			EmbeddedField64: []float64{7, 8, 9},
+			EmbeddedField32: []float32{7, 8, 9},
+			Float32s:        []float32{7, 8, 9},
+		},
+		{ // Euclidean Distance from {1, 2, 3} = 15.58
+			ID:              3,
+			EmbeddedField64: []float64{10, 11, 12},
+			EmbeddedField32: []float32{10, 11, 12},
+			Float32s:        []float32{10, 11, 12},
+		},
 		{
-			ID:              "Arabica",
+			// Euclidean Distance from {1, 2, 3} = 370.42
+			ID:              4,
 			EmbeddedField64: []float64{100, 200, 300}, // too far from query vector. not within findNearest limit
 			EmbeddedField32: []float32{100, 200, 300},
 			Float32s:        []float32{100, 200, 300},
 		},
-
 		{
-			ID:              "Liberica",
+			ID:              5,
 			EmbeddedField64: []float64{1, 2}, // Not enough dimensions as compared to query vector.
 			EmbeddedField32: []float32{1, 2},
 			Float32s:        []float32{1, 2},
@@ -3277,27 +3305,73 @@ func TestIntegration_FindNearest(t *testing.T) {
 		h.mustCreate(doc, beans[i])
 	}
 
-	// Query documents with a vector field
-	vectorQuery := collRef.FindNearest(queryField, []float64{1, 2, 3}, 2, DistanceMeasureEuclidean, nil)
+	for _, tc := range []struct {
+		desc         string
+		vq           VectorQuery
+		wantBeans    []coffeeBean
+		wantResField string
+	}{
+		{
+			desc:      "FindNearest without threshold without resultField",
+			vq:        collRef.FindNearest(queryField, []float64{1, 2, 3}, 2, DistanceMeasureEuclidean, nil),
+			wantBeans: beans[:2],
+		},
+		{
+			desc: "FindNearest threshold and resultField",
+			vq: collRef.FindNearest(queryField, []float64{1, 2, 3}, 3, DistanceMeasureEuclidean, &FindNearestOptions{
+				DistanceThreshold:   Ptr(20.0),
+				DistanceResultField: resultField,
+			}),
+			wantBeans:    beans[:3],
+			wantResField: resultField,
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			testutil.Retry(t, 5, 5*time.Second, func(r *testutil.R) {
+				// Get all documents
+				iter := tc.vq.Documents(ctx)
+				gotDocs, err := iter.GetAll()
 
-	iter := vectorQuery.Documents(ctx)
-	gotDocs, err := iter.GetAll()
-	if err != nil {
-		t.Fatalf("GetAll: %+v", err)
-	}
+				// Retry only if index building is in progress
+				s, ok := status.FromError(err)
+				if err != nil && ok && s != nil && s.Code() != codes.FailedPrecondition &&
+					strings.Contains(s.Message(), indexBuilding) {
+					r.Errorf("GetAll: %v", err)
+					return
+				}
 
-	if len(gotDocs) != 2 {
-		t.Fatalf("Expected 2 results, got %d", len(gotDocs))
-	}
+				if err != nil {
+					t.Fatalf("GetAll: %+v", err)
+				}
 
-	for i, doc := range gotDocs {
-		gotBean := coffeeBean{}
-		err := doc.DataTo(&gotBean)
-		if err != nil {
-			t.Errorf("#%v: DataTo: %+v", doc.Ref.ID, err)
-		}
-		if beans[i].ID != gotBean.ID {
-			t.Errorf("#%v: want: %v, got: %v", i, beans[i].ID, gotBean.ID)
-		}
+				// Compare expected and actual results length
+				if len(gotDocs) != len(tc.wantBeans) {
+					t.Fatalf("Expected %v results, got %d", len(tc.wantBeans), len(gotDocs))
+				}
+
+				// Compare results
+				for i, doc := range gotDocs {
+					var gotBean coffeeBean
+
+					// Compare expected and actual result field
+					if len(tc.wantResField) != 0 {
+						_, ok := doc.Data()[tc.wantResField]
+						if !ok {
+							t.Errorf("Expected %v field to exist in %v", tc.wantResField, doc.Data())
+						}
+					}
+
+					// Compare expected and actual document ID
+					err := doc.DataTo(&gotBean)
+					if err != nil {
+						t.Errorf("#%v: DataTo: %+v", doc.Ref.ID, err)
+						continue
+					}
+					if tc.wantBeans[i].ID != gotBean.ID {
+						t.Errorf("#%v: want: %v, got: %v", i, beans[i].ID, gotBean.ID)
+					}
+				}
+			})
+		})
 	}
 }

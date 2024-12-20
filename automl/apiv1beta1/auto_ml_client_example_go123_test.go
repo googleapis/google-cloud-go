@@ -44,7 +44,7 @@ func ExampleClient_ListColumnSpecs_all() {
 	}
 	for resp, err := range c.ListColumnSpecs(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -70,7 +70,7 @@ func ExampleClient_ListDatasets_all() {
 	}
 	for resp, err := range c.ListDatasets(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -96,7 +96,7 @@ func ExampleClient_ListModelEvaluations_all() {
 	}
 	for resp, err := range c.ListModelEvaluations(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -122,7 +122,7 @@ func ExampleClient_ListModels_all() {
 	}
 	for resp, err := range c.ListModels(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -148,7 +148,7 @@ func ExampleClient_ListTableSpecs_all() {
 	}
 	for resp, err := range c.ListTableSpecs(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp

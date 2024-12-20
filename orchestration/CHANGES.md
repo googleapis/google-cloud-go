@@ -1,6 +1,46 @@
 # Changes
 
 
+## [1.11.2](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.11.1...orchestration/v1.11.2) (2024-12-11)
+
+
+### Documentation
+
+* **orchestration/airflow/service:** Add examples for kubernetes secret ([#11236](https://github.com/googleapis/google-cloud-go/issues/11236)) ([38385d4](https://github.com/googleapis/google-cloud-go/commit/38385d441ba43e7bf6166ee5507a70e77c0b01f5))
+
+## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.11.0...orchestration/v1.11.1) (2024-10-23)
+
+
+### Bug Fixes
+
+* **orchestration:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **orchestration:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.10.1...orchestration/v1.11.0) (2024-09-19)
+
+
+### Features
+
+* **orchestration/airflow/service:** A new field `airflow_metadata_retention_config` is added to message `.google.cloud.orchestration.airflow.service.v1.DataRetentionConfig` ([c56f8ac](https://github.com/googleapis/google-cloud-go/commit/c56f8ac77567ab52f374fdd02364a2c0a3df879c))
+* **orchestration/airflow/service:** A new field `satisfies_pzi` is added to message `.google.cloud.orchestration.airflow.service.v1.Environment` ([c56f8ac](https://github.com/googleapis/google-cloud-go/commit/c56f8ac77567ab52f374fdd02364a2c0a3df879c))
+* **orchestration/airflow/service:** A new message `AirflowMetadataRetentionPolicyConfig` is added ([c56f8ac](https://github.com/googleapis/google-cloud-go/commit/c56f8ac77567ab52f374fdd02364a2c0a3df879c))
+* **orchestration/airflow/service:** A new message `CheckUpgradeRequest` is added ([c56f8ac](https://github.com/googleapis/google-cloud-go/commit/c56f8ac77567ab52f374fdd02364a2c0a3df879c))
+* **orchestration/airflow/service:** A new method `CheckUpgrade` is added to service `Environments` ([#10854](https://github.com/googleapis/google-cloud-go/issues/10854)) ([c56f8ac](https://github.com/googleapis/google-cloud-go/commit/c56f8ac77567ab52f374fdd02364a2c0a3df879c))
+
+
+### Documentation
+
+* **orchestration/airflow/service:** A comment for field `maintenance_window` in message `.google.cloud.orchestration.airflow.service.v1.EnvironmentConfig` is changed ([c56f8ac](https://github.com/googleapis/google-cloud-go/commit/c56f8ac77567ab52f374fdd02364a2c0a3df879c))
+* **orchestration/airflow/service:** A comment for field `storage_mode` in message `.google.cloud.orchestration.airflow.service.v1.TaskLogsRetentionConfig` is changed ([c56f8ac](https://github.com/googleapis/google-cloud-go/commit/c56f8ac77567ab52f374fdd02364a2c0a3df879c))
+* **orchestration/airflow/service:** A comment for message `WorkloadsConfig` is changed ([c56f8ac](https://github.com/googleapis/google-cloud-go/commit/c56f8ac77567ab52f374fdd02364a2c0a3df879c))
+
+## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.10.0...orchestration/v1.10.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **orchestration:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
 ## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.9.7...orchestration/v1.10.0) (2024-08-20)
 
 

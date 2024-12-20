@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	lfppb "cloud.google.com/go/shopping/merchant/lfp/apiv1beta/lfppb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -158,6 +157,8 @@ type lfpSaleGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewLfpSaleClient creates a new lfp sale service client based on gRPC.
@@ -186,6 +187,7 @@ func NewLfpSaleClient(ctx context.Context, opts ...option.ClientOption) (*LfpSal
 		connPool:      connPool,
 		lfpSaleClient: lfppb.NewLfpSaleServiceClient(connPool),
 		CallOptions:   &client.CallOptions,
+		logger:        internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -232,6 +234,8 @@ type lfpSaleRESTClient struct {
 
 	// Points back to the CallOptions field of the containing LfpSaleClient
 	CallOptions **LfpSaleCallOptions
+
+	logger *slog.Logger
 }
 
 // NewLfpSaleRESTClient creates a new lfp sale service rest client.
@@ -251,6 +255,7 @@ func NewLfpSaleRESTClient(ctx context.Context, opts ...option.ClientOption) (*Lf
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -303,7 +308,7 @@ func (c *lfpSaleGRPCClient) InsertLfpSale(ctx context.Context, req *lfppb.Insert
 	var resp *lfppb.LfpSale
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.lfpSaleClient.InsertLfpSale(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.lfpSaleClient.InsertLfpSale, req, settings.GRPC, c.logger, "InsertLfpSale")
 		return err
 	}, opts...)
 	if err != nil {
@@ -352,17 +357,7 @@ func (c *lfpSaleRESTClient) InsertLfpSale(ctx context.Context, req *lfppb.Insert
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "InsertLfpSale")
 		if err != nil {
 			return err
 		}

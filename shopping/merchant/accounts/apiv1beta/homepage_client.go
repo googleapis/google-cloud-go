@@ -20,19 +20,20 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
+	"time"
 
 	accountspb "cloud.google.com/go/shopping/merchant/accounts/apiv1beta/accountspb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -63,19 +64,103 @@ func defaultHomepageGRPCClientOptions() []option.ClientOption {
 
 func defaultHomepageCallOptions() *HomepageCallOptions {
 	return &HomepageCallOptions{
-		GetHomepage:     []gax.CallOption{},
-		UpdateHomepage:  []gax.CallOption{},
-		ClaimHomepage:   []gax.CallOption{},
-		UnclaimHomepage: []gax.CallOption{},
+		GetHomepage: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateHomepage: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ClaimHomepage: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UnclaimHomepage: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
 func defaultHomepageRESTCallOptions() *HomepageCallOptions {
 	return &HomepageCallOptions{
-		GetHomepage:     []gax.CallOption{},
-		UpdateHomepage:  []gax.CallOption{},
-		ClaimHomepage:   []gax.CallOption{},
-		UnclaimHomepage: []gax.CallOption{},
+		GetHomepage: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		UpdateHomepage: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ClaimHomepage: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		UnclaimHomepage: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 	}
 }
 
@@ -173,6 +258,8 @@ type homepageGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewHomepageClient creates a new homepage service client based on gRPC.
@@ -199,6 +286,7 @@ func NewHomepageClient(ctx context.Context, opts ...option.ClientOption) (*Homep
 		connPool:       connPool,
 		homepageClient: accountspb.NewHomepageServiceClient(connPool),
 		CallOptions:    &client.CallOptions,
+		logger:         internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -245,6 +333,8 @@ type homepageRESTClient struct {
 
 	// Points back to the CallOptions field of the containing HomepageClient
 	CallOptions **HomepageCallOptions
+
+	logger *slog.Logger
 }
 
 // NewHomepageRESTClient creates a new homepage service rest client.
@@ -262,6 +352,7 @@ func NewHomepageRESTClient(ctx context.Context, opts ...option.ClientOption) (*H
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -314,7 +405,7 @@ func (c *homepageGRPCClient) GetHomepage(ctx context.Context, req *accountspb.Ge
 	var resp *accountspb.Homepage
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.homepageClient.GetHomepage(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.homepageClient.GetHomepage, req, settings.GRPC, c.logger, "GetHomepage")
 		return err
 	}, opts...)
 	if err != nil {
@@ -332,7 +423,7 @@ func (c *homepageGRPCClient) UpdateHomepage(ctx context.Context, req *accountspb
 	var resp *accountspb.Homepage
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.homepageClient.UpdateHomepage(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.homepageClient.UpdateHomepage, req, settings.GRPC, c.logger, "UpdateHomepage")
 		return err
 	}, opts...)
 	if err != nil {
@@ -350,7 +441,7 @@ func (c *homepageGRPCClient) ClaimHomepage(ctx context.Context, req *accountspb.
 	var resp *accountspb.Homepage
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.homepageClient.ClaimHomepage(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.homepageClient.ClaimHomepage, req, settings.GRPC, c.logger, "ClaimHomepage")
 		return err
 	}, opts...)
 	if err != nil {
@@ -368,7 +459,7 @@ func (c *homepageGRPCClient) UnclaimHomepage(ctx context.Context, req *accountsp
 	var resp *accountspb.Homepage
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.homepageClient.UnclaimHomepage(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.homepageClient.UnclaimHomepage, req, settings.GRPC, c.logger, "UnclaimHomepage")
 		return err
 	}, opts...)
 	if err != nil {
@@ -410,17 +501,7 @@ func (c *homepageRESTClient) GetHomepage(ctx context.Context, req *accountspb.Ge
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetHomepage")
 		if err != nil {
 			return err
 		}
@@ -484,17 +565,7 @@ func (c *homepageRESTClient) UpdateHomepage(ctx context.Context, req *accountspb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateHomepage")
 		if err != nil {
 			return err
 		}
@@ -563,17 +634,7 @@ func (c *homepageRESTClient) ClaimHomepage(ctx context.Context, req *accountspb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ClaimHomepage")
 		if err != nil {
 			return err
 		}
@@ -629,17 +690,7 @@ func (c *homepageRESTClient) UnclaimHomepage(ctx context.Context, req *accountsp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UnclaimHomepage")
 		if err != nil {
 			return err
 		}

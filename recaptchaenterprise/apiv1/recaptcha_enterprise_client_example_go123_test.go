@@ -44,7 +44,33 @@ func ExampleClient_ListFirewallPolicies_all() {
 	}
 	for resp, err := range c.ListFirewallPolicies(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_ListIpOverrides_all() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := recaptchaenterprise.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &recaptchaenterprisepb.ListIpOverridesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/recaptchaenterprise/v2/apiv1/recaptchaenterprisepb#ListIpOverridesRequest.
+	}
+	for resp, err := range c.ListIpOverrides(ctx, req).All() {
+		if err != nil {
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -70,7 +96,7 @@ func ExampleClient_ListKeys_all() {
 	}
 	for resp, err := range c.ListKeys(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -96,7 +122,7 @@ func ExampleClient_ListRelatedAccountGroupMemberships_all() {
 	}
 	for resp, err := range c.ListRelatedAccountGroupMemberships(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -122,7 +148,7 @@ func ExampleClient_ListRelatedAccountGroups_all() {
 	}
 	for resp, err := range c.ListRelatedAccountGroups(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -148,7 +174,7 @@ func ExampleClient_SearchRelatedAccountGroupMemberships_all() {
 	}
 	for resp, err := range c.SearchRelatedAccountGroupMemberships(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp

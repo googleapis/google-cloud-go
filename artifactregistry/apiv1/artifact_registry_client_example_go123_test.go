@@ -26,6 +26,32 @@ import (
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
 
+func ExampleClient_ListAttachments_all() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := artifactregistry.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &artifactregistrypb.ListAttachmentsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/artifactregistry/apiv1/artifactregistrypb#ListAttachmentsRequest.
+	}
+	for resp, err := range c.ListAttachments(ctx, req).All() {
+		if err != nil {
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
 func ExampleClient_ListDockerImages_all() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -45,7 +71,7 @@ func ExampleClient_ListDockerImages_all() {
 	}
 	for resp, err := range c.ListDockerImages(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -71,7 +97,7 @@ func ExampleClient_ListFiles_all() {
 	}
 	for resp, err := range c.ListFiles(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -97,7 +123,7 @@ func ExampleClient_ListMavenArtifacts_all() {
 	}
 	for resp, err := range c.ListMavenArtifacts(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -123,7 +149,7 @@ func ExampleClient_ListNpmPackages_all() {
 	}
 	for resp, err := range c.ListNpmPackages(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -149,7 +175,7 @@ func ExampleClient_ListPackages_all() {
 	}
 	for resp, err := range c.ListPackages(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -175,7 +201,7 @@ func ExampleClient_ListPythonPackages_all() {
 	}
 	for resp, err := range c.ListPythonPackages(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -201,7 +227,33 @@ func ExampleClient_ListRepositories_all() {
 	}
 	for resp, err := range c.ListRepositories(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_ListRules_all() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := artifactregistry.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &artifactregistrypb.ListRulesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/artifactregistry/apiv1/artifactregistrypb#ListRulesRequest.
+	}
+	for resp, err := range c.ListRules(ctx, req).All() {
+		if err != nil {
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -227,7 +279,7 @@ func ExampleClient_ListTags_all() {
 	}
 	for resp, err := range c.ListTags(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -253,7 +305,7 @@ func ExampleClient_ListVersions_all() {
 	}
 	for resp, err := range c.ListVersions(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -279,7 +331,7 @@ func ExampleClient_ListLocations_all() {
 	}
 	for resp, err := range c.ListLocations(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp

@@ -21,14 +21,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
 
 	routingpb "cloud.google.com/go/maps/routing/apiv2/routingpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -216,6 +215,8 @@ type routesGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewRoutesClient creates a new routes client based on gRPC.
@@ -242,6 +243,7 @@ func NewRoutesClient(ctx context.Context, opts ...option.ClientOption) (*RoutesC
 		connPool:     connPool,
 		routesClient: routingpb.NewRoutesClient(connPool),
 		CallOptions:  &client.CallOptions,
+		logger:       internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -288,6 +290,8 @@ type routesRESTClient struct {
 
 	// Points back to the CallOptions field of the containing RoutesClient
 	CallOptions **RoutesCallOptions
+
+	logger *slog.Logger
 }
 
 // NewRoutesRESTClient creates a new routes rest client.
@@ -305,6 +309,7 @@ func NewRoutesRESTClient(ctx context.Context, opts ...option.ClientOption) (*Rou
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -354,7 +359,7 @@ func (c *routesGRPCClient) ComputeRoutes(ctx context.Context, req *routingpb.Com
 	var resp *routingpb.ComputeRoutesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.routesClient.ComputeRoutes(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.routesClient.ComputeRoutes, req, settings.GRPC, c.logger, "ComputeRoutes")
 		return err
 	}, opts...)
 	if err != nil {
@@ -369,7 +374,9 @@ func (c *routesGRPCClient) ComputeRouteMatrix(ctx context.Context, req *routingp
 	var resp routingpb.Routes_ComputeRouteMatrixClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "ComputeRouteMatrix")
 		resp, err = c.routesClient.ComputeRouteMatrix(ctx, req, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "ComputeRouteMatrix")
 		return err
 	}, opts...)
 	if err != nil {
@@ -450,17 +457,7 @@ func (c *routesRESTClient) ComputeRoutes(ctx context.Context, req *routingpb.Com
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ComputeRoutes")
 		if err != nil {
 			return err
 		}
@@ -547,12 +544,8 @@ func (c *routesRESTClient) ComputeRouteMatrix(ctx context.Context, req *routingp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		httpRsp, err := executeStreamingHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ComputeRouteMatrix")
 		if err != nil {
-			return err
-		}
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
 			return err
 		}
 

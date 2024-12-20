@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -817,6 +816,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new auto ml client based on gRPC.
@@ -856,6 +857,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      automlpb.NewAutoMlClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -918,6 +920,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new auto ml rest client.
@@ -948,6 +952,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -1010,7 +1015,7 @@ func (c *gRPCClient) CreateDataset(ctx context.Context, req *automlpb.CreateData
 	var resp *automlpb.Dataset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateDataset(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateDataset, req, settings.GRPC, c.logger, "CreateDataset")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1028,7 +1033,7 @@ func (c *gRPCClient) GetDataset(ctx context.Context, req *automlpb.GetDatasetReq
 	var resp *automlpb.Dataset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetDataset(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetDataset, req, settings.GRPC, c.logger, "GetDataset")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1057,7 +1062,7 @@ func (c *gRPCClient) ListDatasets(ctx context.Context, req *automlpb.ListDataset
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListDatasets(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListDatasets, req, settings.GRPC, c.logger, "ListDatasets")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1092,7 +1097,7 @@ func (c *gRPCClient) UpdateDataset(ctx context.Context, req *automlpb.UpdateData
 	var resp *automlpb.Dataset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateDataset(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateDataset, req, settings.GRPC, c.logger, "UpdateDataset")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1110,7 +1115,7 @@ func (c *gRPCClient) DeleteDataset(ctx context.Context, req *automlpb.DeleteData
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteDataset(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteDataset, req, settings.GRPC, c.logger, "DeleteDataset")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1130,7 +1135,7 @@ func (c *gRPCClient) ImportData(ctx context.Context, req *automlpb.ImportDataReq
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ImportData(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ImportData, req, settings.GRPC, c.logger, "ImportData")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1150,7 +1155,7 @@ func (c *gRPCClient) ExportData(ctx context.Context, req *automlpb.ExportDataReq
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ExportData(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ExportData, req, settings.GRPC, c.logger, "ExportData")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1170,7 +1175,7 @@ func (c *gRPCClient) GetAnnotationSpec(ctx context.Context, req *automlpb.GetAnn
 	var resp *automlpb.AnnotationSpec
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetAnnotationSpec(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetAnnotationSpec, req, settings.GRPC, c.logger, "GetAnnotationSpec")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1188,7 +1193,7 @@ func (c *gRPCClient) GetTableSpec(ctx context.Context, req *automlpb.GetTableSpe
 	var resp *automlpb.TableSpec
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetTableSpec(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetTableSpec, req, settings.GRPC, c.logger, "GetTableSpec")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1217,7 +1222,7 @@ func (c *gRPCClient) ListTableSpecs(ctx context.Context, req *automlpb.ListTable
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListTableSpecs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListTableSpecs, req, settings.GRPC, c.logger, "ListTableSpecs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1252,7 +1257,7 @@ func (c *gRPCClient) UpdateTableSpec(ctx context.Context, req *automlpb.UpdateTa
 	var resp *automlpb.TableSpec
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateTableSpec(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateTableSpec, req, settings.GRPC, c.logger, "UpdateTableSpec")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1270,7 +1275,7 @@ func (c *gRPCClient) GetColumnSpec(ctx context.Context, req *automlpb.GetColumnS
 	var resp *automlpb.ColumnSpec
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetColumnSpec(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetColumnSpec, req, settings.GRPC, c.logger, "GetColumnSpec")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1299,7 +1304,7 @@ func (c *gRPCClient) ListColumnSpecs(ctx context.Context, req *automlpb.ListColu
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListColumnSpecs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListColumnSpecs, req, settings.GRPC, c.logger, "ListColumnSpecs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1334,7 +1339,7 @@ func (c *gRPCClient) UpdateColumnSpec(ctx context.Context, req *automlpb.UpdateC
 	var resp *automlpb.ColumnSpec
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateColumnSpec(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateColumnSpec, req, settings.GRPC, c.logger, "UpdateColumnSpec")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1352,7 +1357,7 @@ func (c *gRPCClient) CreateModel(ctx context.Context, req *automlpb.CreateModelR
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateModel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateModel, req, settings.GRPC, c.logger, "CreateModel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1372,7 +1377,7 @@ func (c *gRPCClient) GetModel(ctx context.Context, req *automlpb.GetModelRequest
 	var resp *automlpb.Model
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetModel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetModel, req, settings.GRPC, c.logger, "GetModel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1401,7 +1406,7 @@ func (c *gRPCClient) ListModels(ctx context.Context, req *automlpb.ListModelsReq
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListModels(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListModels, req, settings.GRPC, c.logger, "ListModels")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1436,7 +1441,7 @@ func (c *gRPCClient) DeleteModel(ctx context.Context, req *automlpb.DeleteModelR
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteModel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteModel, req, settings.GRPC, c.logger, "DeleteModel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1456,7 +1461,7 @@ func (c *gRPCClient) DeployModel(ctx context.Context, req *automlpb.DeployModelR
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeployModel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeployModel, req, settings.GRPC, c.logger, "DeployModel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1476,7 +1481,7 @@ func (c *gRPCClient) UndeployModel(ctx context.Context, req *automlpb.UndeployMo
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UndeployModel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UndeployModel, req, settings.GRPC, c.logger, "UndeployModel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1496,7 +1501,7 @@ func (c *gRPCClient) ExportModel(ctx context.Context, req *automlpb.ExportModelR
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ExportModel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ExportModel, req, settings.GRPC, c.logger, "ExportModel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1516,7 +1521,7 @@ func (c *gRPCClient) ExportEvaluatedExamples(ctx context.Context, req *automlpb.
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ExportEvaluatedExamples(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ExportEvaluatedExamples, req, settings.GRPC, c.logger, "ExportEvaluatedExamples")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1536,7 +1541,7 @@ func (c *gRPCClient) GetModelEvaluation(ctx context.Context, req *automlpb.GetMo
 	var resp *automlpb.ModelEvaluation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetModelEvaluation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetModelEvaluation, req, settings.GRPC, c.logger, "GetModelEvaluation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1565,7 +1570,7 @@ func (c *gRPCClient) ListModelEvaluations(ctx context.Context, req *automlpb.Lis
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListModelEvaluations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListModelEvaluations, req, settings.GRPC, c.logger, "ListModelEvaluations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1631,17 +1636,7 @@ func (c *restClient) CreateDataset(ctx context.Context, req *automlpb.CreateData
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDataset")
 		if err != nil {
 			return err
 		}
@@ -1691,17 +1686,7 @@ func (c *restClient) GetDataset(ctx context.Context, req *automlpb.GetDatasetReq
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDataset")
 		if err != nil {
 			return err
 		}
@@ -1766,21 +1751,10 @@ func (c *restClient) ListDatasets(ctx context.Context, req *automlpb.ListDataset
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDatasets")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1857,17 +1831,7 @@ func (c *restClient) UpdateDataset(ctx context.Context, req *automlpb.UpdateData
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateDataset")
 		if err != nil {
 			return err
 		}
@@ -1920,21 +1884,10 @@ func (c *restClient) DeleteDataset(ctx context.Context, req *automlpb.DeleteData
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDataset")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1999,21 +1952,10 @@ func (c *restClient) ImportData(ctx context.Context, req *automlpb.ImportDataReq
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ImportData")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2071,21 +2013,10 @@ func (c *restClient) ExportData(ctx context.Context, req *automlpb.ExportDataReq
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExportData")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2136,17 +2067,7 @@ func (c *restClient) GetAnnotationSpec(ctx context.Context, req *automlpb.GetAnn
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAnnotationSpec")
 		if err != nil {
 			return err
 		}
@@ -2203,17 +2124,7 @@ func (c *restClient) GetTableSpec(ctx context.Context, req *automlpb.GetTableSpe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetTableSpec")
 		if err != nil {
 			return err
 		}
@@ -2285,21 +2196,10 @@ func (c *restClient) ListTableSpecs(ctx context.Context, req *automlpb.ListTable
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListTableSpecs")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2376,17 +2276,7 @@ func (c *restClient) UpdateTableSpec(ctx context.Context, req *automlpb.UpdateTa
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateTableSpec")
 		if err != nil {
 			return err
 		}
@@ -2443,17 +2333,7 @@ func (c *restClient) GetColumnSpec(ctx context.Context, req *automlpb.GetColumnS
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetColumnSpec")
 		if err != nil {
 			return err
 		}
@@ -2525,21 +2405,10 @@ func (c *restClient) ListColumnSpecs(ctx context.Context, req *automlpb.ListColu
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListColumnSpecs")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2616,17 +2485,7 @@ func (c *restClient) UpdateColumnSpec(ctx context.Context, req *automlpb.UpdateC
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateColumnSpec")
 		if err != nil {
 			return err
 		}
@@ -2686,21 +2545,10 @@ func (c *restClient) CreateModel(ctx context.Context, req *automlpb.CreateModelR
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateModel")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2751,17 +2599,7 @@ func (c *restClient) GetModel(ctx context.Context, req *automlpb.GetModelRequest
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetModel")
 		if err != nil {
 			return err
 		}
@@ -2826,21 +2664,10 @@ func (c *restClient) ListModels(ctx context.Context, req *automlpb.ListModelsReq
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListModels")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2906,21 +2733,10 @@ func (c *restClient) DeleteModel(ctx context.Context, req *automlpb.DeleteModelR
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteModel")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2987,21 +2803,10 @@ func (c *restClient) DeployModel(ctx context.Context, req *automlpb.DeployModelR
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "DeployModel")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3063,21 +2868,10 @@ func (c *restClient) UndeployModel(ctx context.Context, req *automlpb.UndeployMo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UndeployModel")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3140,21 +2934,10 @@ func (c *restClient) ExportModel(ctx context.Context, req *automlpb.ExportModelR
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExportModel")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3223,21 +3006,10 @@ func (c *restClient) ExportEvaluatedExamples(ctx context.Context, req *automlpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExportEvaluatedExamples")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3288,17 +3060,7 @@ func (c *restClient) GetModelEvaluation(ctx context.Context, req *automlpb.GetMo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetModelEvaluation")
 		if err != nil {
 			return err
 		}
@@ -3363,21 +3125,10 @@ func (c *restClient) ListModelEvaluations(ctx context.Context, req *automlpb.Lis
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListModelEvaluations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

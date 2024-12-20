@@ -19,6 +19,7 @@ package storage
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 	"time"
@@ -61,7 +62,7 @@ func defaultMetastorePartitionGRPCClientOptions() []option.ClientOption {
 func defaultMetastorePartitionCallOptions() *MetastorePartitionCallOptions {
 	return &MetastorePartitionCallOptions{
 		BatchCreateMetastorePartitions: []gax.CallOption{
-			gax.WithTimeout(120000 * time.Millisecond),
+			gax.WithTimeout(240000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -73,7 +74,7 @@ func defaultMetastorePartitionCallOptions() *MetastorePartitionCallOptions {
 			}),
 		},
 		BatchDeleteMetastorePartitions: []gax.CallOption{
-			gax.WithTimeout(120000 * time.Millisecond),
+			gax.WithTimeout(240000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -85,7 +86,7 @@ func defaultMetastorePartitionCallOptions() *MetastorePartitionCallOptions {
 			}),
 		},
 		BatchUpdateMetastorePartitions: []gax.CallOption{
-			gax.WithTimeout(120000 * time.Millisecond),
+			gax.WithTimeout(240000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -97,7 +98,7 @@ func defaultMetastorePartitionCallOptions() *MetastorePartitionCallOptions {
 			}),
 		},
 		ListMetastorePartitions: []gax.CallOption{
-			gax.WithTimeout(120000 * time.Millisecond),
+			gax.WithTimeout(240000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -206,6 +207,8 @@ type metastorePartitionGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewMetastorePartitionClient creates a new metastore partition service client based on gRPC.
@@ -234,6 +237,7 @@ func NewMetastorePartitionClient(ctx context.Context, opts ...option.ClientOptio
 		connPool:                 connPool,
 		metastorePartitionClient: storagepb.NewMetastorePartitionServiceClient(connPool),
 		CallOptions:              &client.CallOptions,
+		logger:                   internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -276,7 +280,7 @@ func (c *metastorePartitionGRPCClient) BatchCreateMetastorePartitions(ctx contex
 	var resp *storagepb.BatchCreateMetastorePartitionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metastorePartitionClient.BatchCreateMetastorePartitions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metastorePartitionClient.BatchCreateMetastorePartitions, req, settings.GRPC, c.logger, "BatchCreateMetastorePartitions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -293,7 +297,7 @@ func (c *metastorePartitionGRPCClient) BatchDeleteMetastorePartitions(ctx contex
 	opts = append((*c.CallOptions).BatchDeleteMetastorePartitions[0:len((*c.CallOptions).BatchDeleteMetastorePartitions):len((*c.CallOptions).BatchDeleteMetastorePartitions)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.metastorePartitionClient.BatchDeleteMetastorePartitions(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.metastorePartitionClient.BatchDeleteMetastorePartitions, req, settings.GRPC, c.logger, "BatchDeleteMetastorePartitions")
 		return err
 	}, opts...)
 	return err
@@ -308,7 +312,7 @@ func (c *metastorePartitionGRPCClient) BatchUpdateMetastorePartitions(ctx contex
 	var resp *storagepb.BatchUpdateMetastorePartitionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metastorePartitionClient.BatchUpdateMetastorePartitions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metastorePartitionClient.BatchUpdateMetastorePartitions, req, settings.GRPC, c.logger, "BatchUpdateMetastorePartitions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -326,7 +330,7 @@ func (c *metastorePartitionGRPCClient) ListMetastorePartitions(ctx context.Conte
 	var resp *storagepb.ListMetastorePartitionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metastorePartitionClient.ListMetastorePartitions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metastorePartitionClient.ListMetastorePartitions, req, settings.GRPC, c.logger, "ListMetastorePartitions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -341,7 +345,9 @@ func (c *metastorePartitionGRPCClient) StreamMetastorePartitions(ctx context.Con
 	opts = append((*c.CallOptions).StreamMetastorePartitions[0:len((*c.CallOptions).StreamMetastorePartitions):len((*c.CallOptions).StreamMetastorePartitions)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "StreamMetastorePartitions")
 		resp, err = c.metastorePartitionClient.StreamMetastorePartitions(ctx, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "StreamMetastorePartitions")
 		return err
 	}, opts...)
 	if err != nil {

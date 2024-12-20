@@ -45,7 +45,7 @@ func ExampleServiceManagerClient_ListServiceConfigs_all() {
 	}
 	for resp, err := range c.ListServiceConfigs(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -71,7 +71,7 @@ func ExampleServiceManagerClient_ListServiceRollouts_all() {
 	}
 	for resp, err := range c.ListServiceRollouts(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -97,7 +97,7 @@ func ExampleServiceManagerClient_ListServices_all() {
 	}
 	for resp, err := range c.ListServices(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -123,7 +123,7 @@ func ExampleServiceManagerClient_ListOperations_all() {
 	}
 	for resp, err := range c.ListOperations(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp

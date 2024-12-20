@@ -288,6 +288,7 @@ deep-remove-regex:
   - /internal/generated/snippets/managedidentities/apiv1/
   - /internal/generated/snippets/managedkafka/apiv1/
   - /internal/generated/snippets/maps/addressvalidation/apiv1/
+  - /internal/generated/snippets/maps/areainsights/apiv1/
   - /internal/generated/snippets/maps/fleetengine/apiv1/
   - /internal/generated/snippets/maps/fleetengine/delivery/apiv1/
   - /internal/generated/snippets/maps/places/apiv1/
@@ -297,6 +298,8 @@ deep-remove-regex:
   - /internal/generated/snippets/mediatranslation/apiv1beta1/
   - /internal/generated/snippets/memcache/apiv1/
   - /internal/generated/snippets/memcache/apiv1beta2/
+  - /internal/generated/snippets/memorystore/apiv1/
+  - /internal/generated/snippets/memorystore/apiv1beta/
   - /internal/generated/snippets/metastore/apiv1/
   - /internal/generated/snippets/metastore/apiv1alpha/
   - /internal/generated/snippets/metastore/apiv1beta/
@@ -314,6 +317,7 @@ deep-remove-regex:
   - /internal/generated/snippets/notebooks/apiv1beta1/
   - /internal/generated/snippets/notebooks/apiv2/
   - /internal/generated/snippets/optimization/apiv1/
+  - /internal/generated/snippets/oracledatabase/apiv1/
   - /internal/generated/snippets/orchestration/airflow/service/apiv1/
   - /internal/generated/snippets/orgpolicy/apiv2/
   - /internal/generated/snippets/osconfig/agentendpoint/apiv1/
@@ -323,6 +327,7 @@ deep-remove-regex:
   - /internal/generated/snippets/osconfig/apiv1beta/
   - /internal/generated/snippets/oslogin/apiv1/
   - /internal/generated/snippets/oslogin/apiv1beta/
+  - /internal/generated/snippets/parallelstore/apiv1/
   - /internal/generated/snippets/parallelstore/apiv1beta/
   - /internal/generated/snippets/phishingprotection/apiv1beta1/
   - /internal/generated/snippets/policysimulator/apiv1/
@@ -380,6 +385,7 @@ deep-remove-regex:
   - /internal/generated/snippets/shopping/merchant/quota/apiv1beta/
   - /internal/generated/snippets/shopping/merchant/inventories/apiv1beta/
   - /internal/generated/snippets/shopping/merchant/reports/apiv1beta/
+  - /internal/generated/snippets/shopping/merchant/reviews/apiv1beta/
   - /internal/generated/snippets/shopping/merchant/lfp/apiv1beta/
   - /internal/generated/snippets/spanner/admin/database/apiv1/
   - /internal/generated/snippets/spanner/admin/instance/apiv1/
@@ -434,6 +440,7 @@ deep-remove-regex:
   - /managedidentities/apiv1/
   - /managedkafka/apiv1/
   - /maps/addressvalidation/apiv1/
+  - /maps/areainsights/apiv1/
   - /maps/fleetengine/apiv1/
   - /maps/fleetengine/delivery/apiv1/
   - /maps/places/apiv1/
@@ -443,6 +450,8 @@ deep-remove-regex:
   - /mediatranslation/apiv1beta1/
   - /memcache/apiv1/
   - /memcache/apiv1beta2/
+  - /memorystore/apiv1/
+  - /memorystore/apiv1beta/
   - /metastore/apiv1/
   - /metastore/apiv1alpha/
   - /metastore/apiv1beta/
@@ -460,6 +469,7 @@ deep-remove-regex:
   - /notebooks/apiv1beta1/
   - /notebooks/apiv2/
   - /optimization/apiv1/
+  - /oracledatabase/apiv1/
   - /orchestration/airflow/service/apiv1/
   - /orgpolicy/apiv1/
   - /orgpolicy/apiv2/
@@ -471,6 +481,7 @@ deep-remove-regex:
   - /oslogin/apiv1/
   - /oslogin/apiv1beta/
   - /oslogin/common/
+  - /parallelstore/apiv1/
   - /parallelstore/apiv1beta/
   - /phishingprotection/apiv1beta1/
   - /policysimulator/apiv1/
@@ -529,6 +540,7 @@ deep-remove-regex:
   - /shopping/merchant/inventories/apiv1beta/
   - /shopping/merchant/lfp/apiv1beta/
   - /shopping/merchant/reports/apiv1beta/
+  - /shopping/merchant/reviews/apiv1beta/
   - /shopping/type/
   - /spanner/admin/database/apiv1/
   - /spanner/admin/instance/apiv1/
@@ -920,6 +932,8 @@ deep-copy-regex:
     dest: /
   - source: /google/maps/addressvalidation/v1/cloud.google.com/go
     dest: /
+  - source: /google/maps/areainsights/v1/cloud.google.com/go
+    dest: /
   - source: /google/maps/fleetengine/v1/cloud.google.com/go
     dest: /
   - source: /google/maps/fleetengine/delivery/v1/cloud.google.com/go
@@ -937,6 +951,10 @@ deep-copy-regex:
   - source: /google/cloud/memcache/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/memcache/v1beta2/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/memorystore/v1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/memorystore/v1beta/cloud.google.com/go
     dest: /
   - source: /google/cloud/metastore/v1/cloud.google.com/go
     dest: /
@@ -972,6 +990,8 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/optimization/v1/cloud.google.com/go
     dest: /
+  - source: /google/cloud/oracledatabase/v1/cloud.google.com/go
+    dest: /
   - source: /google/cloud/orchestration/airflow/service/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/orgpolicy/v1/cloud.google.com/go
@@ -993,6 +1013,8 @@ deep-copy-regex:
   - source: /google/cloud/oslogin/v1beta/cloud.google.com/go
     dest: /
   - source: /google/cloud/oslogin/common/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/parallelstore/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/parallelstore/v1beta/cloud.google.com/go
     dest: /
@@ -1113,6 +1135,8 @@ deep-copy-regex:
   - source: /google/shopping/merchant/lfp/v1beta/cloud.google.com/go
     dest: /
   - source: /google/shopping/merchant/reports/v1beta/cloud.google.com/go
+    dest: /
+  - source: /google/shopping/merchant/reviews/v1beta/cloud.google.com/go
     dest: /
   - source: /google/shopping/type/cloud.google.com/go
     dest: /

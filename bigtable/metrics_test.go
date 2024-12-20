@@ -17,17 +17,21 @@ limitations under the License.
 package bigtable
 
 import (
+	"bytes"
 	"context"
 	"encoding/base64"
 	"fmt"
+	"io"
 	"sort"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
@@ -118,14 +122,18 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 	}
 	go monitoringServer.Serve()
 	defer monitoringServer.Shutdown()
-	origExporterOpts := exporterOpts
-	exporterOpts = []option.ClientOption{
-		option.WithEndpoint(monitoringServer.Endpoint),
-		option.WithoutAuthentication(),
-		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+
+	// Override exporter options
+	origCreateExporterOptions := createExporterOptions
+	createExporterOptions = func(opts ...option.ClientOption) []option.ClientOption {
+		return []option.ClientOption{
+			option.WithEndpoint(monitoringServer.Endpoint), // Connect to mock
+			option.WithoutAuthentication(),
+			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+		}
 	}
 	defer func() {
-		exporterOpts = origExporterOpts
+		createExporterOptions = origCreateExporterOptions
 	}()
 
 	// Setup fake Bigtable server
@@ -277,6 +285,89 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 	}
 }
 
+func setMockErrorHandler(t *testing.T, mockErrorHandler *MockErrorHandler) {
+	origErrHandler := otel.GetErrorHandler()
+	otel.SetErrorHandler(mockErrorHandler)
+	t.Cleanup(func() {
+		otel.SetErrorHandler(origErrHandler)
+	})
+}
+
+func TestExporterLogs(t *testing.T) {
+	ctx := context.Background()
+	project := "test-project"
+	instance := "test-instance"
+
+	// Reduce sampling period to reduce test run time
+	origSamplePeriod := defaultSamplePeriod
+	defaultSamplePeriod = 5 * time.Second
+	defer func() {
+		defaultSamplePeriod = origSamplePeriod
+	}()
+
+	tbl, cleanup, gotErr := setupFakeServer(project, instance, ClientConfig{})
+	t.Cleanup(func() { defer cleanup() })
+	if gotErr != nil {
+		t.Fatalf("err: got: %v, want: %v", gotErr, nil)
+		return
+	}
+
+	// Set up mock error handler
+	mer := &MockErrorHandler{
+		buffer: new(bytes.Buffer),
+	}
+	setMockErrorHandler(t, mer)
+
+	// record start time
+	testStartTime := time.Now()
+
+	// Perform read rows operation
+	tbl.ReadRows(ctx, NewRange("a", "z"), func(r Row) bool {
+		return true
+	})
+
+	// Calculate elapsed time
+	elapsedTime := time.Since(testStartTime)
+	if elapsedTime < 3*defaultSamplePeriod {
+		// Ensure at least 2 datapoints are recorded
+		time.Sleep(3*defaultSamplePeriod - elapsedTime)
+	}
+
+	// In setupFakeServer above, Bigtable client is created with options :
+	// option.WithGRPCConn(conn), option.WithGRPCDialOption(grpc.WithBlock())
+	// These same options will be used to create Monitoring client but since there
+	// is no fake Monitoring server at that grpc conn, all the exports result in failure.
+	// Thus, there should be errors in errBuf.
+	data, readErr := mer.read()
+	if readErr != nil {
+		t.Errorf("Failed to read errBuf: %v", readErr)
+	}
+	if !strings.Contains(data, metricsErrorPrefix) {
+		t.Errorf("Expected %v to contain %v", data, metricsErrorPrefix)
+	}
+}
+
+type MockErrorHandler struct {
+	buffer      *bytes.Buffer
+	bufferMutex sync.Mutex
+}
+
+func (m *MockErrorHandler) Handle(err error) {
+	m.bufferMutex.Lock()
+	defer m.bufferMutex.Unlock()
+	fmt.Fprintln(m.buffer, err)
+}
+
+func (m *MockErrorHandler) read() (string, error) {
+	m.bufferMutex.Lock()
+	defer m.bufferMutex.Unlock()
+	data, err := io.ReadAll(m.buffer)
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
 func TestToOtelMetricAttrs(t *testing.T) {
 	mt := builtinMetricsTracer{
 		tableName:   "my-table",
@@ -338,165 +429,6 @@ func TestToOtelMetricAttrs(t *testing.T) {
 				cmpopts.IgnoreUnexported(attribute.KeyValue{}, attribute.Value{}),
 				cmpopts.SortSlices(lessKeyValue)); diff != "" {
 				t.Errorf("got=-, want=+ \n%v", diff)
-			}
-		})
-	}
-}
-
-func TestGetServerLatency(t *testing.T) {
-	invalidFormat := "invalid format"
-	invalidFormatMD := metadata.MD{
-		serverTimingMDKey: []string{invalidFormat},
-	}
-	invalidFormatErr := fmt.Errorf("strconv.ParseFloat: parsing %q: invalid syntax", invalidFormat)
-
-	tests := []struct {
-		desc        string
-		headerMD    metadata.MD
-		trailerMD   metadata.MD
-		wantLatency float64
-		wantError   error
-	}{
-		{
-			desc:        "No server latency in header or trailer",
-			headerMD:    metadata.MD{},
-			trailerMD:   metadata.MD{},
-			wantLatency: 0,
-			wantError:   fmt.Errorf("strconv.ParseFloat: parsing \"\": invalid syntax"),
-		},
-		{
-			desc: "Server latency in header",
-			headerMD: metadata.MD{
-				serverTimingMDKey: []string{"gfet4t7; dur=1234"},
-			},
-			trailerMD:   metadata.MD{},
-			wantLatency: 1234,
-			wantError:   nil,
-		},
-		{
-			desc:     "Server latency in trailer",
-			headerMD: metadata.MD{},
-			trailerMD: metadata.MD{
-				serverTimingMDKey: []string{"gfet4t7; dur=5678"},
-			},
-			wantLatency: 5678,
-			wantError:   nil,
-		},
-		{
-			desc: "Server latency in both header and trailer",
-			headerMD: metadata.MD{
-				serverTimingMDKey: []string{"gfet4t7; dur=1234"},
-			},
-			trailerMD: metadata.MD{
-				serverTimingMDKey: []string{"gfet4t7; dur=5678"},
-			},
-			wantLatency: 1234,
-			wantError:   nil,
-		},
-		{
-			desc:        "Invalid server latency format in header",
-			headerMD:    invalidFormatMD,
-			trailerMD:   metadata.MD{},
-			wantLatency: 0,
-			wantError:   invalidFormatErr,
-		},
-		{
-			desc:        "Invalid server latency format in trailer",
-			headerMD:    metadata.MD{},
-			trailerMD:   invalidFormatMD,
-			wantLatency: 0,
-			wantError:   invalidFormatErr,
-		},
-	}
-
-	for _, test := range tests {
-		t.Run(test.desc, func(t *testing.T) {
-			gotLatency, gotErr := extractServerLatency(test.headerMD, test.trailerMD)
-			if !equalErrs(gotErr, test.wantError) {
-				t.Errorf("error got: %v, want: %v", gotErr, test.wantError)
-			}
-			if gotLatency != test.wantLatency {
-				t.Errorf("latency got: %v, want: %v", gotLatency, test.wantLatency)
-			}
-		})
-	}
-}
-
-func TestGetLocation(t *testing.T) {
-	invalidFormatErr := "cannot parse invalid wire-format data"
-	tests := []struct {
-		desc        string
-		headerMD    metadata.MD
-		trailerMD   metadata.MD
-		wantCluster string
-		wantZone    string
-		wantError   error
-	}{
-		{
-			desc:        "No location metadata in header or trailer",
-			headerMD:    metadata.MD{},
-			trailerMD:   metadata.MD{},
-			wantCluster: defaultCluster,
-			wantZone:    defaultZone,
-			wantError:   fmt.Errorf("failed to get location metadata"),
-		},
-		{
-			desc:        "Location metadata in header",
-			headerMD:    *testHeaderMD,
-			trailerMD:   metadata.MD{},
-			wantCluster: clusterID1,
-			wantZone:    zoneID1,
-			wantError:   nil,
-		},
-		{
-			desc:        "Location metadata in trailer",
-			headerMD:    metadata.MD{},
-			trailerMD:   *testTrailerMD,
-			wantCluster: clusterID2,
-			wantZone:    zoneID1,
-			wantError:   nil,
-		},
-		{
-			desc:        "Location metadata in both header and trailer",
-			headerMD:    *testHeaderMD,
-			trailerMD:   *testTrailerMD,
-			wantCluster: clusterID1,
-			wantZone:    zoneID1,
-			wantError:   nil,
-		},
-		{
-			desc: "Invalid location metadata format in header",
-			headerMD: metadata.MD{
-				locationMDKey: []string{"invalid format"},
-			},
-			trailerMD:   metadata.MD{},
-			wantCluster: defaultCluster,
-			wantZone:    defaultZone,
-			wantError:   fmt.Errorf(invalidFormatErr),
-		},
-		{
-			desc:     "Invalid location metadata format in trailer",
-			headerMD: metadata.MD{},
-			trailerMD: metadata.MD{
-				locationMDKey: []string{"invalid format"},
-			},
-			wantCluster: defaultCluster,
-			wantZone:    defaultZone,
-			wantError:   fmt.Errorf(invalidFormatErr),
-		},
-	}
-
-	for _, test := range tests {
-		t.Run(test.desc, func(t *testing.T) {
-			gotCluster, gotZone, gotErr := extractLocation(test.headerMD, test.trailerMD)
-			if gotCluster != test.wantCluster {
-				t.Errorf("cluster got: %v, want: %v", gotCluster, test.wantCluster)
-			}
-			if gotZone != test.wantZone {
-				t.Errorf("zone got: %v, want: %v", gotZone, test.wantZone)
-			}
-			if !equalErrs(gotErr, test.wantError) {
-				t.Errorf("error got: %v, want: %v", gotErr, test.wantError)
 			}
 		})
 	}

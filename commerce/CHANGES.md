@@ -1,6 +1,40 @@
 # Changelog
 
 
+## [1.2.1](https://github.com/googleapis/google-cloud-go/compare/commerce/v1.2.0...commerce/v1.2.1) (2024-10-23)
+
+
+### Bug Fixes
+
+* **commerce:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **commerce:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/commerce/v1.1.1...commerce/v1.2.0) (2024-10-09)
+
+
+### Features
+
+* **commerce/consumer/procurement:** Add Order modification RPCs and License Management Service ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+
+
+### Documentation
+
+* **commerce/consumer/procurement:** A comment for enum value `LINE_ITEM_CHANGE_STATE_ABANDONED` in enum `LineItemChangeState` is changed ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **commerce/consumer/procurement:** A comment for enum value `LINE_ITEM_CHANGE_STATE_ACTIVATING` in enum `LineItemChangeState` is changed ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **commerce/consumer/procurement:** A comment for enum value `LINE_ITEM_CHANGE_STATE_APPROVED` in enum `LineItemChangeState` is changed ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **commerce/consumer/procurement:** A comment for enum value `LINE_ITEM_CHANGE_STATE_COMPLETED` in enum `LineItemChangeState` is changed ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **commerce/consumer/procurement:** A comment for enum value `LINE_ITEM_CHANGE_STATE_PENDING_APPROVAL` in enum `LineItemChangeState` is changed ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **commerce/consumer/procurement:** A comment for enum value `LINE_ITEM_CHANGE_STATE_REJECTED` in enum `LineItemChangeState` is changed ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **commerce/consumer/procurement:** A comment for field `filter` in message `.google.cloud.commerce.consumer.procurement.v1.ListOrdersRequest` is changed ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **commerce/consumer/procurement:** A comment for field `request_id` in message `.google.cloud.commerce.consumer.procurement.v1.PlaceOrderRequest` is changed ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+
+## [1.1.1](https://github.com/googleapis/google-cloud-go/compare/commerce/v1.1.0...commerce/v1.1.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **commerce:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
 ## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/commerce/v1.0.5...commerce/v1.1.0) (2024-08-20)
 
 

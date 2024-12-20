@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/bigquery/reservation/apiv1",
-    "version": "1.62.0",
+    "version": "1.65.0",
     "language": "GO",
     "apis": [
       {
@@ -280,6 +280,52 @@
         {
           "start": 18,
           "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigqueryreservation_v1_generated_ReservationService_FailoverReservation_sync",
+      "title": "bigqueryreservation FailoverReservation Sample",
+      "description": "FailoverReservation fail over a reservation to the secondary location. The operation should be\ndone in the current secondary location, which will be promoted to the\nnew primary location for the reservation.\nAttempting to failover a reservation in the current primary location will\nfail with the error code `google.rpc.Code.FAILED_PRECONDITION`.",
+      "file": "Client/FailoverReservation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FailoverReservation",
+        "fullName": "google.cloud.bigquery.reservation.v1.Client.FailoverReservation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "reservationpb.FailoverReservationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*reservationpb.Reservation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.reservation.v1.Client"
+        },
+        "method": {
+          "shortName": "FailoverReservation",
+          "fullName": "google.cloud.bigquery.reservation.v1.ReservationService.FailoverReservation",
+          "service": {
+            "shortName": "ReservationService",
+            "fullName": "google.cloud.bigquery.reservation.v1.ReservationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]

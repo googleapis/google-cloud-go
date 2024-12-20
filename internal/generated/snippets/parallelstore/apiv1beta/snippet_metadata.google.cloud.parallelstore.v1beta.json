@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/parallelstore/apiv1beta",
-    "version": "0.6.0",
+    "version": "0.9.0",
     "language": "GO",
     "apis": [
       {
@@ -105,7 +105,7 @@
     {
       "regionTag": "parallelstore_v1beta_generated_Parallelstore_DeleteInstance_sync",
       "title": "parallelstore DeleteInstance Sample",
-      "description": "DeleteInstance deletes a single Instance.",
+      "description": "DeleteInstance deletes a single instance.",
       "file": "Client/DeleteInstance/main.go",
       "language": "GO",
       "clientMethod": {
@@ -196,7 +196,7 @@
     {
       "regionTag": "parallelstore_v1beta_generated_Parallelstore_ExportData_sync",
       "title": "parallelstore ExportData Sample",
-      "description": "ExportData exportData copies data from Parallelstore to Cloud Storage",
+      "description": "ExportData copies data from Parallelstore to Cloud Storage.",
       "file": "Client/ExportData/main.go",
       "language": "GO",
       "clientMethod": {
@@ -242,7 +242,7 @@
     {
       "regionTag": "parallelstore_v1beta_generated_Parallelstore_GetInstance_sync",
       "title": "parallelstore GetInstance Sample",
-      "description": "GetInstance gets details of a single Instance.",
+      "description": "GetInstance gets details of a single instance.",
       "file": "Client/GetInstance/main.go",
       "language": "GO",
       "clientMethod": {
@@ -380,7 +380,7 @@
     {
       "regionTag": "parallelstore_v1beta_generated_Parallelstore_ImportData_sync",
       "title": "parallelstore ImportData Sample",
-      "description": "ImportData importData copies data from Cloud Storage to Parallelstore.",
+      "description": "ImportData copies data from Cloud Storage to Parallelstore.",
       "file": "Client/ImportData/main.go",
       "language": "GO",
       "clientMethod": {
@@ -426,7 +426,7 @@
     {
       "regionTag": "parallelstore_v1beta_generated_Parallelstore_ListInstances_sync",
       "title": "parallelstore ListInstances Sample",
-      "description": "ListInstances lists Instances in a given project and location.",
+      "description": "ListInstances lists all instances in a given project and location.",
       "file": "Client/ListInstances/main.go",
       "language": "GO",
       "clientMethod": {
@@ -564,7 +564,7 @@
     {
       "regionTag": "parallelstore_v1beta_generated_Parallelstore_UpdateInstance_sync",
       "title": "parallelstore UpdateInstance Sample",
-      "description": "UpdateInstance updates the parameters of a single Instance.",
+      "description": "UpdateInstance updates the parameters of a single instance.",
       "file": "Client/UpdateInstance/main.go",
       "language": "GO",
       "clientMethod": {

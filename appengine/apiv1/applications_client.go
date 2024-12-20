@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -234,6 +233,8 @@ type applicationsGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewApplicationsClient creates a new applications client based on gRPC.
@@ -260,6 +261,7 @@ func NewApplicationsClient(ctx context.Context, opts ...option.ClientOption) (*A
 		connPool:           connPool,
 		applicationsClient: appenginepb.NewApplicationsClient(connPool),
 		CallOptions:        &client.CallOptions,
+		logger:             internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -322,6 +324,8 @@ type applicationsRESTClient struct {
 
 	// Points back to the CallOptions field of the containing ApplicationsClient
 	CallOptions **ApplicationsCallOptions
+
+	logger *slog.Logger
 }
 
 // NewApplicationsRESTClient creates a new applications rest client.
@@ -339,6 +343,7 @@ func NewApplicationsRESTClient(ctx context.Context, opts ...option.ClientOption)
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -401,7 +406,7 @@ func (c *applicationsGRPCClient) GetApplication(ctx context.Context, req *appeng
 	var resp *appenginepb.Application
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.applicationsClient.GetApplication(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.applicationsClient.GetApplication, req, settings.GRPC, c.logger, "GetApplication")
 		return err
 	}, opts...)
 	if err != nil {
@@ -416,7 +421,7 @@ func (c *applicationsGRPCClient) CreateApplication(ctx context.Context, req *app
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.applicationsClient.CreateApplication(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.applicationsClient.CreateApplication, req, settings.GRPC, c.logger, "CreateApplication")
 		return err
 	}, opts...)
 	if err != nil {
@@ -436,7 +441,7 @@ func (c *applicationsGRPCClient) UpdateApplication(ctx context.Context, req *app
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.applicationsClient.UpdateApplication(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.applicationsClient.UpdateApplication, req, settings.GRPC, c.logger, "UpdateApplication")
 		return err
 	}, opts...)
 	if err != nil {
@@ -456,7 +461,7 @@ func (c *applicationsGRPCClient) RepairApplication(ctx context.Context, req *app
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.applicationsClient.RepairApplication(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.applicationsClient.RepairApplication, req, settings.GRPC, c.logger, "RepairApplication")
 		return err
 	}, opts...)
 	if err != nil {
@@ -500,17 +505,7 @@ func (c *applicationsRESTClient) GetApplication(ctx context.Context, req *appeng
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetApplication")
 		if err != nil {
 			return err
 		}
@@ -570,21 +565,10 @@ func (c *applicationsRESTClient) CreateApplication(ctx context.Context, req *app
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateApplication")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -655,21 +639,10 @@ func (c *applicationsRESTClient) UpdateApplication(ctx context.Context, req *app
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateApplication")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -734,21 +707,10 @@ func (c *applicationsRESTClient) RepairApplication(ctx context.Context, req *app
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RepairApplication")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}

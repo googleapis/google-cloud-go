@@ -1,5 +1,27 @@
 # Changes
 
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/storagetransfer/v1.11.2...storagetransfer/v1.12.0) (2024-12-18)
+
+
+### Features
+
+* **storagetransfer:** Support cross-bucket replication ([#11291](https://github.com/googleapis/google-cloud-go/issues/11291)) ([4254053](https://github.com/googleapis/google-cloud-go/commit/42540530e44e5f331e66e0777c4aabf449f5fd90))
+
+## [1.11.2](https://github.com/googleapis/google-cloud-go/compare/storagetransfer/v1.11.1...storagetransfer/v1.11.2) (2024-10-23)
+
+
+### Bug Fixes
+
+* **storagetransfer:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **storagetransfer:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([2b8ca4b](https://github.com/googleapis/google-cloud-go/commit/2b8ca4b4127ce3025c7a21cc7247510e07cc5625))
+
+## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/storagetransfer/v1.11.0...storagetransfer/v1.11.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **storagetransfer:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
 ## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/storagetransfer/v1.10.11...storagetransfer/v1.11.0) (2024-08-20)
 
 

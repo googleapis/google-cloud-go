@@ -32,6 +32,7 @@ import (
 	btopt "cloud.google.com/go/bigtable/internal/option"
 	"cloud.google.com/go/internal/trace"
 	gax "github.com/googleapis/gax-go/v2"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -98,6 +99,18 @@ func NewClient(ctx context.Context, project, instance string, opts ...option.Cli
 
 // NewClientWithConfig creates a new client with the given config.
 func NewClientWithConfig(ctx context.Context, project, instance string, config ClientConfig, opts ...option.ClientOption) (*Client, error) {
+	metricsProvider := config.MetricsProvider
+	if emulatorAddr := os.Getenv("BIGTABLE_EMULATOR_HOST"); emulatorAddr != "" {
+		// Do not emit metrics when emulator is being used
+		metricsProvider = NoopMetricsProvider{}
+	}
+
+	// Create a OpenTelemetry metrics configuration
+	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(ctx, project, instance, config.AppProfile, metricsProvider, opts...)
+	if err != nil {
+		return nil, err
+	}
+
 	o, err := btopt.DefaultClientOptions(prodAddr, mtlsProdAddr, Scope, clientUserAgent)
 	if err != nil {
 		return nil, err
@@ -114,21 +127,24 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 
 	// Allow non-default service account in DirectPath.
 	o = append(o, internaloption.AllowNonDefaultServiceAccount(true))
-	o = append(o, internaloption.EnableNewAuthLibrary())
 	o = append(o, opts...)
+
+	// TODO(b/372244283): Remove after b/358175516 has been fixed
+	asyncRefreshMetricAttrs := metricsTracerFactory.clientAttributes
+	asyncRefreshMetricAttrs = append(asyncRefreshMetricAttrs,
+		attribute.String(metricLabelKeyTag, "async_refresh_dry_run"),
+		// Table, cluster and zone are unknown at this point
+		// Use default values
+		attribute.String(monitoredResLabelKeyTable, defaultTable),
+		attribute.String(monitoredResLabelKeyCluster, defaultCluster),
+		attribute.String(monitoredResLabelKeyZone, defaultZone),
+	)
+	o = append(o, internaloption.EnableAsyncRefreshDryRun(func() {
+		metricsTracerFactory.debugTags.Add(context.Background(), 1,
+			metric.WithAttributes(asyncRefreshMetricAttrs...))
+	}))
+
 	connPool, err := gtransport.DialPool(ctx, o...)
-	if err != nil {
-		return nil, fmt.Errorf("dialing: %w", err)
-	}
-
-	metricsProvider := config.MetricsProvider
-	if emulatorAddr := os.Getenv("BIGTABLE_EMULATOR_HOST"); emulatorAddr != "" {
-		// Do not emit metrics when emulator is being used
-		metricsProvider = NoopMetricsProvider{}
-	}
-
-	// Create a OpenTelemetry metrics configuration
-	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(ctx, project, instance, config.AppProfile, metricsProvider)
 	if err != nil {
 		return nil, err
 	}
@@ -1598,41 +1614,57 @@ func recordOperationCompletion(mt *builtinMetricsTracer) {
 // - then, calls gax.Invoke with 'callWrapper' as an argument
 func gaxInvokeWithRecorder(ctx context.Context, mt *builtinMetricsTracer, method string,
 	f func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error, opts ...gax.CallOption) error {
-
+	attemptHeaderMD := metadata.New(nil)
+	attempTrailerMD := metadata.New(nil)
 	mt.method = method
-	callWrapper := func(ctx context.Context, callSettings gax.CallSettings) error {
-		// Increment number of attempts
-		mt.currOp.incrementAttemptCount()
 
-		attemptHeaderMD := metadata.New(nil)
-		attempTrailerMD := metadata.New(nil)
-		mt.currOp.currAttempt = attemptTracer{}
+	var callWrapper func(context.Context, gax.CallSettings) error
+	if !mt.builtInEnabled {
+		callWrapper = func(ctx context.Context, callSettings gax.CallSettings) error {
+			// f makes calls to CBT service
+			return f(ctx, &attemptHeaderMD, &attempTrailerMD, callSettings)
+		}
+	} else {
+		callWrapper = func(ctx context.Context, callSettings gax.CallSettings) error {
+			// Increment number of attempts
+			mt.currOp.incrementAttemptCount()
 
-		// record start time
-		mt.currOp.currAttempt.setStartTime(time.Now())
+			mt.currOp.currAttempt = attemptTracer{}
 
-		// f makes calls to CBT service
-		err := f(ctx, &attemptHeaderMD, &attempTrailerMD, callSettings)
+			// record start time
+			mt.currOp.currAttempt.setStartTime(time.Now())
 
-		// Set attempt status
-		statusCode, _ := convertToGrpcStatusErr(err)
-		mt.currOp.currAttempt.setStatus(statusCode.String())
+			// f makes calls to CBT service
+			err := f(ctx, &attemptHeaderMD, &attempTrailerMD, callSettings)
 
+<<<<<<< HEAD
 		// Get location attributes from metadata and set it in tracer
 		// Ignore get location error since the metric can still be recorded with rest of the attributes
 		clusterID, zoneID, locationErr := extractLocation(attemptHeaderMD, attempTrailerMD)
 		mt.currOp.currAttempt.setLocationErr(locationErr)
 		mt.currOp.currAttempt.setClusterID(clusterID)
 		mt.currOp.currAttempt.setZoneID(zoneID)
+=======
+			// Set attempt status
+			statusCode, _ := convertToGrpcStatusErr(err)
+			mt.currOp.currAttempt.setStatus(statusCode.String())
+>>>>>>> main
 
-		// Set server latency in tracer
-		serverLatency, serverLatencyErr := extractServerLatency(attemptHeaderMD, attempTrailerMD)
-		mt.currOp.currAttempt.setServerLatencyErr(serverLatencyErr)
-		mt.currOp.currAttempt.setServerLatency(serverLatency)
+			// Get location attributes from metadata and set it in tracer
+			// Ignore get location error since the metric can still be recorded with rest of the attributes
+			clusterID, zoneID, _ := extractLocation(attemptHeaderMD, attempTrailerMD)
+			mt.currOp.currAttempt.setClusterID(clusterID)
+			mt.currOp.currAttempt.setZoneID(zoneID)
 
-		// Record attempt specific metrics
-		recordAttemptCompletion(mt)
-		return err
+			// Set server latency in tracer
+			serverLatency, serverLatencyErr := extractServerLatency(attemptHeaderMD, attempTrailerMD)
+			mt.currOp.currAttempt.setServerLatencyErr(serverLatencyErr)
+			mt.currOp.currAttempt.setServerLatency(serverLatency)
+
+			// Record attempt specific metrics
+			recordAttemptCompletion(mt)
+			return err
+		}
 	}
 	return gax.Invoke(ctx, callWrapper, opts...)
 }

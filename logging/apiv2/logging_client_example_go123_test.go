@@ -45,7 +45,7 @@ func ExampleClient_ListLogEntries_all() {
 	}
 	for resp, err := range c.ListLogEntries(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -71,7 +71,7 @@ func ExampleClient_ListLogs_all() {
 	}
 	for resp, err := range c.ListLogs(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -97,7 +97,7 @@ func ExampleClient_ListMonitoredResourceDescriptors_all() {
 	}
 	for resp, err := range c.ListMonitoredResourceDescriptors(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -123,7 +123,7 @@ func ExampleClient_ListOperations_all() {
 	}
 	for resp, err := range c.ListOperations(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp

@@ -91,6 +91,21 @@ func (wps withPartSize) apply(tm *transferManagerConfig) {
 	tm.partSize = wps.partSize
 }
 
+// SkipIfExists returns a TransferManagerOption that will not download files
+// that already exist in the local directory.
+//
+// By default, if a file already exists the operation will abort and return an error.
+func SkipIfExists() Option {
+	return &skipIfExists{}
+}
+
+type skipIfExists struct {
+}
+
+func (sie skipIfExists) apply(tm *transferManagerConfig) {
+	tm.skipIfExists = true
+}
+
 type transferManagerConfig struct {
 	// Workers in thread pool; default numCPU/2 based on previous benchmarks?
 	numWorkers int
@@ -107,6 +122,10 @@ type transferManagerConfig struct {
 	// If true, callbacks are used instead of returning results synchronously
 	// in a slice at the end.
 	asynchronous bool
+
+	// If true, files that already exist in the local directory will not be
+	// downloaded.
+	skipIfExists bool
 }
 
 func defaultTransferManagerConfig() *transferManagerConfig {

@@ -44,7 +44,7 @@ func ExampleStreetViewPublishClient_ListPhotoSequences_all() {
 	}
 	for resp, err := range c.ListPhotoSequences(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -70,7 +70,7 @@ func ExampleStreetViewPublishClient_ListPhotos_all() {
 	}
 	for resp, err := range c.ListPhotos(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp

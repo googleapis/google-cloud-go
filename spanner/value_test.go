@@ -18,7 +18,9 @@ package spanner
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"math"
 	"math/big"
@@ -211,7 +213,7 @@ func (c *customArray) DecodeSpanner(val interface{}) error {
 	}
 	asSlice := listVal.AsSlice()
 	if len(asSlice) != 4 {
-		return fmt.Errorf("failed to decode customArray: expected array of length 4")
+		return errors.New("failed to decode customArray: expected array of length 4")
 	}
 	for i, vI := range asSlice {
 		vStr, ok := vI.(string)
@@ -1981,6 +1983,14 @@ func TestDecodeValue(t *testing.T) {
 		},
 		{desc: "decode ENUM to protoreflect.Enum", proto: protoEnumProto(pb.Genre_ROCK), protoType: protoEnumType(protoEnumfqn), want: singerEnumValue},
 		{desc: "decode PROTO to NullProto", proto: protoMessageProto(&singerProtoMsg), protoType: protoMessageType(protoMessagefqn), want: NullProtoMessage{&singerProtoMsg, true}},
+		{desc: "decode PROTO to *pb.SingerInfo", proto: protoMessageProto(&singerProtoMsg), protoType: protoMessageType(protoMessagefqn),
+			want: &pb.SingerInfo{
+				SingerId:    proto.Int64(1),
+				BirthDate:   proto.String("January"),
+				Nationality: proto.String("Country1"),
+				Genre:       &singerEnumValue,
+			},
+		},
 		{desc: "decode NULL to NullProto", proto: nullProto(), protoType: protoMessageType(protoMessagefqn), want: NullProtoMessage{}},
 		{desc: "decode ENUM to NullEnum", proto: protoEnumProto(pb.Genre_ROCK), protoType: protoEnumType(protoEnumfqn), want: NullProtoEnum{&singerEnumValue, true}},
 		{desc: "decode NULL to NullEnum", proto: nullProto(), protoType: protoEnumType(protoEnumfqn), want: NullProtoEnum{}},
@@ -3278,5 +3288,76 @@ func TestNullJson(t *testing.T) {
 	v, _ = nulljson(false, nil)
 	if string(v) != "null" {
 		t.Fatalf("expected null, got %s", v)
+	}
+}
+
+// Test decode for PROTO type when custom type is a variant of a base type
+func TestDecodeProtoUsingBaseVariant(t *testing.T) {
+	// nullBytes is custom type from []byte base type.
+	type nullBytes []byte
+
+	var b []byte
+	var nb nullBytes
+
+	gcv := &GenericColumnValue{
+		Type: &sppb.Type{
+			Code:         sppb.TypeCode_PROTO,
+			ProtoTypeFqn: "examples.ProtoType",
+		},
+		Value: structpb.NewStringValue("Zm9vCg=="),
+	}
+	if err := gcv.Decode(&nb); err != nil {
+		t.Error(err)
+	}
+	if err := gcv.Decode(&b); err != nil {
+		t.Error(err)
+	}
+
+	// Convert []byte and nullBytes to base64 encoding and then compare the contents.
+	if !testutil.Equal(base64.StdEncoding.EncodeToString(b), base64.StdEncoding.EncodeToString(nb)) {
+		t.Errorf("%s: got %+v, want %+v", "Test PROTO decode to []byte custom type", nb, b)
+	}
+}
+
+// Test decode for PROTO type when custom type is a variant of a base type
+func TestDecodeProtoArrayUsingBaseVariant(t *testing.T) {
+	// nullBytes is custom type from []byte base type.
+	type nullBytes [][]byte
+
+	var b [][]byte
+	var nb nullBytes
+
+	gcv := &GenericColumnValue{
+		Type: &sppb.Type{
+			Code: sppb.TypeCode_ARRAY,
+			ArrayElementType: &sppb.Type{
+				Code:         sppb.TypeCode_PROTO,
+				ProtoTypeFqn: "examples.ProtoType",
+			},
+		},
+		Value: structpb.NewListValue(
+			&structpb.ListValue{
+				Values: []*structpb.Value{
+					structpb.NewStringValue("Zm9vCg=="),
+				},
+			}),
+	}
+	if err := gcv.Decode(&nb); err != nil {
+		t.Error(err)
+	}
+	if err := gcv.Decode(&b); err != nil {
+		t.Error(err)
+	}
+
+	if len(b) != 1 {
+		t.Errorf("Expected length to be 1")
+	}
+
+	if len(nb) != 1 {
+		t.Errorf("Expected length to be 1")
+	}
+	// Convert to base64 encoding and then compare the contents.
+	if !testutil.Equal(base64.StdEncoding.EncodeToString(b[0]), base64.StdEncoding.EncodeToString(nb[0])) {
+		t.Errorf("%s: got %+v, want %+v", "Test PROTO decode to [][]byte custom type", nb, b)
 	}
 }

@@ -24,6 +24,7 @@ package pstest
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"math/rand"
@@ -551,6 +552,14 @@ func (s *GServer) CreateSubscription(_ context.Context, ps *pb.Subscription) (*p
 	}
 
 	sub := newSubscription(top, &s.mu, s.now, deadLetterTopic, ps)
+	if ps.Filter != "" {
+		filter, err := parseFilter(ps.Filter)
+		if err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "bad filter: %v", err)
+		}
+		sub.filter = &filter
+	}
+
 	top.subs[ps.Name] = sub
 	s.subs[ps.Name] = sub
 	sub.start(&s.wg)
@@ -904,13 +913,6 @@ func newSubscription(t *topic, mu *sync.Mutex, timeNowFunc func() time.Time, dea
 		msgs:            map[string]*message{},
 		done:            make(chan struct{}),
 		timeNowFunc:     timeNowFunc,
-	}
-	if ps.Filter != "" {
-		filter, err := parseFilter(ps.Filter)
-		if err != nil {
-			panic(fmt.Sprintf("pstest: bad filter: %v", err))
-		}
-		sub.filter = &filter
 	}
 	return sub
 }
@@ -1380,7 +1382,7 @@ func (st *stream) pull(wg *sync.WaitGroup) error {
 	var err error
 	select {
 	case err = <-errc:
-		if err == io.EOF {
+		if errors.Is(err, io.EOF) {
 			err = nil
 		}
 	case <-tchan:
