@@ -55,6 +55,8 @@ import (
 	"github.com/googleapis/gax-go/v2/apierror"
 	"go.opentelemetry.io/contrib/detectors/gcp"
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/sdk/metric"
+	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
@@ -341,6 +343,7 @@ var readCases = []readCase{
 // 3. DC not detected with dual region bucket in EUR4
 // 4. DC not detected with regional bucket in EUROPE-WEST1
 func TestIntegration_DetectDirectConnectivityInGCE(t *testing.T) {
+	t.Skip("Does not work in kokoro yet")
 	ctx := skipHTTP("grpc only test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
 		h := testHelper{t}
@@ -414,6 +417,108 @@ func TestIntegration_DoNotDetectDirectConnectivityWhenDisabled(t *testing.T) {
 			t.Fatalf("CheckDirectConnectivitySupported: failed on a different error %v", err)
 		}
 	}, internaloption.EnableDirectPath(false))
+}
+
+func TestIntegration_MetricsEnablement(t *testing.T) {
+	ctx := skipHTTP("grpc only test")
+	mr := metric.NewManualReader()
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
+		it := client.Bucket(bucket).Objects(ctx, nil)
+		_, err := it.Next()
+		if err != iterator.Done {
+			t.Errorf("Objects.Next: expected iterator.Done got %v", err)
+		}
+		rm := metricdata.ResourceMetrics{}
+		if err := mr.Collect(ctx, &rm); err != nil {
+			t.Errorf("ManualReader.Collect: %v", err)
+		}
+		metricCheck := map[string]bool{
+			"grpc.client.attempt.started":                            false,
+			"grpc.client.attempt.duration":                           false,
+			"grpc.client.attempt.sent_total_compressed_message_size": false,
+			"grpc.client.attempt.rcvd_total_compressed_message_size": false,
+			"grpc.client.call.duration":                              false,
+		}
+		for _, sm := range rm.ScopeMetrics {
+			for _, m := range sm.Metrics {
+				metricCheck[m.Name] = true
+			}
+		}
+		for k, v := range metricCheck {
+			if !v {
+				t.Errorf("metric %v not found", k)
+			}
+		}
+	}, withTestMetricReader(mr))
+}
+
+func TestIntegration_MetricsEnablementInGCE(t *testing.T) {
+	t.Skip("flaky test for rls metrics; other metrics are tested TestIntegration_MetricsEnablement")
+	ctx := skipHTTP("grpc only test")
+	mr := metric.NewManualReader()
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
+		detectedAttrs, err := resource.New(ctx, resource.WithDetectors(gcp.NewDetector()))
+		if err != nil {
+			t.Fatalf("resource.New: %v", err)
+		}
+		attrs := detectedAttrs.Set()
+		if v, exists := attrs.Value("cloud.platform"); !exists || v.AsString() != "gcp_compute_engine" {
+			t.Skip("only testable in a GCE instance")
+		}
+		instance, exists := attrs.Value("host.id")
+		if !exists {
+			t.Skip("GCE instance id not detected")
+		}
+		if v, exists := attrs.Value("cloud.region"); !exists || !strings.Contains(strings.ToLower(v.AsString()), "us-west1") {
+			t.Skip("inside a GCE instance but region is not us-west1")
+		}
+		it := client.Buckets(ctx, testutil.ProjID())
+		_, _ = it.Next()
+		rm := metricdata.ResourceMetrics{}
+		if err := mr.Collect(ctx, &rm); err != nil {
+			t.Errorf("ManualReader.Collect: %v", err)
+		}
+
+		monitoredResourceWant := map[string]string{
+			"gcp.resource_type": "storage.googleapis.com/Client",
+			"api":               "grpc",
+			"cloud_platform":    "gcp_compute_engine",
+			"host_id":           instance.AsString(),
+			"location":          "us-west1",
+			"project_id":        testutil.ProjID(),
+			"instance_id":       "ignore", // generated UUID
+		}
+		for _, attr := range rm.Resource.Attributes() {
+			want := monitoredResourceWant[string(attr.Key)]
+			if want == "ignore" {
+				continue
+			}
+			got := attr.Value.AsString()
+			if want != got {
+				t.Errorf("got: %v want: %v", got, want)
+			}
+		}
+		metricCheck := map[string]bool{
+			"grpc.client.attempt.started":                            false,
+			"grpc.client.attempt.duration":                           false,
+			"grpc.client.attempt.sent_total_compressed_message_size": false,
+			"grpc.client.attempt.rcvd_total_compressed_message_size": false,
+			"grpc.client.call.duration":                              false,
+			"grpc.lb.rls.cache_entries":                              false,
+			"grpc.lb.rls.cache_size":                                 false,
+			"grpc.lb.rls.default_target_picks":                       false,
+		}
+		for _, sm := range rm.ScopeMetrics {
+			for _, m := range sm.Metrics {
+				metricCheck[m.Name] = true
+			}
+		}
+		for k, v := range metricCheck {
+			if !v {
+				t.Errorf("metric %v not found", k)
+			}
+		}
+	}, withTestMetricReader(mr))
 }
 
 func TestIntegration_BucketCreateDelete(t *testing.T) {
