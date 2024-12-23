@@ -413,19 +413,31 @@ func TestReadWriteTransaction_PrecommitToken(t *testing.T) {
 		query                  bool
 		update                 bool
 		batchUpdate            bool
+		mutationsOnly          bool
 		expectedPrecommitToken string
 		expectedSequenceNumber int32
 	}
 
 	testCases := []testCase{
-		{"Only Query", true, false, false, "PartialResultSetPrecommitToken", 3}, //since mock server is returning 3 rows
-		{"Query and Update", true, true, false, "ResultSetPrecommitToken", 4},
-		{"Query, Update, and Batch Update", true, true, true, "ExecuteBatchDmlResponsePrecommitToken", 5},
+		{"Only Query", true, false, false, false, "PartialResultSetPrecommitToken", 3},
+		{"Query and Update", true, true, false, false, "ResultSetPrecommitToken", 4},
+		{"Query, Update, and Batch Update", true, true, true, false, "ExecuteBatchDmlResponsePrecommitToken", 5},
+		{"Only Mutations", false, false, false, true, "BeginTransactionPrecommitToken", 1},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+				if tc.mutationsOnly {
+					ms := []*Mutation{
+						Insert("t_foo", []string{"col1", "col2"}, []interface{}{int64(1), int64(2)}),
+						Update("t_foo", []string{"col1", "col2"}, []interface{}{"one", []byte(nil)}),
+					}
+					if err := tx.BufferWrite(ms); err != nil {
+						return err
+					}
+				}
+
 				if tc.query {
 					iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
 					defer iter.Stop()

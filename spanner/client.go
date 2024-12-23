@@ -107,20 +107,19 @@ func parseDatabaseName(db string) (project, instance, database string, err error
 // Client is a client for reading and writing data to a Cloud Spanner database.
 // A client is safe to use concurrently, except for its Close method.
 type Client struct {
-	sc                            *sessionClient
-	idleSessions                  *sessionPool
-	logger                        *log.Logger
-	qo                            QueryOptions
-	ro                            ReadOptions
-	ao                            []ApplyOption
-	txo                           TransactionOptions
-	bwo                           BatchWriteOptions
-	ct                            *commonTags
-	disableRouteToLeader          bool
-	enableMultiplexedSessionForRW bool
-	dro                           *sppb.DirectedReadOptions
-	otConfig                      *openTelemetryConfig
-	metricsTracerFactory          *builtinMetricsTracerFactory
+	sc                   *sessionClient
+	idleSessions         *sessionPool
+	logger               *log.Logger
+	qo                   QueryOptions
+	ro                   ReadOptions
+	ao                   []ApplyOption
+	txo                  TransactionOptions
+	bwo                  BatchWriteOptions
+	ct                   *commonTags
+	disableRouteToLeader bool
+	dro                  *sppb.DirectedReadOptions
+	otConfig             *openTelemetryConfig
+	metricsTracerFactory *builtinMetricsTracerFactory
 }
 
 // DatabaseName returns the full name of a database, e.g.,
@@ -548,20 +547,19 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	}
 
 	c = &Client{
-		sc:                            sc,
-		idleSessions:                  sp,
-		logger:                        config.Logger,
-		qo:                            getQueryOptions(config.QueryOptions),
-		ro:                            config.ReadOptions,
-		ao:                            config.ApplyOptions,
-		txo:                           config.TransactionOptions,
-		bwo:                           config.BatchWriteOptions,
-		ct:                            getCommonTags(sc),
-		disableRouteToLeader:          config.DisableRouteToLeader,
-		dro:                           config.DirectedReadOptions,
-		otConfig:                      otConfig,
-		metricsTracerFactory:          metricsTracerFactory,
-		enableMultiplexedSessionForRW: config.enableMultiplexedSessionForRW,
+		sc:                   sc,
+		idleSessions:         sp,
+		logger:               config.Logger,
+		qo:                   getQueryOptions(config.QueryOptions),
+		ro:                   config.ReadOptions,
+		ao:                   config.ApplyOptions,
+		txo:                  config.TransactionOptions,
+		bwo:                  config.BatchWriteOptions,
+		ct:                   getCommonTags(sc),
+		disableRouteToLeader: config.DisableRouteToLeader,
+		dro:                  config.DirectedReadOptions,
+		otConfig:             otConfig,
+		metricsTracerFactory: metricsTracerFactory,
 	}
 	return c, nil
 }
@@ -1025,7 +1023,7 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 			err error
 		)
 		if sh == nil || sh.getID() == "" || sh.getClient() == nil {
-			if c.enableMultiplexedSessionForRW {
+			if c.idleSessions.isMultiplexedSessionForRWEnabled() {
 				sh, err = c.idleSessions.takeMultiplexed(ctx)
 			} else {
 				// Session handle hasn't been allocated or has been destroyed.
@@ -1044,7 +1042,7 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 			// Note that the t.begin(ctx) call could change the session that is being used by the transaction, as the
 			// BeginTransaction RPC invocation will be retried on a new session if it returns SessionNotFound.
 			t.txReadOnly.sh = sh
-			if err = t.begin(ctx); err != nil {
+			if err = t.begin(ctx, nil); err != nil {
 				trace.TracePrintf(ctx, nil, "Error while BeginTransaction during retrying a ReadWrite transaction: %v", ToSpannerError(err))
 				return ToSpannerError(err)
 			}
@@ -1072,7 +1070,7 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 		return err
 	})
 	if isUnimplementedErrorForMultiplexedRW(err) {
-		c.enableMultiplexedSessionForRW = false
+		c.idleSessions.disableMultiplexedSessionForRW()
 	}
 	return resp, err
 }
