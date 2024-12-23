@@ -382,9 +382,6 @@ type attemptTracer struct {
 
 	// Error seen while getting server latency from headers / trailers
 	serverLatencyErr error
-
-	// Error seen while getting location (cluster and zone) from headers / trailers
-	locationErr error
 }
 
 func (a *attemptTracer) setStartTime(t time.Time) {
@@ -397,10 +394,6 @@ func (a *attemptTracer) setClusterID(clusterID string) {
 
 func (a *attemptTracer) setZoneID(zoneID string) {
 	a.zoneID = zoneID
-}
-
-func (a *attemptTracer) setLocationErr(err error) {
-	a.locationErr = err
 }
 
 func (a *attemptTracer) setStatus(status string) {
