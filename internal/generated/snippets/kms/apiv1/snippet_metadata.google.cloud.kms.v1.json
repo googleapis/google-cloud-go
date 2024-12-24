@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/kms/apiv1",
-    "version": "$VERSION",
+    "version": "1.20.3",
     "language": "GO",
     "apis": [
       {
