@@ -18,6 +18,7 @@ package spanner
 
 import (
 	"errors"
+	"fmt"
 	"math/big"
 	"testing"
 	"time"
@@ -141,9 +142,34 @@ func TestKey(t *testing.T) {
 			wantStr:   `(1.000000000)`,
 		},
 		{
-			k:         Key{uuid.MustParse("b7f2188b-fa4c-4243-8ec4-5e02b77e95df")},
-			wantProto: listValueProto(uuidProto(uuid.MustParse("b7f2188b-fa4c-4243-8ec4-5e02b77e95df"))),
-			wantStr:   `(b7f2188b-fa4c-4243-8ec4-5e02b77e95df)`,
+			k:         Key{uuid1},
+			wantProto: listValueProto(uuidProto(uuid1)),
+			wantStr:   fmt.Sprintf("(%s)", uuid1.String()),
+		},
+		{
+			k:         Key{uuid.NullUUID{UUID: uuid1, Valid: true}},
+			wantProto: listValueProto(uuidProto(uuid1)),
+			wantStr:   fmt.Sprintf("(%s)", uuid1.String()),
+		},
+		{
+			k:         Key{uuid.NullUUID{UUID: uuid1, Valid: false}},
+			wantProto: listValueProto(nullProto()),
+			wantStr:   `(<null>)`,
+		},
+		{
+			k:         Key{SpannerNullUUID{uuid1, false}},
+			wantProto: listValueProto(nullProto()),
+			wantStr:   `(<null>)`,
+		},
+		{
+			k:         Key{SpannerNullUUID{uuid1, true}},
+			wantProto: listValueProto(uuidProto(uuid1)),
+			wantStr:   fmt.Sprintf("(%s)", uuid1.String()),
+		},
+		{
+			k:         Key{SpannerNullUUID{uuid1, false}},
+			wantProto: listValueProto(nullProto()),
+			wantStr:   `(<null>)`,
 		},
 		{
 			k:         Key{[]byte("value")},
