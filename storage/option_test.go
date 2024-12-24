@@ -22,6 +22,7 @@ import (
 	"cloud.google.com/go/storage/experimental"
 	"github.com/google/go-cmp/cmp"
 	"go.opentelemetry.io/otel/exporters/stdout/stdoutmetric"
+	"go.opentelemetry.io/otel/sdk/metric"
 	"google.golang.org/api/option"
 )
 
@@ -168,6 +169,21 @@ func TestSetCustomExporter(t *testing.T) {
 	}
 	if got.metricExporter != want.metricExporter {
 		t.Errorf("TestSetCustomExpoerter: metricExporter want=%v, got=%v", want.metricExporter, got.metricExporter)
+	}
+}
+
+func TestSetManualReader(t *testing.T) {
+	manualReader := metric.NewManualReader()
+	want := storageConfig{
+		manualReader: manualReader,
+	}
+	var got storageConfig
+	opt := withTestMetricReader(manualReader)
+	if storageOpt, ok := opt.(storageClientOption); ok {
+		storageOpt.ApplyStorageOpt(&got)
+	}
+	if got.manualReader != want.manualReader {
+		t.Errorf("TestSetCustomExpoerter: manualReader want=%v, got=%v", want.manualReader, got.manualReader)
 	}
 }
 
