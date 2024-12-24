@@ -859,6 +859,8 @@ func TestIntegration_SingleUse_WithQueryOptions(t *testing.T) {
 
 func TestIntegration_TransactionWasStartedInDifferentSession(t *testing.T) {
 	t.Parallel()
+	// TODO: unskip once https://b.corp.google.com/issues/309745482 is fixed
+	skipOnNonProd(t)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
@@ -6217,6 +6219,13 @@ func skipEmulatorTest(t *testing.T) {
 func skipUnsupportedPGTest(t *testing.T) {
 	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
 		t.Skip("Skipping testing of unsupported tests in Postgres dialect.")
+	}
+}
+
+func skipOnNonProd(t *testing.T) {
+	job := os.Getenv("JOB_TYPE")
+	if strings.Contains(job, "cloud-devel") || strings.Contains(job, "cloud-staging") {
+		t.Skip("Skipping test on non-production environment.")
 	}
 }
 
