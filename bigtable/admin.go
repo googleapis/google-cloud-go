@@ -47,6 +47,8 @@ import (
 const adminAddr = "bigtableadmin.googleapis.com:443"
 const mtlsAdminAddr = "bigtableadmin.mtls.googleapis.com:443"
 
+var errExpiryMissing = errors.New("WithExpiry is a required option")
+
 // ErrPartiallyUnavailable is returned when some locations (clusters) are
 // unavailable. Both partial results (retrieved from available locations)
 // and the error are returned when this exception occurred.
@@ -2153,54 +2155,69 @@ func (ac *AdminClient) RestoreTableFrom(ctx context.Context, sourceInstance, tab
 type backupOptions struct {
 	backupType        *BackupType
 	hotToStandardTime *time.Time
+	expireTime        *time.Time
 }
 
 // BackupOption can be used to specify parameters for backup operations.
-type BackupOption interface {
-	apply(o *backupOptions)
-}
+type BackupOption func(*backupOptions)
 
-type hotBackupOption struct {
-	htsTime *time.Time
-}
-
-func (hbo hotBackupOption) apply(o *backupOptions) {
-	o.hotToStandardTime = hbo.htsTime
-	btHot := BackupTypeHot
-	o.backupType = &btHot
-}
-
-// HotToStandardBackup option can be used to create backup with
+// WithHotToStandardBackup option can be used to create backup with
 // type [BackupTypeHot] and specify time at which the hot backup will be
-// converted to a standard backup. Once the `hot_to_standard_time` has passed,
+// converted to a standard backup. Once the 'hotToStandardTime' has passed,
 // Cloud Bigtable will convert the hot backup to a standard backup.
 // This value must be greater than the backup creation time by at least 24 hours
-func HotToStandardBackup(hotToStandardTime time.Time) BackupOption {
-	return hotBackupOption{htsTime: &hotToStandardTime}
+func WithHotToStandardBackup(hotToStandardTime time.Time) BackupOption {
+	return func(bo *backupOptions) {
+		btHot := BackupTypeHot
+		bo.backupType = &btHot
+		bo.hotToStandardTime = &hotToStandardTime
+	}
 }
 
-// HotBackup option can be used to create backup
+// WithExpiry option can be used to create backup
+// that expires after time 'expireTime'.
+// Once the 'expireTime' has passed, Cloud Bigtable will delete the backup.
+func WithExpiry(expireTime time.Time) BackupOption {
+	return func(bo *backupOptions) {
+		bo.expireTime = &expireTime
+	}
+}
+
+// WithHotBackup option can be used to create backup
 // with type [BackupTypeHot]
-func HotBackup() BackupOption {
-	return hotBackupOption{}
+func WithHotBackup() BackupOption {
+	return func(bo *backupOptions) {
+		btHot := BackupTypeHot
+		bo.backupType = &btHot
+	}
 }
 
 // CreateBackup creates a new backup in the specified cluster from the
 // specified source table with the user-provided expire time.
 func (ac *AdminClient) CreateBackup(ctx context.Context, table, cluster, backup string, expireTime time.Time) error {
-	return ac.createBackup(ctx, table, cluster, backup, expireTime, nil)
+	return ac.createBackup(ctx, table, cluster, backup, WithExpiry(expireTime))
 }
 
 // CreateBackupWithOptions is similar to CreateBackup but lets the user specify additional options.
-func (ac *AdminClient) CreateBackupWithOptions(ctx context.Context, table, cluster, backup string, expireTime time.Time, opts ...BackupOption) error {
-	return ac.createBackup(ctx, table, cluster, backup, expireTime, opts...)
+func (ac *AdminClient) CreateBackupWithOptions(ctx context.Context, table, cluster, backup string, opts ...BackupOption) error {
+	return ac.createBackup(ctx, table, cluster, backup, opts...)
 }
 
-func (ac *AdminClient) createBackup(ctx context.Context, table, cluster, backup string, expireTime time.Time, opts ...BackupOption) error {
+func (ac *AdminClient) createBackup(ctx context.Context, table, cluster, backup string, opts ...BackupOption) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
 
-	parsedExpireTime := timestamppb.New(expireTime)
+	o := backupOptions{}
+	for _, opt := range opts {
+		if opt != nil {
+			opt(&o)
+		}
+	}
+
+	if o.expireTime == nil {
+		return errExpiryMissing
+	}
+	parsedExpireTime := timestamppb.New(*o.expireTime)
 
 	req := &btapb.CreateBackupRequest{
 		Parent:   prefix + "/clusters/" + cluster,
@@ -2210,12 +2227,7 @@ func (ac *AdminClient) createBackup(ctx context.Context, table, cluster, backup 
 			SourceTable: prefix + "/tables/" + table,
 		},
 	}
-	o := backupOptions{}
-	for _, opt := range opts {
-		if opt != nil {
-			opt.apply(&o)
-		}
-	}
+
 	if o.backupType != nil {
 		req.Backup.BackupType = btapb.Backup_BackupType(*o.backupType)
 	}

@@ -3757,7 +3757,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	defer adminClient.DeleteBackup(ctx, sourceCluster, hotBkpName1)
 	wantHtsTime := time.Now().Truncate(time.Second).Add(48 * time.Hour)
 	if err = adminClient.CreateBackupWithOptions(ctx, tblConf.TableID, sourceCluster, hotBkpName1,
-		time.Now().Add(8*time.Hour), HotToStandardBackup(wantHtsTime)); err != nil {
+		WithExpiry(time.Now().Add(8*time.Hour)), WithHotToStandardBackup(wantHtsTime)); err != nil {
 		t.Fatalf("Creating backup: %v", err)
 	}
 
@@ -3765,7 +3765,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	hotBkpName2 := backupUID.New()
 	defer adminClient.DeleteBackup(ctx, sourceCluster, hotBkpName2)
 	if err = adminClient.CreateBackupWithOptions(ctx, tblConf.TableID, sourceCluster, hotBkpName2,
-		time.Now().Add(8*time.Hour), HotBackup()); err != nil {
+		WithExpiry(time.Now().Add(8*time.Hour)), WithHotBackup()); err != nil {
 		t.Fatalf("Creating backup: %v", err)
 	}
 
@@ -3946,7 +3946,7 @@ func TestIntegration_AdminUpdateBackupHotToStandardTime(t *testing.T) {
 	bkpName := backupUID.New()
 	defer adminClient.DeleteBackup(ctx, testEnv.Config().Cluster, bkpName)
 	if err = adminClient.CreateBackupWithOptions(ctx, tblConf.TableID, testEnv.Config().Cluster, bkpName,
-		time.Now().Add(8*time.Hour), HotToStandardBackup(time.Now().Truncate(time.Second).Add(2*24*time.Hour))); err != nil {
+		WithExpiry(time.Now().Add(8*time.Hour)), WithHotToStandardBackup(time.Now().Truncate(time.Second).Add(2*24*time.Hour))); err != nil {
 		t.Fatalf("Creating backup: %v", err)
 	}
 
