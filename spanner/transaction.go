@@ -1665,7 +1665,7 @@ func (co CommitOptions) merge(opts CommitOptions) CommitOptions {
 func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions) (CommitResponse, error) {
 	resp := CommitResponse{}
 	t.mu.Lock()
-	mPb, bmPb, err := mutationsProto(t.wb)
+	mutationProtos, selectedMutationProto, err := mutationsProto(t.wb)
 	if t.tx == nil {
 		if t.state == txClosed {
 			// inline begin transaction failed
@@ -1674,10 +1674,10 @@ func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions
 		}
 		t.mu.Unlock()
 		if !t.sp.isMultiplexedSessionForRWEnabled() {
-			bmPb = nil
+			selectedMutationProto = nil
 		}
 		// mutations or empty transaction body only
-		if err := t.begin(ctx, bmPb); err != nil {
+		if err := t.begin(ctx, selectedMutationProto); err != nil {
 			return resp, err
 		}
 		t.mu.Lock()
@@ -1710,7 +1710,7 @@ func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions
 		},
 		PrecommitToken:    precommitToken,
 		RequestOptions:    createRequestOptions(t.txOpts.CommitPriority, "", t.txOpts.TransactionTag),
-		Mutations:         mPb,
+		Mutations:         mutationProtos,
 		ReturnCommitStats: options.ReturnCommitStats,
 		MaxCommitDelay:    maxCommitDelay,
 	}, gax.WithGRPCOptions(grpc.Header(&md)))

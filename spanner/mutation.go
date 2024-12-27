@@ -432,18 +432,18 @@ func (m Mutation) proto() (*sppb.Mutation, error) {
 func mutationsProto(ms []*Mutation) ([]*sppb.Mutation, *sppb.Mutation, error) {
 	var selectedMutation *Mutation
 	var nonInsertMutations []*Mutation
-	maxValues := -1
 
 	l := make([]*sppb.Mutation, 0, len(ms))
 	for _, m := range ms {
 		if m.op != opInsert {
 			nonInsertMutations = append(nonInsertMutations, m)
 		}
-
-		// Track the INSERT mutation with the highest number of values if only INSERT mutation were found
-		if (selectedMutation == nil || selectedMutation.op == opInsert) && (m.op == opInsert && len(m.values) > maxValues) {
+		if selectedMutation == nil {
 			selectedMutation = m
-			maxValues = len(m.values)
+		}
+		// Track the INSERT mutation with the highest number of values if only INSERT mutation were found
+		if selectedMutation.op == opInsert && m.op == opInsert && len(m.values) > len(selectedMutation.values) {
+			selectedMutation = m
 		}
 
 		// Convert the mutation to sppb.Mutation and add to the list

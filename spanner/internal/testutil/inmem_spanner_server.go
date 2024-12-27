@@ -1079,7 +1079,7 @@ func (s *inMemSpannerServer) BeginTransaction(ctx context.Context, req *spannerp
 	s.updateSessionLastUseTime(session.Name)
 	tx := s.beginTransaction(session, req.Options)
 	if session.Multiplexed && req.MutationKey != nil {
-		tx.PrecommitToken = s.getPreCommitToken(string(tx.Id), "BeginTransactionPrecommitToken")
+		tx.PrecommitToken = s.getPreCommitToken(string(tx.Id), "TransactionPrecommitToken")
 	}
 	return tx, nil
 }
