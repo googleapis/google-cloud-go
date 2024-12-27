@@ -313,27 +313,27 @@ func equalsKeyValue(gotAttrs, wantAttrs []attribute.KeyValue) bool {
 		return false
 	}
 
-	gotJsonVals, err := keyValueToKeyJsonValue(gotAttrs)
+	gotJSONVals, err := keyValueToKeyJSONValue(gotAttrs)
 	if err != nil {
 		return false
 	}
-	wantJsonVals, err := keyValueToKeyJsonValue(wantAttrs)
+	wantJSONVals, err := keyValueToKeyJSONValue(wantAttrs)
 	if err != nil {
 		return false
 	}
-	return testutil.Equal(gotJsonVals, wantJsonVals)
+	return testutil.Equal(gotJSONVals, wantJSONVals)
 }
 
-func keyValueToKeyJsonValue(attrs []attribute.KeyValue) (map[string]string, error) {
-	keyJsonVal := map[string]string{}
+func keyValueToKeyJSONValue(attrs []attribute.KeyValue) (map[string]string, error) {
+	keyJSONVal := map[string]string{}
 	for _, attr := range attrs {
 		jsonVal, err := attr.Value.MarshalJSON()
 		if err != nil {
 			return nil, err
 		}
-		keyJsonVal[string(attr.Key)] = string(jsonVal)
+		keyJSONVal[string(attr.Key)] = string(jsonVal)
 	}
-	return keyJsonVal, nil
+	return keyJSONVal, nil
 }
 
 func TestExporterLogs(t *testing.T) {
