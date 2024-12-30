@@ -302,6 +302,185 @@ func TestReadWriteTransaction_ErrorReturned(t *testing.T) {
 	}
 }
 
+func TestClient_ReadWriteTransaction_UnimplementedErrorWithMultiplexedSessionSwitchesToRegular(t *testing.T) {
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened:                     1,
+			MaxOpened:                     1,
+			enableMultiplexSession:        true,
+			enableMultiplexedSessionForRW: true,
+		},
+	})
+	defer teardown()
+
+	for _, sumulatdError := range []error{
+		status.Error(codes.Unimplemented, "other Unimplemented error which should not turn off multiplexed session"),
+		status.Error(codes.Unimplemented, "Transaction type read_write not supported with multiplexed sessions")} {
+		server.TestSpanner.PutExecutionTime(
+			MethodExecuteStreamingSql,
+			SimulatedExecutionTime{Errors: []error{sumulatdError}},
+		)
+		_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+			iter := tx.Query(ctx, NewStatement(SelectFooFromBar))
+			defer iter.Stop()
+			for {
+				_, err := iter.Next()
+				if err == iterator.Done {
+					break
+				}
+				if err != nil {
+					return err
+				}
+			}
+			return nil
+		})
+		requests := drainRequestsFromServer(server.TestSpanner)
+		foundMultiplexedSession := false
+		for _, req := range requests {
+			if sqlReq, ok := req.(*sppb.ExecuteSqlRequest); ok {
+				if strings.Contains(sqlReq.Session, "multiplexed") {
+					foundMultiplexedSession = true
+					break
+				}
+			}
+		}
+
+		// Assert that the error is an Unimplemented error.
+		if status.Code(err) != codes.Unimplemented {
+			t.Fatalf("Expected Unimplemented error, got: %v", err)
+		}
+		if !foundMultiplexedSession {
+			t.Fatalf("Expected first transaction to use a multiplexed session, but it did not")
+		}
+		server.TestSpanner.Reset()
+	}
+
+	// Attempt a second read-write transaction.
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		iter := tx.Query(ctx, NewStatement(SelectFooFromBar))
+		defer iter.Stop()
+		for {
+			_, err := iter.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+
+	if err != nil {
+		t.Fatalf("Unexpected error in second transaction: %v", err)
+	}
+
+	// Check that the second transaction used a regular session.
+	requests := drainRequestsFromServer(server.TestSpanner)
+	foundMultiplexedSession := false
+	for _, req := range requests {
+		if sqlReq, ok := req.(*sppb.CommitRequest); ok {
+			if strings.Contains(sqlReq.Session, "multiplexed") {
+				foundMultiplexedSession = true
+				break
+			}
+		}
+	}
+
+	if foundMultiplexedSession {
+		t.Fatalf("Expected second transaction to use a regular session, but it did not")
+	}
+}
+
+func TestReadWriteTransaction_PrecommitToken(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened:                     1,
+			MaxOpened:                     1,
+			enableMultiplexSession:        true,
+			enableMultiplexedSessionForRW: true,
+		},
+	})
+	defer teardown()
+
+	type testCase struct {
+		name                   string
+		query                  bool
+		update                 bool
+		batchUpdate            bool
+		expectedPrecommitToken string
+		expectedSequenceNumber int32
+	}
+
+	testCases := []testCase{
+		{"Only Query", true, false, false, "PartialResultSetPrecommitToken", 3}, //since mock server is returning 3 rows
+		{"Query and Update", true, true, false, "ResultSetPrecommitToken", 4},
+		{"Query, Update, and Batch Update", true, true, true, "ExecuteBatchDmlResponsePrecommitToken", 5},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+				if tc.query {
+					iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+					defer iter.Stop()
+					for {
+						_, err := iter.Next()
+						if err == iterator.Done {
+							break
+						}
+						if err != nil {
+							return err
+						}
+					}
+				}
+
+				if tc.update {
+					if _, err := tx.Update(ctx, Statement{SQL: UpdateBarSetFoo}); err != nil {
+						return err
+					}
+				}
+
+				if tc.batchUpdate {
+					if _, err := tx.BatchUpdate(ctx, []Statement{{SQL: UpdateBarSetFoo}}); err != nil {
+						return err
+					}
+				}
+
+				return nil
+			})
+			if err != nil {
+				t.Fatalf("%s failed: %v", tc.name, err)
+			}
+
+			requests := drainRequestsFromServer(server.TestSpanner)
+			var commitReq *sppb.CommitRequest
+			for _, req := range requests {
+				if c, ok := req.(*sppb.CommitRequest); ok {
+					commitReq = c
+					break
+				}
+			}
+			if commitReq.PrecommitToken == nil || len(commitReq.PrecommitToken.GetPrecommitToken()) == 0 {
+				t.Fatalf("Expected commit request to contain a valid precommitToken, got: %v", commitReq.PrecommitToken)
+			}
+			// Validate that the precommit token contains the test argument.
+			if !strings.Contains(string(commitReq.PrecommitToken.GetPrecommitToken()), tc.expectedPrecommitToken) {
+				t.Fatalf("Precommit token does not contain the expected test argument")
+			}
+			// Validate that the sequence number is as expected.
+			if got, want := commitReq.PrecommitToken.GetSeqNum(), tc.expectedSequenceNumber; got != want {
+				t.Fatalf("Precommit token sequence number mismatch: got %d, want %d", got, want)
+			}
+		})
+	}
+}
+
 func TestBatchDML_WithMultipleDML(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
