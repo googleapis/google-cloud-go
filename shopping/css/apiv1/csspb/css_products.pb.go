@@ -88,7 +88,7 @@ func (x *GetCssProductRequest) GetName() string {
 	return ""
 }
 
-// The processed CSS Product(a.k.a Aggregate Offer internally).
+// The processed CSS Product.
 type CssProduct struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
