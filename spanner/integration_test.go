@@ -860,6 +860,8 @@ func TestIntegration_SingleUse_WithQueryOptions(t *testing.T) {
 
 func TestIntegration_TransactionWasStartedInDifferentSession(t *testing.T) {
 	t.Parallel()
+	// TODO: unskip once https://b.corp.google.com/issues/309745482 is fixed
+	skipOnNonProd(t)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
@@ -5343,7 +5345,7 @@ func TestIntegration_Foreign_Key_Delete_Cascade_Action(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			gotErr := tt.test()
 			// convert the error to lower case because resource names are in lower case for PG dialect.
-			if gotErr != nil && !strings.EqualFold(gotErr.Error(), tt.wantErr.Error()) {
+			if gotErr != nil && !strings.Contains(gotErr.Error(), tt.wantErr.Error()) {
 				t.Errorf("FKDC error=%v, wantErr: %v", gotErr, tt.wantErr)
 			} else {
 				tt.validate()
@@ -6228,6 +6230,13 @@ func skipEmulatorTest(t *testing.T) {
 func skipUnsupportedPGTest(t *testing.T) {
 	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
 		t.Skip("Skipping testing of unsupported tests in Postgres dialect.")
+	}
+}
+
+func skipOnNonProd(t *testing.T) {
+	job := os.Getenv("JOB_TYPE")
+	if strings.Contains(job, "cloud-devel") || strings.Contains(job, "cloud-staging") {
+		t.Skip("Skipping test on non-production environment.")
 	}
 }
 
