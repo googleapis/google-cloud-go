@@ -16,6 +16,7 @@ package firestore
 
 import (
 	"context"
+	"os"
 	"testing"
 	"time"
 
@@ -397,5 +398,21 @@ func TestClient_WithReadOptions(t *testing.T) {
 
 	if err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestClient_UsingEmulator(t *testing.T) {
+	c, _, cleanup := newMock(t)
+	defer cleanup()
+	if c.UsingEmulator {
+		t.Error("got true, want false")
+	}
+
+	os.Setenv("FIRESTORE_EMULATOR_HOST", "localhost:8080")
+	defer os.Unsetenv("FIRESTORE_EMULATOR_HOST")
+	c, _, cleanup = newMock(t)
+	defer cleanup()
+	if !c.UsingEmulator {
+		t.Error("got false, want true")
 	}
 }
