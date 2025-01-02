@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.2.3](https://github.com/googleapis/google-cloud-go/compare/apikeys/v1.2.2...apikeys/v1.2.3) (2025-01-02)
+
+
+### Bug Fixes
+
+* **apikeys:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [1.2.2](https://github.com/googleapis/google-cloud-go/compare/apikeys/v1.2.1...apikeys/v1.2.2) (2024-10-23)
 
 

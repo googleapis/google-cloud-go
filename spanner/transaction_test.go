@@ -413,19 +413,31 @@ func TestReadWriteTransaction_PrecommitToken(t *testing.T) {
 		query                  bool
 		update                 bool
 		batchUpdate            bool
+		mutationsOnly          bool
 		expectedPrecommitToken string
 		expectedSequenceNumber int32
 	}
 
 	testCases := []testCase{
-		{"Only Query", true, false, false, "PartialResultSetPrecommitToken", 3}, //since mock server is returning 3 rows
-		{"Query and Update", true, true, false, "ResultSetPrecommitToken", 4},
-		{"Query, Update, and Batch Update", true, true, true, "ExecuteBatchDmlResponsePrecommitToken", 5},
+		{"Only Query", true, false, false, false, "PartialResultSetPrecommitToken", 3},
+		{"Query and Update", true, true, false, false, "ResultSetPrecommitToken", 4},
+		{"Query, Update, and Batch Update", true, true, true, false, "ExecuteBatchDmlResponsePrecommitToken", 5},
+		{"Only Mutations", false, false, false, true, "TransactionPrecommitToken", 1},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+				if tc.mutationsOnly {
+					ms := []*Mutation{
+						Insert("t_foo", []string{"col1", "col2"}, []interface{}{int64(1), int64(2)}),
+						Update("t_foo", []string{"col1", "col2"}, []interface{}{"one", []byte(nil)}),
+					}
+					if err := tx.BufferWrite(ms); err != nil {
+						return err
+					}
+				}
+
 				if tc.query {
 					iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
 					defer iter.Stop()
@@ -463,8 +475,19 @@ func TestReadWriteTransaction_PrecommitToken(t *testing.T) {
 			for _, req := range requests {
 				if c, ok := req.(*sppb.CommitRequest); ok {
 					commitReq = c
-					break
 				}
+				if b, ok := req.(*sppb.BeginTransactionRequest); ok {
+					if !strings.Contains(b.GetSession(), "multiplexed") {
+						t.Errorf("Expected session to be multiplexed")
+					}
+					if b.MutationKey == nil {
+						t.Fatalf("Expected BeginTransaction request to contain a mutation key")
+					}
+				}
+
+			}
+			if !strings.Contains(commitReq.GetSession(), "multiplexed") {
+				t.Errorf("Expected session to be multiplexed")
 			}
 			if commitReq.PrecommitToken == nil || len(commitReq.PrecommitToken.GetPrecommitToken()) == 0 {
 				t.Fatalf("Expected commit request to contain a valid precommitToken, got: %v", commitReq.PrecommitToken)
@@ -477,6 +500,88 @@ func TestReadWriteTransaction_PrecommitToken(t *testing.T) {
 			if got, want := commitReq.PrecommitToken.GetSeqNum(), tc.expectedSequenceNumber; got != want {
 				t.Fatalf("Precommit token sequence number mismatch: got %d, want %d", got, want)
 			}
+		})
+	}
+}
+
+func TestMutationOnlyCaseAborted(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	// Define mutations to apply
+	mutations := []*Mutation{
+		Insert("FOO", []string{"ID", "NAME"}, []interface{}{int64(1), "Bar"}),
+	}
+
+	// Define a function to verify requests
+	verifyRequests := func(server *MockedSpannerInMemTestServer) {
+		var numBeginReq, numCommitReq int
+		// Verify that for mutation-only case, a mutation key is set in BeginTransactionRequest
+		requests := drainRequestsFromServer(server.TestSpanner)
+		for _, req := range requests {
+			if beginReq, ok := req.(*sppb.BeginTransactionRequest); ok {
+				if beginReq.GetMutationKey() == nil {
+					t.Fatalf("Expected mutation key with insert operation")
+				}
+				if !strings.Contains(beginReq.GetSession(), "multiplexed") {
+					t.Errorf("Expected session to be multiplexed")
+				}
+				numBeginReq++
+			}
+			if commitReq, ok := req.(*sppb.CommitRequest); ok {
+				if commitReq.GetPrecommitToken() == nil || !strings.Contains(string(commitReq.GetPrecommitToken().PrecommitToken), "TransactionPrecommitToken") {
+					t.Errorf("Expected precommit token 'TransactionPrecommitToken', got %v", commitReq.GetPrecommitToken())
+				}
+				if !strings.Contains(commitReq.GetSession(), "multiplexed") {
+					t.Errorf("Expected session to be multiplexed")
+				}
+				numCommitReq++
+			}
+		}
+		if numBeginReq != 2 || numCommitReq != 2 {
+			t.Fatalf("Expected 2 BeginTransactionRequests and 2 CommitRequests, got %d and %d", numBeginReq, numCommitReq)
+		}
+	}
+
+	// Test both ReadWriteTransaction and client.Apply
+	for _, method := range []string{"ReadWriteTransaction", "Apply"} {
+		t.Run(method, func(t *testing.T) {
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+				DisableNativeMetrics: true,
+				SessionPoolConfig: SessionPoolConfig{
+					MinOpened:                     1,
+					MaxOpened:                     1,
+					enableMultiplexSession:        true,
+					enableMultiplexedSessionForRW: true,
+				},
+			})
+			defer teardown()
+
+			// Simulate an aborted transaction on the first commit attempt
+			server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
+				SimulatedExecutionTime{
+					Errors: []error{status.Errorf(codes.Aborted, "Transaction aborted")},
+				})
+			switch method {
+			case "ReadWriteTransaction":
+				_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+					if err := tx.BufferWrite(mutations); err != nil {
+						return err
+					}
+					return nil
+				})
+				if err != nil {
+					t.Fatalf("ReadWriteTransaction failed: %v", err)
+				}
+			case "Apply":
+				_, err := client.Apply(ctx, mutations)
+				if err != nil {
+					t.Fatalf("Apply failed: %v", err)
+				}
+			}
+
+			// Verify requests for the current method
+			verifyRequests(server)
 		})
 	}
 }
