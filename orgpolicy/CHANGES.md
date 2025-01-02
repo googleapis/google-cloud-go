@@ -1,5 +1,12 @@
 # Changes
 
+## [1.14.2](https://github.com/googleapis/google-cloud-go/compare/orgpolicy/v1.14.1...orgpolicy/v1.14.2) (2025-01-02)
+
+
+### Bug Fixes
+
+* **orgpolicy:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/orgpolicy/v1.14.0...orgpolicy/v1.14.1) (2024-10-23)
 
 
