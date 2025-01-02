@@ -1,6 +1,30 @@
 # Changelog
 
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.4.1...netapp/v1.5.0) (2024-12-04)
+
+
+### Features
+
+* **netapp:** Add EstablishPeering API for Onprem Migration ([bf3fe5b](https://github.com/googleapis/google-cloud-go/commit/bf3fe5be3262c5f91f92d4850c833e56fe11be16))
+* **netapp:** Add new Active Directory state for AD Diagnostics support ([bf3fe5b](https://github.com/googleapis/google-cloud-go/commit/bf3fe5be3262c5f91f92d4850c833e56fe11be16))
+* **netapp:** Add Sync API for Replications ([bf3fe5b](https://github.com/googleapis/google-cloud-go/commit/bf3fe5be3262c5f91f92d4850c833e56fe11be16))
+* **netapp:** Enable creation of Onprem Migration in CreateVolume ([bf3fe5b](https://github.com/googleapis/google-cloud-go/commit/bf3fe5be3262c5f91f92d4850c833e56fe11be16))
+* **netapp:** Enable creation of Onprem Migration in CreateVolume ([#11172](https://github.com/googleapis/google-cloud-go/issues/11172)) ([bf3fe5b](https://github.com/googleapis/google-cloud-go/commit/bf3fe5be3262c5f91f92d4850c833e56fe11be16))
+
+
+### Documentation
+
+* **netapp:** Docs now do not allow underscore in IDs of various Resources ([bf3fe5b](https://github.com/googleapis/google-cloud-go/commit/bf3fe5be3262c5f91f92d4850c833e56fe11be16))
+
+## [1.4.1](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.4.0...netapp/v1.4.1) (2024-10-23)
+
+
+### Bug Fixes
+
+* **netapp:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **netapp:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.3.1...netapp/v1.4.0) (2024-09-19)
 
 

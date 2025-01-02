@@ -53,13 +53,20 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/googleapis/gax-go/v2/apierror"
+	"go.opentelemetry.io/contrib/detectors/gcp"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/sdk/metric"
+	"go.opentelemetry.io/otel/sdk/metric/metricdata"
+	"go.opentelemetry.io/otel/sdk/resource"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	"go.opentelemetry.io/otel/sdk/trace/tracetest"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	itesting "google.golang.org/api/iterator/testing"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	"google.golang.org/api/transport"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -93,7 +100,6 @@ var (
 )
 
 func TestMain(m *testing.M) {
-	grpc.EnableTracing = true
 	cleanup := initIntegrationTest()
 	cleanupEmulatorClients := initEmulatorClients()
 	exit := m.Run()
@@ -324,6 +330,195 @@ var readCases = []readCase{
 			return b.Bytes(), err
 		},
 	},
+}
+
+// Test in a GCE environment expected to be located in one of:
+// - us-west1-a, us-west1-b, us-west-c
+//
+// The test skips when ran outside of a GCE instance and us-west-*.
+//
+// Test cases for direct connectivity (DC) check:
+// 1. DC detected with co-located GCS bucket in us-west1
+// 2. DC not detected with multi region bucket in EU
+// 3. DC not detected with dual region bucket in EUR4
+// 4. DC not detected with regional bucket in EUROPE-WEST1
+func TestIntegration_DetectDirectConnectivityInGCE(t *testing.T) {
+	t.Skip("Does not work in kokoro yet")
+	ctx := skipHTTP("grpc only test")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
+		h := testHelper{t}
+		// Using Resoource Detector to detect if test is being ran inside GCE
+		// if so, the test expects Direct Connectivity to be detected.
+		// Otherwise, it will only validate that Direct Connectivity was not
+		// detected.
+		// https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/resourcedetectionprocessor/README.md
+		detectedAttrs, err := resource.New(ctx, resource.WithDetectors(gcp.NewDetector()))
+		if err != nil {
+			t.Fatalf("resource.New: %v", err)
+		}
+		attrs := detectedAttrs.Set()
+		if v, exists := attrs.Value("cloud.platform"); !exists || v.AsString() != "gcp_compute_engine" {
+			t.Skip("only testable in a GCE instance")
+		}
+		if v, exists := attrs.Value("cloud.region"); !exists || !strings.Contains(strings.ToLower(v.AsString()), "us-west1") {
+			t.Skip("inside a GCE instance but region is not us-west1")
+		}
+		for _, test := range []struct {
+			name                     string
+			attrs                    *BucketAttrs
+			expectDirectConnectivity bool
+		}{
+			{
+				name:                     "co-located-bucket",
+				attrs:                    &BucketAttrs{Location: "us-west1"},
+				expectDirectConnectivity: true,
+			},
+			{
+				name:  "not-colocated-multi-region-bucket",
+				attrs: &BucketAttrs{Location: "EU"},
+			},
+			{
+				name:  "not-colocated-dual-region-bucket",
+				attrs: &BucketAttrs{Location: "EUR4"},
+			},
+			{
+				name:  "not-colocated-region-bucket",
+				attrs: &BucketAttrs{Location: "EUROPE-WEST1"},
+			},
+			// TODO: Add a test for DC dual-region with us-west1 when supported
+		} {
+			t.Run(test.name, func(t *testing.T) {
+				newBucketName := prefix + uidSpace.New()
+				newBucket := client.Bucket(newBucketName)
+				h.mustCreate(newBucket, testutil.ProjID(), test.attrs)
+				defer h.mustDeleteBucket(newBucket)
+				err := CheckDirectConnectivitySupported(ctx, newBucketName)
+				if err != nil && test.expectDirectConnectivity {
+					t.Fatalf("CheckDirectConnectivitySupported: expected direct connectivity but failed: %v", err)
+				}
+				if err == nil && !test.expectDirectConnectivity {
+					t.Fatalf("CheckDirectConnectivitySupported: detected direct connectivity when not expected")
+				}
+			})
+		}
+	})
+}
+
+// Test handles the case when Direct Connectivity is disabled which causes
+// "grpc.lb.locality" to return ""
+func TestIntegration_DoNotDetectDirectConnectivityWhenDisabled(t *testing.T) {
+	ctx := skipHTTP("grpc only test")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
+		err := CheckDirectConnectivitySupported(ctx, bucket)
+		if err == nil {
+			t.Fatal("CheckDirectConnectivitySupported: expected error but none returned")
+		}
+		if err != nil && !strings.Contains(err.Error(), "direct connectivity not detected") {
+			t.Fatalf("CheckDirectConnectivitySupported: failed on a different error %v", err)
+		}
+	}, internaloption.EnableDirectPath(false))
+}
+
+func TestIntegration_MetricsEnablement(t *testing.T) {
+	ctx := skipHTTP("grpc only test")
+	mr := metric.NewManualReader()
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
+		it := client.Bucket(bucket).Objects(ctx, nil)
+		_, err := it.Next()
+		if err != iterator.Done {
+			t.Errorf("Objects.Next: expected iterator.Done got %v", err)
+		}
+		rm := metricdata.ResourceMetrics{}
+		if err := mr.Collect(ctx, &rm); err != nil {
+			t.Errorf("ManualReader.Collect: %v", err)
+		}
+		metricCheck := map[string]bool{
+			"grpc.client.attempt.started":                            false,
+			"grpc.client.attempt.duration":                           false,
+			"grpc.client.attempt.sent_total_compressed_message_size": false,
+			"grpc.client.attempt.rcvd_total_compressed_message_size": false,
+			"grpc.client.call.duration":                              false,
+		}
+		for _, sm := range rm.ScopeMetrics {
+			for _, m := range sm.Metrics {
+				metricCheck[m.Name] = true
+			}
+		}
+		for k, v := range metricCheck {
+			if !v {
+				t.Errorf("metric %v not found", k)
+			}
+		}
+	}, withTestMetricReader(mr))
+}
+
+func TestIntegration_MetricsEnablementInGCE(t *testing.T) {
+	t.Skip("flaky test for rls metrics; other metrics are tested TestIntegration_MetricsEnablement")
+	ctx := skipHTTP("grpc only test")
+	mr := metric.NewManualReader()
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
+		detectedAttrs, err := resource.New(ctx, resource.WithDetectors(gcp.NewDetector()))
+		if err != nil {
+			t.Fatalf("resource.New: %v", err)
+		}
+		attrs := detectedAttrs.Set()
+		if v, exists := attrs.Value("cloud.platform"); !exists || v.AsString() != "gcp_compute_engine" {
+			t.Skip("only testable in a GCE instance")
+		}
+		instance, exists := attrs.Value("host.id")
+		if !exists {
+			t.Skip("GCE instance id not detected")
+		}
+		if v, exists := attrs.Value("cloud.region"); !exists || !strings.Contains(strings.ToLower(v.AsString()), "us-west1") {
+			t.Skip("inside a GCE instance but region is not us-west1")
+		}
+		it := client.Buckets(ctx, testutil.ProjID())
+		_, _ = it.Next()
+		rm := metricdata.ResourceMetrics{}
+		if err := mr.Collect(ctx, &rm); err != nil {
+			t.Errorf("ManualReader.Collect: %v", err)
+		}
+
+		monitoredResourceWant := map[string]string{
+			"gcp.resource_type": "storage.googleapis.com/Client",
+			"api":               "grpc",
+			"cloud_platform":    "gcp_compute_engine",
+			"host_id":           instance.AsString(),
+			"location":          "us-west1",
+			"project_id":        testutil.ProjID(),
+			"instance_id":       "ignore", // generated UUID
+		}
+		for _, attr := range rm.Resource.Attributes() {
+			want := monitoredResourceWant[string(attr.Key)]
+			if want == "ignore" {
+				continue
+			}
+			got := attr.Value.AsString()
+			if want != got {
+				t.Errorf("got: %v want: %v", got, want)
+			}
+		}
+		metricCheck := map[string]bool{
+			"grpc.client.attempt.started":                            false,
+			"grpc.client.attempt.duration":                           false,
+			"grpc.client.attempt.sent_total_compressed_message_size": false,
+			"grpc.client.attempt.rcvd_total_compressed_message_size": false,
+			"grpc.client.call.duration":                              false,
+			"grpc.lb.rls.cache_entries":                              false,
+			"grpc.lb.rls.cache_size":                                 false,
+			"grpc.lb.rls.default_target_picks":                       false,
+		}
+		for _, sm := range rm.ScopeMetrics {
+			for _, m := range sm.Metrics {
+				metricCheck[m.Name] = true
+			}
+		}
+		for k, v := range metricCheck {
+			if !v {
+				t.Errorf("metric %v not found", k)
+			}
+		}
+	}, withTestMetricReader(mr))
 }
 
 func TestIntegration_BucketCreateDelete(t *testing.T) {
@@ -4513,6 +4708,78 @@ func TestIntegration_SoftDelete(t *testing.T) {
 	})
 }
 
+func TestIntegration_ObjectMove(t *testing.T) {
+	multiTransportTest(skipJSONReads(context.Background(), "no reads in test"), t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
+		h := testHelper{t}
+		srcObj := "move-src-obj"
+		dstObj := "move-dst-obj"
+
+		// Create bucket with HNS enabled
+		bkt := client.Bucket(prefix + uidSpace.New())
+		attrs := &BucketAttrs{
+			HierarchicalNamespace:    &HierarchicalNamespace{Enabled: true},
+			UniformBucketLevelAccess: UniformBucketLevelAccess{Enabled: true},
+			SoftDeletePolicy:         &SoftDeletePolicy{RetentionDuration: 0},
+		}
+		if err := bkt.Create(ctx, testutil.ProjID(), attrs); err != nil {
+			t.Fatalf("error creating bucket with soft delete policy set: %v", err)
+		}
+		t.Cleanup(func() { h.mustDeleteBucket(bkt) })
+
+		// Create source object
+		obj := bkt.Object(srcObj)
+		w := obj.NewWriter(ctx)
+		h.mustWrite(w, randomContents())
+		t.Cleanup(func() { h.mustDeleteObject(bkt.Object(dstObj)) })
+
+		// Move object
+		objAttrs, err := obj.Move(ctx, MoveObjectDestination{Object: dstObj})
+		if err != nil {
+			t.Fatalf("ObjectHandle.Move: %v", err)
+		}
+		// Check attrs are populated.
+		if objAttrs == nil || objAttrs.Name == "" {
+			t.Errorf("wanted object attrs to be populated; got %+v", objAttrs)
+		}
+		// Check source object is no longer present.
+		if _, err := obj.Attrs(ctx); !errors.Is(err, ErrObjectNotExist) {
+			t.Errorf("source object: got err %v, want ErrObjectNotExist", err)
+		}
+
+		// Test that source and destination preconditions are applied appropriately.
+		srcObj2 := "move-src-obj2"
+		dstObj2 := "move-dst-obj2"
+
+		obj2 := bkt.Object(srcObj2)
+		w2 := obj2.NewWriter(ctx)
+		h.mustWrite(w2, randomContents())
+		t.Cleanup(func() { h.mustDeleteObject(bkt.Object(dstObj2)) })
+
+		// Bad source generation should cause 412.
+		_, err = obj2.If(Conditions{
+			GenerationMatch: 123,
+		}).Move(ctx, MoveObjectDestination{Object: dstObj2})
+		if err == nil || !(status.Code(err) == codes.FailedPrecondition || extractErrCode(err) == http.StatusPreconditionFailed) {
+			t.Errorf("ObjectHandle.Move: got err %v, want failed precondition (412)", err)
+		}
+
+		// Bad dest generation should also cause 412.
+		_, err = obj2.Move(ctx, MoveObjectDestination{Object: dstObj2, Conditions: &Conditions{GenerationMatch: 123}})
+		if err == nil || !(status.Code(err) == codes.FailedPrecondition || extractErrCode(err) == http.StatusPreconditionFailed) {
+			t.Errorf("ObjectHandle.Move: got err %v, want failed precondition (412)", err)
+		}
+
+		// Correctly applied preconditions should work.
+		_, err = obj2.If(Conditions{
+			GenerationMatch:     w2.Attrs().Generation,
+			MetagenerationMatch: w2.Attrs().Metageneration,
+		}).Move(ctx, MoveObjectDestination{Object: dstObj2, Conditions: &Conditions{DoesNotExist: true}})
+		if err != nil {
+			t.Fatalf("ObjectHandle.Move: %v", err)
+		}
+	})
+}
+
 func TestIntegration_KMS(t *testing.T) {
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, prefix string, client *Client) {
 		h := testHelper{t}
@@ -4954,8 +5221,48 @@ func TestIntegration_ReaderAttrs(t *testing.T) {
 			Metageneration:  attrs.Metageneration,
 			CRC32C:          crc32c(c),
 		}
-		if got != want {
-			t.Fatalf("got\t%v,\nwanted\t%v", got, want)
+		if diff := cmp.Diff(got, want); diff != "" {
+			t.Fatalf("diff got vs want: %v", diff)
+		}
+	})
+}
+
+func TestIntegration_ReaderAttrs_Metadata(t *testing.T) {
+	multiTransportTest(skipJSONReads(context.Background(), "metadata on read not supported on JSON api"), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
+		bkt := client.Bucket(bucket)
+
+		const defaultType = "text/plain"
+		o := bkt.Object("reader-attrs-metadata-obj")
+		c := randomContents()
+		if err := writeObject(ctx, o, defaultType, c); err != nil {
+			t.Errorf("Write for %v failed with %v", o.ObjectName(), err)
+		}
+		t.Cleanup(func() {
+			if err := o.Delete(ctx); err != nil {
+				log.Printf("failed to delete test object: %v", err)
+			}
+		})
+
+		oa, err := o.Update(ctx, ObjectAttrsToUpdate{Metadata: map[string]string{"Custom-Key": "custom-value", "Other-Key": "other-value"}})
+		if err != nil {
+			t.Fatal(err)
+		}
+		_ = oa
+
+		o = o.Generation(oa.Generation)
+		rc, err := o.NewReader(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		got := rc.Metadata()
+		want := map[string]string{
+			"Custom-Key": "custom-value",
+			"Other-Key":  "other-value",
+		}
+
+		if diff := cmp.Diff(got, want); diff != "" {
+			t.Fatalf("diff got vs want: %v", diff)
 		}
 	})
 }
@@ -5772,10 +6079,10 @@ func TestIntegration_PostPolicyV4_SignedURL_WithSignBytes(t *testing.T) {
 	})
 }
 
-func TestIntegration_OCTracing(t *testing.T) {
+func TestIntegration_OTelTracing(t *testing.T) {
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
-		te := testutil.NewTestExporter()
-		defer te.Unregister()
+		te := newOpenTelemetryTestExporter()
+		defer te.Unregister(ctx)
 
 		bkt := client.Bucket(bucket)
 		bkt.Attrs(ctx)
@@ -5784,6 +6091,38 @@ func TestIntegration_OCTracing(t *testing.T) {
 			t.Fatalf("Expected some spans to be created, but got %d", 0)
 		}
 	})
+}
+
+// openTelemetryTestExporter is a test utility exporter. It should be created
+// with NewopenTelemetryTestExporter.
+type openTelemetryTestExporter struct {
+	exporter *tracetest.InMemoryExporter
+	tp       *sdktrace.TracerProvider
+}
+
+// newOpenTelemetryTestExporter creates a openTelemetryTestExporter with
+// underlying InMemoryExporter and TracerProvider from OpenTelemetry.
+func newOpenTelemetryTestExporter() *openTelemetryTestExporter {
+	exporter := tracetest.NewInMemoryExporter()
+	tp := sdktrace.NewTracerProvider(
+		sdktrace.WithSyncer(exporter),
+		sdktrace.WithSampler(sdktrace.AlwaysSample()),
+	)
+	otel.SetTracerProvider(tp)
+	return &openTelemetryTestExporter{
+		exporter: exporter,
+		tp:       tp,
+	}
+}
+
+// Spans returns the current in-memory stored spans.
+func (te *openTelemetryTestExporter) Spans() tracetest.SpanStubs {
+	return te.exporter.GetSpans()
+}
+
+// Unregister shuts down the underlying OpenTelemetry TracerProvider.
+func (te *openTelemetryTestExporter) Unregister(ctx context.Context) {
+	te.tp.Shutdown(ctx)
 }
 
 // verifySignedURL gets the bytes at the provided url and verifies them against the

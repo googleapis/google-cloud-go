@@ -119,6 +119,36 @@ func ExampleSiteSearchEngineClient_BatchVerifyTargetSites() {
 	_ = resp
 }
 
+func ExampleSiteSearchEngineClient_CreateSitemap() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := discoveryengine.NewSiteSearchEngineClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &discoveryenginepb.CreateSitemapRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/discoveryengine/apiv1beta/discoveryenginepb#CreateSitemapRequest.
+	}
+	op, err := c.CreateSitemap(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleSiteSearchEngineClient_CreateTargetSite() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -147,6 +177,34 @@ func ExampleSiteSearchEngineClient_CreateTargetSite() {
 	}
 	// TODO: Use resp.
 	_ = resp
+}
+
+func ExampleSiteSearchEngineClient_DeleteSitemap() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := discoveryengine.NewSiteSearchEngineClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &discoveryenginepb.DeleteSitemapRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/discoveryengine/apiv1beta/discoveryenginepb#DeleteSitemapRequest.
+	}
+	op, err := c.DeleteSitemap(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleSiteSearchEngineClient_DeleteTargetSite() {
@@ -272,6 +330,31 @@ func ExampleSiteSearchEngineClient_FetchDomainVerificationStatus() {
 		// first call to Next(). Not safe for concurrent access.
 		_ = it.Response.(*discoveryenginepb.FetchDomainVerificationStatusResponse)
 	}
+}
+
+func ExampleSiteSearchEngineClient_FetchSitemaps() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := discoveryengine.NewSiteSearchEngineClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &discoveryenginepb.FetchSitemapsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/discoveryengine/apiv1beta/discoveryenginepb#FetchSitemapsRequest.
+	}
+	resp, err := c.FetchSitemaps(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleSiteSearchEngineClient_GetSiteSearchEngine() {

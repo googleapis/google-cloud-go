@@ -21,8 +21,8 @@ import (
 	"fmt"
 	"log"
 	"reflect"
-	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"cloud.google.com/go/internal/trace"
@@ -49,7 +49,7 @@ func newClientIDGenerator() *clientIDGenerator {
 	return &clientIDGenerator{ids: make(map[string]int)}
 }
 
-func (cg *clientIDGenerator) nextID(database string) string {
+func (cg *clientIDGenerator) nextClientIDAndOrdinal(database string) (clientID string, nthClient int) {
 	cg.mu.Lock()
 	defer cg.mu.Unlock()
 	var id int
@@ -59,7 +59,12 @@ func (cg *clientIDGenerator) nextID(database string) string {
 		id = 1
 	}
 	cg.ids[database] = id
-	return fmt.Sprintf("client-%d", id)
+	return fmt.Sprintf("client-%d", id), id
+}
+
+func (cg *clientIDGenerator) nextID(database string) string {
+	clientStrID, _ := cg.nextClientIDAndOrdinal(database)
+	return clientStrID
 }
 
 // sessionConsumer is passed to the batchCreateSessions method and will receive
@@ -90,26 +95,34 @@ type sessionClient struct {
 	closed               bool
 	disableRouteToLeader bool
 
-	connPool      gtransport.ConnPool
-	database      string
-	id            string
-	userAgent     string
-	sessionLabels map[string]string
-	databaseRole  string
-	md            metadata.MD
-	batchTimeout  time.Duration
-	logger        *log.Logger
-	callOptions   *vkit.CallOptions
-	otConfig      *openTelemetryConfig
+	connPool             gtransport.ConnPool
+	database             string
+	id                   string
+	userAgent            string
+	sessionLabels        map[string]string
+	databaseRole         string
+	md                   metadata.MD
+	batchTimeout         time.Duration
+	logger               *log.Logger
+	callOptions          *vkit.CallOptions
+	otConfig             *openTelemetryConfig
+	metricsTracerFactory *builtinMetricsTracerFactory
+	channelIDMap         map[*grpc.ClientConn]uint64
+
+	// These fields are for request-id propagation.
+	nthClient int
+	// nthRequest shall always be incremented on every fresh request.
+	nthRequest *atomic.Uint32
 }
 
 // newSessionClient creates a session client to use for a database.
 func newSessionClient(connPool gtransport.ConnPool, database, userAgent string, sessionLabels map[string]string, databaseRole string, disableRouteToLeader bool, md metadata.MD, batchTimeout time.Duration, logger *log.Logger, callOptions *vkit.CallOptions) *sessionClient {
+	clientID, nthClient := cidGen.nextClientIDAndOrdinal(database)
 	return &sessionClient{
 		connPool:             connPool,
 		database:             database,
 		userAgent:            userAgent,
-		id:                   cidGen.nextID(database),
+		id:                   clientID,
 		sessionLabels:        sessionLabels,
 		databaseRole:         databaseRole,
 		disableRouteToLeader: disableRouteToLeader,
@@ -117,6 +130,9 @@ func newSessionClient(connPool gtransport.ConnPool, database, userAgent string, 
 		batchTimeout:         batchTimeout,
 		logger:               logger,
 		callOptions:          callOptions,
+
+		nthClient:  nthClient,
+		nthRequest: new(atomic.Uint32),
 	}
 }
 
@@ -249,9 +265,8 @@ func (sc *sessionClient) batchCreateSessions(createSessionCount int32, distribut
 
 // executeBatchCreateSessions executes the gRPC call for creating a batch of
 // sessions.
-func (sc *sessionClient) executeBatchCreateSessions(client *vkit.Client, createCount int32, labels map[string]string, md metadata.MD, consumer sessionConsumer) {
+func (sc *sessionClient) executeBatchCreateSessions(client spannerClient, createCount int32, labels map[string]string, md metadata.MD, consumer sessionConsumer) {
 	defer sc.waitWorkers.Done()
-
 	ctx, cancel := context.WithTimeout(context.Background(), sc.batchTimeout)
 	defer cancel()
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.BatchCreateSessions")
@@ -325,7 +340,7 @@ func (sc *sessionClient) executeBatchCreateSessions(client *vkit.Client, createC
 	}
 }
 
-func (sc *sessionClient) executeCreateMultiplexedSession(ctx context.Context, client *vkit.Client, md metadata.MD, consumer sessionConsumer) {
+func (sc *sessionClient) executeCreateMultiplexedSession(ctx context.Context, client spannerClient, md metadata.MD, consumer sessionConsumer) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.CreateSession")
 	defer func() { trace.EndSpan(ctx, nil) }()
 	trace.TracePrintf(ctx, nil, "Creating a multiplexed session")
@@ -395,30 +410,36 @@ func (sc *sessionClient) sessionWithID(id string) (*session, error) {
 // client is set on the session, and used by all subsequent gRPC calls on the
 // session. Using the same channel for all gRPC calls for a session ensures the
 // optimal usage of server side caches.
-func (sc *sessionClient) nextClient() (*vkit.Client, error) {
+func (sc *sessionClient) nextClient() (spannerClient, error) {
 	var clientOpt option.ClientOption
+	var channelID uint64
 	if _, ok := sc.connPool.(*gmeWrapper); ok {
 		// Pass GCPMultiEndpoint as a pool.
 		clientOpt = gtransport.WithConnPool(sc.connPool)
 	} else {
 		// Pick a grpc.ClientConn from a regular pool.
-		clientOpt = option.WithGRPCConn(sc.connPool.Conn())
+		conn := sc.connPool.Conn()
+
+		// Retrieve the channelID for each spannerClient.
+		// It is assumed that this method is invoked
+		// under a lock already.
+		var ok bool
+		channelID, ok = sc.channelIDMap[conn]
+		if !ok {
+			if sc.channelIDMap == nil {
+				sc.channelIDMap = make(map[*grpc.ClientConn]uint64)
+			}
+			channelID = uint64(len(sc.channelIDMap)) + 1
+			sc.channelIDMap[conn] = channelID
+		}
+
+		clientOpt = option.WithGRPCConn(conn)
 	}
-	client, err := vkit.NewClient(context.Background(), clientOpt)
+	client, err := newGRPCSpannerClient(context.Background(), sc, channelID, clientOpt)
 	if err != nil {
 		return nil, err
 	}
-	clientInfo := []string{"gccl", internal.Version}
-	if sc.userAgent != "" {
-		agentWithVersion := strings.SplitN(sc.userAgent, "/", 2)
-		if len(agentWithVersion) == 2 {
-			clientInfo = append(clientInfo, agentWithVersion[0], agentWithVersion[1])
-		}
-	}
-	client.SetGoogleClientInfo(clientInfo...)
-	if sc.callOptions != nil {
-		client.CallOptions = mergeCallOptions(client.CallOptions, sc.callOptions)
-	}
+
 	return client, nil
 }
 

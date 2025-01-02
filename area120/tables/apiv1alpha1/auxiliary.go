@@ -41,7 +41,7 @@ type RowIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*tablespb.Row, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *RowIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -88,7 +88,7 @@ type TableIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*tablespb.Table, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TableIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -135,7 +135,7 @@ type WorkspaceIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*tablespb.Workspace, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *WorkspaceIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/bigquery/migration/apiv2",
-    "version": "1.63.0",
+    "version": "1.65.0",
     "language": "GO",
     "apis": [
       {

@@ -18,6 +18,7 @@ package spanner
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"sync"
 	"testing"
@@ -92,7 +93,8 @@ func TestNextClient(t *testing.T) {
 
 	n := 4
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		NumChannels: n,
+		DisableNativeMetrics: true,
+		NumChannels:          n,
 		SessionPoolConfig: SessionPoolConfig{
 			MinOpened: 0,
 			MaxOpened: 100,
@@ -134,6 +136,7 @@ func TestCreateAndCloseSession(t *testing.T) {
 	t.Parallel()
 
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
 		SessionPoolConfig: SessionPoolConfig{
 			MinOpened: 0,
 			MaxOpened: 100,
@@ -167,7 +170,7 @@ func TestCreateSessionWithDatabaseRole(t *testing.T) {
 		MinOpened: 0,
 		MaxOpened: 1,
 	}
-	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{SessionPoolConfig: sc, DatabaseRole: "test"})
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, SessionPoolConfig: sc, DatabaseRole: "test"})
 	defer teardown()
 	ctx := context.Background()
 
@@ -224,7 +227,8 @@ func TestBatchCreateAndCloseSession(t *testing.T) {
 		prevCreated := server.TestSpanner.TotalSessionsCreated()
 		prevDeleted := server.TestSpanner.TotalSessionsDeleted()
 		config := ClientConfig{
-			NumChannels: numChannels,
+			DisableNativeMetrics: true,
+			NumChannels:          numChannels,
 			SessionPoolConfig: SessionPoolConfig{
 				MinOpened: 0,
 				MaxOpened: 400,
@@ -260,7 +264,7 @@ func TestBatchCreateAndCloseSession(t *testing.T) {
 				client.idleSessions.mu.Lock()
 				defer client.idleSessions.mu.Unlock()
 				if client.idleSessions.multiplexedSession == nil {
-					return fmt.Errorf("multiplexed session not created yet")
+					return errors.New("multiplexed session not created yet")
 				}
 				return nil
 			})
@@ -281,7 +285,7 @@ func TestBatchCreateAndCloseSession(t *testing.T) {
 			t.Fatalf("number of sessions created mismatch\ngot: %v\nwant: %v", created, expectedNumSessions)
 		}
 		// Check that all channels are used evenly.
-		channelCounts := make(map[*vkit.Client]int32)
+		channelCounts := make(map[spannerClient]int32)
 		for _, s := range consumer.sessions {
 			channelCounts[s.client]++
 		}
@@ -341,7 +345,7 @@ func TestBatchCreateSessionsWithDatabaseRole(t *testing.T) {
 		MinOpened: 0,
 		MaxOpened: 1,
 	}
-	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{SessionPoolConfig: sc, DatabaseRole: "test"})
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, SessionPoolConfig: sc, DatabaseRole: "test"})
 	defer teardown()
 
 	ctx := context.Background()
@@ -387,7 +391,8 @@ func TestBatchCreateSessionsWithExceptions(t *testing.T) {
 		// Make sure that the error is not always the first call.
 		for firstErrorAt := numErrors - 1; firstErrorAt < numChannels-numErrors+1; firstErrorAt++ {
 			config := ClientConfig{
-				NumChannels: numChannels,
+				DisableNativeMetrics: true,
+				NumChannels:          numChannels,
 				SessionPoolConfig: SessionPoolConfig{
 					MinOpened: 0,
 					MaxOpened: 400,
@@ -432,7 +437,8 @@ func TestBatchCreateSessions_ServerReturnsLessThanRequestedSessions(t *testing.T
 
 	numChannels := 4
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		NumChannels: numChannels,
+		DisableNativeMetrics: true,
+		NumChannels:          numChannels,
 		SessionPoolConfig: SessionPoolConfig{
 			MinOpened: 0,
 			MaxOpened: 100,
@@ -465,7 +471,8 @@ func TestBatchCreateSessions_ServerExhausted(t *testing.T) {
 
 	numChannels := 4
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		NumChannels: numChannels,
+		DisableNativeMetrics: true,
+		NumChannels:          numChannels,
 		SessionPoolConfig: SessionPoolConfig{
 			MinOpened: 0,
 			MaxOpened: 100,
@@ -475,7 +482,7 @@ func TestBatchCreateSessions_ServerExhausted(t *testing.T) {
 	if isMultiplexEnabled {
 		waitFor(t, func() error {
 			if client.idleSessions.multiplexedSession == nil {
-				return fmt.Errorf("multiplexed session not created yet")
+				return errors.New("multiplexed session not created yet")
 			}
 			return nil
 		})
@@ -521,6 +528,7 @@ func TestBatchCreateSessions_WithTimeout(t *testing.T) {
 		MinimumExecutionTime: time.Second,
 	})
 	config := ClientConfig{
+		DisableNativeMetrics: true,
 		SessionPoolConfig: SessionPoolConfig{
 			MinOpened: 0,
 			MaxOpened: 400,

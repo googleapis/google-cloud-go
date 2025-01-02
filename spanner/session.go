@@ -24,14 +24,12 @@ import (
 	"log"
 	"math"
 	"math/rand"
-	"os"
 	"runtime/debug"
 	"strings"
 	"sync"
 	"time"
 
 	"cloud.google.com/go/internal/trace"
-	vkit "cloud.google.com/go/spanner/apiv1"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"cloud.google.com/go/spanner/internal"
 	"go.opencensus.io/stats"
@@ -91,7 +89,7 @@ type sessionHandle struct {
 	// access it directly.
 	session *session
 	// client is the RPC channel to Cloud Spanner. It is set only once during session acquisition.
-	client *vkit.Client
+	client spannerClient
 	// checkoutTime is the time the session was checked out of the pool.
 	checkoutTime time.Time
 	// lastUseTime is the time the session was last used after checked out of the pool.
@@ -151,7 +149,7 @@ func (sh *sessionHandle) getID() string {
 
 // getClient gets the Cloud Spanner RPC client associated with the session ID
 // in sessionHandle.
-func (sh *sessionHandle) getClient() *vkit.Client {
+func (sh *sessionHandle) getClient() spannerClient {
 	sh.mu.Lock()
 	defer sh.mu.Unlock()
 	if sh.session == nil {
@@ -227,7 +225,7 @@ func (sh *sessionHandle) updateLastUseTime() {
 type session struct {
 	// client is the RPC channel to Cloud Spanner. It is set only once during
 	// session's creation.
-	client *vkit.Client
+	client spannerClient
 	// id is the unique id of the session in Cloud Spanner. It is set only once
 	// during session's creation.
 	id string
@@ -508,6 +506,11 @@ type SessionPoolConfig struct {
 	// Defaults to false.
 	TrackSessionHandles bool
 
+	enableMultiplexSession bool
+
+	// enableMultiplexedSessionForRW is a flag to enable multiplexed session for read/write transactions
+	enableMultiplexedSessionForRW bool
+
 	// healthCheckSampleInterval is how often the health checker samples live
 	// session (for use in maintaining session pool size).
 	//
@@ -603,7 +606,7 @@ type sessionPool struct {
 	// multiplexSessionClientCounter is the counter for the multiplexed session client.
 	multiplexSessionClientCounter int
 	// clientPool is a pool of Cloud Spanner grpc clients.
-	clientPool []*vkit.Client
+	clientPool []spannerClient
 	// multiplexedSession contains the multiplexed session
 	multiplexedSession *session
 	// mayGetSession is for broadcasting that session retrival/creation may
@@ -700,10 +703,7 @@ func newSessionPool(sc *sessionClient, config SessionPoolConfig) (*sessionPool, 
 	if config.MultiplexSessionCheckInterval == 0 {
 		config.MultiplexSessionCheckInterval = 10 * time.Minute
 	}
-	isMultiplexed := strings.ToLower(os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS"))
-	if isMultiplexed != "" && isMultiplexed != "true" && isMultiplexed != "false" {
-		return nil, spannerErrorf(codes.InvalidArgument, "GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS must be either true or false")
-	}
+
 	pool := &sessionPool{
 		sc:                       sc,
 		valid:                    true,
@@ -714,7 +714,7 @@ func newSessionPool(sc *sessionClient, config SessionPoolConfig) (*sessionPool, 
 		mw:                       newMaintenanceWindow(config.MaxOpened),
 		rand:                     rand.New(rand.NewSource(time.Now().UnixNano())),
 		otConfig:                 sc.otConfig,
-		enableMultiplexSession:   isMultiplexed == "true",
+		enableMultiplexSession:   config.enableMultiplexSession,
 	}
 
 	_, instance, database, err := parseDatabaseName(sc.database)
@@ -762,7 +762,6 @@ func newSessionPool(sc *sessionClient, config SessionPoolConfig) (*sessionPool, 
 			// wait for the session to be created
 			case <-pool.mayGetMultiplexedSession:
 			}
-			return
 		}()
 	}
 	pool.recordStat(context.Background(), MaxAllowedSessionsCount, int64(config.MaxOpened))
@@ -809,6 +808,18 @@ func (p *sessionPool) getRatioOfSessionsInUseLocked() float64 {
 		return 0
 	}
 	return float64(p.numInUse) / float64(maxSessions)
+}
+
+func (p *sessionPool) isMultiplexedSessionForRWEnabled() bool {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	return p.enableMultiplexedSessionForRW
+}
+
+func (p *sessionPool) disableMultiplexedSessionForRW() {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	p.enableMultiplexedSessionForRW = false
 }
 
 // gets sessions which are unexpectedly long-running.
@@ -908,7 +919,10 @@ func (p *sessionPool) createMultiplexedSession() {
 				p.mu.Lock()
 				p.multiplexedSessionCreationError = err
 				p.mu.Unlock()
-				p.mayGetMultiplexedSession <- true
+				select {
+				case p.mayGetMultiplexedSession <- true:
+				case <-c.ctx.Done():
+				}
 				continue
 			}
 			p.sc.executeCreateMultiplexedSession(c.ctx, client, p.sc.md, p)
@@ -1084,14 +1098,14 @@ func (p *sessionPool) newSessionHandle(s *session) (sh *sessionHandle) {
 	return sh
 }
 
-func (p *sessionPool) getRoundRobinClient() *vkit.Client {
+func (p *sessionPool) getRoundRobinClient() spannerClient {
 	p.sc.mu.Lock()
 	defer func() {
 		p.multiplexSessionClientCounter++
 		p.sc.mu.Unlock()
 	}()
 	if len(p.clientPool) == 0 {
-		p.clientPool = make([]*vkit.Client, p.sc.connPool.Num())
+		p.clientPool = make([]spannerClient, p.sc.connPool.Num())
 		for i := 0; i < p.sc.connPool.Num(); i++ {
 			c, err := p.sc.nextClient()
 			if err != nil {
@@ -1943,15 +1957,19 @@ func isSessionNotFoundError(err error) bool {
 	return strings.Contains(err.Error(), "Session not found")
 }
 
-// isUnimplementedError returns true if the gRPC error code is Unimplemented.
 func isUnimplementedError(err error) bool {
 	if err == nil {
 		return false
 	}
-	if ErrCode(err) == codes.Unimplemented {
-		return true
+	return ErrCode(err) == codes.Unimplemented
+}
+
+// isUnimplementedErrorForMultiplexedRW returns true if the gRPC error code is Unimplemented and related to use of multiplexed session with ReadWrite txn.
+func isUnimplementedErrorForMultiplexedRW(err error) bool {
+	if err == nil {
+		return false
 	}
-	return false
+	return ErrCode(err) == codes.Unimplemented && strings.Contains(err.Error(), "Transaction type read_write not supported with multiplexed sessions")
 }
 
 func isFailedInlineBeginTransaction(err error) bool {

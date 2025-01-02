@@ -1,5 +1,20 @@
 # Changes
 
+## [1.14.3](https://github.com/googleapis/google-cloud-go/compare/automl/v1.14.2...automl/v1.14.3) (2024-12-11)
+
+
+### Documentation
+
+* **automl:** Update io.proto to use markdown headings instead of HTML, remove some unused HTML from markdown ([#11234](https://github.com/googleapis/google-cloud-go/issues/11234)) ([0b3ab19](https://github.com/googleapis/google-cloud-go/commit/0b3ab19d38a5726b9e9db91fde933c4d7fe72fc8))
+
+## [1.14.2](https://github.com/googleapis/google-cloud-go/compare/automl/v1.14.1...automl/v1.14.2) (2024-10-23)
+
+
+### Bug Fixes
+
+* **automl:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **automl:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
 ## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/automl/v1.14.0...automl/v1.14.1) (2024-09-12)
 
 

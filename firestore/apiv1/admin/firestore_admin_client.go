@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -695,6 +694,8 @@ type firestoreAdminGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewFirestoreAdminClient creates a new firestore admin client based on gRPC.
@@ -748,6 +749,7 @@ func NewFirestoreAdminClient(ctx context.Context, opts ...option.ClientOption) (
 		connPool:             connPool,
 		firestoreAdminClient: adminpb.NewFirestoreAdminClient(connPool),
 		CallOptions:          &client.CallOptions,
+		logger:               internaloption.GetLogger(opts),
 		operationsClient:     longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -811,6 +813,8 @@ type firestoreAdminRESTClient struct {
 
 	// Points back to the CallOptions field of the containing FirestoreAdminClient
 	CallOptions **FirestoreAdminCallOptions
+
+	logger *slog.Logger
 }
 
 // NewFirestoreAdminRESTClient creates a new firestore admin rest client.
@@ -855,6 +859,7 @@ func NewFirestoreAdminRESTClient(ctx context.Context, opts ...option.ClientOptio
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -917,7 +922,7 @@ func (c *firestoreAdminGRPCClient) CreateIndex(ctx context.Context, req *adminpb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.firestoreAdminClient.CreateIndex(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.firestoreAdminClient.CreateIndex, req, settings.GRPC, c.logger, "CreateIndex")
 		return err
 	}, opts...)
 	if err != nil {
@@ -948,7 +953,7 @@ func (c *firestoreAdminGRPCClient) ListIndexes(ctx context.Context, req *adminpb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.firestoreAdminClient.ListIndexes(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.firestoreAdminClient.ListIndexes, req, settings.GRPC, c.logger, "ListIndexes")
 			return err
 		}, opts...)
 		if err != nil {
@@ -983,7 +988,7 @@ func (c *firestoreAdminGRPCClient) GetIndex(ctx context.Context, req *adminpb.Ge
 	var resp *adminpb.Index
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.firestoreAdminClient.GetIndex(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.firestoreAdminClient.GetIndex, req, settings.GRPC, c.logger, "GetIndex")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1000,7 +1005,7 @@ func (c *firestoreAdminGRPCClient) DeleteIndex(ctx context.Context, req *adminpb
 	opts = append((*c.CallOptions).DeleteIndex[0:len((*c.CallOptions).DeleteIndex):len((*c.CallOptions).DeleteIndex)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.firestoreAdminClient.DeleteIndex(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.firestoreAdminClient.DeleteIndex, req, settings.GRPC, c.logger, "DeleteIndex")
 		return err
 	}, opts...)
 	return err
@@ -1015,7 +1020,7 @@ func (c *firestoreAdminGRPCClient) GetField(ctx context.Context, req *adminpb.Ge
 	var resp *adminpb.Field
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.firestoreAdminClient.GetField(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.firestoreAdminClient.GetField, req, settings.GRPC, c.logger, "GetField")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1033,7 +1038,7 @@ func (c *firestoreAdminGRPCClient) UpdateField(ctx context.Context, req *adminpb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.firestoreAdminClient.UpdateField(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.firestoreAdminClient.UpdateField, req, settings.GRPC, c.logger, "UpdateField")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1064,7 +1069,7 @@ func (c *firestoreAdminGRPCClient) ListFields(ctx context.Context, req *adminpb.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.firestoreAdminClient.ListFields(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.firestoreAdminClient.ListFields, req, settings.GRPC, c.logger, "ListFields")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1099,7 +1104,7 @@ func (c *firestoreAdminGRPCClient) ExportDocuments(ctx context.Context, req *adm
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.firestoreAdminClient.ExportDocuments(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.firestoreAdminClient.ExportDocuments, req, settings.GRPC, c.logger, "ExportDocuments")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1119,7 +1124,7 @@ func (c *firestoreAdminGRPCClient) ImportDocuments(ctx context.Context, req *adm
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.firestoreAdminClient.ImportDocuments(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.firestoreAdminClient.ImportDocuments, req, settings.GRPC, c.logger, "ImportDocuments")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1139,7 +1144,7 @@ func (c *firestoreAdminGRPCClient) BulkDeleteDocuments(ctx context.Context, req 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.firestoreAdminClient.BulkDeleteDocuments(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.firestoreAdminClient.BulkDeleteDocuments, req, settings.GRPC, c.logger, "BulkDeleteDocuments")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1159,7 +1164,7 @@ func (c *firestoreAdminGRPCClient) CreateDatabase(ctx context.Context, req *admi
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.firestoreAdminClient.CreateDatabase(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.firestoreAdminClient.CreateDatabase, req, settings.GRPC, c.logger, "CreateDatabase")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1179,7 +1184,7 @@ func (c *firestoreAdminGRPCClient) GetDatabase(ctx context.Context, req *adminpb
 	var resp *adminpb.Database
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.firestoreAdminClient.GetDatabase(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.firestoreAdminClient.GetDatabase, req, settings.GRPC, c.logger, "GetDatabase")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1197,7 +1202,7 @@ func (c *firestoreAdminGRPCClient) ListDatabases(ctx context.Context, req *admin
 	var resp *adminpb.ListDatabasesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.firestoreAdminClient.ListDatabases(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.firestoreAdminClient.ListDatabases, req, settings.GRPC, c.logger, "ListDatabases")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1215,7 +1220,7 @@ func (c *firestoreAdminGRPCClient) UpdateDatabase(ctx context.Context, req *admi
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.firestoreAdminClient.UpdateDatabase(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.firestoreAdminClient.UpdateDatabase, req, settings.GRPC, c.logger, "UpdateDatabase")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1235,7 +1240,7 @@ func (c *firestoreAdminGRPCClient) DeleteDatabase(ctx context.Context, req *admi
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.firestoreAdminClient.DeleteDatabase(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.firestoreAdminClient.DeleteDatabase, req, settings.GRPC, c.logger, "DeleteDatabase")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1255,7 +1260,7 @@ func (c *firestoreAdminGRPCClient) GetBackup(ctx context.Context, req *adminpb.G
 	var resp *adminpb.Backup
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.firestoreAdminClient.GetBackup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.firestoreAdminClient.GetBackup, req, settings.GRPC, c.logger, "GetBackup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1273,7 +1278,7 @@ func (c *firestoreAdminGRPCClient) ListBackups(ctx context.Context, req *adminpb
 	var resp *adminpb.ListBackupsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.firestoreAdminClient.ListBackups(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.firestoreAdminClient.ListBackups, req, settings.GRPC, c.logger, "ListBackups")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1290,7 +1295,7 @@ func (c *firestoreAdminGRPCClient) DeleteBackup(ctx context.Context, req *adminp
 	opts = append((*c.CallOptions).DeleteBackup[0:len((*c.CallOptions).DeleteBackup):len((*c.CallOptions).DeleteBackup)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.firestoreAdminClient.DeleteBackup(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.firestoreAdminClient.DeleteBackup, req, settings.GRPC, c.logger, "DeleteBackup")
 		return err
 	}, opts...)
 	return err
@@ -1305,7 +1310,7 @@ func (c *firestoreAdminGRPCClient) RestoreDatabase(ctx context.Context, req *adm
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.firestoreAdminClient.RestoreDatabase(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.firestoreAdminClient.RestoreDatabase, req, settings.GRPC, c.logger, "RestoreDatabase")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1325,7 +1330,7 @@ func (c *firestoreAdminGRPCClient) CreateBackupSchedule(ctx context.Context, req
 	var resp *adminpb.BackupSchedule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.firestoreAdminClient.CreateBackupSchedule(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.firestoreAdminClient.CreateBackupSchedule, req, settings.GRPC, c.logger, "CreateBackupSchedule")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1343,7 +1348,7 @@ func (c *firestoreAdminGRPCClient) GetBackupSchedule(ctx context.Context, req *a
 	var resp *adminpb.BackupSchedule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.firestoreAdminClient.GetBackupSchedule(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.firestoreAdminClient.GetBackupSchedule, req, settings.GRPC, c.logger, "GetBackupSchedule")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1361,7 +1366,7 @@ func (c *firestoreAdminGRPCClient) ListBackupSchedules(ctx context.Context, req 
 	var resp *adminpb.ListBackupSchedulesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.firestoreAdminClient.ListBackupSchedules(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.firestoreAdminClient.ListBackupSchedules, req, settings.GRPC, c.logger, "ListBackupSchedules")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1379,7 +1384,7 @@ func (c *firestoreAdminGRPCClient) UpdateBackupSchedule(ctx context.Context, req
 	var resp *adminpb.BackupSchedule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.firestoreAdminClient.UpdateBackupSchedule(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.firestoreAdminClient.UpdateBackupSchedule, req, settings.GRPC, c.logger, "UpdateBackupSchedule")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1396,7 +1401,7 @@ func (c *firestoreAdminGRPCClient) DeleteBackupSchedule(ctx context.Context, req
 	opts = append((*c.CallOptions).DeleteBackupSchedule[0:len((*c.CallOptions).DeleteBackupSchedule):len((*c.CallOptions).DeleteBackupSchedule)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.firestoreAdminClient.DeleteBackupSchedule(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.firestoreAdminClient.DeleteBackupSchedule, req, settings.GRPC, c.logger, "DeleteBackupSchedule")
 		return err
 	}, opts...)
 	return err
@@ -1410,7 +1415,7 @@ func (c *firestoreAdminGRPCClient) CancelOperation(ctx context.Context, req *lon
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -1424,7 +1429,7 @@ func (c *firestoreAdminGRPCClient) DeleteOperation(ctx context.Context, req *lon
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -1439,7 +1444,7 @@ func (c *firestoreAdminGRPCClient) GetOperation(ctx context.Context, req *longru
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1468,7 +1473,7 @@ func (c *firestoreAdminGRPCClient) ListOperations(ctx context.Context, req *long
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1537,21 +1542,10 @@ func (c *firestoreAdminRESTClient) CreateIndex(ctx context.Context, req *adminpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateIndex")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1617,21 +1611,10 @@ func (c *firestoreAdminRESTClient) ListIndexes(ctx context.Context, req *adminpb
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListIndexes")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1694,17 +1677,7 @@ func (c *firestoreAdminRESTClient) GetIndex(ctx context.Context, req *adminpb.Ge
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetIndex")
 		if err != nil {
 			return err
 		}
@@ -1751,15 +1724,8 @@ func (c *firestoreAdminRESTClient) DeleteIndex(ctx context.Context, req *adminpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteIndex")
+		return err
 	}, opts...)
 }
 
@@ -1796,17 +1762,7 @@ func (c *firestoreAdminRESTClient) GetField(ctx context.Context, req *adminpb.Ge
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetField")
 		if err != nil {
 			return err
 		}
@@ -1883,21 +1839,10 @@ func (c *firestoreAdminRESTClient) UpdateField(ctx context.Context, req *adminpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateField")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1971,21 +1916,10 @@ func (c *firestoreAdminRESTClient) ListFields(ctx context.Context, req *adminpb.
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListFields")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2063,21 +1997,10 @@ func (c *firestoreAdminRESTClient) ExportDocuments(ctx context.Context, req *adm
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExportDocuments")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2137,21 +2060,10 @@ func (c *firestoreAdminRESTClient) ImportDocuments(ctx context.Context, req *adm
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ImportDocuments")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2214,21 +2126,10 @@ func (c *firestoreAdminRESTClient) BulkDeleteDocuments(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BulkDeleteDocuments")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2286,21 +2187,10 @@ func (c *firestoreAdminRESTClient) CreateDatabase(ctx context.Context, req *admi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDatabase")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2351,17 +2241,7 @@ func (c *firestoreAdminRESTClient) GetDatabase(ctx context.Context, req *adminpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDatabase")
 		if err != nil {
 			return err
 		}
@@ -2414,17 +2294,7 @@ func (c *firestoreAdminRESTClient) ListDatabases(ctx context.Context, req *admin
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDatabases")
 		if err != nil {
 			return err
 		}
@@ -2487,21 +2357,10 @@ func (c *firestoreAdminRESTClient) UpdateDatabase(ctx context.Context, req *admi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateDatabase")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2554,21 +2413,10 @@ func (c *firestoreAdminRESTClient) DeleteDatabase(ctx context.Context, req *admi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDatabase")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2619,17 +2467,7 @@ func (c *firestoreAdminRESTClient) GetBackup(ctx context.Context, req *adminpb.G
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetBackup")
 		if err != nil {
 			return err
 		}
@@ -2679,17 +2517,7 @@ func (c *firestoreAdminRESTClient) ListBackups(ctx context.Context, req *adminpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListBackups")
 		if err != nil {
 			return err
 		}
@@ -2736,15 +2564,8 @@ func (c *firestoreAdminRESTClient) DeleteBackup(ctx context.Context, req *adminp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteBackup")
+		return err
 	}, opts...)
 }
 
@@ -2802,21 +2623,10 @@ func (c *firestoreAdminRESTClient) RestoreDatabase(ctx context.Context, req *adm
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RestoreDatabase")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2876,17 +2686,7 @@ func (c *firestoreAdminRESTClient) CreateBackupSchedule(ctx context.Context, req
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateBackupSchedule")
 		if err != nil {
 			return err
 		}
@@ -2936,17 +2736,7 @@ func (c *firestoreAdminRESTClient) GetBackupSchedule(ctx context.Context, req *a
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetBackupSchedule")
 		if err != nil {
 			return err
 		}
@@ -2996,17 +2786,7 @@ func (c *firestoreAdminRESTClient) ListBackupSchedules(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListBackupSchedules")
 		if err != nil {
 			return err
 		}
@@ -3070,17 +2850,7 @@ func (c *firestoreAdminRESTClient) UpdateBackupSchedule(ctx context.Context, req
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateBackupSchedule")
 		if err != nil {
 			return err
 		}
@@ -3127,15 +2897,8 @@ func (c *firestoreAdminRESTClient) DeleteBackupSchedule(ctx context.Context, req
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteBackupSchedule")
+		return err
 	}, opts...)
 }
 
@@ -3175,15 +2938,8 @@ func (c *firestoreAdminRESTClient) CancelOperation(ctx context.Context, req *lon
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -3217,15 +2973,8 @@ func (c *firestoreAdminRESTClient) DeleteOperation(ctx context.Context, req *lon
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOperation")
+		return err
 	}, opts...)
 }
 
@@ -3262,17 +3011,7 @@ func (c *firestoreAdminRESTClient) GetOperation(ctx context.Context, req *longru
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -3337,21 +3076,10 @@ func (c *firestoreAdminRESTClient) ListOperations(ctx context.Context, req *long
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

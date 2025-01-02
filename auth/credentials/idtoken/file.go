@@ -21,10 +21,10 @@ import (
 	"strings"
 
 	"cloud.google.com/go/auth"
-	"cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/auth/credentials/impersonate"
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/credsfile"
+	"github.com/googleapis/gax-go/v2/internallog"
 )
 
 const (
@@ -32,14 +32,8 @@ const (
 	iamCredAud  = "https://iamcredentials.googleapis.com/"
 )
 
-var (
-	defaultScopes = []string{
-		"https://iamcredentials.googleapis.com/",
-		"https://www.googleapis.com/auth/cloud-platform",
-	}
-)
-
-func credsFromBytes(b []byte, opts *Options) (*auth.Credentials, error) {
+func credsFromDefault(creds *auth.Credentials, opts *Options) (*auth.Credentials, error) {
+	b := creds.JSON()
 	t, err := credsfile.ParseFileType(b)
 	if err != nil {
 		return nil, err
@@ -56,6 +50,7 @@ func credsFromBytes(b []byte, opts *Options) (*auth.Credentials, error) {
 			PrivateKeyID: f.PrivateKeyID,
 			TokenURL:     f.TokenURL,
 			UseIDToken:   true,
+			Logger:       internallog.New(opts.Logger),
 		}
 		if opts2LO.TokenURL == "" {
 			opts2LO.TokenURL = jwtTokenURL
@@ -92,34 +87,24 @@ func credsFromBytes(b []byte, opts *Options) (*auth.Credentials, error) {
 		}
 		account := filepath.Base(accountURL.ServiceAccountImpersonationURL)
 		account = strings.Split(account, ":")[0]
-
-		baseCreds, err := credentials.DetectDefault(&credentials.DetectOptions{
-			Scopes:           defaultScopes,
-			CredentialsJSON:  b,
-			Client:           opts.client(),
-			UseSelfSignedJWT: true,
-		})
-		if err != nil {
-			return nil, err
-		}
-
 		config := impersonate.IDTokenOptions{
 			Audience:        opts.Audience,
 			TargetPrincipal: account,
 			IncludeEmail:    true,
 			Client:          opts.client(),
-			Credentials:     baseCreds,
+			Credentials:     creds,
+			Logger:          internallog.New(opts.Logger),
 		}
-		creds, err := impersonate.NewIDTokenCredentials(&config)
+		idTokenCreds, err := impersonate.NewIDTokenCredentials(&config)
 		if err != nil {
 			return nil, err
 		}
 		return auth.NewCredentials(&auth.CredentialsOptions{
-			TokenProvider:          creds,
+			TokenProvider:          idTokenCreds,
 			JSON:                   b,
-			ProjectIDProvider:      auth.CredentialsPropertyFunc(baseCreds.ProjectID),
-			UniverseDomainProvider: auth.CredentialsPropertyFunc(baseCreds.UniverseDomain),
-			QuotaProjectIDProvider: auth.CredentialsPropertyFunc(baseCreds.QuotaProjectID),
+			ProjectIDProvider:      auth.CredentialsPropertyFunc(creds.ProjectID),
+			UniverseDomainProvider: auth.CredentialsPropertyFunc(creds.UniverseDomain),
+			QuotaProjectIDProvider: auth.CredentialsPropertyFunc(creds.QuotaProjectID),
 		}), nil
 	default:
 		return nil, fmt.Errorf("idtoken: unsupported credentials type: %v", t)

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/binaryauthorization/apiv1beta1",
-    "version": "1.9.1",
+    "version": "1.9.2",
     "language": "GO",
     "apis": [
       {

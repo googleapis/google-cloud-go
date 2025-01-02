@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	accountspb "cloud.google.com/go/shopping/merchant/accounts/apiv1beta/accountspb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -279,6 +278,9 @@ func (c *Client) CreateAndConfigureAccount(ctx context.Context, req *accountspb.
 // DeleteAccount deletes the specified account regardless of its type: standalone, MCA or
 // sub-account. Deleting an MCA leads to the deletion of all of its
 // sub-accounts. Executing this method requires admin access.
+// The deletion succeeds only if the account does not provide services
+// to any other account and has no processed offers. You can use the force
+// parameter to override this.
 func (c *Client) DeleteAccount(ctx context.Context, req *accountspb.DeleteAccountRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteAccount(ctx, req, opts...)
 }
@@ -293,7 +295,8 @@ func (c *Client) UpdateAccount(ctx context.Context, req *accountspb.UpdateAccoun
 // constraints of the request such as page size or filters.
 // This is not just listing the sub-accounts of an MCA, but all accounts the
 // calling user has access to including other MCAs, linked accounts,
-// standalone accounts and so on.
+// standalone accounts and so on. If no filter is provided, then it returns
+// accounts the user is directly added to.
 func (c *Client) ListAccounts(ctx context.Context, req *accountspb.ListAccountsRequest, opts ...gax.CallOption) *AccountIterator {
 	return c.internalClient.ListAccounts(ctx, req, opts...)
 }
@@ -322,6 +325,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new accounts service client based on gRPC.
@@ -348,6 +353,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      accountspb.NewAccountsServiceClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -394,6 +400,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new accounts service rest client.
@@ -411,6 +419,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -463,7 +472,7 @@ func (c *gRPCClient) GetAccount(ctx context.Context, req *accountspb.GetAccountR
 	var resp *accountspb.Account
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetAccount(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetAccount, req, settings.GRPC, c.logger, "GetAccount")
 		return err
 	}, opts...)
 	if err != nil {
@@ -478,7 +487,7 @@ func (c *gRPCClient) CreateAndConfigureAccount(ctx context.Context, req *account
 	var resp *accountspb.Account
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateAndConfigureAccount(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateAndConfigureAccount, req, settings.GRPC, c.logger, "CreateAndConfigureAccount")
 		return err
 	}, opts...)
 	if err != nil {
@@ -495,7 +504,7 @@ func (c *gRPCClient) DeleteAccount(ctx context.Context, req *accountspb.DeleteAc
 	opts = append((*c.CallOptions).DeleteAccount[0:len((*c.CallOptions).DeleteAccount):len((*c.CallOptions).DeleteAccount)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteAccount(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteAccount, req, settings.GRPC, c.logger, "DeleteAccount")
 		return err
 	}, opts...)
 	return err
@@ -510,7 +519,7 @@ func (c *gRPCClient) UpdateAccount(ctx context.Context, req *accountspb.UpdateAc
 	var resp *accountspb.Account
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateAccount(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateAccount, req, settings.GRPC, c.logger, "UpdateAccount")
 		return err
 	}, opts...)
 	if err != nil {
@@ -536,7 +545,7 @@ func (c *gRPCClient) ListAccounts(ctx context.Context, req *accountspb.ListAccou
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListAccounts(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListAccounts, req, settings.GRPC, c.logger, "ListAccounts")
 			return err
 		}, opts...)
 		if err != nil {
@@ -582,7 +591,7 @@ func (c *gRPCClient) ListSubAccounts(ctx context.Context, req *accountspb.ListSu
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListSubAccounts(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListSubAccounts, req, settings.GRPC, c.logger, "ListSubAccounts")
 			return err
 		}, opts...)
 		if err != nil {
@@ -643,17 +652,7 @@ func (c *restClient) GetAccount(ctx context.Context, req *accountspb.GetAccountR
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAccount")
 		if err != nil {
 			return err
 		}
@@ -707,17 +706,7 @@ func (c *restClient) CreateAndConfigureAccount(ctx context.Context, req *account
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateAndConfigureAccount")
 		if err != nil {
 			return err
 		}
@@ -737,6 +726,9 @@ func (c *restClient) CreateAndConfigureAccount(ctx context.Context, req *account
 // DeleteAccount deletes the specified account regardless of its type: standalone, MCA or
 // sub-account. Deleting an MCA leads to the deletion of all of its
 // sub-accounts. Executing this method requires admin access.
+// The deletion succeeds only if the account does not provide services
+// to any other account and has no processed offers. You can use the force
+// parameter to override this.
 func (c *restClient) DeleteAccount(ctx context.Context, req *accountspb.DeleteAccountRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -746,6 +738,9 @@ func (c *restClient) DeleteAccount(ctx context.Context, req *accountspb.DeleteAc
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetForce() {
+		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -766,15 +761,8 @@ func (c *restClient) DeleteAccount(ctx context.Context, req *accountspb.DeleteAc
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteAccount")
+		return err
 	}, opts...)
 }
 
@@ -826,17 +814,7 @@ func (c *restClient) UpdateAccount(ctx context.Context, req *accountspb.UpdateAc
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateAccount")
 		if err != nil {
 			return err
 		}
@@ -857,7 +835,8 @@ func (c *restClient) UpdateAccount(ctx context.Context, req *accountspb.UpdateAc
 // constraints of the request such as page size or filters.
 // This is not just listing the sub-accounts of an MCA, but all accounts the
 // calling user has access to including other MCAs, linked accounts,
-// standalone accounts and so on.
+// standalone accounts and so on. If no filter is provided, then it returns
+// accounts the user is directly added to.
 func (c *restClient) ListAccounts(ctx context.Context, req *accountspb.ListAccountsRequest, opts ...gax.CallOption) *AccountIterator {
 	it := &AccountIterator{}
 	req = proto.Clone(req).(*accountspb.ListAccountsRequest)
@@ -905,21 +884,10 @@ func (c *restClient) ListAccounts(ctx context.Context, req *accountspb.ListAccou
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAccounts")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -998,21 +966,10 @@ func (c *restClient) ListSubAccounts(ctx context.Context, req *accountspb.ListSu
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSubAccounts")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

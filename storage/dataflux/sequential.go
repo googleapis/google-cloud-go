@@ -16,7 +16,6 @@ package dataflux
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
 	"cloud.google.com/go/storage"
@@ -24,52 +23,57 @@ import (
 )
 
 const (
-	// defaultPageSize specifies the number of object results to include on a single page.
-	defaultPageSize = 5000
+	// seqDefaultPageSize specifies the number of object results to include on a single page for sequential listing.
+	seqDefaultPageSize = 5000
 )
 
 // sequentialListing performs a sequential listing on the given bucket.
 // It returns a list of objects and the next token to use to continue listing.
 // If the next token is empty, then listing is complete.
 func (c *Lister) sequentialListing(ctx context.Context) ([]*storage.ObjectAttrs, string, error) {
-	var result []*storage.ObjectAttrs
-	var objectsListed int
+	var results []*storage.ObjectAttrs
+	var objectsIterated int
 	var lastToken string
 	objectIterator := c.bucket.Objects(ctx, &c.query)
 	objectIterator.PageInfo().Token = c.pageToken
-	objectIterator.PageInfo().MaxSize = defaultPageSize
+	objectIterator.PageInfo().MaxSize = seqDefaultPageSize
 
 	for {
-		objects, nextToken, numObjects, err := doListing(objectIterator, c.skipDirectoryObjects)
+		objects, nextToken, pageSize, err := listNextPageSequentially(objectIterator, c.skipDirectoryObjects)
 		if err != nil {
-			return nil, "", fmt.Errorf("failed while listing objects: %w", err)
+			return nil, "", err
 		}
-		result = append(result, objects...)
+		results = append(results, objects...)
 		lastToken = nextToken
-		objectsListed += numObjects
-		if nextToken == "" || (c.batchSize > 0 && objectsListed >= c.batchSize) {
+		objectsIterated += pageSize
+		if nextToken == "" || (c.batchSize > 0 && objectsIterated >= c.batchSize) {
 			break
 		}
 		c.pageToken = nextToken
 	}
-	return result, lastToken, nil
+	return results, lastToken, nil
 }
 
-func doListing(objectIterator *storage.ObjectIterator, skipDirectoryObjects bool) (result []*storage.ObjectAttrs, token string, objectsListed int, err error) {
+// listNextPageSequentially returns all objects fetched by GCS API in a single request
+// and a token to list next page of objects and number of objects iterated(even
+// if not in results). This function will make at most one network call to GCS
+// and will exhaust all objects currently held in the iterator
+func listNextPageSequentially(objectIterator *storage.ObjectIterator, skipDirectoryObjects bool) (results []*storage.ObjectAttrs, token string, pageSize int, err error) {
 
 	for {
 		attrs, errObjectIterator := objectIterator.Next()
-		objectsListed++
 		// Stop listing when all the requested objects have been listed.
 		if errObjectIterator == iterator.Done {
 			break
 		}
 		if errObjectIterator != nil {
-			err = fmt.Errorf("iterating through objects %w", errObjectIterator)
+			err = errObjectIterator
 			return
 		}
+		// pageSize tracks the number of objects iterated through
+		pageSize++
 		if !(skipDirectoryObjects && strings.HasSuffix(attrs.Name, "/")) {
-			result = append(result, attrs)
+			results = append(results, attrs)
 		}
 		if objectIterator.PageInfo().Remaining() == 0 {
 			break

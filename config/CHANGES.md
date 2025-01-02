@@ -1,6 +1,32 @@
 # Changelog
 
 
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/config/v1.1.2...config/v1.2.0) (2024-12-13)
+
+
+### Features
+
+* **config:** Added annotations ([1f49a23](https://github.com/googleapis/google-cloud-go/commit/1f49a23270a3614ead812524d94a87c39b403e76))
+
+
+### Bug Fixes
+
+* **config:** Changed field behavior for an existing field `service_account` in message `.google.cloud.config.v1.Deployment` ([1f49a23](https://github.com/googleapis/google-cloud-go/commit/1f49a23270a3614ead812524d94a87c39b403e76))
+* **config:** Changed field behavior for an existing field `service_account` in message `.google.cloud.config.v1.Preview` ([1f49a23](https://github.com/googleapis/google-cloud-go/commit/1f49a23270a3614ead812524d94a87c39b403e76))
+
+
+### Documentation
+
+* **config:** Service Account is a required field ([1f49a23](https://github.com/googleapis/google-cloud-go/commit/1f49a23270a3614ead812524d94a87c39b403e76))
+
+## [1.1.2](https://github.com/googleapis/google-cloud-go/compare/config/v1.1.1...config/v1.1.2) (2024-10-23)
+
+
+### Bug Fixes
+
+* **config:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **config:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
 ## [1.1.1](https://github.com/googleapis/google-cloud-go/compare/config/v1.1.0...config/v1.1.1) (2024-09-12)
 
 

@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -101,10 +100,11 @@ func defaultDocumentProcessorCallOptions() *DocumentProcessorCallOptions {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
+					Initial:    1000 * time.Millisecond,
+					Max:        90000 * time.Millisecond,
+					Multiplier: 9.00,
 				})
 			}),
 		},
@@ -115,9 +115,9 @@ func defaultDocumentProcessorCallOptions() *DocumentProcessorCallOptions {
 					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
+					Initial:    1000 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
+					Multiplier: 1.50,
 				})
 			}),
 		},
@@ -144,9 +144,9 @@ func defaultDocumentProcessorCallOptions() *DocumentProcessorCallOptions {
 					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
+					Initial:    1000 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
+					Multiplier: 1.50,
 				})
 			}),
 		},
@@ -168,21 +168,22 @@ func defaultDocumentProcessorRESTCallOptions() *DocumentProcessorCallOptions {
 			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
+					Initial:    1000 * time.Millisecond,
+					Max:        90000 * time.Millisecond,
+					Multiplier: 9.00,
 				},
 					http.StatusGatewayTimeout,
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
 		},
 		BatchProcessDocuments: []gax.CallOption{
 			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    100 * time.Millisecond,
+					Initial:    1000 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
+					Multiplier: 1.50,
 				},
 					http.StatusGatewayTimeout,
 					http.StatusServiceUnavailable)
@@ -208,9 +209,9 @@ func defaultDocumentProcessorRESTCallOptions() *DocumentProcessorCallOptions {
 			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    100 * time.Millisecond,
+					Initial:    1000 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
+					Multiplier: 1.50,
 				},
 					http.StatusGatewayTimeout,
 					http.StatusServiceUnavailable)
@@ -573,6 +574,8 @@ type documentProcessorGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewDocumentProcessorClient creates a new document processor service client based on gRPC.
@@ -602,6 +605,7 @@ func NewDocumentProcessorClient(ctx context.Context, opts ...option.ClientOption
 		connPool:                connPool,
 		documentProcessorClient: documentaipb.NewDocumentProcessorServiceClient(connPool),
 		CallOptions:             &client.CallOptions,
+		logger:                  internaloption.GetLogger(opts),
 		operationsClient:        longrunningpb.NewOperationsClient(connPool),
 		locationsClient:         locationpb.NewLocationsClient(connPool),
 	}
@@ -666,6 +670,8 @@ type documentProcessorRESTClient struct {
 
 	// Points back to the CallOptions field of the containing DocumentProcessorClient
 	CallOptions **DocumentProcessorCallOptions
+
+	logger *slog.Logger
 }
 
 // NewDocumentProcessorRESTClient creates a new document processor service rest client.
@@ -686,6 +692,7 @@ func NewDocumentProcessorRESTClient(ctx context.Context, opts ...option.ClientOp
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -748,7 +755,7 @@ func (c *documentProcessorGRPCClient) ProcessDocument(ctx context.Context, req *
 	var resp *documentaipb.ProcessResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.documentProcessorClient.ProcessDocument(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.documentProcessorClient.ProcessDocument, req, settings.GRPC, c.logger, "ProcessDocument")
 		return err
 	}, opts...)
 	if err != nil {
@@ -766,7 +773,7 @@ func (c *documentProcessorGRPCClient) BatchProcessDocuments(ctx context.Context,
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.documentProcessorClient.BatchProcessDocuments(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.documentProcessorClient.BatchProcessDocuments, req, settings.GRPC, c.logger, "BatchProcessDocuments")
 		return err
 	}, opts...)
 	if err != nil {
@@ -786,7 +793,7 @@ func (c *documentProcessorGRPCClient) FetchProcessorTypes(ctx context.Context, r
 	var resp *documentaipb.FetchProcessorTypesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.documentProcessorClient.FetchProcessorTypes(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.documentProcessorClient.FetchProcessorTypes, req, settings.GRPC, c.logger, "FetchProcessorTypes")
 		return err
 	}, opts...)
 	if err != nil {
@@ -815,7 +822,7 @@ func (c *documentProcessorGRPCClient) ListProcessorTypes(ctx context.Context, re
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.documentProcessorClient.ListProcessorTypes(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.documentProcessorClient.ListProcessorTypes, req, settings.GRPC, c.logger, "ListProcessorTypes")
 			return err
 		}, opts...)
 		if err != nil {
@@ -850,7 +857,7 @@ func (c *documentProcessorGRPCClient) GetProcessorType(ctx context.Context, req 
 	var resp *documentaipb.ProcessorType
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.documentProcessorClient.GetProcessorType(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.documentProcessorClient.GetProcessorType, req, settings.GRPC, c.logger, "GetProcessorType")
 		return err
 	}, opts...)
 	if err != nil {
@@ -879,7 +886,7 @@ func (c *documentProcessorGRPCClient) ListProcessors(ctx context.Context, req *d
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.documentProcessorClient.ListProcessors(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.documentProcessorClient.ListProcessors, req, settings.GRPC, c.logger, "ListProcessors")
 			return err
 		}, opts...)
 		if err != nil {
@@ -914,7 +921,7 @@ func (c *documentProcessorGRPCClient) GetProcessor(ctx context.Context, req *doc
 	var resp *documentaipb.Processor
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.documentProcessorClient.GetProcessor(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.documentProcessorClient.GetProcessor, req, settings.GRPC, c.logger, "GetProcessor")
 		return err
 	}, opts...)
 	if err != nil {
@@ -932,7 +939,7 @@ func (c *documentProcessorGRPCClient) TrainProcessorVersion(ctx context.Context,
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.documentProcessorClient.TrainProcessorVersion(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.documentProcessorClient.TrainProcessorVersion, req, settings.GRPC, c.logger, "TrainProcessorVersion")
 		return err
 	}, opts...)
 	if err != nil {
@@ -952,7 +959,7 @@ func (c *documentProcessorGRPCClient) GetProcessorVersion(ctx context.Context, r
 	var resp *documentaipb.ProcessorVersion
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.documentProcessorClient.GetProcessorVersion(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.documentProcessorClient.GetProcessorVersion, req, settings.GRPC, c.logger, "GetProcessorVersion")
 		return err
 	}, opts...)
 	if err != nil {
@@ -981,7 +988,7 @@ func (c *documentProcessorGRPCClient) ListProcessorVersions(ctx context.Context,
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.documentProcessorClient.ListProcessorVersions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.documentProcessorClient.ListProcessorVersions, req, settings.GRPC, c.logger, "ListProcessorVersions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1016,7 +1023,7 @@ func (c *documentProcessorGRPCClient) DeleteProcessorVersion(ctx context.Context
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.documentProcessorClient.DeleteProcessorVersion(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.documentProcessorClient.DeleteProcessorVersion, req, settings.GRPC, c.logger, "DeleteProcessorVersion")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1036,7 +1043,7 @@ func (c *documentProcessorGRPCClient) DeployProcessorVersion(ctx context.Context
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.documentProcessorClient.DeployProcessorVersion(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.documentProcessorClient.DeployProcessorVersion, req, settings.GRPC, c.logger, "DeployProcessorVersion")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1056,7 +1063,7 @@ func (c *documentProcessorGRPCClient) UndeployProcessorVersion(ctx context.Conte
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.documentProcessorClient.UndeployProcessorVersion(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.documentProcessorClient.UndeployProcessorVersion, req, settings.GRPC, c.logger, "UndeployProcessorVersion")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1076,7 +1083,7 @@ func (c *documentProcessorGRPCClient) CreateProcessor(ctx context.Context, req *
 	var resp *documentaipb.Processor
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.documentProcessorClient.CreateProcessor(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.documentProcessorClient.CreateProcessor, req, settings.GRPC, c.logger, "CreateProcessor")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1094,7 +1101,7 @@ func (c *documentProcessorGRPCClient) DeleteProcessor(ctx context.Context, req *
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.documentProcessorClient.DeleteProcessor(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.documentProcessorClient.DeleteProcessor, req, settings.GRPC, c.logger, "DeleteProcessor")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1114,7 +1121,7 @@ func (c *documentProcessorGRPCClient) EnableProcessor(ctx context.Context, req *
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.documentProcessorClient.EnableProcessor(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.documentProcessorClient.EnableProcessor, req, settings.GRPC, c.logger, "EnableProcessor")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1134,7 +1141,7 @@ func (c *documentProcessorGRPCClient) DisableProcessor(ctx context.Context, req 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.documentProcessorClient.DisableProcessor(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.documentProcessorClient.DisableProcessor, req, settings.GRPC, c.logger, "DisableProcessor")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1154,7 +1161,7 @@ func (c *documentProcessorGRPCClient) SetDefaultProcessorVersion(ctx context.Con
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.documentProcessorClient.SetDefaultProcessorVersion(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.documentProcessorClient.SetDefaultProcessorVersion, req, settings.GRPC, c.logger, "SetDefaultProcessorVersion")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1174,7 +1181,7 @@ func (c *documentProcessorGRPCClient) ReviewDocument(ctx context.Context, req *d
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.documentProcessorClient.ReviewDocument(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.documentProcessorClient.ReviewDocument, req, settings.GRPC, c.logger, "ReviewDocument")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1194,7 +1201,7 @@ func (c *documentProcessorGRPCClient) EvaluateProcessorVersion(ctx context.Conte
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.documentProcessorClient.EvaluateProcessorVersion(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.documentProcessorClient.EvaluateProcessorVersion, req, settings.GRPC, c.logger, "EvaluateProcessorVersion")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1214,7 +1221,7 @@ func (c *documentProcessorGRPCClient) GetEvaluation(ctx context.Context, req *do
 	var resp *documentaipb.Evaluation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.documentProcessorClient.GetEvaluation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.documentProcessorClient.GetEvaluation, req, settings.GRPC, c.logger, "GetEvaluation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1243,7 +1250,7 @@ func (c *documentProcessorGRPCClient) ListEvaluations(ctx context.Context, req *
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.documentProcessorClient.ListEvaluations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.documentProcessorClient.ListEvaluations, req, settings.GRPC, c.logger, "ListEvaluations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1278,7 +1285,7 @@ func (c *documentProcessorGRPCClient) ImportProcessorVersion(ctx context.Context
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.documentProcessorClient.ImportProcessorVersion(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.documentProcessorClient.ImportProcessorVersion, req, settings.GRPC, c.logger, "ImportProcessorVersion")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1298,7 +1305,7 @@ func (c *documentProcessorGRPCClient) GetLocation(ctx context.Context, req *loca
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1327,7 +1334,7 @@ func (c *documentProcessorGRPCClient) ListLocations(ctx context.Context, req *lo
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1361,7 +1368,7 @@ func (c *documentProcessorGRPCClient) CancelOperation(ctx context.Context, req *
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -1376,7 +1383,7 @@ func (c *documentProcessorGRPCClient) GetOperation(ctx context.Context, req *lon
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1405,7 +1412,7 @@ func (c *documentProcessorGRPCClient) ListOperations(ctx context.Context, req *l
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1470,17 +1477,7 @@ func (c *documentProcessorRESTClient) ProcessDocument(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ProcessDocument")
 		if err != nil {
 			return err
 		}
@@ -1536,21 +1533,10 @@ func (c *documentProcessorRESTClient) BatchProcessDocuments(ctx context.Context,
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchProcessDocuments")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1603,17 +1589,7 @@ func (c *documentProcessorRESTClient) FetchProcessorTypes(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FetchProcessorTypes")
 		if err != nil {
 			return err
 		}
@@ -1675,21 +1651,10 @@ func (c *documentProcessorRESTClient) ListProcessorTypes(ctx context.Context, re
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListProcessorTypes")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1752,17 +1717,7 @@ func (c *documentProcessorRESTClient) GetProcessorType(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetProcessorType")
 		if err != nil {
 			return err
 		}
@@ -1824,21 +1779,10 @@ func (c *documentProcessorRESTClient) ListProcessors(ctx context.Context, req *d
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListProcessors")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1901,17 +1845,7 @@ func (c *documentProcessorRESTClient) GetProcessor(ctx context.Context, req *doc
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetProcessor")
 		if err != nil {
 			return err
 		}
@@ -1968,21 +1902,10 @@ func (c *documentProcessorRESTClient) TrainProcessorVersion(ctx context.Context,
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TrainProcessorVersion")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2033,17 +1956,7 @@ func (c *documentProcessorRESTClient) GetProcessorVersion(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetProcessorVersion")
 		if err != nil {
 			return err
 		}
@@ -2105,21 +2018,10 @@ func (c *documentProcessorRESTClient) ListProcessorVersions(ctx context.Context,
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListProcessorVersions")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2182,21 +2084,10 @@ func (c *documentProcessorRESTClient) DeleteProcessorVersion(ctx context.Context
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteProcessorVersion")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2252,21 +2143,10 @@ func (c *documentProcessorRESTClient) DeployProcessorVersion(ctx context.Context
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "DeployProcessorVersion")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2322,21 +2202,10 @@ func (c *documentProcessorRESTClient) UndeployProcessorVersion(ctx context.Conte
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UndeployProcessorVersion")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2400,17 +2269,7 @@ func (c *documentProcessorRESTClient) CreateProcessor(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateProcessor")
 		if err != nil {
 			return err
 		}
@@ -2460,21 +2319,10 @@ func (c *documentProcessorRESTClient) DeleteProcessor(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteProcessor")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2530,21 +2378,10 @@ func (c *documentProcessorRESTClient) EnableProcessor(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "EnableProcessor")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2600,21 +2437,10 @@ func (c *documentProcessorRESTClient) DisableProcessor(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "DisableProcessor")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2674,21 +2500,10 @@ func (c *documentProcessorRESTClient) SetDefaultProcessorVersion(ctx context.Con
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetDefaultProcessorVersion")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2745,21 +2560,10 @@ func (c *documentProcessorRESTClient) ReviewDocument(ctx context.Context, req *d
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ReviewDocument")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2816,21 +2620,10 @@ func (c *documentProcessorRESTClient) EvaluateProcessorVersion(ctx context.Conte
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "EvaluateProcessorVersion")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2881,17 +2674,7 @@ func (c *documentProcessorRESTClient) GetEvaluation(ctx context.Context, req *do
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetEvaluation")
 		if err != nil {
 			return err
 		}
@@ -2953,21 +2736,10 @@ func (c *documentProcessorRESTClient) ListEvaluations(ctx context.Context, req *
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListEvaluations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3035,21 +2807,10 @@ func (c *documentProcessorRESTClient) ImportProcessorVersion(ctx context.Context
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ImportProcessorVersion")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3100,17 +2861,7 @@ func (c *documentProcessorRESTClient) GetLocation(ctx context.Context, req *loca
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -3175,21 +2926,10 @@ func (c *documentProcessorRESTClient) ListLocations(ctx context.Context, req *lo
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3249,15 +2989,8 @@ func (c *documentProcessorRESTClient) CancelOperation(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -3294,17 +3027,7 @@ func (c *documentProcessorRESTClient) GetOperation(ctx context.Context, req *lon
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -3369,21 +3092,10 @@ func (c *documentProcessorRESTClient) ListOperations(ctx context.Context, req *l
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

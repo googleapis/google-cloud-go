@@ -15,6 +15,8 @@
 package transport
 
 import (
+	"io"
+	"log/slog"
 	"testing"
 )
 
@@ -26,7 +28,7 @@ const (
 func TestGetS2AAddress(t *testing.T) {
 	testCases := []struct {
 		name               string
-		respFn             func() (string, error)
+		respFn             func(*slog.Logger) (string, error)
 		wantErr            bool
 		wantS2AAddress     string
 		wantMTLSS2AAddress string
@@ -69,18 +71,19 @@ func TestGetS2AAddress(t *testing.T) {
 	}
 
 	defer setupTest(t)()
+	logger := slog.New(slog.NewTextHandler(io.Discard, nil))
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			var err error
 			httpGetMetadataMTLSConfig = tc.respFn
-			mtlsConfiguration, err = queryConfig()
+			mtlsConfiguration, err = queryConfig(logger)
 			if gotErr := err != nil; gotErr != tc.wantErr {
 				t.Errorf("queryConfig() got error: %v, want error: %v", gotErr, tc.wantErr)
 			}
-			if want, got := tc.wantS2AAddress, GetS2AAddress(); got != want {
+			if want, got := tc.wantS2AAddress, GetS2AAddress(logger); got != want {
 				t.Errorf("want S2A address [%s], got address [%s]", want, got)
 			}
-			if want, got := tc.wantMTLSS2AAddress, GetMTLSS2AAddress(); got != want {
+			if want, got := tc.wantMTLSS2AAddress, GetMTLSS2AAddress(logger); got != want {
 				t.Errorf("want MTLS S2A address [%s], got address [%s]", want, got)
 			}
 		})

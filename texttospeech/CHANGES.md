@@ -1,5 +1,27 @@
 # Changes
 
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/texttospeech/v1.9.0...texttospeech/v1.10.0) (2024-11-06)
+
+
+### Features
+
+* **texttospeech:** Add multi-speaker markup, which allows generating dialogue between multiple speakers ([2c83297](https://github.com/googleapis/google-cloud-go/commit/2c83297a569117b0252b5b2edaecb09e4924d979))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/texttospeech/v1.8.1...texttospeech/v1.9.0) (2024-10-23)
+
+
+### Features
+
+* **texttospeech:** Add brand voice lite, which lets you clone a voice with just 10 seconds of audio ([#11014](https://github.com/googleapis/google-cloud-go/issues/11014)) ([6e69d2e](https://github.com/googleapis/google-cloud-go/commit/6e69d2e85849002bad227ea5bebcde9199605bef))
+* **texttospeech:** Add CustomPronunciationParams for upcoming feature work ([f0b05e2](https://github.com/googleapis/google-cloud-go/commit/f0b05e260435d5e8889b9a0ca0ab215fcde169ab))
+* **texttospeech:** Add low latency journey option to proto ([f0b05e2](https://github.com/googleapis/google-cloud-go/commit/f0b05e260435d5e8889b9a0ca0ab215fcde169ab))
+
+
+### Bug Fixes
+
+* **texttospeech:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **texttospeech:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([2b8ca4b](https://github.com/googleapis/google-cloud-go/commit/2b8ca4b4127ce3025c7a21cc7247510e07cc5625))
+
 ## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/texttospeech/v1.8.0...texttospeech/v1.8.1) (2024-09-12)
 
 

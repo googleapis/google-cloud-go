@@ -1,6 +1,28 @@
 # Changes
 
 
+## [1.20.3](https://github.com/googleapis/google-cloud-go/compare/kms/v1.20.2...kms/v1.20.3) (2024-12-18)
+
+
+### Documentation
+
+* **kms:** Code documentation improvements ([4254053](https://github.com/googleapis/google-cloud-go/commit/42540530e44e5f331e66e0777c4aabf449f5fd90))
+
+## [1.20.2](https://github.com/googleapis/google-cloud-go/compare/kms/v1.20.1...kms/v1.20.2) (2024-12-04)
+
+
+### Documentation
+
+* **kms:** A comment for enum `CryptoKeyVersionAlgorithm` is changed ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+
+## [1.20.1](https://github.com/googleapis/google-cloud-go/compare/kms/v1.20.0...kms/v1.20.1) (2024-10-23)
+
+
+### Bug Fixes
+
+* **kms:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **kms:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
 ## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.19.1...kms/v1.20.0) (2024-09-19)
 
 

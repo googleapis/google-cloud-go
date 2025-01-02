@@ -34,7 +34,19 @@ func (it *AnalysisIterator) All() iter.Seq2[*contactcenterinsightspb.Analysis, e
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *AnalysisRuleIterator) All() iter.Seq2[*contactcenterinsightspb.AnalysisRule, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *ConversationIterator) All() iter.Seq2[*contactcenterinsightspb.Conversation, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FeedbackLabelIterator) All() iter.Seq2[*contactcenterinsightspb.FeedbackLabel, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 
@@ -47,6 +59,24 @@ func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *PhraseMatcherIterator) All() iter.Seq2[*contactcenterinsightspb.PhraseMatcher, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *QaQuestionIterator) All() iter.Seq2[*contactcenterinsightspb.QaQuestion, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *QaScorecardIterator) All() iter.Seq2[*contactcenterinsightspb.QaScorecard, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *QaScorecardRevisionIterator) All() iter.Seq2[*contactcenterinsightspb.QaScorecardRevision, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 

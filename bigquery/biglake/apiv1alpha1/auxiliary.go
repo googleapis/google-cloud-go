@@ -41,7 +41,7 @@ type CatalogIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*biglakepb.Catalog, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *CatalogIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -88,7 +88,7 @@ type DatabaseIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*biglakepb.Database, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *DatabaseIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -135,7 +135,7 @@ type LockIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*biglakepb.Lock, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *LockIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -182,7 +182,7 @@ type TableIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*biglakepb.Table, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TableIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

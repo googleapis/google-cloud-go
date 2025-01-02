@@ -1,5 +1,39 @@
 # Changes
 
+## [1.19.1](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.19.0...cloudbuild/v1.19.1) (2024-12-11)
+
+
+### Bug Fixes
+
+* **cloudbuild:** Deprecate apiv1 client ([#11225](https://github.com/googleapis/google-cloud-go/issues/11225)) ([ba9412a](https://github.com/googleapis/google-cloud-go/commit/ba9412a07cc3b31278c204759c343c5e0c60663f))
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.18.1...cloudbuild/v1.19.0) (2024-11-06)
+
+
+### Features
+
+* **cloudbuild/apiv1:** Add PrivateServiceConnect option to WorkerPool ([#11034](https://github.com/googleapis/google-cloud-go/issues/11034)) ([ecf1cf6](https://github.com/googleapis/google-cloud-go/commit/ecf1cf68aabe32e131bfc66b7c4575c63ad41a22))
+
+## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.18.0...cloudbuild/v1.18.1) (2024-10-23)
+
+
+### Bug Fixes
+
+* **cloudbuild:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **cloudbuild:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.17.1...cloudbuild/v1.18.0) (2024-09-25)
+
+
+### Features
+
+* **cloudbuild/apiv1:** Add LEGACY_BUCKET option to DefaultLogsBucketBehavior ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+
+
+### Documentation
+
+* **cloudbuild/apiv1:** Sanitize docs ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+
 ## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.17.0...cloudbuild/v1.17.1) (2024-09-12)
 
 

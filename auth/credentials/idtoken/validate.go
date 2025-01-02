@@ -24,6 +24,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"math/big"
 	"net/http"
 	"strings"
@@ -31,16 +32,19 @@ import (
 
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/jwt"
+	"github.com/googleapis/gax-go/v2/internallog"
 )
 
 const (
-	es256KeySize      int    = 32
+	es256KeySize int = 32
+	// googleIAPCertsURL is used for ES256 Certs.
 	googleIAPCertsURL string = "https://www.gstatic.com/iap/verify/public_key-jwk"
-	googleSACertsURL  string = "https://www.googleapis.com/oauth2/v3/certs"
+	// googleSACertsURL is used for RS256 Certs.
+	googleSACertsURL string = "https://www.googleapis.com/oauth2/v3/certs"
 )
 
 var (
-	defaultValidator = &Validator{client: newCachingClient(internal.DefaultClient())}
+	defaultValidator = &Validator{client: newCachingClient(internal.DefaultClient(), internallog.New(nil))}
 	// now aliases time.Now for testing.
 	now = time.Now
 )
@@ -67,25 +71,42 @@ type jwk struct {
 
 // Validator provides a way to validate Google ID Tokens
 type Validator struct {
-	client *cachingClient
+	client   *cachingClient
+	rs256URL string
+	es256URL string
 }
 
 // ValidatorOptions provides a way to configure a [Validator].
 type ValidatorOptions struct {
 	// Client used to make requests to the certs URL. Optional.
 	Client *http.Client
+	// Custom certs URL for RS256 JWK to be used. If not provided, the default
+	// Google oauth2 endpoint will be used. Optional.
+	RS256CertsURL string
+	// Custom certs URL for ES256 JWK to be used. If not provided, the default
+	// Google IAP endpoint will be used. Optional.
+	ES256CertsURL string
+	// Logger is used for debug logging. If provided, logging will be enabled
+	// at the loggers configured level. By default logging is disabled unless
+	// enabled by setting GOOGLE_SDK_GO_LOGGING_LEVEL in which case a default
+	// Logger will be used. Optional.
+	Logger *slog.Logger
 }
 
 // NewValidator creates a Validator that uses the options provided to configure
 // a the internal http.Client that will be used to make requests to fetch JWKs.
 func NewValidator(opts *ValidatorOptions) (*Validator, error) {
-	var client *http.Client
-	if opts != nil && opts.Client != nil {
-		client = opts.Client
-	} else {
+	if opts == nil {
+		opts = &ValidatorOptions{}
+	}
+	client := opts.Client
+	if client == nil {
 		client = internal.DefaultClient()
 	}
-	return &Validator{client: newCachingClient(client)}, nil
+	rs256URL := opts.RS256CertsURL
+	es256URL := opts.ES256CertsURL
+	logger := internallog.New(opts.Logger)
+	return &Validator{client: newCachingClient(client, logger), rs256URL: rs256URL, es256URL: es256URL}, nil
 }
 
 // Validate is used to validate the provided idToken with a known Google cert
@@ -140,7 +161,7 @@ func (v *Validator) validate(ctx context.Context, idToken string, audience strin
 		if err := v.validateRS256(ctx, header.KeyID, hashedContent, sig); err != nil {
 			return nil, err
 		}
-	case "ES256":
+	case jwt.HeaderAlgES256:
 		if err := v.validateES256(ctx, header.KeyID, hashedContent, sig); err != nil {
 			return nil, err
 		}
@@ -152,7 +173,7 @@ func (v *Validator) validate(ctx context.Context, idToken string, audience strin
 }
 
 func (v *Validator) validateRS256(ctx context.Context, keyID string, hashedContent []byte, sig []byte) error {
-	certResp, err := v.client.getCert(ctx, googleSACertsURL)
+	certResp, err := v.client.getCert(ctx, v.rs256CertsURL())
 	if err != nil {
 		return err
 	}
@@ -176,8 +197,15 @@ func (v *Validator) validateRS256(ctx context.Context, keyID string, hashedConte
 	return rsa.VerifyPKCS1v15(pk, crypto.SHA256, hashedContent, sig)
 }
 
+func (v *Validator) rs256CertsURL() string {
+	if v.rs256URL == "" {
+		return googleSACertsURL
+	}
+	return v.rs256URL
+}
+
 func (v *Validator) validateES256(ctx context.Context, keyID string, hashedContent []byte, sig []byte) error {
-	certResp, err := v.client.getCert(ctx, googleIAPCertsURL)
+	certResp, err := v.client.getCert(ctx, v.es256CertsURL())
 	if err != nil {
 		return err
 	}
@@ -205,6 +233,13 @@ func (v *Validator) validateES256(ctx context.Context, keyID string, hashedConte
 		return fmt.Errorf("idtoken: ES256 signature not valid")
 	}
 	return nil
+}
+
+func (v *Validator) es256CertsURL() string {
+	if v.es256URL == "" {
+		return googleIAPCertsURL
+	}
+	return v.es256URL
 }
 
 func findMatchingKey(response *certResponse, keyID string) (*jwk, error) {

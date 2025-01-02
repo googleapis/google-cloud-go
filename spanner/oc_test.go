@@ -31,24 +31,6 @@ import (
 	structpb "google.golang.org/protobuf/types/known/structpb"
 )
 
-// Check that stats are being exported.
-func TestOCStats(t *testing.T) {
-	DisableGfeLatencyAndHeaderMissingCountViews()
-	te := testutil.NewTestExporter()
-	defer te.Unregister()
-
-	_, c, teardown := setupMockedTestServer(t)
-	defer teardown()
-
-	c.Single().ReadRow(context.Background(), "Users", Key{"alice"}, []string{"email"})
-	// Wait until we see data from the view.
-	select {
-	case <-te.Stats:
-	case <-time.After(1 * time.Second):
-		t.Fatal("no stats were exported before timeout")
-	}
-}
-
 func TestOCStats_SessionPool(t *testing.T) {
 	skipUnsupportedPGTest(t)
 	DisableGfeLatencyAndHeaderMissingCountViews()
@@ -165,7 +147,7 @@ func TestOCStats_SessionPool_SessionsCount(t *testing.T) {
 	defer te.Unregister()
 
 	waitErr := &Error{}
-	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{SessionPoolConfig: DefaultSessionPoolConfig})
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, SessionPoolConfig: DefaultSessionPoolConfig})
 	defer teardown()
 	// Wait for the session pool initialization to finish.
 	expectedWrites := uint64(0)

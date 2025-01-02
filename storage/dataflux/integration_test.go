@@ -49,11 +49,10 @@ var (
 
 func TestMain(m *testing.M) {
 	flag.Parse()
-	fmt.Println("creating bucket")
 	if err := httpTestBucket.Create(testPrefix); err != nil {
 		log.Fatalf("test bucket creation failed: %v", err)
 	}
-
+	cleanupEmulatorClients := initEmulatorClients()
 	m.Run()
 
 	if err := httpTestBucket.Cleanup(); err != nil {
@@ -62,6 +61,10 @@ func TestMain(m *testing.M) {
 
 	if err := deleteExpiredBuckets(testPrefix); err != nil {
 		log.Printf("expired http bucket cleanup failed: %v", err)
+	}
+	if err := cleanupEmulatorClients(); err != nil {
+		// Don't fail the test if cleanup fails.
+		log.Printf("Post-test cleanup failed for emulator clients: %v", err)
 	}
 }
 
@@ -100,13 +103,14 @@ func TestIntegration_NextBatch(t *testing.T) {
 	}
 	const landsatBucket = "gcp-public-data-landsat"
 	const landsatPrefix = "LC08/01/001/00"
-	wantObjects := 17225
+
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		t.Fatalf("NewClient: %v", err)
 	}
 
+	numObjectsPrefix := 17225
 	in := &ListerInput{
 		BucketName: landsatBucket,
 		Query:      storage.Query{Prefix: landsatPrefix},
@@ -116,22 +120,25 @@ func TestIntegration_NextBatch(t *testing.T) {
 	df := NewLister(c, in)
 	defer df.Close()
 	totalObjects := 0
+	counter := 0
 	for {
 		objects, err := df.NextBatch(ctx)
-		if err != nil && err != iterator.Done {
-			t.Errorf("df.NextBatch : %v", err)
-		}
-		totalObjects += len(objects)
 		if err == iterator.Done {
+			counter++
+			totalObjects += len(objects)
 			break
 		}
-		if len(objects) > in.BatchSize {
-			t.Errorf("expected to receive %d objects in each batch, got %d objects in a batch", in.BatchSize, len(objects))
+		if err != nil {
+			t.Errorf("df.NextBatch : %v", err)
 		}
+		counter++
+		totalObjects += len(objects)
 	}
-	if totalObjects != wantObjects {
-		t.Errorf("expected to receive %d objects in results, got %d objects in results", wantObjects, totalObjects)
-
+	if totalObjects != numObjectsPrefix {
+		t.Errorf("expected to receive %d objects in results, got %d objects in results", numObjectsPrefix, totalObjects)
+	}
+	if counter <= 1 {
+		t.Errorf("expected df.NextBatch to be called more than once, got %d times", counter)
 	}
 }
 

@@ -20,20 +20,21 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
+	"time"
 
 	accountspb "cloud.google.com/go/shopping/merchant/accounts/apiv1beta/accountspb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -65,19 +66,103 @@ func defaultProgramsGRPCClientOptions() []option.ClientOption {
 
 func defaultProgramsCallOptions() *ProgramsCallOptions {
 	return &ProgramsCallOptions{
-		GetProgram:     []gax.CallOption{},
-		ListPrograms:   []gax.CallOption{},
-		EnableProgram:  []gax.CallOption{},
-		DisableProgram: []gax.CallOption{},
+		GetProgram: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListPrograms: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		EnableProgram: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DisableProgram: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
 func defaultProgramsRESTCallOptions() *ProgramsCallOptions {
 	return &ProgramsCallOptions{
-		GetProgram:     []gax.CallOption{},
-		ListPrograms:   []gax.CallOption{},
-		EnableProgram:  []gax.CallOption{},
-		DisableProgram: []gax.CallOption{},
+		GetProgram: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListPrograms: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		EnableProgram: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		DisableProgram: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 	}
 }
 
@@ -174,6 +259,8 @@ type programsGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewProgramsClient creates a new programs service client based on gRPC.
@@ -210,6 +297,7 @@ func NewProgramsClient(ctx context.Context, opts ...option.ClientOption) (*Progr
 		connPool:       connPool,
 		programsClient: accountspb.NewProgramsServiceClient(connPool),
 		CallOptions:    &client.CallOptions,
+		logger:         internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -256,6 +344,8 @@ type programsRESTClient struct {
 
 	// Points back to the CallOptions field of the containing ProgramsClient
 	CallOptions **ProgramsCallOptions
+
+	logger *slog.Logger
 }
 
 // NewProgramsRESTClient creates a new programs service rest client.
@@ -283,6 +373,7 @@ func NewProgramsRESTClient(ctx context.Context, opts ...option.ClientOption) (*P
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -335,7 +426,7 @@ func (c *programsGRPCClient) GetProgram(ctx context.Context, req *accountspb.Get
 	var resp *accountspb.Program
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.programsClient.GetProgram(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.programsClient.GetProgram, req, settings.GRPC, c.logger, "GetProgram")
 		return err
 	}, opts...)
 	if err != nil {
@@ -364,7 +455,7 @@ func (c *programsGRPCClient) ListPrograms(ctx context.Context, req *accountspb.L
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.programsClient.ListPrograms(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.programsClient.ListPrograms, req, settings.GRPC, c.logger, "ListPrograms")
 			return err
 		}, opts...)
 		if err != nil {
@@ -399,7 +490,7 @@ func (c *programsGRPCClient) EnableProgram(ctx context.Context, req *accountspb.
 	var resp *accountspb.Program
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.programsClient.EnableProgram(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.programsClient.EnableProgram, req, settings.GRPC, c.logger, "EnableProgram")
 		return err
 	}, opts...)
 	if err != nil {
@@ -417,7 +508,7 @@ func (c *programsGRPCClient) DisableProgram(ctx context.Context, req *accountspb
 	var resp *accountspb.Program
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.programsClient.DisableProgram(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.programsClient.DisableProgram, req, settings.GRPC, c.logger, "DisableProgram")
 		return err
 	}, opts...)
 	if err != nil {
@@ -459,17 +550,7 @@ func (c *programsRESTClient) GetProgram(ctx context.Context, req *accountspb.Get
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetProgram")
 		if err != nil {
 			return err
 		}
@@ -531,21 +612,10 @@ func (c *programsRESTClient) ListPrograms(ctx context.Context, req *accountspb.L
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListPrograms")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -615,17 +685,7 @@ func (c *programsRESTClient) EnableProgram(ctx context.Context, req *accountspb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "EnableProgram")
 		if err != nil {
 			return err
 		}
@@ -682,17 +742,7 @@ func (c *programsRESTClient) DisableProgram(ctx context.Context, req *accountspb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "DisableProgram")
 		if err != nil {
 			return err
 		}

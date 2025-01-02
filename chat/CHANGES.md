@@ -1,5 +1,47 @@
 # Changelog
 
+## [0.9.0](https://github.com/googleapis/google-cloud-go/compare/chat/v0.8.0...chat/v0.9.0) (2024-12-11)
+
+
+### Features
+
+* **chat:** Add missing field annotations in space.proto, message.proto, reaction.proto, space_event.proto, membership.proto, attachment.proto ([#11246](https://github.com/googleapis/google-cloud-go/issues/11246)) ([ca8d4c3](https://github.com/googleapis/google-cloud-go/commit/ca8d4c36476b2834fca7500368a3f09bea12bd08))
+
+## [0.8.0](https://github.com/googleapis/google-cloud-go/compare/chat/v0.7.1...chat/v0.8.0) (2024-12-04)
+
+
+### Features
+
+* **chat:** Chat Apps can now retrieve the import mode expire time information to know when to complete the import mode properly ([191a664](https://github.com/googleapis/google-cloud-go/commit/191a6643252221a2d6947d85aea7f31bae17cec6))
+
+
+### Documentation
+
+* **chat:** Update reference documentation to include import_mode_expire_time field ([191a664](https://github.com/googleapis/google-cloud-go/commit/191a6643252221a2d6947d85aea7f31bae17cec6))
+
+## [0.7.1](https://github.com/googleapis/google-cloud-go/compare/chat/v0.7.0...chat/v0.7.1) (2024-10-23)
+
+
+### Bug Fixes
+
+* **chat:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **chat:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
+## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/chat/v0.6.0...chat/v0.7.0) (2024-10-09)
+
+
+### Features
+
+* **chat:** Add doc for import mode external users support ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **chat:** Add doc for permission settings & announcement space support ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+
+
+### Documentation
+
+* **chat:** Discoverable space docs improvement ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **chat:** Memberships API dev docs improvement ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **chat:** Messages API dev docs improvement ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+
 ## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/chat/v0.5.0...chat/v0.6.0) (2024-09-19)
 
 

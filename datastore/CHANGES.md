@@ -1,5 +1,24 @@
 # Changes
 
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.19.0...datastore/v1.20.0) (2024-10-29)
+
+
+### Features
+
+* **datastore:** Add FindNearest API to the stable branch ([#10980](https://github.com/googleapis/google-cloud-go/issues/10980)) ([f0b05e2](https://github.com/googleapis/google-cloud-go/commit/f0b05e260435d5e8889b9a0ca0ab215fcde169ab))
+* **datastore:** Support for field update operators in the Datastore API and resolution strategies when there is a conflict at write time ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+
+
+### Bug Fixes
+
+* **datastore:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+* **datastore:** Do not delay on final transaction attempt ([#10824](https://github.com/googleapis/google-cloud-go/issues/10824)) ([0d732cc](https://github.com/googleapis/google-cloud-go/commit/0d732cc87b432589f156c96d430e13c792dceeeb))
+* **datastore:** Remove namespace from Key.String() ([40229e6](https://github.com/googleapis/google-cloud-go/commit/40229e65f574d63e2f31e5b15ec61d565db59fef))
+* **datastore:** Remove namespace from Key.String() ([#10684](https://github.com/googleapis/google-cloud-go/issues/10684)) ([#10823](https://github.com/googleapis/google-cloud-go/issues/10823)) ([40229e6](https://github.com/googleapis/google-cloud-go/commit/40229e65f574d63e2f31e5b15ec61d565db59fef))
+* **datastore:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **datastore:** Use local retryer in transactions ([#11050](https://github.com/googleapis/google-cloud-go/issues/11050)) ([3ef61a2](https://github.com/googleapis/google-cloud-go/commit/3ef61a29f10d34355d44830b5d473cacd6cf2be5))
+* **datastore:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
 ## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.18.0...datastore/v1.19.0) (2024-08-22)
 
 

@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	routeoptimizationpb "cloud.google.com/go/maps/routeoptimization/apiv1/routeoptimizationpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -202,23 +201,23 @@ func (c *Client) OptimizeTours(ctx context.Context, req *routeoptimizationpb.Opt
 //
 // This method is a Long Running Operation (LRO). The inputs for optimization
 // (OptimizeToursRequest messages) and outputs (OptimizeToursResponse
-// messages) are read/written from/to Cloud Storage in user-specified
+// messages) are read from and written to Cloud Storage in user-specified
 // format. Like the OptimizeTours method, each OptimizeToursRequest
 // contains a ShipmentModel and returns an OptimizeToursResponse
-// containing ShipmentRoutes, which are a set of routes to be performed by
-// vehicles minimizing the overall cost.
+// containing ShipmentRoute fields, which are a set of routes to be
+// performed by vehicles minimizing the overall cost.
 //
 // The user can poll operations.get to check the status of the LRO:
 //
-// If the LRO’s done field is false, then at least one request is still
+// If the LRO done field is false, then at least one request is still
 // being processed. Other requests may have completed successfully and their
-// results are available in GCS.
+// results are available in Cloud Storage.
 //
 // If the LRO’s done field is true, then all requests have been processed.
 // Any successfully processed requests will have their results available in
-// GCS. Any requests that failed will not have their results available in
-// GCS. If the LRO’s error field is set, then it contains the error from
-// one of the failed requests.
+// Cloud Storage. Any requests that failed will not have their results
+// available in Cloud Storage. If the LRO’s error field is set, then it
+// contains the error from one of the failed requests.
 func (c *Client) BatchOptimizeTours(ctx context.Context, req *routeoptimizationpb.BatchOptimizeToursRequest, opts ...gax.CallOption) (*BatchOptimizeToursOperation, error) {
 	return c.internalClient.BatchOptimizeTours(ctx, req, opts...)
 }
@@ -256,6 +255,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new route optimization client based on gRPC.
@@ -308,6 +309,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:         connPool,
 		client:           routeoptimizationpb.NewRouteOptimizationClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -371,6 +373,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new route optimization rest client.
@@ -414,6 +418,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -476,7 +481,7 @@ func (c *gRPCClient) OptimizeTours(ctx context.Context, req *routeoptimizationpb
 	var resp *routeoptimizationpb.OptimizeToursResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.OptimizeTours(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.OptimizeTours, req, settings.GRPC, c.logger, "OptimizeTours")
 		return err
 	}, opts...)
 	if err != nil {
@@ -494,7 +499,7 @@ func (c *gRPCClient) BatchOptimizeTours(ctx context.Context, req *routeoptimizat
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.BatchOptimizeTours(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.BatchOptimizeTours, req, settings.GRPC, c.logger, "BatchOptimizeTours")
 		return err
 	}, opts...)
 	if err != nil {
@@ -514,7 +519,7 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -575,17 +580,7 @@ func (c *restClient) OptimizeTours(ctx context.Context, req *routeoptimizationpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "OptimizeTours")
 		if err != nil {
 			return err
 		}
@@ -607,23 +602,23 @@ func (c *restClient) OptimizeTours(ctx context.Context, req *routeoptimizationpb
 //
 // This method is a Long Running Operation (LRO). The inputs for optimization
 // (OptimizeToursRequest messages) and outputs (OptimizeToursResponse
-// messages) are read/written from/to Cloud Storage in user-specified
+// messages) are read from and written to Cloud Storage in user-specified
 // format. Like the OptimizeTours method, each OptimizeToursRequest
 // contains a ShipmentModel and returns an OptimizeToursResponse
-// containing ShipmentRoutes, which are a set of routes to be performed by
-// vehicles minimizing the overall cost.
+// containing ShipmentRoute fields, which are a set of routes to be
+// performed by vehicles minimizing the overall cost.
 //
 // The user can poll operations.get to check the status of the LRO:
 //
-// If the LRO’s done field is false, then at least one request is still
+// If the LRO done field is false, then at least one request is still
 // being processed. Other requests may have completed successfully and their
-// results are available in GCS.
+// results are available in Cloud Storage.
 //
 // If the LRO’s done field is true, then all requests have been processed.
 // Any successfully processed requests will have their results available in
-// GCS. Any requests that failed will not have their results available in
-// GCS. If the LRO’s error field is set, then it contains the error from
-// one of the failed requests.
+// Cloud Storage. Any requests that failed will not have their results
+// available in Cloud Storage. If the LRO’s error field is set, then it
+// contains the error from one of the failed requests.
 func (c *restClient) BatchOptimizeTours(ctx context.Context, req *routeoptimizationpb.BatchOptimizeToursRequest, opts ...gax.CallOption) (*BatchOptimizeToursOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -661,21 +656,10 @@ func (c *restClient) BatchOptimizeTours(ctx context.Context, req *routeoptimizat
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchOptimizeTours")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -726,17 +710,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}

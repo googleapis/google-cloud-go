@@ -26,6 +26,7 @@ import (
 	echo "cloud.google.com/go/auth/grpctransport/testdata"
 	"cloud.google.com/go/auth/internal"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
@@ -258,7 +259,7 @@ func TestOptions_ResolveDetectOptions(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := tt.in.resolveDetectOptions()
-			if diff := cmp.Diff(tt.want, got); diff != "" {
+			if diff := cmp.Diff(tt.want, got, cmpopts.IgnoreFields(credentials.DetectOptions{}, "Logger")); diff != "" {
 				t.Errorf("mismatch (-want +got):\n%s", diff)
 			}
 		})
@@ -267,25 +268,42 @@ func TestOptions_ResolveDetectOptions(t *testing.T) {
 
 func TestGrpcCredentialsProvider_GetClientUniverseDomain(t *testing.T) {
 	nonDefault := "example.com"
+	nonDefault2 := "other-example.com"
 	tests := []struct {
-		name           string
-		universeDomain string
-		want           string
+		name                 string
+		clientUniverseDomain string
+		envUniverseDomain    string
+		want                 string
 	}{
 		{
-			name:           "default",
-			universeDomain: "",
-			want:           internal.DefaultUniverseDomain,
+			name:                 "default",
+			clientUniverseDomain: "",
+			want:                 internal.DefaultUniverseDomain,
 		},
 		{
-			name:           "non-default",
-			universeDomain: nonDefault,
-			want:           nonDefault,
+			name:                 "client option",
+			clientUniverseDomain: nonDefault,
+			want:                 nonDefault,
+		},
+		{
+			name:                 "env var",
+			clientUniverseDomain: "",
+			envUniverseDomain:    nonDefault2,
+			want:                 nonDefault2,
+		},
+		{
+			name:                 "client option and env var",
+			clientUniverseDomain: nonDefault,
+			envUniverseDomain:    nonDefault2,
+			want:                 nonDefault,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			at := &grpcCredentialsProvider{clientUniverseDomain: tt.universeDomain}
+			if tt.envUniverseDomain != "" {
+				t.Setenv(internal.UniverseDomainEnvVar, tt.envUniverseDomain)
+			}
+			at := &grpcCredentialsProvider{clientUniverseDomain: tt.clientUniverseDomain}
 			got := at.getClientUniverseDomain()
 			if got != tt.want {
 				t.Errorf("got %q, want %q", got, tt.want)

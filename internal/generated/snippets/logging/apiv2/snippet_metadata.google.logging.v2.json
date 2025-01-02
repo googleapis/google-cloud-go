@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/logging/apiv2",
-    "version": "1.11.0",
+    "version": "1.12.0",
     "language": "GO",
     "apis": [
       {
@@ -1938,7 +1938,7 @@
     {
       "regionTag": "logging_v2_generated_LoggingServiceV2_TailLogEntries_sync",
       "title": "logging TailLogEntries Sample",
-      "description": "TailLogEntries streaming read of log entries as they are ingested. Until the stream is\nterminated, it will continue reading logs.",
+      "description": "TailLogEntries streaming read of log entries as they are ingested. Until the stream is\nterminated, it will continue reading logs.\n\n\nThis method is not supported for the REST transport.",
       "file": "Client/TailLogEntries/main.go",
       "language": "GO",
       "clientMethod": {

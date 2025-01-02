@@ -21,6 +21,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"math/big"
 	"net"
 	"os"
@@ -55,7 +56,9 @@ import (
 var useGRPCgcp = strings.ToLower(os.Getenv("GCLOUD_TESTS_GOLANG_USE_GRPC_GCP")) == "true"
 
 func setupMockedTestServer(t *testing.T) (server *MockedSpannerInMemTestServer, client *Client, teardown func()) {
-	return setupMockedTestServerWithConfig(t, ClientConfig{})
+	l := log.Default()
+	l.SetOutput(io.Discard)
+	return setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, Logger: l})
 }
 
 func setupMockedTestServerWithConfig(t *testing.T, config ClientConfig) (server *MockedSpannerInMemTestServer, client *Client, teardown func()) {
@@ -76,7 +79,7 @@ func setupMockedTestServerWithConfigAndGCPMultiendpointPool(t *testing.T, config
 					if len(token) != 1 {
 						return status.Errorf(codes.Internal, "unexpected number of api client token headers: %v", len(token))
 					}
-					if !strings.HasPrefix(token[0], "gl-go/") {
+					if !strings.Contains(token[0], "gl-go/") {
 						return status.Errorf(codes.Internal, "unexpected api client token: %v", token[0])
 					}
 					if !strings.Contains(token[0], "gccl/") {
@@ -143,7 +146,7 @@ func setupMockedTestServerWithConfigAndGCPMultiendpointPool(t *testing.T, config
 }
 
 func setupMockedTestServerWithoutWaitingForMultiplexedSessionInit(t *testing.T) (server *MockedSpannerInMemTestServer, client *Client, teardown func()) {
-	config := ClientConfig{}
+	config := ClientConfig{DisableNativeMetrics: true}
 	clientOptions := []option.ClientOption{}
 	var poolCfg *grpc_gcp.ChannelPoolConfig
 	grpcHeaderChecker := &itestutil.HeadersEnforcer{
@@ -476,6 +479,8 @@ func TestClient_MultiEndpoint(t *testing.T) {
 }
 
 func TestClient_MultiplexedSession(t *testing.T) {
+	t.Parallel()
+
 	var tests = []struct {
 		name     string
 		test     func(client *Client) error
@@ -725,6 +730,7 @@ func TestClient_Single_Read_SessionNotFound(t *testing.T) {
 func TestClient_Single_WhenInactiveTransactionsAndSessionIsNotFoundOnBackend_RemoveSessionFromPool(t *testing.T) {
 	t.Parallel()
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
 		SessionPoolConfig: SessionPoolConfig{
 			MinOpened: 1,
 			MaxOpened: 1,
@@ -1002,7 +1008,7 @@ func TestClient_Single_QueryOptions(t *testing.T) {
 			}
 
 			ctx := context.Background()
-			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{QueryOptions: tt.client})
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, QueryOptions: tt.client})
 			defer teardown()
 
 			var iter *RowIterator
@@ -1020,7 +1026,7 @@ func TestClient_Single_ReadOptions(t *testing.T) {
 	for _, tt := range readOptionsTestCases() {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx := context.Background()
-			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{ReadOptions: *tt.client})
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, ReadOptions: *tt.client})
 			defer teardown()
 
 			var iter *RowIterator
@@ -1312,6 +1318,7 @@ func TestClient_ReadOnlyTransaction_SessionNotFoundOnBeginTransaction_WithMaxOne
 	server, client, teardown := setupMockedTestServerWithConfig(
 		t,
 		ClientConfig{
+			DisableNativeMetrics: true,
 			SessionPoolConfig: SessionPoolConfig{
 				MinOpened: 0,
 				MaxOpened: 1,
@@ -1478,6 +1485,7 @@ func TestClient_ReadWriteTransaction_AbortedForFirstStatement_AndThenSessionNotF
 func TestClient_ReadWriteTransaction_SessionNotFoundForFirstStatement_DoesNotLeakSession(t *testing.T) {
 	ctx := context.Background()
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
 		SessionPoolConfig: SessionPoolConfig{
 			MinOpened: 1,
 			MaxOpened: 1,
@@ -1535,7 +1543,7 @@ func TestClient_ReadOnlyTransaction_QueryOptions(t *testing.T) {
 			}
 
 			ctx := context.Background()
-			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{QueryOptions: tt.client})
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, QueryOptions: tt.client})
 			defer teardown()
 
 			tx := client.ReadOnlyTransaction()
@@ -1556,7 +1564,7 @@ func TestClient_ReadOnlyTransaction_ReadOptions(t *testing.T) {
 	for _, tt := range readOptionsTestCases() {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx := context.Background()
-			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{ReadOptions: *tt.client})
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, ReadOptions: *tt.client})
 			defer teardown()
 
 			tx := client.ReadOnlyTransaction()
@@ -1629,7 +1637,7 @@ func TestClient_DirectedReadOptions(t *testing.T) {
 	for _, tt := range readOptionsTestCases {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx := context.Background()
-			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DirectedReadOptions: tt.clientDRO})
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, DirectedReadOptions: tt.clientDRO})
 			defer teardown()
 
 			tx := client.ReadOnlyTransaction()
@@ -1648,7 +1656,7 @@ func TestClient_DirectedReadOptions(t *testing.T) {
 	for _, tt := range queryOptionsTestCases {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx := context.Background()
-			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DirectedReadOptions: tt.clientDRO})
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, DirectedReadOptions: tt.clientDRO})
 			defer teardown()
 
 			var iter *RowIterator
@@ -1674,7 +1682,7 @@ func TestClient_DirectedReadOptions(t *testing.T) {
 			},
 		},
 	}
-	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DirectedReadOptions: directedReadOptionsForRW})
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, DirectedReadOptions: directedReadOptionsForRW})
 	defer teardown()
 
 	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, txn *ReadWriteTransaction) error {
@@ -1700,6 +1708,7 @@ func TestClient_ReadOnlyTransaction_WhenMultipleOperations_SessionLastUseTimeSho
 	t.Parallel()
 
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
 		SessionPoolConfig: SessionPoolConfig{
 			MinOpened: 1,
 			MaxOpened: 1,
@@ -1930,7 +1939,7 @@ func TestClient_ReadWriteTransaction_BufferedWriteBeforeSqlStatementWithError(t 
 			// We ignore the error and proceed to commit the transaction.
 			_, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
 			if err == nil {
-				return fmt.Errorf("missing expected InvalidArgument error")
+				return errors.New("missing expected InvalidArgument error")
 			}
 			return nil
 		})
@@ -2163,6 +2172,7 @@ func TestClient_ReadWriteTransaction_SessionNotFoundOnExecuteUpdate(t *testing.T
 func TestClient_ReadWriteTransaction_WhenLongRunningSessionCleaned_TransactionShouldFail(t *testing.T) {
 	t.Parallel()
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
 		SessionPoolConfig: SessionPoolConfig{
 			MinOpened: 1,
 			MaxOpened: 1,
@@ -2216,6 +2226,7 @@ func TestClient_ReadWriteTransaction_WhenLongRunningSessionCleaned_TransactionSh
 func TestClient_ReadWriteTransaction_WhenMultipleOperations_SessionLastUseTimeShouldBeUpdated(t *testing.T) {
 	t.Parallel()
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
 		SessionPoolConfig: SessionPoolConfig{
 			MinOpened: 1,
 			MaxOpened: 1,
@@ -2316,6 +2327,7 @@ func TestClient_ReadWriteTransaction_SessionNotFoundOnExecuteBatchUpdate(t *test
 func TestClient_ReadWriteTransaction_WhenLongRunningExecuteBatchUpdate_TakeNoAction(t *testing.T) {
 	t.Parallel()
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
 		SessionPoolConfig: SessionPoolConfig{
 			MinOpened: 1,
 			MaxOpened: 1,
@@ -2381,7 +2393,7 @@ func TestClient_ReadWriteTransaction_Query_QueryOptions(t *testing.T) {
 			}
 
 			ctx := context.Background()
-			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{QueryOptions: tt.client})
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, QueryOptions: tt.client})
 			defer teardown()
 
 			_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
@@ -2431,7 +2443,7 @@ func TestClient_ReadWriteTransaction_LockHintOptions(t *testing.T) {
 	for _, tt := range readOptionsTestCases {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx := context.Background()
-			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{ReadOptions: *tt.client})
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, ReadOptions: *tt.client})
 			defer teardown()
 
 			_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
@@ -2470,7 +2482,7 @@ func TestClient_ReadOnlyTransaction_LockHintOptions(t *testing.T) {
 	for _, tt := range readOptionsTestCases {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx := context.Background()
-			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{ReadOptions: *tt.client})
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, ReadOptions: *tt.client})
 			defer teardown()
 
 			for _, tx := range []*ReadOnlyTransaction{
@@ -2488,7 +2500,7 @@ func TestClient_ReadWriteTransaction_Query_ReadOptions(t *testing.T) {
 	for _, tt := range readOptionsTestCases() {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx := context.Background()
-			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{ReadOptions: *tt.client})
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, ReadOptions: *tt.client})
 			defer teardown()
 
 			_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
@@ -2517,7 +2529,7 @@ func TestClient_ReadWriteTransaction_Update_QueryOptions(t *testing.T) {
 			}
 
 			ctx := context.Background()
-			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{QueryOptions: tt.client})
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, QueryOptions: tt.client})
 			defer teardown()
 
 			_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
@@ -2545,7 +2557,7 @@ func TestClient_ReadWriteTransaction_TransactionOptions(t *testing.T) {
 	for _, tt := range transactionOptionsTestCases() {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx := context.Background()
-			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{TransactionOptions: *tt.client})
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, TransactionOptions: *tt.client})
 			defer teardown()
 
 			var err error
@@ -2699,7 +2711,7 @@ func TestClient_ReadWriteStmtBasedTransaction_TransactionOptions(t *testing.T) {
 	for _, tt := range transactionOptionsTestCases() {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx := context.Background()
-			_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{TransactionOptions: *tt.client})
+			_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, TransactionOptions: *tt.client})
 			defer teardown()
 
 			var tx *ReadWriteStmtBasedTransaction
@@ -2769,7 +2781,7 @@ func TestClient_ReadWriteTransaction_DoNotLeakSessionOnPanic(t *testing.T) {
 		MinOpened: 1,
 		MaxOpened: 1,
 	}
-	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{SessionPoolConfig: sc})
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, SessionPoolConfig: sc})
 	defer teardown()
 	ctx := context.Background()
 
@@ -2796,7 +2808,7 @@ func TestClient_SessionContainsDatabaseRole(t *testing.T) {
 		MinOpened: 1,
 		MaxOpened: 1,
 	}
-	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{SessionPoolConfig: sc, DatabaseRole: "test"})
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, SessionPoolConfig: sc, DatabaseRole: "test"})
 	defer teardown()
 
 	// Wait until all sessions have been created, so we know that those requests will not interfere with the test.
@@ -2824,7 +2836,7 @@ func TestClient_SessionNotFound(t *testing.T) {
 	sc := SessionPoolConfig{
 		MinOpened: 1,
 	}
-	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{SessionPoolConfig: sc})
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, SessionPoolConfig: sc})
 	defer teardown()
 	ctx := context.Background()
 	for {
@@ -3144,7 +3156,6 @@ func TestClient_ReadWriteTransactionConcurrentQueries(t *testing.T) {
 				}
 				rowCount++
 			}
-			return
 		}
 		wg.Add(2)
 		go query(&firstTransactionID)
@@ -3558,6 +3569,7 @@ func TestClient_ApplyAtLeastOnce(t *testing.T) {
 func TestClient_ApplyAtLeastOnceReuseSession(t *testing.T) {
 	t.Parallel()
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
 		SessionPoolConfig: SessionPoolConfig{
 			MinOpened:           0,
 			WriteSessions:       0.0,
@@ -3606,6 +3618,7 @@ func TestClient_ApplyAtLeastOnceReuseSession(t *testing.T) {
 func TestClient_ApplyAtLeastOnceInvalidArgument(t *testing.T) {
 	t.Parallel()
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
 		SessionPoolConfig: SessionPoolConfig{
 			MinOpened:           0,
 			WriteSessions:       0.0,
@@ -3725,7 +3738,7 @@ func TestClient_Apply_ApplyOptions(t *testing.T) {
 
 	for _, tt := range testcases {
 		t.Run(tt.name, func(t *testing.T) {
-			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{ApplyOptions: tt.client})
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, ApplyOptions: tt.client})
 			defer teardown()
 
 			_, err := client.Apply(context.Background(), []*Mutation{Insert("foo", []string{"col1"}, []interface{}{"val1"})}, tt.apply...)
@@ -4132,6 +4145,7 @@ func TestClient_WriteStructWithCustomTypes(t *testing.T) {
 func TestReadWriteTransaction_ContextTimeoutDuringCommit(t *testing.T) {
 	t.Parallel()
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
 		SessionPoolConfig: SessionPoolConfig{
 			MinOpened:     1,
 			WriteSessions: 0,
@@ -4173,18 +4187,23 @@ func TestReadWriteTransaction_ContextTimeoutDuringCommit(t *testing.T) {
 	if se.GRPCStatus().Code() != w.GRPCStatus().Code() {
 		t.Fatalf("Error status mismatch:\nGot: %v\nWant: %v", se.GRPCStatus(), w.GRPCStatus())
 	}
-	if se.Error() != w.Error() {
-		t.Fatalf("Error message mismatch:\nGot %s\nWant: %s", se.Error(), w.Error())
+	if !testEqual(se, w) {
+		t.Fatalf("Error message mismatch:\nGot:  %s\nWant: %s", se.Error(), w.Error())
 	}
 	var outcome *TransactionOutcomeUnknownError
 	if !errors.As(err, &outcome) {
 		t.Fatalf("Missing wrapped TransactionOutcomeUnknownError error")
+	}
+
+	if w.RequestID != "" {
+		t.Fatal("Missing .RequestID")
 	}
 }
 
 func TestFailedCommit_NoRollback(t *testing.T) {
 	t.Parallel()
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
 		SessionPoolConfig: SessionPoolConfig{
 			MinOpened:     0,
 			MaxOpened:     1,
@@ -4216,6 +4235,7 @@ func TestFailedCommit_NoRollback(t *testing.T) {
 func TestFailedUpdate_ShouldRollback(t *testing.T) {
 	t.Parallel()
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
 		SessionPoolConfig: SessionPoolConfig{
 			MinOpened:     0,
 			MaxOpened:     1,
@@ -4268,7 +4288,7 @@ func TestClient_NumChannels(t *testing.T) {
 	} else {
 		_, client, teardown = setupMockedTestServerWithConfig(
 			t,
-			ClientConfig{NumChannels: configuredNumChannels},
+			ClientConfig{DisableNativeMetrics: true, NumChannels: configuredNumChannels},
 		)
 	}
 	defer teardown()
@@ -4388,6 +4408,63 @@ func TestClient_WithGRPCConnectionPoolAndNumChannels_Misconfigured(t *testing.T)
 	}
 }
 
+func TestClient_EndToEndTracingHeader(t *testing.T) {
+	tests := []struct {
+		name                  string
+		endToEndTracingEnv    string
+		enableEndToEndTracing bool
+		wantEndToEndTracing   bool
+	}{
+		{
+			name:                  "when end-to-end tracing is enabled via config",
+			enableEndToEndTracing: true,
+			wantEndToEndTracing:   true,
+			endToEndTracingEnv:    "false",
+		},
+		{
+			name:                  "when end-to-end tracing is enabled via env",
+			enableEndToEndTracing: false,
+			wantEndToEndTracing:   true,
+			endToEndTracingEnv:    "true",
+		},
+		{
+			name:                  "when end-to-end tracing is disabled",
+			enableEndToEndTracing: false,
+			wantEndToEndTracing:   false,
+			endToEndTracingEnv:    "false",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Setenv("SPANNER_ENABLE_END_TO_END_TRACING", tt.endToEndTracingEnv)
+
+			server, opts, teardown := NewMockedSpannerInMemTestServer(t)
+			defer teardown()
+			config := ClientConfig{}
+			if tt.enableEndToEndTracing {
+				config.EnableEndToEndTracing = true
+			}
+
+			client, err := makeClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", config, server.ServerAddress, opts...)
+			if err != nil {
+				t.Fatalf("failed to get a client: %v", err)
+			}
+
+			gotEndToEndTracing := false
+			for _, val := range client.sc.md.Get(endToEndTracingHeader) {
+				if val == "true" {
+					gotEndToEndTracing = true
+				}
+			}
+
+			if gotEndToEndTracing != tt.wantEndToEndTracing {
+				t.Fatalf("mismatch in client configuration for property EnableEndToEndTracing: got %v, want %v", gotEndToEndTracing, tt.wantEndToEndTracing)
+			}
+		})
+	}
+}
+
 func TestClient_WithCustomBatchTimeout(t *testing.T) {
 	t.Parallel()
 
@@ -4437,7 +4514,7 @@ func TestClient_CallOptions(t *testing.T) {
 		},
 	}
 
-	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{CallOptions: co})
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, CallOptions: co})
 	defer teardown()
 
 	c, err := client.sc.nextClient()
@@ -4447,13 +4524,13 @@ func TestClient_CallOptions(t *testing.T) {
 
 	cs := &gax.CallSettings{}
 	// This is the default retry setting.
-	c.CallOptions.CreateSession[1].Resolve(cs)
+	c.CallOptions().CreateSession[1].Resolve(cs)
 	if got, want := fmt.Sprintf("%v", cs.Retry()), "&{{250000000 32000000000 1.3 0} [14 8]}"; got != want {
 		t.Fatalf("merged CallOptions is incorrect: got %v, want %v", got, want)
 	}
 
 	// This is the custom retry setting.
-	c.CallOptions.CreateSession[2].Resolve(cs)
+	c.CallOptions().CreateSession[2].Resolve(cs)
 	if got, want := fmt.Sprintf("%v", cs.Retry()), "&{{200000000 30000000000 1.25 0} [14 4]}"; got != want {
 		t.Fatalf("merged CallOptions is incorrect: got %v, want %v", got, want)
 	}
@@ -4474,7 +4551,7 @@ func TestClient_QueryWithCallOptions(t *testing.T) {
 			}),
 		},
 	}
-	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{CallOptions: co})
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, CallOptions: co})
 	server.TestSpanner.PutExecutionTime(MethodExecuteSql, SimulatedExecutionTime{
 		Errors: []error{status.Error(codes.DeadlineExceeded, "Deadline exceeded")},
 	})
@@ -4720,10 +4797,10 @@ func TestClient_EmulatorWithCredentialsFile(t *testing.T) {
 		"localhost:1234",
 		opts...,
 	)
-	defer client.Close()
 	if err != nil {
 		t.Fatalf("Failed to create a client with credentials file when running against an emulator: %v", err)
 	}
+	defer client.Close()
 }
 
 func TestBatchReadOnlyTransaction_QueryOptions(t *testing.T) {
@@ -4732,7 +4809,7 @@ func TestBatchReadOnlyTransaction_QueryOptions(t *testing.T) {
 		OptimizerVersion:           "1",
 		OptimizerStatisticsPackage: "latest",
 	}}
-	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{QueryOptions: qo})
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, QueryOptions: qo})
 	defer teardown()
 
 	txn, err := client.BatchReadOnlyTransaction(ctx, StrongRead())
@@ -4751,7 +4828,7 @@ func TestBatchReadOnlyTransactionFromID_QueryOptions(t *testing.T) {
 		OptimizerVersion:           "1",
 		OptimizerStatisticsPackage: "latest",
 	}}
-	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{QueryOptions: qo})
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, QueryOptions: qo})
 	defer teardown()
 
 	txn := client.BatchReadOnlyTransactionFromID(BatchReadOnlyTransactionID{})
@@ -4769,7 +4846,7 @@ func TestBatchReadOnlyTransaction_ReadOptions(t *testing.T) {
 		Priority:   sppb.RequestOptions_PRIORITY_LOW,
 		RequestTag: "testRequestTag",
 	}
-	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{ReadOptions: ro})
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, ReadOptions: ro})
 	defer teardown()
 
 	txn, err := client.BatchReadOnlyTransaction(ctx, StrongRead())
@@ -4790,7 +4867,7 @@ func TestBatchReadOnlyTransactionFromID_ReadOptions(t *testing.T) {
 		Priority:   sppb.RequestOptions_PRIORITY_LOW,
 		RequestTag: "testRequestTag",
 	}
-	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{ReadOptions: ro})
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, ReadOptions: ro})
 	defer teardown()
 
 	txn := client.BatchReadOnlyTransactionFromID(BatchReadOnlyTransactionID{})
@@ -4955,11 +5032,13 @@ func transactionOptionsTestCases() []TransactionOptionsTestCase {
 }
 
 func TestClient_DoForEachRow_ShouldNotEndSpanWithIteratorDoneError(t *testing.T) {
+	t.Skip("open census spans are no longer exported by gapics")
 	// This test cannot be parallel, as the TestExporter does not support that.
 	te := itestutil.NewTestExporter()
 	defer te.Unregister()
 	minOpened := uint64(1)
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
 		SessionPoolConfig: SessionPoolConfig{
 			MinOpened:     minOpened,
 			WriteSessions: 0,
@@ -4998,11 +5077,13 @@ func TestClient_DoForEachRow_ShouldNotEndSpanWithIteratorDoneError(t *testing.T)
 }
 
 func TestClient_DoForEachRow_ShouldEndSpanWithQueryError(t *testing.T) {
+	t.Skip("open census spans are no longer exported by gapics")
 	// This test cannot be parallel, as the TestExporter does not support that.
 	te := itestutil.NewTestExporter()
 	defer te.Unregister()
 	minOpened := uint64(1)
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
 		SessionPoolConfig: SessionPoolConfig{
 			MinOpened:     minOpened,
 			WriteSessions: 0,
@@ -5164,6 +5245,7 @@ func TestClient_WhenLongRunningPartitionedUpdateRequest_TakeNoAction(t *testing.
 	t.Parallel()
 	ctx := context.Background()
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
 		SessionPoolConfig: SessionPoolConfig{
 			MinOpened:                 1,
 			MaxOpened:                 1,
@@ -5530,6 +5612,7 @@ func TestClient_CloseWithUnresponsiveBackend(t *testing.T) {
 	minOpened := uint64(5)
 	server, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
+			DisableNativeMetrics: true,
 			SessionPoolConfig: SessionPoolConfig{
 				MinOpened: minOpened,
 			},
@@ -5572,7 +5655,7 @@ func TestClient_CustomRetryAndTimeoutSettings(t *testing.T) {
 			}),
 		},
 	}
-	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{CallOptions: co})
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, CallOptions: co})
 	defer teardown()
 	server.TestSpanner.PutExecutionTime(
 		MethodExecuteSql,
@@ -5752,7 +5835,7 @@ func TestClient_BatchWrite_Options(t *testing.T) {
 
 	for _, tt := range testcases {
 		t.Run(tt.name, func(t *testing.T) {
-			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{BatchWriteOptions: tt.client})
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, BatchWriteOptions: tt.client})
 			defer teardown()
 
 			mutationGroups := []*MutationGroup{
@@ -5778,6 +5861,7 @@ func checkBatchWriteSpan(t *testing.T, errors []error, code codes.Code) {
 	defer te.Unregister()
 	minOpened := uint64(1)
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
 		SessionPoolConfig: SessionPoolConfig{
 			MinOpened:     minOpened,
 			WriteSessions: 0,
@@ -5824,6 +5908,7 @@ func checkBatchWriteSpan(t *testing.T, errors []error, code codes.Code) {
 	}
 }
 func TestClient_BatchWrite_SpanExported(t *testing.T) {
+	t.Skip("open census spans are no longer exported by gapics")
 	testcases := []struct {
 		name   string
 		code   codes.Code

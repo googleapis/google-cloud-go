@@ -483,6 +483,67 @@ func (op *RejectHubSpokeOperation) Name() string {
 	return op.lro.Name()
 }
 
+// UpdateGroupOperation manages a long-running operation from UpdateGroup.
+type UpdateGroupOperation struct {
+	lro *longrunning.Operation
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *UpdateGroupOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*networkconnectivitypb.Group, error) {
+	var resp networkconnectivitypb.Group
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *UpdateGroupOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*networkconnectivitypb.Group, error) {
+	var resp networkconnectivitypb.Group
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *UpdateGroupOperation) Metadata() (*networkconnectivitypb.OperationMetadata, error) {
+	var meta networkconnectivitypb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *UpdateGroupOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *UpdateGroupOperation) Name() string {
+	return op.lro.Name()
+}
+
 // UpdateHubOperation manages a long-running operation from UpdateHub.
 type UpdateHubOperation struct {
 	lro *longrunning.Operation
@@ -625,7 +686,7 @@ type GroupIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*networkconnectivitypb.Group, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *GroupIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -672,7 +733,7 @@ type HubIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*networkconnectivitypb.Hub, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *HubIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -699,6 +760,53 @@ func (it *HubIterator) takeBuf() interface{} {
 	return b
 }
 
+// HubStatusEntryIterator manages a stream of *networkconnectivitypb.HubStatusEntry.
+type HubStatusEntryIterator struct {
+	items    []*networkconnectivitypb.HubStatusEntry
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*networkconnectivitypb.HubStatusEntry, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *HubStatusEntryIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *HubStatusEntryIterator) Next() (*networkconnectivitypb.HubStatusEntry, error) {
+	var item *networkconnectivitypb.HubStatusEntry
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *HubStatusEntryIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *HubStatusEntryIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // LocationIterator manages a stream of *locationpb.Location.
 type LocationIterator struct {
 	items    []*locationpb.Location
@@ -719,7 +827,7 @@ type LocationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *LocationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -766,7 +874,7 @@ type OperationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *OperationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -813,7 +921,7 @@ type PolicyBasedRouteIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*networkconnectivitypb.PolicyBasedRoute, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *PolicyBasedRouteIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -860,7 +968,7 @@ type RouteIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*networkconnectivitypb.Route, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *RouteIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -907,7 +1015,7 @@ type RouteTableIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*networkconnectivitypb.RouteTable, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *RouteTableIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -954,7 +1062,7 @@ type SpokeIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*networkconnectivitypb.Spoke, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *SpokeIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

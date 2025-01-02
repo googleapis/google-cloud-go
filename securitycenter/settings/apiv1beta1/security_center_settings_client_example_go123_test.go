@@ -44,7 +44,7 @@ func ExampleSecurityCenterSettingsClient_ListComponents_all() {
 	}
 	for resp, err := range c.ListComponents(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -70,7 +70,7 @@ func ExampleSecurityCenterSettingsClient_ListDetectors_all() {
 	}
 	for resp, err := range c.ListDetectors(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp

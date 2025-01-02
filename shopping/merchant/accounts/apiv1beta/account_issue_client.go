@@ -19,20 +19,21 @@ package accounts
 import (
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
+	"time"
 
 	accountspb "cloud.google.com/go/shopping/merchant/accounts/apiv1beta/accountspb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -61,13 +62,34 @@ func defaultAccountIssueGRPCClientOptions() []option.ClientOption {
 
 func defaultAccountIssueCallOptions() *AccountIssueCallOptions {
 	return &AccountIssueCallOptions{
-		ListAccountIssues: []gax.CallOption{},
+		ListAccountIssues: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
 func defaultAccountIssueRESTCallOptions() *AccountIssueCallOptions {
 	return &AccountIssueCallOptions{
-		ListAccountIssues: []gax.CallOption{},
+		ListAccountIssues: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 	}
 }
 
@@ -134,6 +156,8 @@ type accountIssueGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewAccountIssueClient creates a new account issue service client based on gRPC.
@@ -160,6 +184,7 @@ func NewAccountIssueClient(ctx context.Context, opts ...option.ClientOption) (*A
 		connPool:           connPool,
 		accountIssueClient: accountspb.NewAccountIssueServiceClient(connPool),
 		CallOptions:        &client.CallOptions,
+		logger:             internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -206,6 +231,8 @@ type accountIssueRESTClient struct {
 
 	// Points back to the CallOptions field of the containing AccountIssueClient
 	CallOptions **AccountIssueCallOptions
+
+	logger *slog.Logger
 }
 
 // NewAccountIssueRESTClient creates a new account issue service rest client.
@@ -223,6 +250,7 @@ func NewAccountIssueRESTClient(ctx context.Context, opts ...option.ClientOption)
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -286,7 +314,7 @@ func (c *accountIssueGRPCClient) ListAccountIssues(ctx context.Context, req *acc
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.accountIssueClient.ListAccountIssues(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.accountIssueClient.ListAccountIssues, req, settings.GRPC, c.logger, "ListAccountIssues")
 			return err
 		}, opts...)
 		if err != nil {
@@ -344,11 +372,8 @@ func (c *accountIssueRESTClient) ListAccountIssues(ctx context.Context, req *acc
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
-		if req.GetTimeZone().GetId() != "" {
-			params.Add("timeZone.id", fmt.Sprintf("%v", req.GetTimeZone().GetId()))
-		}
-		if req.GetTimeZone().GetVersion() != "" {
-			params.Add("timeZone.version", fmt.Sprintf("%v", req.GetTimeZone().GetVersion()))
+		if req.GetTimeZone() != "" {
+			params.Add("timeZone", fmt.Sprintf("%v", req.GetTimeZone()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -366,21 +391,10 @@ func (c *accountIssueRESTClient) ListAccountIssues(ctx context.Context, req *acc
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAccountIssues")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
