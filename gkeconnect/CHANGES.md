@@ -1,5 +1,12 @@
 # Changes
 
+## [0.12.1](https://github.com/googleapis/google-cloud-go/compare/gkeconnect/v0.12.0...gkeconnect/v0.12.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **gkeconnect:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [0.12.0](https://github.com/googleapis/google-cloud-go/compare/gkeconnect/v0.11.2...gkeconnect/v0.12.0) (2024-11-14)
 
 

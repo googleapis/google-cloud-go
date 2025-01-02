@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.11.3](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.11.2...orchestration/v1.11.3) (2025-01-02)
+
+
+### Bug Fixes
+
+* **orchestration:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [1.11.2](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.11.1...orchestration/v1.11.2) (2024-12-11)
 
 

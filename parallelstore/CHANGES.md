@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.9.1](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.9.0...parallelstore/v0.9.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **parallelstore:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+
+### Documentation
+
+* **parallelstore:** A comment for field `requested_cancellation` in message `.google.cloud.parallelstore.v1beta.ExportDataMetadata` is changed ([e2796a8](https://github.com/googleapis/google-cloud-go/commit/e2796a8c1460211fc2f4e78f37e15e8e2b6e8179))
+* **parallelstore:** A comment for field `requested_cancellation` in message `.google.cloud.parallelstore.v1beta.ImportDataMetadata` is changed ([e2796a8](https://github.com/googleapis/google-cloud-go/commit/e2796a8c1460211fc2f4e78f37e15e8e2b6e8179))
+* **parallelstore:** A comment for field `requested_cancellation` in message `.google.cloud.parallelstore.v1beta.OperationMetadata` is changed ([e2796a8](https://github.com/googleapis/google-cloud-go/commit/e2796a8c1460211fc2f4e78f37e15e8e2b6e8179))
+
 ## [0.9.0](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.8.0...parallelstore/v0.9.0) (2024-12-11)
 
 
