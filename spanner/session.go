@@ -508,7 +508,7 @@ type SessionPoolConfig struct {
 
 	enableMultiplexSession bool
 
-	// enableMultiplexedSessionForRW is a flag to enable multiplexed session for read/write transactions, is used in testing
+	// enableMultiplexedSessionForRW is a flag to enable multiplexed session for read/write transactions
 	enableMultiplexedSessionForRW bool
 
 	// healthCheckSampleInterval is how often the health checker samples live
@@ -808,6 +808,18 @@ func (p *sessionPool) getRatioOfSessionsInUseLocked() float64 {
 		return 0
 	}
 	return float64(p.numInUse) / float64(maxSessions)
+}
+
+func (p *sessionPool) isMultiplexedSessionForRWEnabled() bool {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	return p.enableMultiplexedSessionForRW
+}
+
+func (p *sessionPool) disableMultiplexedSessionForRW() {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	p.enableMultiplexedSessionForRW = false
 }
 
 // gets sessions which are unexpectedly long-running.

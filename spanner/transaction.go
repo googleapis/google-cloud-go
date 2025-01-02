@@ -1535,7 +1535,7 @@ func (t *ReadWriteTransaction) setSessionEligibilityForLongRunning(sh *sessionHa
 	}
 }
 
-func beginTransaction(ctx context.Context, sid string, client spannerClient, opts TransactionOptions) (transactionID, error) {
+func beginTransaction(ctx context.Context, sid string, client spannerClient, opts TransactionOptions, mutationKey *sppb.Mutation) (transactionID, *sppb.MultiplexedSessionPrecommitToken, error) {
 	res, err := client.BeginTransaction(ctx, &sppb.BeginTransactionRequest{
 		Session: sid,
 		Options: &sppb.TransactionOptions{
@@ -1546,14 +1546,16 @@ func beginTransaction(ctx context.Context, sid string, client spannerClient, opt
 			},
 			ExcludeTxnFromChangeStreams: opts.ExcludeTxnFromChangeStreams,
 		},
+		MutationKey: mutationKey,
 	})
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	if res.Id == nil {
-		return nil, spannerErrorf(codes.Unknown, "BeginTransaction returned a transaction with a nil ID.")
+		return nil, nil, spannerErrorf(codes.Unknown, "BeginTransaction returned a transaction with a nil ID.")
 	}
-	return res.Id, nil
+
+	return res.Id, res.GetPrecommitToken(), nil
 }
 
 // shouldExplicitBegin checks if ReadWriteTransaction should do an explicit BeginTransaction
@@ -1572,7 +1574,7 @@ func (t *ReadWriteTransaction) shouldExplicitBegin(attempt int) bool {
 }
 
 // begin starts a read-write transaction on Cloud Spanner.
-func (t *ReadWriteTransaction) begin(ctx context.Context) error {
+func (t *ReadWriteTransaction) begin(ctx context.Context, mutation *sppb.Mutation) error {
 	t.mu.Lock()
 	if t.tx != nil {
 		t.state = txActive
@@ -1582,8 +1584,9 @@ func (t *ReadWriteTransaction) begin(ctx context.Context) error {
 	t.mu.Unlock()
 
 	var (
-		tx  transactionID
-		err error
+		tx             transactionID
+		precommitToken *sppb.MultiplexedSessionPrecommitToken
+		err            error
 	)
 	defer func() {
 		if err != nil && sh != nil {
@@ -1601,9 +1604,10 @@ func (t *ReadWriteTransaction) begin(ctx context.Context) error {
 		if sh != nil {
 			sh.updateLastUseTime()
 		}
-		tx, err = beginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), sh.getID(), sh.getClient(), t.txOpts)
+		tx, precommitToken, err = beginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), sh.getID(), sh.getClient(), t.txOpts, mutation)
 		if isSessionNotFoundError(err) {
 			sh.destroy()
+			// this should not happen with multiplexed session, but if it does, we should not retry with multiplexed session
 			sh, err = t.sp.take(ctx)
 			if err != nil {
 				return err
@@ -1614,6 +1618,7 @@ func (t *ReadWriteTransaction) begin(ctx context.Context) error {
 		} else {
 			err = ToSpannerError(err)
 		}
+		t.updatePrecommitToken(precommitToken)
 		break
 	}
 	if err == nil {
@@ -1660,6 +1665,7 @@ func (co CommitOptions) merge(opts CommitOptions) CommitOptions {
 func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions) (CommitResponse, error) {
 	resp := CommitResponse{}
 	t.mu.Lock()
+	mutationProtos, selectedMutationProto, err := mutationsProto(t.wb)
 	if t.tx == nil {
 		if t.state == txClosed {
 			// inline begin transaction failed
@@ -1667,16 +1673,18 @@ func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions
 			return resp, errInlineBeginTransactionFailed()
 		}
 		t.mu.Unlock()
+		if !t.sp.isMultiplexedSessionForRWEnabled() {
+			selectedMutationProto = nil
+		}
 		// mutations or empty transaction body only
-		if err := t.begin(ctx); err != nil {
+		if err := t.begin(ctx, selectedMutationProto); err != nil {
 			return resp, err
 		}
 		t.mu.Lock()
 	}
 	t.state = txClosed // No further operations after commit.
 	close(t.txReadyOrClosed)
-	mPb, err := mutationsProto(t.wb)
-
+	precommitToken := t.precommitToken
 	t.mu.Unlock()
 	if err != nil {
 		return resp, err
@@ -1700,9 +1708,9 @@ func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions
 		Transaction: &sppb.CommitRequest_TransactionId{
 			TransactionId: t.tx,
 		},
-		PrecommitToken:    t.precommitToken,
+		PrecommitToken:    precommitToken,
 		RequestOptions:    createRequestOptions(t.txOpts.CommitPriority, "", t.txOpts.TransactionTag),
-		Mutations:         mPb,
+		Mutations:         mutationProtos,
 		ReturnCommitStats: options.ReturnCommitStats,
 		MaxCommitDelay:    maxCommitDelay,
 	}, gax.WithGRPCOptions(grpc.Header(&md)))
@@ -1883,7 +1891,7 @@ func newReadWriteStmtBasedTransactionWithSessionHandle(ctx context.Context, c *C
 	t.otConfig = c.otConfig
 
 	// always explicit begin the transactions
-	if err = t.begin(ctx); err != nil {
+	if err = t.begin(ctx, nil); err != nil {
 		if sh != nil {
 			sh.recycle()
 		}
@@ -1975,7 +1983,7 @@ func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Muta
 			sh.recycle()
 		}
 	}()
-	mPb, err := mutationsProto(ms)
+	mPb, _, err := mutationsProto(ms)
 	if err != nil {
 		// Malformed mutation found, just return the error.
 		return ts, err
