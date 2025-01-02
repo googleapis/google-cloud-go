@@ -131,7 +131,7 @@ use (
 	./privatecatalog
 	./privilegedaccessmanager
 	./profiler
-	./pubsub
+	./pubsub/v2
 	./pubsublite
 	./rapidmigrationassessment
 	./recaptchaenterprise
