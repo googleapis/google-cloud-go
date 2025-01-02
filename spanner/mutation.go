@@ -17,7 +17,9 @@ limitations under the License.
 package spanner
 
 import (
+	"math/rand"
 	"reflect"
+	"time"
 
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"google.golang.org/grpc/codes"
@@ -427,16 +429,42 @@ func (m Mutation) proto() (*sppb.Mutation, error) {
 
 // mutationsProto turns a spanner.Mutation array into a sppb.Mutation array,
 // it is convenient for sending batch mutations to Cloud Spanner.
-func mutationsProto(ms []*Mutation) ([]*sppb.Mutation, error) {
+func mutationsProto(ms []*Mutation) ([]*sppb.Mutation, *sppb.Mutation, error) {
+	var selectedMutation *Mutation
+	var nonInsertMutations []*Mutation
+
 	l := make([]*sppb.Mutation, 0, len(ms))
 	for _, m := range ms {
+		if m.op != opInsert {
+			nonInsertMutations = append(nonInsertMutations, m)
+		}
+		if selectedMutation == nil {
+			selectedMutation = m
+		}
+		// Track the INSERT mutation with the highest number of values if only INSERT mutation were found
+		if selectedMutation.op == opInsert && m.op == opInsert && len(m.values) > len(selectedMutation.values) {
+			selectedMutation = m
+		}
+
+		// Convert the mutation to sppb.Mutation and add to the list
 		pb, err := m.proto()
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		l = append(l, pb)
 	}
-	return l, nil
+	if len(nonInsertMutations) > 0 {
+		selectedMutation = nonInsertMutations[rand.New(rand.NewSource(time.Now().UnixNano())).Intn(len(nonInsertMutations))]
+	}
+	if selectedMutation != nil {
+		m, err := selectedMutation.proto()
+		if err != nil {
+			return nil, nil, err
+		}
+		return l, m, nil
+	}
+
+	return l, nil, nil
 }
 
 // mutationGroupsProto turns a spanner.MutationGroup array into a
@@ -444,7 +472,7 @@ func mutationsProto(ms []*Mutation) ([]*sppb.Mutation, error) {
 func mutationGroupsProto(mgs []*MutationGroup) ([]*sppb.BatchWriteRequest_MutationGroup, error) {
 	gs := make([]*sppb.BatchWriteRequest_MutationGroup, 0, len(mgs))
 	for _, mg := range mgs {
-		ms, err := mutationsProto(mg.Mutations)
+		ms, _, err := mutationsProto(mg.Mutations)
 		if err != nil {
 			return nil, err
 		}
