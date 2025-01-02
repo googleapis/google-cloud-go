@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,3 +17,7 @@
 //go:build go1.23
 
 package datacatalog_test
+
+import (
+	datacatalog "cloud.google.com/go/datacatalog/apiv1beta1"
+)
