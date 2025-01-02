@@ -1,6 +1,6 @@
 module cloud.google.com/go/spanner/test
 
-go 1.21
+go 1.22
 
 replace (
 	cloud.google.com/go => ../../../../
