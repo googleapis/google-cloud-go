@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/redis/cluster/apiv1",
-    "version": "$VERSION",
+    "version": "1.17.3",
     "language": "GO",
     "apis": [
       {
