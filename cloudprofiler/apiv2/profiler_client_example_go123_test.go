@@ -17,3 +17,7 @@
 //go:build go1.23
 
 package cloudprofiler_test
+
+import (
+	cloudprofiler "cloud.google.com/go/cloudprofiler/apiv2"
+)
