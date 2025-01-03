@@ -1,6 +1,6 @@
 module cloud.google.com/go/apikeys
 
-go 1.21
+go 1.22
 
 require (
 	cloud.google.com/go/longrunning v0.6.2
