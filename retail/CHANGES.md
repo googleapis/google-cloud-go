@@ -1,5 +1,12 @@
 # Changes
 
+## [1.19.2](https://github.com/googleapis/google-cloud-go/compare/retail/v1.19.1...retail/v1.19.2) (2025-01-02)
+
+
+### Bug Fixes
+
+* **retail:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [1.19.1](https://github.com/googleapis/google-cloud-go/compare/retail/v1.19.0...retail/v1.19.1) (2024-10-23)
 
 
