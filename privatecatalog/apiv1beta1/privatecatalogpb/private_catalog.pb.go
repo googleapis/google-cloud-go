@@ -21,11 +21,8 @@
 package privatecatalogpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -524,7 +523,7 @@ type Catalog struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Output only. The resource name of the target catalog, in the format of
-	// `catalogs/{catalog}'.
+	// `catalogs/{catalog}`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. The descriptive name of the catalog as it appears in UIs.
 	DisplayName string `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
@@ -1302,7 +1301,7 @@ type Version struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Output only. The resource name of the version, in the format
-	// `catalogs/{catalog}/products/{product}/versions/[a-z][-a-z0-9]*[a-z0-9]'.
+	// `catalogs/{catalog}/products/{product}/versions/[a-z][-a-z0-9]*[a-z0-9]`.
 	//
 	// A unique identifier for the version under a product.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
