@@ -401,10 +401,10 @@ func TestClient_WithReadOptions(t *testing.T) {
 	}
 }
 
-func TestClient_UsingEmulator(t *testing.T) {
+func TestClient_UsesEmulator(t *testing.T) {
 	c, _, cleanup := newMock(t)
 	defer cleanup()
-	if c.UsingEmulator {
+	if c.UsesEmulator {
 		t.Error("got true, want false")
 	}
 
@@ -412,7 +412,7 @@ func TestClient_UsingEmulator(t *testing.T) {
 	defer os.Unsetenv("FIRESTORE_EMULATOR_HOST")
 	c, _, cleanup = newMock(t)
 	defer cleanup()
-	if !c.UsingEmulator {
+	if !c.UsesEmulator {
 		t.Error("got false, want true")
 	}
 }
