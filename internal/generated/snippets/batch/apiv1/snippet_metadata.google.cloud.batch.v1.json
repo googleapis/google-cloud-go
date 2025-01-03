@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/batch/apiv1",
-    "version": "1.11.4",
+    "version": "1.11.5",
     "language": "GO",
     "apis": [
       {
