@@ -1,5 +1,12 @@
 # Changes
 
+## [1.7.3](https://github.com/googleapis/google-cloud-go/compare/websecurityscanner/v1.7.2...websecurityscanner/v1.7.3) (2025-01-02)
+
+
+### Bug Fixes
+
+* **websecurityscanner:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [1.7.2](https://github.com/googleapis/google-cloud-go/compare/websecurityscanner/v1.7.1...websecurityscanner/v1.7.2) (2024-10-23)
 
 
