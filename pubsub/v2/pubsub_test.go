@@ -19,9 +19,9 @@ import (
 	"testing"
 	"time"
 
-	vkit "cloud.google.com/go/pubsub/apiv1"
-	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
-	"cloud.google.com/go/pubsub/pstest"
+	vkit "cloud.google.com/go/pubsub/v2/apiv1"
+	pb "cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
+	"cloud.google.com/go/pubsub/v2/pstest"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
@@ -33,7 +33,7 @@ func TestClient_ApplyClientConfig(t *testing.T) {
 	ctx := context.Background()
 	srv := pstest.NewServer()
 	// Add a retry for an obscure error.
-	pco := &vkit.PublisherCallOptions{
+	pco := &vkit.TopicAdminCallOptions{
 		Publish: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{

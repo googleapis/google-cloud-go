@@ -21,8 +21,8 @@ package pubsub_test
 import (
 	"context"
 
-	pubsub "cloud.google.com/go/pubsub/apiv1"
-	pubsubpb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
+	pubsub "cloud.google.com/go/pubsub/v2/apiv1"
+	pubsubpb "cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
 )
 
 func ExampleSubscriptionAdminClient_ListSnapshots_all() {
@@ -40,7 +40,7 @@ func ExampleSubscriptionAdminClient_ListSnapshots_all() {
 
 	req := &pubsubpb.ListSnapshotsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#ListSnapshotsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/v2/apiv1/pubsubpb#ListSnapshotsRequest.
 	}
 	for resp, err := range c.ListSnapshots(ctx, req).All() {
 		if err != nil {
@@ -66,7 +66,7 @@ func ExampleSubscriptionAdminClient_ListSubscriptions_all() {
 
 	req := &pubsubpb.ListSubscriptionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#ListSubscriptionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/v2/apiv1/pubsubpb#ListSubscriptionsRequest.
 	}
 	for resp, err := range c.ListSubscriptions(ctx, req).All() {
 		if err != nil {

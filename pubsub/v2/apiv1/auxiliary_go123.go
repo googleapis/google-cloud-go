@@ -21,7 +21,7 @@ package pubsub
 import (
 	"iter"
 
-	pubsubpb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
+	pubsubpb "cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
 	"github.com/googleapis/gax-go/v2/iterator"
 )
 

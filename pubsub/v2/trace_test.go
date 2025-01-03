@@ -24,7 +24,7 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/pubsub/internal"
-	"cloud.google.com/go/pubsub/pstest"
+	"cloud.google.com/go/pubsub/v2/pstest"
 	"github.com/google/go-cmp/cmp"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
@@ -122,21 +122,21 @@ func TestTrace_PublishSpan(t *testing.T) {
 			},
 			ChildSpanCount: 2,
 			InstrumentationLibrary: instrumentation.Scope{
-				Name:    "cloud.google.com/go/pubsub",
+				Name:    "cloud.google.com/go/pubsub/v2",
 				Version: internal.Version,
 			},
 		},
 		tracetest.SpanStub{
 			Name: publishFCSpanName,
 			InstrumentationLibrary: instrumentation.Scope{
-				Name:    "cloud.google.com/go/pubsub",
+				Name:    "cloud.google.com/go/pubsub/v2",
 				Version: internal.Version,
 			},
 		},
 		tracetest.SpanStub{
 			Name: batcherSpanName,
 			InstrumentationLibrary: instrumentation.Scope{
-				Name:    "cloud.google.com/go/pubsub",
+				Name:    "cloud.google.com/go/pubsub/v2",
 				Version: internal.Version,
 			},
 		},
@@ -150,7 +150,7 @@ func TestTrace_PublishSpan(t *testing.T) {
 				attribute.String(gcpProjectIDAttribute, projName),
 			},
 			InstrumentationLibrary: instrumentation.Scope{
-				Name:    "cloud.google.com/go/pubsub",
+				Name:    "cloud.google.com/go/pubsub/v2",
 				Version: internal.Version,
 			},
 			Links: []sdktrace.Link{
@@ -356,7 +356,7 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 				},
 			},
 			InstrumentationLibrary: instrumentation.Scope{
-				Name:    "cloud.google.com/go/pubsub",
+				Name:    "cloud.google.com/go/pubsub/v2",
 				Version: internal.Version,
 			},
 		},
@@ -400,21 +400,21 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 			},
 			// ChildSpanCount: 3,
 			InstrumentationLibrary: instrumentation.Scope{
-				Name:    "cloud.google.com/go/pubsub",
+				Name:    "cloud.google.com/go/pubsub/v2",
 				Version: internal.Version,
 			},
 		},
 		tracetest.SpanStub{
 			Name: scheduleSpanName,
 			InstrumentationLibrary: instrumentation.Scope{
-				Name:    "cloud.google.com/go/pubsub",
+				Name:    "cloud.google.com/go/pubsub/v2",
 				Version: internal.Version,
 			},
 		},
 		tracetest.SpanStub{
 			Name: ccSpanName,
 			InstrumentationLibrary: instrumentation.Scope{
-				Name:    "cloud.google.com/go/pubsub",
+				Name:    "cloud.google.com/go/pubsub/v2",
 				Version: internal.Version,
 			},
 		},
@@ -437,14 +437,14 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 				attribute.String(gcpProjectIDAttribute, projName),
 			},
 			InstrumentationLibrary: instrumentation.Scope{
-				Name:    "cloud.google.com/go/pubsub",
+				Name:    "cloud.google.com/go/pubsub/v2",
 				Version: internal.Version,
 			},
 		},
 		tracetest.SpanStub{
 			Name: fmt.Sprintf("%s %s", subID, modackSpanName),
 			InstrumentationLibrary: instrumentation.Scope{
-				Name:    "cloud.google.com/go/pubsub",
+				Name:    "cloud.google.com/go/pubsub/v2",
 				Version: internal.Version,
 			},
 			Links: []sdktrace.Link{
@@ -609,7 +609,7 @@ func getPublishSpanStubsWithError(topicID string, m *Message, err error) tracete
 				attribute.String(gcpProjectIDAttribute, projName),
 			},
 			InstrumentationLibrary: instrumentation.Scope{
-				Name:    "cloud.google.com/go/pubsub",
+				Name:    "cloud.google.com/go/pubsub/v2",
 				Version: internal.Version,
 			},
 			Status: sdktrace.Status{
@@ -625,7 +625,7 @@ func getFlowControlSpanStubs(err error) tracetest.SpanStubs {
 		tracetest.SpanStub{
 			Name: publishFCSpanName,
 			InstrumentationLibrary: instrumentation.Scope{
-				Name:    "cloud.google.com/go/pubsub",
+				Name:    "cloud.google.com/go/pubsub/v2",
 				Version: internal.Version,
 			},
 			Status: sdktrace.Status{

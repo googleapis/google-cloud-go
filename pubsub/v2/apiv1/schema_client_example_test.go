@@ -20,8 +20,8 @@ import (
 	"context"
 
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
-	pubsub "cloud.google.com/go/pubsub/apiv1"
-	pubsubpb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
+	pubsub "cloud.google.com/go/pubsub/v2/apiv1"
+	pubsubpb "cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
 	"google.golang.org/api/iterator"
 )
 
@@ -74,7 +74,7 @@ func ExampleSchemaClient_CommitSchema() {
 
 	req := &pubsubpb.CommitSchemaRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#CommitSchemaRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/v2/apiv1/pubsubpb#CommitSchemaRequest.
 	}
 	resp, err := c.CommitSchema(ctx, req)
 	if err != nil {
@@ -99,7 +99,7 @@ func ExampleSchemaClient_CreateSchema() {
 
 	req := &pubsubpb.CreateSchemaRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#CreateSchemaRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/v2/apiv1/pubsubpb#CreateSchemaRequest.
 	}
 	resp, err := c.CreateSchema(ctx, req)
 	if err != nil {
@@ -124,7 +124,7 @@ func ExampleSchemaClient_DeleteSchema() {
 
 	req := &pubsubpb.DeleteSchemaRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#DeleteSchemaRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/v2/apiv1/pubsubpb#DeleteSchemaRequest.
 	}
 	err = c.DeleteSchema(ctx, req)
 	if err != nil {
@@ -147,7 +147,7 @@ func ExampleSchemaClient_DeleteSchemaRevision() {
 
 	req := &pubsubpb.DeleteSchemaRevisionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#DeleteSchemaRevisionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/v2/apiv1/pubsubpb#DeleteSchemaRevisionRequest.
 	}
 	resp, err := c.DeleteSchemaRevision(ctx, req)
 	if err != nil {
@@ -172,7 +172,7 @@ func ExampleSchemaClient_GetSchema() {
 
 	req := &pubsubpb.GetSchemaRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#GetSchemaRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/v2/apiv1/pubsubpb#GetSchemaRequest.
 	}
 	resp, err := c.GetSchema(ctx, req)
 	if err != nil {
@@ -197,7 +197,7 @@ func ExampleSchemaClient_ListSchemaRevisions() {
 
 	req := &pubsubpb.ListSchemaRevisionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#ListSchemaRevisionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/v2/apiv1/pubsubpb#ListSchemaRevisionsRequest.
 	}
 	it := c.ListSchemaRevisions(ctx, req)
 	for {
@@ -234,7 +234,7 @@ func ExampleSchemaClient_ListSchemas() {
 
 	req := &pubsubpb.ListSchemasRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#ListSchemasRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/v2/apiv1/pubsubpb#ListSchemasRequest.
 	}
 	it := c.ListSchemas(ctx, req)
 	for {
@@ -271,7 +271,7 @@ func ExampleSchemaClient_RollbackSchema() {
 
 	req := &pubsubpb.RollbackSchemaRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#RollbackSchemaRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/v2/apiv1/pubsubpb#RollbackSchemaRequest.
 	}
 	resp, err := c.RollbackSchema(ctx, req)
 	if err != nil {
@@ -296,7 +296,7 @@ func ExampleSchemaClient_ValidateMessage() {
 
 	req := &pubsubpb.ValidateMessageRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#ValidateMessageRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/v2/apiv1/pubsubpb#ValidateMessageRequest.
 	}
 	resp, err := c.ValidateMessage(ctx, req)
 	if err != nil {
@@ -321,7 +321,7 @@ func ExampleSchemaClient_ValidateSchema() {
 
 	req := &pubsubpb.ValidateSchemaRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#ValidateSchemaRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/v2/apiv1/pubsubpb#ValidateSchemaRequest.
 	}
 	resp, err := c.ValidateSchema(ctx, req)
 	if err != nil {
