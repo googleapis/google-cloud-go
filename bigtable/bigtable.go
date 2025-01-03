@@ -1605,7 +1605,7 @@ func gaxInvokeWithRecorder(ctx context.Context, mt *builtinMetricsTracer, method
 	f func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error, opts ...gax.CallOption) error {
 	attemptHeaderMD := metadata.New(nil)
 	attempTrailerMD := metadata.New(nil)
-	mt.method = method
+	mt.setMethod(method)
 
 	var callWrapper func(context.Context, gax.CallSettings) error
 	if !mt.builtInEnabled {

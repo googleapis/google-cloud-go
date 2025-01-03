@@ -1,6 +1,24 @@
 # Changelog
 
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v1.4.1...gkemulticloud/v1.5.0) (2025-01-02)
+
+
+### Features
+
+* **gkemulticloud:** Added support for optionally disabling built-in GKE metrics ([8ebcc6d](https://github.com/googleapis/google-cloud-go/commit/8ebcc6d276fc881c3914b5a7af3265a04e718e45))
+* **gkemulticloud:** Added tag bindings support for Attached Clusters ([8ebcc6d](https://github.com/googleapis/google-cloud-go/commit/8ebcc6d276fc881c3914b5a7af3265a04e718e45))
+
+
+### Bug Fixes
+
+* **gkemulticloud:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+
+### Documentation
+
+* **gkemulticloud:** Updated comments of existing fields ([8ebcc6d](https://github.com/googleapis/google-cloud-go/commit/8ebcc6d276fc881c3914b5a7af3265a04e718e45))
+
 ## [1.4.1](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v1.4.0...gkemulticloud/v1.4.1) (2024-10-23)
 
 

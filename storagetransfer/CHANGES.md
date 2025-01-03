@@ -1,5 +1,12 @@
 # Changes
 
+## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/storagetransfer/v1.12.0...storagetransfer/v1.12.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **storagetransfer:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/storagetransfer/v1.11.2...storagetransfer/v1.12.0) (2024-12-18)
 
 

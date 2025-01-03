@@ -1,6 +1,6 @@
 module cloud.google.com/go/internal/aliasfix
 
-go 1.21
+go 1.22
 
 require (
 	github.com/google/go-cmp v0.6.0
