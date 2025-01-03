@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -706,7 +706,7 @@ type ConnectionProfileIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*datastreampb.ConnectionProfile, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ConnectionProfileIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -753,7 +753,7 @@ type PrivateConnectionIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*datastreampb.PrivateConnection, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *PrivateConnectionIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -800,7 +800,7 @@ type RouteIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*datastreampb.Route, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *RouteIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -847,7 +847,7 @@ type StreamIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*datastreampb.Stream, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *StreamIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -894,7 +894,7 @@ type StringIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []string, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *StringIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

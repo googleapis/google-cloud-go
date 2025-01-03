@@ -1,5 +1,31 @@
 # Changes
 
+## [1.73.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.72.0...spanner/v1.73.0) (2024-11-14)
+
+
+### Features
+
+* **spanner:** Add ResetForRetry method for stmt-based transactions ([#10956](https://github.com/googleapis/google-cloud-go/issues/10956)) ([02c191c](https://github.com/googleapis/google-cloud-go/commit/02c191c5dc13023857812217f63be2395bfcb382))
+
+
+### Bug Fixes
+
+* **spanner:** Add safecheck to avoid deadlock when creating multiplex session ([#11131](https://github.com/googleapis/google-cloud-go/issues/11131)) ([8ee5d05](https://github.com/googleapis/google-cloud-go/commit/8ee5d05e288c7105ddb1722071d6719933effea4))
+* **spanner:** Allow non default service account only when direct path is enabled ([#11046](https://github.com/googleapis/google-cloud-go/issues/11046)) ([4250788](https://github.com/googleapis/google-cloud-go/commit/42507887523f41d0507ca8b1772235846947c3e0))
+* **spanner:** Use spanner options when initializing monitoring exporter ([#11109](https://github.com/googleapis/google-cloud-go/issues/11109)) ([81413f3](https://github.com/googleapis/google-cloud-go/commit/81413f3647a0ea406f25d4159db19b7ad9f0682b))
+
+## [1.72.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.71.0...spanner/v1.72.0) (2024-11-07)
+
+
+### Features
+
+* **spanner/spansql:** Add support for protobuf column types & Proto bundles ([#10945](https://github.com/googleapis/google-cloud-go/issues/10945)) ([91c6f0f](https://github.com/googleapis/google-cloud-go/commit/91c6f0fcaadfb7bd983e070e6ceffc8aeba7d5a2)), refs [#10944](https://github.com/googleapis/google-cloud-go/issues/10944)
+
+
+### Bug Fixes
+
+* **spanner:** Skip exporting metrics if attempt or operation is not captured. ([#11095](https://github.com/googleapis/google-cloud-go/issues/11095)) ([1d074b5](https://github.com/googleapis/google-cloud-go/commit/1d074b520c7a368fb8a7a27574ef56a120665c64))
+
 ## [1.71.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.70.0...spanner/v1.71.0) (2024-11-01)
 
 

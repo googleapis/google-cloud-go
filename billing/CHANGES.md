@@ -1,5 +1,19 @@
 # Changes
 
+## [1.20.1](https://github.com/googleapis/google-cloud-go/compare/billing/v1.20.0...billing/v1.20.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **billing:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/billing/v1.19.2...billing/v1.20.0) (2024-12-04)
+
+
+### Features
+
+* **billing:** Added currency field to billing account message ([d3de944](https://github.com/googleapis/google-cloud-go/commit/d3de9448192d4caf8506964cdc494d33f6b82070))
+
 ## [1.19.2](https://github.com/googleapis/google-cloud-go/compare/billing/v1.19.1...billing/v1.19.2) (2024-10-23)
 
 

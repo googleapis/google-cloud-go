@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	languagepb "cloud.google.com/go/language/apiv2/languagepb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -289,6 +288,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new language service client based on gRPC.
@@ -316,6 +317,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      languagepb.NewLanguageServiceClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -362,6 +364,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new language service rest client.
@@ -380,6 +384,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -429,7 +434,7 @@ func (c *gRPCClient) AnalyzeSentiment(ctx context.Context, req *languagepb.Analy
 	var resp *languagepb.AnalyzeSentimentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.AnalyzeSentiment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.AnalyzeSentiment, req, settings.GRPC, c.logger, "AnalyzeSentiment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -444,7 +449,7 @@ func (c *gRPCClient) AnalyzeEntities(ctx context.Context, req *languagepb.Analyz
 	var resp *languagepb.AnalyzeEntitiesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.AnalyzeEntities(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.AnalyzeEntities, req, settings.GRPC, c.logger, "AnalyzeEntities")
 		return err
 	}, opts...)
 	if err != nil {
@@ -459,7 +464,7 @@ func (c *gRPCClient) ClassifyText(ctx context.Context, req *languagepb.ClassifyT
 	var resp *languagepb.ClassifyTextResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ClassifyText(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ClassifyText, req, settings.GRPC, c.logger, "ClassifyText")
 		return err
 	}, opts...)
 	if err != nil {
@@ -474,7 +479,7 @@ func (c *gRPCClient) ModerateText(ctx context.Context, req *languagepb.ModerateT
 	var resp *languagepb.ModerateTextResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ModerateText(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ModerateText, req, settings.GRPC, c.logger, "ModerateText")
 		return err
 	}, opts...)
 	if err != nil {
@@ -489,7 +494,7 @@ func (c *gRPCClient) AnnotateText(ctx context.Context, req *languagepb.AnnotateT
 	var resp *languagepb.AnnotateTextResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.AnnotateText(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.AnnotateText, req, settings.GRPC, c.logger, "AnnotateText")
 		return err
 	}, opts...)
 	if err != nil {
@@ -534,17 +539,7 @@ func (c *restClient) AnalyzeSentiment(ctx context.Context, req *languagepb.Analy
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AnalyzeSentiment")
 		if err != nil {
 			return err
 		}
@@ -599,17 +594,7 @@ func (c *restClient) AnalyzeEntities(ctx context.Context, req *languagepb.Analyz
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AnalyzeEntities")
 		if err != nil {
 			return err
 		}
@@ -662,17 +647,7 @@ func (c *restClient) ClassifyText(ctx context.Context, req *languagepb.ClassifyT
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ClassifyText")
 		if err != nil {
 			return err
 		}
@@ -725,17 +700,7 @@ func (c *restClient) ModerateText(ctx context.Context, req *languagepb.ModerateT
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ModerateText")
 		if err != nil {
 			return err
 		}
@@ -788,17 +753,7 @@ func (c *restClient) AnnotateText(ctx context.Context, req *languagepb.AnnotateT
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AnnotateText")
 		if err != nil {
 			return err
 		}

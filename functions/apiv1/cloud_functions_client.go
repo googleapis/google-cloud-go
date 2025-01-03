@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -32,7 +32,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -438,6 +437,8 @@ type cloudFunctionsGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewCloudFunctionsClient creates a new cloud functions service client based on gRPC.
@@ -464,6 +465,7 @@ func NewCloudFunctionsClient(ctx context.Context, opts ...option.ClientOption) (
 		connPool:             connPool,
 		cloudFunctionsClient: functionspb.NewCloudFunctionsServiceClient(connPool),
 		CallOptions:          &client.CallOptions,
+		logger:               internaloption.GetLogger(opts),
 		operationsClient:     longrunningpb.NewOperationsClient(connPool),
 		locationsClient:      locationpb.NewLocationsClient(connPool),
 	}
@@ -528,6 +530,8 @@ type cloudFunctionsRESTClient struct {
 
 	// Points back to the CallOptions field of the containing CloudFunctionsClient
 	CallOptions **CloudFunctionsCallOptions
+
+	logger *slog.Logger
 }
 
 // NewCloudFunctionsRESTClient creates a new cloud functions service rest client.
@@ -545,6 +549,7 @@ func NewCloudFunctionsRESTClient(ctx context.Context, opts ...option.ClientOptio
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -618,7 +623,7 @@ func (c *cloudFunctionsGRPCClient) ListFunctions(ctx context.Context, req *funct
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudFunctionsClient.ListFunctions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudFunctionsClient.ListFunctions, req, settings.GRPC, c.logger, "ListFunctions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -653,7 +658,7 @@ func (c *cloudFunctionsGRPCClient) GetFunction(ctx context.Context, req *functio
 	var resp *functionspb.CloudFunction
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudFunctionsClient.GetFunction(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudFunctionsClient.GetFunction, req, settings.GRPC, c.logger, "GetFunction")
 		return err
 	}, opts...)
 	if err != nil {
@@ -671,7 +676,7 @@ func (c *cloudFunctionsGRPCClient) CreateFunction(ctx context.Context, req *func
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudFunctionsClient.CreateFunction(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudFunctionsClient.CreateFunction, req, settings.GRPC, c.logger, "CreateFunction")
 		return err
 	}, opts...)
 	if err != nil {
@@ -691,7 +696,7 @@ func (c *cloudFunctionsGRPCClient) UpdateFunction(ctx context.Context, req *func
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudFunctionsClient.UpdateFunction(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudFunctionsClient.UpdateFunction, req, settings.GRPC, c.logger, "UpdateFunction")
 		return err
 	}, opts...)
 	if err != nil {
@@ -711,7 +716,7 @@ func (c *cloudFunctionsGRPCClient) DeleteFunction(ctx context.Context, req *func
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudFunctionsClient.DeleteFunction(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudFunctionsClient.DeleteFunction, req, settings.GRPC, c.logger, "DeleteFunction")
 		return err
 	}, opts...)
 	if err != nil {
@@ -731,7 +736,7 @@ func (c *cloudFunctionsGRPCClient) CallFunction(ctx context.Context, req *functi
 	var resp *functionspb.CallFunctionResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudFunctionsClient.CallFunction(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudFunctionsClient.CallFunction, req, settings.GRPC, c.logger, "CallFunction")
 		return err
 	}, opts...)
 	if err != nil {
@@ -749,7 +754,7 @@ func (c *cloudFunctionsGRPCClient) GenerateUploadUrl(ctx context.Context, req *f
 	var resp *functionspb.GenerateUploadUrlResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudFunctionsClient.GenerateUploadUrl(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudFunctionsClient.GenerateUploadUrl, req, settings.GRPC, c.logger, "GenerateUploadUrl")
 		return err
 	}, opts...)
 	if err != nil {
@@ -767,7 +772,7 @@ func (c *cloudFunctionsGRPCClient) GenerateDownloadUrl(ctx context.Context, req 
 	var resp *functionspb.GenerateDownloadUrlResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudFunctionsClient.GenerateDownloadUrl(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudFunctionsClient.GenerateDownloadUrl, req, settings.GRPC, c.logger, "GenerateDownloadUrl")
 		return err
 	}, opts...)
 	if err != nil {
@@ -785,7 +790,7 @@ func (c *cloudFunctionsGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudFunctionsClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudFunctionsClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -803,7 +808,7 @@ func (c *cloudFunctionsGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudFunctionsClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudFunctionsClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -821,7 +826,7 @@ func (c *cloudFunctionsGRPCClient) TestIamPermissions(ctx context.Context, req *
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudFunctionsClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudFunctionsClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -850,7 +855,7 @@ func (c *cloudFunctionsGRPCClient) ListLocations(ctx context.Context, req *locat
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -885,7 +890,7 @@ func (c *cloudFunctionsGRPCClient) GetOperation(ctx context.Context, req *longru
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -911,7 +916,7 @@ func (c *cloudFunctionsGRPCClient) ListOperations(ctx context.Context, req *long
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -982,21 +987,10 @@ func (c *cloudFunctionsRESTClient) ListFunctions(ctx context.Context, req *funct
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListFunctions")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1062,17 +1056,7 @@ func (c *cloudFunctionsRESTClient) GetFunction(ctx context.Context, req *functio
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetFunction")
 		if err != nil {
 			return err
 		}
@@ -1130,21 +1114,10 @@ func (c *cloudFunctionsRESTClient) CreateFunction(ctx context.Context, req *func
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateFunction")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1208,21 +1181,10 @@ func (c *cloudFunctionsRESTClient) UpdateFunction(ctx context.Context, req *func
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateFunction")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1274,21 +1236,10 @@ func (c *cloudFunctionsRESTClient) DeleteFunction(ctx context.Context, req *func
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteFunction")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1348,17 +1299,7 @@ func (c *cloudFunctionsRESTClient) CallFunction(ctx context.Context, req *functi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CallFunction")
 		if err != nil {
 			return err
 		}
@@ -1441,17 +1382,7 @@ func (c *cloudFunctionsRESTClient) GenerateUploadUrl(ctx context.Context, req *f
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GenerateUploadUrl")
 		if err != nil {
 			return err
 		}
@@ -1511,17 +1442,7 @@ func (c *cloudFunctionsRESTClient) GenerateDownloadUrl(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GenerateDownloadUrl")
 		if err != nil {
 			return err
 		}
@@ -1578,17 +1499,7 @@ func (c *cloudFunctionsRESTClient) SetIamPolicy(ctx context.Context, req *iampb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -1643,17 +1554,7 @@ func (c *cloudFunctionsRESTClient) GetIamPolicy(ctx context.Context, req *iampb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -1712,17 +1613,7 @@ func (c *cloudFunctionsRESTClient) TestIamPermissions(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
 		if err != nil {
 			return err
 		}
@@ -1787,21 +1678,10 @@ func (c *cloudFunctionsRESTClient) ListLocations(ctx context.Context, req *locat
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1864,17 +1744,7 @@ func (c *cloudFunctionsRESTClient) GetOperation(ctx context.Context, req *longru
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -1942,21 +1812,10 @@ func (c *cloudFunctionsRESTClient) ListOperations(ctx context.Context, req *long
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

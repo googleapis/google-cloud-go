@@ -1,6 +1,73 @@
 # Changes
 
 
+## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.12.0...datastream/v1.12.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **datastream:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.11.2...datastream/v1.12.0) (2024-11-21)
+
+
+### Features
+
+* **datastream:** A new field `append_only` is added to message `.google.cloud.datastream.v1.BigQueryDestinationConfig` ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A new field `binary_log_parser` is added to message `.google.cloud.datastream.v1.OracleSourceConfig` ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A new field `binary_log_position` is added to message `.google.cloud.datastream.v1.MysqlSourceConfig` ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A new field `gtid` is added to message `.google.cloud.datastream.v1.MysqlSourceConfig` ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A new field `last_recovery_time` is added to message `.google.cloud.datastream.v1.Stream` ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A new field `log_miner` is added to message `.google.cloud.datastream.v1.OracleSourceConfig` ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A new field `merge` is added to message `.google.cloud.datastream.v1.BigQueryDestinationConfig` ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A new field `oracle_asm_config` is added to message `.google.cloud.datastream.v1.OracleProfile` ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A new field `oracle_ssl_config` is added to message `.google.cloud.datastream.v1.OracleProfile` ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A new field `secret_manager_stored_password` is added to message `.google.cloud.datastream.v1.OracleProfile` ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A new field `sql_server_excluded_objects` is added to message `.google.cloud.datastream.v1.Stream` ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A new field `sql_server_identifier` is added to message `.google.cloud.datastream.v1.SourceObjectIdentifier` ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A new field `sql_server_profile` is added to message `.google.cloud.datastream.v1.ConnectionProfile` ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A new field `sql_server_rdbms` is added to message `.google.cloud.datastream.v1.DiscoverConnectionProfileRequest` ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A new field `sql_server_rdbms` is added to message `.google.cloud.datastream.v1.DiscoverConnectionProfileResponse` ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A new field `sql_server_source_config` is added to message `.google.cloud.datastream.v1.SourceConfig` ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A new message `AppendOnly` is added ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A new message `BinaryLogParser` is added ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A new message `BinaryLogPosition` is added ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A new message `CdcStrategy` is added ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A new message `Gtid` is added ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A new message `LogMiner` is added ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A new message `Merge` is added ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A new message `MysqlLogPosition` is added ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A new message `OracleAsmConfig` is added ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A new message `OracleScnPosition` is added ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A new message `OracleSslConfig` is added ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A new message `RunStreamRequest` is added ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A new message `SqlServerChangeTables` is added ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A new message `SqlServerColumn` is added ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A new message `SqlServerLsnPosition` is added ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A new message `SqlServerObjectIdentifier` is added ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A new message `SqlServerProfile` is added ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A new message `SqlServerRdbms` is added ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A new message `SqlServerSchema` is added ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A new message `SqlServerSourceConfig` is added ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A new message `SqlServerTable` is added ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A new message `SqlServerTransactionLogs` is added ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A new method `RunStream` is added to service `Datastream` ([#11153](https://github.com/googleapis/google-cloud-go/issues/11153)) ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A new value `WARNING` is added to enum `State` ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+
+
+### Documentation
+
+* **datastream:** A comment for field `dataset_id` in message `.google.cloud.datastream.v1.BigQueryDestinationConfig` is changed ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A comment for field `password` in message `.google.cloud.datastream.v1.MysqlProfile` is changed ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A comment for field `password` in message `.google.cloud.datastream.v1.OracleProfile` is changed ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A comment for field `password` in message `.google.cloud.datastream.v1.PostgresqlProfile` is changed ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A comment for field `requested_cancellation` in message `.google.cloud.datastream.v1.OperationMetadata` is changed ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A comment for field `state` in message `.google.cloud.datastream.v1.BackfillJob` is changed ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A comment for field `state` in message `.google.cloud.datastream.v1.Validation` is changed ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A comment for field `stream_large_objects` in message `.google.cloud.datastream.v1.OracleSourceConfig` is changed ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A comment for message `MysqlProfile` is changed ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **datastream:** A comment for message `OracleProfile` is changed ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+
 ## [1.11.2](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.11.1...datastream/v1.11.2) (2024-10-23)
 
 

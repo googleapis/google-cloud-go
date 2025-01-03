@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1beta1",
-    "version": "1.68.0",
+    "version": "1.69.0",
     "language": "GO",
     "apis": [
       {
@@ -18265,6 +18265,52 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1beta1_generated_ModelGardenService_DeployPublisherModel_sync",
+      "title": "aiplatform DeployPublisherModel Sample",
+      "description": "DeployPublisherModel deploys publisher models.",
+      "file": "ModelGardenClient/DeployPublisherModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeployPublisherModel",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenClient.DeployPublisherModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.DeployPublisherModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeployPublisherModelOperation",
+        "client": {
+          "shortName": "ModelGardenClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenClient"
+        },
+        "method": {
+          "shortName": "DeployPublisherModel",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenService.DeployPublisherModel",
+          "service": {
+            "shortName": "ModelGardenService",
+            "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1beta1_generated_ModelGardenService_GetIamPolicy_sync",
       "title": "aiplatform GetIamPolicy Sample",
       "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
@@ -30227,6 +30273,52 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1beta1_generated_VertexRagService_AugmentPrompt_sync",
+      "title": "aiplatform AugmentPrompt Sample",
+      "description": "AugmentPrompt given an input prompt, it returns augmented prompt from vertex rag store\nto guide LLM towards generating grounded responses.",
+      "file": "VertexRagClient/AugmentPrompt/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AugmentPrompt",
+        "fullName": "google.cloud.aiplatform.v1beta1.VertexRagClient.AugmentPrompt",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.AugmentPromptRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.AugmentPromptResponse",
+        "client": {
+          "shortName": "VertexRagClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.VertexRagClient"
+        },
+        "method": {
+          "shortName": "AugmentPrompt",
+          "fullName": "google.cloud.aiplatform.v1beta1.VertexRagService.AugmentPrompt",
+          "service": {
+            "shortName": "VertexRagService",
+            "fullName": "google.cloud.aiplatform.v1beta1.VertexRagService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1beta1_generated_VertexRagService_CancelOperation_sync",
       "title": "aiplatform CancelOperation Sample",
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",
@@ -30267,6 +30359,52 @@
         {
           "start": 18,
           "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_VertexRagService_CorroborateContent_sync",
+      "title": "aiplatform CorroborateContent Sample",
+      "description": "CorroborateContent given an input text, it returns a score that evaluates the factuality of\nthe text. It also extracts and returns claims from the text and provides\nsupporting facts.",
+      "file": "VertexRagClient/CorroborateContent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CorroborateContent",
+        "fullName": "google.cloud.aiplatform.v1beta1.VertexRagClient.CorroborateContent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.CorroborateContentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.CorroborateContentResponse",
+        "client": {
+          "shortName": "VertexRagClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.VertexRagClient"
+        },
+        "method": {
+          "shortName": "CorroborateContent",
+          "fullName": "google.cloud.aiplatform.v1beta1.VertexRagService.CorroborateContent",
+          "service": {
+            "shortName": "VertexRagService",
+            "fullName": "google.cloud.aiplatform.v1beta1.VertexRagService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]

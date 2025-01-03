@@ -1,5 +1,33 @@
 # Changes
 
+## [1.31.1](https://github.com/googleapis/google-cloud-go/compare/compute/v1.31.0...compute/v1.31.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **compute:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+## [1.31.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.30.0...compute/v1.31.0) (2024-12-13)
+
+
+### Features
+
+* **compute:** Update Compute Engine API to revision 20241201 ([#971](https://github.com/googleapis/google-cloud-go/issues/971)) ([#11274](https://github.com/googleapis/google-cloud-go/issues/11274)) ([1f49a23](https://github.com/googleapis/google-cloud-go/commit/1f49a23270a3614ead812524d94a87c39b403e76))
+
+## [1.30.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.29.0...compute/v1.30.0) (2024-12-11)
+
+
+### Features
+
+* **compute:** Update Compute Engine API to revision 20241201 ([#966](https://github.com/googleapis/google-cloud-go/issues/966)) ([#11250](https://github.com/googleapis/google-cloud-go/issues/11250)) ([76266a6](https://github.com/googleapis/google-cloud-go/commit/76266a619b4a2178c21de4d330f751bffc84994e))
+
+## [1.29.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.28.3...compute/v1.29.0) (2024-11-14)
+
+
+### Features
+
+* **compute:** Update Compute Engine API to revision 20241105 ([#954](https://github.com/googleapis/google-cloud-go/issues/954)) ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+
 ## [1.28.3](https://github.com/googleapis/google-cloud-go/compare/compute/v1.28.2...compute/v1.28.3) (2024-11-06)
 
 

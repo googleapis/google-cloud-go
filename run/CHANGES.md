@@ -1,6 +1,32 @@
 # Changelog
 
 
+## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/run/v1.8.0...run/v1.8.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **run:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/run/v1.7.0...run/v1.8.0) (2024-11-19)
+
+
+### Features
+
+* **run:** Support manual instance count in Cloud Run for manual scaling feature ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/run/v1.6.1...run/v1.7.0) (2024-11-14)
+
+
+### Features
+
+* **run:** Add EncryptionKeyRevocationAction and shutdown duration configuration to Services ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+
+
+### Documentation
+
+* **run:** Fixed formatting of some documentation ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+
 ## [1.6.1](https://github.com/googleapis/google-cloud-go/compare/run/v1.6.0...run/v1.6.1) (2024-10-23)
 
 

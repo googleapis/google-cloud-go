@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -29,7 +29,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	retailpb "cloud.google.com/go/retail/apiv2/retailpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -219,6 +218,8 @@ type generativeQuestionGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewGenerativeQuestionClient creates a new generative question service client based on gRPC.
@@ -245,6 +246,7 @@ func NewGenerativeQuestionClient(ctx context.Context, opts ...option.ClientOptio
 		connPool:                 connPool,
 		generativeQuestionClient: retailpb.NewGenerativeQuestionServiceClient(connPool),
 		CallOptions:              &client.CallOptions,
+		logger:                   internaloption.GetLogger(opts),
 		operationsClient:         longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -292,6 +294,8 @@ type generativeQuestionRESTClient struct {
 
 	// Points back to the CallOptions field of the containing GenerativeQuestionClient
 	CallOptions **GenerativeQuestionCallOptions
+
+	logger *slog.Logger
 }
 
 // NewGenerativeQuestionRESTClient creates a new generative question service rest client.
@@ -309,6 +313,7 @@ func NewGenerativeQuestionRESTClient(ctx context.Context, opts ...option.ClientO
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -361,7 +366,7 @@ func (c *generativeQuestionGRPCClient) UpdateGenerativeQuestionsFeatureConfig(ct
 	var resp *retailpb.GenerativeQuestionsFeatureConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.generativeQuestionClient.UpdateGenerativeQuestionsFeatureConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.generativeQuestionClient.UpdateGenerativeQuestionsFeatureConfig, req, settings.GRPC, c.logger, "UpdateGenerativeQuestionsFeatureConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -379,7 +384,7 @@ func (c *generativeQuestionGRPCClient) GetGenerativeQuestionsFeatureConfig(ctx c
 	var resp *retailpb.GenerativeQuestionsFeatureConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.generativeQuestionClient.GetGenerativeQuestionsFeatureConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.generativeQuestionClient.GetGenerativeQuestionsFeatureConfig, req, settings.GRPC, c.logger, "GetGenerativeQuestionsFeatureConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -397,7 +402,7 @@ func (c *generativeQuestionGRPCClient) ListGenerativeQuestionConfigs(ctx context
 	var resp *retailpb.ListGenerativeQuestionConfigsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.generativeQuestionClient.ListGenerativeQuestionConfigs(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.generativeQuestionClient.ListGenerativeQuestionConfigs, req, settings.GRPC, c.logger, "ListGenerativeQuestionConfigs")
 		return err
 	}, opts...)
 	if err != nil {
@@ -415,7 +420,7 @@ func (c *generativeQuestionGRPCClient) UpdateGenerativeQuestionConfig(ctx contex
 	var resp *retailpb.GenerativeQuestionConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.generativeQuestionClient.UpdateGenerativeQuestionConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.generativeQuestionClient.UpdateGenerativeQuestionConfig, req, settings.GRPC, c.logger, "UpdateGenerativeQuestionConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -433,7 +438,7 @@ func (c *generativeQuestionGRPCClient) BatchUpdateGenerativeQuestionConfigs(ctx 
 	var resp *retailpb.BatchUpdateGenerativeQuestionConfigsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.generativeQuestionClient.BatchUpdateGenerativeQuestionConfigs(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.generativeQuestionClient.BatchUpdateGenerativeQuestionConfigs, req, settings.GRPC, c.logger, "BatchUpdateGenerativeQuestionConfigs")
 		return err
 	}, opts...)
 	if err != nil {
@@ -451,7 +456,7 @@ func (c *generativeQuestionGRPCClient) GetOperation(ctx context.Context, req *lo
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -480,7 +485,7 @@ func (c *generativeQuestionGRPCClient) ListOperations(ctx context.Context, req *
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -554,17 +559,7 @@ func (c *generativeQuestionRESTClient) UpdateGenerativeQuestionsFeatureConfig(ct
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateGenerativeQuestionsFeatureConfig")
 		if err != nil {
 			return err
 		}
@@ -615,17 +610,7 @@ func (c *generativeQuestionRESTClient) GetGenerativeQuestionsFeatureConfig(ctx c
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetGenerativeQuestionsFeatureConfig")
 		if err != nil {
 			return err
 		}
@@ -675,17 +660,7 @@ func (c *generativeQuestionRESTClient) ListGenerativeQuestionConfigs(ctx context
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListGenerativeQuestionConfigs")
 		if err != nil {
 			return err
 		}
@@ -749,17 +724,7 @@ func (c *generativeQuestionRESTClient) UpdateGenerativeQuestionConfig(ctx contex
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateGenerativeQuestionConfig")
 		if err != nil {
 			return err
 		}
@@ -815,17 +780,7 @@ func (c *generativeQuestionRESTClient) BatchUpdateGenerativeQuestionConfigs(ctx 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchUpdateGenerativeQuestionConfigs")
 		if err != nil {
 			return err
 		}
@@ -875,17 +830,7 @@ func (c *generativeQuestionRESTClient) GetOperation(ctx context.Context, req *lo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -950,21 +895,10 @@ func (c *generativeQuestionRESTClient) ListOperations(ctx context.Context, req *
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

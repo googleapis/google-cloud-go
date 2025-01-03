@@ -1,6 +1,64 @@
 # Changes
 
 
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.20.0...dataplex/v1.21.0) (2025-01-02)
+
+
+### Features
+
+* **dataplex:** A new field `force` is added to message `.google.cloud.dataplex.v1.DeleteDataScanRequest` ([8ebcc6d](https://github.com/googleapis/google-cloud-go/commit/8ebcc6d276fc881c3914b5a7af3265a04e718e45))
+
+
+### Bug Fixes
+
+* **dataplex:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+
+### Documentation
+
+* **dataplex:** Miscellaneous doc updates ([8ebcc6d](https://github.com/googleapis/google-cloud-go/commit/8ebcc6d276fc881c3914b5a7af3265a04e718e45))
+
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.19.2...dataplex/v1.20.0) (2024-11-19)
+
+
+### Features
+
+* **dataplex:** A new enum `TableType` is added ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **dataplex:** A new field `datascan_id` is added to message `.google.cloud.dataplex.v1.DiscoveryEvent` ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **dataplex:** A new field `suspended` is added to DataScans ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **dataplex:** A new field `table` is added to message `.google.cloud.dataplex.v1.DiscoveryEvent` ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **dataplex:** A new message `TableDetails` is added ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **dataplex:** Add a DATA_DISCOVERY enum type in DataScanEvent ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **dataplex:** Add a DataDiscoveryAppliedConfigs message ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **dataplex:** Add a TABLE_DELETED field in DiscoveryEvent ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **dataplex:** Add a TABLE_IGNORED field in DiscoveryEvent ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **dataplex:** Add a TABLE_PUBLISHED field in DiscoveryEvent ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **dataplex:** Add a TABLE_UPDATED field in DiscoveryEvent ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **dataplex:** Add an Issue field to DiscoveryEvent.ActionDetails to output the action message in Cloud Logs ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **dataplex:** Add annotations in CreateMetadataJob, GetMetadataJob, ListMetaDataJobs and CancelMetadataJob for cloud audit logging ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **dataplex:** Add data_version field to AspectSource ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **dataplex:** Add new Data Discovery scan type in Datascan ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **dataplex:** Expose create time in DataScanJobAPI ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **dataplex:** Expose create time to customers ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **dataplex:** Release metadata export in private preview ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **dataplex:** Release MetadataJob APIs and related resources in GA ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **dataplex:** Update Go Bigtable import path ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **dataplex:** Update Go Datastore import path ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+
+
+### Documentation
+
+* **dataplex:** A comment for message `DataScanEvent` is changed ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **dataplex:** Add comment for field `status` in message `.google.cloud.dataplex.v1.MetadataJob` per https ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **dataplex:** Add comment for field `type` in message `.google.cloud.dataplex.v1.MetadataJob` per https ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **dataplex:** Add Identifier for `name` in message `.google.cloud.dataplex.v1.MetadataJob` per https ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **dataplex:** Add info about schema changes for BigQuery metadata in Dataplex Catalog ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **dataplex:** Add link to fully qualified names documentation ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **dataplex:** Correct API documentation ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **dataplex:** Correct the dimensions for data quality rules ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **dataplex:** Dataplex Tasks do not support Dataplex Content path as a direct input anymore ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **dataplex:** Scrub descriptions for standalone discovery scans ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+
 ## [1.19.2](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.19.1...dataplex/v1.19.2) (2024-10-23)
 
 

@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ type EventIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*servicehealthpb.Event, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *EventIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -89,7 +89,7 @@ type LocationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *LocationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -136,7 +136,7 @@ type OrganizationEventIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*servicehealthpb.OrganizationEvent, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *OrganizationEventIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -183,7 +183,7 @@ type OrganizationImpactIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*servicehealthpb.OrganizationImpact, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *OrganizationImpactIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

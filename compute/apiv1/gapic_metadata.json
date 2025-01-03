@@ -1089,6 +1089,11 @@
                 "Resize"
               ]
             },
+            "ResumeInstances": {
+              "methods": [
+                "ResumeInstances"
+              ]
+            },
             "SetInstanceTemplate": {
               "methods": [
                 "SetInstanceTemplate"
@@ -1097,6 +1102,21 @@
             "SetTargetPools": {
               "methods": [
                 "SetTargetPools"
+              ]
+            },
+            "StartInstances": {
+              "methods": [
+                "StartInstances"
+              ]
+            },
+            "StopInstances": {
+              "methods": [
+                "StopInstances"
+              ]
+            },
+            "SuspendInstances": {
+              "methods": [
+                "SuspendInstances"
               ]
             },
             "UpdatePerInstanceConfigs": {
@@ -2026,6 +2046,25 @@
         }
       }
     },
+    "NetworkProfiles": {
+      "clients": {
+        "rest": {
+          "libraryClient": "NetworkProfilesClient",
+          "rpcs": {
+            "Get": {
+              "methods": [
+                "Get"
+              ]
+            },
+            "List": {
+              "methods": [
+                "List"
+              ]
+            }
+          }
+        }
+      }
+    },
     "Networks": {
       "clients": {
         "rest": {
@@ -2876,6 +2915,11 @@
                 "Resize"
               ]
             },
+            "ResumeInstances": {
+              "methods": [
+                "ResumeInstances"
+              ]
+            },
             "SetInstanceTemplate": {
               "methods": [
                 "SetInstanceTemplate"
@@ -2884,6 +2928,21 @@
             "SetTargetPools": {
               "methods": [
                 "SetTargetPools"
+              ]
+            },
+            "StartInstances": {
+              "methods": [
+                "StartInstances"
+              ]
+            },
+            "StopInstances": {
+              "methods": [
+                "StopInstances"
+              ]
+            },
+            "SuspendInstances": {
+              "methods": [
+                "SuspendInstances"
               ]
             },
             "UpdatePerInstanceConfigs": {
@@ -3260,6 +3319,11 @@
             "RemoveRule": {
               "methods": [
                 "RemoveRule"
+              ]
+            },
+            "SetLabels": {
+              "methods": [
+                "SetLabels"
               ]
             }
           }

@@ -433,6 +433,14 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	} else {
 		// Create gtransport ConnPool as usual if MultiEndpoint is not used.
 		// gRPC options.
+
+		// Add a unaryClientInterceptor and streamClientInterceptor.
+		reqIDInjector := new(requestIDHeaderInjector)
+		opts = append(opts,
+			option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(reqIDInjector.interceptStream)),
+			option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(reqIDInjector.interceptUnary)),
+		)
+
 		allOpts := allClientOpts(config.NumChannels, config.Compression, opts...)
 		pool, err = gtransport.DialPool(ctx, allOpts...)
 		if err != nil {
@@ -479,6 +487,21 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		md.Append(endToEndTracingHeader, "true")
 	}
 
+	if isMultiplexed := strings.ToLower(os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS")); isMultiplexed != "" {
+		config.SessionPoolConfig.enableMultiplexSession, err = strconv.ParseBool(isMultiplexed)
+		if err != nil {
+			return nil, spannerErrorf(codes.InvalidArgument, "GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS must be either true or false")
+		}
+	}
+	//TODO: Uncomment this once the feature is enabled.
+	//if isMultiplexForRW := os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_FOR_RW"); isMultiplexForRW != "" {
+	//	config.enableMultiplexedSessionForRW, err = strconv.ParseBool(isMultiplexForRW)
+	//	if err != nil {
+	//		return nil, spannerErrorf(codes.InvalidArgument, "GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_FOR_RW must be either true or false")
+	//	}
+	//  config.enableMultiplexedSessionForRW = config.enableMultiplexedSessionForRW && config.SessionPoolConfig.enableMultiplexSession
+	//}
+
 	// Create a session client.
 	sc := newSessionClient(pool, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, md, config.BatchTimeout, config.Logger, config.CallOptions)
 
@@ -507,8 +530,7 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		metricsProvider = noop.NewMeterProvider()
 	}
 
-	// Create a OpenTelemetry metrics configuration
-	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(ctx, database, metricsProvider)
+	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(ctx, database, metricsProvider, config.Compression, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -592,11 +614,11 @@ func allClientOpts(numChannels int, compression string, userOpts ...option.Clien
 	clientDefaultOpts := []option.ClientOption{
 		option.WithGRPCConnectionPool(numChannels),
 		option.WithUserAgent(fmt.Sprintf("spanner-go/v%s", internal.Version)),
-		internaloption.AllowNonDefaultServiceAccount(true),
 		option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(addNativeMetricsInterceptor()...)),
 		option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(addStreamNativeMetricsInterceptor()...)),
 	}
 	if enableDirectPathXds, _ := strconv.ParseBool(os.Getenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS")); enableDirectPathXds {
+		clientDefaultOpts = append(clientDefaultOpts, internaloption.AllowNonDefaultServiceAccount(true))
 		clientDefaultOpts = append(clientDefaultOpts, internaloption.EnableDirectPath(true), internaloption.EnableDirectPathXds())
 	}
 	if compression == "gzip" {
@@ -749,7 +771,7 @@ func getQueryOptions(opts QueryOptions) QueryOptions {
 // Close closes the client.
 func (c *Client) Close() {
 	if c.metricsTracerFactory != nil {
-		c.metricsTracerFactory.shutdown()
+		c.metricsTracerFactory.shutdown(context.Background())
 	}
 	if c.idleSessions != nil {
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -1001,8 +1023,12 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 			err error
 		)
 		if sh == nil || sh.getID() == "" || sh.getClient() == nil {
-			// Session handle hasn't been allocated or has been destroyed.
-			sh, err = c.idleSessions.take(ctx)
+			if c.idleSessions.isMultiplexedSessionForRWEnabled() {
+				sh, err = c.idleSessions.takeMultiplexed(ctx)
+			} else {
+				// Session handle hasn't been allocated or has been destroyed.
+				sh, err = c.idleSessions.take(ctx)
+			}
 			if err != nil {
 				// If session retrieval fails, just fail the transaction.
 				return err
@@ -1016,7 +1042,7 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 			// Note that the t.begin(ctx) call could change the session that is being used by the transaction, as the
 			// BeginTransaction RPC invocation will be retried on a new session if it returns SessionNotFound.
 			t.txReadOnly.sh = sh
-			if err = t.begin(ctx); err != nil {
+			if err = t.begin(ctx, nil); err != nil {
 				trace.TracePrintf(ctx, nil, "Error while BeginTransaction during retrying a ReadWrite transaction: %v", ToSpannerError(err))
 				return ToSpannerError(err)
 			}
@@ -1043,6 +1069,9 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 		resp, err = t.runInTransaction(ctx, f)
 		return err
 	})
+	if isUnimplementedErrorForMultiplexedRW(err) {
+		c.idleSessions.disableMultiplexedSessionForRW()
+	}
 	return resp, err
 }
 

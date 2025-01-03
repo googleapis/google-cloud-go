@@ -1,6 +1,29 @@
 # Changelog
 
 
+## [1.5.1](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.5.0...netapp/v1.5.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **netapp:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.4.1...netapp/v1.5.0) (2024-12-04)
+
+
+### Features
+
+* **netapp:** Add EstablishPeering API for Onprem Migration ([bf3fe5b](https://github.com/googleapis/google-cloud-go/commit/bf3fe5be3262c5f91f92d4850c833e56fe11be16))
+* **netapp:** Add new Active Directory state for AD Diagnostics support ([bf3fe5b](https://github.com/googleapis/google-cloud-go/commit/bf3fe5be3262c5f91f92d4850c833e56fe11be16))
+* **netapp:** Add Sync API for Replications ([bf3fe5b](https://github.com/googleapis/google-cloud-go/commit/bf3fe5be3262c5f91f92d4850c833e56fe11be16))
+* **netapp:** Enable creation of Onprem Migration in CreateVolume ([bf3fe5b](https://github.com/googleapis/google-cloud-go/commit/bf3fe5be3262c5f91f92d4850c833e56fe11be16))
+* **netapp:** Enable creation of Onprem Migration in CreateVolume ([#11172](https://github.com/googleapis/google-cloud-go/issues/11172)) ([bf3fe5b](https://github.com/googleapis/google-cloud-go/commit/bf3fe5be3262c5f91f92d4850c833e56fe11be16))
+
+
+### Documentation
+
+* **netapp:** Docs now do not allow underscore in IDs of various Resources ([bf3fe5b](https://github.com/googleapis/google-cloud-go/commit/bf3fe5be3262c5f91f92d4850c833e56fe11be16))
+
 ## [1.4.1](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.4.0...netapp/v1.4.1) (2024-10-23)
 
 

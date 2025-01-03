@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -270,6 +270,18 @@ func (it *PersistentResourceIterator) All() iter.Seq2[*aiplatformpb.PersistentRe
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *PipelineJobIterator) All() iter.Seq2[*aiplatformpb.PipelineJob, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RagCorpusIterator) All() iter.Seq2[*aiplatformpb.RagCorpus, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RagFileIterator) All() iter.Seq2[*aiplatformpb.RagFile, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 

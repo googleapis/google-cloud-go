@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ type EffectiveEventThreatDetectionCustomModuleIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*securitycentermanagementpb.EffectiveEventThreatDetectionCustomModule, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *EffectiveEventThreatDetectionCustomModuleIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -89,7 +89,7 @@ type EffectiveSecurityHealthAnalyticsCustomModuleIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*securitycentermanagementpb.EffectiveSecurityHealthAnalyticsCustomModule, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *EffectiveSecurityHealthAnalyticsCustomModuleIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -136,7 +136,7 @@ type EventThreatDetectionCustomModuleIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*securitycentermanagementpb.EventThreatDetectionCustomModule, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *EventThreatDetectionCustomModuleIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -183,7 +183,7 @@ type LocationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *LocationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -230,7 +230,7 @@ type SecurityCenterServiceIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*securitycentermanagementpb.SecurityCenterService, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *SecurityCenterServiceIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -277,7 +277,7 @@ type SecurityHealthAnalyticsCustomModuleIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*securitycentermanagementpb.SecurityHealthAnalyticsCustomModule, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *SecurityHealthAnalyticsCustomModuleIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/discoveryengine/apiv1beta",
-    "version": "1.15.0",
+    "version": "1.16.1",
     "language": "GO",
     "apis": [
       {

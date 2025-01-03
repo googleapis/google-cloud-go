@@ -1252,6 +1252,52 @@
       ]
     },
     {
+      "regionTag": "datastream_v1_generated_Datastream_RunStream_sync",
+      "title": "datastream RunStream Sample",
+      "description": "RunStream use this method to start, resume or recover a stream with a non default CDC\nstrategy.",
+      "file": "Client/RunStream/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RunStream",
+        "fullName": "google.cloud.datastream.v1.Client.RunStream",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datastreampb.RunStreamRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RunStreamOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datastream.v1.Client"
+        },
+        "method": {
+          "shortName": "RunStream",
+          "fullName": "google.cloud.datastream.v1.Datastream.RunStream",
+          "service": {
+            "shortName": "Datastream",
+            "fullName": "google.cloud.datastream.v1.Datastream"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "datastream_v1_generated_Datastream_StartBackfillJob_sync",
       "title": "datastream StartBackfillJob Sample",
       "description": "StartBackfillJob use this method to start a backfill job for the specified stream object.",

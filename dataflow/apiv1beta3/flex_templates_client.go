@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,14 +20,13 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
 
 	dataflowpb "cloud.google.com/go/dataflow/apiv1beta3/dataflowpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -133,6 +132,8 @@ type flexTemplatesGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewFlexTemplatesClient creates a new flex templates service client based on gRPC.
@@ -159,6 +160,7 @@ func NewFlexTemplatesClient(ctx context.Context, opts ...option.ClientOption) (*
 		connPool:            connPool,
 		flexTemplatesClient: dataflowpb.NewFlexTemplatesServiceClient(connPool),
 		CallOptions:         &client.CallOptions,
+		logger:              internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -205,6 +207,8 @@ type flexTemplatesRESTClient struct {
 
 	// Points back to the CallOptions field of the containing FlexTemplatesClient
 	CallOptions **FlexTemplatesCallOptions
+
+	logger *slog.Logger
 }
 
 // NewFlexTemplatesRESTClient creates a new flex templates service rest client.
@@ -222,6 +226,7 @@ func NewFlexTemplatesRESTClient(ctx context.Context, opts ...option.ClientOption
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -274,7 +279,7 @@ func (c *flexTemplatesGRPCClient) LaunchFlexTemplate(ctx context.Context, req *d
 	var resp *dataflowpb.LaunchFlexTemplateResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.flexTemplatesClient.LaunchFlexTemplate(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.flexTemplatesClient.LaunchFlexTemplate, req, settings.GRPC, c.logger, "LaunchFlexTemplate")
 		return err
 	}, opts...)
 	if err != nil {
@@ -322,17 +327,7 @@ func (c *flexTemplatesRESTClient) LaunchFlexTemplate(ctx context.Context, req *d
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "LaunchFlexTemplate")
 		if err != nil {
 			return err
 		}

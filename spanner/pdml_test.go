@@ -119,8 +119,9 @@ func TestPartitionedUpdate_WithDeadline(t *testing.T) {
 	t.Parallel()
 	logger := log.New(os.Stderr, "", log.LstdFlags)
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		SessionPoolConfig: DefaultSessionPoolConfig,
-		Logger:            logger,
+		DisableNativeMetrics: true,
+		SessionPoolConfig:    DefaultSessionPoolConfig,
+		Logger:               logger,
 	})
 	defer teardown()
 
@@ -156,7 +157,7 @@ func TestPartitionedUpdate_QueryOptions(t *testing.T) {
 			}
 
 			ctx := context.Background()
-			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{QueryOptions: tt.client, Compression: gzip.Name})
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, QueryOptions: tt.client, Compression: gzip.Name})
 			defer teardown()
 
 			var err error

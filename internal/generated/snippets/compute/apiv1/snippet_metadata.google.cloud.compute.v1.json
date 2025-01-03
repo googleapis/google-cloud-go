@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/compute/apiv1",
-    "version": "1.28.2",
+    "version": "1.31.1",
     "language": "GO",
     "apis": [
       {
@@ -8200,6 +8200,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_InstanceGroupManagers_ResumeInstances_sync",
+      "title": "compute ResumeInstances Sample",
+      "description": "ResumeInstances flags the specified instances in the managed instance group to be resumed. This method increases the targetSize and decreases the targetSuspendedSize of the managed instance group by the number of instances that you resume. The resumeInstances operation is marked DONE if the resumeInstances request is successful. The underlying actions take additional time. You must separately verify the status of the RESUMING action with the listmanagedinstances method. In this request, you can only specify instances that are suspended. For example, if an instance was previously suspended using the suspendInstances method, it can be resumed using the resumeInstances method. If a health check is attached to the managed instance group, the specified instances will be verified as healthy after they are resumed. You can specify a maximum of 1000 instances with this method per request.",
+      "file": "InstanceGroupManagersClient/ResumeInstances/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ResumeInstances",
+        "fullName": "google.cloud.compute.v1.InstanceGroupManagersClient.ResumeInstances",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ResumeInstancesInstanceGroupManagerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "InstanceGroupManagersClient",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagersClient"
+        },
+        "method": {
+          "shortName": "ResumeInstances",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagers.ResumeInstances",
+          "service": {
+            "shortName": "InstanceGroupManagers",
+            "fullName": "google.cloud.compute.v1.InstanceGroupManagers"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_InstanceGroupManagers_SetInstanceTemplate_sync",
       "title": "compute SetInstanceTemplate Sample",
       "description": "SetInstanceTemplate specifies the instance template to use when creating new instances in this group. The templates for existing instances in the group do not change unless you run recreateInstances, run applyUpdatesToInstances, or set the group's updatePolicy.type to PROACTIVE.",
@@ -8276,6 +8322,144 @@
         "method": {
           "shortName": "SetTargetPools",
           "fullName": "google.cloud.compute.v1.InstanceGroupManagers.SetTargetPools",
+          "service": {
+            "shortName": "InstanceGroupManagers",
+            "fullName": "google.cloud.compute.v1.InstanceGroupManagers"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InstanceGroupManagers_StartInstances_sync",
+      "title": "compute StartInstances Sample",
+      "description": "StartInstances flags the specified instances in the managed instance group to be started. This method increases the targetSize and decreases the targetStoppedSize of the managed instance group by the number of instances that you start. The startInstances operation is marked DONE if the startInstances request is successful. The underlying actions take additional time. You must separately verify the status of the STARTING action with the listmanagedinstances method. In this request, you can only specify instances that are stopped. For example, if an instance was previously stopped using the stopInstances method, it can be started using the startInstances method. If a health check is attached to the managed instance group, the specified instances will be verified as healthy after they are started. You can specify a maximum of 1000 instances with this method per request.",
+      "file": "InstanceGroupManagersClient/StartInstances/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StartInstances",
+        "fullName": "google.cloud.compute.v1.InstanceGroupManagersClient.StartInstances",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.StartInstancesInstanceGroupManagerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "InstanceGroupManagersClient",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagersClient"
+        },
+        "method": {
+          "shortName": "StartInstances",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagers.StartInstances",
+          "service": {
+            "shortName": "InstanceGroupManagers",
+            "fullName": "google.cloud.compute.v1.InstanceGroupManagers"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InstanceGroupManagers_StopInstances_sync",
+      "title": "compute StopInstances Sample",
+      "description": "StopInstances flags the specified instances in the managed instance group to be immediately stopped. You can only specify instances that are running in this request. This method reduces the targetSize and increases the targetStoppedSize of the managed instance group by the number of instances that you stop. The stopInstances operation is marked DONE if the stopInstances request is successful. The underlying actions take additional time. You must separately verify the status of the STOPPING action with the listmanagedinstances method. If the standbyPolicy.initialDelaySec field is set, the group delays stopping the instances until initialDelaySec have passed from instance.creationTimestamp (that is, when the instance was created). This delay gives your application time to set itself up and initialize on the instance. If more than initialDelaySec seconds have passed since instance.creationTimestamp when this method is called, there will be zero delay. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is stopped. Stopped instances can be started using the startInstances method. You can specify a maximum of 1000 instances with this method per request.",
+      "file": "InstanceGroupManagersClient/StopInstances/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StopInstances",
+        "fullName": "google.cloud.compute.v1.InstanceGroupManagersClient.StopInstances",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.StopInstancesInstanceGroupManagerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "InstanceGroupManagersClient",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagersClient"
+        },
+        "method": {
+          "shortName": "StopInstances",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagers.StopInstances",
+          "service": {
+            "shortName": "InstanceGroupManagers",
+            "fullName": "google.cloud.compute.v1.InstanceGroupManagers"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InstanceGroupManagers_SuspendInstances_sync",
+      "title": "compute SuspendInstances Sample",
+      "description": "SuspendInstances flags the specified instances in the managed instance group to be immediately suspended. You can only specify instances that are running in this request. This method reduces the targetSize and increases the targetSuspendedSize of the managed instance group by the number of instances that you suspend. The suspendInstances operation is marked DONE if the suspendInstances request is successful. The underlying actions take additional time. You must separately verify the status of the SUSPENDING action with the listmanagedinstances method. If the standbyPolicy.initialDelaySec field is set, the group delays suspension of the instances until initialDelaySec have passed from instance.creationTimestamp (that is, when the instance was created). This delay gives your application time to set itself up and initialize on the instance. If more than initialDelaySec seconds have passed since instance.creationTimestamp when this method is called, there will be zero delay. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is suspended. Suspended instances can be resumed using the resumeInstances method. You can specify a maximum of 1000 instances with this method per request.",
+      "file": "InstanceGroupManagersClient/SuspendInstances/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SuspendInstances",
+        "fullName": "google.cloud.compute.v1.InstanceGroupManagersClient.SuspendInstances",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.SuspendInstancesInstanceGroupManagerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "InstanceGroupManagersClient",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagersClient"
+        },
+        "method": {
+          "shortName": "SuspendInstances",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagers.SuspendInstances",
           "service": {
             "shortName": "InstanceGroupManagers",
             "fullName": "google.cloud.compute.v1.InstanceGroupManagers"
@@ -15376,6 +15560,98 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_NetworkProfiles_Get_sync",
+      "title": "compute Get Sample",
+      "description": "Get returns the specified network profile.",
+      "file": "NetworkProfilesClient/Get/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Get",
+        "fullName": "google.cloud.compute.v1.NetworkProfilesClient.Get",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetNetworkProfileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.NetworkProfile",
+        "client": {
+          "shortName": "NetworkProfilesClient",
+          "fullName": "google.cloud.compute.v1.NetworkProfilesClient"
+        },
+        "method": {
+          "shortName": "Get",
+          "fullName": "google.cloud.compute.v1.NetworkProfiles.Get",
+          "service": {
+            "shortName": "NetworkProfiles",
+            "fullName": "google.cloud.compute.v1.NetworkProfiles"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_NetworkProfiles_List_sync",
+      "title": "compute List Sample",
+      "description": "List retrieves a list of network profiles available to the specified project.",
+      "file": "NetworkProfilesClient/List/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "List",
+        "fullName": "google.cloud.compute.v1.NetworkProfilesClient.List",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListNetworkProfilesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "NetworkProfileIterator",
+        "client": {
+          "shortName": "NetworkProfilesClient",
+          "fullName": "google.cloud.compute.v1.NetworkProfilesClient"
+        },
+        "method": {
+          "shortName": "List",
+          "fullName": "google.cloud.compute.v1.NetworkProfiles.List",
+          "service": {
+            "shortName": "NetworkProfiles",
+            "fullName": "google.cloud.compute.v1.NetworkProfiles"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_Networks_AddPeering_sync",
       "title": "compute AddPeering Sample",
       "description": "AddPeering adds a peering to the specified network.",
@@ -21908,6 +22184,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_RegionInstanceGroupManagers_ResumeInstances_sync",
+      "title": "compute ResumeInstances Sample",
+      "description": "ResumeInstances flags the specified instances in the managed instance group to be resumed. This method increases the targetSize and decreases the targetSuspendedSize of the managed instance group by the number of instances that you resume. The resumeInstances operation is marked DONE if the resumeInstances request is successful. The underlying actions take additional time. You must separately verify the status of the RESUMING action with the listmanagedinstances method. In this request, you can only specify instances that are suspended. For example, if an instance was previously suspended using the suspendInstances method, it can be resumed using the resumeInstances method. If a health check is attached to the managed instance group, the specified instances will be verified as healthy after they are resumed. You can specify a maximum of 1000 instances with this method per request.",
+      "file": "RegionInstanceGroupManagersClient/ResumeInstances/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ResumeInstances",
+        "fullName": "google.cloud.compute.v1.RegionInstanceGroupManagersClient.ResumeInstances",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ResumeInstancesRegionInstanceGroupManagerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionInstanceGroupManagersClient",
+          "fullName": "google.cloud.compute.v1.RegionInstanceGroupManagersClient"
+        },
+        "method": {
+          "shortName": "ResumeInstances",
+          "fullName": "google.cloud.compute.v1.RegionInstanceGroupManagers.ResumeInstances",
+          "service": {
+            "shortName": "RegionInstanceGroupManagers",
+            "fullName": "google.cloud.compute.v1.RegionInstanceGroupManagers"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_RegionInstanceGroupManagers_SetInstanceTemplate_sync",
       "title": "compute SetInstanceTemplate Sample",
       "description": "SetInstanceTemplate sets the instance template to use when creating new instances or recreating instances in this group. Existing instances are not affected.",
@@ -21984,6 +22306,144 @@
         "method": {
           "shortName": "SetTargetPools",
           "fullName": "google.cloud.compute.v1.RegionInstanceGroupManagers.SetTargetPools",
+          "service": {
+            "shortName": "RegionInstanceGroupManagers",
+            "fullName": "google.cloud.compute.v1.RegionInstanceGroupManagers"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionInstanceGroupManagers_StartInstances_sync",
+      "title": "compute StartInstances Sample",
+      "description": "StartInstances flags the specified instances in the managed instance group to be started. This method increases the targetSize and decreases the targetStoppedSize of the managed instance group by the number of instances that you start. The startInstances operation is marked DONE if the startInstances request is successful. The underlying actions take additional time. You must separately verify the status of the STARTING action with the listmanagedinstances method. In this request, you can only specify instances that are stopped. For example, if an instance was previously stopped using the stopInstances method, it can be started using the startInstances method. If a health check is attached to the managed instance group, the specified instances will be verified as healthy after they are started. You can specify a maximum of 1000 instances with this method per request.",
+      "file": "RegionInstanceGroupManagersClient/StartInstances/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StartInstances",
+        "fullName": "google.cloud.compute.v1.RegionInstanceGroupManagersClient.StartInstances",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.StartInstancesRegionInstanceGroupManagerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionInstanceGroupManagersClient",
+          "fullName": "google.cloud.compute.v1.RegionInstanceGroupManagersClient"
+        },
+        "method": {
+          "shortName": "StartInstances",
+          "fullName": "google.cloud.compute.v1.RegionInstanceGroupManagers.StartInstances",
+          "service": {
+            "shortName": "RegionInstanceGroupManagers",
+            "fullName": "google.cloud.compute.v1.RegionInstanceGroupManagers"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionInstanceGroupManagers_StopInstances_sync",
+      "title": "compute StopInstances Sample",
+      "description": "StopInstances flags the specified instances in the managed instance group to be immediately stopped. You can only specify instances that are running in this request. This method reduces the targetSize and increases the targetStoppedSize of the managed instance group by the number of instances that you stop. The stopInstances operation is marked DONE if the stopInstances request is successful. The underlying actions take additional time. You must separately verify the status of the STOPPING action with the listmanagedinstances method. If the standbyPolicy.initialDelaySec field is set, the group delays stopping the instances until initialDelaySec have passed from instance.creationTimestamp (that is, when the instance was created). This delay gives your application time to set itself up and initialize on the instance. If more than initialDelaySec seconds have passed since instance.creationTimestamp when this method is called, there will be zero delay. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is stopped. Stopped instances can be started using the startInstances method. You can specify a maximum of 1000 instances with this method per request.",
+      "file": "RegionInstanceGroupManagersClient/StopInstances/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StopInstances",
+        "fullName": "google.cloud.compute.v1.RegionInstanceGroupManagersClient.StopInstances",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.StopInstancesRegionInstanceGroupManagerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionInstanceGroupManagersClient",
+          "fullName": "google.cloud.compute.v1.RegionInstanceGroupManagersClient"
+        },
+        "method": {
+          "shortName": "StopInstances",
+          "fullName": "google.cloud.compute.v1.RegionInstanceGroupManagers.StopInstances",
+          "service": {
+            "shortName": "RegionInstanceGroupManagers",
+            "fullName": "google.cloud.compute.v1.RegionInstanceGroupManagers"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionInstanceGroupManagers_SuspendInstances_sync",
+      "title": "compute SuspendInstances Sample",
+      "description": "SuspendInstances flags the specified instances in the managed instance group to be immediately suspended. You can only specify instances that are running in this request. This method reduces the targetSize and increases the targetSuspendedSize of the managed instance group by the number of instances that you suspend. The suspendInstances operation is marked DONE if the suspendInstances request is successful. The underlying actions take additional time. You must separately verify the status of the SUSPENDING action with the listmanagedinstances method. If the standbyPolicy.initialDelaySec field is set, the group delays suspension of the instances until initialDelaySec have passed from instance.creationTimestamp (that is, when the instance was created). This delay gives your application time to set itself up and initialize on the instance. If more than initialDelaySec seconds have passed since instance.creationTimestamp when this method is called, there will be zero delay. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is suspended. Suspended instances can be resumed using the resumeInstances method. You can specify a maximum of 1000 instances with this method per request.",
+      "file": "RegionInstanceGroupManagersClient/SuspendInstances/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SuspendInstances",
+        "fullName": "google.cloud.compute.v1.RegionInstanceGroupManagersClient.SuspendInstances",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.SuspendInstancesRegionInstanceGroupManagerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionInstanceGroupManagersClient",
+          "fullName": "google.cloud.compute.v1.RegionInstanceGroupManagersClient"
+        },
+        "method": {
+          "shortName": "SuspendInstances",
+          "fullName": "google.cloud.compute.v1.RegionInstanceGroupManagers.SuspendInstances",
           "service": {
             "shortName": "RegionInstanceGroupManagers",
             "fullName": "google.cloud.compute.v1.RegionInstanceGroupManagers"
@@ -24698,6 +25158,52 @@
         "method": {
           "shortName": "RemoveRule",
           "fullName": "google.cloud.compute.v1.RegionSecurityPolicies.RemoveRule",
+          "service": {
+            "shortName": "RegionSecurityPolicies",
+            "fullName": "google.cloud.compute.v1.RegionSecurityPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionSecurityPolicies_SetLabels_sync",
+      "title": "compute SetLabels Sample",
+      "description": "SetLabels sets the labels on a security policy. To learn more about labels, read the Labeling Resources documentation.",
+      "file": "RegionSecurityPoliciesClient/SetLabels/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetLabels",
+        "fullName": "google.cloud.compute.v1.RegionSecurityPoliciesClient.SetLabels",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.SetLabelsRegionSecurityPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionSecurityPoliciesClient",
+          "fullName": "google.cloud.compute.v1.RegionSecurityPoliciesClient"
+        },
+        "method": {
+          "shortName": "SetLabels",
+          "fullName": "google.cloud.compute.v1.RegionSecurityPolicies.SetLabels",
           "service": {
             "shortName": "RegionSecurityPolicies",
             "fullName": "google.cloud.compute.v1.RegionSecurityPolicies"

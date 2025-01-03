@@ -18,12 +18,14 @@ package spanner
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"sort"
 	"testing"
-
 	"time"
 
+	"cloud.google.com/go/internal/testutil"
+	. "cloud.google.com/go/spanner/internal/testutil"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"go.opentelemetry.io/otel/attribute"
 	"google.golang.org/api/option"
@@ -32,12 +34,15 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
-
-	"cloud.google.com/go/internal/testutil"
-	. "cloud.google.com/go/spanner/internal/testutil"
 )
 
 func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
+	flag.Parse() // Needed for testing.Short().
+	if testing.Short() {
+		t.Skip("TestNewBuiltinMetricsTracerFactory tests skipped in -short mode.")
+	}
+	t.Parallel()
+
 	ctx := context.Background()
 	clientUID := "test-uid"
 	createSessionRPC := "Spanner.BatchCreateSessions"
@@ -89,29 +94,35 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 	}
 	go monitoringServer.Serve()
 	defer monitoringServer.Shutdown()
-	origExporterOpts := exporterOpts
-	exporterOpts = []option.ClientOption{
-		option.WithEndpoint(monitoringServer.Endpoint),
-		option.WithoutAuthentication(),
-		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+
+	// Override exporter options
+	origCreateExporterOptions := createExporterOptions
+	createExporterOptions = func(opts ...option.ClientOption) []option.ClientOption {
+		return []option.ClientOption{
+			option.WithEndpoint(monitoringServer.Endpoint), // Connect to mock
+			option.WithoutAuthentication(),
+			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+		}
 	}
 	defer func() {
-		exporterOpts = origExporterOpts
+		createExporterOptions = origCreateExporterOptions
 	}()
 
 	tests := []struct {
 		desc                   string
 		config                 ClientConfig
 		wantBuiltinEnabled     bool
-		setEmulator            bool
+		runOnlyInEmulator      bool
 		wantCreateTSCallsCount int // No. of CreateTimeSeries calls
 		wantMethods            []string
 		wantOTELValue          map[string]map[string]int64
 		wantOTELMetrics        map[string][]string
 	}{
 		{
-			desc:                   "should create a new tracer factory with default meter provider",
-			config:                 ClientConfig{},
+			desc:              "should create a new tracer factory with default meter provider",
+			runOnlyInEmulator: isEmulatorEnvSet(),
+			config:            ClientConfig{},
+
 			wantBuiltinEnabled:     true,
 			wantCreateTSCallsCount: 2,
 			wantMethods:            []string{createSessionRPC, "Spanner.StreamingRead"},
@@ -132,16 +143,16 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 			},
 		},
 		{
-			desc:        "should not create instruments when SPANNER_EMULATOR_HOST is set",
-			config:      ClientConfig{},
-			setEmulator: true,
+			desc:               "should not create instruments when SPANNER_EMULATOR_HOST is set",
+			runOnlyInEmulator:  !isEmulatorEnvSet(),
+			config:             ClientConfig{},
+			wantBuiltinEnabled: false,
 		},
 	}
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			if test.setEmulator {
-				// Set environment variable
-				t.Setenv("SPANNER_EMULATOR_HOST", "localhost:9010")
+			if test.runOnlyInEmulator {
+				t.Skip("Skipping test that should only run in emulator")
 			}
 			server, client, teardown := setupMockedTestServerWithConfig(t, test.config)
 			defer teardown()

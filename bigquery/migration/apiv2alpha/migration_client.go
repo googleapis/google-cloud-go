@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	migrationpb "cloud.google.com/go/bigquery/migration/apiv2alpha/migrationpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -307,6 +306,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new migration service client based on gRPC.
@@ -333,6 +334,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      migrationpb.NewMigrationServiceClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -379,6 +381,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new migration service rest client.
@@ -396,6 +400,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -448,7 +453,7 @@ func (c *gRPCClient) CreateMigrationWorkflow(ctx context.Context, req *migration
 	var resp *migrationpb.MigrationWorkflow
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateMigrationWorkflow(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateMigrationWorkflow, req, settings.GRPC, c.logger, "CreateMigrationWorkflow")
 		return err
 	}, opts...)
 	if err != nil {
@@ -466,7 +471,7 @@ func (c *gRPCClient) GetMigrationWorkflow(ctx context.Context, req *migrationpb.
 	var resp *migrationpb.MigrationWorkflow
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetMigrationWorkflow(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetMigrationWorkflow, req, settings.GRPC, c.logger, "GetMigrationWorkflow")
 		return err
 	}, opts...)
 	if err != nil {
@@ -495,7 +500,7 @@ func (c *gRPCClient) ListMigrationWorkflows(ctx context.Context, req *migrationp
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListMigrationWorkflows(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListMigrationWorkflows, req, settings.GRPC, c.logger, "ListMigrationWorkflows")
 			return err
 		}, opts...)
 		if err != nil {
@@ -529,7 +534,7 @@ func (c *gRPCClient) DeleteMigrationWorkflow(ctx context.Context, req *migration
 	opts = append((*c.CallOptions).DeleteMigrationWorkflow[0:len((*c.CallOptions).DeleteMigrationWorkflow):len((*c.CallOptions).DeleteMigrationWorkflow)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteMigrationWorkflow(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteMigrationWorkflow, req, settings.GRPC, c.logger, "DeleteMigrationWorkflow")
 		return err
 	}, opts...)
 	return err
@@ -543,7 +548,7 @@ func (c *gRPCClient) StartMigrationWorkflow(ctx context.Context, req *migrationp
 	opts = append((*c.CallOptions).StartMigrationWorkflow[0:len((*c.CallOptions).StartMigrationWorkflow):len((*c.CallOptions).StartMigrationWorkflow)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.StartMigrationWorkflow(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.StartMigrationWorkflow, req, settings.GRPC, c.logger, "StartMigrationWorkflow")
 		return err
 	}, opts...)
 	return err
@@ -558,7 +563,7 @@ func (c *gRPCClient) GetMigrationSubtask(ctx context.Context, req *migrationpb.G
 	var resp *migrationpb.MigrationSubtask
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetMigrationSubtask(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetMigrationSubtask, req, settings.GRPC, c.logger, "GetMigrationSubtask")
 		return err
 	}, opts...)
 	if err != nil {
@@ -587,7 +592,7 @@ func (c *gRPCClient) ListMigrationSubtasks(ctx context.Context, req *migrationpb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListMigrationSubtasks(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListMigrationSubtasks, req, settings.GRPC, c.logger, "ListMigrationSubtasks")
 			return err
 		}, opts...)
 		if err != nil {
@@ -648,17 +653,7 @@ func (c *restClient) CreateMigrationWorkflow(ctx context.Context, req *migration
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateMigrationWorkflow")
 		if err != nil {
 			return err
 		}
@@ -714,17 +709,7 @@ func (c *restClient) GetMigrationWorkflow(ctx context.Context, req *migrationpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetMigrationWorkflow")
 		if err != nil {
 			return err
 		}
@@ -792,21 +777,10 @@ func (c *restClient) ListMigrationWorkflows(ctx context.Context, req *migrationp
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListMigrationWorkflows")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -861,15 +835,8 @@ func (c *restClient) DeleteMigrationWorkflow(ctx context.Context, req *migration
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteMigrationWorkflow")
+		return err
 	}, opts...)
 }
 
@@ -907,15 +874,8 @@ func (c *restClient) StartMigrationWorkflow(ctx context.Context, req *migrationp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "StartMigrationWorkflow")
+		return err
 	}, opts...)
 }
 
@@ -958,17 +918,7 @@ func (c *restClient) GetMigrationSubtask(ctx context.Context, req *migrationpb.G
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetMigrationSubtask")
 		if err != nil {
 			return err
 		}
@@ -1039,21 +989,10 @@ func (c *restClient) ListMigrationSubtasks(ctx context.Context, req *migrationpb
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListMigrationSubtasks")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,15 +20,15 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
 	"time"
 
 	generativelanguagepb "cloud.google.com/go/ai/generativelanguage/apiv1beta/generativelanguagepb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -64,6 +64,8 @@ type RetrieverCallOptions struct {
 	DeleteChunk       []gax.CallOption
 	BatchDeleteChunks []gax.CallOption
 	ListChunks        []gax.CallOption
+	GetOperation      []gax.CallOption
+	ListOperations    []gax.CallOption
 }
 
 func defaultRetrieverGRPCClientOptions() []option.ClientOption {
@@ -279,6 +281,8 @@ func defaultRetrieverCallOptions() *RetrieverCallOptions {
 		},
 		BatchDeleteChunks: []gax.CallOption{},
 		ListChunks:        []gax.CallOption{},
+		GetOperation:      []gax.CallOption{},
+		ListOperations:    []gax.CallOption{},
 	}
 }
 
@@ -464,6 +468,8 @@ func defaultRetrieverRESTCallOptions() *RetrieverCallOptions {
 		},
 		BatchDeleteChunks: []gax.CallOption{},
 		ListChunks:        []gax.CallOption{},
+		GetOperation:      []gax.CallOption{},
+		ListOperations:    []gax.CallOption{},
 	}
 }
 
@@ -492,6 +498,8 @@ type internalRetrieverClient interface {
 	DeleteChunk(context.Context, *generativelanguagepb.DeleteChunkRequest, ...gax.CallOption) error
 	BatchDeleteChunks(context.Context, *generativelanguagepb.BatchDeleteChunksRequest, ...gax.CallOption) error
 	ListChunks(context.Context, *generativelanguagepb.ListChunksRequest, ...gax.CallOption) *ChunkIterator
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
+	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
 // RetrieverClient is a client for interacting with Generative Language API.
@@ -629,6 +637,16 @@ func (c *RetrieverClient) ListChunks(ctx context.Context, req *generativelanguag
 	return c.internalClient.ListChunks(ctx, req, opts...)
 }
 
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *RetrieverClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *RetrieverClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	return c.internalClient.ListOperations(ctx, req, opts...)
+}
+
 // retrieverGRPCClient is a client for interacting with Generative Language API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -642,8 +660,12 @@ type retrieverGRPCClient struct {
 	// The gRPC API client.
 	retrieverClient generativelanguagepb.RetrieverServiceClient
 
+	operationsClient longrunningpb.OperationsClient
+
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewRetrieverClient creates a new retriever service client based on gRPC.
@@ -667,9 +689,11 @@ func NewRetrieverClient(ctx context.Context, opts ...option.ClientOption) (*Retr
 	client := RetrieverClient{CallOptions: defaultRetrieverCallOptions()}
 
 	c := &retrieverGRPCClient{
-		connPool:        connPool,
-		retrieverClient: generativelanguagepb.NewRetrieverServiceClient(connPool),
-		CallOptions:     &client.CallOptions,
+		connPool:         connPool,
+		retrieverClient:  generativelanguagepb.NewRetrieverServiceClient(connPool),
+		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
+		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -716,6 +740,8 @@ type retrieverRESTClient struct {
 
 	// Points back to the CallOptions field of the containing RetrieverClient
 	CallOptions **RetrieverCallOptions
+
+	logger *slog.Logger
 }
 
 // NewRetrieverRESTClient creates a new retriever service rest client.
@@ -733,6 +759,7 @@ func NewRetrieverRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -782,7 +809,7 @@ func (c *retrieverGRPCClient) CreateCorpus(ctx context.Context, req *generativel
 	var resp *generativelanguagepb.Corpus
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.retrieverClient.CreateCorpus(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.retrieverClient.CreateCorpus, req, settings.GRPC, c.logger, "CreateCorpus")
 		return err
 	}, opts...)
 	if err != nil {
@@ -800,7 +827,7 @@ func (c *retrieverGRPCClient) GetCorpus(ctx context.Context, req *generativelang
 	var resp *generativelanguagepb.Corpus
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.retrieverClient.GetCorpus(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.retrieverClient.GetCorpus, req, settings.GRPC, c.logger, "GetCorpus")
 		return err
 	}, opts...)
 	if err != nil {
@@ -818,7 +845,7 @@ func (c *retrieverGRPCClient) UpdateCorpus(ctx context.Context, req *generativel
 	var resp *generativelanguagepb.Corpus
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.retrieverClient.UpdateCorpus(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.retrieverClient.UpdateCorpus, req, settings.GRPC, c.logger, "UpdateCorpus")
 		return err
 	}, opts...)
 	if err != nil {
@@ -835,7 +862,7 @@ func (c *retrieverGRPCClient) DeleteCorpus(ctx context.Context, req *generativel
 	opts = append((*c.CallOptions).DeleteCorpus[0:len((*c.CallOptions).DeleteCorpus):len((*c.CallOptions).DeleteCorpus)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.retrieverClient.DeleteCorpus(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.retrieverClient.DeleteCorpus, req, settings.GRPC, c.logger, "DeleteCorpus")
 		return err
 	}, opts...)
 	return err
@@ -858,7 +885,7 @@ func (c *retrieverGRPCClient) ListCorpora(ctx context.Context, req *generativela
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.retrieverClient.ListCorpora(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.retrieverClient.ListCorpora, req, settings.GRPC, c.logger, "ListCorpora")
 			return err
 		}, opts...)
 		if err != nil {
@@ -893,7 +920,7 @@ func (c *retrieverGRPCClient) QueryCorpus(ctx context.Context, req *generativela
 	var resp *generativelanguagepb.QueryCorpusResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.retrieverClient.QueryCorpus(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.retrieverClient.QueryCorpus, req, settings.GRPC, c.logger, "QueryCorpus")
 		return err
 	}, opts...)
 	if err != nil {
@@ -911,7 +938,7 @@ func (c *retrieverGRPCClient) CreateDocument(ctx context.Context, req *generativ
 	var resp *generativelanguagepb.Document
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.retrieverClient.CreateDocument(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.retrieverClient.CreateDocument, req, settings.GRPC, c.logger, "CreateDocument")
 		return err
 	}, opts...)
 	if err != nil {
@@ -929,7 +956,7 @@ func (c *retrieverGRPCClient) GetDocument(ctx context.Context, req *generativela
 	var resp *generativelanguagepb.Document
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.retrieverClient.GetDocument(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.retrieverClient.GetDocument, req, settings.GRPC, c.logger, "GetDocument")
 		return err
 	}, opts...)
 	if err != nil {
@@ -947,7 +974,7 @@ func (c *retrieverGRPCClient) UpdateDocument(ctx context.Context, req *generativ
 	var resp *generativelanguagepb.Document
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.retrieverClient.UpdateDocument(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.retrieverClient.UpdateDocument, req, settings.GRPC, c.logger, "UpdateDocument")
 		return err
 	}, opts...)
 	if err != nil {
@@ -964,7 +991,7 @@ func (c *retrieverGRPCClient) DeleteDocument(ctx context.Context, req *generativ
 	opts = append((*c.CallOptions).DeleteDocument[0:len((*c.CallOptions).DeleteDocument):len((*c.CallOptions).DeleteDocument)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.retrieverClient.DeleteDocument(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.retrieverClient.DeleteDocument, req, settings.GRPC, c.logger, "DeleteDocument")
 		return err
 	}, opts...)
 	return err
@@ -990,7 +1017,7 @@ func (c *retrieverGRPCClient) ListDocuments(ctx context.Context, req *generative
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.retrieverClient.ListDocuments(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.retrieverClient.ListDocuments, req, settings.GRPC, c.logger, "ListDocuments")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1025,7 +1052,7 @@ func (c *retrieverGRPCClient) QueryDocument(ctx context.Context, req *generative
 	var resp *generativelanguagepb.QueryDocumentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.retrieverClient.QueryDocument(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.retrieverClient.QueryDocument, req, settings.GRPC, c.logger, "QueryDocument")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1043,7 +1070,7 @@ func (c *retrieverGRPCClient) CreateChunk(ctx context.Context, req *generativela
 	var resp *generativelanguagepb.Chunk
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.retrieverClient.CreateChunk(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.retrieverClient.CreateChunk, req, settings.GRPC, c.logger, "CreateChunk")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1061,7 +1088,7 @@ func (c *retrieverGRPCClient) BatchCreateChunks(ctx context.Context, req *genera
 	var resp *generativelanguagepb.BatchCreateChunksResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.retrieverClient.BatchCreateChunks(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.retrieverClient.BatchCreateChunks, req, settings.GRPC, c.logger, "BatchCreateChunks")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1079,7 +1106,7 @@ func (c *retrieverGRPCClient) GetChunk(ctx context.Context, req *generativelangu
 	var resp *generativelanguagepb.Chunk
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.retrieverClient.GetChunk(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.retrieverClient.GetChunk, req, settings.GRPC, c.logger, "GetChunk")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1097,7 +1124,7 @@ func (c *retrieverGRPCClient) UpdateChunk(ctx context.Context, req *generativela
 	var resp *generativelanguagepb.Chunk
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.retrieverClient.UpdateChunk(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.retrieverClient.UpdateChunk, req, settings.GRPC, c.logger, "UpdateChunk")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1115,7 +1142,7 @@ func (c *retrieverGRPCClient) BatchUpdateChunks(ctx context.Context, req *genera
 	var resp *generativelanguagepb.BatchUpdateChunksResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.retrieverClient.BatchUpdateChunks(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.retrieverClient.BatchUpdateChunks, req, settings.GRPC, c.logger, "BatchUpdateChunks")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1132,7 +1159,7 @@ func (c *retrieverGRPCClient) DeleteChunk(ctx context.Context, req *generativela
 	opts = append((*c.CallOptions).DeleteChunk[0:len((*c.CallOptions).DeleteChunk):len((*c.CallOptions).DeleteChunk)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.retrieverClient.DeleteChunk(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.retrieverClient.DeleteChunk, req, settings.GRPC, c.logger, "DeleteChunk")
 		return err
 	}, opts...)
 	return err
@@ -1146,7 +1173,7 @@ func (c *retrieverGRPCClient) BatchDeleteChunks(ctx context.Context, req *genera
 	opts = append((*c.CallOptions).BatchDeleteChunks[0:len((*c.CallOptions).BatchDeleteChunks):len((*c.CallOptions).BatchDeleteChunks)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.retrieverClient.BatchDeleteChunks(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.retrieverClient.BatchDeleteChunks, req, settings.GRPC, c.logger, "BatchDeleteChunks")
 		return err
 	}, opts...)
 	return err
@@ -1172,7 +1199,7 @@ func (c *retrieverGRPCClient) ListChunks(ctx context.Context, req *generativelan
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.retrieverClient.ListChunks(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.retrieverClient.ListChunks, req, settings.GRPC, c.logger, "ListChunks")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1181,6 +1208,70 @@ func (c *retrieverGRPCClient) ListChunks(ctx context.Context, req *generativelan
 
 		it.Response = resp
 		return resp.GetChunks(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *retrieverGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *retrieverGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -1235,17 +1326,7 @@ func (c *retrieverRESTClient) CreateCorpus(ctx context.Context, req *generativel
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateCorpus")
 		if err != nil {
 			return err
 		}
@@ -1295,17 +1376,7 @@ func (c *retrieverRESTClient) GetCorpus(ctx context.Context, req *generativelang
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCorpus")
 		if err != nil {
 			return err
 		}
@@ -1369,17 +1440,7 @@ func (c *retrieverRESTClient) UpdateCorpus(ctx context.Context, req *generativel
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateCorpus")
 		if err != nil {
 			return err
 		}
@@ -1429,15 +1490,8 @@ func (c *retrieverRESTClient) DeleteCorpus(ctx context.Context, req *generativel
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteCorpus")
+		return err
 	}, opts...)
 }
 
@@ -1486,21 +1540,10 @@ func (c *retrieverRESTClient) ListCorpora(ctx context.Context, req *generativela
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListCorpora")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1569,17 +1612,7 @@ func (c *retrieverRESTClient) QueryCorpus(ctx context.Context, req *generativela
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "QueryCorpus")
 		if err != nil {
 			return err
 		}
@@ -1636,17 +1669,7 @@ func (c *retrieverRESTClient) CreateDocument(ctx context.Context, req *generativ
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDocument")
 		if err != nil {
 			return err
 		}
@@ -1696,17 +1719,7 @@ func (c *retrieverRESTClient) GetDocument(ctx context.Context, req *generativela
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDocument")
 		if err != nil {
 			return err
 		}
@@ -1770,17 +1783,7 @@ func (c *retrieverRESTClient) UpdateDocument(ctx context.Context, req *generativ
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateDocument")
 		if err != nil {
 			return err
 		}
@@ -1830,15 +1833,8 @@ func (c *retrieverRESTClient) DeleteDocument(ctx context.Context, req *generativ
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDocument")
+		return err
 	}, opts...)
 }
 
@@ -1887,21 +1883,10 @@ func (c *retrieverRESTClient) ListDocuments(ctx context.Context, req *generative
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDocuments")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1970,17 +1955,7 @@ func (c *retrieverRESTClient) QueryDocument(ctx context.Context, req *generative
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "QueryDocument")
 		if err != nil {
 			return err
 		}
@@ -2037,17 +2012,7 @@ func (c *retrieverRESTClient) CreateChunk(ctx context.Context, req *generativela
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateChunk")
 		if err != nil {
 			return err
 		}
@@ -2103,17 +2068,7 @@ func (c *retrieverRESTClient) BatchCreateChunks(ctx context.Context, req *genera
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchCreateChunks")
 		if err != nil {
 			return err
 		}
@@ -2163,17 +2118,7 @@ func (c *retrieverRESTClient) GetChunk(ctx context.Context, req *generativelangu
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetChunk")
 		if err != nil {
 			return err
 		}
@@ -2237,17 +2182,7 @@ func (c *retrieverRESTClient) UpdateChunk(ctx context.Context, req *generativela
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateChunk")
 		if err != nil {
 			return err
 		}
@@ -2303,17 +2238,7 @@ func (c *retrieverRESTClient) BatchUpdateChunks(ctx context.Context, req *genera
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchUpdateChunks")
 		if err != nil {
 			return err
 		}
@@ -2360,15 +2285,8 @@ func (c *retrieverRESTClient) DeleteChunk(ctx context.Context, req *generativela
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteChunk")
+		return err
 	}, opts...)
 }
 
@@ -2408,15 +2326,8 @@ func (c *retrieverRESTClient) BatchDeleteChunks(ctx context.Context, req *genera
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchDeleteChunks")
+		return err
 	}, opts...)
 }
 
@@ -2465,21 +2376,10 @@ func (c *retrieverRESTClient) ListChunks(ctx context.Context, req *generativelan
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListChunks")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2491,6 +2391,137 @@ func (c *retrieverRESTClient) ListChunks(ctx context.Context, req *generativelan
 		}
 		it.Response = resp
 		return resp.GetChunks(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *retrieverRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *retrieverRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1beta/%v/operations", req.GetName())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
 	}
 
 	fetch := func(pageSize int, pageToken string) (string, error) {

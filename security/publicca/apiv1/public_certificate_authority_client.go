@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	publiccapb "cloud.google.com/go/security/publicca/apiv1/publiccapb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -160,6 +159,8 @@ type publicCertificateAuthorityGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewPublicCertificateAuthorityClient creates a new public certificate authority service client based on gRPC.
@@ -188,6 +189,7 @@ func NewPublicCertificateAuthorityClient(ctx context.Context, opts ...option.Cli
 		connPool:                         connPool,
 		publicCertificateAuthorityClient: publiccapb.NewPublicCertificateAuthorityServiceClient(connPool),
 		CallOptions:                      &client.CallOptions,
+		logger:                           internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -234,6 +236,8 @@ type publicCertificateAuthorityRESTClient struct {
 
 	// Points back to the CallOptions field of the containing PublicCertificateAuthorityClient
 	CallOptions **PublicCertificateAuthorityCallOptions
+
+	logger *slog.Logger
 }
 
 // NewPublicCertificateAuthorityRESTClient creates a new public certificate authority service rest client.
@@ -253,6 +257,7 @@ func NewPublicCertificateAuthorityRESTClient(ctx context.Context, opts ...option
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -305,7 +310,7 @@ func (c *publicCertificateAuthorityGRPCClient) CreateExternalAccountKey(ctx cont
 	var resp *publiccapb.ExternalAccountKey
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.publicCertificateAuthorityClient.CreateExternalAccountKey(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.publicCertificateAuthorityClient.CreateExternalAccountKey, req, settings.GRPC, c.logger, "CreateExternalAccountKey")
 		return err
 	}, opts...)
 	if err != nil {
@@ -356,17 +361,7 @@ func (c *publicCertificateAuthorityRESTClient) CreateExternalAccountKey(ctx cont
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateExternalAccountKey")
 		if err != nil {
 			return err
 		}

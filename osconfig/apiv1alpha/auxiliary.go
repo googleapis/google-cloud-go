@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -227,7 +227,7 @@ type InstanceOSPoliciesComplianceIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*osconfigpb.InstanceOSPoliciesCompliance, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *InstanceOSPoliciesComplianceIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -274,7 +274,7 @@ type InventoryIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*osconfigpb.Inventory, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *InventoryIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -321,7 +321,7 @@ type OSPolicyAssignmentIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*osconfigpb.OSPolicyAssignment, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *OSPolicyAssignmentIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -368,7 +368,7 @@ type OSPolicyAssignmentReportIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*osconfigpb.OSPolicyAssignmentReport, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *OSPolicyAssignmentReportIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -415,7 +415,7 @@ type VulnerabilityReportIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*osconfigpb.VulnerabilityReport, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *VulnerabilityReportIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

@@ -1,6 +1,52 @@
 # Changes
 
 
+## [1.26.1](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.26.0...deploy/v1.26.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **deploy:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+## [1.26.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.25.1...deploy/v1.26.0) (2024-12-04)
+
+
+### Features
+
+* **deploy:** A new field `dns_endpoint` is added to message `.google.cloud.deploy.v1.GkeCluster` ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+
+
+### Documentation
+
+* **deploy:** A comment for field `internal_ip` in message `.google.cloud.deploy.v1.GkeCluster` is changed ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+* **deploy:** A comment for field `requested_cancellation` in message `.google.cloud.deploy.v1.OperationMetadata` is changed ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+* **deploy:** A comment for field `skaffold_version` in message `.google.cloud.deploy.v1.Release` is changed ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+* **deploy:** Documentation improvements. `skaffold_version` field is no longer explicitly marked as optional ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+
+## [1.25.1](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.25.0...deploy/v1.25.1) (2024-11-21)
+
+
+### Documentation
+
+* **deploy:** Minor documentation updates ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+
+## [1.25.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.24.0...deploy/v1.25.0) (2024-11-14)
+
+
+### Features
+
+* **deploy:** A new field `timed_promote_release_condition` is added to message `.google.cloud.deploy.v1.AutomationRuleCondition` ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **deploy:** A new field `timed_promote_release_operation` is added to message `.google.cloud.deploy.v1.AutomationRun` ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **deploy:** A new field `timed_promote_release_rule` is added to message `.google.cloud.deploy.v1.AutomationRule` ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **deploy:** A new message `TimedPromoteReleaseCondition` is added ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **deploy:** A new message `TimedPromoteReleaseOperation` is added ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **deploy:** A new message `TimedPromoteReleaseRule` is added ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+
+
+### Documentation
+
+* **deploy:** A comment for field `target_id` in message `.google.cloud.deploy.v1.AutomationRun` is changed ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+
 ## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.23.1...deploy/v1.24.0) (2024-11-06)
 
 

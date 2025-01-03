@@ -1,5 +1,29 @@
 # Changes
 
+## [1.42.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.42.0...container/v1.42.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **container:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+## [1.42.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.41.0...container/v1.42.0) (2024-11-14)
+
+
+### Features
+
+* **container:** Add desired_enterprise_config,desired_node_pool_auto_config_linux_node_config to ClusterUpdate. ([f072178](https://github.com/googleapis/google-cloud-go/commit/f072178f6fd90537a5782395f4229e4c8b30af7e))
+* **container:** Add desired_tier to EnterpriseConfig. ([f072178](https://github.com/googleapis/google-cloud-go/commit/f072178f6fd90537a5782395f4229e4c8b30af7e))
+* **container:** Add DesiredEnterpriseConfig proto message ([f072178](https://github.com/googleapis/google-cloud-go/commit/f072178f6fd90537a5782395f4229e4c8b30af7e))
+* **container:** Add LinuxNodeConfig in NodePoolAutoConfig ([f072178](https://github.com/googleapis/google-cloud-go/commit/f072178f6fd90537a5782395f4229e4c8b30af7e))
+* **container:** Add LocalSsdEncryptionMode in NodeConfig ([#11103](https://github.com/googleapis/google-cloud-go/issues/11103)) ([f072178](https://github.com/googleapis/google-cloud-go/commit/f072178f6fd90537a5782395f4229e4c8b30af7e))
+* **container:** Add UpgradeInfoEvent proto message ([f072178](https://github.com/googleapis/google-cloud-go/commit/f072178f6fd90537a5782395f4229e4c8b30af7e))
+
+
+### Documentation
+
+* **container:** Minor documentation updates ([f072178](https://github.com/googleapis/google-cloud-go/commit/f072178f6fd90537a5782395f4229e4c8b30af7e))
+
 ## [1.41.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.40.0...container/v1.41.0) (2024-10-23)
 
 

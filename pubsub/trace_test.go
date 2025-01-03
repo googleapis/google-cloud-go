@@ -93,7 +93,7 @@ func TestTrace_PublishSpan(t *testing.T) {
 			Attributes: []attribute.KeyValue{
 				semconv.CodeFunction("Publish"),
 				semconv.MessagingDestinationName(topicID),
-				attribute.String(orderingAttribute, m.OrderingKey),
+				semconv.MessagingGCPPubsubMessageOrderingKey(m.OrderingKey),
 				// Hardcoded since the fake server always returns m0 first.
 				semconv.MessagingMessageIDKey.String("m0"),
 				semconv.MessagingSystemGCPPubsub,
@@ -371,8 +371,8 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 				// Hardcoded since the fake server always returns m0 first.
 				semconv.MessagingMessageIDKey.String("m0"),
 				// The fake server uses message ID as ackID, this is not the case with live service.
-				attribute.String(ackIDAttribute, "m0"),
-				attribute.String(orderingAttribute, m.OrderingKey),
+				semconv.MessagingGCPPubsubMessageAckID("m0"),
+				semconv.MessagingGCPPubsubMessageOrderingKey(m.OrderingKey),
 				attribute.String(resultAttribute, resultAcked),
 				semconv.MessagingSystemGCPPubsub,
 				semconv.MessagingMessageBodySize(len(m.Data)),
@@ -566,7 +566,7 @@ func getSpans(e *tracetest.InMemoryExporter) tracetest.SpanStubs {
 
 	spans := e.GetSpans()
 
-	// Implement sortable struct, replace with slices.SortFunc once go 1.21 is min version
+	// Implement sortable struct, replace with slices.SortFunc once go 1.22 is min version
 	slices.SortFunc(spans, func(a, b tracetest.SpanStub) int {
 		return sortSpanStub(a, b)
 	})
@@ -604,7 +604,7 @@ func getPublishSpanStubsWithError(topicID string, m *Message, err error) tracete
 				semconv.MessagingDestinationName(topicID),
 				semconv.MessagingMessageIDKey.String(""),
 				semconv.MessagingMessageBodySize(len(m.Data)),
-				attribute.String(orderingAttribute, m.OrderingKey),
+				semconv.MessagingGCPPubsubMessageOrderingKey(m.OrderingKey),
 				semconv.MessagingSystemGCPPubsub,
 				attribute.String(gcpProjectIDAttribute, projName),
 			},
