@@ -21,15 +21,14 @@
 package talentpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	latlng "google.golang.org/genproto/googleapis/type/latlng"
 	timeofday "google.golang.org/genproto/googleapis/type/timeofday"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -575,7 +574,8 @@ type LocationFilter struct {
 	// [PostingRegion.TELECOMMUTE][google.cloud.talent.v4.PostingRegion.TELECOMMUTE]
 	// and have additional [Job.addresses][google.cloud.talent.v4.Job.addresses]
 	// may still be matched based on other location filters using
-	// [address][google.cloud.talent.v4.LocationFilter.address] or [latlng][].
+	// [address][google.cloud.talent.v4.LocationFilter.address] or
+	// [lat_lng][google.cloud.talent.v4.LocationFilter.lat_lng].
 	//
 	// This filter can be used by itself to search exclusively for telecommuting
 	// jobs, or it can be combined with another location
