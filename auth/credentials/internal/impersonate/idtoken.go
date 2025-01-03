@@ -15,15 +15,18 @@
 package impersonate
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"strings"
 	"time"
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
+	"github.com/googleapis/gax-go/v2/internallog"
 )
 
 var (
@@ -33,7 +36,10 @@ var (
 
 // IDTokenOptions provides configuration for [IDTokenOptions.Token].
 type IDTokenOptions struct {
-	Client              *http.Client
+	// Client is required.
+	Client *http.Client
+	// Logger is required.
+	Logger              *slog.Logger
 	UniverseDomain      auth.CredentialsPropertyProvider
 	ServiceAccountEmail string
 	GenerateIDTokenRequest
@@ -62,15 +68,27 @@ func (o IDTokenOptions) Token(ctx context.Context) (*auth.Token, error) {
 
 	bodyBytes, err := json.Marshal(o.GenerateIDTokenRequest)
 	if err != nil {
-		return nil, fmt.Errorf("credentials: unable to marshal request: %w", err)
+		return nil, fmt.Errorf("impersonate: unable to marshal request: %w", err)
 	}
-	body, err := internal.DoJSONRequest(ctx, o.Client, url, "POST", bodyBytes, "credentials")
+
+	req, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewReader(bodyBytes))
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("impersonate: unable to create request: %w", err)
 	}
+	req.Header.Set("Content-Type", "application/json")
+	o.Logger.DebugContext(ctx, "impersonated idtoken request", "request", internallog.HTTPRequest(req, bodyBytes))
+	resp, body, err := internal.DoRequest(o.Client, req)
+	if err != nil {
+		return nil, fmt.Errorf("impersonate: unable to generate ID token: %w", err)
+	}
+	o.Logger.DebugContext(ctx, "impersonated idtoken response", "response", internallog.HTTPResponse(resp, body))
+	if c := resp.StatusCode; c < 200 || c > 299 {
+		return nil, fmt.Errorf("impersonate: status code %d: %s", c, body)
+	}
+
 	var tokenResp GenerateIDTokenResponse
 	if err := json.Unmarshal(body, &tokenResp); err != nil {
-		return nil, fmt.Errorf("credentials: unable to parse response: %w", err)
+		return nil, fmt.Errorf("impersonate: unable to parse response: %w", err)
 	}
 	return &auth.Token{
 		Value: tokenResp.Token,

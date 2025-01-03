@@ -58,6 +58,7 @@ func credsFromDefault(creds *auth.Credentials, opts *Options) (*auth.Credentials
 				universeDomain: auth.CredentialsPropertyFunc(creds.UniverseDomain),
 				signerEmail:    f.ClientEmail,
 				audience:       opts.Audience,
+				logger:         internallog.New(opts.Logger),
 			}
 		}
 		tp = auth.NewCachedTokenProvider(tp, nil)

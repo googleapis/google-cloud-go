@@ -20,6 +20,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -249,6 +250,7 @@ func TestNewCredentials_ImpersonatedAndExternal(t *testing.T) {
 					"foo": "bar",
 				},
 				Client: client,
+				Logger: slog.New(slog.NewTextHandler(io.Discard, nil)),
 			}
 			if tt.file != "" {
 				opts.CredentialsFile = tt.file

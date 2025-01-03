@@ -16,6 +16,7 @@ package idtoken
 
 import (
 	"context"
+	"log/slog"
 	"net/http"
 
 	"cloud.google.com/go/auth"
@@ -36,6 +37,7 @@ type iamIDTokenProvider struct {
 	// signerEmail is the service account client email used to form the IAM generateIdToken endpoint.
 	signerEmail string
 	audience    string
+	logger      *slog.Logger
 }
 
 func (i iamIDTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
@@ -43,6 +45,7 @@ func (i iamIDTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 		Client:              i.client,
 		UniverseDomain:      i.universeDomain,
 		ServiceAccountEmail: i.signerEmail,
+		Logger:              i.logger,
 		GenerateIDTokenRequest: impersonate.GenerateIDTokenRequest{
 			Audience:     i.audience,
 			IncludeEmail: true,

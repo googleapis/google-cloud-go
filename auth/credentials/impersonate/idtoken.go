@@ -17,7 +17,6 @@ package impersonate
 import (
 	"context"
 	"errors"
-	"fmt"
 	"log/slog"
 	"net/http"
 
@@ -111,7 +110,7 @@ func NewIDTokenCredentials(opts *IDTokenOptions) (*auth.Credentials, error) {
 		client, err = httptransport.NewClient(&httptransport.Options{
 			Credentials:    creds,
 			UniverseDomain: opts.UniverseDomain,
-			Logger:      logger,
+			Logger:         logger,
 		})
 		if err != nil {
 			return nil, err
@@ -126,7 +125,7 @@ func NewIDTokenCredentials(opts *IDTokenOptions) (*auth.Credentials, error) {
 		targetPrincipal:        opts.TargetPrincipal,
 		audience:               opts.Audience,
 		includeEmail:           opts.IncludeEmail,
-		logger:          logger,
+		logger:                 logger,
 	}
 	for _, v := range opts.Delegates {
 		itp.delegates = append(itp.delegates, internal.FormatIAMServiceAccountResource(v))
@@ -141,7 +140,7 @@ func NewIDTokenCredentials(opts *IDTokenOptions) (*auth.Credentials, error) {
 type impersonatedIDTokenProvider struct {
 	client                 *http.Client
 	universeDomainProvider auth.CredentialsPropertyProvider
-	logger *slog.Logger
+	logger                 *slog.Logger
 
 	targetPrincipal string
 	audience        string
@@ -152,6 +151,7 @@ type impersonatedIDTokenProvider struct {
 func (i impersonatedIDTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 	opts := impersonate.IDTokenOptions{
 		Client:              i.client,
+		Logger:              i.logger,
 		UniverseDomain:      i.universeDomainProvider,
 		ServiceAccountEmail: i.targetPrincipal,
 		GenerateIDTokenRequest: impersonate.GenerateIDTokenRequest{
@@ -160,34 +160,5 @@ func (i impersonatedIDTokenProvider) Token(ctx context.Context) (*auth.Token, er
 			Delegates:    i.delegates,
 		},
 	}
-	bodyBytes, err := json.Marshal(genIDTokenReq)
-	if err != nil {
-		return nil, fmt.Errorf("impersonate: unable to marshal request: %w", err)
-	}
-
-	url := fmt.Sprintf("%s/v1/%s:generateIdToken", iamCredentialsEndpoint, formatIAMServiceAccountName(i.targetPrincipal))
-	req, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewReader(bodyBytes))
-	if err != nil {
-		return nil, fmt.Errorf("impersonate: unable to create request: %w", err)
-	}
-	req.Header.Set("Content-Type", "application/json")
-	i.logger.DebugContext(ctx, "impersonated idtoken request", "request", internallog.HTTPRequest(req, bodyBytes))
-	resp, body, err := internal.DoRequest(i.client, req)
-	if err != nil {
-		return nil, fmt.Errorf("impersonate: unable to generate ID token: %w", err)
-	}
-	i.logger.DebugContext(ctx, "impersonated idtoken response", "response", internallog.HTTPResponse(resp, body))
-	if c := resp.StatusCode; c < 200 || c > 299 {
-		return nil, fmt.Errorf("impersonate: status code %d: %s", c, body)
-	}
-
-	var generateIDTokenResp generateIDTokenResponse
-	if err := json.Unmarshal(body, &generateIDTokenResp); err != nil {
-		return nil, fmt.Errorf("impersonate: unable to parse response: %w", err)
-	}
-	return &auth.Token{
-		Value: generateIDTokenResp.Token,
-		// Generated ID tokens are good for one hour.
-		Expiry: time.Now().Add(1 * time.Hour),
-	}, nil
+	return opts.Token(ctx)
 }
