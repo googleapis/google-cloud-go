@@ -801,6 +801,10 @@ func (c *httpStorageClient) ComposeObject(ctx context.Context, req *composeObjec
 	retryCall := func(ctx context.Context) error { obj, err = call.Context(ctx).Do(); return err }
 
 	if err := run(ctx, retryCall, s.retry, s.idempotent); err != nil {
+		var e *googleapi.Error
+		if errors.As(err, &e) && e.Code == http.StatusNotFound {
+			return nil, fmt.Errorf("%w: %w", ErrObjectNotExist, err)
+		}
 		return nil, err
 	}
 	return newObject(obj), nil
@@ -848,6 +852,10 @@ func (c *httpStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 	retryCall := func(ctx context.Context) error { res, err = call.Context(ctx).Do(); return err }
 
 	if err := run(ctx, retryCall, s.retry, s.idempotent); err != nil {
+		var e *googleapi.Error
+		if errors.As(err, &e) && e.Code == http.StatusNotFound {
+			return nil, fmt.Errorf("%w: %w", ErrObjectNotExist, err)
+		}
 		return nil, err
 	}
 
