@@ -529,7 +529,6 @@ func TestIterator_StreamingPullExactlyOnce(t *testing.T) {
 	srv.Publish(fullyQualifiedTopicName, []byte("msg"), nil)
 
 	iter := newMessageIterator(client.subc, fullyQualifiedSubName, &pullOptions{
-		synchronous:            false,
 		maxOutstandingMessages: 100,
 		maxOutstandingBytes:    1e6,
 		maxPrefetch:            30,

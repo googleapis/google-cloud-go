@@ -98,14 +98,12 @@ func TestIntegration_PublishReceive(t *testing.T) {
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
 
-	for _, sync := range []bool{false, true} {
-		for _, maxMsgs := range []int{0, 3, -1} { // MaxOutstandingMessages = default, 3, unlimited
-			testPublishAndReceive(t, client, maxMsgs, sync, false, 10, 0)
-		}
-
-		// Tests for large messages (larger than the 4MB gRPC limit).
-		testPublishAndReceive(t, client, 0, sync, false, 1, 5*1024*1024)
+	for _, maxMsgs := range []int{0, 3, -1} { // MaxOutstandingMessages = default, 3, unlimited
+		testPublishAndReceive(t, client, maxMsgs, false, 10, 0)
 	}
+
+	// Tests for large messages (larger than the 4MB gRPC limit).
+	testPublishAndReceive(t, client, 0, false, 1, 5*1024*1024)
 }
 
 // withGoogleClientInfo sets the name and version of the application in
@@ -126,8 +124,8 @@ func withGoogleClientInfo(ctx context.Context) context.Context {
 	return metadata.NewOutgoingContext(ctx, metadata.Join(allMDs...))
 }
 
-func testPublishAndReceive(t *testing.T, client *Client, maxMsgs int, synchronous, exactlyOnceDelivery bool, numMsgs, extraBytes int) {
-	t.Run(fmt.Sprintf("maxMsgs:%d,synchronous:%t,exactlyOnceDelivery:%t,numMsgs:%d", maxMsgs, synchronous, exactlyOnceDelivery, numMsgs), func(t *testing.T) {
+func testPublishAndReceive(t *testing.T, client *Client, maxMsgs int, exactlyOnceDelivery bool, numMsgs, extraBytes int) {
+	t.Run(fmt.Sprintf("maxMsgs:%d,exactlyOnceDelivery:%t,numMsgs:%d", maxMsgs, exactlyOnceDelivery, numMsgs), func(t *testing.T) {
 		t.Parallel()
 		testutil.Retry(t, 3, 10*time.Second, func(r *testutil.R) {
 			ctx := context.Background()
@@ -193,7 +191,6 @@ func testPublishAndReceive(t *testing.T, client *Client, maxMsgs int, synchronou
 			}
 
 			sub.ReceiveSettings.MaxOutstandingMessages = maxMsgs
-			sub.ReceiveSettings.Synchronous = synchronous
 
 			// Use a timeout to ensure that Pull does not block indefinitely if there are
 			// unexpectedly few messages available.
@@ -219,8 +216,8 @@ func testPublishAndReceive(t *testing.T, client *Client, maxMsgs int, synchronou
 				got[md.ID] = md
 			}
 			if !testutil.Equal(got, want) {
-				r.Errorf("MaxOutstandingMessages=%d, Synchronous=%t, messages got: %+v, messages want: %+v",
-					maxMsgs, synchronous, got, want)
+				r.Errorf("MaxOutstandingMessages=%d, messages got: %+v, messages want: %+v",
+					maxMsgs, got, want)
 			}
 		})
 	})
@@ -601,7 +598,6 @@ func TestIntegration_OrderedKeys_ResumePublish(t *testing.T) {
 		t.Fatalf("topic %v should exist, but it doesn't", topic)
 	}
 
-	topic.PublishSettings.BufferedByteLimit = 100
 	topic.EnableMessageOrdering = true
 
 	orderingKey := "some-ordering-key2"
@@ -792,7 +788,7 @@ func TestIntegration_ExactlyOnceDelivery_PublishReceive(t *testing.T) {
 	client := integrationTestClient(ctx, t)
 
 	for _, maxMsgs := range []int{0, 3, -1} { // MaxOutstandingMessages = default, 3, unlimited
-		testPublishAndReceive(t, client, maxMsgs, false, true, 10, 0)
+		testPublishAndReceive(t, client, maxMsgs, true, 10, 0)
 	}
 }
 

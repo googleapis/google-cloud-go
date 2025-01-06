@@ -66,13 +66,13 @@ func getSubIDs(subs []*Subscription) []string {
 }
 
 func TestReceive(t *testing.T) {
-	testReceive(t, true, false)
-	testReceive(t, false, false)
-	testReceive(t, false, true)
+	testReceive(t, false)
+	testReceive(t, false)
+	testReceive(t, true)
 }
 
-func testReceive(t *testing.T, synchronous, exactlyOnceDelivery bool) {
-	t.Run(fmt.Sprintf("synchronous:%t,exactlyOnceDelivery:%t", synchronous, exactlyOnceDelivery), func(t *testing.T) {
+func testReceive(t *testing.T, exactlyOnceDelivery bool) {
+	t.Run(fmt.Sprintf("exactlyOnceDelivery:%t", exactlyOnceDelivery), func(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 		defer cancel()
 		client, srv := newFake(t)
@@ -90,7 +90,6 @@ func testReceive(t *testing.T, synchronous, exactlyOnceDelivery bool) {
 		for i := 0; i < 256; i++ {
 			srv.Publish(topic.name, []byte{byte(i)}, nil)
 		}
-		sub.ReceiveSettings.Synchronous = synchronous
 		msgs, err := pullN(ctx, sub, 256, 0, func(_ context.Context, m *Message) {
 			if exactlyOnceDelivery {
 				ar := m.AckWithResult()
@@ -115,7 +114,7 @@ func testReceive(t *testing.T, synchronous, exactlyOnceDelivery bool) {
 		}
 		for i, saw := range seen {
 			if !saw {
-				t.Errorf("sync=%t, eod=%t: did not see message #%d", synchronous, exactlyOnceDelivery, i)
+				t.Errorf("eod=%t: did not see message #%d", exactlyOnceDelivery, i)
 			}
 		}
 	})
