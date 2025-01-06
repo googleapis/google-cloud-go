@@ -27,13 +27,11 @@ import (
 	"cloud.google.com/go/pubsub/internal/distribution"
 	vkit "cloud.google.com/go/pubsub/v2/apiv1"
 	pb "cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
-	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/apierror"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/propagation"
 	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 	"go.opentelemetry.io/otel/trace"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/encoding/protowire"
@@ -384,27 +382,6 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 		return v, nil
 	}
 	return nil, nil
-}
-
-// Get messages using the Pull RPC.
-// This may block indefinitely. It may also return zero messages, after some time waiting.
-func (it *messageIterator) pullMessages(maxToPull int32) ([]*pb.ReceivedMessage, error) {
-	// Use it.ctx as the RPC context, so that if the iterator is stopped, the call
-	// will return immediately.
-	res, err := it.subc.Pull(it.ctx, &pb.PullRequest{
-		Subscription: it.subName,
-		MaxMessages:  maxToPull,
-	}, gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(maxSendRecvBytes)))
-	switch {
-	case errors.Is(err, context.Canceled):
-		return nil, nil
-	case status.Code(err) == codes.Canceled:
-		return nil, nil
-	case err != nil:
-		return nil, err
-	default:
-		return res.ReceivedMessages, nil
-	}
 }
 
 func (it *messageIterator) recvMessages() ([]*pb.ReceivedMessage, error) {

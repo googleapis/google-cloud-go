@@ -49,13 +49,6 @@ const (
 	MaxPublishRequestBytes = 1e7
 )
 
-const (
-	// TODO: math.MaxInt was added in Go 1.17. We should use that once 1.17
-	// becomes the minimum supported version of Go.
-	intSize = 32 << (^uint(0) >> 63)
-	maxInt  = 1<<(intSize-1) - 1
-)
-
 // ErrOversizedMessage indicates that a message's size exceeds MaxPublishRequestBytes.
 var ErrOversizedMessage = bundler.ErrOversizedItem
 
