@@ -3,13 +3,13 @@ module cloud.google.com/go/vertexai
 go 1.22
 
 require (
-	cloud.google.com/go v0.116.0
+	cloud.google.com/go v0.118.0
 	cloud.google.com/go/aiplatform v1.69.0
 	github.com/google/go-cmp v0.6.0
 	golang.org/x/text v0.21.0
 	google.golang.org/api v0.214.0
 	google.golang.org/genproto v0.0.0-20241118233622-e639e219e697
-	google.golang.org/protobuf v1.35.2
+	google.golang.org/protobuf v1.36.1
 )
 
 require (
