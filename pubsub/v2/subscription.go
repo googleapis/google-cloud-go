@@ -278,7 +278,11 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 		// The iterator does not use the context passed to Receive. If it did,
 		// canceling that context would immediately stop the iterator without
 		// waiting for unacked messages.
+<<<<<<< HEAD
 		iter := newMessageIterator(s.c.SubscriptionAdminClient, s.name, po)
+=======
+		iter := newMessageIterator(s.c.subc, s.name, po)
+>>>>>>> af6fd376e1 (revert changes to filenames)
 		iter.enableTracing = s.enableTracing
 
 		// We cannot use errgroup from Receive here. Receive might already be

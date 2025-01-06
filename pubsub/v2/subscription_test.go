@@ -407,5 +407,5 @@ func mustCreateSubConfig(t *testing.T, c *Client, pbs *pb.Subscription) *Subscri
 	if _, err := c.SubscriptionAdminClient.CreateSubscription(ctx, pbs); err != nil {
 		t.Fatal(err)
 	}
-	return c.Subscriber(pbs.Name)
+	return c.Subscription(pbs.Name)
 }

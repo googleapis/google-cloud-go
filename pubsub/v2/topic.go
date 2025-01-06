@@ -52,10 +52,10 @@ const (
 // ErrOversizedMessage indicates that a message's size exceeds MaxPublishRequestBytes.
 var ErrOversizedMessage = bundler.ErrOversizedItem
 
-// Topic is a reference to a PubSub topic.
+// Publisher is a reference to a PubSub publisher, associated with a single topic.
 //
-// The methods of Topic are safe for use by multiple goroutines.
-type Topic struct {
+// The methods of Publisher are safe for use by multiple goroutines.
+type Publisher struct {
 	c *Client
 	// The fully qualified identifier for the topic, in the format "projects/<projid>/topics/<name>"
 	name string
@@ -139,7 +139,7 @@ var DefaultPublishSettings = PublishSettings{
 // associated with it. Clean them up by calling Topic.Stop.
 //
 // Avoid creating many Topic instances if you use them to publish.
-func (c *Client) Topic(id string) *Topic {
+func (c *Client) Topic(id string) *Publisher {
 	return c.TopicInProject(id, c.projectID)
 }
 
@@ -152,7 +152,7 @@ func (c *Client) Topic(id string) *Topic {
 //
 // It is best practice to reuse the Publisher when publishing to the same topic.
 // Avoid creating many Publisher instances if you use them to publish.
-func (c *Client) Publisher(topicNameOrID string) *Topic {
+func (c *Client) Publisher(topicNameOrID string) *Publisher {
 	s := strings.Split(topicNameOrID, "/")
 	// The string looks like a properly formatted topic name, use it directly.
 	if len(s) == 4 {
@@ -168,12 +168,12 @@ func (c *Client) Publisher(topicNameOrID string) *Topic {
 // associated with it. Clean them up by calling Topic.Stop.
 //
 // Avoid creating many Topic instances if you use them to publish.
-func (c *Client) TopicInProject(id, projectID string) *Topic {
+func (c *Client) TopicInProject(id, projectID string) *Publisher {
 	return newTopic(c, fmt.Sprintf("projects/%s/topics/%s", projectID, id))
 }
 
-func newTopic(c *Client, name string) *Topic {
-	return &Topic{
+func newTopic(c *Client, name string) *Publisher {
+	return &Publisher{
 		c:               c,
 		name:            name,
 		PublishSettings: DefaultPublishSettings,
@@ -182,7 +182,7 @@ func newTopic(c *Client, name string) *Topic {
 }
 
 // ID returns the unique identifier of the topic within its project.
-func (t *Topic) ID() string {
+func (t *Publisher) ID() string {
 	slash := strings.LastIndex(t.name, "/")
 	if slash == -1 {
 		// name is not a fully-qualified name.
@@ -192,7 +192,7 @@ func (t *Topic) ID() string {
 }
 
 // String returns the printable globally unique name for the topic.
-func (t *Topic) String() string {
+func (t *Publisher) String() string {
 	return t.name
 }
 
@@ -221,7 +221,7 @@ var errTopicOrderingNotEnabled = errors.New("Topic.EnableMessageOrdering=false, 
 // Publish creates goroutines for batching and sending messages. These goroutines
 // need to be stopped by calling t.Stop(). Once stopped, future calls to Publish
 // will immediately return a PublishResult with an error.
-func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
+func (t *Publisher) Publish(ctx context.Context, msg *Message) *PublishResult {
 	var createSpan trace.Span
 	if t.enableTracing {
 		opts := getPublishSpanAttributes(t.c.projectID, t.ID(), msg)
@@ -303,7 +303,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 // Stop sends all remaining published messages and stop goroutines created for handling
 // publishing. Returns once all outstanding messages have been sent or have
 // failed to be sent.
-func (t *Topic) Stop() {
+func (t *Publisher) Stop() {
 	t.mu.Lock()
 	noop := t.stopped || t.scheduler == nil
 	t.stopped = true
@@ -315,7 +315,7 @@ func (t *Topic) Stop() {
 }
 
 // Flush blocks until all remaining messages are sent.
-func (t *Topic) Flush() {
+func (t *Publisher) Flush() {
 	if t.stopped || t.scheduler == nil {
 		return
 	}
@@ -332,7 +332,7 @@ type bundledMessage struct {
 	batcherSpan trace.Span
 }
 
-func (t *Topic) initBundler() {
+func (t *Publisher) initBundler() {
 	t.mu.RLock()
 	noop := t.stopped || t.scheduler != nil
 	t.mu.RUnlock()
@@ -414,7 +414,7 @@ func (e ErrPublishingPaused) Error() string {
 
 }
 
-func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage) {
+func (t *Publisher) publishMessageBundle(ctx context.Context, bms []*bundledMessage) {
 	ctx, err := tag.New(ctx, tag.Insert(keyStatus, "OK"), tag.Upsert(keyTopic, t.name))
 	if err != nil {
 		log.Printf("pubsub: cannot create context with tag in publishMessageBundle: %v", err)
@@ -529,7 +529,7 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 // Publishing using an ordering key might be paused if an error is
 // encountered while publishing, to prevent messages from being published
 // out of order.
-func (t *Topic) ResumePublish(orderingKey string) {
+func (t *Publisher) ResumePublish(orderingKey string) {
 	t.mu.RLock()
 	noop := t.scheduler == nil
 	t.mu.RUnlock()
