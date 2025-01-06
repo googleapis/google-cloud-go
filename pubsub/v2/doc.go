@@ -26,7 +26,7 @@ connection pooling and similar aspects of this package.
 
 # Publishing
 
-Pub/Sub messages are published to topics. A [Topic] may be created
+Pub/Sub messages are published to topics. A [Publisher] may be created
 using [Client.CreateTopic] like so:
 
 	topic, err := pubsubClient.CreateTopic(context.Background(), "topic-name")
@@ -35,21 +35,21 @@ Messages may then be published to a [Topic]:
 
 	res := topic.Publish(ctx, &pubsub.Message{Data: []byte("payload")})
 
-[Topic.Publish] queues the message for publishing and returns immediately. When enough
+[Publisher.Publish] queues the message for publishing and returns immediately. When enough
 messages have accumulated, or enough time has elapsed, the batch of messages is
 sent to the Pub/Sub service.
 
-[Topic.Publish] returns a [PublishResult], which behaves like a future: its Get method
+[Publisher.Publish] returns a [PublishResult], which behaves like a future: its Get method
 blocks until the message has been sent to the service.
 
-The first time you call [Topic.Publish] on a [Topic], goroutines are started in the
+The first time you call [Publisher.Publish] on a [Publisher], goroutines are started in the
 background. To clean up these goroutines, call [Topic.Stop]:
 
 	topic.Stop()
 
 # Receiving
 
-To receive messages published to a [Topic], clients create a [Subscription]
+To receive messages published to a [Publisher], clients create a [Subscription]
 for the topic. There may be more than one subscription per topic ; each message
 that is published to the topic will be delivered to all associated subscriptions.
 
