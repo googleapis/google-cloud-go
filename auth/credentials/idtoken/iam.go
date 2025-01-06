@@ -41,7 +41,7 @@ type iamIDTokenProvider struct {
 }
 
 func (i iamIDTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
-	opts := impersonate.IDTokenOptions{
+	opts := impersonate.IDTokenIAMOptions{
 		Client:              i.client,
 		UniverseDomain:      i.universeDomain,
 		ServiceAccountEmail: i.signerEmail,

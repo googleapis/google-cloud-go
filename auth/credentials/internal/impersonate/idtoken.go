@@ -34,8 +34,8 @@ var (
 	iamCredentialsUniverseDomainEndpoint = "https://iamcredentials.UNIVERSE_DOMAIN"
 )
 
-// IDTokenOptions provides configuration for [IDTokenOptions.Token].
-type IDTokenOptions struct {
+// IDTokenIAMOptions provides configuration for [IDTokenIAMOptions.Token].
+type IDTokenIAMOptions struct {
 	// Client is required.
 	Client *http.Client
 	// Logger is required.
@@ -57,8 +57,8 @@ type GenerateIDTokenResponse struct {
 	Token string `json:"token"`
 }
 
-// Token call IAM generateIdToken with the configuration provided in [IDTokenOptions].
-func (o IDTokenOptions) Token(ctx context.Context) (*auth.Token, error) {
+// Token call IAM generateIdToken with the configuration provided in [IDTokenIAMOptions].
+func (o IDTokenIAMOptions) Token(ctx context.Context) (*auth.Token, error) {
 	universeDomain, err := o.UniverseDomain.GetProperty(ctx)
 	if err != nil {
 		return nil, err

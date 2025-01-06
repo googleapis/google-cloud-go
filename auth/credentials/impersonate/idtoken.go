@@ -149,7 +149,7 @@ type impersonatedIDTokenProvider struct {
 }
 
 func (i impersonatedIDTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
-	opts := impersonate.IDTokenOptions{
+	opts := impersonate.IDTokenIAMOptions{
 		Client:              i.client,
 		Logger:              i.logger,
 		UniverseDomain:      i.universeDomainProvider,
