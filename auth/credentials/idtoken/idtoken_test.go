@@ -134,7 +134,7 @@ func TestNewCredentials_ServiceAccount_UniverseDomain(t *testing.T) {
 			if r.Audience != wantAudience {
 				t.Errorf("got %q, want %q", r.Audience, wantAudience)
 			}
-			if !r.IncludeEmail {
+			if r.IncludeEmail {
 				t.Errorf("got %t, want %t", r.IncludeEmail, false)
 			}
 			if !strings.Contains(req.URL.Path, wantClientEmail) {

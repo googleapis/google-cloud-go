@@ -15,7 +15,6 @@
 package impersonate
 
 import (
-	"context"
 	"errors"
 	"log/slog"
 	"net/http"
@@ -118,47 +117,24 @@ func NewIDTokenCredentials(opts *IDTokenOptions) (*auth.Credentials, error) {
 	}
 
 	universeDomainProvider := resolveUniverseDomainProvider(creds)
-	itp := impersonatedIDTokenProvider{
-		client: client,
-		// Pass the credentials universe domain provider to configure the endpoint.
-		universeDomainProvider: universeDomainProvider,
-		targetPrincipal:        opts.TargetPrincipal,
-		audience:               opts.Audience,
-		includeEmail:           opts.IncludeEmail,
-		logger:                 logger,
-	}
+	delegates := make([]string, len(opts.Delegates))
 	for _, v := range opts.Delegates {
-		itp.delegates = append(itp.delegates, internal.FormatIAMServiceAccountResource(v))
+		delegates = append(delegates, internal.FormatIAMServiceAccountResource(v))
 	}
-
-	return auth.NewCredentials(&auth.CredentialsOptions{
-		TokenProvider:          auth.NewCachedTokenProvider(itp, nil),
-		UniverseDomainProvider: universeDomainProvider,
-	}), nil
-}
-
-type impersonatedIDTokenProvider struct {
-	client                 *http.Client
-	universeDomainProvider auth.CredentialsPropertyProvider
-	logger                 *slog.Logger
-
-	targetPrincipal string
-	audience        string
-	includeEmail    bool
-	delegates       []string
-}
-
-func (i impersonatedIDTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
-	opts := impersonate.IDTokenIAMOptions{
-		Client:              i.client,
-		Logger:              i.logger,
-		UniverseDomain:      i.universeDomainProvider,
-		ServiceAccountEmail: i.targetPrincipal,
+	iamOpts := impersonate.IDTokenIAMOptions{
+		Client: client,
+		Logger: logger,
+		// Pass the credentials universe domain provider to configure the endpoint.
+		UniverseDomain:      universeDomainProvider,
+		ServiceAccountEmail: opts.TargetPrincipal,
 		GenerateIDTokenRequest: impersonate.GenerateIDTokenRequest{
-			Audience:     i.audience,
-			IncludeEmail: i.includeEmail,
-			Delegates:    i.delegates,
+			Audience:     opts.Audience,
+			IncludeEmail: opts.IncludeEmail,
+			Delegates:    delegates,
 		},
 	}
-	return opts.Token(ctx)
+	return auth.NewCredentials(&auth.CredentialsOptions{
+		TokenProvider:          auth.NewCachedTokenProvider(iamOpts, nil),
+		UniverseDomainProvider: universeDomainProvider,
+	}), nil
 }

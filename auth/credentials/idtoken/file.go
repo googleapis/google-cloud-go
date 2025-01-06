@@ -22,6 +22,7 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/credentials/impersonate"
+	intimpersonate "cloud.google.com/go/auth/credentials/internal/impersonate"
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/credsfile"
 	"github.com/googleapis/gax-go/v2/internallog"
@@ -52,13 +53,15 @@ func credsFromDefault(creds *auth.Credentials, opts *Options) (*auth.Credentials
 			}
 		} else {
 			// In case of non-GDU universe domain, use IAM.
-			tp = iamIDTokenProvider{
-				client: opts.client(),
+			tp = intimpersonate.IDTokenIAMOptions{
+				Client: opts.client(),
+				Logger: internallog.New(opts.Logger),
 				// Pass the credentials universe domain to configure the endpoint.
-				universeDomain: auth.CredentialsPropertyFunc(creds.UniverseDomain),
-				signerEmail:    f.ClientEmail,
-				audience:       opts.Audience,
-				logger:         internallog.New(opts.Logger),
+				UniverseDomain:      auth.CredentialsPropertyFunc(creds.UniverseDomain),
+				ServiceAccountEmail: f.ClientEmail,
+				GenerateIDTokenRequest: intimpersonate.GenerateIDTokenRequest{
+					Audience: opts.Audience,
+				},
 			}
 		}
 		tp = auth.NewCachedTokenProvider(tp, nil)
