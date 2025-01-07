@@ -21,11 +21,8 @@
 package parallelstorepb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -35,6 +32,8 @@ import (
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -928,7 +927,7 @@ type OperationMetadata struct {
 	StatusMessage string `protobuf:"bytes,5,opt,name=status_message,json=statusMessage,proto3" json:"status_message,omitempty"`
 	// Output only. Identifies whether the user has requested cancellation
 	// of the operation. Operations that have been cancelled successfully
-	// have [Operation.error][] value with a
+	// have [Operation.error][google.longrunning.Operation.error] value with a
 	// [google.rpc.Status.code][google.rpc.Status.code] of 1, corresponding to
 	// `Code.CANCELLED`.
 	RequestedCancellation bool `protobuf:"varint,6,opt,name=requested_cancellation,json=requestedCancellation,proto3" json:"requested_cancellation,omitempty"`
@@ -1563,7 +1562,7 @@ type ImportDataMetadata struct {
 	StatusMessage string `protobuf:"bytes,6,opt,name=status_message,json=statusMessage,proto3" json:"status_message,omitempty"`
 	// Output only. Identifies whether the user has requested cancellation
 	// of the operation. Operations that have successfully been cancelled
-	// have [Operation.error][] value with a
+	// have [Operation.error][google.longrunning.Operation.error] value with a
 	// [google.rpc.Status.code][google.rpc.Status.code] of 1, corresponding to
 	// `Code.CANCELLED`.
 	RequestedCancellation bool `protobuf:"varint,7,opt,name=requested_cancellation,json=requestedCancellation,proto3" json:"requested_cancellation,omitempty"`
@@ -1714,7 +1713,7 @@ type ExportDataMetadata struct {
 	StatusMessage string `protobuf:"bytes,6,opt,name=status_message,json=statusMessage,proto3" json:"status_message,omitempty"`
 	// Output only. Identifies whether the user has requested cancellation
 	// of the operation. Operations that have successfully been cancelled
-	// have [Operation.error][] value with a
+	// have [Operation.error][google.longrunning.Operation.error] value with a
 	// [google.rpc.Status.code][google.rpc.Status.code] of 1, corresponding to
 	// `Code.CANCELLED`.
 	RequestedCancellation bool `protobuf:"varint,7,opt,name=requested_cancellation,json=requestedCancellation,proto3" json:"requested_cancellation,omitempty"`
