@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/monitoring/apiv3/v2",
-    "version": "1.22.0",
+    "version": "1.22.1",
     "language": "GO",
     "apis": [
       {
@@ -1387,7 +1387,7 @@
     {
       "regionTag": "monitoring_v3_generated_QueryService_QueryTimeSeries_sync",
       "title": "monitoring QueryTimeSeries Sample",
-      "description": "QueryTimeSeries queries time series using Monitoring Query Language.",
+      "description": "QueryTimeSeries queries time series by using Monitoring Query Language (MQL). We recommend\nusing PromQL instead of MQL. For more information about the status of MQL,\nsee the [MQL deprecation\nnotice](https: //cloud.google.com/stackdriver/docs/deprecations/mql).\n\n\nDeprecated: QueryTimeSeries may be removed in a future version.",
       "file": "QueryClient/QueryTimeSeries/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2258,7 +2258,7 @@
     {
       "regionTag": "monitoring_v3_generated_UptimeCheckService_ListUptimeCheckIps_sync",
       "title": "monitoring ListUptimeCheckIps Sample",
-      "description": "ListUptimeCheckIps returns the list of IP addresses that checkers run from",
+      "description": "ListUptimeCheckIps returns the list of IP addresses that checkers run from.",
       "file": "UptimeCheckClient/ListUptimeCheckIps/main.go",
       "language": "GO",
       "clientMethod": {

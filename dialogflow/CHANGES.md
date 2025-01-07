@@ -1,5 +1,32 @@
 # Changes
 
+## [1.64.1](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.64.0...dialogflow/v1.64.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **dialogflow:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+## [1.64.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.63.0...dialogflow/v1.64.0) (2024-12-18)
+
+
+### Features
+
+* **dialogflow:** Add new fields for delivering intermediate transcriptions through PubSub ([4254053](https://github.com/googleapis/google-cloud-go/commit/42540530e44e5f331e66e0777c4aabf449f5fd90))
+* **dialogflow:** Add new fields for delivering intermediate transcriptions through PubSub ([4254053](https://github.com/googleapis/google-cloud-go/commit/42540530e44e5f331e66e0777c4aabf449f5fd90))
+
+## [1.63.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.62.0...dialogflow/v1.63.0) (2024-12-11)
+
+
+### Features
+
+* **dialogflow:** Properly mark TrainingPhrase name field output-only ([57fdec7](https://github.com/googleapis/google-cloud-go/commit/57fdec7ce3792753c419298b9e526c4889f4101d))
+
+
+### Documentation
+
+* **dialogflow:** Fixed the references to proto method / fields ([57fdec7](https://github.com/googleapis/google-cloud-go/commit/57fdec7ce3792753c419298b9e526c4889f4101d))
+
 ## [1.62.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.61.0...dialogflow/v1.62.0) (2024-12-04)
 
 

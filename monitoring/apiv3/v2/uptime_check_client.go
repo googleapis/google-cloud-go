@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -207,7 +207,7 @@ func (c *UptimeCheckClient) DeleteUptimeCheckConfig(ctx context.Context, req *mo
 	return c.internalClient.DeleteUptimeCheckConfig(ctx, req, opts...)
 }
 
-// ListUptimeCheckIps returns the list of IP addresses that checkers run from
+// ListUptimeCheckIps returns the list of IP addresses that checkers run from.
 func (c *UptimeCheckClient) ListUptimeCheckIps(ctx context.Context, req *monitoringpb.ListUptimeCheckIpsRequest, opts ...gax.CallOption) *UptimeCheckIpIterator {
 	return c.internalClient.ListUptimeCheckIps(ctx, req, opts...)
 }

@@ -18,6 +18,8 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
+	"io"
+	"log/slog"
 	"net/http"
 	"testing"
 
@@ -38,7 +40,7 @@ const (
 )
 
 var (
-	validConfigResp = func() (string, error) {
+	validConfigResp = func(*slog.Logger) (string, error) {
 		validConfig := mtlsConfig{
 			S2A: &s2aAddresses{
 				PlaintextAddress: testS2AAddr,
@@ -52,7 +54,7 @@ var (
 		return string(configStr), nil
 	}
 
-	validConfigRespMTLSS2A = func() (string, error) {
+	validConfigRespMTLSS2A = func(*slog.Logger) (string, error) {
 		validConfig := mtlsConfig{
 			S2A: &s2aAddresses{
 				PlaintextAddress: "",
@@ -66,7 +68,7 @@ var (
 		return string(configStr), nil
 	}
 
-	validConfigRespDualS2A = func() (string, error) {
+	validConfigRespDualS2A = func(*slog.Logger) (string, error) {
 		validConfig := mtlsConfig{
 			S2A: &s2aAddresses{
 				PlaintextAddress: testS2AAddr,
@@ -80,15 +82,15 @@ var (
 		return string(configStr), nil
 	}
 
-	errorConfigResp = func() (string, error) {
+	errorConfigResp = func(*slog.Logger) (string, error) {
 		return "", fmt.Errorf("error getting config")
 	}
 
-	invalidConfigResp = func() (string, error) {
+	invalidConfigResp = func(*slog.Logger) (string, error) {
 		return "{}", nil
 	}
 
-	invalidJSONResp = func() (string, error) {
+	invalidJSONResp = func(*slog.Logger) (string, error) {
 		return "test", nil
 	}
 	fakeClientCertSource = func(info *tls.CertificateRequestInfo) (*tls.Certificate, error) { return nil, nil }
@@ -284,7 +286,7 @@ func TestGetGRPCTransportConfigAndEndpoint_S2A(t *testing.T) {
 	testCases := []struct {
 		name      string
 		opts      *Options
-		s2ARespFn func() (string, error)
+		s2ARespFn func(*slog.Logger) (string, error)
 		want      string
 	}{
 		{
@@ -405,7 +407,7 @@ func TestGetGRPCTransportConfigAndEndpoint_S2A(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			httpGetMetadataMTLSConfig = tc.s2ARespFn
-			mtlsConfiguration, _ = queryConfig()
+			mtlsConfiguration, _ = queryConfig(slog.New(slog.NewTextHandler(io.Discard, nil)))
 			if tc.opts.ClientCertProvider != nil {
 				t.Setenv(googleAPIUseCertSource, "true")
 			} else {
@@ -423,7 +425,7 @@ func TestGetHTTPTransportConfig_S2A(t *testing.T) {
 	testCases := []struct {
 		name        string
 		opts        *Options
-		s2ARespFn   func() (string, error)
+		s2ARespFn   func(*slog.Logger) (string, error)
 		want        string
 		isDialFnNil bool
 	}{
@@ -514,7 +516,7 @@ func TestGetHTTPTransportConfig_S2A(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			httpGetMetadataMTLSConfig = tc.s2ARespFn
-			mtlsConfiguration, _ = queryConfig()
+			mtlsConfiguration, _ = queryConfig(slog.New(slog.NewTextHandler(io.Discard, nil)))
 			if tc.opts.ClientCertProvider != nil {
 				t.Setenv(googleAPIUseCertSource, "true")
 			} else {

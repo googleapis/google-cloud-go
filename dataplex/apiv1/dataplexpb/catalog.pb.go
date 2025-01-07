@@ -2619,7 +2619,7 @@ type UpdateEntryRequest struct {
 	// specified path. For example, to attach an aspect to a field that is
 	// specified by the `schema` aspect, the path should have the format
 	// `Schema.<field_name>`.
-	// * `<aspect_type_reference>*` - matches aspects of the given type for all
+	// * `<aspect_type_reference>@*` - matches aspects of the given type for all
 	// paths.
 	// * `*@path` - matches aspects of all types on the given path.
 	//
@@ -3075,6 +3075,8 @@ type SearchEntriesRequest struct {
 	// following form: `projects/{project}/locations/{location}`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. The query against which entries in scope should be matched.
+	// The query syntax is defined in [Search syntax for Dataplex
+	// Catalog](https://cloud.google.com/dataplex/docs/search-syntax).
 	Query string `protobuf:"bytes,2,opt,name=query,proto3" json:"query,omitempty"`
 	// Optional. Number of results in the search page. If <=0, then defaults
 	// to 10. Max limit for page_size is 1000. Throws an invalid argument for
@@ -3084,6 +3086,10 @@ type SearchEntriesRequest struct {
 	// this to retrieve the subsequent page.
 	PageToken string `protobuf:"bytes,4,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	// Optional. Specifies the ordering of results.
+	// Supported values are:
+	// * `relevance` (default)
+	// * `last_modified_timestamp`
+	// * `last_modified_timestamp asc`
 	OrderBy string `protobuf:"bytes,5,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 	// Optional. The scope under which the search should be operating. It must
 	// either be `organizations/<org_id>` or `projects/<project_ref>`. If it is
@@ -3349,9 +3355,9 @@ type ImportItem struct {
 	// aspect type and are attached directly to the entry.
 	// * `{aspect_type_reference}@{path}`: matches aspects that belong to the
 	// specified aspect type and path.
-	// * `{aspect_type_reference}@*`: matches aspects that belong to the specified
-	// aspect type for all paths.
-	//
+	// * `<aspect_type_reference>@*` : matches aspects of the given type for all
+	// paths.
+	// * `*@path` : matches aspects of all types on the given path.
 	// Replace `{aspect_type_reference}` with a reference to the aspect type, in
 	// the format
 	// `{project_id_or_number}.{location_id}.{aspect_type_id}`.

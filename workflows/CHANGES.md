@@ -1,5 +1,12 @@
 # Changes
 
+## [1.13.3](https://github.com/googleapis/google-cloud-go/compare/workflows/v1.13.2...workflows/v1.13.3) (2025-01-02)
+
+
+### Bug Fixes
+
+* **workflows:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [1.13.2](https://github.com/googleapis/google-cloud-go/compare/workflows/v1.13.1...workflows/v1.13.2) (2024-10-23)
 
 

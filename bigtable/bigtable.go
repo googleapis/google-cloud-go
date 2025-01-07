@@ -126,10 +126,10 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	o = append(o, internaloption.AllowNonDefaultServiceAccount(true))
 	o = append(o, opts...)
 
+	// TODO(b/372244283): Remove after b/358175516 has been fixed
 	asyncRefreshMetricAttrs := metricsTracerFactory.clientAttributes
 	asyncRefreshMetricAttrs = append(asyncRefreshMetricAttrs,
 		attribute.String(metricLabelKeyTag, "async_refresh_dry_run"),
-
 		// Table, cluster and zone are unknown at this point
 		// Use default values
 		attribute.String(monitoredResLabelKeyTable, defaultTable),
@@ -140,9 +140,10 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		metricsTracerFactory.debugTags.Add(context.Background(), 1,
 			metric.WithAttributes(asyncRefreshMetricAttrs...))
 	}))
+
 	connPool, err := gtransport.DialPool(ctx, o...)
 	if err != nil {
-		return nil, fmt.Errorf("dialing: %w", err)
+		return nil, err
 	}
 
 	return &Client{
@@ -1604,7 +1605,7 @@ func gaxInvokeWithRecorder(ctx context.Context, mt *builtinMetricsTracer, method
 	f func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error, opts ...gax.CallOption) error {
 	attemptHeaderMD := metadata.New(nil)
 	attempTrailerMD := metadata.New(nil)
-	mt.method = method
+	mt.setMethod(method)
 
 	var callWrapper func(context.Context, gax.CallSettings) error
 	if !mt.builtInEnabled {

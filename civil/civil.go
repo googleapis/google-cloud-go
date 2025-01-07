@@ -86,6 +86,18 @@ func (d Date) AddDays(n int) Date {
 	return DateOf(d.In(time.UTC).AddDate(0, 0, n))
 }
 
+// AddMonths returns the date that is n months in the future.
+// n can also be negative to go into the past.
+func (d Date) AddMonths(n int) Date {
+	return DateOf(d.In(time.UTC).AddDate(0, n, 0))
+}
+
+// AddYears returns the date that is n years in the future.
+// n can also be negative to go into the past.
+func (d Date) AddYears(n int) Date {
+	return DateOf(d.In(time.UTC).AddDate(n, 0, 0))
+}
+
 // DaysSince returns the signed number of days between the date and s, not including the end day.
 // This is the inverse operation to AddDays.
 func (d Date) DaysSince(s Date) (days int) {
@@ -125,6 +137,11 @@ func (d Date) Compare(d2 Date) int {
 // IsZero reports whether date fields are set to their default value.
 func (d Date) IsZero() bool {
 	return (d.Year == 0) && (int(d.Month) == 0) && (d.Day == 0)
+}
+
+// Weekday returns the day of the week for the date.
+func (d Date) Weekday() time.Weekday {
+	return d.In(time.UTC).Weekday()
 }
 
 // MarshalText implements the encoding.TextMarshaler interface.
