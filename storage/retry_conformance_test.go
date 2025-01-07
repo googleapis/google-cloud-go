@@ -627,9 +627,9 @@ var methods = map[string][]retryFunc{
 	},
 	"storage.appendable.upload": {
 		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
-			rapidBucketName := fmt.Sprintf("%s-rapid", bucketIDs.New())
-			b := c.Bucket(rapidBucketName)
-			if err := b.Create(ctx, projectID, &BucketAttrs{StorageClass: "RAPID"}); err != nil {
+			bucketName := fmt.Sprintf("%s-appendable", bucketIDs.New())
+			b := c.Bucket(bucketName)
+			if err := b.Create(ctx, projectID, nil); err != nil {
 				return err
 			}
 			defer b.Delete(ctx)

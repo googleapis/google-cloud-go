@@ -965,8 +965,7 @@ func TestOpenAppendableWriterEmulated(t *testing.T) {
 	transportClientTest(skipHTTP("appends only supported via gRPC"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		// Populate test data.
 		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
-			Name:         bucket,
-			StorageClass: "RAPID", // Only RAPID class for appends
+			Name: bucket,
 		}, nil)
 		if err != nil {
 			t.Fatalf("client.CreateBucket: %v", err)
@@ -1009,8 +1008,7 @@ func TestOpenAppendableWriterMultipleFlushesEmulated(t *testing.T) {
 	transportClientTest(skipHTTP("appends only supported via gRPC"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		// Populate test data.
 		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
-			Name:         bucket,
-			StorageClass: "RAPID", // Only RAPID class for appends
+			Name: bucket,
 		}, nil)
 		if err != nil {
 			t.Fatalf("client.CreateBucket: %v", err)

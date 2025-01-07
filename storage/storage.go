@@ -964,8 +964,8 @@ type ObjectHandle struct {
 // using a read handle returned in the response, at lower latency.
 // This produces the exact same object and generation and does not check if
 // the generation is still the newest one.
-// Note that this will be a noop unless it's set on a gRPC client using a Rapid
-// Storage bucket.
+// Note that this will be a noop unless it's set on a gRPC client on buckets with
+// appendable write access.
 // Also note that you can get a ReadHandle only via calling reader.ReadHandle() on a
 // previous read of the same object.
 func (o *ObjectHandle) ReadHandle(r ReadHandle) *ObjectHandle {

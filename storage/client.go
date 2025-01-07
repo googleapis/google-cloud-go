@@ -109,7 +109,6 @@ type storageClient interface {
 	CreateNotification(ctx context.Context, bucket string, n *Notification, opts ...storageOption) (*Notification, error)
 	DeleteNotification(ctx context.Context, bucket string, id string, opts ...storageOption) error
 
-	// Rapid storage methods.
 	NewMultiRangeDownloader(ctx context.Context, params *newMultiRangeDownloaderParams, opts ...storageOption) (*MultiRangeDownloader, error)
 }
 
