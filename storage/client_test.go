@@ -935,32 +935,6 @@ func TestOpenWriterEmulated(t *testing.T) {
 	})
 }
 
-func TestOpenAppendableWriterUnsupportedEmulated(t *testing.T) {
-	transportClientTest(skipHTTP("appends only supported via gRPC"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
-		// Populate test data.
-		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
-			Name:         bucket,
-			StorageClass: "STANDARD", // STANDARD does not support appends
-		}, nil)
-		if err != nil {
-			t.Fatalf("client.CreateBucket: %v", err)
-		}
-		prefix := time.Now().Nanosecond()
-		objName := fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond())
-
-		vc := &Client{tc: client}
-		w := vc.Bucket(bucket).Object(objName).NewWriter(ctx)
-		w.Append = true
-		_, err = w.Write(randomBytesToWrite)
-		if err != nil {
-			return // An error here passes the test. If no error, try to close.
-		}
-		if err := w.Close(); err == nil {
-			t.Fatal("writing test data: got success; want error")
-		}
-	})
-}
-
 func TestOpenAppendableWriterEmulated(t *testing.T) {
 	transportClientTest(skipHTTP("appends only supported via gRPC"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		// Populate test data.
