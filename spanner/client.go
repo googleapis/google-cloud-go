@@ -18,6 +18,8 @@ package spanner
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"fmt"
 	"io"
 	"log"
@@ -45,6 +47,7 @@ import (
 	"google.golang.org/grpc/encoding/gzip"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/peer"
+	"google.golang.org/grpc/security/advancedtls"
 	"google.golang.org/grpc/status"
 
 	vkit "cloud.google.com/go/spanner/apiv1"
@@ -1397,6 +1400,66 @@ func (c *Client) BatchWriteWithOptions(ctx context.Context, mgs []*MutationGroup
 		release:            release,
 		cancel:             cancel,
 	}
+}
+
+// CertPool creates a x509.CertPool from the given CA certificate file.
+func CertPool(caCertFile string) (*x509.CertPool, error) {
+	ca, err := os.ReadFile(caCertFile)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read CA certificate file: %w", err)
+	}
+	capool := x509.NewCertPool()
+	if !capool.AppendCertsFromPEM(ca) {
+		return nil, fmt.Errorf("failed to append the CA certificate to CA pool")
+	}
+	return capool, nil
+}
+
+// NewMtlsConn creates a new gRPC client connection using mutual TLS (mTLS).
+//
+// Parameters:
+// - endpoint: external spanner endpoint in the format host:port.
+// - caCertificate: Path to the CA certificate for server validation.
+// - clientCertificate: Path to the client certificate for client authentication.
+// - clientCertificateKey: Path to the private key associated with the client certificate.
+// - The returned gRPC connection can be passed to `option.WithGRPCConn(grpcConn)` to create a client using mTLS.
+func NewMtlsConn(endpoint, caCertificate, clientCertificate, clientCertificateKey string) (*grpc.ClientConn, error) {
+	cert, err := tls.LoadX509KeyPair(clientCertificate, clientCertificateKey)
+	if err != nil {
+		return nil, fmt.Errorf("failed to load client cert and key: %w", err)
+	}
+	clientCerts := []tls.Certificate{cert}
+
+	// Create a TLSConfig with the client certificate source.
+	capool, err := CertPool(caCertificate)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to load root CA: %w", err)
+	}
+
+	options := &advancedtls.Options{
+		VerificationType: advancedtls.CertAndHostVerification,
+		IdentityOptions: advancedtls.IdentityCertificateOptions{
+			Certificates: clientCerts, // mTLS client certificates.
+		},
+		RootOptions: advancedtls.RootCertificateOptions{
+			RootCertificates: capool, // The CA certificate.
+		},
+	}
+
+	creds, err := advancedtls.NewClientCreds(options)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to create mTLS credentials: %w", err)
+	}
+
+	grpcConn, err := grpc.NewClient(endpoint, grpc.WithTransportCredentials(creds))
+
+	if err != nil {
+		return nil, err
+	}
+
+	return grpcConn, nil
 }
 
 // logf logs the given message to the given logger, or the standard logger if
