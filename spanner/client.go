@@ -1432,7 +1432,6 @@ func NewMtlsConn(endpoint, caCertificate, clientCertificate, clientCertificateKe
 
 	// Create a TLSConfig with the client certificate source.
 	capool, err := CertPool(caCertificate)
-
 	if err != nil {
 		return nil, fmt.Errorf("failed to load root CA: %w", err)
 	}
@@ -1448,17 +1447,13 @@ func NewMtlsConn(endpoint, caCertificate, clientCertificate, clientCertificateKe
 	}
 
 	creds, err := advancedtls.NewClientCreds(options)
-
 	if err != nil {
 		return nil, fmt.Errorf("failed to create mTLS credentials: %w", err)
 	}
-
 	grpcConn, err := grpc.NewClient(endpoint, grpc.WithTransportCredentials(creds))
-
 	if err != nil {
 		return nil, err
 	}
-
 	return grpcConn, nil
 }
 
