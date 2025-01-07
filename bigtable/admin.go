@@ -2195,15 +2195,11 @@ func WithHotBackup() BackupOption {
 // CreateBackup creates a new backup in the specified cluster from the
 // specified source table with the user-provided expire time.
 func (ac *AdminClient) CreateBackup(ctx context.Context, table, cluster, backup string, expireTime time.Time) error {
-	return ac.createBackup(ctx, table, cluster, backup, WithExpiry(expireTime))
+	return ac.CreateBackupWithOptions(ctx, table, cluster, backup, WithExpiry(expireTime))
 }
 
 // CreateBackupWithOptions is similar to CreateBackup but lets the user specify additional options.
 func (ac *AdminClient) CreateBackupWithOptions(ctx context.Context, table, cluster, backup string, opts ...BackupOption) error {
-	return ac.createBackup(ctx, table, cluster, backup, opts...)
-}
-
-func (ac *AdminClient) createBackup(ctx context.Context, table, cluster, backup string, opts ...BackupOption) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
 

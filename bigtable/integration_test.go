@@ -3983,9 +3983,9 @@ func TestIntegration_AdminUpdateBackupHotToStandardTime(t *testing.T) {
 				t.Fatalf("BackupInfo: %v", err)
 			}
 			gotHtsTime := updatedBackup.HotToStandardTime
-			if (test.wantHtsTime != nil && !test.wantHtsTime.Equal(*gotHtsTime)) ||
-				(test.wantHtsTime == nil && gotHtsTime != nil) ||
-				(test.wantHtsTime != nil && gotHtsTime == nil) {
+			if (test.wantHtsTime == nil && gotHtsTime != nil) ||
+				(test.wantHtsTime != nil && gotHtsTime == nil) ||
+				(test.wantHtsTime != nil && !test.wantHtsTime.Equal(*gotHtsTime)) {
 				t.Errorf("hot_to_standard_time got: %v, want: %v", gotHtsTime, test.wantHtsTime)
 			}
 		})
