@@ -1609,18 +1609,26 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 		wantCRC = checksums.GetCrc32C()
 	}
 
-	// The remaining bytes are the lesser of the requested range and all bytes
-	// after params.offset. Note that if params.length < 0, all remaining bytes
-	// were requested.
-	remain := params.length
-	if remain < 0 || size-params.offset < remain {
-		remain = size - params.offset
+	startOffset := params.offset
+	if params.offset < 0 {
+		startOffset = size + params.offset
 	}
+
+	// The remaining bytes are the lesser of the requested range and all bytes
+	// after params.offset.
+	length := params.length
+	if params.length > size || params.length < 0 {
+		// if params.length < 0 (or larger than object size),
+		// all remaining bytes were requested.
+		length = size
+	}
+	remain := length - startOffset
 
 	metadata := obj.GetMetadata()
 	r = &Reader{
 		Attrs: ReaderObjectAttrs{
 			Size:            size,
+			StartOffset:     startOffset,
 			ContentType:     obj.GetContentType(),
 			ContentEncoding: obj.GetContentEncoding(),
 			CacheControl:    obj.GetCacheControl(),
