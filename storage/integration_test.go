@@ -5458,7 +5458,7 @@ func TestIntegration_ReaderAttrs(t *testing.T) {
 }
 
 func TestIntegration_ReaderAttrs_Metadata(t *testing.T) {
-	multiTransportTest(skipExtraReadAPIs(context.Background(), "metadata on read not supported on JSON api"), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
+	multiTransportTest(skipJSONReads(context.Background(), "metadata on read not supported in JSON"), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		bkt := client.Bucket(bucket)
 
 		const defaultType = "text/plain"
@@ -6921,6 +6921,10 @@ func skipExtraReadAPIs(ctx context.Context, reason string) context.Context {
 
 func skipXMLReads(ctx context.Context, reason string) context.Context {
 	return context.WithValue(ctx, skipTransportTestKey("http"), reason)
+}
+
+func skipJSONReads(ctx context.Context, reason string) context.Context {
+	return context.WithValue(ctx, skipTransportTestKey("jsonReads"), reason)
 }
 
 // Extract the error code if it's a googleapi.Error

@@ -201,6 +201,7 @@ func (c *grpcStorageClient) NewRangeReaderReadObject(ctx context.Context, params
 		wantCRC = checksums.GetCrc32C()
 	}
 
+	metadata := obj.GetMetadata()
 	r = &Reader{
 		Attrs: ReaderObjectAttrs{
 			Size:            size,
@@ -212,6 +213,7 @@ func (c *grpcStorageClient) NewRangeReaderReadObject(ctx context.Context, params
 			Generation:      obj.GetGeneration(),
 			CRC32C:          wantCRC,
 		},
+		objectMetadata: &metadata,
 		reader: &gRPCReadObjectReader{
 			stream: res.stream,
 			reopen: reopen,
