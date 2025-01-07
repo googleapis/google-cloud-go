@@ -795,7 +795,7 @@ func TestOpenReaderEmulated(t *testing.T) {
 	})
 }
 
-func TestOpenReaderEmulated_Metadata(t *testing.T) {
+func TestOpenReaderMetadataEmulated(t *testing.T) {
 	transportClientTest(skipHTTP("metadata on read not supported in testbench rest server"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		// Populate test data.
 		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
