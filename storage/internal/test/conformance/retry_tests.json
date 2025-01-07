@@ -92,7 +92,8 @@
         {"name": "storage.objects.delete",        "resources": ["BUCKET", "OBJECT"]},
         {"name": "storage.objects.patch",         "resources": ["BUCKET", "OBJECT"]},
         {"name": "storage.objects.rewrite",       "resources": ["BUCKET", "OBJECT"]},
-        {"name": "storage.objects.update",        "resources": ["BUCKET", "OBJECT"]}
+        {"name": "storage.objects.update",        "resources": ["BUCKET", "OBJECT"]},
+        {"name": "storage.objects.insert",        "resources": ["BUCKET"]}
       ],
       "preconditionProvided": false,
       "expectSuccess": false
