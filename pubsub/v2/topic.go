@@ -49,13 +49,6 @@ const (
 	MaxPublishRequestBytes = 1e7
 )
 
-const (
-	// TODO: math.MaxInt was added in Go 1.17. We should use that once 1.17
-	// becomes the minimum supported version of Go.
-	intSize = 32 << (^uint(0) >> 63)
-	maxInt  = 1<<(intSize-1) - 1
-)
-
 // ErrOversizedMessage indicates that a message's size exceeds MaxPublishRequestBytes.
 var ErrOversizedMessage = bundler.ErrOversizedItem
 
@@ -108,14 +101,6 @@ type PublishSettings struct {
 	// The maximum time that the client will attempt to publish a bundle of messages.
 	Timeout time.Duration
 
-	// The maximum number of bytes that the Bundler will keep in memory before
-	// returning ErrOverflow. This is now superseded by FlowControlSettings.MaxOutstandingBytes.
-	// If MaxOutstandingBytes is set, that value will override BufferedByteLimit.
-	//
-	// Defaults to DefaultPublishSettings.BufferedByteLimit.
-	// Deprecated: Set `Topic.PublishSettings.FlowControlSettings.MaxOutstandingBytes` instead.
-	BufferedByteLimit int
-
 	// FlowControlSettings defines publisher flow control settings.
 	FlowControlSettings FlowControlSettings
 
@@ -137,10 +122,6 @@ var DefaultPublishSettings = PublishSettings{
 	CountThreshold: 100,
 	ByteThreshold:  1e6,
 	Timeout:        60 * time.Second,
-	// By default, limit the bundler to 10 times the max message size. The number 10 is
-	// chosen as a reasonable amount of messages in the worst case whilst still
-	// capping the number to a low enough value to not OOM users.
-	BufferedByteLimit: 10 * MaxPublishRequestBytes,
 	FlowControlSettings: FlowControlSettings{
 		MaxOutstandingMessages: 1000,
 		MaxOutstandingBytes:    -1,
@@ -391,24 +372,13 @@ func (t *Topic) initBundler() {
 	if t.PublishSettings.FlowControlSettings.MaxOutstandingBytes > 0 {
 		b := t.PublishSettings.FlowControlSettings.MaxOutstandingBytes
 		fcs.MaxOutstandingBytes = b
-
-		// If MaxOutstandingBytes is set, disable BufferedByteLimit by setting it to maxint.
-		// This is because there's no way to set "unlimited" for BufferedByteLimit,
-		// and simply setting it to MaxOutstandingBytes occasionally leads to issues where
-		// BufferedByteLimit is reached even though there are resources available.
-		t.PublishSettings.BufferedByteLimit = maxInt
+		t.scheduler.BufferedByteLimit = b
 	}
 	if t.PublishSettings.FlowControlSettings.MaxOutstandingMessages > 0 {
 		fcs.MaxOutstandingMessages = t.PublishSettings.FlowControlSettings.MaxOutstandingMessages
 	}
 
 	t.flowController = newTopicFlowController(fcs)
-
-	bufferedByteLimit := DefaultPublishSettings.BufferedByteLimit
-	if t.PublishSettings.BufferedByteLimit > 0 {
-		bufferedByteLimit = t.PublishSettings.BufferedByteLimit
-	}
-	t.scheduler.BufferedByteLimit = bufferedByteLimit
 
 	// Calculate the max limit of a single bundle. 5 comes from the number of bytes
 	// needed to be reserved for encoding the PubsubMessage repeated field.

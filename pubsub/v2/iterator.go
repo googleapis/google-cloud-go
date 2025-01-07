@@ -27,13 +27,11 @@ import (
 	"cloud.google.com/go/pubsub/internal/distribution"
 	vkit "cloud.google.com/go/pubsub/v2/apiv1"
 	pb "cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
-	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/apierror"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/propagation"
 	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 	"go.opentelemetry.io/otel/trace"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/encoding/protowire"
@@ -126,16 +124,10 @@ type messageIterator struct {
 // Stop must be called on the messageIterator when it is no longer needed.
 // The iterator always uses the background context for acking messages and extending message deadlines.
 func newMessageIterator(subc *vkit.SubscriptionAdminClient, subName string, po *pullOptions) *messageIterator {
-	var ps *pullStream
-	if !po.synchronous {
-		maxMessages := po.maxOutstandingMessages
-		maxBytes := po.maxOutstandingBytes
-		if po.useLegacyFlowControl {
-			maxMessages = 0
-			maxBytes = 0
-		}
-		ps = newPullStream(context.Background(), subc.StreamingPull, subName, po.clientID, maxMessages, maxBytes, po.maxExtensionPeriod)
-	}
+	maxMessages := po.maxOutstandingMessages
+	maxBytes := po.maxOutstandingBytes
+
+	ps := newPullStream(context.Background(), subc.StreamingPull, subName, po.clientID, maxMessages, maxBytes, po.maxExtensionPeriod)
 	// The period will update each tick based on the distribution of acks. We'll start by arbitrarily sending
 	// the first keepAlive halfway towards the minimum ack deadline.
 	keepAlivePeriod := minDurationPerLeaseExtension / 2
@@ -270,21 +262,17 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 
 	var rmsgs []*pb.ReceivedMessage
 	var err error
-	if it.po.synchronous {
-		rmsgs, err = it.pullMessages(maxToPull)
-	} else {
-		rmsgs, err = it.recvMessages()
-		// If stopping the iterator results in the grpc stream getting shut down and
-		// returning an error here, treat the same as above and return EOF.
-		// If the cancellation comes from the underlying grpc client getting closed,
-		// do propagate the cancellation error.
-		// See https://github.com/googleapis/google-cloud-go/pull/10153#discussion_r1600814775
-		if err != nil && errors.Is(it.ps.ctx.Err(), context.Canceled) {
+	rmsgs, err = it.recvMessages()
+	// If stopping the iterator results in the grpc stream getting shut down and
+	// returning an error here, treat the same as above and return EOF.
+	// If the cancellation comes from the underlying grpc client getting closed,
+	// do propagate the cancellation error.
+	// See https://github.com/googleapis/google-cloud-go/pull/10153#discussion_r1600814775
+	if err != nil {
+		if errors.Is(it.ps.ctx.Err(), context.Canceled) {
 			err = io.EOF
 		}
-	}
-	// Any error here is fatal.
-	if err != nil {
+		// Any error here is fatal.
 		return nil, it.fail(err)
 	}
 
@@ -396,27 +384,6 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 	return nil, nil
 }
 
-// Get messages using the Pull RPC.
-// This may block indefinitely. It may also return zero messages, after some time waiting.
-func (it *messageIterator) pullMessages(maxToPull int32) ([]*pb.ReceivedMessage, error) {
-	// Use it.ctx as the RPC context, so that if the iterator is stopped, the call
-	// will return immediately.
-	res, err := it.subc.Pull(it.ctx, &pb.PullRequest{
-		Subscription: it.subName,
-		MaxMessages:  maxToPull,
-	}, gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(maxSendRecvBytes)))
-	switch {
-	case errors.Is(err, context.Canceled):
-		return nil, nil
-	case status.Code(err) == codes.Canceled:
-		return nil, nil
-	case err != nil:
-		return nil, err
-	default:
-		return res.ReceivedMessages, nil
-	}
-}
-
 func (it *messageIterator) recvMessages() ([]*pb.ReceivedMessage, error) {
 	res, err := it.ps.Recv()
 	if err != nil {
@@ -510,7 +477,7 @@ func (it *messageIterator) sender() {
 		case <-it.pingTicker.C:
 			it.mu.Lock()
 			// Ping only if we are processing messages via streaming.
-			sendPing = !it.po.synchronous
+			sendPing = true
 		case <-it.receiptTicker.C:
 			it.mu.Lock()
 			sendReceipt = (len(it.pendingReceipts) > 0)
