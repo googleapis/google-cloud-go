@@ -49,16 +49,16 @@ background. To clean up these goroutines, call [Topic.Stop]:
 
 # Receiving
 
-To receive messages published to a [Publisher], clients create a [Subscription]
+To receive messages published to a [Publisher], clients create a [Subscriber]
 for the topic. There may be more than one subscription per topic ; each message
 that is published to the topic will be delivered to all associated subscriptions.
 
-A [Subscription] may be created like so:
+A [Subscriber] may be created like so:
 
 	 sub, err := pubsubClient.CreateSubscription(context.Background(), "sub-name",
 		pubsub.SubscriptionConfig{Topic: topic})
 
-Messages are then consumed from a [Subscription] via callback.
+Messages are then consumed from a [Subscriber] via callback.
 
 	 err := sub.Receive(context.Background(), func(ctx context.Context, m *Message) {
 		log.Printf("Got message: %s", m.Data)
@@ -69,11 +69,11 @@ Messages are then consumed from a [Subscription] via callback.
 	 }
 
 The callback is invoked concurrently by multiple goroutines, maximizing
-throughput. To terminate a call to [Subscription.Receive], cancel its context.
+throughput. To terminate a call to [Subscriber.Receive], cancel its context.
 
 Once client code has processed the [Message], it must call Message.Ack or
 Message.Nack; otherwise the Message will eventually be redelivered. Ack/Nack
-MUST be called within the [Subscription.Receive] handler function, and not from a goroutine.
+MUST be called within the [Subscriber.Receive] handler function, and not from a goroutine.
 Otherwise, flow control (e.g. ReceiveSettings.MaxOutstandingMessages) will
 not be respected, and messages can get orphaned when cancelling Receive.
 

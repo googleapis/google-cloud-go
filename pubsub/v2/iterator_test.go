@@ -232,7 +232,7 @@ func setsAreEqual(haystack, needles []int32) bool {
 
 // startReceiving pretends to be a client. It calls s.Receive and acks messages after some random delay. It also
 // looks out for dupes - any message that arrives twice will cause a failure.
-func startReceiving(ctx context.Context, t *testing.T, s *Subscription, recvdWg *sync.WaitGroup, processTimeSecs *int32) {
+func startReceiving(ctx context.Context, t *testing.T, s *Subscriber, recvdWg *sync.WaitGroup, processTimeSecs *int32) {
 	t.Log("Receiving..")
 
 	var recvdMu sync.Mutex
@@ -330,7 +330,7 @@ func toSet(arr []int32) []int32 {
 
 }
 
-func initConn(ctx context.Context, addr string) (*Subscription, *Client, error) {
+func initConn(ctx context.Context, addr string) (*Subscriber, *Client, error) {
 	conn, err := grpc.Dial(addr, grpc.WithInsecure())
 	if err != nil {
 		return nil, nil, err
