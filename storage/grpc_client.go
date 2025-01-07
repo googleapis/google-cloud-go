@@ -1369,6 +1369,8 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 }
 
 func getActiveRange(r *gRPCBidiReader) []rangeSpec {
+	r.mu.Lock()
+	defer r.mu.Unlock()
 	var activeRange []rangeSpec
 	for k, v := range r.mp {
 		activeRange = append(activeRange, rangeSpec{
@@ -1445,7 +1447,14 @@ func (mr *gRPCBidiReader) add(output io.Writer, offset, limit int64, callback fu
 }
 
 func (mr *gRPCBidiReader) wait() {
-	for len(mr.mp) != 0 && mr.activeTask != 0 {
+	mr.mu.Lock()
+	keepWaiting := len(mr.mp) != 0 && mr.activeTask != 0
+	mr.mu.Unlock()
+
+	for keepWaiting {
+		mr.mu.Lock()
+		keepWaiting = len(mr.mp) != 0 && mr.activeTask != 0
+		mr.mu.Unlock()
 	}
 }
 
@@ -1860,7 +1869,6 @@ type gRPCBidiReader struct {
 	settings         *settings
 	readHandle       ReadHandle
 	readID           int64
-	mu               sync.Mutex // protects map from concurrent access.
 	reopen           func() (*bidiReadStreamResponse, context.CancelFunc, error)
 	readSpec         *storagepb.BidiReadObjectSpec
 	data             chan []rangeSpec
@@ -1869,7 +1877,8 @@ type gRPCBidiReader struct {
 	closeManager     chan bool
 	managerRetry     chan bool
 	receiverRetry    chan bool
-	mp               map[int64]rangeSpec
+	mp               map[int64]rangeSpec // always use the mutex when accessing the map
+	mu               sync.Mutex          // protects map from concurrent access.
 	done             bool
 	activeTask       int64
 	objectSize       int64
