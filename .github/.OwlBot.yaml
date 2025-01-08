@@ -78,6 +78,7 @@ deep-remove-regex:
   - /clouddms/apiv1/
   - /cloudprofiler/apiv2/
   - /cloudquotas/apiv1/
+  - /cloudquotas/apiv1beta/
   - /cloudtasks/apiv2/
   - /cloudtasks/apiv2beta2/
   - /cloudtasks/apiv2beta3/
@@ -214,6 +215,7 @@ deep-remove-regex:
   - /internal/generated/snippets/clouddms/apiv1/
   - /internal/generated/snippets/cloudprofiler/apiv2/
   - /internal/generated/snippets/cloudquotas/apiv1/
+  - /internal/generated/snippets/cloudquotas/apiv1beta/
   - /internal/generated/snippets/cloudtasks/apiv2/
   - /internal/generated/snippets/cloudtasks/apiv2beta2/
   - /internal/generated/snippets/cloudtasks/apiv2beta3/
@@ -671,6 +673,8 @@ deep-copy-regex:
   - source: /google/api/apikeys/v2/cloud.google.com/go
     dest: /
   - source: /google/api/cloudquotas/v1/cloud.google.com/go
+    dest: /
+  - source: /google/api/cloudquotas/v1beta/cloud.google.com/go
     dest: /
   - source: /google/appengine/v1/cloud.google.com/go
     dest: /

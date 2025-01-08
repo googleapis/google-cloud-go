@@ -501,6 +501,9 @@ service-configs:
   - input-directory: google/api/cloudquotas/v1
     service-config: cloudquotas_v1.yaml
     import-path: cloud.google.com/go/cloudquotas/apiv1
+  - input-directory: google/api/cloudquotas/v1beta
+    service-config: cloudquotas_v1beta.yaml
+    import-path: cloud.google.com/go/cloudquotas/apiv1beta
   - input-directory: google/cloud/commerce/consumer/procurement/v1
     service-config: cloudcommerceconsumerprocurement_v1.yaml
     import-path: cloud.google.com/go/commerce/consumer/procurement/apiv1
