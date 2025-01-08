@@ -138,6 +138,13 @@ func TestApplyStorageOpt(t *testing.T) {
 				},
 			},
 		},
+		{
+			desc: "use gRPC bidi reads",
+			opts: []option.ClientOption{withGRPCBidiReads()},
+			want: storageConfig{
+				grpcBidiReads: true,
+			},
+		},
 	} {
 		t.Run(test.desc, func(t *testing.T) {
 			var got storageConfig

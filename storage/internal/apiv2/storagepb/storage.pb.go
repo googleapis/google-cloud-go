@@ -108,6 +108,8 @@ const (
 	// The maximum number of days for which a token returned by the
 	// GetListObjectsSplitPoints RPC is valid.
 	ServiceConstants_SPLIT_TOKEN_MAX_VALID_DAYS ServiceConstants_Values = 14
+	// The maximum number of read ranges that can be in flight.
+	ServiceConstants_MAX_READ_RANGES_IN_FLIGHT ServiceConstants_Values = 100
 )
 
 // Enum value maps for ServiceConstants_Values.
@@ -131,6 +133,7 @@ var (
 		128:  "MAX_LABELS_KEY_VALUE_BYTES",
 		1000: "MAX_OBJECT_IDS_PER_DELETE_OBJECTS_REQUEST",
 		14:   "SPLIT_TOKEN_MAX_VALID_DAYS",
+		// Duplicate value: 100: "MAX_READ_RANGES_IN_FLIGHT",
 	}
 	ServiceConstants_Values_value = map[string]int32{
 		"VALUES_UNSPECIFIED":                             0,
@@ -151,6 +154,7 @@ var (
 		"MAX_LABELS_KEY_VALUE_BYTES":                     128,
 		"MAX_OBJECT_IDS_PER_DELETE_OBJECTS_REQUEST":      1000,
 		"SPLIT_TOKEN_MAX_VALID_DAYS":                     14,
+		"MAX_READ_RANGES_IN_FLIGHT":                      100,
 	}
 )
 
@@ -2757,6 +2761,111 @@ type WriteObjectResponse_Resource struct {
 func (*WriteObjectResponse_PersistedSize) isWriteObjectResponse_WriteStatus() {}
 
 func (*WriteObjectResponse_Resource) isWriteObjectResponse_WriteStatus() {}
+
+// Describes an attempt to append to an object, possibly over multiple requests.
+type AppendObjectSpec struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Required. The name of the bucket containing the object to write.
+	Bucket string `protobuf:"bytes,1,opt,name=bucket,proto3" json:"bucket,omitempty"`
+	// Required. The name of the object to open for writing.
+	Object string `protobuf:"bytes,2,opt,name=object,proto3" json:"object,omitempty"`
+	// Required. The generation number of the object to open for writing.
+	Generation int64 `protobuf:"varint,3,opt,name=generation,proto3" json:"generation,omitempty"`
+	// Makes the operation conditional on whether the object's current
+	// metageneration matches the given value.
+	IfMetagenerationMatch *int64 `protobuf:"varint,4,opt,name=if_metageneration_match,json=ifMetagenerationMatch,proto3,oneof" json:"if_metageneration_match,omitempty"`
+	// Makes the operation conditional on whether the object's current
+	// metageneration does not match the given value.
+	IfMetagenerationNotMatch *int64 `protobuf:"varint,5,opt,name=if_metageneration_not_match,json=ifMetagenerationNotMatch,proto3,oneof" json:"if_metageneration_not_match,omitempty"`
+	// An optional routing token that influences request routing for the stream.
+	// Must be provided if a BidiWriteObjectRedirectedError is returned.
+	RoutingToken *string `protobuf:"bytes,6,opt,name=routing_token,json=routingToken,proto3,oneof" json:"routing_token,omitempty"`
+	// An optional write handle returned from a previous BidiWriteObjectResponse
+	// message or a BidiWriteObjectRedirectedError error.
+	WriteHandle *BidiWriteHandle `protobuf:"bytes,7,opt,name=write_handle,json=writeHandle,proto3,oneof" json:"write_handle,omitempty"`
+}
+
+func (x *AppendObjectSpec) Reset() {
+	*x = AppendObjectSpec{}
+	mi := &file_google_storage_v2_storage_proto_msgTypes[29]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AppendObjectSpec) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AppendObjectSpec) ProtoMessage() {}
+
+func (x *AppendObjectSpec) ProtoReflect() protoreflect.Message {
+	mi := &file_google_storage_v2_storage_proto_msgTypes[29]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AppendObjectSpec.ProtoReflect.Descriptor instead.
+func (*AppendObjectSpec) Descriptor() ([]byte, []int) {
+	return file_google_storage_v2_storage_proto_rawDescGZIP(), []int{29}
+}
+
+func (x *AppendObjectSpec) GetBucket() string {
+	if x != nil {
+		return x.Bucket
+	}
+	return ""
+}
+
+func (x *AppendObjectSpec) GetObject() string {
+	if x != nil {
+		return x.Object
+	}
+	return ""
+}
+
+func (x *AppendObjectSpec) GetGeneration() int64 {
+	if x != nil {
+		return x.Generation
+	}
+	return 0
+}
+
+func (x *AppendObjectSpec) GetIfMetagenerationMatch() int64 {
+	if x != nil && x.IfMetagenerationMatch != nil {
+		return *x.IfMetagenerationMatch
+	}
+	return 0
+}
+
+func (x *AppendObjectSpec) GetIfMetagenerationNotMatch() int64 {
+	if x != nil && x.IfMetagenerationNotMatch != nil {
+		return *x.IfMetagenerationNotMatch
+	}
+	return 0
+}
+
+func (x *AppendObjectSpec) GetRoutingToken() string {
+	if x != nil && x.RoutingToken != nil {
+		return *x.RoutingToken
+	}
+	return ""
+}
+
+func (x *AppendObjectSpec) GetWriteHandle() *BidiWriteHandle {
+	if x != nil {
+		return x.WriteHandle
+	}
+	return nil
+}
 
 // Describes an attempt to append to an object, possibly over multiple requests.
 type AppendObjectSpec struct {
