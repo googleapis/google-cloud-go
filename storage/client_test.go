@@ -811,8 +811,8 @@ func TestOpenReaderEmulated(t *testing.T) {
 	})
 }
 
-func TestOpenReaderEmulated_Metadata(t *testing.T) {
-	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+func TestOpenReaderMetadataEmulated(t *testing.T) {
+	transportClientTest(skipHTTP("metadata on read not supported in testbench rest server"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		// Populate test data.
 		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
 			Name: bucket,
@@ -865,8 +865,13 @@ func TestOpenReaderEmulated_Metadata(t *testing.T) {
 			"Custom-Key":     "custom-value",
 			"Some-Other-Key": "some-other-value",
 		}
-		if diff := cmp.Diff(r.Metadata(), expectedMetadata); diff != "" {
-			t.Fatalf("Object Metadata: got(-),want(+):\n%s", diff)
+		gotMetaData := r.Metadata()
+		// Testbench specific metadata is included for testing purposes.
+		for key, expectedValue := range expectedMetadata {
+			actualValue, ok := gotMetaData[key]
+			if !ok || actualValue != expectedValue {
+				t.Fatalf("Object Metadata: Expected key %q with value %q, but got %q", key, expectedValue, actualValue)
+			}
 		}
 
 	})
