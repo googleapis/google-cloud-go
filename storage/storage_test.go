@@ -540,7 +540,7 @@ func TestSignedURL_MissingOptions(t *testing.T) {
 				GoogleAccessID: "access_id",
 				PrivateKey:     pk,
 			},
-			errSignedUrlMethodNotValid.Error(),
+			errSignedURLMethodNotValid.Error(),
 		},
 		{
 			&SignedURLOptions{
@@ -548,7 +548,7 @@ func TestSignedURL_MissingOptions(t *testing.T) {
 				PrivateKey:     pk,
 				Method:         "getMethod", // wrong method name
 			},
-			errSignedUrlMethodNotValid.Error(),
+			errSignedURLMethodNotValid.Error(),
 		},
 		{
 			&SignedURLOptions{
@@ -563,7 +563,7 @@ func TestSignedURL_MissingOptions(t *testing.T) {
 				GoogleAccessID: "access_id",
 				SignBytes:      func(b []byte) ([]byte, error) { return b, nil },
 			},
-			errSignedUrlMethodNotValid.Error(),
+			errSignedURLMethodNotValid.Error(),
 		},
 		{
 			&SignedURLOptions{
@@ -611,7 +611,7 @@ func TestSignedURL_MissingOptions(t *testing.T) {
 				Expires:        expires,
 				Scheme:         SigningSchemeV4,
 			},
-			errSignedUrlMethodNotValid.Error(),
+			errSignedURLMethodNotValid.Error(),
 		},
 		{
 			&SignedURLOptions{
