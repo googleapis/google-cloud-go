@@ -117,10 +117,11 @@ func NewIDTokenCredentials(opts *IDTokenOptions) (*auth.Credentials, error) {
 	}
 
 	universeDomainProvider := resolveUniverseDomainProvider(creds)
-	delegates := make([]string, len(opts.Delegates))
+	var delegates []string
 	for _, v := range opts.Delegates {
 		delegates = append(delegates, internal.FormatIAMServiceAccountResource(v))
 	}
+
 	iamOpts := impersonate.IDTokenIAMOptions{
 		Client: client,
 		Logger: logger,
