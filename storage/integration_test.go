@@ -41,7 +41,6 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"sync"
 	"testing"
 	"time"
 
@@ -64,6 +63,7 @@ import (
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
 	"golang.org/x/oauth2/google"
+	"golang.org/x/sync/errgroup"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	itesting "google.golang.org/api/iterator/testing"
@@ -402,8 +402,9 @@ func TestIntegration_MultiRangeDownloader(t *testing.T) {
 	})
 }
 
-// Add three threads across which we read the entire object. This will bring in some degree to parallelism to mrd.
-func TestIntegration_MRDParallelUse(t *testing.T) {
+// TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader tests for potential deadlocks
+// or race conditions when multiple goroutines call Add() concurrently on the same MRD multiple times.
+func TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader(t *testing.T) {
 	multiTransportTest(skipHTTP("gRPC implementation specific test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		content := make([]byte, 5<<20)
 		rand.New(rand.NewSource(0)).Read(content)
@@ -423,59 +424,47 @@ func TestIntegration_MRDParallelUse(t *testing.T) {
 		if err != nil {
 			t.Fatalf("NewMultiRangeDownloader: %v", err)
 		}
-		res := make([]multiRangeDownloaderOutput, 6)
-		callback := func(x, y int64, err error) {
-			res[0].offset = x
-			res[0].limit = y
-			res[0].err = err
-		}
-		callback1 := func(x, y int64, err error) {
-			res[1].offset = x
-			res[1].limit = y
-			res[1].err = err
-		}
-		callback2 := func(x, y int64, err error) {
-			res[2].offset = x
-			res[2].limit = y
-			res[2].err = err
-		}
-		callback3 := func(x, y int64, err error) {
-			res[3].offset = x
-			res[3].limit = y
-			res[3].err = err
-		}
-		callback4 := func(x, y int64, err error) {
-			res[4].offset = x
-			res[4].limit = y
-			res[4].err = err
-		}
-		callback5 := func(x, y int64, err error) {
-			res[5].offset = x
-			res[5].limit = y
-			res[5].err = err
-		}
-		var wg sync.WaitGroup
-		thread1 := func() {
-			defer wg.Done()
-			reader.Add(&res[0].buf, 0, int64(len(content)), callback)
-			reader.Add(&res[1].buf, 0, int64(len(content)), callback1)
 
+		// Create a top-level errgroup for each goroutine
+		eG, ctx := errgroup.WithContext(ctx)
+		goRoutineCount := 10
+		perGoRoutineAddCount := 10
+		res := make([]multiRangeDownloaderOutput, goRoutineCount*perGoRoutineAddCount)
+
+		// Create multiple go routines to read concurrently.
+		for i := 0; i < goRoutineCount; i++ {
+			groupID := i
+			eG.Go(func() error {
+
+				// Subgroup for tasks within this goroutine
+				subGroup, _ := errgroup.WithContext(ctx)
+
+				for j := 0; j < perGoRoutineAddCount; j++ {
+					taskID := perGoRoutineAddCount*groupID + j
+					subGroup.Go(func() error {
+						// Use a channel to receive the callback results
+						done := make(chan error, 1)
+
+						reader.Add(&res[taskID].buf, 0, int64(len(content)), func(x, y int64, err error) {
+							res[taskID].offset = x
+							res[taskID].limit = y
+							res[taskID].err = err
+							// Send each callback result to subGroup.
+							done <- err
+						})
+						return <-done
+					})
+				}
+				// Wait for all tasks in current sub-group to complete to send result to main error group.
+				return subGroup.Wait()
+			})
 		}
-		thread2 := func() {
-			defer wg.Done()
-			reader.Add(&res[2].buf, 0, int64(len(content)), callback2)
-			reader.Add(&res[3].buf, 0, int64(len(content)), callback3)
+
+		// Wait for all top-level goroutines to complete
+		if err := eG.Wait(); err != nil {
+			t.Errorf("Possible deadlock or race condition detected during concurrent Add calls: %v\n", err)
 		}
-		thread3 := func() {
-			defer wg.Done()
-			reader.Add(&res[4].buf, 0, int64(len(content)), callback4)
-			reader.Add(&res[5].buf, 0, int64(len(content)), callback5)
-		}
-		wg.Add(3)
-		go thread1()
-		go thread2()
-		go thread3()
-		wg.Wait()
+
 		reader.Wait()
 		for _, k := range res {
 			if k.offset < 0 {

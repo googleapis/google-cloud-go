@@ -608,6 +608,25 @@ func (c *Client) ReadObject(ctx context.Context, req *storagepb.ReadObjectReques
 	return c.internalClient.ReadObject(ctx, req, opts...)
 }
 
+// BidiReadObject reads an object’s data.
+//
+// This is a bi-directional API with the added support for reading multiple
+// ranges within one stream both within and across multiple messages.
+// If the server encountered an error for any of the inputs, the stream will
+// be closed with the relevant error code.
+// Because the API allows for multiple outstanding requests, when the stream
+// is closed the error response will contain a BidiReadObjectRangesError proto
+// in the error extension describing the error for each outstanding read_id.
+//
+// IAM Permissions:
+//
+// # Requires storage.objects.get
+//
+// IAM permission (at https://cloud.google.com/iam/docs/overview#permissions) on
+// the bucket.
+//
+// This API is currently in preview and is not yet available for general
+// use.
 func (c *Client) BidiReadObject(ctx context.Context, opts ...gax.CallOption) (storagepb.Storage_BidiReadObjectClient, error) {
 	return c.internalClient.BidiReadObject(ctx, opts...)
 }
