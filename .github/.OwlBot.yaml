@@ -5,6 +5,7 @@ deep-remove-regex:
   - /accessapproval/apiv1/
   - /accesscontextmanager/apiv1/
   - /ai/generativelanguage/apiv1/
+  - /ai/generativelanguage/apiv1alpha/
   - /ai/generativelanguage/apiv1beta/
   - /ai/generativelanguage/apiv1beta2/
   - /aiplatform/apiv1/
@@ -147,6 +148,7 @@ deep-remove-regex:
   - /internal/generated/snippets/accessapproval/apiv1/
   - /internal/generated/snippets/accesscontextmanager/apiv1/
   - /internal/generated/snippets/ai/generativelanguage/apiv1/
+  - /internal/generated/snippets/ai/generativelanguage/apiv1alpha/
   - /internal/generated/snippets/ai/generativelanguage/apiv1beta/
   - /internal/generated/snippets/ai/generativelanguage/apiv1beta2/
   - /internal/generated/snippets/aiplatform/apiv1/
@@ -631,6 +633,8 @@ deep-copy-regex:
   - source: /google/identity/accesscontextmanager/v1/cloud.google.com/go
     dest: /
   - source: /google/ai/generativelanguage/v1/cloud.google.com/go
+    dest: /
+  - source: /google/ai/generativelanguage/v1alpha/cloud.google.com/go
     dest: /
   - source: /google/ai/generativelanguage/v1beta/cloud.google.com/go
     dest: /

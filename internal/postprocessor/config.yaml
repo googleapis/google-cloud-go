@@ -288,6 +288,9 @@ service-configs:
   - input-directory: google/ai/generativelanguage/v1
     service-config: generativelanguage_v1.yaml
     import-path: cloud.google.com/go/ai/generativelanguage/apiv1
+  - input-directory: google/ai/generativelanguage/v1alpha
+    service-config: generativelanguage_v1alpha.yaml
+    import-path: cloud.google.com/go/ai/generativelanguage/apiv1alpha
   - input-directory: google/ai/generativelanguage/v1beta
     service-config: generativelanguage_v1beta.yaml
     import-path: cloud.google.com/go/ai/generativelanguage/apiv1beta
