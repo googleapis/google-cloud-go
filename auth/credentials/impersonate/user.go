@@ -31,6 +31,10 @@ import (
 	"github.com/googleapis/gax-go/v2/internallog"
 )
 
+var (
+	iamCredentialsEndpoint = "https://iamcredentials.googleapis.com"
+)
+
 // user provides an auth flow for domain-wide delegation, setting
 // CredentialsConfig.Subject to be the impersonated user.
 func user(opts *CredentialsOptions, client *http.Client, lifetime time.Duration, isStaticToken bool, universeDomainProvider auth.CredentialsPropertyProvider) (auth.TokenProvider, error) {
@@ -47,7 +51,7 @@ func user(opts *CredentialsOptions, client *http.Client, lifetime time.Duration,
 	}
 	u.delegates = make([]string, len(opts.Delegates))
 	for i, v := range opts.Delegates {
-		u.delegates[i] = formatIAMServiceAccountName(v)
+		u.delegates[i] = internal.FormatIAMServiceAccountResource(v)
 	}
 	u.scopes = make([]string, len(opts.Scopes))
 	copy(u.scopes, opts.Scopes)
@@ -143,7 +147,7 @@ func (u userTokenProvider) signJWT(ctx context.Context) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("impersonate: unable to marshal request: %w", err)
 	}
-	reqURL := fmt.Sprintf("%s/v1/%s:signJwt", iamCredentialsEndpoint, formatIAMServiceAccountName(u.targetPrincipal))
+	reqURL := fmt.Sprintf("%s/v1/%s:signJwt", iamCredentialsEndpoint, internal.FormatIAMServiceAccountResource(u.targetPrincipal))
 	req, err := http.NewRequestWithContext(ctx, "POST", reqURL, bytes.NewReader(bodyBytes))
 	if err != nil {
 		return "", fmt.Errorf("impersonate: unable to create request: %w", err)
