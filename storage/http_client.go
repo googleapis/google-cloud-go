@@ -863,7 +863,7 @@ func (c *httpStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 
 // NewMultiRangeDownloader is not supported by http client.
 func (c *httpStorageClient) NewMultiRangeDownloader(ctx context.Context, params *newMultiRangeDownloaderParams, opts ...storageOption) (mr *MultiRangeDownloader, err error) {
-	return nil, errMethodNotValid
+	return nil, errMethodNotSupported
 }
 
 func (c *httpStorageClient) NewRangeReader(ctx context.Context, params *newRangeReaderParams, opts ...storageOption) (r *Reader, err error) {
