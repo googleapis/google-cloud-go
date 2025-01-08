@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.20.5](https://github.com/googleapis/google-cloud-go/compare/kms/v1.20.4...kms/v1.20.5) (2025-01-08)
+
+
+### Documentation
+
+* **kms:** Modify enum comment ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+
 ## [1.20.4](https://github.com/googleapis/google-cloud-go/compare/kms/v1.20.3...kms/v1.20.4) (2025-01-02)
 
 

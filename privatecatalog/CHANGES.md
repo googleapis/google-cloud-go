@@ -1,5 +1,12 @@
 # Changes
 
+## [0.10.4](https://github.com/googleapis/google-cloud-go/compare/privatecatalog/v0.10.3...privatecatalog/v0.10.4) (2025-01-08)
+
+
+### Documentation
+
+* **privatecatalog:** Fixed format string formatting ([e4e1a49](https://github.com/googleapis/google-cloud-go/commit/e4e1a498f21b0792e0a7662f82f9e062e5aa0fe9))
+
 ## [0.10.3](https://github.com/googleapis/google-cloud-go/compare/privatecatalog/v0.10.2...privatecatalog/v0.10.3) (2025-01-02)
 
 
