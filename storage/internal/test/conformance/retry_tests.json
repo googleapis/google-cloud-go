@@ -297,7 +297,7 @@
       "methods": [
         {"name": "storage.objects.insert", "group": "storage.appendable.upload", "resources": []}
       ],
-      "preconditionProvided": false,
+      "preconditionProvided": true,
       "expectSuccess": true
     },
     {
