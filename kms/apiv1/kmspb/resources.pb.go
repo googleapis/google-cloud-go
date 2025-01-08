@@ -21,15 +21,14 @@
 package kmspb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -403,8 +402,6 @@ func (KeyOperationAttestation_AttestationFormat) EnumDescriptor() ([]byte, []int
 //
 // The suffix following `HMAC_` corresponds to the hash algorithm being used
 // (eg. SHA256).
-//
-// Algorithms beginning with `PQ_` are post-quantum.
 //
 // For more information, see [Key purposes and algorithms]
 // (https://cloud.google.com/kms/docs/algorithms).
