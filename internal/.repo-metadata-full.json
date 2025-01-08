@@ -39,6 +39,16 @@
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/ai/generativelanguage/apiv1alpha": {
+    "api_shortname": "generativelanguage",
+    "distribution_name": "cloud.google.com/go/ai/generativelanguage/apiv1alpha",
+    "description": "Generative Language API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/ai/latest/generativelanguage/apiv1alpha",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/ai/generativelanguage/apiv1beta": {
     "api_shortname": "generativelanguage",
     "distribution_name": "cloud.google.com/go/ai/generativelanguage/apiv1beta",
@@ -777,6 +787,16 @@
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/cloudquotas/latest/apiv1",
     "release_level": "stable",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/cloudquotas/apiv1beta": {
+    "api_shortname": "cloudquotas",
+    "distribution_name": "cloud.google.com/go/cloudquotas/apiv1beta",
+    "description": "Cloud Quotas API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/cloudquotas/latest/apiv1beta",
+    "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/cloudtasks/apiv2": {
