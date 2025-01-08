@@ -107,7 +107,8 @@ type Writer struct {
 	// visible on the first Write() call, and can be appended to until they are
 	// finalized. The object is finalized on a call to Close().
 	//
-	// Append is only supported for gRPC.
+	// Append is only supported for gRPC. This feature is in preview and is not
+	// yet available for general use.
 	Append bool
 
 	// ProgressFunc can be used to monitor the progress of a large write
