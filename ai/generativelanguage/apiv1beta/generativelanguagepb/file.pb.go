@@ -97,6 +97,7 @@ func (File_State) EnumDescriptor() ([]byte, []int) {
 }
 
 // A file uploaded to the API.
+// Next ID: 15
 type File struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
