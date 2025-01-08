@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/cloudcontrolspartner/apiv1beta",
-    "version": "$VERSION",
+    "version": "1.2.2",
     "language": "GO",
     "apis": [
       {
