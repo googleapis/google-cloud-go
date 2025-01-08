@@ -21,14 +21,13 @@
 package netapppb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -2170,9 +2169,7 @@ type HybridReplicationParameters struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Desired Identifier (name) of the replication which will be created for this volume.
-	// Format:
-	// `projects/{project_id}/locations/{location}/volumes/{volume_id}/replications/{replication_id}`
+	// Required. Desired name for the replication of this volume.
 	Replication string `protobuf:"bytes,1,opt,name=replication,proto3" json:"replication,omitempty"`
 	// Required. Name of the user's local source volume to be peered with the
 	// destination volume.
