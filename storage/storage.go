@@ -72,8 +72,8 @@ var (
 	// errMethodNotSupported indicates that the method called is not currently supported by the client.
 	// TODO: Export this error when launching the transport-agnostic client.
 	errMethodNotSupported = errors.New("storage: method is not currently supported")
-	// errMethodNotValid indicates that given HTTP method is not valid.
-	errMethodNotValid = fmt.Errorf("storage: HTTP method should be one of %v", reflect.ValueOf(signedURLMethods).MapKeys())
+	// errSignedUrlMethodNotValid indicates that given HTTP method is not valid.
+	errSignedUrlMethodNotValid = fmt.Errorf("storage: HTTP method should be one of %v", reflect.ValueOf(signedURLMethods).MapKeys())
 )
 
 var userAgent = fmt.Sprintf("gcloud-golang-storage/%s", internal.Version)
@@ -689,7 +689,7 @@ func validateOptions(opts *SignedURLOptions, now time.Time) error {
 	}
 	opts.Method = strings.ToUpper(opts.Method)
 	if _, ok := signedURLMethods[opts.Method]; !ok {
-		return errMethodNotValid
+		return errSignedUrlMethodNotValid
 	}
 	if opts.Expires.IsZero() {
 		return errors.New("storage: missing required expires option")
