@@ -99,8 +99,12 @@ func (ci CreateIndex) SQL() string {
 }
 
 func (cp CreateProtoBundle) SQL() string {
+	typeList := ""
+	if len(cp.Types) > 0 {
+		typeList = "`" + strings.Join(cp.Types, "`, `") + "`"
+	}
 	// Backtick-quote all the types so we don't need to check for SQL keywords
-	return "CREATE PROTO BUNDLE (`" + strings.Join(cp.Types, "`, `") + "`)"
+	return "CREATE PROTO BUNDLE (" + typeList + ")"
 }
 
 func (cv CreateView) SQL() string {
