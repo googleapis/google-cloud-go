@@ -1424,12 +1424,18 @@ func CertPool(caCertFile string) (*x509.CertPool, error) {
 // - clientCertificateKey: Path to the private key associated with the client certificate.
 // - The returned gRPC connection can be passed to `option.WithGRPCConn(grpcConn)` to create a client using mTLS.
 func NewMtlsConn(endpoint, caCertificate, clientCertificate, clientCertificateKey string) (*grpc.ClientConn, error) {
+	if clientCertificate == "" || clientCertificateKey == "" {
+		return nil, fmt.Errorf("client certificate and key are mandatory for mTLS connection")
+	}
 	cert, err := tls.LoadX509KeyPair(clientCertificate, clientCertificateKey)
 	if err != nil {
 		return nil, fmt.Errorf("failed to load client cert and key: %w", err)
 	}
 	clientCerts := []tls.Certificate{cert}
 
+	if caCertificate == "" {
+		return nil, fmt.Errorf("ca certificate is required for mTLS connection")
+	}
 	// Create a TLSConfig with the client certificate source.
 	capool, err := CertPool(caCertificate)
 	if err != nil {
