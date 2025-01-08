@@ -637,6 +637,7 @@ func TestIntegration_DoNotDetectDirectConnectivityWhenDisabled(t *testing.T) {
 
 func TestIntegration_MetricsEnablement(t *testing.T) {
 	ctx := skipHTTP("grpc only test")
+	ctx = skipExtraReadAPIs(ctx, "no reads in test")
 	mr := metric.NewManualReader()
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
 		it := client.Bucket(bucket).Objects(ctx, nil)
@@ -646,7 +647,7 @@ func TestIntegration_MetricsEnablement(t *testing.T) {
 		}
 		rm := metricdata.ResourceMetrics{}
 		if err := mr.Collect(ctx, &rm); err != nil {
-			t.Errorf("ManualReader.Collect: %v", err)
+			t.Fatalf("ManualReader.Collect: %v", err)
 		}
 		metricCheck := map[string]bool{
 			"grpc.client.attempt.started":                            false,
