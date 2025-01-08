@@ -1360,12 +1360,12 @@ func (t *Table) doApplyBulk(ctx context.Context, entryErrs []*entryErr, headerMD
 			return err
 		}
 
-		for i, entry := range res.Entries {
+		for _, entry := range res.Entries {
 			s := entry.Status
 			if s.Code == int32(codes.OK) {
-				entryErrs[i].Err = nil
+				entryErrs[entry.Index].Err = nil
 			} else {
-				entryErrs[i].Err = status.Errorf(codes.Code(s.Code), s.Message)
+				entryErrs[entry.Index].Err = status.Errorf(codes.Code(s.Code), s.Message)
 			}
 		}
 		after(res)
