@@ -47,9 +47,16 @@ type IDTokenIAMOptions struct {
 
 // GenerateIDTokenRequest holds the request to the IAM generateIdToken RPC.
 type GenerateIDTokenRequest struct {
-	Audience     string   `json:"audience"`
-	IncludeEmail bool     `json:"includeEmail"`
-	Delegates    []string `json:"delegates,omitempty"`
+	Audience     string `json:"audience"`
+	IncludeEmail bool   `json:"includeEmail"`
+	// Delegates are the ordered, fully-qualified resource name for service
+	// accounts in a delegation chain. Each service account must be granted
+	// roles/iam.serviceAccountTokenCreator on the next service account in the
+	// chain. The delegates must have the following format:
+	// projects/-/serviceAccounts/{ACCOUNT_EMAIL_OR_UNIQUEID}. The - wildcard
+	// character is required; replacing it with a project ID is invalid.
+	// Optional.
+	Delegates []string `json:"delegates,omitempty"`
 }
 
 // GenerateIDTokenResponse holds the response from the IAM generateIdToken RPC.
