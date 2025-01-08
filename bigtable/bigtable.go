@@ -1360,12 +1360,12 @@ func (t *Table) doApplyBulk(ctx context.Context, entryErrs []*entryErr, headerMD
 			return err
 		}
 
-		for i, entry := range res.Entries {
+		for _, entry := range res.Entries {
 			s := entry.Status
 			if s.Code == int32(codes.OK) {
-				entryErrs[i].Err = nil
+				entryErrs[entry.Index].Err = nil
 			} else {
-				entryErrs[i].Err = status.Errorf(codes.Code(s.Code), s.Message)
+				entryErrs[entry.Index].Err = status.Errorf(codes.Code(s.Code), s.Message)
 			}
 		}
 		after(res)
@@ -1605,7 +1605,7 @@ func gaxInvokeWithRecorder(ctx context.Context, mt *builtinMetricsTracer, method
 	f func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error, opts ...gax.CallOption) error {
 	attemptHeaderMD := metadata.New(nil)
 	attempTrailerMD := metadata.New(nil)
-	mt.method = method
+	mt.setMethod(method)
 
 	var callWrapper func(context.Context, gax.CallSettings) error
 	if !mt.builtInEnabled {

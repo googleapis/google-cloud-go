@@ -1,5 +1,12 @@
 # Changes
 
+## [1.15.1](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.15.0...eventarc/v1.15.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **eventarc:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.14.2...eventarc/v1.15.0) (2024-11-06)
 
 

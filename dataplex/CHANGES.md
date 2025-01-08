@@ -1,6 +1,23 @@
 # Changes
 
 
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.20.0...dataplex/v1.21.0) (2025-01-02)
+
+
+### Features
+
+* **dataplex:** A new field `force` is added to message `.google.cloud.dataplex.v1.DeleteDataScanRequest` ([8ebcc6d](https://github.com/googleapis/google-cloud-go/commit/8ebcc6d276fc881c3914b5a7af3265a04e718e45))
+
+
+### Bug Fixes
+
+* **dataplex:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+
+### Documentation
+
+* **dataplex:** Miscellaneous doc updates ([8ebcc6d](https://github.com/googleapis/google-cloud-go/commit/8ebcc6d276fc881c3914b5a7af3265a04e718e45))
+
 ## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.19.2...dataplex/v1.20.0) (2024-11-19)
 
 

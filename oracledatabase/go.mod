@@ -1,6 +1,6 @@
 module cloud.google.com/go/oracledatabase
 
-go 1.21.13
+go 1.22
 
 require (
 	cloud.google.com/go/longrunning v0.6.2

@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.5.1](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.5.0...netapp/v1.5.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **netapp:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.4.1...netapp/v1.5.0) (2024-12-04)
 
 

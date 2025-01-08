@@ -1,5 +1,22 @@
 # Changes
 
+## [1.26.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.25.2...speech/v1.26.0) (2025-01-02)
+
+
+### Features
+
+* **speech:** Expand the set of supported explicit audio encodings ([8ebcc6d](https://github.com/googleapis/google-cloud-go/commit/8ebcc6d276fc881c3914b5a7af3265a04e718e45))
+
+
+### Bug Fixes
+
+* **speech:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+
+### Documentation
+
+* **speech:** Updated ExplicitDecodingConfig documentation to reflect changes related to newly supported encodings ([8ebcc6d](https://github.com/googleapis/google-cloud-go/commit/8ebcc6d276fc881c3914b5a7af3265a04e718e45))
+
 ## [1.25.2](https://github.com/googleapis/google-cloud-go/compare/speech/v1.25.1...speech/v1.25.2) (2024-10-23)
 
 

@@ -1,6 +1,6 @@
 module cloud.google.com/go/auth/oauth2adapt
 
-go 1.21
+go 1.22
 
 require (
 	cloud.google.com/go/auth v0.12.1

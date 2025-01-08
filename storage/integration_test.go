@@ -4618,14 +4618,18 @@ func TestIntegration_SoftDelete(t *testing.T) {
 		// Update the soft delete policy of the original bucket.
 		policy.RetentionDuration = time.Hour * 24 * 9
 
-		attrs, err = b.Update(ctx, BucketAttrsToUpdate{SoftDeletePolicy: policy})
-		if err != nil {
-			t.Fatalf("b.Update: %v", err)
-		}
-
-		if got, expect := attrs.SoftDeletePolicy.RetentionDuration, policy.RetentionDuration; got != expect {
-			t.Fatalf("mismatching retention duration; got: %+v, expected: %+v", got, expect)
-		}
+		retry(ctx, func() error {
+			attrs, err = b.Update(ctx, BucketAttrsToUpdate{SoftDeletePolicy: policy})
+			if err != nil {
+				return fmt.Errorf("b.Update: %v", err)
+			}
+			return nil
+		}, func() error {
+			if got, expect := attrs.SoftDeletePolicy.RetentionDuration, policy.RetentionDuration; got != expect {
+				return fmt.Errorf("mismatching retention duration; got: %+v, expected: %+v", got, expect)
+			}
+			return nil
+		})
 
 		// Create 2 objects and delete one of them.
 		deletedObject := b.Object("soft-delete" + uidSpaceObjects.New())

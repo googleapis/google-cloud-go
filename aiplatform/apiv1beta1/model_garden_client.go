@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,6 +27,8 @@ import (
 
 	aiplatformpb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	"cloud.google.com/go/longrunning"
+	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
@@ -44,18 +46,19 @@ var newModelGardenClientHook clientHook
 
 // ModelGardenCallOptions contains the retry settings for each method of ModelGardenClient.
 type ModelGardenCallOptions struct {
-	GetPublisherModel   []gax.CallOption
-	ListPublisherModels []gax.CallOption
-	GetLocation         []gax.CallOption
-	ListLocations       []gax.CallOption
-	GetIamPolicy        []gax.CallOption
-	SetIamPolicy        []gax.CallOption
-	TestIamPermissions  []gax.CallOption
-	CancelOperation     []gax.CallOption
-	DeleteOperation     []gax.CallOption
-	GetOperation        []gax.CallOption
-	ListOperations      []gax.CallOption
-	WaitOperation       []gax.CallOption
+	GetPublisherModel    []gax.CallOption
+	ListPublisherModels  []gax.CallOption
+	DeployPublisherModel []gax.CallOption
+	GetLocation          []gax.CallOption
+	ListLocations        []gax.CallOption
+	GetIamPolicy         []gax.CallOption
+	SetIamPolicy         []gax.CallOption
+	TestIamPermissions   []gax.CallOption
+	CancelOperation      []gax.CallOption
+	DeleteOperation      []gax.CallOption
+	GetOperation         []gax.CallOption
+	ListOperations       []gax.CallOption
+	WaitOperation        []gax.CallOption
 }
 
 func defaultModelGardenGRPCClientOptions() []option.ClientOption {
@@ -75,35 +78,37 @@ func defaultModelGardenGRPCClientOptions() []option.ClientOption {
 
 func defaultModelGardenCallOptions() *ModelGardenCallOptions {
 	return &ModelGardenCallOptions{
-		GetPublisherModel:   []gax.CallOption{},
-		ListPublisherModels: []gax.CallOption{},
-		GetLocation:         []gax.CallOption{},
-		ListLocations:       []gax.CallOption{},
-		GetIamPolicy:        []gax.CallOption{},
-		SetIamPolicy:        []gax.CallOption{},
-		TestIamPermissions:  []gax.CallOption{},
-		CancelOperation:     []gax.CallOption{},
-		DeleteOperation:     []gax.CallOption{},
-		GetOperation:        []gax.CallOption{},
-		ListOperations:      []gax.CallOption{},
-		WaitOperation:       []gax.CallOption{},
+		GetPublisherModel:    []gax.CallOption{},
+		ListPublisherModels:  []gax.CallOption{},
+		DeployPublisherModel: []gax.CallOption{},
+		GetLocation:          []gax.CallOption{},
+		ListLocations:        []gax.CallOption{},
+		GetIamPolicy:         []gax.CallOption{},
+		SetIamPolicy:         []gax.CallOption{},
+		TestIamPermissions:   []gax.CallOption{},
+		CancelOperation:      []gax.CallOption{},
+		DeleteOperation:      []gax.CallOption{},
+		GetOperation:         []gax.CallOption{},
+		ListOperations:       []gax.CallOption{},
+		WaitOperation:        []gax.CallOption{},
 	}
 }
 
 func defaultModelGardenRESTCallOptions() *ModelGardenCallOptions {
 	return &ModelGardenCallOptions{
-		GetPublisherModel:   []gax.CallOption{},
-		ListPublisherModels: []gax.CallOption{},
-		GetLocation:         []gax.CallOption{},
-		ListLocations:       []gax.CallOption{},
-		GetIamPolicy:        []gax.CallOption{},
-		SetIamPolicy:        []gax.CallOption{},
-		TestIamPermissions:  []gax.CallOption{},
-		CancelOperation:     []gax.CallOption{},
-		DeleteOperation:     []gax.CallOption{},
-		GetOperation:        []gax.CallOption{},
-		ListOperations:      []gax.CallOption{},
-		WaitOperation:       []gax.CallOption{},
+		GetPublisherModel:    []gax.CallOption{},
+		ListPublisherModels:  []gax.CallOption{},
+		DeployPublisherModel: []gax.CallOption{},
+		GetLocation:          []gax.CallOption{},
+		ListLocations:        []gax.CallOption{},
+		GetIamPolicy:         []gax.CallOption{},
+		SetIamPolicy:         []gax.CallOption{},
+		TestIamPermissions:   []gax.CallOption{},
+		CancelOperation:      []gax.CallOption{},
+		DeleteOperation:      []gax.CallOption{},
+		GetOperation:         []gax.CallOption{},
+		ListOperations:       []gax.CallOption{},
+		WaitOperation:        []gax.CallOption{},
 	}
 }
 
@@ -114,6 +119,8 @@ type internalModelGardenClient interface {
 	Connection() *grpc.ClientConn
 	GetPublisherModel(context.Context, *aiplatformpb.GetPublisherModelRequest, ...gax.CallOption) (*aiplatformpb.PublisherModel, error)
 	ListPublisherModels(context.Context, *aiplatformpb.ListPublisherModelsRequest, ...gax.CallOption) *PublisherModelIterator
+	DeployPublisherModel(context.Context, *aiplatformpb.DeployPublisherModelRequest, ...gax.CallOption) (*DeployPublisherModelOperation, error)
+	DeployPublisherModelOperation(name string) *DeployPublisherModelOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -136,6 +143,11 @@ type ModelGardenClient struct {
 
 	// The call options for this service.
 	CallOptions *ModelGardenCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
 }
 
 // Wrapper methods routed to the internal client.
@@ -169,6 +181,17 @@ func (c *ModelGardenClient) GetPublisherModel(ctx context.Context, req *aiplatfo
 // ListPublisherModels lists publisher models in Model Garden.
 func (c *ModelGardenClient) ListPublisherModels(ctx context.Context, req *aiplatformpb.ListPublisherModelsRequest, opts ...gax.CallOption) *PublisherModelIterator {
 	return c.internalClient.ListPublisherModels(ctx, req, opts...)
+}
+
+// DeployPublisherModel deploys publisher models.
+func (c *ModelGardenClient) DeployPublisherModel(ctx context.Context, req *aiplatformpb.DeployPublisherModelRequest, opts ...gax.CallOption) (*DeployPublisherModelOperation, error) {
+	return c.internalClient.DeployPublisherModel(ctx, req, opts...)
+}
+
+// DeployPublisherModelOperation returns a new DeployPublisherModelOperation from a given name.
+// The name must be that of a previously created DeployPublisherModelOperation, possibly from a different process.
+func (c *ModelGardenClient) DeployPublisherModelOperation(name string) *DeployPublisherModelOperation {
+	return c.internalClient.DeployPublisherModelOperation(name)
 }
 
 // GetLocation gets information about a location.
@@ -245,6 +268,11 @@ type modelGardenGRPCClient struct {
 	// The gRPC API client.
 	modelGardenClient aiplatformpb.ModelGardenServiceClient
 
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
+
 	operationsClient longrunningpb.OperationsClient
 
 	iamPolicyClient iampb.IAMPolicyClient
@@ -290,6 +318,17 @@ func NewModelGardenClient(ctx context.Context, opts ...option.ClientOption) (*Mo
 
 	client.internalClient = c
 
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	if err != nil {
+		// This error "should not happen", since we are just reusing old connection pool
+		// and never actually need to dial.
+		// If this does happen, we could leak connp. However, we cannot close conn:
+		// If the user invoked the constructor with option.WithGRPCConn,
+		// we would close a connection that's still in use.
+		// TODO: investigate error conditions.
+		return nil, err
+	}
+	c.LROClient = &client.LROClient
 	return &client, nil
 }
 
@@ -326,6 +365,11 @@ type modelGardenRESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
+
 	// The x-goog-* headers to be sent with each request.
 	xGoogHeaders []string
 
@@ -353,6 +397,16 @@ func NewModelGardenRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	lroOpts := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opClient, err := lroauto.NewOperationsRESTClient(ctx, lroOpts...)
+	if err != nil {
+		return nil, err
+	}
+	c.LROClient = &opClient
 
 	return &ModelGardenClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -456,6 +510,26 @@ func (c *modelGardenGRPCClient) ListPublisherModels(ctx context.Context, req *ai
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *modelGardenGRPCClient) DeployPublisherModel(ctx context.Context, req *aiplatformpb.DeployPublisherModelRequest, opts ...gax.CallOption) (*DeployPublisherModelOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "destination", url.QueryEscape(req.GetDestination()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeployPublisherModel[0:len((*c.CallOptions).DeployPublisherModel):len((*c.CallOptions).DeployPublisherModel)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.modelGardenClient.DeployPublisherModel, req, settings.GRPC, c.logger, "DeployPublisherModel")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeployPublisherModelOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *modelGardenGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -839,6 +913,65 @@ func (c *modelGardenRESTClient) ListPublisherModels(ctx context.Context, req *ai
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// DeployPublisherModel deploys publisher models.
+func (c *modelGardenRESTClient) DeployPublisherModel(ctx context.Context, req *aiplatformpb.DeployPublisherModelRequest, opts ...gax.CallOption) (*DeployPublisherModelOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:deploy", req.GetDestination())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "destination", url.QueryEscape(req.GetDestination()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "DeployPublisherModel")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/ui/%s", resp.GetName())
+	return &DeployPublisherModelOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
 }
 
 // GetLocation gets information about a location.
@@ -1407,4 +1540,22 @@ func (c *modelGardenRESTClient) WaitOperation(ctx context.Context, req *longrunn
 		return nil, e
 	}
 	return resp, nil
+}
+
+// DeployPublisherModelOperation returns a new DeployPublisherModelOperation from a given name.
+// The name must be that of a previously created DeployPublisherModelOperation, possibly from a different process.
+func (c *modelGardenGRPCClient) DeployPublisherModelOperation(name string) *DeployPublisherModelOperation {
+	return &DeployPublisherModelOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeployPublisherModelOperation returns a new DeployPublisherModelOperation from a given name.
+// The name must be that of a previously created DeployPublisherModelOperation, possibly from a different process.
+func (c *modelGardenRESTClient) DeployPublisherModelOperation(name string) *DeployPublisherModelOperation {
+	override := fmt.Sprintf("/ui/%s", name)
+	return &DeployPublisherModelOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
 }
