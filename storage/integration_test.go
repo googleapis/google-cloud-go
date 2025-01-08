@@ -450,7 +450,7 @@ func TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader(t *testin
 							res[taskID].limit = y
 							res[taskID].err = err
 							// Send each callback result to subGroup.
-							done <- err	
+							done <- err
 						})
 						return <-done
 					})
