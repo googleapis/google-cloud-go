@@ -16,23 +16,21 @@ package storage
 
 import (
 	"bytes"
-	"context"
 	"crypto/md5"
-	"errors"
+	"fmt"
 	"hash/crc32"
-	"io"
 	"math/rand"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/go-cmp/cmp"
-	"google.golang.org/api/option"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/mem"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/protoadapt"
+	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/testing/protocmp"
 )
 
@@ -95,39 +93,63 @@ func TestBytesCodecV2(t *testing.T) {
 
 	for _, test := range []struct {
 		desc        string
-		resp        *storagepb.ReadObjectResponse
+		resp        *storagepb.BidiReadObjectResponse
 		wantContent []byte
 	}{
 		{
 			desc: "filled object response",
-			resp: &storagepb.ReadObjectResponse{
-				ChecksummedData: &storagepb.ChecksummedData{
-					Content: content,
-					Crc32C:  &crc32c,
-				},
-				ObjectChecksums: &storagepb.ObjectChecksums{
-					Crc32C:  &crc32c,
-					Md5Hash: md5,
-				},
-				ContentRange: &storagepb.ContentRange{
-					Start:          0,
-					End:            1025,
-					CompleteLength: 1025,
+			resp: &storagepb.BidiReadObjectResponse{
+				ObjectDataRanges: []*storagepb.ObjectRangeData{
+					{
+						ChecksummedData: &storagepb.ChecksummedData{
+							Content: content,
+							Crc32C:  &crc32c,
+						},
+						ReadRange: &storagepb.ReadRange{
+							ReadOffset: 0,
+							ReadLength: 1025,
+							ReadId:     1,
+						},
+						RangeEnd: true,
+					},
 				},
 				Metadata: metadata,
+				ReadHandle: &storagepb.BidiReadHandle{
+					Handle: []byte("abcde"),
+				},
 			},
 			wantContent: content,
 		},
 		{
 			desc:        "empty object response",
-			resp:        &storagepb.ReadObjectResponse{},
+			resp:        &storagepb.BidiReadObjectResponse{},
 			wantContent: []byte{},
 		},
 		{
 			desc: "partially empty",
-			resp: &storagepb.ReadObjectResponse{
-				ChecksummedData: &storagepb.ChecksummedData{},
-				ObjectChecksums: &storagepb.ObjectChecksums{Md5Hash: md5},
+			resp: &storagepb.BidiReadObjectResponse{
+				ObjectDataRanges: []*storagepb.ObjectRangeData{
+					{
+						ChecksummedData: &storagepb.ChecksummedData{},
+					},
+				},
+				Metadata: &storagepb.Object{
+					Checksums: &storagepb.ObjectChecksums{
+						Md5Hash: md5,
+					},
+				},
+			},
+			wantContent: []byte{},
+		},
+		{
+			desc: "empty ObjectDataRanges",
+			resp: &storagepb.BidiReadObjectResponse{
+				ObjectDataRanges: []*storagepb.ObjectRangeData{},
+				Metadata: &storagepb.Object{
+					Checksums: &storagepb.ObjectChecksums{
+						Md5Hash: md5,
+					},
+				},
 			},
 			wantContent: []byte{},
 		},
@@ -206,7 +228,7 @@ func TestBytesCodecV2(t *testing.T) {
 					}
 
 					// Compare the result with the original ReadObjectResponse, without the content
-					if diff := cmp.Diff(decoder.msg, test.resp, protocmp.Transform(), protocmp.IgnoreMessages(&storagepb.ChecksummedData{})); diff != "" {
+					if diff := cmp.Diff(decoder.msg, test.resp, protocmp.Transform(), protocmp.IgnoreMessages(&storagepb.ObjectRangeData{})); diff != "" {
 						t.Errorf("cmp.Diff message: got(-),want(+):\n%s", diff)
 					}
 
@@ -226,161 +248,89 @@ func TestBytesCodecV2(t *testing.T) {
 	}
 }
 
-func TestWriteBackoff(t *testing.T) {
-	ctx := context.Background()
-
-	writeStream := &MockWriteStream{}
-	streamInterceptor := grpc.WithStreamInterceptor(
-		func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-			return writeStream, nil
-		})
-
-	c, err := NewGRPCClient(ctx, option.WithoutAuthentication(), option.WithGRPCDialOption(streamInterceptor))
-	if err != nil {
-		t.Fatalf("NewGRPCClient: %v", err)
+func str(s *status.Status) string {
+	if s == nil {
+		return "nil"
 	}
-
-	w := gRPCWriter{
-		c:         (c.tc).(*grpcStorageClient),
-		buf:       []byte("012345689abcdefg"),
-		chunkSize: 10,
-		ctx:       ctx,
-		attrs:     &ObjectAttrs{},
+	if s.Proto() == nil {
+		return "<Code=OK>"
 	}
+	return fmt.Sprintf("<Code=%v, Message=%q, Details=%+v>", s.Code(), s.Message(), s.Details())
+}
 
-	maxAttempts := 4 // be careful changing this value; some tests depend on it
-
-	retriableErr := status.Errorf(codes.Internal, "a retriable error")
-	nonretriableErr := status.Errorf(codes.PermissionDenied, "a non-retriable error")
-	testCases := []struct {
-		desc            string
-		recvErrs        []error
-		sendErrs        []error
-		closeSend       bool // if true, will mimic finishing the upload so CloseSend will be called
-		expectedRetries int
-		expectedErr     error // final err from uploadBuffer should wrap this err
+func TestErrorGenerationAndRetrival(t *testing.T) {
+	for _, tc := range []struct {
+		desc    string
+		code    codes.Code
+		details []protoadapt.MessageV1
 	}{
 		{
-			desc:            "retriable error on receive",
-			recvErrs:        []error{retriableErr, retriableErr, retriableErr, retriableErr},
-			expectedRetries: maxAttempts - 1,
-			expectedErr:     retriableErr,
+			desc: "redirect",
+			code: codes.Unavailable,
+			details: []protoadapt.MessageV1{
+				&storagepb.BidiReadObjectRedirectedError{
+					ReadHandle: &storagepb.BidiReadHandle{
+						Handle: []byte{1, 2, 3},
+					},
+					RoutingToken: proto.String("redirect-routing-1234"),
+				},
+			},
 		},
 		{
-			desc:            "retriable error on send",
-			sendErrs:        []error{io.EOF},
-			recvErrs:        []error{retriableErr, retriableErr, retriableErr, retriableErr},
-			expectedRetries: maxAttempts - 1,
-			expectedErr:     retriableErr,
+			desc: "read-range",
+			code: codes.NotFound,
+			details: []protoadapt.MessageV1{
+				&storagepb.BidiReadObjectError{
+					ReadRangeErrors: []*storagepb.ReadRangeError{{ReadId: 4}},
+				},
+			},
 		},
-		{
-			desc:            "non-retriable error on send",
-			sendErrs:        []error{io.EOF},
-			recvErrs:        []error{nonretriableErr},
-			expectedRetries: 0,
-			expectedErr:     nonretriableErr,
-		},
-		{
-			desc:            "non-retriable err after send closed",
-			recvErrs:        []error{nil, nonretriableErr},
-			expectedRetries: 0,
-			expectedErr:     nonretriableErr,
-			closeSend:       true,
-		},
-		{
-			desc:            "retriable err after send closed",
-			recvErrs:        []error{nil, retriableErr, retriableErr, retriableErr, retriableErr},
-			expectedRetries: maxAttempts - 1,
-			expectedErr:     retriableErr,
-			closeSend:       true,
-		},
-	}
-	for _, test := range testCases {
-		t.Run(test.desc, func(t *testing.T) {
-			backoff := &mockBackoff{}
-			retryConfig := newUploadBufferRetryConfig(&settings{})
-			retryConfig.config.maxAttempts = &maxAttempts
-			retryConfig.config.backoff = backoff
-
-			writeStream.RecvMsgErrToReturn = test.recvErrs
-			writeStream.SendMsgErrToReturn = test.sendErrs
-
-			_, _, err = w.uploadBuffer(0, 0, test.closeSend, retryConfig)
-			if !errors.Is(err, test.expectedErr) {
-				t.Fatalf("uploadBuffer, want err to wrap: %v, got err: %v", test.expectedErr, err)
+	} {
+		initialStatus := status.New(tc.code, tc.desc)
+		newStatus, err := initialStatus.WithDetails(tc.details...)
+		if err != nil {
+			t.Fatalf("(%v).WithDetails(%+v) failed: %v", str(newStatus), tc.details, err)
+		}
+		errorReceived := newStatus.Err()
+		finalStatus := status.Convert(errorReceived)
+		if finalStatus.Code() != tc.code {
+			t.Fatalf("status code expected: %v, received: %v", tc.code, finalStatus.Code())
+		}
+		detail := finalStatus.Details()
+		for i := range detail {
+			if !proto.Equal(detail[i].(protoreflect.ProtoMessage), tc.details[i].(protoreflect.ProtoMessage)) {
+				t.Fatalf("(%v).Details()[%d] = %+v, want %+v", str(finalStatus), i, detail[i], tc.details[i])
 			}
+		}
+		if finalStatus.Message() != tc.desc {
+			t.Fatalf("(%v)message()= %v, want %v", str(finalStatus), finalStatus.Message(), tc.desc)
+		}
+	}
+}
 
-			if got, want := backoff.pauseCallsCount, test.expectedRetries; got != want {
-				t.Errorf("backoff.Pause was called %d times, expected %d", got, want)
+func TestErrorExtension(t *testing.T) {
+	// Create an initial BidiReadObjectRedirectedError.
+	initialStatus := status.New(codes.Unavailable, "redirect")
+	reqDetails := &storagepb.BidiReadObjectRedirectedError{
+		ReadHandle: &storagepb.BidiReadHandle{
+			Handle: []byte{1, 2, 3},
+		},
+		RoutingToken: proto.String("redirect-routing-1234"),
+	}
+	newStatus, err := initialStatus.WithDetails(reqDetails)
+	if err != nil {
+		t.Fatalf("(%v).WithDetails(%+v) failed: %v", str(newStatus), reqDetails, err)
+	}
+	// Decode the above error extension to get BidiReadObjectRedirectedError.
+	errorReceived := newStatus.Err()
+	rpcStatus := status.Convert(errorReceived)
+	respDetails := rpcStatus.Details()
+	for _, detail := range respDetails {
+		if bidiError, ok := detail.(*storagepb.BidiReadObjectRedirectedError); ok {
+			// Compare the result with the original BidiReadObjectRedirectedError.
+			if diff := cmp.Diff(bidiError, reqDetails, protocmp.Transform()); diff != "" {
+				t.Errorf("cmp.Diff got(-),want(+):\n%s", diff)
 			}
-		})
+		}
 	}
-}
-
-type MockWriteStream struct {
-	grpc.ClientStream
-	SendMsgErrToReturn []error // if the array is empty, returns nil; otherwise, pops the first value
-	RecvMsgErrToReturn []error // if the array is empty, returns nil; otherwise, pops the first value
-}
-
-func (s *MockWriteStream) SendMsg(m any) error {
-	if len(s.SendMsgErrToReturn) < 1 {
-		return nil
-	}
-	err := s.SendMsgErrToReturn[0]
-	s.SendMsgErrToReturn = s.SendMsgErrToReturn[1:]
-	return err
-}
-
-// Retriable errors mean we should start over and attempt to
-// resend the entire buffer via a new stream.
-// If not retriable, falling through will return the error received.
-func (s *MockWriteStream) RecvMsg(m any) error {
-	if len(s.RecvMsgErrToReturn) < 1 {
-		return nil
-	}
-	err := s.RecvMsgErrToReturn[0]
-	s.RecvMsgErrToReturn = s.RecvMsgErrToReturn[1:]
-	return err
-}
-
-func (s *MockWriteStream) CloseSend() error {
-	return nil
-}
-
-// mockBackoff keeps count of the number of time Pause was called. Not thread-safe.
-type mockBackoff struct {
-	Initial         time.Duration
-	Max             time.Duration
-	Multiplier      float64
-	pauseCallsCount int
-}
-
-func (b *mockBackoff) Pause() time.Duration {
-	b.pauseCallsCount++
-	return 0
-}
-
-func (b *mockBackoff) SetInitial(i time.Duration) {
-	b.Initial = i
-}
-
-func (b *mockBackoff) SetMax(m time.Duration) {
-	b.Max = m
-}
-
-func (b *mockBackoff) SetMultiplier(m float64) {
-	b.Multiplier = m
-}
-
-func (b *mockBackoff) GetInitial() time.Duration {
-	return b.Initial
-}
-
-func (b *mockBackoff) GetMax() time.Duration {
-	return b.Max
-}
-
-func (b *mockBackoff) GetMultiplier() float64 {
-	return b.Multiplier
 }
