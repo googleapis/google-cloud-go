@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math/rand"
 	"net/url"
 	"os"
 	"strconv"
@@ -752,6 +753,13 @@ func TestObjectACLCRUDEmulated(t *testing.T) {
 
 func TestOpenReaderEmulated(t *testing.T) {
 	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		if c, ok := client.(*grpcStorageClient); ok {
+			c.config.grpcBidiReads = true
+			defer func() {
+				c.config.grpcBidiReads = false
+			}()
+		}
+
 		// Populate test data.
 		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
 			Name: bucket,
@@ -764,33 +772,41 @@ func TestOpenReaderEmulated(t *testing.T) {
 			Bucket: bucket,
 			Name:   fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond()),
 		}
-		w := veneerClient.Bucket(bucket).Object(want.Name).NewWriter(ctx)
-		if _, err := w.Write(randomBytesToWrite); err != nil {
+		w := veneerClient.Bucket(want.Bucket).Object(want.Name).NewWriter(ctx)
+		if _, err := w.Write(randomBytes3MiB); err != nil {
 			t.Fatalf("failed to populate test data: %v", err)
 		}
 		if err := w.Close(); err != nil {
 			t.Fatalf("closing object: %v", err)
 		}
-
+		sentHandle := ReadHandle([]byte("abcdef"))
 		params := &newRangeReaderParams{
 			bucket: bucket,
 			object: want.Name,
 			gen:    defaultGen,
 			offset: 0,
 			length: -1,
+			handle: &sentHandle,
 		}
 		r, err := client.NewRangeReader(ctx, params)
 		if err != nil {
 			t.Fatalf("opening reading: %v", err)
 		}
-		wantLen := len(randomBytesToWrite)
-		got := make([]byte, wantLen)
-		n, err := r.Read(got)
-		if n != wantLen {
-			t.Fatalf("expected to read %d bytes, but got %d", wantLen, n)
+		// For gRPC requests with the emulator, we expect ReadHandle to be populated.
+		if _, ok := client.(*grpcStorageClient); ok {
+			if h := r.ReadHandle(); len(h) == 0 {
+				t.Errorf("got ReadHandle of length zero, expected bytes.")
+			}
 		}
-		if diff := cmp.Diff(got, randomBytesToWrite); diff != "" {
-			t.Fatalf("Read: got(-),want(+):\n%s", diff)
+		got, err := io.ReadAll(r)
+		if err != nil && err != io.EOF {
+			t.Fatalf("r.Read: %v", err)
+		}
+		if !bytes.Equal(got, randomBytes3MiB) {
+			t.Errorf("r.Read: content did not match, got %v bytes, want %v", len(got), len(randomBytes3MiB))
+		}
+		if err := r.Close(); err != nil {
+			t.Errorf("closing Reader: %v", err)
 		}
 	})
 }
@@ -911,6 +927,7 @@ func TestOpenWriterEmulated(t *testing.T) {
 		if err != nil {
 			t.Fatalf("opening reading: %v", err)
 		}
+		defer r.Close()
 		wantLen := len(randomBytesToWrite)
 		got := make([]byte, wantLen)
 		n, err := r.Read(got)
@@ -919,6 +936,94 @@ func TestOpenWriterEmulated(t *testing.T) {
 		}
 		if diff := cmp.Diff(got, randomBytesToWrite); diff != "" {
 			t.Fatalf("checking written content: got(-),want(+):\n%s", diff)
+		}
+	})
+}
+
+func TestOpenAppendableWriterEmulated(t *testing.T) {
+	transportClientTest(skipHTTP("appends only supported via gRPC"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		// Populate test data.
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
+			Name: bucket,
+		}, nil)
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		prefix := time.Now().Nanosecond()
+		objName := fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond())
+
+		vc := &Client{tc: client}
+		w := vc.Bucket(bucket).Object(objName).NewWriter(ctx)
+		w.Append = true
+		_, err = w.Write(randomBytesToWrite)
+		if err != nil {
+			t.Fatalf("writing test data: got %v; want ok", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing test data writer: got %v; want ok", err)
+		}
+
+		if diff := cmp.Diff(w.Attrs().Name, objName); diff != "" {
+			t.Fatalf("Resulting object name: got(-), want(+):\n%s", diff)
+		}
+
+		r, err := vc.Bucket(bucket).Object(objName).NewReader(ctx)
+		defer r.Close()
+		if err != nil {
+			t.Fatalf("opening reading: %v", err)
+		}
+		wantLen := len(randomBytesToWrite)
+		got, err := io.ReadAll(r)
+		if n := len(got); n != wantLen {
+			t.Fatalf("expected to read %d bytes, but got %d", wantLen, n)
+		}
+		if diff := cmp.Diff(got, randomBytesToWrite); diff != "" {
+			t.Fatalf("checking written content: got(-), want(+):\n%s", diff)
+		}
+	})
+}
+
+func TestOpenAppendableWriterMultipleFlushesEmulated(t *testing.T) {
+	transportClientTest(skipHTTP("appends only supported via gRPC"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		// Populate test data.
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
+			Name: bucket,
+		}, nil)
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		prefix := time.Now().Nanosecond()
+		objName := fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond())
+
+		vc := &Client{tc: client}
+		w := vc.Bucket(bucket).Object(objName).NewWriter(ctx)
+		w.Append = true
+		// This should chunk the request into three separate flushes to storage.
+		w.ChunkSize = MiB
+		_, err = w.Write(randomBytes3MiB)
+		if err != nil {
+			t.Fatalf("writing test data: got %v; want ok", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing test data writer: got %v; want ok", err)
+		}
+
+		if diff := cmp.Diff(w.Attrs().Name, objName); diff != "" {
+			t.Fatalf("Resulting object name: got(-), want(+):\n%s", diff)
+		}
+
+		r, err := veneerClient.Bucket(bucket).Object(objName).NewReader(ctx)
+		defer r.Close()
+		if err != nil {
+			t.Fatalf("opening reading: %v", err)
+		}
+		wantLen := len(randomBytes3MiB)
+		got, err := io.ReadAll(r)
+		if n := len(got); n != wantLen {
+			t.Fatalf("expected to read %d bytes, but got %d (%v)", wantLen, n, err)
+		}
+		if diff := cmp.Diff(got, randomBytes3MiB); diff != "" {
+			t.Fatalf("checking written content: got(-), want(+):\n%s", diff)
 		}
 	})
 }
@@ -971,6 +1076,288 @@ func TestCreateNotificationEmulated(t *testing.T) {
 		}
 		if diff := cmp.Diff(got.TopicID, want.TopicID); diff != "" {
 			t.Errorf("CreateNotification topic: got(-),want(+):\n%s", diff)
+		}
+	})
+}
+
+type multiRangeDownloaderOutput struct {
+	offset int64
+	limit  int64
+	err    error
+	buf    bytes.Buffer
+}
+
+func TestMultiRangeDownloaderEmulated(t *testing.T) {
+	transportClientTest(skipHTTP("mrd is implemented for grpc client"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		content := make([]byte, 5<<20)
+		rand.New(rand.NewSource(0)).Read(content)
+		_, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{
+			Name: bucket,
+		}, nil)
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		prefix := time.Now().Nanosecond()
+		objectName := fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond())
+		w := veneerClient.Bucket(bucket).Object(objectName).NewWriter(context.Background())
+		if _, err := w.Write(content); err != nil {
+			t.Fatalf("failed to populate test data: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing object: %v", err)
+		}
+		res := make([]multiRangeDownloaderOutput, 4)
+		params := &newMultiRangeDownloaderParams{
+			bucket: bucket,
+			object: objectName,
+			gen:    defaultGen,
+		}
+		reader, err := client.NewMultiRangeDownloader(context.Background(), params)
+		if err != nil {
+			t.Fatalf("error opening multirangedownloader: %v", err)
+		}
+		callback1 := func(x, y int64, err error) {
+			res[0].offset = x
+			res[0].limit = y
+			res[0].err = err
+		}
+		callback2 := func(x, y int64, err error) {
+			res[1].offset = x
+			res[1].limit = y
+			res[1].err = err
+		}
+		callback3 := func(x, y int64, err error) {
+			res[2].offset = x
+			res[2].limit = y
+			res[2].err = err
+		}
+		callback4 := func(x, y int64, err error) {
+			res[3].offset = x
+			res[3].limit = y
+			res[3].err = err
+		}
+		reader.Add(&res[0].buf, 0, 5<<20, callback1)
+		reader.Add(&res[1].buf, 100, 1000, callback2)
+		reader.Add(&res[2].buf, 0, 600, callback3)
+		reader.Add(&res[3].buf, 36, 999, callback4)
+		reader.Wait()
+		for _, k := range res {
+			if !bytes.Equal(k.buf.Bytes(), content[k.offset:k.offset+k.limit]) {
+				t.Errorf("Error in read range offset %v, limit %v, got: %v; want: %v",
+					k.offset, k.limit, k.buf.Bytes(), content[k.offset:k.offset+k.limit])
+			}
+			if k.err != nil {
+				t.Errorf("read range %v to %v : %v", k.offset, k.limit, k.err)
+			}
+		}
+		if err = reader.Close(); err != nil {
+			t.Errorf("Error while closing reader %v", err)
+		}
+	})
+}
+
+func TestMRDAddAfterCloseEmulated(t *testing.T) {
+	transportClientTest(skipHTTP("mrd is implemented for grpc client"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		content := make([]byte, 5000)
+		rand.New(rand.NewSource(0)).Read(content)
+		// Populate test data.
+		_, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{
+			Name: bucket,
+		}, nil)
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		prefix := time.Now().Nanosecond()
+		objectName := fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond())
+		w := veneerClient.Bucket(bucket).Object(objectName).NewWriter(context.Background())
+		if _, err := w.Write(content); err != nil {
+			t.Fatalf("failed to populate test data: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing object: %v", err)
+		}
+		buf := new(bytes.Buffer)
+		params := &newMultiRangeDownloaderParams{
+			bucket: bucket,
+			object: objectName,
+			gen:    defaultGen,
+		}
+		reader, err := client.NewMultiRangeDownloader(context.Background(), params)
+		if err != nil {
+			t.Fatalf("opening reading: %v", err)
+		}
+		var err1 error
+		callback := func(x, y int64, err error) {
+			err1 = err
+		}
+		err = reader.Close()
+		if err != nil {
+			t.Errorf("Error while closing reader %v", err)
+		}
+		reader.Add(buf, 10, 3000, callback)
+		if err1 == nil {
+			t.Fatalf("Expected error: stream to be closed")
+		}
+		if got, want := err1, fmt.Errorf("stream is closed, can't add range"); got.Error() != want.Error() {
+			t.Errorf("err: got %v, want %v", got.Error(), want.Error())
+		}
+	})
+}
+
+func TestMRDAddSanityCheck(t *testing.T) {
+	transportClientTest(skipHTTP("mrd is implemented for grpc client"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		content := make([]byte, 5000)
+		rand.New(rand.NewSource(0)).Read(content)
+		// Populate test data.
+		_, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{
+			Name: bucket,
+		}, nil)
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		prefix := time.Now().Nanosecond()
+		objectName := fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond())
+		w := veneerClient.Bucket(bucket).Object(objectName).NewWriter(context.Background())
+		if _, err := w.Write(content); err != nil {
+			t.Fatalf("failed to populate test data: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing object: %v", err)
+		}
+		buf := new(bytes.Buffer)
+		sentHandle := ReadHandle([]byte("abcdef"))
+		params := &newMultiRangeDownloaderParams{
+			bucket: bucket,
+			object: objectName,
+			gen:    defaultGen,
+			handle: &sentHandle,
+		}
+		reader, err := client.NewMultiRangeDownloader(context.Background(), params)
+		if err != nil {
+			t.Fatalf("opening reading: %v", err)
+		}
+		// For gRPC requests with the emulator, we expect ReadHandle to be populated.
+		if _, ok := client.(*grpcStorageClient); ok {
+			if h := reader.GetHandle(); len(h) == 0 {
+				t.Errorf("got ReadHandle of length zero, expected bytes.")
+			}
+		}
+		var err1, err2 error
+		callback1 := func(x, y int64, err error) {
+			err1 = err
+		}
+		callback2 := func(x, y int64, err error) {
+			err2 = err
+		}
+		// Request fails as offset greater than object size.
+		reader.Add(buf, 10000, 3000, callback1)
+		// Request fails as limit is negative.
+		reader.Add(buf, 10, -1, callback2)
+		if got, want := err1, fmt.Errorf("offset larger than size of object"); got.Error() != want.Error() {
+			t.Errorf("err: got %v, want %v", got.Error(), want.Error())
+		}
+		if got, want := err2, fmt.Errorf("limit can't be negative"); got.Error() != want.Error() {
+			t.Errorf("err: got %v, want %v", got.Error(), want.Error())
+		}
+		if err = reader.Close(); err != nil {
+			t.Errorf("Error while closing reader %v", err)
+		}
+	})
+}
+
+func TestMultiRangeDownloaderSpecifyGenerationEmulated(t *testing.T) {
+	transportClientTest(skipHTTP("mrd is implemented for grpc client"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		content := make([]byte, 5000)
+		rand.New(rand.NewSource(0)).Read(content)
+		// Populate test data.
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
+			Name: bucket,
+		}, nil)
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		prefix := time.Now().Nanosecond()
+		objectName := fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond())
+
+		vc := &Client{tc: client}
+		w := vc.Bucket(bucket).Object(objectName).NewWriter(ctx)
+		if _, err := w.Write(content); err != nil {
+			t.Fatalf("failed to populate test data: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing object: %v", err)
+		}
+
+		generation := w.Attrs().Generation
+
+		r, err := vc.Bucket(bucket).Object(objectName).Generation(generation).NewMultiRangeDownloader(ctx)
+		if err != nil {
+			t.Fatalf("generation-specific NewMultiRangeDownloader: %v", err)
+		}
+
+		b := bytes.Buffer{}
+		var readErr error
+		cb := func(_, _ int64, err error) {
+			readErr = err
+		}
+		r.Add(&b, 0, 0, cb)
+		r.Wait()
+		if err := r.Close(); err != nil {
+			t.Errorf("MultiRangeDownloader.Close() error: %v", err)
+		}
+		if readErr != nil {
+			t.Fatalf("Error during read: %v", readErr)
+		}
+
+		result := b.Bytes()
+		if len(result) != len(content) {
+			t.Fatalf("expected to read %d bytes, but got %d", len(content), len(result))
+		}
+		if diff := cmp.Diff(result, content); diff != "" {
+			t.Fatalf("checking read content: got(-),want(+):\n%s", diff)
+		}
+	})
+}
+
+func TestWholeObjectReaderSpecifyGenerationEmulated(t *testing.T) {
+	transportClientTest(skipHTTP("mrd is implemented for grpc client"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		content := make([]byte, 5000)
+		rand.New(rand.NewSource(0)).Read(content)
+		// Populate test data.
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
+			Name: bucket,
+		}, nil)
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		prefix := time.Now().Nanosecond()
+		objectName := fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond())
+
+		vc := &Client{tc: client}
+		w := vc.Bucket(bucket).Object(objectName).NewWriter(ctx)
+		if _, err := w.Write(content); err != nil {
+			t.Fatalf("failed to populate test data: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing object: %v", err)
+		}
+
+		generation := w.Attrs().Generation
+
+		r, err := vc.Bucket(bucket).Object(objectName).Generation(generation).NewReader(ctx)
+		if err != nil {
+			t.Fatalf("generation-specific NewReader: %v", err)
+		}
+		result, err := io.ReadAll(r)
+		if err != nil {
+			t.Fatalf("Error during read: %v", err)
+		}
+
+		if len(result) != len(content) {
+			t.Fatalf("expected to read %d bytes, but got %d", len(content), len(result))
+		}
+		if diff := cmp.Diff(result, content); diff != "" {
+			t.Fatalf("checking read content: got(-),want(+):\n%s", diff)
 		}
 	})
 }
@@ -1462,7 +1849,7 @@ func TestRetryMaxAttemptsEmulated(t *testing.T) {
 		instructions := map[string][]string{"storage.buckets.get": {"return-503", "return-503", "return-503", "return-503", "return-503"}}
 		testID := createRetryTest(t, client, instructions)
 		ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
-		config := &retryConfig{maxAttempts: expectedAttempts(3), backoff: gaxBackoffFromStruct(&gax.Backoff{Initial: 10 * time.Millisecond})}
+		config := &retryConfig{maxAttempts: expectedAttempts(3), backoff: &gax.Backoff{Initial: 10 * time.Millisecond}}
 		_, err = client.GetBucket(ctx, bucket, nil, idempotent(true), withRetryConfig(config))
 
 		var ae *apierror.APIError
@@ -1487,7 +1874,7 @@ func TestTimeoutErrorEmulated(t *testing.T) {
 		ctx, cancel := context.WithTimeout(ctx, time.Nanosecond)
 		defer cancel()
 		time.Sleep(5 * time.Nanosecond)
-		config := &retryConfig{backoff: gaxBackoffFromStruct(&gax.Backoff{Initial: 10 * time.Millisecond})}
+		config := &retryConfig{backoff: &gax.Backoff{Initial: 10 * time.Millisecond}}
 		_, err := client.GetBucket(ctx, bucket, nil, idempotent(true), withRetryConfig(config))
 
 		// Error may come through as a context.DeadlineExceeded (HTTP) or status.DeadlineExceeded (gRPC)
@@ -1504,7 +1891,7 @@ func TestTimeoutErrorEmulated(t *testing.T) {
 }
 
 // Test that server-side DEADLINE_EXCEEDED errors are retried as expected with gRPC.
-func TestRetryDeadlineExceedeEmulated(t *testing.T) {
+func TestRetryDeadlineExceededEmulated(t *testing.T) {
 	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{}, nil)
 		if err != nil {
@@ -1513,7 +1900,7 @@ func TestRetryDeadlineExceedeEmulated(t *testing.T) {
 		instructions := map[string][]string{"storage.buckets.get": {"return-504", "return-504"}}
 		testID := createRetryTest(t, client, instructions)
 		ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
-		config := &retryConfig{maxAttempts: expectedAttempts(4), backoff: gaxBackoffFromStruct(&gax.Backoff{Initial: 10 * time.Millisecond})}
+		config := &retryConfig{maxAttempts: expectedAttempts(4), backoff: &gax.Backoff{Initial: 10 * time.Millisecond}}
 		if _, err := client.GetBucket(ctx, bucket, nil, idempotent(true), withRetryConfig(config)); err != nil {
 			t.Fatalf("GetBucket: got unexpected error %v, want nil", err)
 		}

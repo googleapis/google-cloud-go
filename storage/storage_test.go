@@ -540,7 +540,7 @@ func TestSignedURL_MissingOptions(t *testing.T) {
 				GoogleAccessID: "access_id",
 				PrivateKey:     pk,
 			},
-			errMethodNotValid.Error(),
+			errSignedURLMethodNotValid.Error(),
 		},
 		{
 			&SignedURLOptions{
@@ -548,7 +548,7 @@ func TestSignedURL_MissingOptions(t *testing.T) {
 				PrivateKey:     pk,
 				Method:         "getMethod", // wrong method name
 			},
-			errMethodNotValid.Error(),
+			errSignedURLMethodNotValid.Error(),
 		},
 		{
 			&SignedURLOptions{
@@ -563,7 +563,7 @@ func TestSignedURL_MissingOptions(t *testing.T) {
 				GoogleAccessID: "access_id",
 				SignBytes:      func(b []byte) ([]byte, error) { return b, nil },
 			},
-			errMethodNotValid.Error(),
+			errSignedURLMethodNotValid.Error(),
 		},
 		{
 			&SignedURLOptions{
@@ -611,7 +611,7 @@ func TestSignedURL_MissingOptions(t *testing.T) {
 				Expires:        expires,
 				Scheme:         SigningSchemeV4,
 			},
-			errMethodNotValid.Error(),
+			errSignedURLMethodNotValid.Error(),
 		},
 		{
 			&SignedURLOptions{
@@ -995,11 +995,11 @@ func TestObjectRetryer(t *testing.T) {
 					WithErrorFunc(func(err error) bool { return false }))
 			},
 			want: &retryConfig{
-				backoff: gaxBackoffFromStruct(&gax.Backoff{
+				backoff: &gax.Backoff{
 					Initial:    2 * time.Second,
 					Max:        30 * time.Second,
 					Multiplier: 3,
-				}),
+				},
 				maxAttempts: expectedAttempts(5),
 				policy:      RetryAlways,
 				shouldRetry: func(err error) bool { return false },
@@ -1014,9 +1014,9 @@ func TestObjectRetryer(t *testing.T) {
 					}))
 			},
 			want: &retryConfig{
-				backoff: gaxBackoffFromStruct(&gax.Backoff{
+				backoff: &gax.Backoff{
 					Multiplier: 3,
-				})},
+				}},
 		},
 		{
 			name: "set policy only",
@@ -1092,11 +1092,11 @@ func TestClientSetRetry(t *testing.T) {
 				WithErrorFunc(func(err error) bool { return false }),
 			},
 			want: &retryConfig{
-				backoff: gaxBackoffFromStruct(&gax.Backoff{
+				backoff: &gax.Backoff{
 					Initial:    2 * time.Second,
 					Max:        30 * time.Second,
 					Multiplier: 3,
-				}),
+				},
 				maxAttempts: expectedAttempts(5),
 				policy:      RetryAlways,
 				shouldRetry: func(err error) bool { return false },
@@ -1110,9 +1110,9 @@ func TestClientSetRetry(t *testing.T) {
 				}),
 			},
 			want: &retryConfig{
-				backoff: gaxBackoffFromStruct(&gax.Backoff{
+				backoff: &gax.Backoff{
 					Multiplier: 3,
-				})},
+				}},
 		},
 		{
 			name: "set policy only",
@@ -1207,11 +1207,11 @@ func TestRetryer(t *testing.T) {
 				WithErrorFunc(ShouldRetry),
 			},
 			want: &retryConfig{
-				backoff: gaxBackoffFromStruct(&gax.Backoff{
+				backoff: &gax.Backoff{
 					Initial:    time.Minute,
 					Max:        time.Hour,
 					Multiplier: 6,
-				}),
+				},
 				shouldRetry: ShouldRetry,
 				maxAttempts: expectedAttempts(11),
 				policy:      RetryAlways,
@@ -1230,11 +1230,11 @@ func TestRetryer(t *testing.T) {
 				WithErrorFunc(ShouldRetry),
 			},
 			want: &retryConfig{
-				backoff: gaxBackoffFromStruct(&gax.Backoff{
+				backoff: &gax.Backoff{
 					Initial:    time.Minute,
 					Max:        time.Hour,
 					Multiplier: 6,
-				}),
+				},
 				shouldRetry: ShouldRetry,
 				maxAttempts: expectedAttempts(7),
 				policy:      RetryAlways,
@@ -1294,10 +1294,10 @@ func TestRetryer(t *testing.T) {
 				policy:      RetryAlways,
 				maxAttempts: expectedAttempts(5),
 				shouldRetry: ShouldRetry,
-				backoff: gaxBackoffFromStruct(&gax.Backoff{
+				backoff: &gax.Backoff{
 					Initial: time.Nanosecond,
 					Max:     time.Microsecond,
-				}),
+				},
 			},
 		},
 		{
@@ -1316,10 +1316,10 @@ func TestRetryer(t *testing.T) {
 				}),
 			},
 			want: &retryConfig{
-				backoff: gaxBackoffFromStruct(&gax.Backoff{
+				backoff: &gax.Backoff{
 					Initial: time.Nanosecond,
 					Max:     time.Microsecond,
-				}),
+				},
 			},
 		},
 		{
@@ -1339,10 +1339,10 @@ func TestRetryer(t *testing.T) {
 				policy:      RetryNever,
 				maxAttempts: expectedAttempts(5),
 				shouldRetry: ShouldRetry,
-				backoff: gaxBackoffFromStruct(&gax.Backoff{
+				backoff: &gax.Backoff{
 					Initial: time.Nanosecond,
 					Max:     time.Second,
-				}),
+				},
 			},
 		},
 		{
@@ -1358,9 +1358,9 @@ func TestRetryer(t *testing.T) {
 				}),
 			},
 			want: &retryConfig{
-				backoff: gaxBackoffFromStruct(&gax.Backoff{
+				backoff: &gax.Backoff{
 					Multiplier: 4,
-				}),
+				},
 			},
 		},
 	}
