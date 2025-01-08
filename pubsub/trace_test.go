@@ -566,7 +566,7 @@ func getSpans(e *tracetest.InMemoryExporter) tracetest.SpanStubs {
 
 	spans := e.GetSpans()
 
-	// Implement sortable struct, replace with slices.SortFunc once go 1.21 is min version
+	// Implement sortable struct, replace with slices.SortFunc once go 1.22 is min version
 	slices.SortFunc(spans, func(a, b tracetest.SpanStub) int {
 		return sortSpanStub(a, b)
 	})

@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	vmwareenginepb "cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -2167,6 +2166,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new vmware engine client based on gRPC.
@@ -2193,6 +2194,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:         connPool,
 		client:           vmwareenginepb.NewVmwareEngineClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:  iampb.NewIAMPolicyClient(connPool),
 		locationsClient:  locationpb.NewLocationsClient(connPool),
@@ -2258,6 +2260,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new vmware engine rest client.
@@ -2275,6 +2279,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -2348,7 +2353,7 @@ func (c *gRPCClient) ListPrivateClouds(ctx context.Context, req *vmwareenginepb.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListPrivateClouds(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListPrivateClouds, req, settings.GRPC, c.logger, "ListPrivateClouds")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2383,7 +2388,7 @@ func (c *gRPCClient) GetPrivateCloud(ctx context.Context, req *vmwareenginepb.Ge
 	var resp *vmwareenginepb.PrivateCloud
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetPrivateCloud(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetPrivateCloud, req, settings.GRPC, c.logger, "GetPrivateCloud")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2401,7 +2406,7 @@ func (c *gRPCClient) CreatePrivateCloud(ctx context.Context, req *vmwareenginepb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreatePrivateCloud(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreatePrivateCloud, req, settings.GRPC, c.logger, "CreatePrivateCloud")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2421,7 +2426,7 @@ func (c *gRPCClient) UpdatePrivateCloud(ctx context.Context, req *vmwareenginepb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdatePrivateCloud(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdatePrivateCloud, req, settings.GRPC, c.logger, "UpdatePrivateCloud")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2441,7 +2446,7 @@ func (c *gRPCClient) DeletePrivateCloud(ctx context.Context, req *vmwareenginepb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeletePrivateCloud(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeletePrivateCloud, req, settings.GRPC, c.logger, "DeletePrivateCloud")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2461,7 +2466,7 @@ func (c *gRPCClient) UndeletePrivateCloud(ctx context.Context, req *vmwareengine
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UndeletePrivateCloud(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UndeletePrivateCloud, req, settings.GRPC, c.logger, "UndeletePrivateCloud")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2492,7 +2497,7 @@ func (c *gRPCClient) ListClusters(ctx context.Context, req *vmwareenginepb.ListC
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListClusters(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListClusters, req, settings.GRPC, c.logger, "ListClusters")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2527,7 +2532,7 @@ func (c *gRPCClient) GetCluster(ctx context.Context, req *vmwareenginepb.GetClus
 	var resp *vmwareenginepb.Cluster
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetCluster(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetCluster, req, settings.GRPC, c.logger, "GetCluster")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2545,7 +2550,7 @@ func (c *gRPCClient) CreateCluster(ctx context.Context, req *vmwareenginepb.Crea
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateCluster(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateCluster, req, settings.GRPC, c.logger, "CreateCluster")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2565,7 +2570,7 @@ func (c *gRPCClient) UpdateCluster(ctx context.Context, req *vmwareenginepb.Upda
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateCluster(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateCluster, req, settings.GRPC, c.logger, "UpdateCluster")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2585,7 +2590,7 @@ func (c *gRPCClient) DeleteCluster(ctx context.Context, req *vmwareenginepb.Dele
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteCluster(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteCluster, req, settings.GRPC, c.logger, "DeleteCluster")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2616,7 +2621,7 @@ func (c *gRPCClient) ListNodes(ctx context.Context, req *vmwareenginepb.ListNode
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListNodes(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListNodes, req, settings.GRPC, c.logger, "ListNodes")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2651,7 +2656,7 @@ func (c *gRPCClient) GetNode(ctx context.Context, req *vmwareenginepb.GetNodeReq
 	var resp *vmwareenginepb.Node
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetNode(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetNode, req, settings.GRPC, c.logger, "GetNode")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2680,7 +2685,7 @@ func (c *gRPCClient) ListExternalAddresses(ctx context.Context, req *vmwareengin
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListExternalAddresses(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListExternalAddresses, req, settings.GRPC, c.logger, "ListExternalAddresses")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2726,7 +2731,7 @@ func (c *gRPCClient) FetchNetworkPolicyExternalAddresses(ctx context.Context, re
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.FetchNetworkPolicyExternalAddresses(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.FetchNetworkPolicyExternalAddresses, req, settings.GRPC, c.logger, "FetchNetworkPolicyExternalAddresses")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2761,7 +2766,7 @@ func (c *gRPCClient) GetExternalAddress(ctx context.Context, req *vmwareenginepb
 	var resp *vmwareenginepb.ExternalAddress
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetExternalAddress(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetExternalAddress, req, settings.GRPC, c.logger, "GetExternalAddress")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2779,7 +2784,7 @@ func (c *gRPCClient) CreateExternalAddress(ctx context.Context, req *vmwareengin
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateExternalAddress(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateExternalAddress, req, settings.GRPC, c.logger, "CreateExternalAddress")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2799,7 +2804,7 @@ func (c *gRPCClient) UpdateExternalAddress(ctx context.Context, req *vmwareengin
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateExternalAddress(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateExternalAddress, req, settings.GRPC, c.logger, "UpdateExternalAddress")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2819,7 +2824,7 @@ func (c *gRPCClient) DeleteExternalAddress(ctx context.Context, req *vmwareengin
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteExternalAddress(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteExternalAddress, req, settings.GRPC, c.logger, "DeleteExternalAddress")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2850,7 +2855,7 @@ func (c *gRPCClient) ListSubnets(ctx context.Context, req *vmwareenginepb.ListSu
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListSubnets(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListSubnets, req, settings.GRPC, c.logger, "ListSubnets")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2885,7 +2890,7 @@ func (c *gRPCClient) GetSubnet(ctx context.Context, req *vmwareenginepb.GetSubne
 	var resp *vmwareenginepb.Subnet
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetSubnet(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetSubnet, req, settings.GRPC, c.logger, "GetSubnet")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2903,7 +2908,7 @@ func (c *gRPCClient) UpdateSubnet(ctx context.Context, req *vmwareenginepb.Updat
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateSubnet(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateSubnet, req, settings.GRPC, c.logger, "UpdateSubnet")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2934,7 +2939,7 @@ func (c *gRPCClient) ListExternalAccessRules(ctx context.Context, req *vmwareeng
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListExternalAccessRules(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListExternalAccessRules, req, settings.GRPC, c.logger, "ListExternalAccessRules")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2969,7 +2974,7 @@ func (c *gRPCClient) GetExternalAccessRule(ctx context.Context, req *vmwareengin
 	var resp *vmwareenginepb.ExternalAccessRule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetExternalAccessRule(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetExternalAccessRule, req, settings.GRPC, c.logger, "GetExternalAccessRule")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2987,7 +2992,7 @@ func (c *gRPCClient) CreateExternalAccessRule(ctx context.Context, req *vmwareen
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateExternalAccessRule(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateExternalAccessRule, req, settings.GRPC, c.logger, "CreateExternalAccessRule")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3007,7 +3012,7 @@ func (c *gRPCClient) UpdateExternalAccessRule(ctx context.Context, req *vmwareen
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateExternalAccessRule(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateExternalAccessRule, req, settings.GRPC, c.logger, "UpdateExternalAccessRule")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3027,7 +3032,7 @@ func (c *gRPCClient) DeleteExternalAccessRule(ctx context.Context, req *vmwareen
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteExternalAccessRule(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteExternalAccessRule, req, settings.GRPC, c.logger, "DeleteExternalAccessRule")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3058,7 +3063,7 @@ func (c *gRPCClient) ListLoggingServers(ctx context.Context, req *vmwareenginepb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListLoggingServers(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListLoggingServers, req, settings.GRPC, c.logger, "ListLoggingServers")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3093,7 +3098,7 @@ func (c *gRPCClient) GetLoggingServer(ctx context.Context, req *vmwareenginepb.G
 	var resp *vmwareenginepb.LoggingServer
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetLoggingServer(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetLoggingServer, req, settings.GRPC, c.logger, "GetLoggingServer")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3111,7 +3116,7 @@ func (c *gRPCClient) CreateLoggingServer(ctx context.Context, req *vmwareenginep
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateLoggingServer(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateLoggingServer, req, settings.GRPC, c.logger, "CreateLoggingServer")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3131,7 +3136,7 @@ func (c *gRPCClient) UpdateLoggingServer(ctx context.Context, req *vmwareenginep
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateLoggingServer(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateLoggingServer, req, settings.GRPC, c.logger, "UpdateLoggingServer")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3151,7 +3156,7 @@ func (c *gRPCClient) DeleteLoggingServer(ctx context.Context, req *vmwareenginep
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteLoggingServer(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteLoggingServer, req, settings.GRPC, c.logger, "DeleteLoggingServer")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3182,7 +3187,7 @@ func (c *gRPCClient) ListNodeTypes(ctx context.Context, req *vmwareenginepb.List
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListNodeTypes(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListNodeTypes, req, settings.GRPC, c.logger, "ListNodeTypes")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3217,7 +3222,7 @@ func (c *gRPCClient) GetNodeType(ctx context.Context, req *vmwareenginepb.GetNod
 	var resp *vmwareenginepb.NodeType
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetNodeType(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetNodeType, req, settings.GRPC, c.logger, "GetNodeType")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3235,7 +3240,7 @@ func (c *gRPCClient) ShowNsxCredentials(ctx context.Context, req *vmwareenginepb
 	var resp *vmwareenginepb.Credentials
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ShowNsxCredentials(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ShowNsxCredentials, req, settings.GRPC, c.logger, "ShowNsxCredentials")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3253,7 +3258,7 @@ func (c *gRPCClient) ShowVcenterCredentials(ctx context.Context, req *vmwareengi
 	var resp *vmwareenginepb.Credentials
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ShowVcenterCredentials(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ShowVcenterCredentials, req, settings.GRPC, c.logger, "ShowVcenterCredentials")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3271,7 +3276,7 @@ func (c *gRPCClient) ResetNsxCredentials(ctx context.Context, req *vmwareenginep
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ResetNsxCredentials(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ResetNsxCredentials, req, settings.GRPC, c.logger, "ResetNsxCredentials")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3291,7 +3296,7 @@ func (c *gRPCClient) ResetVcenterCredentials(ctx context.Context, req *vmwareeng
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ResetVcenterCredentials(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ResetVcenterCredentials, req, settings.GRPC, c.logger, "ResetVcenterCredentials")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3311,7 +3316,7 @@ func (c *gRPCClient) GetDnsForwarding(ctx context.Context, req *vmwareenginepb.G
 	var resp *vmwareenginepb.DnsForwarding
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetDnsForwarding(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetDnsForwarding, req, settings.GRPC, c.logger, "GetDnsForwarding")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3329,7 +3334,7 @@ func (c *gRPCClient) UpdateDnsForwarding(ctx context.Context, req *vmwareenginep
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateDnsForwarding(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateDnsForwarding, req, settings.GRPC, c.logger, "UpdateDnsForwarding")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3349,7 +3354,7 @@ func (c *gRPCClient) GetNetworkPeering(ctx context.Context, req *vmwareenginepb.
 	var resp *vmwareenginepb.NetworkPeering
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetNetworkPeering(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetNetworkPeering, req, settings.GRPC, c.logger, "GetNetworkPeering")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3378,7 +3383,7 @@ func (c *gRPCClient) ListNetworkPeerings(ctx context.Context, req *vmwareenginep
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListNetworkPeerings(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListNetworkPeerings, req, settings.GRPC, c.logger, "ListNetworkPeerings")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3413,7 +3418,7 @@ func (c *gRPCClient) CreateNetworkPeering(ctx context.Context, req *vmwareengine
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateNetworkPeering(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateNetworkPeering, req, settings.GRPC, c.logger, "CreateNetworkPeering")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3433,7 +3438,7 @@ func (c *gRPCClient) DeleteNetworkPeering(ctx context.Context, req *vmwareengine
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteNetworkPeering(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteNetworkPeering, req, settings.GRPC, c.logger, "DeleteNetworkPeering")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3453,7 +3458,7 @@ func (c *gRPCClient) UpdateNetworkPeering(ctx context.Context, req *vmwareengine
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateNetworkPeering(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateNetworkPeering, req, settings.GRPC, c.logger, "UpdateNetworkPeering")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3484,7 +3489,7 @@ func (c *gRPCClient) ListPeeringRoutes(ctx context.Context, req *vmwareenginepb.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListPeeringRoutes(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListPeeringRoutes, req, settings.GRPC, c.logger, "ListPeeringRoutes")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3519,7 +3524,7 @@ func (c *gRPCClient) CreateHcxActivationKey(ctx context.Context, req *vmwareengi
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateHcxActivationKey(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateHcxActivationKey, req, settings.GRPC, c.logger, "CreateHcxActivationKey")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3550,7 +3555,7 @@ func (c *gRPCClient) ListHcxActivationKeys(ctx context.Context, req *vmwareengin
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListHcxActivationKeys(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListHcxActivationKeys, req, settings.GRPC, c.logger, "ListHcxActivationKeys")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3585,7 +3590,7 @@ func (c *gRPCClient) GetHcxActivationKey(ctx context.Context, req *vmwareenginep
 	var resp *vmwareenginepb.HcxActivationKey
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetHcxActivationKey(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetHcxActivationKey, req, settings.GRPC, c.logger, "GetHcxActivationKey")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3603,7 +3608,7 @@ func (c *gRPCClient) GetNetworkPolicy(ctx context.Context, req *vmwareenginepb.G
 	var resp *vmwareenginepb.NetworkPolicy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetNetworkPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetNetworkPolicy, req, settings.GRPC, c.logger, "GetNetworkPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3632,7 +3637,7 @@ func (c *gRPCClient) ListNetworkPolicies(ctx context.Context, req *vmwareenginep
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListNetworkPolicies(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListNetworkPolicies, req, settings.GRPC, c.logger, "ListNetworkPolicies")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3667,7 +3672,7 @@ func (c *gRPCClient) CreateNetworkPolicy(ctx context.Context, req *vmwareenginep
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateNetworkPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateNetworkPolicy, req, settings.GRPC, c.logger, "CreateNetworkPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3687,7 +3692,7 @@ func (c *gRPCClient) UpdateNetworkPolicy(ctx context.Context, req *vmwareenginep
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateNetworkPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateNetworkPolicy, req, settings.GRPC, c.logger, "UpdateNetworkPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3707,7 +3712,7 @@ func (c *gRPCClient) DeleteNetworkPolicy(ctx context.Context, req *vmwareenginep
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteNetworkPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteNetworkPolicy, req, settings.GRPC, c.logger, "DeleteNetworkPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3738,7 +3743,7 @@ func (c *gRPCClient) ListManagementDnsZoneBindings(ctx context.Context, req *vmw
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListManagementDnsZoneBindings(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListManagementDnsZoneBindings, req, settings.GRPC, c.logger, "ListManagementDnsZoneBindings")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3773,7 +3778,7 @@ func (c *gRPCClient) GetManagementDnsZoneBinding(ctx context.Context, req *vmwar
 	var resp *vmwareenginepb.ManagementDnsZoneBinding
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetManagementDnsZoneBinding(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetManagementDnsZoneBinding, req, settings.GRPC, c.logger, "GetManagementDnsZoneBinding")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3791,7 +3796,7 @@ func (c *gRPCClient) CreateManagementDnsZoneBinding(ctx context.Context, req *vm
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateManagementDnsZoneBinding(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateManagementDnsZoneBinding, req, settings.GRPC, c.logger, "CreateManagementDnsZoneBinding")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3811,7 +3816,7 @@ func (c *gRPCClient) UpdateManagementDnsZoneBinding(ctx context.Context, req *vm
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateManagementDnsZoneBinding(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateManagementDnsZoneBinding, req, settings.GRPC, c.logger, "UpdateManagementDnsZoneBinding")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3831,7 +3836,7 @@ func (c *gRPCClient) DeleteManagementDnsZoneBinding(ctx context.Context, req *vm
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteManagementDnsZoneBinding(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteManagementDnsZoneBinding, req, settings.GRPC, c.logger, "DeleteManagementDnsZoneBinding")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3851,7 +3856,7 @@ func (c *gRPCClient) RepairManagementDnsZoneBinding(ctx context.Context, req *vm
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.RepairManagementDnsZoneBinding(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.RepairManagementDnsZoneBinding, req, settings.GRPC, c.logger, "RepairManagementDnsZoneBinding")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3871,7 +3876,7 @@ func (c *gRPCClient) CreateVmwareEngineNetwork(ctx context.Context, req *vmwaree
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateVmwareEngineNetwork(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateVmwareEngineNetwork, req, settings.GRPC, c.logger, "CreateVmwareEngineNetwork")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3891,7 +3896,7 @@ func (c *gRPCClient) UpdateVmwareEngineNetwork(ctx context.Context, req *vmwaree
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateVmwareEngineNetwork(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateVmwareEngineNetwork, req, settings.GRPC, c.logger, "UpdateVmwareEngineNetwork")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3911,7 +3916,7 @@ func (c *gRPCClient) DeleteVmwareEngineNetwork(ctx context.Context, req *vmwaree
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteVmwareEngineNetwork(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteVmwareEngineNetwork, req, settings.GRPC, c.logger, "DeleteVmwareEngineNetwork")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3931,7 +3936,7 @@ func (c *gRPCClient) GetVmwareEngineNetwork(ctx context.Context, req *vmwareengi
 	var resp *vmwareenginepb.VmwareEngineNetwork
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetVmwareEngineNetwork(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetVmwareEngineNetwork, req, settings.GRPC, c.logger, "GetVmwareEngineNetwork")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3960,7 +3965,7 @@ func (c *gRPCClient) ListVmwareEngineNetworks(ctx context.Context, req *vmwareen
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListVmwareEngineNetworks(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListVmwareEngineNetworks, req, settings.GRPC, c.logger, "ListVmwareEngineNetworks")
 			return err
 		}, opts...)
 		if err != nil {
@@ -3995,7 +4000,7 @@ func (c *gRPCClient) CreatePrivateConnection(ctx context.Context, req *vmwareeng
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreatePrivateConnection(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreatePrivateConnection, req, settings.GRPC, c.logger, "CreatePrivateConnection")
 		return err
 	}, opts...)
 	if err != nil {
@@ -4015,7 +4020,7 @@ func (c *gRPCClient) GetPrivateConnection(ctx context.Context, req *vmwareengine
 	var resp *vmwareenginepb.PrivateConnection
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetPrivateConnection(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetPrivateConnection, req, settings.GRPC, c.logger, "GetPrivateConnection")
 		return err
 	}, opts...)
 	if err != nil {
@@ -4044,7 +4049,7 @@ func (c *gRPCClient) ListPrivateConnections(ctx context.Context, req *vmwareengi
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListPrivateConnections(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListPrivateConnections, req, settings.GRPC, c.logger, "ListPrivateConnections")
 			return err
 		}, opts...)
 		if err != nil {
@@ -4079,7 +4084,7 @@ func (c *gRPCClient) UpdatePrivateConnection(ctx context.Context, req *vmwareeng
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdatePrivateConnection(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdatePrivateConnection, req, settings.GRPC, c.logger, "UpdatePrivateConnection")
 		return err
 	}, opts...)
 	if err != nil {
@@ -4099,7 +4104,7 @@ func (c *gRPCClient) DeletePrivateConnection(ctx context.Context, req *vmwareeng
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeletePrivateConnection(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeletePrivateConnection, req, settings.GRPC, c.logger, "DeletePrivateConnection")
 		return err
 	}, opts...)
 	if err != nil {
@@ -4130,7 +4135,7 @@ func (c *gRPCClient) ListPrivateConnectionPeeringRoutes(ctx context.Context, req
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListPrivateConnectionPeeringRoutes(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListPrivateConnectionPeeringRoutes, req, settings.GRPC, c.logger, "ListPrivateConnectionPeeringRoutes")
 			return err
 		}, opts...)
 		if err != nil {
@@ -4165,7 +4170,7 @@ func (c *gRPCClient) GrantDnsBindPermission(ctx context.Context, req *vmwareengi
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GrantDnsBindPermission(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GrantDnsBindPermission, req, settings.GRPC, c.logger, "GrantDnsBindPermission")
 		return err
 	}, opts...)
 	if err != nil {
@@ -4185,7 +4190,7 @@ func (c *gRPCClient) GetDnsBindPermission(ctx context.Context, req *vmwareengine
 	var resp *vmwareenginepb.DnsBindPermission
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetDnsBindPermission(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetDnsBindPermission, req, settings.GRPC, c.logger, "GetDnsBindPermission")
 		return err
 	}, opts...)
 	if err != nil {
@@ -4203,7 +4208,7 @@ func (c *gRPCClient) RevokeDnsBindPermission(ctx context.Context, req *vmwareeng
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.RevokeDnsBindPermission(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.RevokeDnsBindPermission, req, settings.GRPC, c.logger, "RevokeDnsBindPermission")
 		return err
 	}, opts...)
 	if err != nil {
@@ -4223,7 +4228,7 @@ func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -4252,7 +4257,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -4287,7 +4292,7 @@ func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -4305,7 +4310,7 @@ func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -4323,7 +4328,7 @@ func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -4340,7 +4345,7 @@ func (c *gRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -4355,7 +4360,7 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -4384,7 +4389,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -4461,21 +4466,10 @@ func (c *restClient) ListPrivateClouds(ctx context.Context, req *vmwareenginepb.
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListPrivateClouds")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4538,17 +4532,7 @@ func (c *restClient) GetPrivateCloud(ctx context.Context, req *vmwareenginepb.Ge
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetPrivateCloud")
 		if err != nil {
 			return err
 		}
@@ -4617,21 +4601,10 @@ func (c *restClient) CreatePrivateCloud(ctx context.Context, req *vmwareenginepb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreatePrivateCloud")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4705,21 +4678,10 @@ func (c *restClient) UpdatePrivateCloud(ctx context.Context, req *vmwareenginepb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdatePrivateCloud")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4792,21 +4754,10 @@ func (c *restClient) DeletePrivateCloud(ctx context.Context, req *vmwareenginepb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeletePrivateCloud")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4865,21 +4816,10 @@ func (c *restClient) UndeletePrivateCloud(ctx context.Context, req *vmwareengine
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UndeletePrivateCloud")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4948,21 +4888,10 @@ func (c *restClient) ListClusters(ctx context.Context, req *vmwareenginepb.ListC
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListClusters")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -5025,17 +4954,7 @@ func (c *restClient) GetCluster(ctx context.Context, req *vmwareenginepb.GetClus
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCluster")
 		if err != nil {
 			return err
 		}
@@ -5101,21 +5020,10 @@ func (c *restClient) CreateCluster(ctx context.Context, req *vmwareenginepb.Crea
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateCluster")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5191,21 +5099,10 @@ func (c *restClient) UpdateCluster(ctx context.Context, req *vmwareenginepb.Upda
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateCluster")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5261,21 +5158,10 @@ func (c *restClient) DeleteCluster(ctx context.Context, req *vmwareenginepb.Dele
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteCluster")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5338,21 +5224,10 @@ func (c *restClient) ListNodes(ctx context.Context, req *vmwareenginepb.ListNode
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListNodes")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -5415,17 +5290,7 @@ func (c *restClient) GetNode(ctx context.Context, req *vmwareenginepb.GetNodeReq
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetNode")
 		if err != nil {
 			return err
 		}
@@ -5494,21 +5359,10 @@ func (c *restClient) ListExternalAddresses(ctx context.Context, req *vmwareengin
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListExternalAddresses")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -5584,21 +5438,10 @@ func (c *restClient) FetchNetworkPolicyExternalAddresses(ctx context.Context, re
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FetchNetworkPolicyExternalAddresses")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -5661,17 +5504,7 @@ func (c *restClient) GetExternalAddress(ctx context.Context, req *vmwareenginepb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetExternalAddress")
 		if err != nil {
 			return err
 		}
@@ -5733,21 +5566,10 @@ func (c *restClient) CreateExternalAddress(ctx context.Context, req *vmwareengin
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateExternalAddress")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5820,21 +5642,10 @@ func (c *restClient) UpdateExternalAddress(ctx context.Context, req *vmwareengin
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateExternalAddress")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5889,21 +5700,10 @@ func (c *restClient) DeleteExternalAddress(ctx context.Context, req *vmwareengin
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteExternalAddress")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -5966,21 +5766,10 @@ func (c *restClient) ListSubnets(ctx context.Context, req *vmwareenginepb.ListSu
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSubnets")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -6043,17 +5832,7 @@ func (c *restClient) GetSubnet(ctx context.Context, req *vmwareenginepb.GetSubne
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSubnet")
 		if err != nil {
 			return err
 		}
@@ -6121,21 +5900,10 @@ func (c *restClient) UpdateSubnet(ctx context.Context, req *vmwareenginepb.Updat
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateSubnet")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -6204,21 +5972,10 @@ func (c *restClient) ListExternalAccessRules(ctx context.Context, req *vmwareeng
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListExternalAccessRules")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -6281,17 +6038,7 @@ func (c *restClient) GetExternalAccessRule(ctx context.Context, req *vmwareengin
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetExternalAccessRule")
 		if err != nil {
 			return err
 		}
@@ -6351,21 +6098,10 @@ func (c *restClient) CreateExternalAccessRule(ctx context.Context, req *vmwareen
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateExternalAccessRule")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -6433,21 +6169,10 @@ func (c *restClient) UpdateExternalAccessRule(ctx context.Context, req *vmwareen
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateExternalAccessRule")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -6500,21 +6225,10 @@ func (c *restClient) DeleteExternalAccessRule(ctx context.Context, req *vmwareen
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteExternalAccessRule")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -6584,21 +6298,10 @@ func (c *restClient) ListLoggingServers(ctx context.Context, req *vmwareenginepb
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLoggingServers")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -6661,17 +6364,7 @@ func (c *restClient) GetLoggingServer(ctx context.Context, req *vmwareenginepb.G
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLoggingServer")
 		if err != nil {
 			return err
 		}
@@ -6731,21 +6424,10 @@ func (c *restClient) CreateLoggingServer(ctx context.Context, req *vmwareenginep
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateLoggingServer")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -6813,21 +6495,10 @@ func (c *restClient) UpdateLoggingServer(ctx context.Context, req *vmwareenginep
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateLoggingServer")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -6880,21 +6551,10 @@ func (c *restClient) DeleteLoggingServer(ctx context.Context, req *vmwareenginep
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteLoggingServer")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -6960,21 +6620,10 @@ func (c *restClient) ListNodeTypes(ctx context.Context, req *vmwareenginepb.List
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListNodeTypes")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -7037,17 +6686,7 @@ func (c *restClient) GetNodeType(ctx context.Context, req *vmwareenginepb.GetNod
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetNodeType")
 		if err != nil {
 			return err
 		}
@@ -7097,17 +6736,7 @@ func (c *restClient) ShowNsxCredentials(ctx context.Context, req *vmwareenginepb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ShowNsxCredentials")
 		if err != nil {
 			return err
 		}
@@ -7160,17 +6789,7 @@ func (c *restClient) ShowVcenterCredentials(ctx context.Context, req *vmwareengi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ShowVcenterCredentials")
 		if err != nil {
 			return err
 		}
@@ -7225,21 +6844,10 @@ func (c *restClient) ResetNsxCredentials(ctx context.Context, req *vmwareenginep
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ResetNsxCredentials")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -7295,21 +6903,10 @@ func (c *restClient) ResetVcenterCredentials(ctx context.Context, req *vmwareeng
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ResetVcenterCredentials")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -7360,17 +6957,7 @@ func (c *restClient) GetDnsForwarding(ctx context.Context, req *vmwareenginepb.G
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDnsForwarding")
 		if err != nil {
 			return err
 		}
@@ -7437,21 +7024,10 @@ func (c *restClient) UpdateDnsForwarding(ctx context.Context, req *vmwareenginep
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateDnsForwarding")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -7505,17 +7081,7 @@ func (c *restClient) GetNetworkPeering(ctx context.Context, req *vmwareenginepb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetNetworkPeering")
 		if err != nil {
 			return err
 		}
@@ -7584,21 +7150,10 @@ func (c *restClient) ListNetworkPeerings(ctx context.Context, req *vmwareenginep
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListNetworkPeerings")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -7673,21 +7228,10 @@ func (c *restClient) CreateNetworkPeering(ctx context.Context, req *vmwareengine
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateNetworkPeering")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -7743,21 +7287,10 @@ func (c *restClient) DeleteNetworkPeering(ctx context.Context, req *vmwareengine
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteNetworkPeering")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -7826,21 +7359,10 @@ func (c *restClient) UpdateNetworkPeering(ctx context.Context, req *vmwareengine
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateNetworkPeering")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -7907,21 +7429,10 @@ func (c *restClient) ListPeeringRoutes(ctx context.Context, req *vmwareenginepb.
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListPeeringRoutes")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -7994,21 +7505,10 @@ func (c *restClient) CreateHcxActivationKey(ctx context.Context, req *vmwareengi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateHcxActivationKey")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -8071,21 +7571,10 @@ func (c *restClient) ListHcxActivationKeys(ctx context.Context, req *vmwareengin
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListHcxActivationKeys")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -8148,17 +7637,7 @@ func (c *restClient) GetHcxActivationKey(ctx context.Context, req *vmwareenginep
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetHcxActivationKey")
 		if err != nil {
 			return err
 		}
@@ -8208,17 +7687,7 @@ func (c *restClient) GetNetworkPolicy(ctx context.Context, req *vmwareenginepb.G
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetNetworkPolicy")
 		if err != nil {
 			return err
 		}
@@ -8286,21 +7755,10 @@ func (c *restClient) ListNetworkPolicies(ctx context.Context, req *vmwareenginep
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListNetworkPolicies")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -8375,21 +7833,10 @@ func (c *restClient) CreateNetworkPolicy(ctx context.Context, req *vmwareenginep
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateNetworkPolicy")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -8467,21 +7914,10 @@ func (c *restClient) UpdateNetworkPolicy(ctx context.Context, req *vmwareenginep
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateNetworkPolicy")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -8536,21 +7972,10 @@ func (c *restClient) DeleteNetworkPolicy(ctx context.Context, req *vmwareenginep
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteNetworkPolicy")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -8619,21 +8044,10 @@ func (c *restClient) ListManagementDnsZoneBindings(ctx context.Context, req *vmw
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListManagementDnsZoneBindings")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -8696,17 +8110,7 @@ func (c *restClient) GetManagementDnsZoneBinding(ctx context.Context, req *vmwar
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetManagementDnsZoneBinding")
 		if err != nil {
 			return err
 		}
@@ -8772,21 +8176,10 @@ func (c *restClient) CreateManagementDnsZoneBinding(ctx context.Context, req *vm
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateManagementDnsZoneBinding")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -8854,21 +8247,10 @@ func (c *restClient) UpdateManagementDnsZoneBinding(ctx context.Context, req *vm
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateManagementDnsZoneBinding")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -8923,21 +8305,10 @@ func (c *restClient) DeleteManagementDnsZoneBinding(ctx context.Context, req *vm
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteManagementDnsZoneBinding")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -8994,21 +8365,10 @@ func (c *restClient) RepairManagementDnsZoneBinding(ctx context.Context, req *vm
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RepairManagementDnsZoneBinding")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -9069,21 +8429,10 @@ func (c *restClient) CreateVmwareEngineNetwork(ctx context.Context, req *vmwaree
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateVmwareEngineNetwork")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -9152,21 +8501,10 @@ func (c *restClient) UpdateVmwareEngineNetwork(ctx context.Context, req *vmwaree
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateVmwareEngineNetwork")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -9225,21 +8563,10 @@ func (c *restClient) DeleteVmwareEngineNetwork(ctx context.Context, req *vmwaree
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteVmwareEngineNetwork")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -9293,17 +8620,7 @@ func (c *restClient) GetVmwareEngineNetwork(ctx context.Context, req *vmwareengi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetVmwareEngineNetwork")
 		if err != nil {
 			return err
 		}
@@ -9371,21 +8688,10 @@ func (c *restClient) ListVmwareEngineNetworks(ctx context.Context, req *vmwareen
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListVmwareEngineNetworks")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -9459,21 +8765,10 @@ func (c *restClient) CreatePrivateConnection(ctx context.Context, req *vmwareeng
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreatePrivateConnection")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -9526,17 +8821,7 @@ func (c *restClient) GetPrivateConnection(ctx context.Context, req *vmwareengine
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetPrivateConnection")
 		if err != nil {
 			return err
 		}
@@ -9604,21 +8889,10 @@ func (c *restClient) ListPrivateConnections(ctx context.Context, req *vmwareengi
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListPrivateConnections")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -9699,21 +8973,10 @@ func (c *restClient) UpdatePrivateConnection(ctx context.Context, req *vmwareeng
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdatePrivateConnection")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -9768,21 +9031,10 @@ func (c *restClient) DeletePrivateConnection(ctx context.Context, req *vmwareeng
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeletePrivateConnection")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -9845,21 +9097,10 @@ func (c *restClient) ListPrivateConnectionPeeringRoutes(ctx context.Context, req
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListPrivateConnectionPeeringRoutes")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -9930,21 +9171,10 @@ func (c *restClient) GrantDnsBindPermission(ctx context.Context, req *vmwareengi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GrantDnsBindPermission")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -9997,17 +9227,7 @@ func (c *restClient) GetDnsBindPermission(ctx context.Context, req *vmwareengine
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDnsBindPermission")
 		if err != nil {
 			return err
 		}
@@ -10064,21 +9284,10 @@ func (c *restClient) RevokeDnsBindPermission(ctx context.Context, req *vmwareeng
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RevokeDnsBindPermission")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -10129,17 +9338,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -10204,21 +9403,10 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -10285,17 +9473,7 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -10355,17 +9533,7 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -10427,17 +9595,7 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
 		if err != nil {
 			return err
 		}
@@ -10484,15 +9642,8 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOperation")
+		return err
 	}, opts...)
 }
 
@@ -10529,17 +9680,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -10604,21 +9745,10 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

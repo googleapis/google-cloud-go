@@ -1,6 +1,27 @@
 # Changes
 
 
+## [1.20.4](https://github.com/googleapis/google-cloud-go/compare/kms/v1.20.3...kms/v1.20.4) (2025-01-02)
+
+
+### Bug Fixes
+
+* **kms:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+## [1.20.3](https://github.com/googleapis/google-cloud-go/compare/kms/v1.20.2...kms/v1.20.3) (2024-12-18)
+
+
+### Documentation
+
+* **kms:** Code documentation improvements ([4254053](https://github.com/googleapis/google-cloud-go/commit/42540530e44e5f331e66e0777c4aabf449f5fd90))
+
+## [1.20.2](https://github.com/googleapis/google-cloud-go/compare/kms/v1.20.1...kms/v1.20.2) (2024-12-04)
+
+
+### Documentation
+
+* **kms:** A comment for enum `CryptoKeyVersionAlgorithm` is changed ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+
 ## [1.20.1](https://github.com/googleapis/google-cloud-go/compare/kms/v1.20.0...kms/v1.20.1) (2024-10-23)
 
 

@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 	procurementpb "cloud.google.com/go/commerce/consumer/procurement/apiv1/procurementpb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -183,6 +182,8 @@ type licenseManagementGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewLicenseManagementClient creates a new license management service client based on gRPC.
@@ -209,6 +210,7 @@ func NewLicenseManagementClient(ctx context.Context, opts ...option.ClientOption
 		connPool:                connPool,
 		licenseManagementClient: procurementpb.NewLicenseManagementServiceClient(connPool),
 		CallOptions:             &client.CallOptions,
+		logger:                  internaloption.GetLogger(opts),
 		operationsClient:        longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -256,6 +258,8 @@ type licenseManagementRESTClient struct {
 
 	// Points back to the CallOptions field of the containing LicenseManagementClient
 	CallOptions **LicenseManagementCallOptions
+
+	logger *slog.Logger
 }
 
 // NewLicenseManagementRESTClient creates a new license management service rest client.
@@ -273,6 +277,7 @@ func NewLicenseManagementRESTClient(ctx context.Context, opts ...option.ClientOp
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -325,7 +330,7 @@ func (c *licenseManagementGRPCClient) GetLicensePool(ctx context.Context, req *p
 	var resp *procurementpb.LicensePool
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.licenseManagementClient.GetLicensePool(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.licenseManagementClient.GetLicensePool, req, settings.GRPC, c.logger, "GetLicensePool")
 		return err
 	}, opts...)
 	if err != nil {
@@ -343,7 +348,7 @@ func (c *licenseManagementGRPCClient) UpdateLicensePool(ctx context.Context, req
 	var resp *procurementpb.LicensePool
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.licenseManagementClient.UpdateLicensePool(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.licenseManagementClient.UpdateLicensePool, req, settings.GRPC, c.logger, "UpdateLicensePool")
 		return err
 	}, opts...)
 	if err != nil {
@@ -361,7 +366,7 @@ func (c *licenseManagementGRPCClient) Assign(ctx context.Context, req *procureme
 	var resp *procurementpb.AssignResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.licenseManagementClient.Assign(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.licenseManagementClient.Assign, req, settings.GRPC, c.logger, "Assign")
 		return err
 	}, opts...)
 	if err != nil {
@@ -379,7 +384,7 @@ func (c *licenseManagementGRPCClient) Unassign(ctx context.Context, req *procure
 	var resp *procurementpb.UnassignResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.licenseManagementClient.Unassign(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.licenseManagementClient.Unassign, req, settings.GRPC, c.logger, "Unassign")
 		return err
 	}, opts...)
 	if err != nil {
@@ -408,7 +413,7 @@ func (c *licenseManagementGRPCClient) EnumerateLicensedUsers(ctx context.Context
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.licenseManagementClient.EnumerateLicensedUsers(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.licenseManagementClient.EnumerateLicensedUsers, req, settings.GRPC, c.logger, "EnumerateLicensedUsers")
 			return err
 		}, opts...)
 		if err != nil {
@@ -443,7 +448,7 @@ func (c *licenseManagementGRPCClient) GetOperation(ctx context.Context, req *lon
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -485,17 +490,7 @@ func (c *licenseManagementRESTClient) GetLicensePool(ctx context.Context, req *p
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLicensePool")
 		if err != nil {
 			return err
 		}
@@ -559,17 +554,7 @@ func (c *licenseManagementRESTClient) UpdateLicensePool(ctx context.Context, req
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateLicensePool")
 		if err != nil {
 			return err
 		}
@@ -625,17 +610,7 @@ func (c *licenseManagementRESTClient) Assign(ctx context.Context, req *procureme
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "Assign")
 		if err != nil {
 			return err
 		}
@@ -691,17 +666,7 @@ func (c *licenseManagementRESTClient) Unassign(ctx context.Context, req *procure
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "Unassign")
 		if err != nil {
 			return err
 		}
@@ -763,21 +728,10 @@ func (c *licenseManagementRESTClient) EnumerateLicensedUsers(ctx context.Context
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "EnumerateLicensedUsers")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -840,17 +794,7 @@ func (c *licenseManagementRESTClient) GetOperation(ctx context.Context, req *lon
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}

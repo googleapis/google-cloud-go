@@ -1,5 +1,31 @@
 # Changes
 
+## [1.16.1](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.16.0...networkconnectivity/v1.16.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **networkconnectivity:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.15.2...networkconnectivity/v1.16.0) (2024-12-04)
+
+
+### Features
+
+* **networkconnectivity:** Add Network Connectivity Center APIs for dynamic route exchange ([191a664](https://github.com/googleapis/google-cloud-go/commit/191a6643252221a2d6947d85aea7f31bae17cec6))
+* **networkconnectivity:** Add Network Connectivity Center APIs for include export filters ([191a664](https://github.com/googleapis/google-cloud-go/commit/191a6643252221a2d6947d85aea7f31bae17cec6))
+* **networkconnectivity:** Add Network Connectivity Center APIs for include import ranges on hybrid spokes ([191a664](https://github.com/googleapis/google-cloud-go/commit/191a6643252221a2d6947d85aea7f31bae17cec6))
+* **networkconnectivity:** Add Network Connectivity Center APIs for producer VPC spokes ([191a664](https://github.com/googleapis/google-cloud-go/commit/191a6643252221a2d6947d85aea7f31bae17cec6))
+* **networkconnectivity:** Add Network Connectivity Center APIs for PSC connection propagation through NCC ([191a664](https://github.com/googleapis/google-cloud-go/commit/191a6643252221a2d6947d85aea7f31bae17cec6))
+* **networkconnectivity:** Add Network Connectivity Center APIs for star topology ([191a664](https://github.com/googleapis/google-cloud-go/commit/191a6643252221a2d6947d85aea7f31bae17cec6))
+
+
+### Documentation
+
+* **networkconnectivity:** Update comment for `ListRoutes` method in service `HubService` to clarify that it lists routes in a route table ([191a664](https://github.com/googleapis/google-cloud-go/commit/191a6643252221a2d6947d85aea7f31bae17cec6))
+* **networkconnectivity:** Update comment for `ListRouteTables` method in service `HubService` to clarify that it lists route tables in a hub ([191a664](https://github.com/googleapis/google-cloud-go/commit/191a6643252221a2d6947d85aea7f31bae17cec6))
+* **networkconnectivity:** Update comment for field `location` in message `.google.cloud.networkconnectivity.v1.Route` to clarify that it's the origin location ([191a664](https://github.com/googleapis/google-cloud-go/commit/191a6643252221a2d6947d85aea7f31bae17cec6))
+
 ## [1.15.2](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.15.1...networkconnectivity/v1.15.2) (2024-10-23)
 
 

@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 	generativelanguagepb "cloud.google.com/go/ai/generativelanguage/apiv1beta/generativelanguagepb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -183,6 +182,8 @@ type fileGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewFileClient creates a new file service client based on gRPC.
@@ -209,6 +210,7 @@ func NewFileClient(ctx context.Context, opts ...option.ClientOption) (*FileClien
 		connPool:         connPool,
 		fileClient:       generativelanguagepb.NewFileServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -256,6 +258,8 @@ type fileRESTClient struct {
 
 	// Points back to the CallOptions field of the containing FileClient
 	CallOptions **FileCallOptions
+
+	logger *slog.Logger
 }
 
 // NewFileRESTClient creates a new file service rest client.
@@ -273,6 +277,7 @@ func NewFileRESTClient(ctx context.Context, opts ...option.ClientOption) (*FileC
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -322,7 +327,7 @@ func (c *fileGRPCClient) CreateFile(ctx context.Context, req *generativelanguage
 	var resp *generativelanguagepb.CreateFileResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.fileClient.CreateFile(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.fileClient.CreateFile, req, settings.GRPC, c.logger, "CreateFile")
 		return err
 	}, opts...)
 	if err != nil {
@@ -348,7 +353,7 @@ func (c *fileGRPCClient) ListFiles(ctx context.Context, req *generativelanguagep
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.fileClient.ListFiles(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.fileClient.ListFiles, req, settings.GRPC, c.logger, "ListFiles")
 			return err
 		}, opts...)
 		if err != nil {
@@ -383,7 +388,7 @@ func (c *fileGRPCClient) GetFile(ctx context.Context, req *generativelanguagepb.
 	var resp *generativelanguagepb.File
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.fileClient.GetFile(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.fileClient.GetFile, req, settings.GRPC, c.logger, "GetFile")
 		return err
 	}, opts...)
 	if err != nil {
@@ -400,7 +405,7 @@ func (c *fileGRPCClient) DeleteFile(ctx context.Context, req *generativelanguage
 	opts = append((*c.CallOptions).DeleteFile[0:len((*c.CallOptions).DeleteFile):len((*c.CallOptions).DeleteFile)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.fileClient.DeleteFile(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.fileClient.DeleteFile, req, settings.GRPC, c.logger, "DeleteFile")
 		return err
 	}, opts...)
 	return err
@@ -415,7 +420,7 @@ func (c *fileGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.Ge
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -444,7 +449,7 @@ func (c *fileGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -506,17 +511,7 @@ func (c *fileRESTClient) CreateFile(ctx context.Context, req *generativelanguage
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateFile")
 		if err != nil {
 			return err
 		}
@@ -578,21 +573,10 @@ func (c *fileRESTClient) ListFiles(ctx context.Context, req *generativelanguagep
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListFiles")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -655,17 +639,7 @@ func (c *fileRESTClient) GetFile(ctx context.Context, req *generativelanguagepb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetFile")
 		if err != nil {
 			return err
 		}
@@ -712,15 +686,8 @@ func (c *fileRESTClient) DeleteFile(ctx context.Context, req *generativelanguage
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteFile")
+		return err
 	}, opts...)
 }
 
@@ -757,17 +724,7 @@ func (c *fileRESTClient) GetOperation(ctx context.Context, req *longrunningpb.Ge
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -832,21 +789,10 @@ func (c *fileRESTClient) ListOperations(ctx context.Context, req *longrunningpb.
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

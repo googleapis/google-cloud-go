@@ -1,6 +1,20 @@
 # Changes
 
 
+## [2.19.2](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.19.1...recaptchaenterprise/v2.19.2) (2025-01-02)
+
+
+### Bug Fixes
+
+* **recaptchaenterprise:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+## [2.19.1](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.19.0...recaptchaenterprise/v2.19.1) (2024-12-04)
+
+
+### Documentation
+
+* **recaptchaenterprise:** Challenge is also returned for INVISIBLE keys ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+
 ## [2.19.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.18.0...recaptchaenterprise/v2.19.0) (2024-11-14)
 
 

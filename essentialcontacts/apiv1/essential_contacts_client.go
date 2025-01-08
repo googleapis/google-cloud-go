@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	essentialcontactspb "cloud.google.com/go/essentialcontacts/apiv1/essentialcontactspb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -257,6 +256,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new essential contacts service client based on gRPC.
@@ -283,6 +284,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      essentialcontactspb.NewEssentialContactsServiceClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -329,6 +331,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new essential contacts service rest client.
@@ -346,6 +350,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -398,7 +403,7 @@ func (c *gRPCClient) CreateContact(ctx context.Context, req *essentialcontactspb
 	var resp *essentialcontactspb.Contact
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateContact(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateContact, req, settings.GRPC, c.logger, "CreateContact")
 		return err
 	}, opts...)
 	if err != nil {
@@ -416,7 +421,7 @@ func (c *gRPCClient) UpdateContact(ctx context.Context, req *essentialcontactspb
 	var resp *essentialcontactspb.Contact
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateContact(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateContact, req, settings.GRPC, c.logger, "UpdateContact")
 		return err
 	}, opts...)
 	if err != nil {
@@ -445,7 +450,7 @@ func (c *gRPCClient) ListContacts(ctx context.Context, req *essentialcontactspb.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListContacts(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListContacts, req, settings.GRPC, c.logger, "ListContacts")
 			return err
 		}, opts...)
 		if err != nil {
@@ -480,7 +485,7 @@ func (c *gRPCClient) GetContact(ctx context.Context, req *essentialcontactspb.Ge
 	var resp *essentialcontactspb.Contact
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetContact(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetContact, req, settings.GRPC, c.logger, "GetContact")
 		return err
 	}, opts...)
 	if err != nil {
@@ -497,7 +502,7 @@ func (c *gRPCClient) DeleteContact(ctx context.Context, req *essentialcontactspb
 	opts = append((*c.CallOptions).DeleteContact[0:len((*c.CallOptions).DeleteContact):len((*c.CallOptions).DeleteContact)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteContact(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteContact, req, settings.GRPC, c.logger, "DeleteContact")
 		return err
 	}, opts...)
 	return err
@@ -523,7 +528,7 @@ func (c *gRPCClient) ComputeContacts(ctx context.Context, req *essentialcontacts
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ComputeContacts(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ComputeContacts, req, settings.GRPC, c.logger, "ComputeContacts")
 			return err
 		}, opts...)
 		if err != nil {
@@ -557,7 +562,7 @@ func (c *gRPCClient) SendTestMessage(ctx context.Context, req *essentialcontacts
 	opts = append((*c.CallOptions).SendTestMessage[0:len((*c.CallOptions).SendTestMessage):len((*c.CallOptions).SendTestMessage)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.SendTestMessage(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.SendTestMessage, req, settings.GRPC, c.logger, "SendTestMessage")
 		return err
 	}, opts...)
 	return err
@@ -603,17 +608,7 @@ func (c *restClient) CreateContact(ctx context.Context, req *essentialcontactspb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateContact")
 		if err != nil {
 			return err
 		}
@@ -678,17 +673,7 @@ func (c *restClient) UpdateContact(ctx context.Context, req *essentialcontactspb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateContact")
 		if err != nil {
 			return err
 		}
@@ -750,21 +735,10 @@ func (c *restClient) ListContacts(ctx context.Context, req *essentialcontactspb.
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListContacts")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -827,17 +801,7 @@ func (c *restClient) GetContact(ctx context.Context, req *essentialcontactspb.Ge
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetContact")
 		if err != nil {
 			return err
 		}
@@ -884,15 +848,8 @@ func (c *restClient) DeleteContact(ctx context.Context, req *essentialcontactspb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteContact")
+		return err
 	}, opts...)
 }
 
@@ -948,21 +905,10 @@ func (c *restClient) ComputeContacts(ctx context.Context, req *essentialcontacts
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ComputeContacts")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1029,14 +975,7 @@ func (c *restClient) SendTestMessage(ctx context.Context, req *essentialcontacts
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SendTestMessage")
+		return err
 	}, opts...)
 }

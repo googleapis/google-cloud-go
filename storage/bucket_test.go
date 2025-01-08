@@ -279,7 +279,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		PublicAccessPrevention: "enforced",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Set BucketPolicyOnly.Enabled = true --> UBLA should be set to enabled in
@@ -294,7 +294,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		PublicAccessPrevention: "enforced",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Set both BucketPolicyOnly.Enabled = true and
@@ -310,7 +310,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		PublicAccessPrevention: "enforced",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Set UBLA.Enabled=false and BucketPolicyOnly.Enabled=false --> UBLA
@@ -322,7 +322,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		PublicAccessPrevention: "enforced",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Test that setting PublicAccessPrevention to "unspecified" leads to the
@@ -333,7 +333,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		PublicAccessPrevention: "inherited",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Test that setting PublicAccessPrevention to "inherited" leads to the
@@ -344,7 +344,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		PublicAccessPrevention: "inherited",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Test that setting RPO to default is propagated in the proto.
@@ -352,7 +352,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 	got = attrs.toRawBucket()
 	want.Rpo = rpoDefault
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Re-enable UBLA and confirm that it does not affect the PAP setting.
@@ -365,7 +365,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		PublicAccessPrevention: "inherited",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Disable UBLA and reset PAP to default. Confirm that the IAM config is set
@@ -375,7 +375,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 	got = attrs.toRawBucket()
 	want.IamConfiguration = nil
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 }
 
@@ -479,7 +479,10 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 	}
 	got = au3.toRawBucket()
 	want = &raw.Bucket{
-		NullFields: []string{"RetentionPolicy", "Encryption", "Logging", "Website", "SoftDeletePolicy"},
+		NullFields: []string{"RetentionPolicy", "Encryption", "Logging", "Website"},
+		SoftDeletePolicy: &raw.BucketSoftDeletePolicy{
+			ForceSendFields: []string{"RetentionDurationSeconds"},
+		},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
 		t.Error(msg)
@@ -501,7 +504,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Set BucketPolicyOnly.Enabled = true --> UBLA should be set to enabled in
@@ -519,7 +522,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Set both BucketPolicyOnly.Enabled = true and
@@ -539,7 +542,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Set UBLA.Enabled=false and BucketPolicyOnly.Enabled=false --> UBLA
@@ -558,7 +561,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// UBLA.Enabled will have precedence above BucketPolicyOnly.Enabled if both
@@ -577,7 +580,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Set an empty Lifecycle and verify that it will be sent.
@@ -592,7 +595,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		ForceSendFields: []string{"Lifecycle"},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 }
 
@@ -989,7 +992,7 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 		PublicAccessPrevention: "enforced",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Set BucketPolicyOnly.Enabled = true --> UBLA should be set to enabled in
@@ -1004,7 +1007,7 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 		PublicAccessPrevention: "enforced",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Set both BucketPolicyOnly.Enabled = true and
@@ -1020,7 +1023,7 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 		PublicAccessPrevention: "enforced",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Set UBLA.Enabled=false and BucketPolicyOnly.Enabled=false --> UBLA
@@ -1032,7 +1035,7 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 		PublicAccessPrevention: "enforced",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Test that setting PublicAccessPrevention to "unspecified" leads to the
@@ -1043,7 +1046,7 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 		PublicAccessPrevention: "inherited",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Test that setting PublicAccessPrevention to "inherited" leads to the
@@ -1054,7 +1057,7 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 		PublicAccessPrevention: "inherited",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Test that setting RPO to default is propagated in the proto.
@@ -1062,7 +1065,7 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 	got = attrs.toProtoBucket()
 	want.Rpo = rpoDefault
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Re-enable UBLA and confirm that it does not affect the PAP setting.
@@ -1075,7 +1078,7 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 		PublicAccessPrevention: "inherited",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Disable UBLA and reset PAP to default. Confirm that the IAM config is set
@@ -1085,7 +1088,7 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 	got = attrs.toProtoBucket()
 	want.IamConfig = nil
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 }
 
@@ -1116,11 +1119,11 @@ func TestBucketRetryer(t *testing.T) {
 					WithErrorFunc(func(err error) bool { return false }))
 			},
 			want: &retryConfig{
-				backoff: &gax.Backoff{
+				backoff: gaxBackoffFromStruct(&gax.Backoff{
 					Initial:    2 * time.Second,
 					Max:        30 * time.Second,
 					Multiplier: 3,
-				},
+				}),
 				policy:      RetryAlways,
 				maxAttempts: expectedAttempts(5),
 				shouldRetry: func(err error) bool { return false },
@@ -1135,9 +1138,9 @@ func TestBucketRetryer(t *testing.T) {
 					}))
 			},
 			want: &retryConfig{
-				backoff: &gax.Backoff{
+				backoff: gaxBackoffFromStruct(&gax.Backoff{
 					Multiplier: 3,
-				}},
+				})},
 		},
 		{
 			name: "set policy only",

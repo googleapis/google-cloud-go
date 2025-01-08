@@ -189,34 +189,38 @@ func TestCreateSink(t *testing.T) {
 		Filter:          testFilter,
 		IncludeChildren: true,
 	}
-	got, err := client.CreateSink(ctx, sink)
-	if err != nil {
-		t.Fatal(err)
-	}
+	var got *Sink
+	ltest.Retry(t, func(r *testutil.R) error {
+		var err error
+		got, err = client.CreateSink(ctx, sink)
+		return err
+	})
 	defer client.DeleteSink(ctx, sink.ID)
 
 	sink.WriterIdentity = ltest.SharedServiceAccount
 	if want := sink; !testutil.Equal(got, want) {
 		t.Errorf("got %+v, want %+v", got, want)
 	}
-	got, err = client.Sink(ctx, sink.ID)
-	if err != nil {
-		t.Fatal(err)
-	}
+	ltest.Retry(t, func(r *testutil.R) error {
+		var err error
+		got, err = client.Sink(ctx, sink.ID)
+		return err
+	})
 	if want := sink; !testutil.Equal(got, want) {
 		t.Errorf("got %+v, want %+v", got, want)
 	}
 
 	// UniqueWriterIdentity
 	sink.ID = sinkIDs.New()
-	got, err = client.CreateSinkOpt(ctx, sink, SinkOptions{UniqueWriterIdentity: true})
-	if err != nil {
-		t.Fatal(err)
-	}
+	ltest.Retry(t, func(r *testutil.R) error {
+		var err error
+		got, err = client.CreateSinkOpt(ctx, sink, SinkOptions{UniqueWriterIdentity: true})
+		return err
+	})
 	defer client.DeleteSink(ctx, sink.ID)
 
 	// Grant destination permissions to sink's writer identity.
-	err = addBucketCreator(testBucket, got.WriterIdentity)
+	err := addBucketCreator(testBucket, got.WriterIdentity)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -236,23 +240,27 @@ func TestUpdateSink(t *testing.T) {
 		WriterIdentity:  ltest.SharedServiceAccount,
 	}
 
-	_, err := client.CreateSink(ctx, sink)
-	if err != nil {
-		t.Fatal(err)
-	}
+	ltest.Retry(t, func(r *testutil.R) error {
+		_, err := client.CreateSink(ctx, sink)
+		return err
+	})
 	defer client.DeleteSink(ctx, sink.ID)
 
-	got, err := client.UpdateSink(ctx, sink)
-	if err != nil {
-		t.Fatal(err)
-	}
+	var got *Sink
+	ltest.Retry(t, func(r *testutil.R) error {
+		var err error
+		got, err = client.UpdateSink(ctx, sink)
+		return err
+	})
 	if want := sink; !testutil.Equal(got, want) {
 		t.Errorf("got\n%+v\nwant\n%+v", got, want)
 	}
-	got, err = client.Sink(ctx, sink.ID)
-	if err != nil {
-		t.Fatal(err)
-	}
+
+	ltest.Retry(t, func(r *testutil.R) error {
+		var err error
+		got, err = client.Sink(ctx, sink.ID)
+		return err
+	})
 	if want := sink; !testutil.Equal(got, want) {
 		t.Errorf("got\n%+v\nwant\n%+v", got, want)
 	}
@@ -260,13 +268,16 @@ func TestUpdateSink(t *testing.T) {
 	// Updating an existing sink changes it.
 	sink.Filter = ""
 	sink.IncludeChildren = false
-	if _, err := client.UpdateSink(ctx, sink); err != nil {
-		t.Fatal(err)
-	}
-	got, err = client.Sink(ctx, sink.ID)
-	if err != nil {
-		t.Fatal(err)
-	}
+	ltest.Retry(t, func(r *testutil.R) error {
+		_, err := client.UpdateSink(ctx, sink)
+		return err
+	})
+
+	ltest.Retry(t, func(r *testutil.R) error {
+		var err error
+		got, err = client.Sink(ctx, sink.ID)
+		return err
+	})
 	if want := sink; !testutil.Equal(got, want) {
 		t.Errorf("got\n%+v\nwant\n%+v", got, want)
 	}
@@ -283,26 +294,29 @@ func TestUpdateSinkOpt(t *testing.T) {
 		WriterIdentity:  ltest.SharedServiceAccount,
 	}
 
-	_, err := client.CreateSink(ctx, origSink)
-	if err != nil {
-		t.Fatal(err)
-	}
+	ltest.Retry(t, func(r *testutil.R) error {
+		_, err := client.CreateSink(ctx, origSink)
+		return err
+	})
 	defer client.DeleteSink(ctx, origSink.ID)
 
 	// Updating with empty options is an error.
-	_, err = client.UpdateSinkOpt(ctx, &Sink{ID: id, Destination: testSinkDestination}, SinkOptions{})
-	if err == nil {
-		t.Errorf("got %v, want nil", err)
-	}
+	ltest.RetryAndExpectError(t, func(r *testutil.R) error {
+		_, err := client.UpdateSinkOpt(ctx, &Sink{ID: id, Destination: testSinkDestination}, SinkOptions{})
+		return err
+	})
 
 	// Update selected fields.
-	got, err := client.UpdateSinkOpt(ctx, &Sink{ID: id}, SinkOptions{
-		UpdateFilter:          true,
-		UpdateIncludeChildren: true,
+	var got *Sink
+	ltest.Retry(t, func(r *testutil.R) error {
+		var err error
+		got, err = client.UpdateSinkOpt(ctx, &Sink{ID: id}, SinkOptions{
+			UpdateFilter:          true,
+			UpdateIncludeChildren: true,
+		})
+		return err
 	})
-	if err != nil {
-		t.Fatal(err)
-	}
+
 	want := *origSink
 	want.Filter = ""
 	want.IncludeChildren = false
@@ -311,13 +325,15 @@ func TestUpdateSinkOpt(t *testing.T) {
 	}
 
 	// Update writer identity.
-	got, err = client.UpdateSinkOpt(ctx, &Sink{ID: id, Filter: "foo"},
-		SinkOptions{UniqueWriterIdentity: true})
-	if err != nil {
-		t.Fatal(err)
-	}
+	ltest.Retry(t, func(r *testutil.R) error {
+		var err error
+		got, err = client.UpdateSinkOpt(ctx, &Sink{ID: id, Filter: "foo"},
+			SinkOptions{UniqueWriterIdentity: true})
+		return err
+	})
+
 	// Grant destination permissions to sink's new writer identity.
-	err = addBucketCreator(testBucket, got.WriterIdentity)
+	err := addBucketCreator(testBucket, got.WriterIdentity)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -354,14 +370,7 @@ func TestListSinks(t *testing.T) {
 
 	got := map[string]*Sink{}
 	it := client.Sinks(ctx)
-	for {
-		s, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			t.Fatal(err)
-		}
+	for s, done := ltest.RetryIteratorNext(t, it); !done; s, done = ltest.RetryIteratorNext(t, it) {
 		// If tests run simultaneously, we may have more sinks than we
 		// created. So only check for our own.
 		if _, ok := want[s.ID]; ok {

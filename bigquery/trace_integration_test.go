@@ -17,20 +17,30 @@ package bigquery
 import (
 	"context"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
-	traceinternal "cloud.google.com/go/internal/trace"
-	"go.opencensus.io/trace"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/sdk/trace"
 )
 
 // testExporter is a testing exporter for validating captured spans.
 type testExporter struct {
-	spans []*trace.SpanData
+	mu    sync.Mutex
+	spans []trace.ReadOnlySpan
 }
 
-func (te *testExporter) ExportSpan(s *trace.SpanData) {
-	te.spans = append(te.spans, s)
+func (te *testExporter) ExportSpans(ctx context.Context, spans []trace.ReadOnlySpan) error {
+	te.mu.Lock()
+	defer te.mu.Unlock()
+	te.spans = append(te.spans, spans...)
+	return nil
+}
+
+// Satisfy the exporter contract.  This method does nothing.
+func (te *testExporter) Shutdown(ctx context.Context) error {
+	return nil
 }
 
 // hasSpans checks that the exporter has all the span names
@@ -41,7 +51,7 @@ func (te *testExporter) hasSpans(names []string) []string {
 		matches[n] = struct{}{}
 	}
 	for _, s := range te.spans {
-		delete(matches, s.Name)
+		delete(matches, s.Name())
 	}
 	var unmatched []string
 	for k := range matches {
@@ -50,18 +60,9 @@ func (te *testExporter) hasSpans(names []string) []string {
 	return unmatched
 }
 
-func TestIntegration_OpenCensusTracing(t *testing.T) {
+func TestIntegration_Tracing(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
-	}
-
-	if !traceinternal.IsOpenCensusTracingEnabled() {
-		t.Logf("enabling opencensus tracing")
-		traceinternal.SetOpenTelemetryTracingEnabledField(false)
-		defer func() {
-			t.Logf("enabling otel tracing")
-			traceinternal.SetOpenTelemetryTracingEnabledField(true)
-		}()
 	}
 
 	ctx := context.Background()
@@ -128,11 +129,19 @@ func TestIntegration_OpenCensusTracing(t *testing.T) {
 	} {
 		t.Run(tc.description, func(t *testing.T) {
 			exporter := &testExporter{}
-			trace.RegisterExporter(exporter)
-			traceCtx, span := trace.StartSpan(ctx, "testspan", trace.WithSampler(trace.AlwaysSample()))
+			bsp := trace.NewBatchSpanProcessor(exporter)
+			tp := trace.NewTracerProvider(
+				trace.WithSampler(trace.AlwaysSample()),
+				trace.WithSpanProcessor(bsp),
+			)
+			otel.SetTracerProvider(tp)
+
+			tracer := tp.Tracer("test-trace")
+			traceCtx, span := tracer.Start(ctx, "startspan")
+			// Invoke the func to be traced.
 			tc.callF(traceCtx)
 			span.End()
-			trace.UnregisterExporter(exporter)
+			tp.Shutdown(traceCtx)
 
 			if unmatched := exporter.hasSpans(tc.wantSpans); len(unmatched) > 0 {
 				t.Errorf("case (%s): unmatched spans: %s", tc.description, strings.Join(unmatched, ","))

@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	csspb "cloud.google.com/go/shopping/css/apiv1/csspb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -162,7 +161,7 @@ func (c *AccountLabelsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// ListAccountLabels lists the labels assigned to an account.
+// ListAccountLabels lists the labels owned by an account.
 func (c *AccountLabelsClient) ListAccountLabels(ctx context.Context, req *csspb.ListAccountLabelsRequest, opts ...gax.CallOption) *AccountLabelIterator {
 	return c.internalClient.ListAccountLabels(ctx, req, opts...)
 }
@@ -197,6 +196,8 @@ type accountLabelsGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewAccountLabelsClient creates a new account labels service client based on gRPC.
@@ -223,6 +224,7 @@ func NewAccountLabelsClient(ctx context.Context, opts ...option.ClientOption) (*
 		connPool:            connPool,
 		accountLabelsClient: csspb.NewAccountLabelsServiceClient(connPool),
 		CallOptions:         &client.CallOptions,
+		logger:              internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -269,6 +271,8 @@ type accountLabelsRESTClient struct {
 
 	// Points back to the CallOptions field of the containing AccountLabelsClient
 	CallOptions **AccountLabelsCallOptions
+
+	logger *slog.Logger
 }
 
 // NewAccountLabelsRESTClient creates a new account labels service rest client.
@@ -286,6 +290,7 @@ func NewAccountLabelsRESTClient(ctx context.Context, opts ...option.ClientOption
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -349,7 +354,7 @@ func (c *accountLabelsGRPCClient) ListAccountLabels(ctx context.Context, req *cs
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.accountLabelsClient.ListAccountLabels(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.accountLabelsClient.ListAccountLabels, req, settings.GRPC, c.logger, "ListAccountLabels")
 			return err
 		}, opts...)
 		if err != nil {
@@ -384,7 +389,7 @@ func (c *accountLabelsGRPCClient) CreateAccountLabel(ctx context.Context, req *c
 	var resp *csspb.AccountLabel
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.accountLabelsClient.CreateAccountLabel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.accountLabelsClient.CreateAccountLabel, req, settings.GRPC, c.logger, "CreateAccountLabel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -402,7 +407,7 @@ func (c *accountLabelsGRPCClient) UpdateAccountLabel(ctx context.Context, req *c
 	var resp *csspb.AccountLabel
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.accountLabelsClient.UpdateAccountLabel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.accountLabelsClient.UpdateAccountLabel, req, settings.GRPC, c.logger, "UpdateAccountLabel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -419,13 +424,13 @@ func (c *accountLabelsGRPCClient) DeleteAccountLabel(ctx context.Context, req *c
 	opts = append((*c.CallOptions).DeleteAccountLabel[0:len((*c.CallOptions).DeleteAccountLabel):len((*c.CallOptions).DeleteAccountLabel)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.accountLabelsClient.DeleteAccountLabel(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.accountLabelsClient.DeleteAccountLabel, req, settings.GRPC, c.logger, "DeleteAccountLabel")
 		return err
 	}, opts...)
 	return err
 }
 
-// ListAccountLabels lists the labels assigned to an account.
+// ListAccountLabels lists the labels owned by an account.
 func (c *accountLabelsRESTClient) ListAccountLabels(ctx context.Context, req *csspb.ListAccountLabelsRequest, opts ...gax.CallOption) *AccountLabelIterator {
 	it := &AccountLabelIterator{}
 	req = proto.Clone(req).(*csspb.ListAccountLabelsRequest)
@@ -470,21 +475,10 @@ func (c *accountLabelsRESTClient) ListAccountLabels(ctx context.Context, req *cs
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAccountLabels")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -554,17 +548,7 @@ func (c *accountLabelsRESTClient) CreateAccountLabel(ctx context.Context, req *c
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateAccountLabel")
 		if err != nil {
 			return err
 		}
@@ -621,17 +605,7 @@ func (c *accountLabelsRESTClient) UpdateAccountLabel(ctx context.Context, req *c
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateAccountLabel")
 		if err != nil {
 			return err
 		}
@@ -678,14 +652,7 @@ func (c *accountLabelsRESTClient) DeleteAccountLabel(ctx context.Context, req *c
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteAccountLabel")
+		return err
 	}, opts...)
 }
