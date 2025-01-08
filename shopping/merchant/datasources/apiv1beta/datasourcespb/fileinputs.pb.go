@@ -48,10 +48,10 @@ const (
 	// the Merchant Center.
 	FileInput_UPLOAD FileInput_FileInputType = 1
 	// The file is fetched from the configured
-	// [fetch_uri][google.shopping.content.bundles.DataSources.FileInput.FetchSettings.fetch_uri].
+	// [fetch_uri][google.shopping.merchant.datasources.v1beta.FileInput.FetchSettings.fetch_uri].
 	FileInput_FETCH FileInput_FileInputType = 2
 	// The file is fetched from Google Sheets specified in the
-	// [fetch_uri][google.shopping.content.bundles.DataSources.FileInput.FetchSettings.fetch_uri].
+	// [fetch_uri][google.shopping.merchant.datasources.v1beta.FileInput.FetchSettings.fetch_uri].
 	FileInput_GOOGLE_SHEETS FileInput_FileInputType = 3
 )
 
@@ -266,13 +266,13 @@ type FileInput_FetchSettings struct {
 	// HTTPS or SFTP protocols, so the value will need to be a valid link using
 	// one of those three protocols. Immutable for Google Sheets files.
 	FetchUri string `protobuf:"bytes,7,opt,name=fetch_uri,json=fetchUri,proto3" json:"fetch_uri,omitempty"`
-	// Optional. An optional user name for [fetch
-	// url][google.shopping.content.bundles.DataSources.FileInput.fetch_url].
+	// Optional. An optional user name for
+	// [fetch_uri][google.shopping.merchant.datasources.v1beta.FileInput.FetchSettings.fetch_uri].
 	// Used for [submitting data sources through
 	// SFTP](https://support.google.com/merchants/answer/13813117).
 	Username string `protobuf:"bytes,8,opt,name=username,proto3" json:"username,omitempty"`
-	// Optional. An optional password for [fetch
-	// url][google.shopping.content.bundles.DataSources.FileInput.fetch_url].
+	// Optional. An optional password for
+	// [fetch_uri][google.shopping.merchant.datasources.v1beta.FileInput.FetchSettings.fetch_uri].
 	// Used for [submitting data sources through
 	// SFTP](https://support.google.com/merchants/answer/13813117).
 	Password string `protobuf:"bytes,9,opt,name=password,proto3" json:"password,omitempty"`
