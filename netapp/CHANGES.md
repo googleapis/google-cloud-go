@@ -1,6 +1,18 @@
 # Changelog
 
 
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.5.1...netapp/v1.6.0) (2025-01-08)
+
+
+### Features
+
+* **netapp:** Add ValidateDirectoryService API for testing AD connection of a storage pool ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+
+
+### Documentation
+
+* **netapp:** Removed the format for `replication` in message `google.cloud.netapp.v1.HybridReplicationParameters` ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+
 ## [1.5.1](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.5.0...netapp/v1.5.1) (2025-01-02)
 
 

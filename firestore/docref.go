@@ -511,9 +511,9 @@ type transform struct {
 
 func (t transform) String() string {
 	if t.t == nil {
-		return ""
+		return "{t:nil}"
 	}
-	return t.t.String()
+	return fmt.Sprintf("{t:%v}", t.t.String())
 }
 
 // FieldTransformIncrement returns a special value that can be used with Set, Create, or
@@ -675,9 +675,9 @@ type Update struct {
 func (u Update) String() string {
 	t, ok := u.Value.(transform)
 	if !ok {
-		return fmt.Sprintf("Path: %s FieldPath: %s Value: %s", u.Path, u.FieldPath, u.Value)
+		return fmt.Sprintf("{Path:%s FieldPath:%s Value:%s}", u.Path, u.FieldPath, u.Value)
 	}
-	return fmt.Sprintf("Path: %s FieldPath: %s Value: %s", u.Path, u.FieldPath, t.String())
+	return fmt.Sprintf("{Path:%s FieldPath:%s Value:%s}", u.Path, u.FieldPath, t.String())
 }
 
 // An fpv is a pair of validated FieldPath and value.

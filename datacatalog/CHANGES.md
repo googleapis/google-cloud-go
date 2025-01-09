@@ -1,5 +1,12 @@
 # Changes
 
+## [1.24.3](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.24.2...datacatalog/v1.24.3) (2025-01-08)
+
+
+### Documentation
+
+* **datacatalog:** A comment for field `parent` in message `.google.cloud.datacatalog.v1beta1.CreateTagRequest` is changed ([9d60b40](https://github.com/googleapis/google-cloud-go/commit/9d60b40e9ce47aba2f027b42bfdbfed43339df6d))
+
 ## [1.24.2](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.24.1...datacatalog/v1.24.2) (2025-01-02)
 
 

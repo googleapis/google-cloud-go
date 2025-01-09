@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.16.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.15.0...shopping/v0.16.0) (2025-01-08)
+
+
+### Features
+
+* **shopping/merchant/datasources:** A new message `MerchantReviewDataSource` is added to specify the datasource of the merchant review ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+* **shopping/merchant/datasources:** A new message `ProductReviewDataSource` is added to specify the datasource of the product review ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+* **shopping/merchant/datasources:** New field `merchant_review_data_source` added in message `.google.shopping.merchant.datasources.v1beta.DataSource` to specify the datasource of the merchant review ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+* **shopping/merchant/datasources:** New field `product_review_data_source` added in message `.google.shopping.merchant.datasources.v1beta.DataSource` to specify the datasource of the product review ([#11385](https://github.com/googleapis/google-cloud-go/issues/11385)) ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+
+
+### Documentation
+
+* **shopping/merchant/datasources:** A comment for enum value `FETCH` in enum `FileInputType` is changed ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+* **shopping/merchant/datasources:** A comment for enum value `GOOGLE_SHEETS` in enum `FileInputType` is changed ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+* **shopping/merchant/datasources:** A comment for field `feed_label` in message `.google.shopping.merchant.datasources.v1beta.SupplementalProductDataSource` is changed ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+* **shopping/merchant/datasources:** A comment for field `password` in message `.google.shopping.merchant.datasources.v1beta.FileInput` is changed ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+* **shopping/merchant/datasources:** A comment for field `take_from_data_sources` in message `.google.shopping.merchant.datasources.v1beta.PrimaryProductDataSource` is changed ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+* **shopping/merchant/datasources:** A comment for field `username` in message `.google.shopping.merchant.datasources.v1beta.FileInput` is changed ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+* **shopping/merchant/datasources:** A comment for message `SupplementalProductDataSource` is changed ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+
 ## [0.15.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.14.0...shopping/v0.15.0) (2025-01-02)
 
 
