@@ -708,7 +708,7 @@ func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRo
 	for i, e := range errs {
 		var me *btpb.MutateRowsResponse_Entry
 		if e != nil {
-			st := statusFromError(err)
+			st := statusFromError(e)
 			me = &btpb.MutateRowsResponse_Entry{
 				Index:  int64(i),
 				Status: st,
