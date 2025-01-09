@@ -20,27 +20,36 @@ import (
 	"fmt"
 
 	"cloud.google.com/go/pubsub/v2"
+	"cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
 	"google.golang.org/api/iterator"
 )
 
 func ExampleClient_Topics() {
 	ctx := context.Background()
-	client, err := pubsub.NewClient(ctx, "project-id")
+	projectID := "my-project-id"
+	client, err := pubsub.NewClient(ctx, projectID)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	it := client.Topics(ctx)
+	// List all topics.
+	it := client.TopicAdminClient.ListTopics(ctx, &pubsubpb.ListTopicsRequest{
+		Project: projectID,
+	})
+
 	_ = it // TODO: iterate using Next.
 }
 
 func ExampleTopicIterator_Next() {
 	ctx := context.Background()
-	client, err := pubsub.NewClient(ctx, "project-id")
+	projectID := "my-project-id"
+	client, err := pubsub.NewClient(ctx, projectID)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	// List all topics.
-	it := client.Topics(ctx)
+	it := client.TopicAdminClient.ListTopics(ctx, &pubsubpb.ListTopicsRequest{
+		Project: projectID,
+	})
 	for {
 		t, err := it.Next()
 		if errors.Is(err, iterator.Done) {

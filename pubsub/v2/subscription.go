@@ -59,6 +59,17 @@ func (c *Client) Subscription(id string) *Subscription {
 	return c.SubscriptionInProject(id, c.projectID)
 }
 
+// Subscriber creates a subscriber client which references a single subscription.
+func (c *Client) Subscriber(nameOrID string) *Subscription {
+	s := strings.Split(nameOrID, "/")
+	// The string looks like a properly formatted topic name, use it directly.
+	if len(s) == 4 {
+		return newSubscription(c, nameOrID)
+	}
+	// In all other cases, treat the arg as the topicID, even if misformatted.
+	return newSubscription(c, fmt.Sprintf("projects/%s/subscriptions/%s", c.projectID, nameOrID))
+}
+
 // SubscriptionInProject creates a reference to a subscription in a given project.
 func (c *Client) SubscriptionInProject(id, projectID string) *Subscription {
 	return newSubscription(c, fmt.Sprintf("projects/%s/subscriptions/%s", projectID, id))
@@ -267,7 +278,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 		// The iterator does not use the context passed to Receive. If it did,
 		// canceling that context would immediately stop the iterator without
 		// waiting for unacked messages.
-		iter := newMessageIterator(s.c.subc, s.name, po)
+		iter := newMessageIterator(s.c.SubscriptionAdminClient, s.name, po)
 		iter.enableTracing = s.enableTracing
 
 		// We cannot use errgroup from Receive here. Receive might already be

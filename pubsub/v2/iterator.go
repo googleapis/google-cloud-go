@@ -64,10 +64,11 @@ var (
 )
 
 type messageIterator struct {
-	ctx           context.Context
-	cancel        func() // the function that will cancel ctx; called in stop
-	po            *pullOptions
-	ps            *pullStream
+	ctx    context.Context
+	cancel func() // the function that will cancel ctx; called in stop
+	po     *pullOptions
+	ps     *pullStream
+	// this is called an admin client, but also contains the data plane operations we wrap.
 	subc          *vkit.SubscriptionAdminClient
 	projectID     string
 	subID         string

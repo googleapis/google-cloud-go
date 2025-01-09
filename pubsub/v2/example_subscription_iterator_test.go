@@ -20,28 +20,35 @@ import (
 	"fmt"
 
 	"cloud.google.com/go/pubsub/v2"
+	"cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
 	"google.golang.org/api/iterator"
 )
 
 func ExampleClient_Subscriptions() {
 	ctx := context.Background()
-	client, err := pubsub.NewClient(ctx, "project-id")
+	projectID := "my-project-id"
+	client, err := pubsub.NewClient(ctx, projectID)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	// List all subscriptions of the project.
-	it := client.Subscriptions(ctx)
+	it := client.SubscriptionAdminClient.ListSubscriptions(ctx, &pubsubpb.ListSubscriptionsRequest{
+		Project: projectID,
+	})
 	_ = it // TODO: iterate using Next.
 }
 
 func ExampleSubscriptionIterator_Next() {
 	ctx := context.Background()
-	client, err := pubsub.NewClient(ctx, "project-id")
+	projectID := "my-project-id"
+	client, err := pubsub.NewClient(ctx, projectID)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	// List all subscriptions of the project.
-	it := client.Subscriptions(ctx)
+	it := client.SubscriptionAdminClient.ListSubscriptions(ctx, &pubsubpb.ListSubscriptionsRequest{
+		Project: projectID,
+	})
 	for {
 		sub, err := it.Next()
 		if errors.Is(err, iterator.Done) {

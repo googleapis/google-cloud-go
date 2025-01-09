@@ -49,9 +49,17 @@ const (
 // Clients should be reused rather than being created as needed.
 // A Client may be shared by multiple goroutines.
 type Client struct {
+	// TopicAdminClient is a convenience exposure of the underlying gRPC client
+	// for making topic admin calls (CRUDL operations). While this client also
+	// contains data APIs (Publish), it is highly recommended to use Publisher.Publish instead.
+	TopicAdminClient *vkit.TopicAdminClient
+	// SubscriptionAdminClient is a convenience exposure of the underlying gRPC client
+	// for making subscription admin calls (CRUDL operations). While this client also
+	// contains data APIs (StreamingPull), it is highly recommended to use the methods
+	// in Client.Subscriber instead.
+	SubscriptionAdminClient *vkit.SubscriptionAdminClient
+
 	projectID     string
-	pubc          *vkit.TopicAdminClient
-	subc          *vkit.SubscriptionAdminClient
 	enableTracing bool
 }
 
@@ -197,9 +205,9 @@ func NewClientWithConfig(ctx context.Context, projectID string, config *ClientCo
 	}
 
 	c := &Client{
-		projectID: projectID,
-		pubc:      pubc,
-		subc:      subc,
+		projectID:               projectID,
+		TopicAdminClient:        pubc,
+		SubscriptionAdminClient: subc,
 	}
 	if config != nil {
 		c.enableTracing = config.EnableOpenTelemetryTracing
@@ -219,8 +227,8 @@ func (c *Client) Project() string {
 // If the client is available for the lifetime of the program, then Close need not be
 // called at exit.
 func (c *Client) Close() error {
-	pubErr := c.pubc.Close()
-	subErr := c.subc.Close()
+	pubErr := c.TopicAdminClient.Close()
+	subErr := c.SubscriptionAdminClient.Close()
 	if pubErr != nil {
 		return fmt.Errorf("pubsub publisher closing error: %w", pubErr)
 	}

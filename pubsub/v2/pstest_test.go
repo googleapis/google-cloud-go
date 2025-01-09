@@ -17,12 +17,14 @@ package pubsub_test
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strconv"
 	"sync"
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/pubsub/v2"
+	pb "cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
 	"cloud.google.com/go/pubsub/v2/pstest"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
@@ -55,19 +57,26 @@ func TestPSTest(t *testing.T) {
 	}
 	defer conn.Close()
 
+	projID := "some-project"
 	opts := withGRPCHeadersAssertionAlt(t, option.WithGRPCConn(conn))
-	client, err := pubsub.NewClient(ctx, "some-project", opts...)
+	client, err := pubsub.NewClient(ctx, projID, opts...)
 	if err != nil {
 		panic(err)
 	}
 	defer client.Close()
 
-	topic, err := client.CreateTopic(ctx, "test-topic")
+	topicName := fmt.Sprintf("projects/%s/topics/%s", projID, "test-topic")
+	_, err = client.TopicAdminClient.CreateTopic(ctx, &pb.Topic{
+		Name: topicName,
+	})
 	if err != nil {
 		panic(err)
 	}
 
-	sub, err := client.CreateSubscription(ctx, "sub-name", pubsub.SubscriptionConfig{Topic: topic})
+	_, err = client.SubscriptionAdminClient.CreateSubscription(ctx, &pb.Subscription{
+		Name:  fmt.Sprintf("projects/%s/subscriptions/%s", projID, "test-subscription"),
+		Topic: topicName,
+	})
 	if err != nil {
 		panic(err)
 	}
@@ -77,6 +86,8 @@ func TestPSTest(t *testing.T) {
 			srv.Publish("projects/some-project/topics/test-topic", []byte(strconv.Itoa(i)), nil)
 		}
 	}()
+
+	sub := client.Subscriber("test-subscription")
 
 	ctx, cancel := context.WithCancel(ctx)
 	var mu sync.Mutex
