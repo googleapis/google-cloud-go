@@ -21,13 +21,12 @@
 package gkemulticloudpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -200,7 +199,8 @@ type AttachedCluster struct {
 	// encoded Unicode characters except single quotes ('), double quotes ("),
 	// backslashes (\), and forward slashes (/).
 	//
-	// See [Tags](http://cloud/resource-manager/docs/tags/tags-overview)
+	// See
+	// [Tags](https://cloud.google.com/resource-manager/docs/tags/tags-overview)
 	// for more details on Google Cloud Platform tags.
 	Tags map[string]string `protobuf:"bytes,27,rep,name=tags,proto3" json:"tags,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
