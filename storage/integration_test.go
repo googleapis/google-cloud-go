@@ -6966,7 +6966,7 @@ func setUpRequesterPaysBucket(ctx context.Context, t *testing.T, bucket, object 
 	requesterPaysBucket := client.Bucket(bucket)
 
 	// Create a requester-pays bucket with ownership.
-	addACL := []ACLRule{ACLRule{Entity: ACLEntity(fmt.Sprintf("user-%s", addOwnerEmail)), Role: RoleOwner}}
+	addACL := []ACLRule{{Entity: ACLEntity(fmt.Sprintf("user-%s", addOwnerEmail)), Role: RoleOwner}}
 	h.mustCreate(requesterPaysBucket, testutil.ProjID(), &BucketAttrs{RequesterPays: true, ACL: addACL})
 	t.Cleanup(func() { h.mustDeleteBucket(requesterPaysBucket) })
 
