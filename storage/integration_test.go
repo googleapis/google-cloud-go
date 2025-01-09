@@ -635,38 +635,59 @@ func TestIntegration_DoNotDetectDirectConnectivityWhenDisabled(t *testing.T) {
 	}, internaloption.EnableDirectPath(false))
 }
 
+// TestIntegration_MetricsEnablement does not use multiTransportTest because it
+// only has to run once, and creating the manual reader multiple times can
+// cause it to be registered multiple times to packages that enable by default.
 func TestIntegration_MetricsEnablement(t *testing.T) {
-	ctx := skipHTTP("grpc only test")
-	ctx = skipExtraReadAPIs(ctx, "no reads in test")
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+
+	var (
+		ctx           = context.Background()
+		prefix        = grpcTestPrefix
+		newBucketName = prefix + uidSpace.New()
+	)
+
 	mr := metric.NewManualReader()
-	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
-		it := client.Bucket(bucket).Objects(ctx, nil)
-		_, err := it.Next()
-		if err != iterator.Done {
-			t.Errorf("Objects.Next: expected iterator.Done got %v", err)
+	client := testConfigGRPC(ctx, t, withTestMetricReader(mr))
+
+	b := client.Bucket(newBucketName)
+
+	if err := b.Create(ctx, testutil.ProjID(), nil); err != nil {
+		t.Fatalf("BucketHandle.Create(%q): %v", newBucketName, err)
+	}
+
+	it := b.Objects(ctx, nil)
+	_, err := it.Next()
+	if err != iterator.Done {
+		t.Errorf("Objects.Next: expected iterator.Done got %v", err)
+	}
+	rm := metricdata.ResourceMetrics{}
+	if err := mr.Collect(ctx, &rm); err != nil {
+		t.Fatalf("ManualReader.Collect: %v", err)
+	}
+	metricCheck := map[string]bool{
+		"grpc.client.attempt.started":                            false,
+		"grpc.client.attempt.duration":                           false,
+		"grpc.client.attempt.sent_total_compressed_message_size": false,
+		"grpc.client.attempt.rcvd_total_compressed_message_size": false,
+		"grpc.client.call.duration":                              false,
+	}
+	for _, sm := range rm.ScopeMetrics {
+		for _, m := range sm.Metrics {
+			metricCheck[m.Name] = true
 		}
-		rm := metricdata.ResourceMetrics{}
-		if err := mr.Collect(ctx, &rm); err != nil {
-			t.Fatalf("ManualReader.Collect: %v", err)
+	}
+	for k, v := range metricCheck {
+		if !v {
+			t.Errorf("metric %v not found", k)
 		}
-		metricCheck := map[string]bool{
-			"grpc.client.attempt.started":                            false,
-			"grpc.client.attempt.duration":                           false,
-			"grpc.client.attempt.sent_total_compressed_message_size": false,
-			"grpc.client.attempt.rcvd_total_compressed_message_size": false,
-			"grpc.client.call.duration":                              false,
-		}
-		for _, sm := range rm.ScopeMetrics {
-			for _, m := range sm.Metrics {
-				metricCheck[m.Name] = true
-			}
-		}
-		for k, v := range metricCheck {
-			if !v {
-				t.Errorf("metric %v not found", k)
-			}
-		}
-	}, withTestMetricReader(mr))
+	}
+
+	if err := mr.Shutdown(ctx); err != nil {
+		t.Fatalf("manual reader shutdown: %v", err)
+	}
 }
 
 func TestIntegration_MetricsEnablementInGCE(t *testing.T) {
