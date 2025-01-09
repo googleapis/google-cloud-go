@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/config/v1.2.1...config/v1.3.0) (2025-01-08)
+
+
+### Features
+
+* **config:** Specify retry configuration ([e4e1a49](https://github.com/googleapis/google-cloud-go/commit/e4e1a498f21b0792e0a7662f82f9e062e5aa0fe9))
+
 ## [1.2.1](https://github.com/googleapis/google-cloud-go/compare/config/v1.2.0...config/v1.2.1) (2025-01-02)
 
 
