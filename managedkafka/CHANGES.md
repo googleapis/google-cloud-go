@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/managedkafka/v0.3.1...managedkafka/v0.4.0) (2025-01-08)
+
+
+### Features
+
+* **managedkafka:** Adds new resource_definition option ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+
 ## [0.3.1](https://github.com/googleapis/google-cloud-go/compare/managedkafka/v0.3.0...managedkafka/v0.3.1) (2025-01-02)
 
 

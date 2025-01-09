@@ -1,5 +1,38 @@
 # Changelog
 
+## [0.10.0](https://github.com/googleapis/google-cloud-go/compare/ai/v0.9.0...ai/v0.10.0) (2025-01-08)
+
+
+### Features
+
+* **ai/generativelanguage:** Add civic_integrity toggle ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+* **ai/generativelanguage:** Add civic_integrity toggle to generation_config ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+* **ai/generativelanguage:** Add GenerateContentRespoinse.model_version ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **ai/generativelanguage:** Add GoogleSearch tool type ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+* **ai/generativelanguage:** Add GroundingMetadata.web_search_queries ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **ai/generativelanguage:** Add id to FunctionCall and FunctionResponse ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+* **ai/generativelanguage:** Add image_safety block_reason + finish_reason ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+* **ai/generativelanguage:** Add image_safety block_reason + finish_reason ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+* **ai/generativelanguage:** Add response_modalities to generation_config ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+* **ai/generativelanguage:** Add return type `Schema response` to function declarations ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+* **ai/generativelanguage:** Add voice_config to generation_config ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+* **ai/generativelanguage:** Adds `GenerateContentResponse.model_version` output ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **ai/generativelanguage:** Adds search grounding ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **ai:** New client(s) ([#11407](https://github.com/googleapis/google-cloud-go/issues/11407)) ([5b04931](https://github.com/googleapis/google-cloud-go/commit/5b04931038c8722dbe517deabb91e65ca351c76d))
+
+
+### Bug Fixes
+
+* **ai:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+
+### Documentation
+
+* **ai/generativelanguage:** Small updates ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **ai/generativelanguage:** Some small updates. ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **ai/generativelanguage:** Update safety filter list to include civic_integrity ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+* **ai/generativelanguage:** Update safety filter list to include civic_integrity ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+
 ## [0.9.0](https://github.com/googleapis/google-cloud-go/compare/ai/v0.8.2...ai/v0.9.0) (2024-11-13)
 
 
@@ -201,4 +234,3 @@
 * **ai/generativelanguage:** Start generating apiv1beta2 ([#8229](https://github.com/googleapis/google-cloud-go/issues/8229)) ([837f325](https://github.com/googleapis/google-cloud-go/commit/837f32596518d8154f43da1c70f57d1515e2ea8c))
 
 ## Changes
-

@@ -1,5 +1,12 @@
 # Changes
 
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/texttospeech/v1.10.1...texttospeech/v1.11.0) (2025-01-08)
+
+
+### Features
+
+* **texttospeech:** StreamingSynthesize now supports opus ([#11365](https://github.com/googleapis/google-cloud-go/issues/11365)) ([e4e1a49](https://github.com/googleapis/google-cloud-go/commit/e4e1a498f21b0792e0a7662f82f9e062e5aa0fe9))
+
 ## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/texttospeech/v1.10.0...texttospeech/v1.10.1) (2025-01-02)
 
 
