@@ -66,11 +66,12 @@ func TestClient_ApplyClientConfig(t *testing.T) {
 		MessageIds: []string{"1"},
 	}, nil)
 
-	topic, err := c.CreateTopic(ctx, "t")
+	topic, err := c.TopicAdminClient.CreateTopic(ctx, &pb.Topic{Name: "projects/P/topics/t"})
 	if err != nil {
 		t.Fatal(err)
 	}
-	res := topic.Publish(ctx, &Message{
+	publisher := c.Publisher(topic.Name)
+	res := publisher.Publish(ctx, &Message{
 		Data: []byte("test"),
 	})
 	if id, err := res.Get(ctx); err != nil {

@@ -143,6 +143,25 @@ func (c *Client) Topic(id string) *Topic {
 	return c.TopicInProject(id, c.projectID)
 }
 
+// Publisher constructs a publisher client from either a topicID or a topic name, otherwise known as a full path.
+
+// The client created is a reference and does not return any errors if the topic does not exist.
+// Errors will be returned when attempting to Publish instead.
+// If a Publisher's Publish method is called, it has background goroutines
+// associated with it. Clean them up by calling Publisher.Stop.
+//
+// It is best practice to reuse the Publisher when publishing to the same topic.
+// Avoid creating many Publisher instances if you use them to publish.
+func (c *Client) Publisher(topicNameOrID string) *Topic {
+	s := strings.Split(topicNameOrID, "/")
+	// The string looks like a properly formatted topic name, use it directly.
+	if len(s) == 4 {
+		return newTopic(c, topicNameOrID)
+	}
+	// In all other cases, treat the string as the topicID, even if misformatted.
+	return newTopic(c, fmt.Sprintf("projects/%s/topics/%s", c.projectID, topicNameOrID))
+}
+
 // TopicInProject creates a reference to a topic in the given project.
 //
 // If a Topic's Publish method is called, it has background goroutines
@@ -463,7 +482,7 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 	} else {
 		// Apply custom publish retryer on top of user specified retryer and
 		// default retryer.
-		opts := t.c.pubc.CallOptions.Publish
+		opts := t.c.TopicAdminClient.CallOptions.Publish
 		var settings gax.CallSettings
 		for _, opt := range opts {
 			opt.Resolve(&settings)
@@ -476,7 +495,7 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 		if t.PublishSettings.shouldCompress(batchSize) {
 			gaxOpts = append(gaxOpts, gax.WithGRPCOptions(grpc.UseCompressor(gzip.Name)))
 		}
-		res, err = t.c.pubc.Publish(ctx, &pb.PublishRequest{
+		res, err = t.c.TopicAdminClient.Publish(ctx, &pb.PublishRequest{
 			Topic:    t.name,
 			Messages: pbMsgs,
 		}, gaxOpts...)

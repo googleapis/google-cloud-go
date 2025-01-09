@@ -18,6 +18,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"fmt"
 	"strings"
 	"sync"
 	"testing"
@@ -27,36 +28,20 @@ import (
 	"cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
 	pb "cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
 	"cloud.google.com/go/pubsub/v2/pstest"
-	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-// All returns the remaining topics from this iterator.
-func slurpTopics(it *TopicIterator) ([]*Topic, error) {
-	var topics []*Topic
-	for {
-		switch topic, err := it.Next(); err {
-		case nil:
-			topics = append(topics, topic)
-		case iterator.Done:
-			return topics, nil
-		default:
-			return nil, err
-		}
-	}
-}
-
-func TestTopicID(t *testing.T) {
+func TestPublisherID(t *testing.T) {
 	const id = "id"
 	c, srv := newFake(t)
 	defer c.Close()
 	defer srv.Close()
 
-	s := c.Topic(id)
-	if got, want := s.ID(), id; got != want {
+	p := c.Publisher(id)
+	if got, want := p.ID(), id; got != want {
 		t.Errorf("Topic.ID() = %q; want %q", got, want)
 	}
 }
@@ -66,7 +51,7 @@ func TestStopPublishOrder(t *testing.T) {
 	// Also that Publish after Stop returns the right error.
 	ctx := context.Background()
 	c := &Client{projectID: "projid"}
-	topic := c.Topic("t")
+	topic := c.Publisher("t")
 	topic.Stop()
 	r := topic.Publish(ctx, &Message{})
 	_, err := r.Get(ctx)
@@ -92,17 +77,17 @@ func TestPublishTimeout(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	topic := c.Topic("t")
-	topic.PublishSettings.Timeout = 3 * time.Second
-	r := topic.Publish(ctx, &Message{})
-	defer topic.Stop()
+	publisher := c.Publisher("t")
+	publisher.PublishSettings.Timeout = 3 * time.Second
+	r := publisher.Publish(ctx, &Message{})
+	defer publisher.Stop()
 	select {
 	case <-r.Ready():
 		_, err = r.Get(ctx)
 		if !errors.Is(err, context.DeadlineExceeded) {
 			t.Fatalf("got %v, want context.DeadlineExceeded", err)
 		}
-	case <-time.After(2 * topic.PublishSettings.Timeout):
+	case <-time.After(2 * publisher.PublishSettings.Timeout):
 		t.Fatal("timed out")
 	}
 }
@@ -115,23 +100,12 @@ func (s *alwaysFailPublish) Publish(ctx context.Context, req *pubsubpb.PublishRe
 	return nil, status.Errorf(codes.Unavailable, "try again")
 }
 
-func mustCreateTopic(t *testing.T, c *Client, id string) *Topic {
-	topic, err := c.CreateTopic(context.Background(), id)
+func mustCreateTopic(t *testing.T, c *Client, name string) *Topic {
+	_, err := c.TopicAdminClient.CreateTopic(context.Background(), &pb.Topic{Name: name})
 	if err != nil {
 		t.Fatal(err)
 	}
-	return topic
-}
-
-func mustCreateTopicWithConfig(t *testing.T, c *Client, id string, tc *TopicConfig) *Topic {
-	if tc == nil {
-		return mustCreateTopic(t, c, id)
-	}
-	topic, err := c.CreateTopicWithConfig(context.Background(), id, tc)
-	if err != nil {
-		t.Fatal(err)
-	}
-	return topic
+	return c.Publisher(name)
 }
 
 func TestFlushStopTopic(t *testing.T) {
@@ -139,25 +113,22 @@ func TestFlushStopTopic(t *testing.T) {
 	c, srv := newFake(t)
 	defer c.Close()
 	defer srv.Close()
-
-	topic, err := c.CreateTopic(ctx, "flush-topic")
-	if err != nil {
-		t.Fatal(err)
-	}
+	topicName := fmt.Sprintf("projects/%s/topics/flush-topic", projName)
+	publisher := mustCreateTopic(t, c, topicName)
 
 	// Subsequent publishes after a flush should succeed.
-	topic.Flush()
-	r1 := topic.Publish(ctx, &Message{
+	publisher.Flush()
+	r1 := publisher.Publish(ctx, &Message{
 		Data: []byte("hello"),
 	})
-	_, err = r1.Get(ctx)
+	_, err := r1.Get(ctx)
 	if err != nil {
 		t.Errorf("got err: %v", err)
 	}
 
 	// Publishing after a flush should succeed.
-	topic.Flush()
-	r2 := topic.Publish(ctx, &Message{
+	publisher.Flush()
+	r2 := publisher.Publish(ctx, &Message{
 		Data: []byte("world"),
 	})
 	_, err = r2.Get(ctx)
@@ -168,16 +139,16 @@ func TestFlushStopTopic(t *testing.T) {
 	// Publishing after a temporarily blocked flush should succeed.
 	srv.SetAutoPublishResponse(false)
 
-	r3 := topic.Publish(ctx, &Message{
+	r3 := publisher.Publish(ctx, &Message{
 		Data: []byte("blocking message publish"),
 	})
 	go func() {
-		topic.Flush()
+		publisher.Flush()
 	}()
 
 	// Wait a second between publishes to ensure messages are not bundled together.
 	time.Sleep(1 * time.Second)
-	r4 := topic.Publish(ctx, &Message{
+	r4 := publisher.Publish(ctx, &Message{
 		Data: []byte("message published after flush"),
 	})
 
@@ -199,8 +170,8 @@ func TestFlushStopTopic(t *testing.T) {
 
 	// Publishing after Stop should fail.
 	srv.SetAutoPublishResponse(true)
-	topic.Stop()
-	r5 := topic.Publish(ctx, &Message{
+	publisher.Stop()
+	r5 := publisher.Publish(ctx, &Message{
 		Data: []byte("this should fail"),
 	})
 	if _, err := r5.Get(ctx); !errors.Is(err, ErrTopicStopped) {
@@ -214,30 +185,28 @@ func TestPublishFlowControl_SignalError(t *testing.T) {
 	defer c.Close()
 	defer srv.Close()
 
-	topic, err := c.CreateTopic(ctx, "some-topic")
-	if err != nil {
-		t.Fatal(err)
-	}
+	topicName := "projects/P/topics/fc-error-topic"
+	publisher := mustCreateTopic(t, c, topicName)
 	fc := FlowControlSettings{
 		MaxOutstandingMessages: 1,
 		MaxOutstandingBytes:    10,
 		LimitExceededBehavior:  FlowControlSignalError,
 	}
-	topic.PublishSettings.FlowControlSettings = fc
+	publisher.PublishSettings.FlowControlSettings = fc
 
 	srv.SetAutoPublishResponse(false)
 
 	// Sending a message that is too large results in an error in SignalError mode.
-	r1 := publishSingleMessage(ctx, topic, "AAAAAAAAAAA")
+	r1 := publishSingleMessage(ctx, publisher, "AAAAAAAAAAA")
 	if _, err := r1.Get(ctx); err != ErrFlowControllerMaxOutstandingBytes {
 		t.Fatalf("publishResult.Get(): got %v, want %v", err, ErrFlowControllerMaxOutstandingBytes)
 	}
 
 	// Sending a second message succeeds.
-	r2 := publishSingleMessage(ctx, topic, "AAAA")
+	r2 := publishSingleMessage(ctx, publisher, "AAAA")
 
 	// Sending a third message fails because of the outstanding message.
-	r3 := publishSingleMessage(ctx, topic, "AA")
+	r3 := publishSingleMessage(ctx, publisher, "AA")
 	if _, err := r3.Get(ctx); err != ErrFlowControllerMaxOutstandingMessages {
 		t.Fatalf("publishResult.Get(): got %v, want %v", err, ErrFlowControllerMaxOutstandingMessages)
 	}
@@ -254,7 +223,7 @@ func TestPublishFlowControl_SignalError(t *testing.T) {
 	}
 
 	// Sending another messages succeeds.
-	r4 := publishSingleMessage(ctx, topic, "AAAA")
+	r4 := publishSingleMessage(ctx, publisher, "AAAA")
 	srv.AddPublishResponse(&pb.PublishResponse{
 		MessageIds: []string{"2"},
 	}, nil)
@@ -274,30 +243,28 @@ func TestPublishFlowControl_SignalErrorOrderingKey(t *testing.T) {
 	defer c.Close()
 	defer srv.Close()
 
-	topic, err := c.CreateTopic(ctx, "some-topic")
-	if err != nil {
-		t.Fatal(err)
-	}
+	topicName := fmt.Sprintf("projects/p/topics/%s", "fc-error-ordering-topic")
+	publisher := mustCreateTopic(t, c, topicName)
 	fc := FlowControlSettings{
 		MaxOutstandingMessages: 1,
 		MaxOutstandingBytes:    10,
 		LimitExceededBehavior:  FlowControlSignalError,
 	}
-	topic.PublishSettings.FlowControlSettings = fc
-	topic.PublishSettings.DelayThreshold = 5 * time.Second
-	topic.PublishSettings.CountThreshold = 1
-	topic.EnableMessageOrdering = true
+	publisher.PublishSettings.FlowControlSettings = fc
+	publisher.PublishSettings.DelayThreshold = 5 * time.Second
+	publisher.PublishSettings.CountThreshold = 1
+	publisher.EnableMessageOrdering = true
 
-	// Sending a message that is too large reuslts in an error.
-	r1 := publishSingleMessageWithKey(ctx, topic, "AAAAAAAAAAA", "a")
+	// Sending a message that is too large results in an error.
+	r1 := publishSingleMessageWithKey(ctx, publisher, "AAAAAAAAAAA", "a")
 	if _, err := r1.Get(ctx); err != ErrFlowControllerMaxOutstandingBytes {
 		t.Fatalf("r1.Get() got: %v, want %v", err, ErrFlowControllerMaxOutstandingBytes)
 	}
 
 	// Sending a second message for the same ordering key fails because the first one failed.
-	r2 := publishSingleMessageWithKey(ctx, topic, "AAAA", "a")
+	r2 := publishSingleMessageWithKey(ctx, publisher, "AAAA", "a")
 	if _, err := r2.Get(ctx); err == nil {
-		t.Fatal("r2.Get() got nil instead of error before calling topic.ResumePublish(key)")
+		t.Fatal("r2.Get() got nil instead of error before calling publisher.ResumePublish(key)")
 	}
 }
 
@@ -307,18 +274,15 @@ func TestPublishFlowControl_Block(t *testing.T) {
 	defer c.Close()
 	defer srv.Close()
 
-	topic, err := c.CreateTopic(ctx, "some-topic")
-	if err != nil {
-		t.Fatal(err)
-	}
+	publisher := mustCreateTopic(t, c, "fc-block-topic")
 	fc := FlowControlSettings{
 		MaxOutstandingMessages: 2,
 		MaxOutstandingBytes:    10,
 		LimitExceededBehavior:  FlowControlBlock,
 	}
-	topic.PublishSettings.FlowControlSettings = fc
-	topic.PublishSettings.DelayThreshold = 5 * time.Second
-	topic.PublishSettings.CountThreshold = 1
+	publisher.PublishSettings.FlowControlSettings = fc
+	publisher.PublishSettings.DelayThreshold = 5 * time.Second
+	publisher.PublishSettings.CountThreshold = 1
 
 	srv.SetAutoPublishResponse(false)
 
@@ -336,14 +300,14 @@ func TestPublishFlowControl_Block(t *testing.T) {
 	}()
 
 	// Sending two messages succeeds.
-	publishSingleMessage(ctx, topic, "AA")
-	publishSingleMessage(ctx, topic, "AA")
+	publishSingleMessage(ctx, publisher, "AA")
+	publishSingleMessage(ctx, publisher, "AA")
 
 	// Sending a third message blocks because the messages are outstanding.
 	var publish3Completed sync.WaitGroup
 	publish3Completed.Add(1)
 	go func() {
-		publishSingleMessage(ctx, topic, "AAAAAA")
+		publishSingleMessage(ctx, publisher, "AAAAAA")
 		publish3Completed.Done()
 	}()
 
@@ -360,7 +324,7 @@ func TestPublishFlowControl_Block(t *testing.T) {
 
 	go func() {
 		publish3Completed.Wait()
-		publishSingleMessage(ctx, topic, "A")
+		publishSingleMessage(ctx, publisher, "A")
 		publish4Completed.Done()
 	}()
 
@@ -377,11 +341,8 @@ func TestInvalidUTF8(t *testing.T) {
 	defer c.Close()
 	defer srv.Close()
 
-	topic, err := c.CreateTopic(ctx, "invalid-utf8-topic")
-	if err != nil {
-		t.Fatal(err)
-	}
-	res := topic.Publish(ctx, &Message{
+	publisher := mustCreateTopic(t, c, "invalid-utf8-topic")
+	res := publisher.Publish(ctx, &Message{
 		Data: []byte("foo"),
 		Attributes: map[string]string{
 			"attr": "a\xc5z",
@@ -389,7 +350,7 @@ func TestInvalidUTF8(t *testing.T) {
 	})
 	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
-	_, err = res.Get(ctx)
+	_, err := res.Get(ctx)
 	if err == nil || !strings.Contains(err.Error(), "string field contains invalid UTF-8") {
 		t.Fatalf("expected invalid UTF-8 error, got: %v", err)
 	}
@@ -423,11 +384,8 @@ func TestPublishOrderingNotEnabled(t *testing.T) {
 	defer c.Close()
 	defer srv.Close()
 
-	topic, err := c.CreateTopic(ctx, "test-topic")
-	if err != nil {
-		t.Fatal(err)
-	}
-	res := publishSingleMessageWithKey(ctx, topic, "test", "non-existent-key")
+	publisher := mustCreateTopic(t, c, "test-topic")
+	res := publishSingleMessageWithKey(ctx, publisher, "test", "non-existent-key")
 	if _, err := res.Get(ctx); !errors.Is(err, errTopicOrderingNotEnabled) {
 		t.Errorf("got %v, want errTopicOrderingNotEnabled", err)
 	}
@@ -439,16 +397,17 @@ func TestPublishCompression(t *testing.T) {
 	defer client.Close()
 	defer srv.Close()
 
-	topic := mustCreateTopic(t, client, "topic-compression")
-	defer topic.Stop()
+	topic := fmt.Sprintf("projects/%s/topics/topic-compression", testutil.ProjID())
+	publisher := mustCreateTopic(t, client, topic)
+	defer publisher.Stop()
 
-	topic.PublishSettings.EnableCompression = true
-	topic.PublishSettings.CompressionBytesThreshold = 50
+	publisher.PublishSettings.EnableCompression = true
+	publisher.PublishSettings.CompressionBytesThreshold = 50
 
 	const messageSizeBytes = 1000
 
 	msg := &Message{Data: bytes.Repeat([]byte{'A'}, int(messageSizeBytes))}
-	res := topic.Publish(ctx, msg)
+	res := publisher.Publish(ctx, msg)
 
 	_, err := res.Get(ctx)
 	if err != nil {
