@@ -21,15 +21,14 @@
 package backupdrpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	dayofweek "google.golang.org/genproto/googleapis/type/dayofweek"
 	month "google.golang.org/genproto/googleapis/type/month"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -264,8 +263,8 @@ type BackupPlan struct {
 	// Output only. The `State` for the `BackupPlan`.
 	State BackupPlan_State `protobuf:"varint,7,opt,name=state,proto3,enum=google.cloud.backupdr.v1.BackupPlan_State" json:"state,omitempty"`
 	// Required. The resource type to which the `BackupPlan` will be applied.
-	// Examples include, "compute.googleapis.com/Instance" and
-	// "storage.googleapis.com/Bucket".
+	// Examples include, "compute.googleapis.com/Instance",
+	// "sqladmin.googleapis.com/Instance", or "alloydb.googleapis.com/Cluster".
 	ResourceType string `protobuf:"bytes,8,opt,name=resource_type,json=resourceType,proto3" json:"resource_type,omitempty"`
 	// Optional. `etag` is returned from the service in the response. As a user of
 	// the service, you may provide an etag value in this field to prevent stale
@@ -402,9 +401,13 @@ type BackupRule struct {
 	// Required. Configures the duration for which backup data will be kept. It is
 	// defined in “days”. The value should be greater than or equal to minimum
 	// enforced retention of the backup vault.
-	BackupRetentionDays int32 `protobuf:"varint,4,opt,name=backup_retention_days,json=backupRetentionDays,proto3" json:"backup_retention_days,omitempty"`
-	// Required.
 	//
+	// Minimum value is 1 and maximum value is 90 for hourly backups.
+	// Minimum value is 1 and maximum value is 90 for daily backups.
+	// Minimum value is 7 and maximum value is 186 for weekly backups.
+	// Minimum value is 30 and maximum value is 732 for monthly backups.
+	// Minimum value is 365 and maximum value is 36159 for yearly backups.
+	BackupRetentionDays int32 `protobuf:"varint,4,opt,name=backup_retention_days,json=backupRetentionDays,proto3" json:"backup_retention_days,omitempty"`
 	// The schedule that defines the automated backup workloads for this
 	// `BackupRule`.
 	//
