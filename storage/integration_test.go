@@ -635,7 +635,14 @@ func TestIntegration_DoNotDetectDirectConnectivityWhenDisabled(t *testing.T) {
 	}, internaloption.EnableDirectPath(false))
 }
 
+// TestIntegration_MetricsEnablement does not use multiTransportTest because it
+// only has to run once, and creating the manual reader multiple times can
+// cause it to be registered multiple times to packages that enable by default.
 func TestIntegration_MetricsEnablement(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+
 	var (
 		ctx           = context.Background()
 		prefix        = grpcTestPrefix
