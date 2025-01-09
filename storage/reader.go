@@ -158,6 +158,10 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 }
 
 // NewMultiRangeDownloader creates a multi-range reader for an object.
+// Must be called on a gRPC client created using [NewGRPCClient].
+//
+// This uses the gRPC-specific bi-directional read API, which is in private
+// preview; please contact your account manager if interested.
 func (o *ObjectHandle) NewMultiRangeDownloader(ctx context.Context) (mrd *MultiRangeDownloader, err error) {
 	// This span covers the life of the reader. It is closed via the context
 	// in Reader.Close.
@@ -344,8 +348,24 @@ func (r *Reader) LastModified() (time.Time, error) {
 	return r.Attrs.LastModified, nil
 }
 
+// Metadata returns user-provided metadata, in key/value pairs.
+//
+// It can be nil if no metadata is present, or if the client uses the JSON
+// API for downloads. Only the XML and gRPC APIs support getting
+// custom metadata via the Reader; for JSON make a separate call to
+// ObjectHandle.Attrs.
+func (r *Reader) Metadata() map[string]string {
+	if r.objectMetadata != nil {
+		return *r.objectMetadata
+	}
+	return nil
+}
+
 // ReadHandle returns the read handle associated with an object.
-// Read Handle will be periodically refreshed.
+// ReadHandle will be periodically refreshed.
+//
+// ReadHandle requires the gRPC-specific bi-directional read API, which is in
+// private preview; please contact your account manager if interested.
 // Note that this only valid for gRPC and only with zonal buckets.
 func (r *Reader) ReadHandle() ReadHandle {
 	if r.handle == nil {
@@ -360,6 +380,8 @@ func (r *Reader) ReadHandle() ReadHandle {
 //
 // Typically, a MultiRangeDownloader opens a stream to which we can add
 // different ranges to read from the object.
+//
+// This API is currently in preview and is not yet available for general use.
 type MultiRangeDownloader struct {
 	Attrs  ReaderObjectAttrs
 	reader multiRangeDownloader
@@ -398,6 +420,7 @@ func (mrd *MultiRangeDownloader) Add(output io.Writer, offset, length int64, cal
 //
 // This will immediately close the stream and can result in a
 // "stream closed early" error if a response for a range is still not processed.
+// Call [MultiRangeDownloader.Wait] to avoid this error.
 func (mrd *MultiRangeDownloader) Close() error {
 	err := mrd.reader.close()
 	trace.EndSpan(mrd.ctx, err)
@@ -415,17 +438,4 @@ func (mrd *MultiRangeDownloader) Wait() {
 // follow up read if the same object is read through a different stream.
 func (mrd *MultiRangeDownloader) GetHandle() []byte {
 	return mrd.reader.getHandle()
-}
-
-// Metadata returns user-provided metadata, in key/value pairs.
-//
-// It can be nil if no metadata is present, or if the client uses the JSON
-// API for downloads. Only the XML and gRPC APIs support getting
-// custom metadata via the Reader; for JSON make a separate call to
-// ObjectHandle.Attrs.
-func (r *Reader) Metadata() map[string]string {
-	if r.objectMetadata != nil {
-		return *r.objectMetadata
-	}
-	return nil
 }

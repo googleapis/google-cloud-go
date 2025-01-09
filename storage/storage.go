@@ -937,7 +937,7 @@ func signedURLV2(bucket, name string, opts *SignedURLOptions) (string, error) {
 	return u.String(), nil
 }
 
-// ReadHandle associated with the object. This would be periodically refreshed.
+// ReadHandle associated with the object. This is periodically refreshed.
 type ReadHandle []byte
 
 // ObjectHandle provides operations on an object in a Google Cloud Storage bucket.
@@ -965,7 +965,7 @@ type ObjectHandle struct {
 // This produces the exact same object and generation and does not check if
 // the generation is still the newest one.
 // Note that this will be a noop unless it's set on a gRPC client on buckets with
-// appendable write access.
+// bi-directional read API access.
 // Also note that you can get a ReadHandle only via calling reader.ReadHandle() on a
 // previous read of the same object.
 func (o *ObjectHandle) ReadHandle(r ReadHandle) *ObjectHandle {
