@@ -1013,7 +1013,8 @@ func mutationsAreRetryable(muts []*btpb.Mutation) bool {
 	return true
 }
 
-const maxMutations = 100000
+// Overriden in tests
+var maxMutations = 100000
 
 // Apply mutates a row atomically. A mutation must contain at least one
 // operation and at most 100000 operations.
@@ -1257,10 +1258,11 @@ func (t *Table) ApplyBulk(ctx context.Context, rowKeys []string, muts []*Mutatio
 		origEntries[i] = &entryErr{Entry: &btpb.MutateRowsRequest_Entry{RowKey: []byte(key), Mutations: mut.ops}}
 	}
 
+	var firstGroupErr error
 	for _, group := range groupEntries(origEntries, maxMutations) {
 		err := t.applyGroup(ctx, group, opts...)
-		if err != nil {
-			return nil, err
+		if err != nil && firstGroupErr == nil {
+			firstGroupErr = err
 		}
 	}
 
@@ -1274,7 +1276,7 @@ func (t *Table) ApplyBulk(ctx context.Context, rowKeys []string, muts []*Mutatio
 		errs = append(errs, entry.Err)
 	}
 	if foundErr {
-		return errs, nil
+		return errs, firstGroupErr
 	}
 	return nil, nil
 }
@@ -1343,6 +1345,7 @@ func (t *Table) doApplyBulk(ctx context.Context, entryErrs []*entryErr, headerMD
 
 	stream, err := t.c.client.MutateRows(ctx, req)
 	if err != nil {
+		populatePerMutationErrors(entryErrs, nil, err)
 		return err
 	}
 
@@ -1355,11 +1358,22 @@ func (t *Table) doApplyBulk(ctx context.Context, entryErrs []*entryErr, headerMD
 			*trailerMD = stream.Trailer()
 			break
 		}
+
+		populatePerMutationErrors(entryErrs, res, err)
 		if err != nil {
 			*trailerMD = stream.Trailer()
 			return err
 		}
 
+		after(res)
+	}
+	return nil
+}
+
+func populatePerMutationErrors(entryErrs []*entryErr, res *btpb.MutateRowsResponse, err error) {
+	// If response received from Cloud Bigtable service is not nil,
+	// populate per mutation errors with the Entries from response
+	if res != nil {
 		for _, entry := range res.Entries {
 			s := entry.Status
 			if s.Code == int32(codes.OK) {
@@ -1368,9 +1382,16 @@ func (t *Table) doApplyBulk(ctx context.Context, entryErrs []*entryErr, headerMD
 				entryErrs[entry.Index].Err = status.Errorf(codes.Code(s.Code), s.Message)
 			}
 		}
-		after(res)
+		return
 	}
-	return nil
+
+	// If response received from Cloud Bigtable service is nil and error received from Cloud Bigtable service is not nil
+	// set per mutation errors to the error
+	if err != nil {
+		for i, _ := range entryErrs {
+			_, entryErrs[i].Err = convertToGrpcStatusErr(err)
+		}
+	}
 }
 
 // groupEntries groups entries into groups of a specified size without breaking up
