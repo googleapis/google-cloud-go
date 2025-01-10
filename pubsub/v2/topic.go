@@ -133,16 +133,6 @@ var DefaultPublishSettings = PublishSettings{
 	CompressionBytesThreshold: 240,
 }
 
-// Topic creates a reference to a topic in the client's project.
-//
-// If a Topic's Publish method is called, it has background goroutines
-// associated with it. Clean them up by calling Topic.Stop.
-//
-// Avoid creating many Topic instances if you use them to publish.
-func (c *Client) Topic(id string) *Publisher {
-	return c.TopicInProject(id, c.projectID)
-}
-
 // Publisher constructs a publisher client from either a topicID or a topic name, otherwise known as a full path.
 
 // The client created is a reference and does not return any errors if the topic does not exist.
@@ -160,16 +150,6 @@ func (c *Client) Publisher(topicNameOrID string) *Publisher {
 	}
 	// In all other cases, treat the string as the topicID, even if misformatted.
 	return newTopic(c, fmt.Sprintf("projects/%s/topics/%s", c.projectID, topicNameOrID))
-}
-
-// TopicInProject creates a reference to a topic in the given project.
-//
-// If a Topic's Publish method is called, it has background goroutines
-// associated with it. Clean them up by calling Topic.Stop.
-//
-// Avoid creating many Topic instances if you use them to publish.
-func (c *Client) TopicInProject(id, projectID string) *Publisher {
-	return newTopic(c, fmt.Sprintf("projects/%s/topics/%s", projectID, id))
 }
 
 func newTopic(c *Client, name string) *Publisher {
