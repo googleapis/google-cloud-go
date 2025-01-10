@@ -54,13 +54,8 @@ type Subscriber struct {
 	enableTracing bool
 }
 
-// Subscription creates a reference to a subscription.
-func (c *Client) Subscription(id string) *Subscriber {
-	return nil
-}
-
 // Subscriber creates a subscriber client which references a single subscription.
-func (c *Client) Subscriber(nameOrID string) *Subscription {
+func (c *Client) Subscriber(nameOrID string) *Subscriber {
 	s := strings.Split(nameOrID, "/")
 	// The string looks like a properly formatted topic name, use it directly.
 	if len(s) == 4 {
@@ -70,13 +65,8 @@ func (c *Client) Subscriber(nameOrID string) *Subscription {
 	return newSubscription(c, fmt.Sprintf("projects/%s/subscriptions/%s", c.projectID, nameOrID))
 }
 
-// SubscriptionInProject creates a reference to a subscription in a given project.
-func (c *Client) SubscriptionInProject(id, projectID string) *Subscription {
-	return newSubscription(c, fmt.Sprintf("projects/%s/subscriptions/%s", projectID, id))
-}
-
-func newSubscription(c *Client, name string) *Subscription {
-	return &Subscription{
+func newSubscription(c *Client, name string) *Subscriber {
+	return &Subscriber{
 		c:               c,
 		name:            name,
 		clientID:        uuid.NewString(),

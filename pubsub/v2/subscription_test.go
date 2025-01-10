@@ -86,7 +86,7 @@ func testReceive(t *testing.T, exactlyOnceDelivery bool) {
 	})
 }
 
-func (t1 *Topic) Equal(t2 *Topic) bool {
+func (t1 *Publisher) Equal(t2 *Publisher) bool {
 	if t1 == nil && t2 == nil {
 		return true
 	}
@@ -402,10 +402,10 @@ func TestSubscribeMessageExpirationFlowControl(t *testing.T) {
 	}
 }
 
-func mustCreateSubConfig(t *testing.T, c *Client, pbs *pb.Subscription) *Subscription {
+func mustCreateSubConfig(t *testing.T, c *Client, pbs *pb.Subscription) *Subscriber {
 	ctx := context.Background()
 	if _, err := c.SubscriptionAdminClient.CreateSubscription(ctx, pbs); err != nil {
 		t.Fatal(err)
 	}
-	return c.Subscription(pbs.Name)
+	return c.Subscriber(pbs.Name)
 }

@@ -339,7 +339,7 @@ func TestIntegration_CancelReceive(t *testing.T) {
 
 // publishSync is a utility function for publishing a message and
 // blocking until the message has been confirmed.
-func publishSync(ctx context.Context, t *testing.T, publisher *Topic, msg *Message) {
+func publishSync(ctx context.Context, t *testing.T, publisher *Publisher, msg *Message) {
 	res := publisher.Publish(ctx, msg)
 	_, err := res.Get(ctx)
 	if err != nil {
