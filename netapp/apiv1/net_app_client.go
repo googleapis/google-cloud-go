@@ -52,6 +52,7 @@ type CallOptions struct {
 	GetStoragePool              []gax.CallOption
 	UpdateStoragePool           []gax.CallOption
 	DeleteStoragePool           []gax.CallOption
+	ValidateDirectoryService    []gax.CallOption
 	SwitchActiveReplicaZone     []gax.CallOption
 	ListVolumes                 []gax.CallOption
 	GetVolume                   []gax.CallOption
@@ -159,7 +160,8 @@ func defaultCallOptions() *CallOptions {
 		DeleteStoragePool: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
-		SwitchActiveReplicaZone: []gax.CallOption{},
+		ValidateDirectoryService: []gax.CallOption{},
+		SwitchActiveReplicaZone:  []gax.CallOption{},
 		ListVolumes: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -486,7 +488,8 @@ func defaultRESTCallOptions() *CallOptions {
 		DeleteStoragePool: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
-		SwitchActiveReplicaZone: []gax.CallOption{},
+		ValidateDirectoryService: []gax.CallOption{},
+		SwitchActiveReplicaZone:  []gax.CallOption{},
 		ListVolumes: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -777,6 +780,8 @@ type internalClient interface {
 	UpdateStoragePoolOperation(name string) *UpdateStoragePoolOperation
 	DeleteStoragePool(context.Context, *netapppb.DeleteStoragePoolRequest, ...gax.CallOption) (*DeleteStoragePoolOperation, error)
 	DeleteStoragePoolOperation(name string) *DeleteStoragePoolOperation
+	ValidateDirectoryService(context.Context, *netapppb.ValidateDirectoryServiceRequest, ...gax.CallOption) (*ValidateDirectoryServiceOperation, error)
+	ValidateDirectoryServiceOperation(name string) *ValidateDirectoryServiceOperation
 	SwitchActiveReplicaZone(context.Context, *netapppb.SwitchActiveReplicaZoneRequest, ...gax.CallOption) (*SwitchActiveReplicaZoneOperation, error)
 	SwitchActiveReplicaZoneOperation(name string) *SwitchActiveReplicaZoneOperation
 	ListVolumes(context.Context, *netapppb.ListVolumesRequest, ...gax.CallOption) *VolumeIterator
@@ -947,6 +952,18 @@ func (c *Client) DeleteStoragePool(ctx context.Context, req *netapppb.DeleteStor
 // The name must be that of a previously created DeleteStoragePoolOperation, possibly from a different process.
 func (c *Client) DeleteStoragePoolOperation(name string) *DeleteStoragePoolOperation {
 	return c.internalClient.DeleteStoragePoolOperation(name)
+}
+
+// ValidateDirectoryService validateDirectoryService does a connectivity check for a directory service
+// policy attached to the storage pool.
+func (c *Client) ValidateDirectoryService(ctx context.Context, req *netapppb.ValidateDirectoryServiceRequest, opts ...gax.CallOption) (*ValidateDirectoryServiceOperation, error) {
+	return c.internalClient.ValidateDirectoryService(ctx, req, opts...)
+}
+
+// ValidateDirectoryServiceOperation returns a new ValidateDirectoryServiceOperation from a given name.
+// The name must be that of a previously created ValidateDirectoryServiceOperation, possibly from a different process.
+func (c *Client) ValidateDirectoryServiceOperation(name string) *ValidateDirectoryServiceOperation {
+	return c.internalClient.ValidateDirectoryServiceOperation(name)
 }
 
 // SwitchActiveReplicaZone this operation will switch the active/replica zone for a regional
@@ -1736,6 +1753,26 @@ func (c *gRPCClient) DeleteStoragePool(ctx context.Context, req *netapppb.Delete
 		return nil, err
 	}
 	return &DeleteStoragePoolOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ValidateDirectoryService(ctx context.Context, req *netapppb.ValidateDirectoryServiceRequest, opts ...gax.CallOption) (*ValidateDirectoryServiceOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ValidateDirectoryService[0:len((*c.CallOptions).ValidateDirectoryService):len((*c.CallOptions).ValidateDirectoryService)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.ValidateDirectoryService, req, settings.GRPC, c.logger, "ValidateDirectoryService")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ValidateDirectoryServiceOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -3376,6 +3413,66 @@ func (c *restClient) DeleteStoragePool(ctx context.Context, req *netapppb.Delete
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
 	return &DeleteStoragePoolOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ValidateDirectoryService validateDirectoryService does a connectivity check for a directory service
+// policy attached to the storage pool.
+func (c *restClient) ValidateDirectoryService(ctx context.Context, req *netapppb.ValidateDirectoryServiceRequest, opts ...gax.CallOption) (*ValidateDirectoryServiceOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:validateDirectoryService", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ValidateDirectoryService")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &ValidateDirectoryServiceOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
@@ -7405,6 +7502,24 @@ func (c *gRPCClient) UpdateVolumeOperation(name string) *UpdateVolumeOperation {
 func (c *restClient) UpdateVolumeOperation(name string) *UpdateVolumeOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateVolumeOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// ValidateDirectoryServiceOperation returns a new ValidateDirectoryServiceOperation from a given name.
+// The name must be that of a previously created ValidateDirectoryServiceOperation, possibly from a different process.
+func (c *gRPCClient) ValidateDirectoryServiceOperation(name string) *ValidateDirectoryServiceOperation {
+	return &ValidateDirectoryServiceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// ValidateDirectoryServiceOperation returns a new ValidateDirectoryServiceOperation from a given name.
+// The name must be that of a previously created ValidateDirectoryServiceOperation, possibly from a different process.
+func (c *restClient) ValidateDirectoryServiceOperation(name string) *ValidateDirectoryServiceOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &ValidateDirectoryServiceOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

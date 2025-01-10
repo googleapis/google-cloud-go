@@ -27,6 +27,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/grpc/codes"
@@ -41,13 +42,12 @@ func TestInvoke(t *testing.T) {
 
 	for _, test := range []struct {
 		desc              string
-		count             int   // Maximum number of times to return initialErr.
+		count             int   // Number of times to return retryable error.
 		initialErr        error // Error to return initially.
 		finalErr          error // Error to return after count returns of retryCode.
 		retry             *retryConfig
 		isIdempotentValue bool
 		expectFinalErr    bool
-		expectedAttempts  int
 	}{
 		{
 			desc:              "test fn never returns initial error with count=0",
@@ -56,7 +56,6 @@ func TestInvoke(t *testing.T) {
 			finalErr:          nil,
 			isIdempotentValue: true,
 			expectFinalErr:    true,
-			expectedAttempts:  1,
 		},
 		{
 			desc:              "non-retryable error is returned without retrying",
@@ -65,7 +64,6 @@ func TestInvoke(t *testing.T) {
 			finalErr:          nil,
 			isIdempotentValue: true,
 			expectFinalErr:    false,
-			expectedAttempts:  1,
 		},
 		{
 			desc:              "retryable error is retried",
@@ -74,7 +72,6 @@ func TestInvoke(t *testing.T) {
 			finalErr:          nil,
 			isIdempotentValue: true,
 			expectFinalErr:    true,
-			expectedAttempts:  2,
 		},
 		{
 			desc:              "retryable gRPC error is retried",
@@ -83,7 +80,6 @@ func TestInvoke(t *testing.T) {
 			finalErr:          nil,
 			isIdempotentValue: true,
 			expectFinalErr:    true,
-			expectedAttempts:  2,
 		},
 		{
 			desc:              "returns non-retryable error after retryable error",
@@ -92,7 +88,6 @@ func TestInvoke(t *testing.T) {
 			finalErr:          errors.New("bar"),
 			isIdempotentValue: true,
 			expectFinalErr:    true,
-			expectedAttempts:  2,
 		},
 		{
 			desc:              "retryable 5xx error is retried",
@@ -101,7 +96,6 @@ func TestInvoke(t *testing.T) {
 			finalErr:          nil,
 			isIdempotentValue: true,
 			expectFinalErr:    true,
-			expectedAttempts:  3,
 		},
 		{
 			desc:              "retriable error not retried when non-idempotent",
@@ -110,7 +104,6 @@ func TestInvoke(t *testing.T) {
 			finalErr:          nil,
 			isIdempotentValue: false,
 			expectFinalErr:    false,
-			expectedAttempts:  1,
 		},
 		{
 			desc:              "non-idempotent retriable error retried when policy is RetryAlways",
@@ -120,7 +113,6 @@ func TestInvoke(t *testing.T) {
 			isIdempotentValue: false,
 			retry:             &retryConfig{policy: RetryAlways},
 			expectFinalErr:    true,
-			expectedAttempts:  3,
 		},
 		{
 			desc:              "retriable error not retried when policy is RetryNever",
@@ -130,7 +122,6 @@ func TestInvoke(t *testing.T) {
 			isIdempotentValue: true,
 			retry:             &retryConfig{policy: RetryNever},
 			expectFinalErr:    false,
-			expectedAttempts:  1,
 		},
 		{
 			desc:              "non-retriable error not retried when policy is RetryAlways",
@@ -140,7 +131,6 @@ func TestInvoke(t *testing.T) {
 			isIdempotentValue: true,
 			retry:             &retryConfig{policy: RetryAlways},
 			expectFinalErr:    false,
-			expectedAttempts:  1,
 		},
 		{
 			desc:              "non-retriable error retried with custom fn",
@@ -153,8 +143,7 @@ func TestInvoke(t *testing.T) {
 					return err == io.ErrNoProgress
 				},
 			},
-			expectFinalErr:   true,
-			expectedAttempts: 3,
+			expectFinalErr: true,
 		},
 		{
 			desc:              "retriable error not retried with custom fn",
@@ -167,8 +156,7 @@ func TestInvoke(t *testing.T) {
 					return err == io.ErrNoProgress
 				},
 			},
-			expectFinalErr:   false,
-			expectedAttempts: 1,
+			expectFinalErr: false,
 		},
 		{
 			desc:              "error not retried when policy is RetryNever despite custom fn",
@@ -182,8 +170,7 @@ func TestInvoke(t *testing.T) {
 				},
 				policy: RetryNever,
 			},
-			expectFinalErr:   false,
-			expectedAttempts: 1,
+			expectFinalErr: false,
 		},
 		{
 			desc:              "non-idempotent retriable error retried when policy is RetryAlways till maxAttempts",
@@ -193,7 +180,6 @@ func TestInvoke(t *testing.T) {
 			isIdempotentValue: false,
 			retry:             &retryConfig{policy: RetryAlways, maxAttempts: expectedAttempts(2)},
 			expectFinalErr:    false,
-			expectedAttempts:  2,
 		},
 		{
 			desc:              "non-idempotent retriable error not retried when policy is RetryNever with maxAttempts set",
@@ -203,7 +189,6 @@ func TestInvoke(t *testing.T) {
 			isIdempotentValue: false,
 			retry:             &retryConfig{policy: RetryNever, maxAttempts: expectedAttempts(2)},
 			expectFinalErr:    false,
-			expectedAttempts:  1,
 		},
 		{
 			desc:              "non-retriable error retried with custom fn till maxAttempts",
@@ -217,8 +202,7 @@ func TestInvoke(t *testing.T) {
 				},
 				maxAttempts: expectedAttempts(2),
 			},
-			expectFinalErr:   false,
-			expectedAttempts: 2,
+			expectFinalErr: false,
 		},
 		{
 			desc:              "non-idempotent retriable error retried when policy is RetryAlways till maxAttempts where count equals to maxAttempts-1",
@@ -228,7 +212,6 @@ func TestInvoke(t *testing.T) {
 			isIdempotentValue: false,
 			retry:             &retryConfig{policy: RetryAlways, maxAttempts: expectedAttempts(4)},
 			expectFinalErr:    true,
-			expectedAttempts:  4,
 		},
 		{
 			desc:              "non-idempotent retriable error retried when policy is RetryAlways till maxAttempts where count equals to maxAttempts",
@@ -238,7 +221,6 @@ func TestInvoke(t *testing.T) {
 			isIdempotentValue: true,
 			retry:             &retryConfig{policy: RetryAlways, maxAttempts: expectedAttempts(4)},
 			expectFinalErr:    false,
-			expectedAttempts:  4,
 		},
 		{
 			desc:              "non-idempotent retriable error not retried when policy is RetryAlways with maxAttempts equals to zero",
@@ -248,7 +230,6 @@ func TestInvoke(t *testing.T) {
 			isIdempotentValue: true,
 			retry:             &retryConfig{maxAttempts: expectedAttempts(0), policy: RetryAlways},
 			expectFinalErr:    false,
-			expectedAttempts:  1,
 		},
 	} {
 		t.Run(test.desc, func(s *testing.T) {
@@ -274,17 +255,22 @@ func TestInvoke(t *testing.T) {
 			if test.retry == nil {
 				test.retry = defaultRetry.clone()
 			}
-			bo := &gaxBackoff{}
-			bo.Initial = time.Millisecond
-			test.retry.backoff = bo
+			test.retry.backoff = &gax.Backoff{Initial: time.Millisecond}
 			got := run(ctx, call, test.retry, test.isIdempotentValue)
 			if test.expectFinalErr && !errors.Is(got, test.finalErr) {
 				s.Errorf("got %v, want %v", got, test.finalErr)
 			} else if !test.expectFinalErr && !errors.Is(got, test.initialErr) {
 				s.Errorf("got %v, want %v", got, test.initialErr)
 			}
+			wantAttempts := 1 + test.count
+			if !test.expectFinalErr {
+				wantAttempts = 1
+			}
+			if test.retry != nil && test.retry.maxAttempts != nil && *test.retry.maxAttempts != 0 && test.retry.policy != RetryNever {
+				wantAttempts = *test.retry.maxAttempts
+			}
 
-			wantClientHeader := strings.ReplaceAll(initialClientHeader, "gccl-attempt-count/1", fmt.Sprintf("gccl-attempt-count/%v", test.expectedAttempts))
+			wantClientHeader := strings.ReplaceAll(initialClientHeader, "gccl-attempt-count/1", fmt.Sprintf("gccl-attempt-count/%v", wantAttempts))
 			if gotClientHeader != wantClientHeader {
 				t.Errorf("case %q, retry header:\ngot %v\nwant %v", test.desc, gotClientHeader, wantClientHeader)
 			}
