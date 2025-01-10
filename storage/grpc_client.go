@@ -1251,7 +1251,9 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 		for {
 			select {
 			case <-rr.ctx.Done():
+				rr.mu.Lock()
 				rr.done = true
+				rr.mu.Unlock()
 				return
 			case <-rr.receiverRetry:
 				return
@@ -1373,8 +1375,6 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 }
 
 func getActiveRange(r *gRPCBidiReader) []rangeSpec {
-	r.mu.Lock()
-	defer r.mu.Unlock()
 	var activeRange []rangeSpec
 	for k, v := range r.mp {
 		activeRange = append(activeRange, rangeSpec{
@@ -1468,6 +1468,10 @@ func (mr *gRPCBidiReader) wait() {
 
 // Close will notify stream manager goroutine that the reader has been closed, if it's still running.
 func (mr *gRPCBidiReader) close() error {
+	// Before release of resource we close the client->server connection.
+	if err := mr.stream.CloseSend(); err != nil {
+		return err
+	}
 	if mr.cancel != nil {
 		mr.cancel()
 	}
