@@ -1388,7 +1388,7 @@ func populatePerMutationErrors(entryErrs []*entryErr, res *btpb.MutateRowsRespon
 	// If response received from Cloud Bigtable service is nil and error received from Cloud Bigtable service is not nil
 	// set per mutation errors to the error
 	if err != nil {
-		for i, _ := range entryErrs {
+		for i := range entryErrs {
 			_, entryErrs[i].Err = convertToGrpcStatusErr(err)
 		}
 	}
