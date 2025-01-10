@@ -5,6 +5,7 @@ deep-remove-regex:
   - /accessapproval/apiv1/
   - /accesscontextmanager/apiv1/
   - /ai/generativelanguage/apiv1/
+  - /ai/generativelanguage/apiv1alpha/
   - /ai/generativelanguage/apiv1beta/
   - /ai/generativelanguage/apiv1beta2/
   - /aiplatform/apiv1/
@@ -78,6 +79,7 @@ deep-remove-regex:
   - /clouddms/apiv1/
   - /cloudprofiler/apiv2/
   - /cloudquotas/apiv1/
+  - /cloudquotas/apiv1beta/
   - /cloudtasks/apiv2/
   - /cloudtasks/apiv2beta2/
   - /cloudtasks/apiv2beta3/
@@ -146,6 +148,7 @@ deep-remove-regex:
   - /internal/generated/snippets/accessapproval/apiv1/
   - /internal/generated/snippets/accesscontextmanager/apiv1/
   - /internal/generated/snippets/ai/generativelanguage/apiv1/
+  - /internal/generated/snippets/ai/generativelanguage/apiv1alpha/
   - /internal/generated/snippets/ai/generativelanguage/apiv1beta/
   - /internal/generated/snippets/ai/generativelanguage/apiv1beta2/
   - /internal/generated/snippets/aiplatform/apiv1/
@@ -214,6 +217,7 @@ deep-remove-regex:
   - /internal/generated/snippets/clouddms/apiv1/
   - /internal/generated/snippets/cloudprofiler/apiv2/
   - /internal/generated/snippets/cloudquotas/apiv1/
+  - /internal/generated/snippets/cloudquotas/apiv1beta/
   - /internal/generated/snippets/cloudtasks/apiv2/
   - /internal/generated/snippets/cloudtasks/apiv2beta2/
   - /internal/generated/snippets/cloudtasks/apiv2beta3/
@@ -630,6 +634,8 @@ deep-copy-regex:
     dest: /
   - source: /google/ai/generativelanguage/v1/cloud.google.com/go
     dest: /
+  - source: /google/ai/generativelanguage/v1alpha/cloud.google.com/go
+    dest: /
   - source: /google/ai/generativelanguage/v1beta/cloud.google.com/go
     dest: /
   - source: /google/ai/generativelanguage/v1beta2/cloud.google.com/go
@@ -671,6 +677,8 @@ deep-copy-regex:
   - source: /google/api/apikeys/v2/cloud.google.com/go
     dest: /
   - source: /google/api/cloudquotas/v1/cloud.google.com/go
+    dest: /
+  - source: /google/api/cloudquotas/v1beta/cloud.google.com/go
     dest: /
   - source: /google/appengine/v1/cloud.google.com/go
     dest: /

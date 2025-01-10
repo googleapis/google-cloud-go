@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/netapp/apiv1",
-    "version": "1.5.1",
+    "version": "1.6.0",
     "language": "GO",
     "apis": [
       {
@@ -2719,6 +2719,52 @@
         {
           "start": 18,
           "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_ValidateDirectoryService_sync",
+      "title": "netapp ValidateDirectoryService Sample",
+      "description": "ValidateDirectoryService validateDirectoryService does a connectivity check for a directory service\npolicy attached to the storage pool.",
+      "file": "Client/ValidateDirectoryService/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ValidateDirectoryService",
+        "fullName": "google.cloud.netapp.v1.Client.ValidateDirectoryService",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.ValidateDirectoryServiceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ValidateDirectoryServiceOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "ValidateDirectoryService",
+          "fullName": "google.cloud.netapp.v1.NetApp.ValidateDirectoryService",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
           "type": "FULL"
         }
       ]
