@@ -86,16 +86,6 @@ func testReceive(t *testing.T, exactlyOnceDelivery bool) {
 	})
 }
 
-func (t1 *Publisher) Equal(t2 *Publisher) bool {
-	if t1 == nil && t2 == nil {
-		return true
-	}
-	if t1 == nil || t2 == nil {
-		return false
-	}
-	return t1.c == t2.c && t1.name == t2.name
-}
-
 // Note: be sure to close client and server!
 func newFake(t *testing.T) (*Client, *pstest.Server) {
 	ctx := context.Background()
