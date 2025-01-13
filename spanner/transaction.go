@@ -1886,6 +1886,7 @@ func newReadWriteStmtBasedTransactionWithSessionHandle(ctx context.Context, c *C
 		return err
 	}
 
+	t.options = options
 	t.txOpts = c.txo.merge(options)
 	t.ct = c.ct
 	t.otConfig = c.otConfig

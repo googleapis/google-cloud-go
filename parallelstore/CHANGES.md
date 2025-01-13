@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.2](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.9.1...parallelstore/v0.9.2) (2025-01-08)
+
+
+### Documentation
+
+* **parallelstore:** Fix links in documentation ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+
 ## [0.9.1](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.9.0...parallelstore/v0.9.1) (2025-01-02)
 
 

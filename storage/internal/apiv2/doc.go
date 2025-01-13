@@ -64,12 +64,12 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	stream, err := c.BidiWriteObject(ctx)
+//	stream, err := c.BidiReadObject(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
 //	go func() {
-//		reqs := []*storagepb.BidiWriteObjectRequest{
+//		reqs := []*storagepb.BidiReadObjectRequest{
 //			// TODO: Create requests.
 //		}
 //		for _, req := range reqs {

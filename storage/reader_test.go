@@ -299,8 +299,16 @@ type fakeReadCloser struct {
 	counts []int // how much of data to deliver on each read
 	err    error // error to return with last count
 
-	d int // current position in data
-	c int // current position in counts
+	d      int // current position in data
+	c      int // current position in counts
+	handle *ReadHandle
+}
+
+func (f *fakeReadCloser) ReadHandle() ReadHandle {
+	if f.handle == nil {
+		f.handle = &ReadHandle{}
+	}
+	return *f.handle
 }
 
 func (f *fakeReadCloser) Close() error {
@@ -352,6 +360,10 @@ func TestFakeReadCloser(t *testing.T) {
 		}
 		if got, want := string(buf[:n]), wants[i]; got != want {
 			t.Fatalf("i=%d: got %q, want %q", i, got, want)
+		}
+		han := f.ReadHandle()
+		if len(han) != 0 {
+			t.Fatalf("i=%d: got len(ReadHandle) %q, want %q", i, han, 0)
 		}
 	}
 }

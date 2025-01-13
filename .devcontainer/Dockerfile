@@ -1,4 +1,4 @@
-ARG VARIANT="1-1.21-bullseye"
+ARG VARIANT="1-1.22-bullseye"
 FROM mcr.microsoft.com/devcontainers/go:${VARIANT}
 
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive

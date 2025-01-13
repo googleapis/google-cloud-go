@@ -205,6 +205,16 @@ func TestTableAdmin_CreateTableFromConf_AutomatedBackupPolicy_Valid(t *testing.T
 	}
 }
 
+func TestTableAdmin_CreateBackupWithOptions_NoExpiryTime(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	err := c.CreateBackupWithOptions(context.Background(), "table", "cluster", "backup-01")
+	if err == nil || !errors.Is(err, errExpiryMissing) {
+		t.Errorf("CreateBackupWithOptions got: %v, want: %v error", err, errExpiryMissing)
+	}
+}
+
 func TestTableAdmin_CopyBackup_ErrorFromClient(t *testing.T) {
 	mock := &mockTableAdminClock{}
 	c := setupTableClient(t, mock)
