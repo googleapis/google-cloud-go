@@ -949,6 +949,9 @@ func (c *grpcStorageClient) ComposeObject(ctx context.Context, req *composeObjec
 		obj, err = c.raw.ComposeObject(ctx, rawReq, s.gax...)
 		return err
 	}, s.retry, s.idempotent); err != nil {
+		if s, ok := status.FromError(err); ok && s.Code() == codes.NotFound {
+			return nil, fmt.Errorf("%w: %w", ErrObjectNotExist, err)
+		}
 		return nil, err
 	}
 
@@ -998,6 +1001,9 @@ func (c *grpcStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 	retryCall := func(ctx context.Context) error { res, err = c.raw.RewriteObject(ctx, call, s.gax...); return err }
 
 	if err := run(ctx, retryCall, s.retry, s.idempotent); err != nil {
+		if s, ok := status.FromError(err); ok && s.Code() == codes.NotFound {
+			return nil, fmt.Errorf("%w: %w", ErrObjectNotExist, err)
+		}
 		return nil, err
 	}
 

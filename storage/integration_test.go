@@ -3300,12 +3300,23 @@ func TestIntegration_Encryption(t *testing.T) {
 	})
 }
 
-func TestIntegration_NonexistentObjectRead(t *testing.T) {
+func TestIntegration_NonexistentObject(t *testing.T) {
 	t.Parallel()
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
-		_, err := client.Bucket(bucket).Object("object-does-not-exist").NewReader(ctx)
+		nonExistentObj := client.Bucket(bucket).Object("object-does-not-exist")
+		_, err := nonExistentObj.NewReader(ctx)
 		if !errors.Is(err, ErrObjectNotExist) {
-			t.Errorf("Objects: got %v, want ErrObjectNotExist", err)
+			t.Errorf("Read: got %q, want ErrObjectNotExist", err)
+		}
+
+		_, err = client.Bucket(bucket).Object("dst").CopierFrom(nonExistentObj).Run(ctx)
+		if !errors.Is(err, ErrObjectNotExist) {
+			t.Errorf("Copy: got %q, want ErrObjectNotExist", err)
+		}
+
+		_, err = client.Bucket(bucket).Object("dst").ComposerFrom(nonExistentObj).Run(ctx)
+		if !errors.Is(err, ErrObjectNotExist) {
+			t.Errorf("Compose: got %q, want ErrObjectNotExist", err)
 		}
 	})
 }
