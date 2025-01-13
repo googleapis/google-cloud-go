@@ -946,6 +946,14 @@ func TestSQL(t *testing.T) {
 		},
 		{
 			&CreateProtoBundle{
+				Types:    []string(nil),
+				Position: line(1),
+			},
+			"CREATE PROTO BUNDLE ()",
+			reparseDDL,
+		},
+		{
+			&CreateProtoBundle{
 				Types:    []string{"a"},
 				Position: line(1),
 			},

@@ -994,7 +994,7 @@ type OperationMetadata struct {
 	StatusMessage string `protobuf:"bytes,5,opt,name=status_message,json=statusMessage,proto3" json:"status_message,omitempty"`
 	// Output only. Identifies whether the user has requested cancellation
 	// of the operation. Operations that have been cancelled successfully
-	// have [Operation.error][] value with a
+	// have [Operation.error][google.longrunning.Operation.error] value with a
 	// [google.rpc.Status.code][google.rpc.Status.code] of 1, corresponding to
 	// `Code.CANCELLED`.
 	RequestedCancellation bool `protobuf:"varint,6,opt,name=requested_cancellation,json=requestedCancellation,proto3" json:"requested_cancellation,omitempty"`
@@ -1629,7 +1629,7 @@ type ImportDataMetadata struct {
 	StatusMessage string `protobuf:"bytes,6,opt,name=status_message,json=statusMessage,proto3" json:"status_message,omitempty"`
 	// Output only. Identifies whether the user has requested cancellation
 	// of the operation. Operations that have successfully been cancelled
-	// have [Operation.error][] value with a
+	// have [Operation.error][google.longrunning.Operation.error] value with a
 	// [google.rpc.Status.code][google.rpc.Status.code] of 1, corresponding to
 	// `Code.CANCELLED`.
 	RequestedCancellation bool `protobuf:"varint,7,opt,name=requested_cancellation,json=requestedCancellation,proto3" json:"requested_cancellation,omitempty"`
@@ -1780,7 +1780,7 @@ type ExportDataMetadata struct {
 	StatusMessage string `protobuf:"bytes,6,opt,name=status_message,json=statusMessage,proto3" json:"status_message,omitempty"`
 	// Output only. Identifies whether the user has requested cancellation
 	// of the operation. Operations that have successfully been cancelled
-	// have [Operation.error][] value with a
+	// have [Operation.error][google.longrunning.Operation.error] value with a
 	// [google.rpc.Status.code][google.rpc.Status.code] of 1, corresponding to
 	// `Code.CANCELLED`.
 	RequestedCancellation bool `protobuf:"varint,7,opt,name=requested_cancellation,json=requestedCancellation,proto3" json:"requested_cancellation,omitempty"`

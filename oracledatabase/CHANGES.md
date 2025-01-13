@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/oracledatabase/v0.1.3...oracledatabase/v0.2.0) (2025-01-08)
+
+
+### Features
+
+* **oracledatabase:** A new value `ACCOUNT_SUSPENDED` is added to enum `State` ([#11404](https://github.com/googleapis/google-cloud-go/issues/11404)) ([893d27a](https://github.com/googleapis/google-cloud-go/commit/893d27a0b6eb65652ceae79e6ac4497797b52e75))
+
+## [0.1.3](https://github.com/googleapis/google-cloud-go/compare/oracledatabase/v0.1.2...oracledatabase/v0.1.3) (2025-01-02)
+
+
+### Bug Fixes
+
+* **oracledatabase:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [0.1.2](https://github.com/googleapis/google-cloud-go/compare/oracledatabase/v0.1.1...oracledatabase/v0.1.2) (2024-12-11)
 
 
