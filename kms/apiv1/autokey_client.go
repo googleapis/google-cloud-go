@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -229,9 +229,9 @@ func (c *AutokeyClient) Connection() *grpc.ClientConn {
 // CreateKeyHandle creates a new KeyHandle, triggering the
 // provisioning of a new CryptoKey for CMEK
 // use with the given resource type in the configured key project and the same
-// location. GetOperation should be used to resolve
-// the resulting long-running operation and get the resulting
-// KeyHandle and
+// location. GetOperation should
+// be used to resolve the resulting long-running operation and get the
+// resulting KeyHandle and
 // CryptoKey.
 func (c *AutokeyClient) CreateKeyHandle(ctx context.Context, req *kmspb.CreateKeyHandleRequest, opts ...gax.CallOption) (*CreateKeyHandleOperation, error) {
 	return c.internalClient.CreateKeyHandle(ctx, req, opts...)
@@ -744,9 +744,9 @@ func (c *autokeyGRPCClient) GetOperation(ctx context.Context, req *longrunningpb
 // CreateKeyHandle creates a new KeyHandle, triggering the
 // provisioning of a new CryptoKey for CMEK
 // use with the given resource type in the configured key project and the same
-// location. GetOperation should be used to resolve
-// the resulting long-running operation and get the resulting
-// KeyHandle and
+// location. GetOperation should
+// be used to resolve the resulting long-running operation and get the
+// resulting KeyHandle and
 // CryptoKey.
 func (c *autokeyRESTClient) CreateKeyHandle(ctx context.Context, req *kmspb.CreateKeyHandleRequest, opts ...gax.CallOption) (*CreateKeyHandleOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}

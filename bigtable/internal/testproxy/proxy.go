@@ -573,19 +573,13 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 	var rowsReadTillNow int64
 	var rowsPb []*btpb.Row
 
-	limitRowsRead := false
-	rowsToRead := int64(0)
-	if rrq.RowsLimit != 0 {
-		limitRowsRead = true
-		rowsToRead = rrq.RowsLimit
-	}
-	if req.GetCancelAfterRows() != 0 {
-		limitRowsRead = true
-		rowsToRead = int64(req.GetCancelAfterRows())
-	}
+	lim := req.GetCancelAfterRows()
 
-	// Client libray does not have a built-in way to limit the number of rows read in a call to Table.ReadRows().
-	// The caller needs to keep track of any kind of limit externally and from within the callback function passed to ReadRows()
+	reversed := req.GetRequest().GetReversed()
+	opts := []bigtable.ReadOption{}
+	if reversed {
+		opts = append(opts, bigtable.ReverseScan())
+	}
 	err = t.ReadRows(ctx, rs, func(r bigtable.Row) bool {
 
 		if limitRowsRead && rowsReadTillNow == rowsToRead {
@@ -598,7 +592,7 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 		rowsPb = append(rowsPb, rpb)
 		rowsReadTillNow++
 		return true
-	})
+	}, opts...)
 
 	res := &pb.RowsResult{
 		Status: &statpb.Status{
@@ -721,7 +715,7 @@ func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRo
 	for i, e := range errs {
 		var me *btpb.MutateRowsResponse_Entry
 		if e != nil {
-			st := statusFromError(err)
+			st := statusFromError(e)
 			me = &btpb.MutateRowsResponse_Entry{
 				Index:  int64(i),
 				Status: st,

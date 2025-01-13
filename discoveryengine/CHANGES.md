@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.16.1](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.16.0...discoveryengine/v1.16.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **discoveryengine:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.15.0...discoveryengine/v1.16.0) (2024-11-06)
 
 

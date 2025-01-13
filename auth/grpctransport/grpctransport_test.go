@@ -26,6 +26,7 @@ import (
 	echo "cloud.google.com/go/auth/grpctransport/testdata"
 	"cloud.google.com/go/auth/internal"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
@@ -258,7 +259,7 @@ func TestOptions_ResolveDetectOptions(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := tt.in.resolveDetectOptions()
-			if diff := cmp.Diff(tt.want, got); diff != "" {
+			if diff := cmp.Diff(tt.want, got, cmpopts.IgnoreFields(credentials.DetectOptions{}, "Logger")); diff != "" {
 				t.Errorf("mismatch (-want +got):\n%s", diff)
 			}
 		})

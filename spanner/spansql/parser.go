@@ -3151,21 +3151,40 @@ func (p *parser) parseProtobufTypeName(consumed string) (string, *parseError) {
 	possibleProtoTypeName := strings.Builder{}
 	possibleProtoTypeName.WriteString(consumed)
 	ntok := p.next()
+	// Pretend the last token was a dot if either the "consumed" portion we
+	// were given was either empty, or it actually ended in a dot.
+	lastTokIsDot := len(consumed) == 0 || consumed[len(consumed)-1] == '.'
 PROTO_TOK_CONSUME:
 	for ; ntok.err == nil; ntok = p.next() {
 		appendVal := ntok.value
 		switch ntok.typ {
 		case unquotedID:
+			// only consume an unquoted token if the last one was a dot
+			if !lastTokIsDot {
+				p.back()
+				break PROTO_TOK_CONSUME
+			}
+			lastTokIsDot = false
 		case quotedID:
+			// It isn't valid to only quote part of a protobuf
+			// type-name, back out if we encounter another quoted
+			// value.
+			if possibleProtoTypeName.Len() > 0 {
+				p.back()
+				break PROTO_TOK_CONSUME
+			}
 			if !fqProtoMsgName.MatchString(ntok.string) {
 				return "", p.errorf("got %q, want fully qualified protobuf type", ntok.string)
 			}
-			appendVal = ntok.string
+			// Once we've encountered a quoted type-name, we can't consume anything else for this type-name
+			possibleProtoTypeName.WriteString(ntok.string)
+			break PROTO_TOK_CONSUME
 		case unknownToken:
 			if ntok.value != "." {
 				p.back()
 				break PROTO_TOK_CONSUME
 			}
+			lastTokIsDot = true
 		default:
 			p.back()
 			break PROTO_TOK_CONSUME

@@ -29,6 +29,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
 	"google.golang.org/api/option"
 )
 
@@ -298,8 +299,16 @@ type fakeReadCloser struct {
 	counts []int // how much of data to deliver on each read
 	err    error // error to return with last count
 
-	d int // current position in data
-	c int // current position in counts
+	d      int // current position in data
+	c      int // current position in counts
+	handle *ReadHandle
+}
+
+func (f *fakeReadCloser) ReadHandle() ReadHandle {
+	if f.handle == nil {
+		f.handle = &ReadHandle{}
+	}
+	return *f.handle
 }
 
 func (f *fakeReadCloser) Close() error {
@@ -352,6 +361,10 @@ func TestFakeReadCloser(t *testing.T) {
 		if got, want := string(buf[:n]), wants[i]; got != want {
 			t.Fatalf("i=%d: got %q, want %q", i, got, want)
 		}
+		han := f.ReadHandle()
+		if len(han) != 0 {
+			t.Fatalf("i=%d: got len(ReadHandle) %q, want %q", i, han, 0)
+		}
 	}
 }
 
@@ -380,6 +393,7 @@ func TestContentEncodingGzipWithReader(t *testing.T) {
 			w.Header().Set("Etag", `"c50e3e41c9bc9df34e84c94ce073f928"`)
 			w.Header().Set("X-Goog-Generation", "1587012235914578")
 			w.Header().Set("X-Goog-MetaGeneration", "2")
+			w.Header().Set("X-Goog-Meta-custom-metadata-key", "custom-metadata-value")
 			w.Header().Set("X-Goog-Stored-Content-Encoding", "gzip")
 			w.Header().Set("vary", "Accept-Encoding")
 			w.Header().Set("x-goog-stored-content-length", "43")
@@ -466,6 +480,72 @@ func TestContentEncodingGzipWithReader(t *testing.T) {
 					t.Fatalf("Response mismatch\nGot:\n%q\n\nWant:\n%q", g, w)
 				}
 			})
+		}
+	}, option.WithEndpoint(mockGCS.URL), option.WithoutAuthentication(), option.WithHTTPClient(whc))
+}
+
+func TestMetadataParsingWithReader(t *testing.T) {
+	bucketName := "my-bucket"
+	objectName := "test"
+	downloadObjectXMLurl := fmt.Sprintf("/%s/%s", bucketName, objectName)
+	downloadObjectJSONurl := fmt.Sprintf("/b/%s/o/%s?alt=media&prettyPrint=false&projection=full", bucketName, objectName)
+
+	original := bytes.Repeat([]byte("a"), 4)
+	mockGCS := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.String() {
+		case downloadObjectXMLurl, downloadObjectJSONurl:
+			// Serve back the file.
+			w.Header().Set("Content-Type", "text/plain")
+			w.Header().Set("Etag", `"c50e3e41c9bc9df34e84c94ce073f928"`)
+			w.Header().Set("X-Goog-Generation", "1587012235914578")
+			w.Header().Set("X-Goog-MetaGeneration", "2")
+			w.Header().Set("X-Goog-Meta-custom-metadata-key", "custom-metadata-value")
+			w.Header().Set("vary", "Accept-Encoding")
+			w.Header().Set("x-goog-stored-content-length", "4")
+			w.Header().Set("x-goog-hash", "crc32c=pYIWwQ==")
+			w.Header().Set("x-goog-hash", "md5=xQ4+Qcm8nfNOhMlM4HP5KA==")
+			w.Header().Set("x-goog-storage-class", "STANDARD")
+			w.Write(original)
+		default:
+			fmt.Fprintf(w, "unrecognized URL %s", r.URL)
+		}
+	}))
+	mockGCS.EnableHTTP2 = true
+	mockGCS.StartTLS()
+	defer mockGCS.Close()
+
+	ctx := context.Background()
+	hc := mockGCS.Client()
+	ux, _ := url.Parse(mockGCS.URL)
+	hc.Transport.(*http.Transport).TLSClientConfig.InsecureSkipVerify = true
+	wrt := &alwaysToTargetURLRoundTripper{
+		destURL: ux,
+		hc:      hc,
+	}
+
+	whc := &http.Client{Transport: wrt}
+
+	multiReaderTest(ctx, t, func(t *testing.T, c *Client) {
+		obj := c.Bucket(bucketName).Object(objectName)
+		rd, err := obj.NewReader(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer rd.Close()
+
+		expectedMetadata := map[string]string{
+			"Custom-Metadata-Key": "custom-metadata-value",
+		}
+		if diff := cmp.Diff(rd.Metadata(), expectedMetadata); diff != "" {
+			t.Fatalf("metadata mismatch diff got vs want: %v", diff)
+		}
+
+		got, err := ioutil.ReadAll(rd)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if g, w := got, original; !bytes.Equal(g, w) {
+			t.Fatalf("Response mismatch\nGot:\n%q\n\nWant:\n%q", g, w)
 		}
 	}, option.WithEndpoint(mockGCS.URL), option.WithoutAuthentication(), option.WithHTTPClient(whc))
 }

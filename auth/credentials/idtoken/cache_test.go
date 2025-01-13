@@ -19,6 +19,8 @@ import (
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/googleapis/gax-go/v2/internallog"
 )
 
 type fakeClock struct {
@@ -47,7 +49,7 @@ func TestCacheHit(t *testing.T) {
 			},
 		},
 	}
-	cache := newCachingClient(nil)
+	cache := newCachingClient(nil, internallog.New(nil))
 	cache.clock = clock.Now
 
 	// Cache should be empty

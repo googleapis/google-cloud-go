@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -387,6 +387,9 @@ func (c *InstanceAdminClient) Connection() *grpc.ClientConn {
 }
 
 // ListInstanceConfigs lists the supported instance configurations for a given project.
+//
+// Returns both Google-managed configurations and user-managed
+// configurations.
 func (c *InstanceAdminClient) ListInstanceConfigs(ctx context.Context, req *instancepb.ListInstanceConfigsRequest, opts ...gax.CallOption) *InstanceConfigIterator {
 	return c.internalClient.ListInstanceConfigs(ctx, req, opts...)
 }
@@ -397,7 +400,7 @@ func (c *InstanceAdminClient) GetInstanceConfig(ctx context.Context, req *instan
 }
 
 // CreateInstanceConfig creates an instance configuration and begins preparing it to be used. The
-// returned [long-running operation][google.longrunning.Operation]
+// returned long-running operation
 // can be used to track the progress of preparing the new
 // instance configuration. The instance configuration name is assigned by the
 // caller. If the named instance configuration already exists,
@@ -426,7 +429,7 @@ func (c *InstanceAdminClient) GetInstanceConfig(ctx context.Context, req *instan
 //	reconciling
 //	field becomes false. Its state becomes READY.
 //
-// The returned [long-running operation][google.longrunning.Operation] will
+// The returned long-running operation will
 // have a name of the format
 // <instance_config_name>/operations/<operation_id> and can be used to track
 // creation of the instance configuration. The
@@ -450,7 +453,7 @@ func (c *InstanceAdminClient) CreateInstanceConfigOperation(name string) *Create
 }
 
 // UpdateInstanceConfig updates an instance configuration. The returned
-// [long-running operation][google.longrunning.Operation] can be used to track
+// long-running operation can be used to track
 // the progress of updating the instance. If the named instance configuration
 // does not exist, returns NOT_FOUND.
 //
@@ -485,7 +488,7 @@ func (c *InstanceAdminClient) CreateInstanceConfigOperation(name string) *Create
 //	reconciling
 //	field becomes false.
 //
-// The returned [long-running operation][google.longrunning.Operation] will
+// The returned long-running operation will
 // have a name of the format
 // <instance_config_name>/operations/<operation_id> and can be used to track
 // the instance configuration modification.  The
@@ -519,8 +522,8 @@ func (c *InstanceAdminClient) DeleteInstanceConfig(ctx context.Context, req *ins
 	return c.internalClient.DeleteInstanceConfig(ctx, req, opts...)
 }
 
-// ListInstanceConfigOperations lists the user-managed instance configuration [long-running
-// operations][google.longrunning.Operation] in the given project. An instance
+// ListInstanceConfigOperations lists the user-managed instance configuration long-running
+// operations in the given project. An instance
 // configuration operation has a name of the form
 // projects/<project>/instanceConfigs/<instance_config>/operations/<operation>.
 // The long-running operation
@@ -550,7 +553,7 @@ func (c *InstanceAdminClient) GetInstance(ctx context.Context, req *instancepb.G
 }
 
 // CreateInstance creates an instance and begins preparing it to begin serving. The
-// returned [long-running operation][google.longrunning.Operation]
+// returned long-running operation
 // can be used to track the progress of preparing the new
 // instance. The instance name is assigned by the caller. If the
 // named instance already exists, CreateInstance returns
@@ -581,7 +584,7 @@ func (c *InstanceAdminClient) GetInstance(ctx context.Context, req *instancepb.G
 //
 //	The instance’s state becomes READY.
 //
-// The returned [long-running operation][google.longrunning.Operation] will
+// The returned long-running operation will
 // have a name of the format <instance_name>/operations/<operation_id> and
 // can be used to track creation of the instance.  The
 // metadata field type is
@@ -599,8 +602,7 @@ func (c *InstanceAdminClient) CreateInstanceOperation(name string) *CreateInstan
 }
 
 // UpdateInstance updates an instance, and begins allocating or releasing resources
-// as requested. The returned [long-running
-// operation][google.longrunning.Operation] can be used to track the
+// as requested. The returned long-running operation can be used to track the
 // progress of updating the instance. If the named instance does not
 // exist, returns NOT_FOUND.
 //
@@ -632,7 +634,7 @@ func (c *InstanceAdminClient) CreateInstanceOperation(name string) *CreateInstan
 //
 //	The instance’s new resource levels are readable via the API.
 //
-// The returned [long-running operation][google.longrunning.Operation] will
+// The returned long-running operation will
 // have a name of the format <instance_name>/operations/<operation_id> and
 // can be used to track the instance modification.  The
 // metadata field type is
@@ -701,7 +703,7 @@ func (c *InstanceAdminClient) GetInstancePartition(ctx context.Context, req *ins
 }
 
 // CreateInstancePartition creates an instance partition and begins preparing it to be used. The
-// returned [long-running operation][google.longrunning.Operation]
+// returned long-running operation
 // can be used to track the progress of preparing the new instance partition.
 // The instance partition name is assigned by the caller. If the named
 // instance partition already exists, CreateInstancePartition returns
@@ -733,7 +735,7 @@ func (c *InstanceAdminClient) GetInstancePartition(ctx context.Context, req *ins
 //
 //	The instance partition’s state becomes READY.
 //
-// The returned [long-running operation][google.longrunning.Operation] will
+// The returned long-running operation will
 // have a name of the format
 // <instance_partition_name>/operations/<operation_id> and can be used to
 // track creation of the instance partition.  The
@@ -764,8 +766,7 @@ func (c *InstanceAdminClient) DeleteInstancePartition(ctx context.Context, req *
 }
 
 // UpdateInstancePartition updates an instance partition, and begins allocating or releasing resources
-// as requested. The returned [long-running
-// operation][google.longrunning.Operation] can be used to track the
+// as requested. The returned long-running operation can be used to track the
 // progress of updating the instance partition. If the named instance
 // partition does not exist, returns NOT_FOUND.
 //
@@ -798,7 +799,7 @@ func (c *InstanceAdminClient) DeleteInstancePartition(ctx context.Context, req *
 //
 //	The instance partition’s new resource levels are readable via the API.
 //
-// The returned [long-running operation][google.longrunning.Operation] will
+// The returned long-running operation will
 // have a name of the format
 // <instance_partition_name>/operations/<operation_id> and can be used to
 // track the instance partition modification. The
@@ -821,8 +822,7 @@ func (c *InstanceAdminClient) UpdateInstancePartitionOperation(name string) *Upd
 	return c.internalClient.UpdateInstancePartitionOperation(name)
 }
 
-// ListInstancePartitionOperations lists instance partition [long-running
-// operations][google.longrunning.Operation] in the given instance.
+// ListInstancePartitionOperations lists instance partition long-running operations in the given instance.
 // An instance partition operation has a name of the form
 // projects/<project>/instances/<instance>/instancePartitions/<instance_partition>/operations/<operation>.
 // The long-running operation
@@ -841,7 +841,7 @@ func (c *InstanceAdminClient) ListInstancePartitionOperations(ctx context.Contex
 }
 
 // MoveInstance moves an instance to the target instance configuration. You can use the
-// returned [long-running operation][google.longrunning.Operation] to track
+// returned long-running operation to track
 // the progress of moving the instance.
 //
 // MoveInstance returns FAILED_PRECONDITION if the instance meets any of
@@ -882,7 +882,7 @@ func (c *InstanceAdminClient) ListInstancePartitionOperations(ctx context.Contex
 //	transaction abort rate. However, moving an instance doesn’t cause any
 //	downtime.
 //
-// The returned [long-running operation][google.longrunning.Operation] has
+// The returned long-running operation has
 // a name of the format
 // <instance_name>/operations/<operation_id> and can be used to track
 // the move instance operation. The
@@ -1667,6 +1667,9 @@ func (c *instanceAdminGRPCClient) MoveInstance(ctx context.Context, req *instanc
 }
 
 // ListInstanceConfigs lists the supported instance configurations for a given project.
+//
+// Returns both Google-managed configurations and user-managed
+// configurations.
 func (c *instanceAdminRESTClient) ListInstanceConfigs(ctx context.Context, req *instancepb.ListInstanceConfigsRequest, opts ...gax.CallOption) *InstanceConfigIterator {
 	it := &InstanceConfigIterator{}
 	req = proto.Clone(req).(*instancepb.ListInstanceConfigsRequest)
@@ -1795,7 +1798,7 @@ func (c *instanceAdminRESTClient) GetInstanceConfig(ctx context.Context, req *in
 }
 
 // CreateInstanceConfig creates an instance configuration and begins preparing it to be used. The
-// returned [long-running operation][google.longrunning.Operation]
+// returned long-running operation
 // can be used to track the progress of preparing the new
 // instance configuration. The instance configuration name is assigned by the
 // caller. If the named instance configuration already exists,
@@ -1824,7 +1827,7 @@ func (c *instanceAdminRESTClient) GetInstanceConfig(ctx context.Context, req *in
 //	reconciling
 //	field becomes false. Its state becomes READY.
 //
-// The returned [long-running operation][google.longrunning.Operation] will
+// The returned long-running operation will
 // have a name of the format
 // <instance_config_name>/operations/<operation_id> and can be used to track
 // creation of the instance configuration. The
@@ -1896,7 +1899,7 @@ func (c *instanceAdminRESTClient) CreateInstanceConfig(ctx context.Context, req 
 }
 
 // UpdateInstanceConfig updates an instance configuration. The returned
-// [long-running operation][google.longrunning.Operation] can be used to track
+// long-running operation can be used to track
 // the progress of updating the instance. If the named instance configuration
 // does not exist, returns NOT_FOUND.
 //
@@ -1931,7 +1934,7 @@ func (c *instanceAdminRESTClient) CreateInstanceConfig(ctx context.Context, req 
 //	reconciling
 //	field becomes false.
 //
-// The returned [long-running operation][google.longrunning.Operation] will
+// The returned long-running operation will
 // have a name of the format
 // <instance_config_name>/operations/<operation_id> and can be used to track
 // the instance configuration modification.  The
@@ -2049,8 +2052,8 @@ func (c *instanceAdminRESTClient) DeleteInstanceConfig(ctx context.Context, req 
 	}, opts...)
 }
 
-// ListInstanceConfigOperations lists the user-managed instance configuration [long-running
-// operations][google.longrunning.Operation] in the given project. An instance
+// ListInstanceConfigOperations lists the user-managed instance configuration long-running
+// operations in the given project. An instance
 // configuration operation has a name of the form
 // projects/<project>/instanceConfigs/<instance_config>/operations/<operation>.
 // The long-running operation
@@ -2371,7 +2374,7 @@ func (c *instanceAdminRESTClient) GetInstance(ctx context.Context, req *instance
 }
 
 // CreateInstance creates an instance and begins preparing it to begin serving. The
-// returned [long-running operation][google.longrunning.Operation]
+// returned long-running operation
 // can be used to track the progress of preparing the new
 // instance. The instance name is assigned by the caller. If the
 // named instance already exists, CreateInstance returns
@@ -2402,7 +2405,7 @@ func (c *instanceAdminRESTClient) GetInstance(ctx context.Context, req *instance
 //
 //	The instance’s state becomes READY.
 //
-// The returned [long-running operation][google.longrunning.Operation] will
+// The returned long-running operation will
 // have a name of the format <instance_name>/operations/<operation_id> and
 // can be used to track creation of the instance.  The
 // metadata field type is
@@ -2468,8 +2471,7 @@ func (c *instanceAdminRESTClient) CreateInstance(ctx context.Context, req *insta
 }
 
 // UpdateInstance updates an instance, and begins allocating or releasing resources
-// as requested. The returned [long-running
-// operation][google.longrunning.Operation] can be used to track the
+// as requested. The returned long-running operation can be used to track the
 // progress of updating the instance. If the named instance does not
 // exist, returns NOT_FOUND.
 //
@@ -2501,7 +2503,7 @@ func (c *instanceAdminRESTClient) CreateInstance(ctx context.Context, req *insta
 //
 //	The instance’s new resource levels are readable via the API.
 //
-// The returned [long-running operation][google.longrunning.Operation] will
+// The returned long-running operation will
 // have a name of the format <instance_name>/operations/<operation_id> and
 // can be used to track the instance modification.  The
 // metadata field type is
@@ -2846,7 +2848,7 @@ func (c *instanceAdminRESTClient) GetInstancePartition(ctx context.Context, req 
 }
 
 // CreateInstancePartition creates an instance partition and begins preparing it to be used. The
-// returned [long-running operation][google.longrunning.Operation]
+// returned long-running operation
 // can be used to track the progress of preparing the new instance partition.
 // The instance partition name is assigned by the caller. If the named
 // instance partition already exists, CreateInstancePartition returns
@@ -2878,7 +2880,7 @@ func (c *instanceAdminRESTClient) GetInstancePartition(ctx context.Context, req 
 //
 //	The instance partition’s state becomes READY.
 //
-// The returned [long-running operation][google.longrunning.Operation] will
+// The returned long-running operation will
 // have a name of the format
 // <instance_partition_name>/operations/<operation_id> and can be used to
 // track creation of the instance partition.  The
@@ -2990,8 +2992,7 @@ func (c *instanceAdminRESTClient) DeleteInstancePartition(ctx context.Context, r
 }
 
 // UpdateInstancePartition updates an instance partition, and begins allocating or releasing resources
-// as requested. The returned [long-running
-// operation][google.longrunning.Operation] can be used to track the
+// as requested. The returned long-running operation can be used to track the
 // progress of updating the instance partition. If the named instance
 // partition does not exist, returns NOT_FOUND.
 //
@@ -3024,7 +3025,7 @@ func (c *instanceAdminRESTClient) DeleteInstancePartition(ctx context.Context, r
 //
 //	The instance partition’s new resource levels are readable via the API.
 //
-// The returned [long-running operation][google.longrunning.Operation] will
+// The returned long-running operation will
 // have a name of the format
 // <instance_partition_name>/operations/<operation_id> and can be used to
 // track the instance partition modification. The
@@ -3095,8 +3096,7 @@ func (c *instanceAdminRESTClient) UpdateInstancePartition(ctx context.Context, r
 	}, nil
 }
 
-// ListInstancePartitionOperations lists instance partition [long-running
-// operations][google.longrunning.Operation] in the given instance.
+// ListInstancePartitionOperations lists instance partition long-running operations in the given instance.
 // An instance partition operation has a name of the form
 // projects/<project>/instances/<instance>/instancePartitions/<instance_partition>/operations/<operation>.
 // The long-running operation
@@ -3198,7 +3198,7 @@ func (c *instanceAdminRESTClient) ListInstancePartitionOperations(ctx context.Co
 }
 
 // MoveInstance moves an instance to the target instance configuration. You can use the
-// returned [long-running operation][google.longrunning.Operation] to track
+// returned long-running operation to track
 // the progress of moving the instance.
 //
 // MoveInstance returns FAILED_PRECONDITION if the instance meets any of
@@ -3239,7 +3239,7 @@ func (c *instanceAdminRESTClient) ListInstancePartitionOperations(ctx context.Co
 //	transaction abort rate. However, moving an instance doesn’t cause any
 //	downtime.
 //
-// The returned [long-running operation][google.longrunning.Operation] has
+// The returned long-running operation has
 // a name of the format
 // <instance_name>/operations/<operation_id> and can be used to track
 // the move instance operation. The

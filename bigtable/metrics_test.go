@@ -22,6 +22,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io"
+	"slices"
 	"sort"
 	"strings"
 	"sync"
@@ -166,17 +167,17 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 	}{
 		{
 			desc:                   "should create a new tracer factory with default meter provider",
-			config:                 ClientConfig{},
+			config:                 ClientConfig{AppProfile: appProfile},
 			wantBuiltinEnabled:     true,
 			wantCreateTSCallsCount: 2,
 		},
 		{
 			desc:   "should create a new tracer factory with noop meter provider",
-			config: ClientConfig{MetricsProvider: NoopMetricsProvider{}},
+			config: ClientConfig{MetricsProvider: NoopMetricsProvider{}, AppProfile: appProfile},
 		},
 		{
 			desc:        "should not create instruments when BIGTABLE_EMULATOR_HOST is set",
-			config:      ClientConfig{},
+			config:      ClientConfig{AppProfile: appProfile},
 			setEmulator: true,
 		},
 	}
@@ -201,9 +202,8 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 				t.Errorf("builtinEnabled: got: %v, want: %v", gotClient.metricsTracerFactory.enabled, test.wantBuiltinEnabled)
 			}
 
-			if diff := testutil.Diff(gotClient.metricsTracerFactory.clientAttributes, wantClientAttributes,
-				cmpopts.IgnoreUnexported(attribute.KeyValue{}, attribute.Value{})); diff != "" {
-				t.Errorf("clientAttributes: got=-, want=+ \n%v", diff)
+			if !equalsKeyValue(gotClient.metricsTracerFactory.clientAttributes, wantClientAttributes) {
+				t.Errorf("clientAttributes: got: %+v, want: %+v", gotClient.metricsTracerFactory.clientAttributes, wantClientAttributes)
 			}
 
 			// Check instruments
@@ -265,7 +265,26 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 			for _, gotCreateTSCall := range gotCreateTSCalls {
 				gotMetricTypes := []string{}
 				for _, ts := range gotCreateTSCall.TimeSeries {
+					// ts.Metric.Type is of the form "bigtable.googleapis.com/internal/client/server_latencies"
 					gotMetricTypes = append(gotMetricTypes, ts.Metric.Type)
+
+					// Assert "streaming" metric label is correct
+					gotStreaming, gotStreamingExists := ts.Metric.Labels[metricLabelKeyStreamingOperation]
+					splitMetricType := strings.Split(ts.Metric.Type, "/")
+					internalMetricName := splitMetricType[len(splitMetricType)-1] // server_latencies
+					wantStreamingExists := slices.Contains(metricsDetails[internalMetricName].additionalAttrs, metricLabelKeyStreamingOperation)
+					if wantStreamingExists && (!gotStreamingExists || gotStreaming != "true") {
+						t.Errorf("Metric label key: %s, value: got: %v, want: %v", metricLabelKeyStreamingOperation, gotStreaming, "true")
+					}
+					if !wantStreamingExists && gotStreamingExists {
+						t.Errorf("Metric label key: %s exists, value: got: %v, want: %v", metricLabelKeyStreamingOperation, gotStreamingExists, wantStreamingExists)
+					}
+
+					// Assert "method" metric label is correct
+					wantMethod := "Bigtable.ReadRows"
+					if gotLabel, ok := ts.Metric.Labels[metricLabelKeyMethod]; !ok || gotLabel != wantMethod {
+						t.Errorf("Metric label key: %s, value: got: %v, want: %v", metricLabelKeyMethod, gotLabel, wantMethod)
+					}
 				}
 				sort.Strings(gotMetricTypes)
 				if !testutil.Equal(gotMetricTypes, wantMetricTypesGCM) {
@@ -287,6 +306,34 @@ func setMockErrorHandler(t *testing.T, mockErrorHandler *MockErrorHandler) {
 	t.Cleanup(func() {
 		otel.SetErrorHandler(origErrHandler)
 	})
+}
+
+func equalsKeyValue(gotAttrs, wantAttrs []attribute.KeyValue) bool {
+	if len(gotAttrs) != len(wantAttrs) {
+		return false
+	}
+
+	gotJSONVals, err := keyValueToKeyJSONValue(gotAttrs)
+	if err != nil {
+		return false
+	}
+	wantJSONVals, err := keyValueToKeyJSONValue(wantAttrs)
+	if err != nil {
+		return false
+	}
+	return testutil.Equal(gotJSONVals, wantJSONVals)
+}
+
+func keyValueToKeyJSONValue(attrs []attribute.KeyValue) (map[string]string, error) {
+	keyJSONVal := map[string]string{}
+	for _, attr := range attrs {
+		jsonVal, err := attr.Value.MarshalJSON()
+		if err != nil {
+			return nil, err
+		}
+		keyJSONVal[string(attr.Key)] = string(jsonVal)
+	}
+	return keyJSONVal, nil
 }
 
 func TestExporterLogs(t *testing.T) {

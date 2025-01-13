@@ -20,6 +20,8 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"cloud.google.com/go/compute/metadata"
 )
 
 const computeMetadataEnvVar = "GCE_METADATA_HOST"
@@ -42,7 +44,9 @@ func TestComputeTokenProvider(t *testing.T) {
 		Scopes: []string{
 			scope,
 		},
-	})
+	},
+		metadata.NewClient(nil),
+	)
 	tok, err := tp.Token(context.Background())
 	if err != nil {
 		t.Fatal(err)

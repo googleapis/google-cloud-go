@@ -1,0 +1,1 @@
+{"level":"DEBUG","msg":"msg","request":{"headers":{"Foo":"bar"},"method":"POST","url":"https://example.com/computeMetadata/v1/instance/service-accounts/default/token"}}
