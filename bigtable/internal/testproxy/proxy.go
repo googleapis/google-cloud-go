@@ -570,7 +570,7 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 	ctx, cancel := btc.timeout(ctx)
 	defer cancel()
 
-	var rowsReadTillNow int64
+	var c int32
 	var rowsPb []*btpb.Row
 
 	lim := req.GetCancelAfterRows()
@@ -580,9 +580,15 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 	if reversed {
 		opts = append(opts, bigtable.ReverseScan())
 	}
+
+	rowsLimit := req.GetRequest().GetRowsLimit()
+	if rowsLimit > 0 {
+		opts = append(opts, bigtable.LimitRows(rowsLimit))
+	}
 	err = t.ReadRows(ctx, rs, func(r bigtable.Row) bool {
 
-		if limitRowsRead && rowsReadTillNow == rowsToRead {
+		c++
+		if c == lim {
 			return false
 		}
 		rpb, err := rowToProto(r)
@@ -590,7 +596,6 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 			return false
 		}
 		rowsPb = append(rowsPb, rpb)
-		rowsReadTillNow++
 		return true
 	}, opts...)
 
