@@ -888,10 +888,13 @@ func testReadWriteStmtBasedTransaction(t *testing.T, executionTimes map[string]S
 		if attempts > 1 {
 			tx, err = tx.ResetForRetry(ctx)
 		} else {
-			tx, err = NewReadWriteStmtBasedTransaction(ctx, client)
+			tx, err = NewReadWriteStmtBasedTransactionWithOptions(ctx, client, TransactionOptions{TransactionTag: "test"})
 		}
 		if err != nil {
 			return 0, attempts, fmt.Errorf("failed to begin a transaction: %v", err)
+		}
+		if g, w := tx.options.TransactionTag, "test"; g != w {
+			t.Errorf("transaction tag mismatch\n Got: %v\nWant: %v", g, w)
 		}
 		rowCount, err = f(tx)
 		if err != nil && status.Code(err) != codes.Aborted {
