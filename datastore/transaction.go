@@ -544,7 +544,7 @@ func (t *Transaction) Rollback() (err error) {
 }
 
 func (t *Transaction) parseReadOptions() (*pb.ReadOptions, error) {
-	if t.client.readSettings != nil && !t.client.readSettings.readTime.IsZero() {
+	if t.client != nil && t.client.readSettings != nil && !t.client.readSettings.readTime.IsZero() {
 		return nil, errTxnClientReadTime
 	}
 
