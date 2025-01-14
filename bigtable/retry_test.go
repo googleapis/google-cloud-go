@@ -354,8 +354,8 @@ func TestRetryApplyBulk_IndividualErrorsAndDeadlineExceeded(t *testing.T) {
 	if !equalErrs(wantErr, err) {
 		t.Fatalf("deadline exceeded error: got: %v, want: %v", err, wantErr)
 	}
-	if errors != nil {
-		t.Errorf("deadline exceeded errors: got: %v, want: nil", err)
+	if errors == nil {
+		t.Errorf("deadline exceeded errors: got: %v, want: %v", err, []error{wantErr})
 	}
 }
 

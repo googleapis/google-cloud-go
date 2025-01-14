@@ -328,7 +328,11 @@ func TestGroupEntries(t *testing.T) {
 		},
 	} {
 		t.Run(test.desc, func(t *testing.T) {
-			if got, want := groupEntries(test.in, test.size), test.want; !cmp.Equal(mutationCounts(got), mutationCounts(want)) {
+			wantEntriesGroup := []entriesGroup{}
+			for _, w := range test.want {
+				wantEntriesGroup = append(wantEntriesGroup, entriesGroup{entries: w})
+			}
+			if got, want := groupEntries(test.in, test.size), wantEntriesGroup; !cmp.Equal(mutationCounts(got), mutationCounts(want)) {
 				t.Fatalf("[%s] want = %v, got = %v", test.desc, mutationCounts(want), mutationCounts(got))
 			}
 		})
@@ -343,11 +347,11 @@ func buildEntry(numMutations int) *entryErr {
 	return &entryErr{Entry: &btpb.MutateRowsRequest_Entry{Mutations: muts}}
 }
 
-func mutationCounts(batched [][]*entryErr) []int {
+func mutationCounts(batched []entriesGroup) []int {
 	var res []int
-	for _, entries := range batched {
+	for _, group := range batched {
 		var count int
-		for _, e := range entries {
+		for _, e := range group.entries {
 			count += len(e.Entry.Mutations)
 		}
 		res = append(res, count)
