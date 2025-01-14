@@ -66,7 +66,7 @@ func TestStreamingPullMultipleFetches(t *testing.T) {
 }
 
 func testStreamingPullIteration(t *testing.T, client *Client, server *mockServer, msgs []*pb.ReceivedMessage) {
-	sub := client.Subscription("S")
+	sub := client.Subscriber("S")
 	gotMsgs, err := pullN(context.Background(), sub, len(msgs), 0, func(_ context.Context, m *Message) {
 		id, err := strconv.Atoi(msgAckID(m))
 		if err != nil {
@@ -136,7 +136,7 @@ func TestStreamingPullError(t *testing.T) {
 	defer client.Close()
 	server.addStreamingPullMessages(testMessages[:1])
 	server.addStreamingPullError(status.Errorf(codes.Unknown, ""))
-	sub := client.Subscription("S")
+	sub := client.Subscriber("S")
 	// Use only one goroutine, since the fake server is configured to
 	// return only one error.
 	sub.ReceiveSettings.NumGoroutines = 1
@@ -164,7 +164,7 @@ func TestStreamingPullCancel(t *testing.T) {
 	defer server.srv.Close()
 	defer client.Close()
 	server.addStreamingPullMessages(testMessages)
-	sub := client.Subscription("S")
+	sub := client.Subscriber("S")
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	var n int32
 	err := sub.Receive(ctx, func(ctx2 context.Context, m *Message) {
@@ -195,7 +195,7 @@ func TestStreamingPullRetry(t *testing.T) {
 	server.addStreamingPullError(status.Errorf(codes.Unavailable, ""))
 	server.addStreamingPullMessages(testMessages[2:])
 
-	sub := client.Subscription("S")
+	sub := client.Subscriber("S")
 	sub.ReceiveSettings.NumGoroutines = 1
 	gotMsgs, err := pullN(context.Background(), sub, len(testMessages), 0, func(_ context.Context, m *Message) {
 		id, err := strconv.Atoi(msgAckID(m))
@@ -265,7 +265,7 @@ func TestStreamingPullOneActive(t *testing.T) {
 	defer client.Close()
 	defer srv.srv.Close()
 	srv.addStreamingPullMessages(testMessages[:1])
-	sub := client.Subscription("S")
+	sub := client.Subscriber("S")
 	ctx, cancel := context.WithCancel(context.Background())
 	err := sub.Receive(ctx, func(ctx context.Context, m *Message) {
 		m.Ack()
@@ -297,7 +297,7 @@ func TestStreamingPullConcurrent(t *testing.T) {
 	for i := 0; i < nMessages; i += 2 {
 		server.addStreamingPullMessages([]*pb.ReceivedMessage{newMsg(i), newMsg(i + 1)})
 	}
-	sub := client.Subscription("S")
+	sub := client.Subscriber("S")
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	gotMsgs, err := pullN(ctx, sub, nMessages, 0, func(ctx context.Context, m *Message) {
@@ -324,7 +324,7 @@ func TestStreamingPullFlowControl(t *testing.T) {
 	defer server.srv.Close()
 	defer client.Close()
 	server.addStreamingPullMessages(testMessages)
-	sub := client.Subscription("S")
+	sub := client.Subscriber("S")
 	sub.ReceiveSettings.MaxOutstandingMessages = 2
 	ctx, cancel := context.WithCancel(context.Background())
 	activec := make(chan int)
@@ -374,7 +374,7 @@ func TestStreamingPull_ClosedClient(t *testing.T) {
 	defer server.srv.Close()
 	defer client.Close()
 	server.addStreamingPullMessages(testMessages)
-	sub := client.Subscription("S")
+	sub := client.Subscriber("S")
 	sub.ReceiveSettings.MaxOutstandingBytes = 1
 	recvFinished := make(chan error)
 
@@ -423,7 +423,7 @@ func TestStreamingPull_RetriesAfterUnavailable(t *testing.T) {
 	server.addStreamingPullMessages(testMessages)
 	server.addStreamingPullError(unavail)
 
-	sub := client.Subscription("S")
+	sub := client.Subscriber("S")
 	sub.ReceiveSettings.MaxOutstandingBytes = 1
 	recvErr := make(chan error, 1)
 	recvdMsgs := make(chan *Message, len(testMessages)*2)
@@ -458,7 +458,7 @@ func TestStreamingPull_ReconnectsAfterServerDies(t *testing.T) {
 	defer server.srv.Close()
 	defer client.Close()
 	server.addStreamingPullMessages(testMessages)
-	sub := client.Subscription("S")
+	sub := client.Subscriber("S")
 	sub.ReceiveSettings.MaxOutstandingBytes = 1
 	recvErr := make(chan error, 1)
 	recvdMsgs := make(chan interface{}, len(testMessages)*2)
@@ -517,7 +517,7 @@ func newMock(t *testing.T) (*Client, *mockServer) {
 
 // pullN calls sub.Receive until at least n messages are received.
 // Wait a provided duration before cancelling.
-func pullN(ctx context.Context, sub *Subscription, n int, wait time.Duration, f func(context.Context, *Message)) ([]*Message, error) {
+func pullN(ctx context.Context, sub *Subscriber, n int, wait time.Duration, f func(context.Context, *Message)) ([]*Message, error) {
 	var (
 		mu   sync.Mutex
 		msgs []*Message

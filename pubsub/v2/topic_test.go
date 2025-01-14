@@ -100,7 +100,7 @@ func (s *alwaysFailPublish) Publish(ctx context.Context, req *pubsubpb.PublishRe
 	return nil, status.Errorf(codes.Unavailable, "try again")
 }
 
-func mustCreateTopic(t *testing.T, c *Client, name string) *Topic {
+func mustCreateTopic(t *testing.T, c *Client, name string) *Publisher {
 	_, err := c.TopicAdminClient.CreateTopic(context.Background(), &pb.Topic{Name: name})
 	if err != nil {
 		t.Fatal(err)
@@ -357,15 +357,15 @@ func TestInvalidUTF8(t *testing.T) {
 }
 
 // publishSingleMessage publishes a single message to a topic.
-func publishSingleMessage(ctx context.Context, t *Topic, data string) *PublishResult {
-	return t.Publish(ctx, &Message{
+func publishSingleMessage(ctx context.Context, p *Publisher, data string) *PublishResult {
+	return p.Publish(ctx, &Message{
 		Data: []byte(data),
 	})
 }
 
 // publishSingleMessageWithKey publishes a single message to a topic with an ordering key.
-func publishSingleMessageWithKey(ctx context.Context, t *Topic, data, key string) *PublishResult {
-	return t.Publish(ctx, &Message{
+func publishSingleMessageWithKey(ctx context.Context, p *Publisher, data, key string) *PublishResult {
+	return p.Publish(ctx, &Message{
 		Data:        []byte(data),
 		OrderingKey: key,
 	})

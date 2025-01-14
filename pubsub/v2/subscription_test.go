@@ -86,16 +86,6 @@ func testReceive(t *testing.T, exactlyOnceDelivery bool) {
 	})
 }
 
-func (t1 *Topic) Equal(t2 *Topic) bool {
-	if t1 == nil && t2 == nil {
-		return true
-	}
-	if t1 == nil || t2 == nil {
-		return false
-	}
-	return t1.c == t2.c && t1.name == t2.name
-}
-
 // Note: be sure to close client and server!
 func newFake(t *testing.T) (*Client, *pstest.Server) {
 	ctx := context.Background()
@@ -402,7 +392,7 @@ func TestSubscribeMessageExpirationFlowControl(t *testing.T) {
 	}
 }
 
-func mustCreateSubConfig(t *testing.T, c *Client, pbs *pb.Subscription) *Subscription {
+func mustCreateSubConfig(t *testing.T, c *Client, pbs *pb.Subscription) *Subscriber {
 	ctx := context.Background()
 	if _, err := c.SubscriptionAdminClient.CreateSubscription(ctx, pbs); err != nil {
 		t.Fatal(err)

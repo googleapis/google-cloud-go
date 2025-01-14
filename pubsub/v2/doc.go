@@ -27,38 +27,56 @@ connection pooling and similar aspects of this package.
 # Publishing
 
 Pub/Sub messages are published to topics. A [Topic] may be created
-using [Client.CreateTopic] like so:
+like so:
 
-	topic, err := pubsubClient.CreateTopic(context.Background(), "topic-name")
+	adminClient := pubsubClient.TopicAdminClient
+	topic, err := adminClient.CreateTopic(context.Background(), &pubsubpb.Topic{
+		Name: "projects/my-project/topics/my-topic",
+	})
 
-Messages may then be published to a [Topic]:
+A [Publisher] client can then be instantiated.
 
-	res := topic.Publish(ctx, &pubsub.Message{Data: []byte("payload")})
+	publisher := pubsubClient.Publisher(topic.GetName())
 
-[Topic.Publish] queues the message for publishing and returns immediately. When enough
+Messages may then be published to a topic using the [Publisher]:
+
+	res := publisher.Publish(ctx, &pubsub.Message{Data: []byte("payload")})
+
+[Publisher.Publish] queues the message for publishing and returns immediately. When enough
 messages have accumulated, or enough time has elapsed, the batch of messages is
 sent to the Pub/Sub service.
 
-[Topic.Publish] returns a [PublishResult], which behaves like a future: its Get method
+[Publisher.Publish] returns a [PublishResult], which behaves like a future: its Get method
 blocks until the message has been sent to the service.
 
-The first time you call [Topic.Publish] on a [Topic], goroutines are started in the
-background. To clean up these goroutines, call [Topic.Stop]:
+The first time you call [Publisher.Publish] on a [Publisher], goroutines are started in the
+background. To clean up these goroutines, call [Publisher.Stop]:
 
-	topic.Stop()
+	publisher.Stop()
 
 # Receiving
 
-To receive messages published to a [Topic], clients create a [Subscription]
+To receive messages published to a [Publisher], clients create a subscription
 for the topic. There may be more than one subscription per topic ; each message
 that is published to the topic will be delivered to all associated subscriptions.
 
-A [Subscription] may be created like so:
+You then need to create a [Subscriber] client to pull messages from a subscription.
 
-	 sub, err := pubsubClient.CreateSubscription(context.Background(), "sub-name",
-		pubsub.SubscriptionConfig{Topic: topic})
+A Subscription may be created like so:
 
-Messages are then consumed from a [Subscription] via callback.
+	adminClient := pubsubClient.SubscriptionAdminClient
+	subscription, err := adminClient.CreateSubscription(context.Background(),
+		&pubsubpb.Subscription{
+			Name: "projects/my-project/subscriptions/my-sub",
+			Topic: "projects/my-project/topics/my-topic"}
+		),
+	}
+
+A [Subscriber] client can be instantiated like so:
+
+	sub := pubsubClient.Subscriber(subscription.GetName())
+
+Messages are then consumed from a [Subscriber] via callback.
 
 	 err := sub.Receive(context.Background(), func(ctx context.Context, m *Message) {
 		log.Printf("Got message: %s", m.Data)
@@ -69,11 +87,11 @@ Messages are then consumed from a [Subscription] via callback.
 	 }
 
 The callback is invoked concurrently by multiple goroutines, maximizing
-throughput. To terminate a call to [Subscription.Receive], cancel its context.
+throughput. To terminate a call to [Subscriber.Receive], cancel its context.
 
 Once client code has processed the [Message], it must call Message.Ack or
 Message.Nack; otherwise the Message will eventually be redelivered. Ack/Nack
-MUST be called within the [Subscription.Receive] handler function, and not from a goroutine.
+MUST be called within the [Subscriber.Receive] handler function, and not from a goroutine.
 Otherwise, flow control (e.g. ReceiveSettings.MaxOutstandingMessages) will
 not be respected, and messages can get orphaned when cancelling Receive.
 
@@ -92,7 +110,7 @@ pull method.
 # Streams Management
 
 The number of StreamingPull connections can be configured by setting NumGoroutines in [ReceiveSettings].
-The default value of 10 means the client library will maintain 10 StreamingPull connections.
+The default value of 1 means the client library will maintain 1 StreamingPull connection.
 This is more than sufficient for most use cases, as StreamingPull connections can handle up to
 10 MB/s https://cloud.google.com/pubsub/quotas#resource_limits. In some cases, using too many streams
 can lead to client library behaving poorly as the application becomes I/O bound.

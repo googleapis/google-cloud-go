@@ -31,8 +31,8 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-// Subscription is a reference to a PubSub subscription.
-type Subscription struct {
+// Subscriber is a subscriber client that references a subscription.
+type Subscriber struct {
 	c *Client
 
 	// The fully qualified identifier for the subscription, in the format "projects/<projid>/subscriptions/<name>"
@@ -54,13 +54,8 @@ type Subscription struct {
 	enableTracing bool
 }
 
-// Subscription creates a reference to a subscription.
-func (c *Client) Subscription(id string) *Subscription {
-	return c.SubscriptionInProject(id, c.projectID)
-}
-
 // Subscriber creates a subscriber client which references a single subscription.
-func (c *Client) Subscriber(nameOrID string) *Subscription {
+func (c *Client) Subscriber(nameOrID string) *Subscriber {
 	s := strings.Split(nameOrID, "/")
 	// The string looks like a properly formatted topic name, use it directly.
 	if len(s) == 4 {
@@ -70,13 +65,8 @@ func (c *Client) Subscriber(nameOrID string) *Subscription {
 	return newSubscription(c, fmt.Sprintf("projects/%s/subscriptions/%s", c.projectID, nameOrID))
 }
 
-// SubscriptionInProject creates a reference to a subscription in a given project.
-func (c *Client) SubscriptionInProject(id, projectID string) *Subscription {
-	return newSubscription(c, fmt.Sprintf("projects/%s/subscriptions/%s", projectID, id))
-}
-
-func newSubscription(c *Client, name string) *Subscription {
-	return &Subscription{
+func newSubscription(c *Client, name string) *Subscriber {
+	return &Subscriber{
 		c:               c,
 		name:            name,
 		clientID:        uuid.NewString(),
@@ -86,12 +76,12 @@ func newSubscription(c *Client, name string) *Subscription {
 }
 
 // String returns the globally unique printable name of the subscription.
-func (s *Subscription) String() string {
+func (s *Subscriber) String() string {
 	return s.name
 }
 
 // ID returns the unique identifier of the subscription within its project.
-func (s *Subscription) ID() string {
+func (s *Subscriber) ID() string {
 	slash := strings.LastIndex(s.name, "/")
 	if slash == -1 {
 		// name is not a fully-qualified name.
@@ -197,7 +187,7 @@ var errReceiveInProgress = errors.New("pubsub: Receive already in progress for t
 // period specified by s.ReceiveSettings.MaxExtension.
 //
 // Each Subscription may have only one invocation of Receive active at a time.
-func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Message)) error {
+func (s *Subscriber) Receive(ctx context.Context, f func(context.Context, *Message)) error {
 	s.mu.Lock()
 	if s.receiveActive {
 		s.mu.Unlock()
