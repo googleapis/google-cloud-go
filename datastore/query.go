@@ -978,9 +978,7 @@ func (c *Client) RunAggregationQueryWithOptions(ctx context.Context, aq *Aggrega
 }
 
 func validateReadOptions(eventual bool, t *Transaction, clientReadSettings *readSettings) error {
-	crtExists := clientReadSettings != nil && !clientReadSettings.readTime.IsZero()
-
-	if !crtExists {
+	if !clientReadSettings.readTimeExists() {
 		if t == nil {
 			return nil
 		}
@@ -1015,7 +1013,7 @@ func parseQueryReadOptions(eventual bool, t *Transaction, clientReadSettings *re
 		return &pb.ReadOptions{ConsistencyType: &pb.ReadOptions_ReadConsistency_{ReadConsistency: pb.ReadOptions_EVENTUAL}}, nil
 	}
 
-	if clientReadSettings != nil && !clientReadSettings.readTime.IsZero() {
+	if clientReadSettings.readTimeExists() {
 		return &pb.ReadOptions{
 			ConsistencyType: &pb.ReadOptions_ReadTime{
 				ReadTime: timestamppb.New(clientReadSettings.readTime),
