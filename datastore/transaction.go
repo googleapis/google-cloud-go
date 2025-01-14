@@ -35,8 +35,9 @@ const maxIndividualReqTxnRetry = 5
 var ErrConcurrentTransaction = errors.New("datastore: concurrent transaction")
 
 var (
-	errExpiredTransaction             = errors.New("datastore: transaction expired")
-	errEventualConsistencyTransaction = errors.New("datastore: cannot use EventualConsistency query in a transaction")
+	errExpiredTransaction                   = errors.New("datastore: transaction expired")
+	errEventualConsistencyTransaction       = errors.New("datastore: cannot use EventualConsistency query in a transaction")
+	errEventualConsistencyTxnClientReadTime = errors.New("datastore: cannot use EventualConsistency query when read time is specified on client or query is in a transaction")
 
 	txnBackoff = gax.Backoff{
 		Initial:    20 * time.Millisecond,
