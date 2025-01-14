@@ -21,11 +21,8 @@
 package servicepb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -35,6 +32,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -7849,7 +7848,7 @@ type EnvironmentsClient interface {
 	// runs a single Composer component.
 	//
 	// This method is supported for Cloud Composer environments in versions
-	// composer-3.*.*-airflow-*.*.* and newer.
+	// composer-2.*.*-airflow-*.*.* and newer.
 	ListWorkloads(ctx context.Context, in *ListWorkloadsRequest, opts ...grpc.CallOption) (*ListWorkloadsResponse, error)
 	// Check if an upgrade operation on the environment will succeed.
 	//
@@ -8168,7 +8167,7 @@ type EnvironmentsServer interface {
 	// runs a single Composer component.
 	//
 	// This method is supported for Cloud Composer environments in versions
-	// composer-3.*.*-airflow-*.*.* and newer.
+	// composer-2.*.*-airflow-*.*.* and newer.
 	ListWorkloads(context.Context, *ListWorkloadsRequest) (*ListWorkloadsResponse, error)
 	// Check if an upgrade operation on the environment will succeed.
 	//
