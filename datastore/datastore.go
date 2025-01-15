@@ -682,7 +682,7 @@ func putMutations(keys []*Key, src interface{}) ([]*pb.Mutation, error) {
 	v := reflect.ValueOf(src)
 	var multiArgType multiArgType
 
-	// If kind is of type slice, return error
+	// If kind is not of type slice, return error
 	if kind := v.Kind(); kind != reflect.Slice {
 		return nil, fmt.Errorf("%w: dst: expected slice got %v", ErrInvalidEntityType, kind.String())
 	}
