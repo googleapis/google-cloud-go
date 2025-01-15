@@ -1087,15 +1087,12 @@ func (t *Table) apply(ctx context.Context, mt *builtinMetricsTracer, row string,
 		}
 		req.FalseMutations = m.mfalse.ops
 	}
-	if mutationsAreRetryable(req.TrueMutations) && mutationsAreRetryable(req.FalseMutations) {
-		callOptions = retryOptions
-	}
 	var cmRes *btpb.CheckAndMutateRowResponse
 	err = gaxInvokeWithRecorder(ctx, mt, "CheckAndMutateRow", func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
 		var err error
 		cmRes, err = t.c.client.CheckAndMutateRow(ctx, req, grpc.Header(headerMD), grpc.Trailer(trailerMD))
 		return err
-	}, callOptions...)
+	})
 	if err == nil {
 		after(cmRes)
 	}
