@@ -1,5 +1,13 @@
 # Changes
 
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.19.2...cloudbuild/v1.20.0) (2025-01-15)
+
+
+### Features
+
+* **cloudbuild/apiv1:** Add GoModule to Artifact and Results messages and new GO_MODULE_H1 hash type ([baeccc8](https://github.com/googleapis/google-cloud-go/commit/baeccc85c512ff67a63f13bb5822fee3b8e432fc))
+* **cloudbuild/apiv1:** Add option to enable structured logging ([#11435](https://github.com/googleapis/google-cloud-go/issues/11435)) ([8c6ed3d](https://github.com/googleapis/google-cloud-go/commit/8c6ed3d3c9677ab1b6e1e5651995b9be1856c7ac))
+
 ## [1.19.2](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.19.1...cloudbuild/v1.19.2) (2025-01-02)
 
 
