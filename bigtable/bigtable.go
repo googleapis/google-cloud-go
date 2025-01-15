@@ -1348,6 +1348,11 @@ func (t *Table) doApplyBulk(ctx context.Context, entryErrs []*entryErr, headerMD
 		}
 	}
 
+	var topLevelErr error
+	defer func() {
+		populateTopLevelError(entryErrs, topLevelErr)
+	}()
+
 	entries := make([]*btpb.MutateRowsRequest_Entry, len(entryErrs))
 	for i, entryErr := range entryErrs {
 		entries[i] = entryErr.Entry
@@ -1364,8 +1369,7 @@ func (t *Table) doApplyBulk(ctx context.Context, entryErrs []*entryErr, headerMD
 
 	stream, err := t.c.client.MutateRows(ctx, req)
 	if err != nil {
-		_, topLevelErr := convertToGrpcStatusErr(err)
-		populateTopLevelError(entryErrs, topLevelErr)
+		_, topLevelErr = convertToGrpcStatusErr(err)
 		return err
 	}
 
@@ -1380,12 +1384,10 @@ func (t *Table) doApplyBulk(ctx context.Context, entryErrs []*entryErr, headerMD
 		}
 		if err != nil {
 			*trailerMD = stream.Trailer()
-			_, topLevelErr := convertToGrpcStatusErr(err)
-			populateTopLevelError(entryErrs, topLevelErr)
+			_, topLevelErr = convertToGrpcStatusErr(err)
 			return err
 		}
 
-		populateTopLevelError(entryErrs, nil)
 		for _, entry := range res.Entries {
 			s := entry.Status
 			if s.Code == int32(codes.OK) {
