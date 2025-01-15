@@ -2,6 +2,7 @@
 
 
 
+
 ## [1.2.2](https://github.com/googleapis/google-cloud-go/compare/backupdr/v1.2.1...backupdr/v1.2.2) (2025-01-02)
 
 
