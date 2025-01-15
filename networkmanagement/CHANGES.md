@@ -1,5 +1,12 @@
 # Changes
 
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.17.1...networkmanagement/v1.18.0) (2025-01-15)
+
+
+### Features
+
+* **networkmanagement:** Expose the new v1 vpcflowlogs api proto ([973e3d2](https://github.com/googleapis/google-cloud-go/commit/973e3d267844d251f5bfc33f473b853ac288b959))
+
 ## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.17.0...networkmanagement/v1.17.1) (2025-01-02)
 
 
