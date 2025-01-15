@@ -1,6 +1,13 @@
 # Changes
 
 
+## [2.19.4](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.19.3...recaptchaenterprise/v2.19.4) (2025-01-15)
+
+
+### Documentation
+
+* **recaptchaenterprise:** Tweak comments ([baeccc8](https://github.com/googleapis/google-cloud-go/commit/baeccc85c512ff67a63f13bb5822fee3b8e432fc))
+
 ## [2.19.3](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.19.2...recaptchaenterprise/v2.19.3) (2025-01-08)
 
 
