@@ -1228,9 +1228,14 @@ func (m *Mutation) mergeToCell(family, column string, ts Timestamp, value *btpb.
 type entryErr struct {
 	Entry *btpb.MutateRowsRequest_Entry
 	Err   error
+
+	// TopLevelErr is the error received either from
+	// 1. client.MutateRows
+	// 2. stream.Recv
+	TopLevelErr error
 }
 
-// ApplyBulk applies multiple Mutations, up to a maximum of 100,000.
+// ApplyBulk applies multiple Mutations.
 // Each mutation is individually applied atomically,
 // but the set of mutations may be applied in any order.
 //
@@ -1259,50 +1264,57 @@ func (t *Table) ApplyBulk(ctx context.Context, rowKeys []string, muts []*Mutatio
 	}
 
 	var firstGroupErr error
-	for _, group := range groupEntries(origEntries, maxMutations) {
-		err := t.applyGroup(ctx, &group, opts...)
-		if err != nil && firstGroupErr == nil {
-			firstGroupErr = err
-		}
-
-		// Populate per mutation error if top level error is not nil
-		if group.topLevelErr != nil {
-			for i := range group.entries {
-				group.entries[i].Err = group.topLevelErr
+	numFailed := 0
+	groups := groupEntries(origEntries, maxMutations)
+	for _, group := range groups {
+		err := t.applyGroup(ctx, group, opts...)
+		if err != nil {
+			if firstGroupErr == nil {
+				firstGroupErr = err
 			}
+			numFailed++
 		}
+	}
+
+	if numFailed == len(groups) {
+		return nil, firstGroupErr
 	}
 
 	// All the errors are accumulated into an array and returned, interspersed with nils for successful
 	// entries. The absence of any errors means we should return nil.
 	var foundErr bool
 	for _, entry := range origEntries {
+		if entry.Err == nil && entry.TopLevelErr != nil {
+			// Populate per mutation error if top level error is not nil
+			entry.Err = entry.TopLevelErr
+		}
 		if entry.Err != nil {
 			foundErr = true
 		}
 		errs = append(errs, entry.Err)
 	}
 	if foundErr {
-		return errs, firstGroupErr
+		return errs, nil
 	}
 	return nil, nil
 }
 
-func (t *Table) applyGroup(ctx context.Context, group *entriesGroup, opts ...ApplyOption) (err error) {
+func (t *Table) applyGroup(ctx context.Context, group []*entryErr, opts ...ApplyOption) (err error) {
 	attrMap := make(map[string]interface{})
 	mt := t.newBuiltinMetricsTracer(ctx, true)
 	defer recordOperationCompletion(mt)
 
 	err = gaxInvokeWithRecorder(ctx, mt, "MutateRows", func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
-		attrMap["rowCount"] = len(group.entries)
+		attrMap["rowCount"] = len(group)
 		trace.TracePrintf(ctx, attrMap, "Row count in ApplyBulk")
 		err := t.doApplyBulk(ctx, group, headerMD, trailerMD, opts...)
 		if err != nil {
 			// We want to retry the entire request with the current group
 			return err
 		}
-		group.entries = t.getApplyBulkRetries(group.entries)
-		if len(group.entries) > 0 && len(idempotentRetryCodes) > 0 {
+		// Get the entries that need to be retried
+		group = t.getApplyBulkRetries(group)
+		if len(group) > 0 && len(idempotentRetryCodes) > 0 {
 			// We have at least one mutation that needs to be retried.
 			// Return an arbitrary error that is retryable according to callOptions.
 			return status.Errorf(idempotentRetryCodes[0], "Synthetic error: partial failure of ApplyBulk")
@@ -1329,15 +1341,15 @@ func (t *Table) getApplyBulkRetries(entries []*entryErr) []*entryErr {
 }
 
 // doApplyBulk does the work of a single ApplyBulk invocation
-func (t *Table) doApplyBulk(ctx context.Context, group *entriesGroup, headerMD, trailerMD *metadata.MD, opts ...ApplyOption) error {
+func (t *Table) doApplyBulk(ctx context.Context, entryErrs []*entryErr, headerMD, trailerMD *metadata.MD, opts ...ApplyOption) error {
 	after := func(res proto.Message) {
 		for _, o := range opts {
 			o.after(res)
 		}
 	}
 
-	entries := make([]*btpb.MutateRowsRequest_Entry, len(group.entries))
-	for i, entryErr := range group.entries {
+	entries := make([]*btpb.MutateRowsRequest_Entry, len(entryErrs))
+	for i, entryErr := range entryErrs {
 		entries[i] = entryErr.Entry
 	}
 	req := &btpb.MutateRowsRequest{
@@ -1352,7 +1364,8 @@ func (t *Table) doApplyBulk(ctx context.Context, group *entriesGroup, headerMD, 
 
 	stream, err := t.c.client.MutateRows(ctx, req)
 	if err != nil {
-		_, group.topLevelErr = convertToGrpcStatusErr(err)
+		_, topLevelErr := convertToGrpcStatusErr(err)
+		populateTopLevelError(entryErrs, topLevelErr)
 		return err
 	}
 
@@ -1367,16 +1380,18 @@ func (t *Table) doApplyBulk(ctx context.Context, group *entriesGroup, headerMD, 
 		}
 		if err != nil {
 			*trailerMD = stream.Trailer()
-			_, group.topLevelErr = convertToGrpcStatusErr(err)
+			_, topLevelErr := convertToGrpcStatusErr(err)
+			populateTopLevelError(entryErrs, topLevelErr)
 			return err
 		}
 
+		populateTopLevelError(entryErrs, nil)
 		for _, entry := range res.Entries {
 			s := entry.Status
 			if s.Code == int32(codes.OK) {
-				group.entries[entry.Index].Err = nil
+				entryErrs[entry.Index].Err = nil
 			} else {
-				group.entries[entry.Index].Err = status.Errorf(codes.Code(s.Code), s.Message)
+				entryErrs[entry.Index].Err = status.Errorf(codes.Code(s.Code), s.Message)
 			}
 		}
 		after(res)
@@ -1384,24 +1399,23 @@ func (t *Table) doApplyBulk(ctx context.Context, group *entriesGroup, headerMD, 
 	return nil
 }
 
-type entriesGroup struct {
-	entries     []*entryErr
-	topLevelErr error // top level error either from stream.Recv or MutateRows
+func populateTopLevelError(entries []*entryErr, topLevelErr error) {
+	for _, entry := range entries {
+		entry.TopLevelErr = topLevelErr
+	}
 }
 
 // groupEntries groups entries into groups of a specified size without breaking up
 // individual entries.
-func groupEntries(entries []*entryErr, maxSize int) []entriesGroup {
+func groupEntries(entries []*entryErr, maxSize int) [][]*entryErr {
 	var (
-		res   []entriesGroup
+		res   [][]*entryErr
 		start int
 		gmuts int
 	)
 	addGroup := func(end int) {
 		if end-start > 0 {
-			res = append(res, entriesGroup{
-				entries: entries[start:end],
-			})
+			res = append(res, entries[start:end])
 			start = end
 			gmuts = 0
 		}
