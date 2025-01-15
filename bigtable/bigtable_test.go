@@ -986,7 +986,7 @@ func TestApplyBulk_MutationsSucceedAfterGroupError(t *testing.T) {
 	if len(gotErrs) != len(wantErrs) {
 		t.Fatalf("ApplyBulk errs got: %v, want: %v", gotErrs, wantErrs)
 	}
-	for i, _ := range gotErrs {
+	for i := range gotErrs {
 		if !equalErrs(gotErrs[i], wantErrs[i]) {
 			t.Errorf("#%d ApplyBulk err got: %v, want: %v", i, gotErrs[i], wantErrs[i])
 		}
