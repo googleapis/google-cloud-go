@@ -73,6 +73,7 @@ type Client struct {
 	projectID    string
 	databaseID   string        // A client is tied to a single database.
 	readSettings *readSettings // readSettings allows setting a snapshot time to read the database
+	UsesEmulator bool          // a boolean that indicates if the client is using the emulator
 }
 
 // NewClient creates a new Firestore client that uses the given project.
@@ -81,12 +82,14 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 		return nil, errors.New("firestore: projectID was empty")
 	}
 	var o []option.ClientOption
+	var usesEmulator bool
 	// If this environment variable is defined, configure the client to talk to the emulator.
 	if addr := os.Getenv("FIRESTORE_EMULATOR_HOST"); addr != "" {
 		conn, err := grpc.Dial(addr, grpc.WithInsecure(), grpc.WithPerRPCCredentials(emulatorCreds{}))
 		if err != nil {
 			return nil, fmt.Errorf("firestore: dialing address from env var FIRESTORE_EMULATOR_HOST: %s", err)
 		}
+		usesEmulator = true
 		o = []option.ClientOption{option.WithGRPCConn(conn)}
 		projectID, _ = detect.ProjectID(ctx, projectID, "", opts...)
 		if projectID == "" {
@@ -111,6 +114,7 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 		projectID:    projectID,
 		databaseID:   DefaultDatabaseID,
 		readSettings: &readSettings{},
+		UsesEmulator: usesEmulator,
 	}
 	return c, nil
 }
