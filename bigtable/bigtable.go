@@ -401,8 +401,12 @@ func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, mt *
 			intialRowLimit = l.limit
 		}
 	}
+	if intialRowLimit < 0 {
+		return nil
+	}
+
 	err = gaxInvokeWithRecorder(ctx, mt, "ReadRows", func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
-		if rowLimitSet && numRowsRead == intialRowLimit {
+		if rowLimitSet && numRowsRead >= intialRowLimit {
 			return nil
 		}
 
@@ -964,6 +968,7 @@ func makeReadSettings(req *btpb.ReadRowsRequest, numRowsRead int64) readSettings
 
 // A ReadOption is an optional argument to ReadRows.
 type ReadOption interface {
+	// set modifies the request stored in the settings
 	set(settings *readSettings)
 }
 
@@ -983,6 +988,8 @@ func LimitRows(limit int64) ReadOption { return limitRows{limit} }
 type limitRows struct{ limit int64 }
 
 func (lr limitRows) set(settings *readSettings) {
+	// Since 'numRowsRead' out of 'limit' requested rows have already been read,
+	// the subsequest requests should fetch only the remaining rows.
 	settings.req.RowsLimit = lr.limit - settings.numRowsRead
 }
 

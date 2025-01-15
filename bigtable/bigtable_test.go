@@ -713,6 +713,104 @@ func TestReadRowsRequestStats(t *testing.T) {
 	}
 }
 
+func TestReadRowsLimit(t *testing.T) {
+	testEnv, err := NewEmulatedEnv(IntegrationTestConfig{})
+	if err != nil {
+		t.Fatalf("NewEmulatedEnv failed: %v", err)
+	}
+	conn, err := grpc.Dial(testEnv.server.Addr, grpc.WithInsecure(), grpc.WithBlock(),
+		grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(100<<20), grpc.MaxCallRecvMsgSize(100<<20)),
+	)
+	if err != nil {
+		t.Fatalf("grpc.Dial failed: %v", err)
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+	adminClient, err := NewAdminClient(ctx, testEnv.config.Project, testEnv.config.Instance, option.WithGRPCConn(conn))
+	if err != nil {
+		t.Fatalf("NewClient failed: %v", err)
+	}
+	defer adminClient.Close()
+	tableConf := &TableConf{
+		TableID: testEnv.config.Table,
+		Families: map[string]GCPolicy{
+			"f": NoGcPolicy(),
+		},
+	}
+	if err := adminClient.CreateTableFromConf(ctx, tableConf); err != nil {
+		t.Fatalf("CreateTable(%v) failed: %v", testEnv.config.Table, err)
+	}
+
+	client, err := NewClientWithConfig(ctx, testEnv.config.Project, testEnv.config.Instance, disableMetricsConfig, option.WithGRPCConn(conn))
+	if err != nil {
+		t.Fatalf("NewClientWithConfig failed: %v", err)
+	}
+	defer client.Close()
+	table := client.Open(testEnv.config.Table)
+
+	m := NewMutation()
+	m.Set("f", "q", ServerTime, []byte("value"))
+	if err = table.Apply(ctx, "row1", m); err != nil {
+		t.Fatalf("Apply failed: %v", err)
+	}
+
+	m = NewMutation()
+	m.Set("f", "q", ServerTime, []byte("value"))
+	m.Set("f", "q2", ServerTime, []byte("value2"))
+	if err = table.Apply(ctx, "row2", m); err != nil {
+		t.Fatalf("Apply failed: %v", err)
+	}
+
+	m = NewMutation()
+	m.Set("f", "excluded", ServerTime, []byte("value"))
+	if err = table.Apply(ctx, "row3", m); err != nil {
+		t.Fatalf("Apply failed: %v", err)
+	}
+
+	for _, test := range []struct {
+		desc         string
+		limit        *int64
+		wantRowCount int64
+	}{
+		{
+			desc:         "No limit",
+			wantRowCount: 3,
+		},
+		{
+			desc:         "Limit less than number of rows in table",
+			limit:        ptr(int64(2)),
+			wantRowCount: 2,
+		},
+		{
+			desc:         "Limit greater than number of rows in table",
+			limit:        ptr(int64(5)),
+			wantRowCount: 3,
+		},
+	} {
+		gotRowCount := int64(0)
+		t.Run(test.desc, func(t *testing.T) {
+			opts := []ReadOption{}
+			if test.limit != nil {
+				opts = append(opts, LimitRows(*test.limit))
+			}
+			if err := table.ReadRows(ctx, InfiniteRange(""), func(r Row) bool {
+				gotRowCount++
+				return true
+			}, opts...); err != nil {
+				t.Errorf("ReadRows failed: %v", err)
+			}
+
+			if gotRowCount != test.wantRowCount {
+				t.Errorf("ReadRows returned %d rows, want %d", gotRowCount, test.wantRowCount)
+			}
+		})
+	}
+}
+
+// ptr returns a pointer to its argument.
+// It can be used to initialize pointer fields:
+func ptr[T any](t T) *T { return &t }
+
 // TestHeaderPopulatedWithAppProfile verifies that request params header is populated with table name and app profile
 func TestHeaderPopulatedWithAppProfile(t *testing.T) {
 	testEnv, err := NewEmulatedEnv(IntegrationTestConfig{})
