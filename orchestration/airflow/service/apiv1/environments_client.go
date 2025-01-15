@@ -295,7 +295,7 @@ func (c *EnvironmentsClient) PollAirflowCommand(ctx context.Context, req *servic
 // runs a single Composer component.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-2..-airflow-..* and newer.
 func (c *EnvironmentsClient) ListWorkloads(ctx context.Context, req *servicepb.ListWorkloadsRequest, opts ...gax.CallOption) *ListWorkloadsResponse_ComposerWorkloadIterator {
 	return c.internalClient.ListWorkloads(ctx, req, opts...)
 }
@@ -1748,7 +1748,7 @@ func (c *environmentsRESTClient) PollAirflowCommand(ctx context.Context, req *se
 // runs a single Composer component.
 //
 // This method is supported for Cloud Composer environments in versions
-// composer-3..-airflow-..* and newer.
+// composer-2..-airflow-..* and newer.
 func (c *environmentsRESTClient) ListWorkloads(ctx context.Context, req *servicepb.ListWorkloadsRequest, opts ...gax.CallOption) *ListWorkloadsResponse_ComposerWorkloadIterator {
 	it := &ListWorkloadsResponse_ComposerWorkloadIterator{}
 	req = proto.Clone(req).(*servicepb.ListWorkloadsRequest)
