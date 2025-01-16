@@ -1,5 +1,110 @@
 # Changes
 
+## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.22.1...monitoring/v1.23.0) (2025-01-15)
+
+
+### Features
+
+* **monitoring:** Add active_only field to ListMetricDescriptorsRequest ([#11430](https://github.com/googleapis/google-cloud-go/issues/11430)) ([43c6b83](https://github.com/googleapis/google-cloud-go/commit/43c6b83c636503b0d0c45b8845e3516f80dbc86d))
+
+## [1.22.1](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.22.0...monitoring/v1.22.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **monitoring:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.21.2...monitoring/v1.22.0) (2024-12-04)
+
+
+### Features
+
+* **monitoring/apiv3:** Added support for notification prompts in AlertPolicy ([191a664](https://github.com/googleapis/google-cloud-go/commit/191a6643252221a2d6947d85aea7f31bae17cec6))
+* **monitoring/apiv3:** Added support for PromQL metric validation opt-out in AlertPolicy ([191a664](https://github.com/googleapis/google-cloud-go/commit/191a6643252221a2d6947d85aea7f31bae17cec6))
+
+## [1.21.2](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.21.1...monitoring/v1.21.2) (2024-10-23)
+
+
+### Bug Fixes
+
+* **monitoring:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **monitoring:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
+## [1.21.1](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.21.0...monitoring/v1.21.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **monitoring:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.20.4...monitoring/v1.21.0) (2024-08-20)
+
+
+### Features
+
+* **monitoring:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.20.4](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.20.3...monitoring/v1.20.4) (2024-08-08)
+
+
+### Bug Fixes
+
+* **monitoring:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+## [1.20.3](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.20.2...monitoring/v1.20.3) (2024-07-24)
+
+
+### Bug Fixes
+
+* **monitoring:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+## [1.20.2](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.20.1...monitoring/v1.20.2) (2024-07-10)
+
+
+### Bug Fixes
+
+* **monitoring:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.20.1](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.20.0...monitoring/v1.20.1) (2024-07-01)
+
+
+### Bug Fixes
+
+* **monitoring:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.19.0...monitoring/v1.20.0) (2024-06-26)
+
+
+### Features
+
+* **monitoring/apiv3:** Add support to add links in AlertPolicy ([d6c543c](https://github.com/googleapis/google-cloud-go/commit/d6c543c3969016c63e158a862fc173dff60fb8d9))
+
+
+### Bug Fixes
+
+* **monitoring:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.18.2...monitoring/v1.19.0) (2024-05-01)
+
+
+### Features
+
+* **monitoring/apiv3:** Added CloudRun, GkeNamespace, GkeWorkload, GkeService, and BasicService service types ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+* **monitoring/apiv3:** Added Synthetic Monitor targets to Uptime data model ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+
+
+### Bug Fixes
+
+* **monitoring/apiv3:** Defined class prefix of GMON for Objective C ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+* **monitoring:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.18.2](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.18.1...monitoring/v1.18.2) (2024-04-15)
+
+
+### Documentation
+
+* **monitoring/apiv3:** Various updates ([8892943](https://github.com/googleapis/google-cloud-go/commit/8892943b169060f8ba7be227cd65680696c494a0))
+
 ## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.18.0...monitoring/v1.18.1) (2024-03-14)
 
 
@@ -206,4 +311,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out monitoring as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

@@ -106,7 +106,7 @@ func TestTokenProvider(t *testing.T) {
 
 	cred, err := NewTokenProvider(f, &Options{
 		STSAudience: aud,
-		Client:      internal.CloneDefaultClient(),
+		Client:      internal.DefaultClient(),
 	})
 	if err != nil {
 		t.Fatal(err)

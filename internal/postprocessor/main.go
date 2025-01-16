@@ -33,7 +33,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/postprocessor/execv/gocmd"
-	"github.com/google/go-github/v60/github"
+	"github.com/google/go-github/v59/github"
 )
 
 const (
@@ -45,12 +45,28 @@ const (
 	// This is the default Go version that will be generated into new go.mod
 	// files. It should be updated every time we drop support for old Go
 	// versions.
-	defaultGoModuleVersion = "1.19"
+	defaultGoModuleVersion = "1.22"
 )
 
 var (
 	// hashFromLinePattern grabs the hash from the end of a github commit URL
 	hashFromLinePattern = regexp.MustCompile(`.*/(?P<hash>[a-zA-Z0-9]*).*`)
+
+	// conventionalCommitTypes to look out for in multi-line commit blocks.
+	// Pulled from: https://github.com/googleapis/release-please/blob/656b9a9ad1ec77853d16ae1f40e63c4da1e12f0f/src/strategies/go-yoshi.ts#L25-L37
+	conventionalCommitTypes = map[string]bool{
+		"feat":     true,
+		"fix":      true,
+		"perf":     true,
+		"revert":   true,
+		"docs":     true,
+		"style":    true,
+		"chore":    true,
+		"refactor": true,
+		"test":     true,
+		"build":    true,
+		"ci":       true,
+	}
 )
 
 var (
@@ -497,7 +513,7 @@ func (p *postProcessor) processCommit(title, body string) (string, string, error
 		}
 	}
 
-	// Add scope to each commit
+	// Add scope to each commit and every nested commit therein.
 	for commitIndex, commit := range commitsSlice {
 		commitLines := strings.Split(strings.TrimSpace(commit), "\n")
 		var currTitle string
@@ -528,13 +544,34 @@ func (p *postProcessor) processCommit(title, body string) (string, string, error
 					scope = scopes[0]
 				}
 
-				newCommitTitle := updateCommitTitle(currTitle, scope)
+				newCommitTitle := updateCommit(currTitle, scope)
 				if newTitle == "" {
 					newTitle = newCommitTitle
 				} else {
 					newBody.WriteString(fmt.Sprintf("%v\n", newCommitTitle))
 				}
 
+				for i, line := range commitLines {
+					if !strings.Contains(line, ":") {
+						// couldn't be a conventional commit line
+						continue
+					}
+					commitType := line[:strings.Index(line, ":")]
+					if strings.Contains(commitType, "(") {
+						// if it has a scope, remove it - updateCommitTitle does
+						// already, we want to force our own scope.
+						commitType = commitType[:strings.Index(commitType, "(")]
+					}
+
+					// always trim any potential bang
+					commitType = strings.TrimSuffix(commitType, "!")
+
+					if _, ok := conventionalCommitTypes[commitType]; !ok {
+						// not a known conventional commit type, ignore
+						continue
+					}
+					commitLines[i] = updateCommit(line, scope)
+				}
 				newBody.WriteString(strings.Join(commitLines, "\n"))
 				if commitIndex != 0 {
 					newBody.WriteString(fmt.Sprintf("\n%v", endNestedCommitDelimiter))
@@ -607,7 +644,7 @@ func extractHashFromLine(line string) string {
 	return hashVal
 }
 
-func updateCommitTitle(title, titlePkg string) string {
+func updateCommit(title, titlePkg string) string {
 	var breakChangeIndicator string
 	titleParts := strings.Split(title, ":")
 	commitPrefix := titleParts[0]
@@ -619,6 +656,8 @@ func updateCommitTitle(title, titlePkg string) string {
 	}
 	if strings.HasSuffix(commitPrefix, "!") {
 		breakChangeIndicator = "!"
+		// trim it so we don't dupe it, but put it back in the right place
+		commitPrefix = strings.TrimSuffix(commitPrefix, "!")
 	}
 	if titlePkg == "" {
 		return fmt.Sprintf("%v%v: %v", commitPrefix, breakChangeIndicator, msg)

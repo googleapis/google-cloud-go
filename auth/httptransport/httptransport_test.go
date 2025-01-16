@@ -25,6 +25,7 @@ import (
 	"cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/auth/internal"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 )
 
 func TestAddAuthorizationMiddleware(t *testing.T) {
@@ -49,12 +50,12 @@ func TestAddAuthorizationMiddleware(t *testing.T) {
 		},
 		{
 			name:    "missing creds field",
-			client:  internal.CloneDefaultClient(),
+			client:  internal.DefaultClient(),
 			wantErr: true,
 		},
 		{
 			name:   "works",
-			client: internal.CloneDefaultClient(),
+			client: internal.DefaultClient(),
 			creds:  creds,
 			want:   "fakeToken",
 		},
@@ -84,6 +85,28 @@ func TestAddAuthorizationMiddleware(t *testing.T) {
 			defer ts.Close()
 			tt.client.Get(ts.URL)
 		})
+	}
+}
+
+func TestAddAuthorizationMiddleware_HandlesNonTransportAsDefaultTransport(t *testing.T) {
+	client := &http.Client{}
+	creds := auth.NewCredentials(&auth.CredentialsOptions{
+		TokenProvider: staticTP("fakeToken"),
+	})
+	dt := http.DefaultTransport
+
+	http.DefaultTransport = &rt{}
+	defer func() { http.DefaultTransport = dt }()
+
+	err := AddAuthorizationMiddleware(client, creds)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	at := client.Transport.(*authTransport)
+	_, ok := at.base.(*rt)
+	if !ok {
+		t.Errorf("got %T, want %T", at.base, &rt{})
 	}
 }
 
@@ -131,6 +154,27 @@ func TestNewClient_FailsValidation(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestDial_SkipValidation(t *testing.T) {
+	opts := &Options{
+		DisableAuthentication: true,
+		Credentials: auth.NewCredentials(&auth.CredentialsOptions{
+			TokenProvider: staticTP("fakeToken"),
+		}),
+	}
+	t.Run("invalid opts", func(t *testing.T) {
+		if err := opts.validate(); err == nil {
+			t.Fatalf("opts.validate() = nil, want error")
+		}
+	})
+
+	t.Run("skip invalid opts", func(t *testing.T) {
+		opts.InternalOptions = &InternalOptions{SkipValidation: true}
+		if err := opts.validate(); err != nil {
+			t.Fatalf("opts.validate() = %v, want nil", err)
+		}
+	})
 }
 
 func TestOptions_ResolveDetectOptions(t *testing.T) {
@@ -253,7 +297,7 @@ func TestOptions_ResolveDetectOptions(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := tt.in.resolveDetectOptions()
-			if diff := cmp.Diff(tt.want, got); diff != "" {
+			if diff := cmp.Diff(tt.want, got, cmpopts.IgnoreFields(credentials.DetectOptions{}, "Logger")); diff != "" {
 				t.Errorf("mismatch (-want +got):\n%s", diff)
 			}
 		})
@@ -263,7 +307,7 @@ func TestOptions_ResolveDetectOptions(t *testing.T) {
 func TestNewClient_DetectedServiceAccount(t *testing.T) {
 	testQuota := "testquota"
 	wantHeader := "bar"
-	t.Setenv("GOOGLE_CLOUD_QUOTA_PROJECT", testQuota)
+	t.Setenv(internal.QuotaProjectEnvVar, testQuota)
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if got := r.Header.Get("Authorization"); got == "" {
 			t.Errorf(`got "", want an auth token`)
@@ -279,7 +323,7 @@ func TestNewClient_DetectedServiceAccount(t *testing.T) {
 	client, err := NewClient(&Options{
 		Headers: http.Header{"Foo": []string{wantHeader}},
 		InternalOptions: &InternalOptions{
-			DefaultEndpoint: ts.URL,
+			DefaultEndpointTemplate: ts.URL,
 		},
 		DetectOpts: &credentials.DetectOptions{
 			Audience:         ts.URL,
@@ -303,7 +347,7 @@ func TestNewClient_APIKey(t *testing.T) {
 	testQuota := "testquota"
 	apiKey := "thereisnospoon"
 	wantHeader := "bar"
-	t.Setenv("GOOGLE_CLOUD_QUOTA_PROJECT", testQuota)
+	t.Setenv(internal.QuotaProjectEnvVar, testQuota)
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		got := r.URL.Query().Get("key")
 		if got != apiKey {
@@ -329,10 +373,91 @@ func TestNewClient_APIKey(t *testing.T) {
 	}
 }
 
+func TestNewClient_QuotaPrecedence(t *testing.T) {
+	testQuota := "testquotaWins"
+	t.Setenv(internal.QuotaProjectEnvVar, "testquotaLoses")
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if got := r.Header.Get(quotaProjectHeaderKey); got != testQuota {
+			t.Errorf("got %q, want %q", got, testQuota)
+		}
+	}))
+	defer ts.Close()
+
+	h := make(http.Header)
+	h.Set(quotaProjectHeaderKey, testQuota)
+	client, err := NewClient(&Options{
+		InternalOptions: &InternalOptions{
+			DefaultEndpointTemplate: ts.URL,
+		},
+		DetectOpts: &credentials.DetectOptions{
+			Audience:         ts.URL,
+			CredentialsFile:  "../internal/testdata/sa.json",
+			UseSelfSignedJWT: true,
+		},
+		Headers: h,
+	})
+	if err != nil {
+		t.Fatalf("NewClient() = %v", err)
+	}
+	if _, err := client.Get(ts.URL); err != nil {
+		t.Fatalf("client.Get() = %v", err)
+	}
+}
+
+func TestNewClient_BaseRoundTripper(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		got := r.Header.Get("Foo")
+		if want := "foo"; got != want {
+			t.Errorf("got %q, want %q", got, want)
+		}
+		got = r.Header.Get("Bar")
+		if want := "bar"; got != want {
+			t.Errorf("got %q, want %q", got, want)
+		}
+	}))
+	defer ts.Close()
+	client, err := NewClient(&Options{
+		BaseRoundTripper: &rt{key: "Bar", value: "bar"},
+		Headers:          http.Header{"Foo": []string{"foo"}},
+		APIKey:           "key",
+	})
+	if err != nil {
+		t.Fatalf("NewClient() = %v", err)
+	}
+	if _, err := client.Get(ts.URL); err != nil {
+		t.Fatalf("client.Get() = %v", err)
+	}
+}
+
+func TestNewClient_HandlesNonTransportAsDefaultTransport(t *testing.T) {
+	// Override the global http.DefaultTransport.
+	dt := http.DefaultTransport
+	http.DefaultTransport = &rt{}
+	defer func() { http.DefaultTransport = dt }()
+
+	_, err := NewClient(&Options{
+		APIKey: "key",
+	})
+	if err != nil {
+		t.Fatalf("NewClient() = %v", err)
+	}
+}
+
 type staticTP string
 
 func (tp staticTP) Token(context.Context) (*auth.Token, error) {
 	return &auth.Token{
 		Value: string(tp),
 	}, nil
+}
+
+type rt struct {
+	key   string
+	value string
+}
+
+func (r *rt) RoundTrip(req *http.Request) (*http.Response, error) {
+	req2 := req.Clone(req.Context())
+	req2.Header.Add(r.key, r.value)
+	return http.DefaultTransport.RoundTrip(req2)
 }

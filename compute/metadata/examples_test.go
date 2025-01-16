@@ -15,6 +15,7 @@
 package metadata_test
 
 import (
+	"context"
 	"net/http"
 
 	"cloud.google.com/go/compute/metadata"
@@ -22,15 +23,16 @@ import (
 
 // This example demonstrates how to use your own transport when using this package.
 func ExampleNewClient() {
+	ctx := context.Background()
 	c := metadata.NewClient(&http.Client{Transport: userAgentTransport{
 		userAgent: "my-user-agent",
 		base:      http.DefaultTransport,
 	}})
-	p, err := c.ProjectID()
+	pID, err := c.GetWithContext(ctx, "project/project-id")
 	if err != nil {
 		// TODO: Handle error.
 	}
-	_ = p // TODO: Use p.
+	_ = pID // TODO: Use p.
 }
 
 // userAgentTransport sets the User-Agent header before calling base.

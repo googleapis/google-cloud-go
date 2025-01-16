@@ -24,19 +24,20 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"os"
 	"strings"
 
 	aiplatform "cloud.google.com/go/aiplatform/apiv1beta1"
 	pb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
 	"cloud.google.com/go/vertexai/internal"
-	"cloud.google.com/go/vertexai/internal/support"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 )
 
 // A Client is a Google Vertex AI client.
 type Client struct {
-	c         *aiplatform.PredictionClient
+	pc        *aiplatform.PredictionClient
+	cc        *cacheClient
 	projectID string
 	location  string
 }
@@ -47,38 +48,82 @@ type Client struct {
 // are safe for concurrent use by multiple goroutines.
 // projectID is your GCP project; location is GCP region/location per
 // https://cloud.google.com/vertex-ai/docs/general/locations
+// If location is empty, this function attempts to infer it from environment
+// variables and falls back to a default location if unsuccessful.
 //
 // You may configure the client by passing in options from the
 // [google.golang.org/api/option] package. You may also use options defined in
 // this package, such as [WithREST].
 func NewClient(ctx context.Context, projectID, location string, opts ...option.ClientOption) (*Client, error) {
-	opts = append([]option.ClientOption{
-		option.WithEndpoint(fmt.Sprintf("%s-aiplatform.googleapis.com:443", location)),
-	}, opts...)
+	location = inferLocation(location)
+	endpoint := fmt.Sprintf("%s-aiplatform.googleapis.com:443", location)
 	conf := newConfig(opts...)
+	return newClient(ctx, projectID, location, endpoint, conf, opts)
+}
 
-	var c *aiplatform.PredictionClient
-	var err error
-	if conf.withREST {
-		c, err = aiplatform.NewPredictionRESTClient(ctx, opts...)
-	} else {
-		c, err = aiplatform.NewPredictionClient(ctx, opts...)
-	}
-	if err != nil {
+func newClient(ctx context.Context, projectID, location, endpoint string, conf config, opts []option.ClientOption) (*Client, error) {
+	opts = append([]option.ClientOption{option.WithEndpoint(endpoint)}, opts...)
+	c := &Client{projectID: projectID, location: location}
+
+	if err := setGAPICClient(ctx, &c.pc, conf,
+		aiplatform.NewPredictionRESTClient, aiplatform.NewPredictionClient, opts); err != nil {
 		return nil, err
 	}
+	if err := setGAPICClient(ctx, &c.cc, conf, newCacheRESTClient, newCacheClient, opts); err != nil {
+		return nil, err
+	}
+	return c, nil
+}
 
-	c.SetGoogleClientInfo("gccl", internal.Version)
-	return &Client{
-		c:         c,
-		projectID: projectID,
-		location:  location,
-	}, nil
+type sgci interface{ SetGoogleClientInfo(...string) }
+
+func setGAPICClient[ClientType sgci](ctx context.Context, pf *ClientType, conf config, newREST, newGRPC func(context.Context, ...option.ClientOption) (ClientType, error), opts []option.ClientOption) error {
+	var c ClientType
+	var err error
+	if conf.withREST {
+		c, err = newREST(ctx, opts...)
+	} else {
+		c, err = newGRPC(ctx, opts...)
+	}
+	if err != nil {
+		return err
+	}
+	kvs := []string{"gccl", internal.Version}
+	if conf.ciKey != "" && conf.ciValue != "" {
+		kvs = append(kvs, conf.ciKey, conf.ciValue)
+	}
+	c.SetGoogleClientInfo(kvs...)
+	*pf = c
+	return nil
 }
 
 // Close closes the client.
 func (c *Client) Close() error {
-	return c.c.Close()
+	return c.pc.Close()
+}
+
+const defaultLocation = "us-central1"
+
+// inferLocation infers the GCP location from its parameter, env vars or
+// a default location.
+func inferLocation(location string) string {
+	if location != "" {
+		return location
+	}
+	if location = os.Getenv("GOOGLE_CLOUD_REGION"); location != "" {
+		return location
+	}
+	if location = os.Getenv("CLOUD_ML_REGION"); location != "" {
+		return location
+	}
+
+	return defaultLocation
+}
+
+// parent returns a Google Cloud reference to the project and location
+// for this client.
+func (c *Client) parent() string {
+	return fmt.Sprintf("projects/%s/locations/%s", c.projectID, c.location)
 }
 
 // GenerativeModel is a model that can generate text.
@@ -93,22 +138,46 @@ type GenerativeModel struct {
 	fullName string
 
 	GenerationConfig
-	SafetySettings []*SafetySetting
-	Tools          []*Tool
+	SafetySettings    []*SafetySetting
+	Tools             []*Tool
+	ToolConfig        *ToolConfig // configuration for tools
+	SystemInstruction *Content
+	// The name of the CachedContent to use.
+	// Must have already been created with [Client.CreateCachedContent].
+	CachedContentName string
 }
 
 const defaultMaxOutputTokens = 2048
 
 // GenerativeModel creates a new instance of the named model.
-// name is a string model name like "gemini-1.0.-pro".
+// name is a string model name like "gemini-1.0-pro" or "models/gemini-1.0-pro"
+// for Google-published models.
 // See https://cloud.google.com/vertex-ai/generative-ai/docs/learn/model-versioning
-// for details on model naming and versioning.
+// for details on model naming and versioning, and
+// https://cloud.google.com/vertex-ai/generative-ai/docs/model-garden/explore-models
+// for providing model garden names. The SDK isn't familiar with custom model
+// garden models, and will pass your model name to the backend API server.
 func (c *Client) GenerativeModel(name string) *GenerativeModel {
 	return &GenerativeModel{
 		c:        c,
 		name:     name,
-		fullName: fmt.Sprintf("projects/%s/locations/%s/publishers/google/models/%s", c.projectID, c.location, name),
+		fullName: inferFullModelName(c.projectID, c.location, name),
 	}
+}
+
+// inferFullModelName infers the full model name (with all the required prefixes)
+func inferFullModelName(project, location, name string) string {
+	pubName := name
+	if !strings.Contains(name, "/") {
+		pubName = "publishers/google/models/" + name
+	} else if strings.HasPrefix(name, "models/") {
+		pubName = "publishers/google/" + name
+	}
+
+	if !strings.HasPrefix(pubName, "publishers/") {
+		return pubName
+	}
+	return fmt.Sprintf("projects/%s/locations/%s/%s", project, location, pubName)
 }
 
 // Name returns the name of the model.
@@ -118,12 +187,12 @@ func (m *GenerativeModel) Name() string {
 
 // GenerateContent produces a single request and response.
 func (m *GenerativeModel) GenerateContent(ctx context.Context, parts ...Part) (*GenerateContentResponse, error) {
-	return m.generateContent(ctx, m.newGenerateContentRequest(newUserContent(parts)))
+	return m.generateContent(ctx, m.newGenerateContentRequest(NewUserContent(parts...)))
 }
 
 // GenerateContentStream returns an iterator that enumerates responses.
 func (m *GenerativeModel) GenerateContentStream(ctx context.Context, parts ...Part) *GenerateContentResponseIterator {
-	streamClient, err := m.c.c.StreamGenerateContent(ctx, m.newGenerateContentRequest(newUserContent(parts)))
+	streamClient, err := m.c.pc.StreamGenerateContent(ctx, m.newGenerateContentRequest(NewUserContent(parts...)))
 	return &GenerateContentResponseIterator{
 		sc:  streamClient,
 		err: err,
@@ -131,7 +200,7 @@ func (m *GenerativeModel) GenerateContentStream(ctx context.Context, parts ...Pa
 }
 
 func (m *GenerativeModel) generateContent(ctx context.Context, req *pb.GenerateContentRequest) (*GenerateContentResponse, error) {
-	res, err := m.c.c.GenerateContent(ctx, req)
+	res, err := m.c.pc.GenerateContent(ctx, req)
 
 	if err != nil {
 		return nil, err
@@ -141,16 +210,15 @@ func (m *GenerativeModel) generateContent(ctx context.Context, req *pb.GenerateC
 
 func (m *GenerativeModel) newGenerateContentRequest(contents ...*Content) *pb.GenerateContentRequest {
 	return &pb.GenerateContentRequest{
-		Model:            m.fullName,
-		Contents:         support.TransformSlice(contents, (*Content).toProto),
-		SafetySettings:   support.TransformSlice(m.SafetySettings, (*SafetySetting).toProto),
-		Tools:            support.TransformSlice(m.Tools, (*Tool).toProto),
-		GenerationConfig: m.GenerationConfig.toProto(),
+		Model:             m.fullName,
+		Contents:          pvTransformSlice(contents, (*Content).toProto),
+		SafetySettings:    pvTransformSlice(m.SafetySettings, (*SafetySetting).toProto),
+		Tools:             pvTransformSlice(m.Tools, (*Tool).toProto),
+		ToolConfig:        m.ToolConfig.toProto(),
+		GenerationConfig:  m.GenerationConfig.toProto(),
+		SystemInstruction: m.SystemInstruction.toProto(),
+		CachedContent:     m.CachedContentName,
 	}
-}
-
-func newUserContent(parts []Part) *Content {
-	return &Content{Role: roleUser, Parts: parts}
 }
 
 // GenerateContentResponseIterator is an iterator over GnerateContentResponse.
@@ -188,6 +256,13 @@ func (iter *GenerateContentResponseIterator) Next() (*GenerateContentResponse, e
 	return gcp, nil
 }
 
+// MergedResponse returns the result of combining all the streamed responses seen so far.
+// After iteration completes, the merged response should match the response obtained without streaming
+// (that is, if [GenerativeModel.GenerateContent] were called).
+func (iter *GenerateContentResponseIterator) MergedResponse() *GenerateContentResponse {
+	return iter.merged
+}
+
 func protoToResponse(resp *pb.GenerateContentResponse) (*GenerateContentResponse, error) {
 	gcp := (GenerateContentResponse{}).fromProto(resp)
 	// Assume a non-nil PromptFeedback is an error.
@@ -207,8 +282,8 @@ func protoToResponse(resp *pb.GenerateContentResponse) (*GenerateContentResponse
 
 // CountTokens counts the number of tokens in the content.
 func (m *GenerativeModel) CountTokens(ctx context.Context, parts ...Part) (*CountTokensResponse, error) {
-	req := m.newCountTokensRequest(newUserContent(parts))
-	res, err := m.c.c.CountTokens(ctx, req)
+	req := m.newCountTokensRequest(NewUserContent(parts...))
+	res, err := m.c.pc.CountTokens(ctx, req)
 	if err != nil {
 		return nil, err
 	}
@@ -220,7 +295,7 @@ func (m *GenerativeModel) newCountTokensRequest(contents ...*Content) *pb.CountT
 	return &pb.CountTokensRequest{
 		Endpoint: m.fullName,
 		Model:    m.fullName,
-		Contents: support.TransformSlice(contents, (*Content).toProto),
+		Contents: pvTransformSlice(contents, (*Content).toProto),
 	}
 }
 
@@ -295,6 +370,9 @@ func joinCitationMetadata(dest, src *CitationMetadata) *CitationMetadata {
 func joinContent(dest, src *Content) *Content {
 	if dest == nil {
 		return src
+	}
+	if src == nil {
+		return dest
 	}
 	// Assume roles are the same.
 	dest.Parts = joinParts(dest.Parts, src.Parts)

@@ -1,5 +1,87 @@
 # Changes
 
+## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/storagetransfer/v1.12.0...storagetransfer/v1.12.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **storagetransfer:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/storagetransfer/v1.11.2...storagetransfer/v1.12.0) (2024-12-18)
+
+
+### Features
+
+* **storagetransfer:** Support cross-bucket replication ([#11291](https://github.com/googleapis/google-cloud-go/issues/11291)) ([4254053](https://github.com/googleapis/google-cloud-go/commit/42540530e44e5f331e66e0777c4aabf449f5fd90))
+
+## [1.11.2](https://github.com/googleapis/google-cloud-go/compare/storagetransfer/v1.11.1...storagetransfer/v1.11.2) (2024-10-23)
+
+
+### Bug Fixes
+
+* **storagetransfer:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **storagetransfer:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([2b8ca4b](https://github.com/googleapis/google-cloud-go/commit/2b8ca4b4127ce3025c7a21cc7247510e07cc5625))
+
+## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/storagetransfer/v1.11.0...storagetransfer/v1.11.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **storagetransfer:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/storagetransfer/v1.10.11...storagetransfer/v1.11.0) (2024-08-20)
+
+
+### Features
+
+* **storagetransfer:** Add GCS Managed Folders ([b32cb37](https://github.com/googleapis/google-cloud-go/commit/b32cb378ab03f34c0670a8a204bd0ef3f71d48d4))
+* **storagetransfer:** Add HDFS configuration ([b32cb37](https://github.com/googleapis/google-cloud-go/commit/b32cb378ab03f34c0670a8a204bd0ef3f71d48d4))
+* **storagetransfer:** Add S3 Cloudfront Domain ([b32cb37](https://github.com/googleapis/google-cloud-go/commit/b32cb378ab03f34c0670a8a204bd0ef3f71d48d4))
+* **storagetransfer:** Add S3 Managed Private Network ([b32cb37](https://github.com/googleapis/google-cloud-go/commit/b32cb378ab03f34c0670a8a204bd0ef3f71d48d4))
+* **storagetransfer:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.10.11](https://github.com/googleapis/google-cloud-go/compare/storagetransfer/v1.10.10...storagetransfer/v1.10.11) (2024-08-08)
+
+
+### Bug Fixes
+
+* **storagetransfer:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+## [1.10.10](https://github.com/googleapis/google-cloud-go/compare/storagetransfer/v1.10.9...storagetransfer/v1.10.10) (2024-07-24)
+
+
+### Bug Fixes
+
+* **storagetransfer:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+## [1.10.9](https://github.com/googleapis/google-cloud-go/compare/storagetransfer/v1.10.8...storagetransfer/v1.10.9) (2024-07-10)
+
+
+### Bug Fixes
+
+* **storagetransfer:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.10.8](https://github.com/googleapis/google-cloud-go/compare/storagetransfer/v1.10.7...storagetransfer/v1.10.8) (2024-07-01)
+
+
+### Bug Fixes
+
+* **storagetransfer:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.10.7](https://github.com/googleapis/google-cloud-go/compare/storagetransfer/v1.10.6...storagetransfer/v1.10.7) (2024-06-26)
+
+
+### Bug Fixes
+
+* **storagetransfer:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
+## [1.10.6](https://github.com/googleapis/google-cloud-go/compare/storagetransfer/v1.10.5...storagetransfer/v1.10.6) (2024-05-01)
+
+
+### Bug Fixes
+
+* **storagetransfer:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [1.10.5](https://github.com/googleapis/google-cloud-go/compare/storagetransfer/v1.10.4...storagetransfer/v1.10.5) (2024-03-14)
 
 
@@ -127,4 +209,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out storagetransfer as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

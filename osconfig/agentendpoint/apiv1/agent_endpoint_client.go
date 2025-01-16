@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package agentendpoint
 
 import (
 	"context"
+	"log/slog"
 	"math"
 	"time"
 
@@ -51,6 +52,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://osconfig.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -230,6 +232,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new agent endpoint service client based on gRPC.
@@ -256,6 +260,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      agentendpointpb.NewAgentEndpointServiceClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -278,7 +283,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -293,7 +300,9 @@ func (c *gRPCClient) ReceiveTaskNotification(ctx context.Context, req *agentendp
 	var resp agentendpointpb.AgentEndpointService_ReceiveTaskNotificationClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "ReceiveTaskNotification")
 		resp, err = c.client.ReceiveTaskNotification(ctx, req, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "ReceiveTaskNotification")
 		return err
 	}, opts...)
 	if err != nil {
@@ -308,7 +317,7 @@ func (c *gRPCClient) StartNextTask(ctx context.Context, req *agentendpointpb.Sta
 	var resp *agentendpointpb.StartNextTaskResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.StartNextTask(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.StartNextTask, req, settings.GRPC, c.logger, "StartNextTask")
 		return err
 	}, opts...)
 	if err != nil {
@@ -323,7 +332,7 @@ func (c *gRPCClient) ReportTaskProgress(ctx context.Context, req *agentendpointp
 	var resp *agentendpointpb.ReportTaskProgressResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ReportTaskProgress(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ReportTaskProgress, req, settings.GRPC, c.logger, "ReportTaskProgress")
 		return err
 	}, opts...)
 	if err != nil {
@@ -338,7 +347,7 @@ func (c *gRPCClient) ReportTaskComplete(ctx context.Context, req *agentendpointp
 	var resp *agentendpointpb.ReportTaskCompleteResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ReportTaskComplete(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ReportTaskComplete, req, settings.GRPC, c.logger, "ReportTaskComplete")
 		return err
 	}, opts...)
 	if err != nil {
@@ -353,7 +362,7 @@ func (c *gRPCClient) RegisterAgent(ctx context.Context, req *agentendpointpb.Reg
 	var resp *agentendpointpb.RegisterAgentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.RegisterAgent(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.RegisterAgent, req, settings.GRPC, c.logger, "RegisterAgent")
 		return err
 	}, opts...)
 	if err != nil {
@@ -368,7 +377,7 @@ func (c *gRPCClient) ReportInventory(ctx context.Context, req *agentendpointpb.R
 	var resp *agentendpointpb.ReportInventoryResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ReportInventory(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ReportInventory, req, settings.GRPC, c.logger, "ReportInventory")
 		return err
 	}, opts...)
 	if err != nil {

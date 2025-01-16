@@ -23,8 +23,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/golang/protobuf/proto"
-	pb "google.golang.org/genproto/googleapis/datastore/v1"
+	pb "cloud.google.com/go/datastore/apiv1/datastorepb"
+	"google.golang.org/protobuf/proto"
 )
 
 // Key represents the datastore key for a stored entity.
@@ -93,9 +93,10 @@ func (k *Key) Equal(o *Key) bool {
 }
 
 // marshal marshals the key's string representation to the buffer.
-func (k *Key) marshal(b *bytes.Buffer) {
+// If includeSensitive is true, it will include the namespace when creating the string.
+func (k *Key) marshal(b *bytes.Buffer, includeSensitive bool) {
 	if k.Parent != nil {
-		k.Parent.marshal(b)
+		k.Parent.marshal(b, includeSensitive)
 	}
 	b.WriteByte('/')
 	b.WriteString(k.Kind)
@@ -105,19 +106,29 @@ func (k *Key) marshal(b *bytes.Buffer) {
 	} else {
 		b.WriteString(strconv.FormatInt(k.ID, 10))
 	}
-	if k.Namespace != "" {
+	if k.Namespace != "" && includeSensitive {
 		b.WriteByte(',')
 		b.WriteString(k.Namespace)
 	}
 }
 
-// String returns a string representation of the key.
+// String returns a string representation of the key. It does not include
+// the namespace in case that the Namespace's name is sensitive information.
 func (k *Key) String() string {
+	return k.string(false)
+}
+
+// stringInternal is identical to String(), but appends the namespace.
+func (k *Key) stringInternal() string {
+	return k.string(true)
+}
+
+func (k *Key) string(includeSensitive bool) string {
 	if k == nil {
 		return ""
 	}
 	b := bytes.NewBuffer(make([]byte, 0, 512))
-	k.marshal(b)
+	k.marshal(b, includeSensitive)
 	return b.String()
 }
 

@@ -49,10 +49,8 @@ var (
 		"github.com/cloudprober/cloudprober", // https://github.com/googleapis/google-cloud-go/issues/9377
 
 		// Third party deps (temporary exception(s)).
-		"github.com/json-iterator/go", // https://github.com/googleapis/google-cloud-go/issues/9380
-		"github.com/stretchr/testify", // https://github.com/googleapis/google-cloud-go/issues/9378
-		"go.einride.tech/aip",         // https://github.com/googleapis/google-cloud-go/issues/9338
-		"rsc.io/binaryregexp",         // https://github.com/googleapis/google-cloud-go/issues/9376
+		"go.einride.tech/aip", // https://github.com/googleapis/google-cloud-go/issues/9338
+		"rsc.io/binaryregexp", // https://github.com/googleapis/google-cloud-go/issues/9376
 	}
 )
 

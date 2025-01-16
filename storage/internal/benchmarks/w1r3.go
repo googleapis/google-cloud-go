@@ -154,9 +154,9 @@ func (r *w1r3) run(ctx context.Context) error {
 
 	var span trace.Span
 	ctx, span = otel.GetTracerProvider().Tracer(tracerName).Start(ctx, "w1r3")
-	span.SetAttributes(attribute.KeyValue{"workload", attribute.StringValue("w1r3")},
-		attribute.KeyValue{"api", attribute.StringValue(string(r.opts.api))},
-		attribute.KeyValue{"object_size", attribute.Int64Value(r.opts.objectSize)})
+	span.SetAttributes(attribute.KeyValue{Key: "workload", Value: attribute.StringValue("w1r3")},
+		attribute.KeyValue{Key: "api", Value: attribute.StringValue(string(r.opts.api))},
+		attribute.KeyValue{Key: "object_size", Value: attribute.Int64Value(r.opts.objectSize)})
 	defer span.End()
 
 	// Upload

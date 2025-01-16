@@ -25,10 +25,10 @@ import (
 
 	"cloud.google.com/go/internal/trace"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
-	"github.com/golang/protobuf/proto"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 // BatchReadOnlyTransaction is a ReadOnlyTransaction that allows for exporting
@@ -309,7 +309,7 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 	var (
 		sh  *sessionHandle
 		err error
-		rpc func(ct context.Context, resumeToken []byte) (streamingReceiver, error)
+		rpc func(ct context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error)
 	)
 	if sh, _, err = t.acquire(ctx); err != nil {
 		return &RowIterator{err: err}
@@ -322,7 +322,7 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 	sh.updateLastUseTime()
 	// Read or query partition.
 	if p.rreq != nil {
-		rpc = func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
+		rpc = func(ctx context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
 			client, err := client.StreamingRead(ctx, &sppb.ReadRequest{
 				Session:             p.rreq.Session,
 				Transaction:         p.rreq.Transaction,
@@ -335,7 +335,7 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 				ResumeToken:         resumeToken,
 				DataBoostEnabled:    p.rreq.DataBoostEnabled,
 				DirectedReadOptions: p.rreq.DirectedReadOptions,
-			})
+			}, opts...)
 			if err != nil {
 				return client, err
 			}
@@ -351,7 +351,7 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 			return client, err
 		}
 	} else {
-		rpc = func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
+		rpc = func(ctx context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
 			client, err := client.ExecuteStreamingSql(ctx, &sppb.ExecuteSqlRequest{
 				Session:             p.qreq.Session,
 				Transaction:         p.qreq.Transaction,
@@ -364,7 +364,7 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 				ResumeToken:         resumeToken,
 				DataBoostEnabled:    p.qreq.DataBoostEnabled,
 				DirectedReadOptions: p.qreq.DirectedReadOptions,
-			})
+			}, opts...)
 			if err != nil {
 				return client, err
 			}
@@ -384,9 +384,10 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 	return stream(
 		contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader),
 		sh.session.logger,
+		t.sp.sc.metricsTracerFactory,
 		rpc,
 		t.setTimestamp,
-		t.release)
+		t.release, client.(*grpcSpannerClient))
 }
 
 // MarshalBinary implements BinaryMarshaler.

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/security/privateca/apiv1",
-    "version": "1.15.6",
+    "version": "1.18.3",
     "language": "GO",
     "apis": [
       {
@@ -564,7 +564,7 @@
     {
       "regionTag": "privateca_v1_generated_CertificateAuthorityService_FetchCaCerts_sync",
       "title": "privateca FetchCaCerts Sample",
-      "description": "FetchCaCerts fetchCaCerts returns the current trust anchor for the\n[CaPool][google.cloud.security.privateca.v1.CaPool]. This will include CA\ncertificate chains for all Certificate Authorities in the ENABLED,\nDISABLED, or STAGED states.",
+      "description": "FetchCaCerts fetchCaCerts returns the current trust anchor for the\n[CaPool][google.cloud.security.privateca.v1.CaPool]. This will include CA\ncertificate chains for all certificate authorities in the ENABLED,\nDISABLED, or STAGED states.",
       "file": "CertificateAuthorityClient/FetchCaCerts/main.go",
       "language": "GO",
       "clientMethod": {

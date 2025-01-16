@@ -16,6 +16,7 @@ package pubsub_test
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -199,7 +200,7 @@ func ExampleTopic_Subscriptions() {
 	// List all subscriptions of the topic (maybe of multiple projects).
 	for subs := topic.Subscriptions(ctx); ; {
 		sub, err := subs.Next()
-		if err == iterator.Done {
+		if errors.Is(err, iterator.Done) {
 			break
 		}
 		if err != nil {
@@ -303,7 +304,7 @@ func ExampleSubscription_Receive() {
 		// NOTE: May be called concurrently; synchronize access to shared memory.
 		m.Ack()
 	})
-	if err != nil && err != context.Canceled {
+	if err != nil && !errors.Is(err, context.Canceled) {
 		// TODO: Handle error.
 	}
 }
@@ -324,7 +325,7 @@ func ExampleSubscription_Receive_maxExtension() {
 		// TODO: Handle message.
 		m.Ack()
 	})
-	if err != nil && err != context.Canceled {
+	if err != nil && !errors.Is(err, context.Canceled) {
 		// TODO: Handle error.
 	}
 }
@@ -345,7 +346,7 @@ func ExampleSubscription_Receive_maxOutstanding() {
 		// TODO: Handle message.
 		m.Ack()
 	})
-	if err != nil && err != context.Canceled {
+	if err != nil && !errors.Is(err, context.Canceled) {
 		// TODO: Handle error.
 	}
 }
@@ -463,7 +464,7 @@ func ExampleSnapshotConfigIterator_Next() {
 	iter := client.Snapshots(ctx)
 	for {
 		snapConfig, err := iter.Next()
-		if err == iterator.Done {
+		if errors.Is(err, iterator.Done) {
 			break
 		}
 		if err != nil {

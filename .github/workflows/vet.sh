@@ -61,6 +61,7 @@ golint ./... 2>&1 | (
     grep -v "firestore.arrayUnion" |
     grep -v "firestore.arrayRemove" |
     grep -v "maxAttempts" |
+    grep -v "firestore.commitResponse" |
     grep -v "UptimeCheckIpIterator" |
     grep -vE "apiv[0-9]+" |
     grep -v "ALL_CAPS" |
@@ -79,7 +80,7 @@ golint ./... 2>&1 | (
 ) |
   tee /dev/stderr | (! read)
 
-staticcheck -go 1.15 ./... 2>&1 | (
+staticcheck -go 1.22 ./... 2>&1 | (
   grep -v SA1019 |
     grep -v go-cloud-debug-agent |
     grep -v internal/btree/btree.go |

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/redis/cluster/apiv1",
-    "version": "1.14.3",
+    "version": "1.17.3",
     "language": "GO",
     "apis": [
       {
@@ -224,6 +224,52 @@
         "method": {
           "shortName": "GetCluster",
           "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster.GetCluster",
+          "service": {
+            "shortName": "CloudRedisCluster",
+            "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "redis_v1_generated_CloudRedisCluster_GetClusterCertificateAuthority_sync",
+      "title": "redis GetClusterCertificateAuthority Sample",
+      "description": "GetClusterCertificateAuthority gets the details of certificate authority information for Redis cluster.",
+      "file": "CloudRedisClusterClient/GetClusterCertificateAuthority/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetClusterCertificateAuthority",
+        "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient.GetClusterCertificateAuthority",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clusterpb.GetClusterCertificateAuthorityRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*clusterpb.CertificateAuthority",
+        "client": {
+          "shortName": "CloudRedisClusterClient",
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient"
+        },
+        "method": {
+          "shortName": "GetClusterCertificateAuthority",
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster.GetClusterCertificateAuthority",
           "service": {
             "shortName": "CloudRedisCluster",
             "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster"

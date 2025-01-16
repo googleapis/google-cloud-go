@@ -30,13 +30,14 @@ import (
 	"testing"
 
 	"cloud.google.com/go/spanner/apiv1/spannerpb"
-	structpb "github.com/golang/protobuf/ptypes/struct"
 	"google.golang.org/grpc/codes"
+	structpb "google.golang.org/protobuf/types/known/structpb"
 
 	apiv1 "cloud.google.com/go/spanner/apiv1"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 
 	gstatus "google.golang.org/grpc/status"
 )
@@ -72,7 +73,7 @@ func TestMain(m *testing.M) {
 	go serv.Serve(lis)
 
 	serverAddress = lis.Addr().String()
-	conn, err := grpc.Dial(serverAddress, grpc.WithInsecure())
+	conn, err := grpc.Dial(serverAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatal(err)
 	}

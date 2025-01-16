@@ -31,15 +31,16 @@ import (
 	"cloud.google.com/go/logging"
 	logpb "cloud.google.com/go/logging/apiv2/loggingpb"
 	ltesting "cloud.google.com/go/logging/internal/testing"
-	"github.com/golang/protobuf/ptypes"
-	durpb "github.com/golang/protobuf/ptypes/duration"
-	structpb "github.com/golang/protobuf/ptypes/struct"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/api/option"
 	mrpb "google.golang.org/genproto/googleapis/api/monitoredres"
 	audit "google.golang.org/genproto/googleapis/cloud/audit"
 	logtypepb "google.golang.org/genproto/googleapis/logging/type"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/anypb"
+	durpb "google.golang.org/protobuf/types/known/durationpb"
+	structpb "google.golang.org/protobuf/types/known/structpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (
@@ -116,10 +117,7 @@ func TestClientClose(t *testing.T) {
 func TestFromLogEntry(t *testing.T) {
 	now := time.Now()
 	res := &mrpb.MonitoredResource{Type: "global"}
-	ts, err := ptypes.TimestampProto(now)
-	if err != nil {
-		t.Fatal(err)
-	}
+	ts := timestamppb.New(now)
 	logEntry := logpb.LogEntry{
 		LogName:   "projects/PROJECT_ID/logs/LOG_ID",
 		Resource:  res,
@@ -210,7 +208,7 @@ func TestFromLogEntry(t *testing.T) {
 		MethodName:   "method",
 		ResourceName: "shelves/S/books/B",
 	}
-	any, err := ptypes.MarshalAny(alog)
+	any, err := anypb.New(alog)
 	if err != nil {
 		t.Fatal(err)
 	}

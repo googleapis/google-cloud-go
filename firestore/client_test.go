@@ -16,14 +16,14 @@ package firestore
 
 import (
 	"context"
+	"os"
 	"testing"
 	"time"
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
-	tspb "github.com/golang/protobuf/ptypes/timestamp"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/types/known/timestamppb"
+	tspb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var testClient = &Client{
@@ -189,15 +189,15 @@ func testGetAll(t *testing.T, c *Client, srv *mockServer, dbPath string, getAll 
 		[]interface{}{
 			// deliberately put these out of order
 			&pb.BatchGetDocumentsResponse{
-				Result:   &pb.BatchGetDocumentsResponse_Found{wantPBDocs[2]},
+				Result:   &pb.BatchGetDocumentsResponse_Found{Found: wantPBDocs[2]},
 				ReadTime: aTimestamp3,
 			},
 			&pb.BatchGetDocumentsResponse{
-				Result:   &pb.BatchGetDocumentsResponse_Found{wantPBDocs[0]},
+				Result:   &pb.BatchGetDocumentsResponse_Found{Found: wantPBDocs[0]},
 				ReadTime: aTimestamp,
 			},
 			&pb.BatchGetDocumentsResponse{
-				Result:   &pb.BatchGetDocumentsResponse_Missing{dbPath + "/documents/C/b"},
+				Result:   &pb.BatchGetDocumentsResponse_Missing{Missing: dbPath + "/documents/C/b"},
 				ReadTime: aTimestamp2,
 			},
 		},
@@ -267,15 +267,15 @@ func testGetAllWithEqualRefs(t *testing.T, c *Client, srv *mockServer, dbPath st
 		[]interface{}{
 			// deliberately put these out of order
 			&pb.BatchGetDocumentsResponse{
-				Result:   &pb.BatchGetDocumentsResponse_Found{wantPBDocs[1]},
+				Result:   &pb.BatchGetDocumentsResponse_Found{Found: wantPBDocs[1]},
 				ReadTime: aTimestamp3,
 			},
 			&pb.BatchGetDocumentsResponse{
-				Result:   &pb.BatchGetDocumentsResponse_Found{wantPBDocs[0]},
+				Result:   &pb.BatchGetDocumentsResponse_Found{Found: wantPBDocs[0]},
 				ReadTime: aTimestamp,
 			},
 			&pb.BatchGetDocumentsResponse{
-				Result:   &pb.BatchGetDocumentsResponse_Missing{dbPath + "/documents/C/b"},
+				Result:   &pb.BatchGetDocumentsResponse_Missing{Missing: dbPath + "/documents/C/b"},
 				ReadTime: aTimestamp2,
 			},
 		},
@@ -340,17 +340,23 @@ func TestGetAllErrors(t *testing.T) {
 		},
 		[]interface{}{
 			&pb.BatchGetDocumentsResponse{
-				Result:   &pb.BatchGetDocumentsResponse_Found{&pb.Document{Name: docPath}},
+				Result:   &pb.BatchGetDocumentsResponse_Found{Found: &pb.Document{Name: docPath}},
 				ReadTime: aTimestamp,
 			},
 			&pb.BatchGetDocumentsResponse{
-				Result:   &pb.BatchGetDocumentsResponse_Missing{docPath},
+				Result:   &pb.BatchGetDocumentsResponse_Missing{Missing: docPath},
 				ReadTime: aTimestamp,
 			},
 		},
 	)
 	if _, err := c.GetAll(ctx, []*DocumentRef{c.Doc("C/a")}); err == nil {
 		t.Error("got nil, want error")
+	}
+
+	// Invalid UTF-8 characters
+	srv.reset()
+	if _, gotErr := c.GetAll(ctx, []*DocumentRef{c.Doc("C/Mayag\xcfez")}); !errorsMatch(gotErr, errInvalidUtf8DocRef) {
+		t.Errorf("got: %v, want: %v", gotErr, errInvalidUtf8DocRef)
 	}
 }
 
@@ -375,11 +381,11 @@ func TestClient_WithReadOptions(t *testing.T) {
 		Database:  dbPath,
 		Documents: []string{docPath},
 		ConsistencySelector: &pb.BatchGetDocumentsRequest_ReadTime{
-			ReadTime: &timestamppb.Timestamp{Seconds: tm.Unix()},
+			ReadTime: &tspb.Timestamp{Seconds: tm.Unix()},
 		},
 	}, []interface{}{
 		&pb.BatchGetDocumentsResponse{
-			ReadTime: &timestamppb.Timestamp{Seconds: tm.Unix()},
+			ReadTime: &tspb.Timestamp{Seconds: tm.Unix()},
 			Result: &pb.BatchGetDocumentsResponse_Found{
 				Found: &pb.Document{},
 			},
@@ -392,5 +398,21 @@ func TestClient_WithReadOptions(t *testing.T) {
 
 	if err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestClient_UsesEmulator(t *testing.T) {
+	c, _, cleanup := newMock(t)
+	defer cleanup()
+	if c.UsesEmulator {
+		t.Error("got true, want false")
+	}
+
+	os.Setenv("FIRESTORE_EMULATOR_HOST", "localhost:8080")
+	defer os.Unsetenv("FIRESTORE_EMULATOR_HOST")
+	c, _, cleanup = newMock(t)
+	defer cleanup()
+	if !c.UsesEmulator {
+		t.Error("got false, want true")
 	}
 }

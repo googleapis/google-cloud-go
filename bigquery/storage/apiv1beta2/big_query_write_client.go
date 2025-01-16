@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,8 +19,9 @@ package storage
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +29,6 @@ import (
 
 	storagepb "cloud.google.com/go/bigquery/storage/apiv1beta2/storagepb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -59,6 +59,7 @@ func defaultBigQueryWriteGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://bigquerystorage.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -373,6 +374,8 @@ type bigQueryWriteGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewBigQueryWriteClient creates a new big query write client based on gRPC.
@@ -407,6 +410,7 @@ func NewBigQueryWriteClient(ctx context.Context, opts ...option.ClientOption) (*
 		connPool:            connPool,
 		bigQueryWriteClient: storagepb.NewBigQueryWriteClient(connPool),
 		CallOptions:         &client.CallOptions,
+		logger:              internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -429,7 +433,9 @@ func (c *bigQueryWriteGRPCClient) Connection() *grpc.ClientConn {
 func (c *bigQueryWriteGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -451,6 +457,8 @@ type bigQueryWriteRESTClient struct {
 
 	// Points back to the CallOptions field of the containing BigQueryWriteClient
 	CallOptions **BigQueryWriteCallOptions
+
+	logger *slog.Logger
 }
 
 // NewBigQueryWriteRESTClient creates a new big query write rest client.
@@ -476,6 +484,7 @@ func NewBigQueryWriteRESTClient(ctx context.Context, opts ...option.ClientOption
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -490,6 +499,7 @@ func defaultBigQueryWriteRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://bigquerystorage.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -499,7 +509,9 @@ func defaultBigQueryWriteRESTClientOptions() []option.ClientOption {
 func (c *bigQueryWriteRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -525,7 +537,7 @@ func (c *bigQueryWriteGRPCClient) CreateWriteStream(ctx context.Context, req *st
 	var resp *storagepb.WriteStream
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.bigQueryWriteClient.CreateWriteStream(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.bigQueryWriteClient.CreateWriteStream, req, settings.GRPC, c.logger, "CreateWriteStream")
 		return err
 	}, opts...)
 	if err != nil {
@@ -540,7 +552,9 @@ func (c *bigQueryWriteGRPCClient) AppendRows(ctx context.Context, opts ...gax.Ca
 	opts = append((*c.CallOptions).AppendRows[0:len((*c.CallOptions).AppendRows):len((*c.CallOptions).AppendRows)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "AppendRows")
 		resp, err = c.bigQueryWriteClient.AppendRows(ctx, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "AppendRows")
 		return err
 	}, opts...)
 	if err != nil {
@@ -558,7 +572,7 @@ func (c *bigQueryWriteGRPCClient) GetWriteStream(ctx context.Context, req *stora
 	var resp *storagepb.WriteStream
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.bigQueryWriteClient.GetWriteStream(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.bigQueryWriteClient.GetWriteStream, req, settings.GRPC, c.logger, "GetWriteStream")
 		return err
 	}, opts...)
 	if err != nil {
@@ -576,7 +590,7 @@ func (c *bigQueryWriteGRPCClient) FinalizeWriteStream(ctx context.Context, req *
 	var resp *storagepb.FinalizeWriteStreamResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.bigQueryWriteClient.FinalizeWriteStream(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.bigQueryWriteClient.FinalizeWriteStream, req, settings.GRPC, c.logger, "FinalizeWriteStream")
 		return err
 	}, opts...)
 	if err != nil {
@@ -594,7 +608,7 @@ func (c *bigQueryWriteGRPCClient) BatchCommitWriteStreams(ctx context.Context, r
 	var resp *storagepb.BatchCommitWriteStreamsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.bigQueryWriteClient.BatchCommitWriteStreams(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.bigQueryWriteClient.BatchCommitWriteStreams, req, settings.GRPC, c.logger, "BatchCommitWriteStreams")
 		return err
 	}, opts...)
 	if err != nil {
@@ -612,7 +626,7 @@ func (c *bigQueryWriteGRPCClient) FlushRows(ctx context.Context, req *storagepb.
 	var resp *storagepb.FlushRowsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.bigQueryWriteClient.FlushRows(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.bigQueryWriteClient.FlushRows, req, settings.GRPC, c.logger, "FlushRows")
 		return err
 	}, opts...)
 	if err != nil {
@@ -663,17 +677,7 @@ func (c *bigQueryWriteRESTClient) CreateWriteStream(ctx context.Context, req *st
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateWriteStream")
 		if err != nil {
 			return err
 		}
@@ -714,7 +718,7 @@ func (c *bigQueryWriteRESTClient) CreateWriteStream(ctx context.Context, req *st
 //
 // Deprecated: AppendRows may be removed in a future version.
 func (c *bigQueryWriteRESTClient) AppendRows(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
-	return nil, fmt.Errorf("AppendRows not yet supported for REST clients")
+	return nil, errors.New("AppendRows not yet supported for REST clients")
 }
 
 // GetWriteStream gets a write stream.
@@ -753,17 +757,7 @@ func (c *bigQueryWriteRESTClient) GetWriteStream(ctx context.Context, req *stora
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GetWriteStream")
 		if err != nil {
 			return err
 		}
@@ -817,17 +811,7 @@ func (c *bigQueryWriteRESTClient) FinalizeWriteStream(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "FinalizeWriteStream")
 		if err != nil {
 			return err
 		}
@@ -887,17 +871,7 @@ func (c *bigQueryWriteRESTClient) BatchCommitWriteStreams(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "BatchCommitWriteStreams")
 		if err != nil {
 			return err
 		}
@@ -955,17 +929,7 @@ func (c *bigQueryWriteRESTClient) FlushRows(ctx context.Context, req *storagepb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "FlushRows")
 		if err != nil {
 			return err
 		}

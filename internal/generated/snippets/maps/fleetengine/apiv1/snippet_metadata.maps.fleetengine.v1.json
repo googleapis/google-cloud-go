@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/maps/fleetengine/apiv1",
-    "version": "1.7.1",
+    "version": "1.17.1",
     "language": "GO",
     "apis": [
       {
@@ -379,52 +379,6 @@
       ]
     },
     {
-      "regionTag": "fleetengine_v1_generated_VehicleService_SearchFuzzedVehicles_sync",
-      "title": "fleetengine SearchFuzzedVehicles Sample",
-      "description": "SearchFuzzedVehicles deprecated: Use `SearchVehicles` instead.\n\n\nDeprecated: SearchFuzzedVehicles may be removed in a future version.",
-      "file": "VehicleClient/SearchFuzzedVehicles/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "SearchFuzzedVehicles",
-        "fullName": "maps.fleetengine.v1.VehicleClient.SearchFuzzedVehicles",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "fleetenginepb.SearchVehiclesRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*fleetenginepb.SearchVehiclesResponse",
-        "client": {
-          "shortName": "VehicleClient",
-          "fullName": "maps.fleetengine.v1.VehicleClient"
-        },
-        "method": {
-          "shortName": "SearchFuzzedVehicles",
-          "fullName": "maps.fleetengine.v1.VehicleService.SearchFuzzedVehicles",
-          "service": {
-            "shortName": "VehicleService",
-            "fullName": "maps.fleetengine.v1.VehicleService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
       "regionTag": "fleetengine_v1_generated_VehicleService_SearchVehicles_sync",
       "title": "fleetengine SearchVehicles Sample",
       "description": "SearchVehicles returns a list of vehicles that match the request options.",
@@ -547,52 +501,6 @@
         "method": {
           "shortName": "UpdateVehicleAttributes",
           "fullName": "maps.fleetengine.v1.VehicleService.UpdateVehicleAttributes",
-          "service": {
-            "shortName": "VehicleService",
-            "fullName": "maps.fleetengine.v1.VehicleService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "fleetengine_v1_generated_VehicleService_UpdateVehicleLocation_sync",
-      "title": "fleetengine UpdateVehicleLocation Sample",
-      "description": "UpdateVehicleLocation deprecated: Use the `UpdateVehicle` method instead.\nUpdateVehicleLocation updates the location of the vehicle.\n\n\nDeprecated: UpdateVehicleLocation may be removed in a future version.",
-      "file": "VehicleClient/UpdateVehicleLocation/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "UpdateVehicleLocation",
-        "fullName": "maps.fleetengine.v1.VehicleClient.UpdateVehicleLocation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "fleetenginepb.UpdateVehicleLocationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*fleetenginepb.VehicleLocation",
-        "client": {
-          "shortName": "VehicleClient",
-          "fullName": "maps.fleetengine.v1.VehicleClient"
-        },
-        "method": {
-          "shortName": "UpdateVehicleLocation",
-          "fullName": "maps.fleetengine.v1.VehicleService.UpdateVehicleLocation",
           "service": {
             "shortName": "VehicleService",
             "fullName": "maps.fleetengine.v1.VehicleService"

@@ -192,6 +192,9 @@ as a query.
 
 	iter = client.Collection("States").Documents(ctx)
 
+Firestore supports similarity search over embedding vectors. See [Query.FindNearest]
+for details.
+
 # Collection Group Partition Queries
 
 You can partition the documents of a Collection Group allowing for smaller subqueries.

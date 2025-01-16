@@ -20,16 +20,17 @@
     ],
     "packageRules": [
         {
-            "matchPackageNames": [
+            "matchPackagePatterns": [
                 "^github.com/google/go-github/v",
-                "^github.com/apache/arrow/go/v"
+                "^github.com/apache/arrow/go/v",
+                "^github.com/cloudprober/cloudprober"
             ],
             "enabled": false
         }
     ],
     "force": {
         "constraints": {
-            "go": "1.20"
+            "go": "1.22"
         }
     }
 }

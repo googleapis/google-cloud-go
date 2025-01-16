@@ -26,6 +26,42 @@ import (
 	"cloud.google.com/go/civil"
 )
 
+func TestFQProtoMsgName(t *testing.T) {
+	for _, tbl := range []struct {
+		in       string
+		expMatch bool
+	}{
+		{
+			in:       "fizzle",
+			expMatch: true,
+		},
+		{
+			in:       "fizzle.bit",
+			expMatch: true,
+		},
+		{
+			in:       "fizzle.boo1.boop333",
+			expMatch: true,
+		},
+		{
+			in:       "fizz9le.boo1.boop333",
+			expMatch: true,
+		},
+		{
+			in:       "9fizz9le",
+			expMatch: false,
+		},
+		{
+			in:       "99.999",
+			expMatch: false,
+		},
+	} {
+		if matches := fqProtoMsgName.MatchString(tbl.in); matches != tbl.expMatch {
+			t.Errorf("expected %q to match %t; got %t", tbl.in, tbl.expMatch, matches)
+		}
+	}
+}
+
 func TestParseQuery(t *testing.T) {
 	tests := []struct {
 		in   string
@@ -408,6 +444,8 @@ func TestParseExpr(t *testing.T) {
 		// Functions
 		{`STARTS_WITH(Bar, 'B')`, Func{Name: "STARTS_WITH", Args: []Expr{ID("Bar"), StringLiteral("B")}}},
 		{`CAST(Bar AS STRING)`, Func{Name: "CAST", Args: []Expr{TypedExpr{Expr: ID("Bar"), Type: Type{Base: String}}}}},
+		{`CAST(Bar AS fizzle.bit)`, Func{Name: "CAST", Args: []Expr{TypedExpr{Expr: ID("Bar"), Type: Type{Base: Proto, ProtoRef: "fizzle.bit"}}}}},
+		{`CAST(Bar AS fizzle.bit.baz)`, Func{Name: "CAST", Args: []Expr{TypedExpr{Expr: ID("Bar"), Type: Type{Base: Proto, ProtoRef: "fizzle.bit.baz"}}}}},
 		{`SAFE_CAST(Bar AS INT64)`, Func{Name: "SAFE_CAST", Args: []Expr{TypedExpr{Expr: ID("Bar"), Type: Type{Base: Int64}}}}},
 		{`EXTRACT(DATE FROM TIMESTAMP AT TIME ZONE "America/Los_Angeles")`, Func{Name: "EXTRACT", Args: []Expr{ExtractExpr{Part: "DATE", Type: Type{Base: Date}, Expr: AtTimeZoneExpr{Expr: ID("TIMESTAMP"), Zone: "America/Los_Angeles", Type: Type{Base: Timestamp}}}}}},
 		{`EXTRACT(DAY FROM DATE)`, Func{Name: "EXTRACT", Args: []Expr{ExtractExpr{Part: "DAY", Expr: ID("DATE"), Type: Type{Base: Int64}}}}},
@@ -1491,6 +1529,173 @@ func TestParseDDL(t *testing.T) {
 				Position: line(1),
 			},
 		}}},
+		{`ALTER TABLE products ADD COLUMN item ARRAY<STRING(MAX)> AS (ARRAY_INCLUDES(itemDetails, 'value1')) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Array: true, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "ARRAY_INCLUDES",
+						Args: []Expr{ID("itemDetails"), StringLiteral("value1")},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
+		{`ALTER TABLE products ADD COLUMN item STRING(MAX) AS (ARRAY_MAX(itemDetails)) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Array: false, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "ARRAY_MAX",
+						Args: []Expr{ID("itemDetails")},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
+		{`ALTER TABLE products ADD COLUMN item STRING(MAX) AS (ARRAY_MIN(itemDetails)) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Array: false, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "ARRAY_MIN",
+						Args: []Expr{ID("itemDetails")},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
+		{`ALTER TABLE products ADD COLUMN item ARRAY<STRING(MAX)> AS (ARRAY_REVERSE(itemDetails)) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Array: true, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "ARRAY_REVERSE",
+						Args: []Expr{ID("itemDetails")},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
+		{`ALTER TABLE products ADD COLUMN item ARRAY<STRING(MAX)> AS (ARRAY_SLICE(itemDetails, 1, 3)) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Array: true, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "ARRAY_SLICE",
+						Args: []Expr{ID("itemDetails"), IntegerLiteral(1), IntegerLiteral(3)},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
+		{`ALTER TABLE products ADD COLUMN item ARRAY<STRING(MAX)> AS (ARRAY_TRANSFORM(itemDetails, 'value1')) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Array: true, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "ARRAY_TRANSFORM",
+						Args: []Expr{ID("itemDetails"), StringLiteral("value1")},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
+		{`ALTER TABLE products ADD COLUMN item ARRAY<STRING(MAX)> AS (ARRAY_FIRST(itemDetails)) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Array: true, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "ARRAY_FIRST",
+						Args: []Expr{ID("itemDetails")},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
+
+		{`ALTER TABLE products ADD COLUMN item ARRAY<STRING(MAX)> AS (ARRAY_INCLUDES(itemDetails, 'value1')) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Array: true, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "ARRAY_INCLUDES",
+						Args: []Expr{ID("itemDetails"), StringLiteral("value1")},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
+
+		{`ALTER TABLE products ADD COLUMN item ARRAY<STRING(MAX)> AS (ARRAY_INCLUDES_ALL(itemDetails, ["1", "2"])) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Array: true, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "ARRAY_INCLUDES_ALL",
+						Args: []Expr{ID("itemDetails"), Array{StringLiteral("1"), StringLiteral("2")}},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
+		{`ALTER TABLE products ADD COLUMN item ARRAY<STRING(MAX)> AS (ARRAY_INCLUDES_ANY(itemDetails, ["1", "2"])) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Array: true, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "ARRAY_INCLUDES_ANY",
+						Args: []Expr{ID("itemDetails"), Array{StringLiteral("1"), StringLiteral("2")}},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
+		{`ALTER TABLE products ADD COLUMN item ARRAY<STRING(MAX)> AS (ARRAY_LAST(itemDetails)) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Array: true, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "ARRAY_LAST",
+						Args: []Expr{ID("itemDetails")},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
 		{
 			`ALTER STATISTICS auto_20191128_14_47_22UTC SET OPTIONS (allow_gc=false)`,
 			&DDL{
@@ -1698,6 +1903,66 @@ func TestParseDDL(t *testing.T) {
 			},
 		},
 		{
+			`CREATE TABLE IF NOT EXISTS tname (id INT64, name foo.bar.baz.ProtoName) PRIMARY KEY (id)`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&CreateTable{
+						Name:        "tname",
+						IfNotExists: true,
+						Columns: []ColumnDef{
+							{Name: "id", Type: Type{Base: Int64}, Position: line(1)},
+							{Name: "name", Type: Type{Base: Proto, ProtoRef: "foo.bar.baz.ProtoName"}, Position: line(1)},
+						},
+						PrimaryKey: []KeyPart{
+							{Column: "id"},
+						},
+						Position: line(1),
+					},
+				},
+			},
+		},
+		{
+			"CREATE TABLE IF NOT EXISTS tname (id INT64, name `foo.bar.baz.ProtoName`) PRIMARY KEY (id)",
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&CreateTable{
+						Name:        "tname",
+						IfNotExists: true,
+						Columns: []ColumnDef{
+							{Name: "id", Type: Type{Base: Int64}, Position: line(1)},
+							{Name: "name", Type: Type{Base: Proto, ProtoRef: "foo.bar.baz.ProtoName"}, Position: line(1)},
+						},
+						PrimaryKey: []KeyPart{
+							{Column: "id"},
+						},
+						Position: line(1),
+					},
+				},
+			},
+		},
+		{
+			"CREATE TABLE IF NOT EXISTS tname (id INT64, name `foo.bar.baz.ProtoName` NOT NULL) PRIMARY KEY (id)",
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&CreateTable{
+						Name:        "tname",
+						IfNotExists: true,
+						Columns: []ColumnDef{
+							{Name: "id", Type: Type{Base: Int64}, Position: line(1)},
+							{Name: "name", NotNull: true, Type: Type{Base: Proto, ProtoRef: "foo.bar.baz.ProtoName"}, Position: line(1)},
+						},
+						PrimaryKey: []KeyPart{
+							{Column: "id"},
+						},
+						Position: line(1),
+					},
+				},
+			},
+		},
+		{
 			`CREATE INDEX IF NOT EXISTS iname ON tname (cname)`,
 			&DDL{
 				Filename: "filename",
@@ -1852,6 +2117,71 @@ func TestParseDDL(t *testing.T) {
 							},
 						},
 						Position: line(1),
+					},
+				},
+			},
+		},
+		{
+			`CREATE PROTO BUNDLE (foo.bar.baz.Fiddle, ` + "`foo.bar.baz.Foozle`" + `);
+			ALTER PROTO BUNDLE INSERT (a.b.c, b.d.e, k) UPDATE (foo.bar.baz.Fiddle) DELETE (foo.bar.baz.Foozle);
+			DROP PROTO BUNDLE;`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&CreateProtoBundle{
+						Types:    []string{"foo.bar.baz.Fiddle", "foo.bar.baz.Foozle"},
+						Position: line(1),
+					},
+					&AlterProtoBundle{
+						AddTypes:    []string{"a.b.c", "b.d.e", "k"},
+						UpdateTypes: []string{"foo.bar.baz.Fiddle"},
+						DeleteTypes: []string{"foo.bar.baz.Foozle"},
+						Position:    line(2),
+					},
+					&DropProtoBundle{
+						Position: line(3),
+					},
+				},
+			},
+		},
+		{
+			`ALTER PROTO BUNDLE UPDATE (foo.bar.baz.Fiddle) INSERT (a.b.c, b.d.e, k) DELETE (foo.bar.baz.Foozle);`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&AlterProtoBundle{
+						AddTypes:    []string{"a.b.c", "b.d.e", "k"},
+						UpdateTypes: []string{"foo.bar.baz.Fiddle"},
+						DeleteTypes: []string{"foo.bar.baz.Foozle"},
+						Position:    line(1),
+					},
+				},
+			},
+		},
+		{
+			`ALTER PROTO BUNDLE DELETE (foo.bar.baz.Foozle) UPDATE (foo.bar.baz.Fiddle) INSERT (a.b.c, b.d.e, k)`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&AlterProtoBundle{
+						AddTypes:    []string{"a.b.c", "b.d.e", "k"},
+						UpdateTypes: []string{"foo.bar.baz.Fiddle"},
+						DeleteTypes: []string{"foo.bar.baz.Foozle"},
+						Position:    line(1),
+					},
+				},
+			},
+		},
+		{
+			`ALTER PROTO BUNDLE INSERT (a.b.c, b.d.e, k) DELETE (foo.bar.baz.Foozle);`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&AlterProtoBundle{
+						AddTypes:    []string{"a.b.c", "b.d.e", "k"},
+						UpdateTypes: nil,
+						DeleteTypes: []string{"foo.bar.baz.Foozle"},
+						Position:    line(1),
 					},
 				},
 			},

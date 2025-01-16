@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dlp/apiv2",
-    "version": "1.12.1",
+    "version": "1.20.1",
     "language": "GO",
     "apis": [
       {
@@ -98,6 +98,52 @@
         {
           "start": 18,
           "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_CreateConnection_sync",
+      "title": "dlp CreateConnection Sample",
+      "description": "CreateConnection create a Connection to an external data source.",
+      "file": "Client/CreateConnection/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateConnection",
+        "fullName": "google.privacy.dlp.v2.Client.CreateConnection",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.CreateConnectionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dlppb.Connection",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "CreateConnection",
+          "fullName": "google.privacy.dlp.v2.DlpService.CreateConnection",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -425,6 +471,51 @@
       ]
     },
     {
+      "regionTag": "dlp_v2_generated_DlpService_DeleteConnection_sync",
+      "title": "dlp DeleteConnection Sample",
+      "description": "DeleteConnection delete a Connection.",
+      "file": "Client/DeleteConnection/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteConnection",
+        "fullName": "google.privacy.dlp.v2.Client.DeleteConnection",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.DeleteConnectionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "DeleteConnection",
+          "fullName": "google.privacy.dlp.v2.DlpService.DeleteConnection",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dlp_v2_generated_DlpService_DeleteDeidentifyTemplate_sync",
       "title": "dlp DeleteDeidentifyTemplate Sample",
       "description": "DeleteDeidentifyTemplate deletes a DeidentifyTemplate.\nSee\nhttps: //cloud.google.com/sensitive-data-protection/docs/creating-templates-deid\nto learn more.",
@@ -544,6 +635,51 @@
         "method": {
           "shortName": "DeleteDlpJob",
           "fullName": "google.privacy.dlp.v2.DlpService.DeleteDlpJob",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_DeleteFileStoreDataProfile_sync",
+      "title": "dlp DeleteFileStoreDataProfile Sample",
+      "description": "DeleteFileStoreDataProfile delete a FileStoreDataProfile. Will not prevent the profile from being\nregenerated if the resource is still included in a discovery configuration.",
+      "file": "Client/DeleteFileStoreDataProfile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteFileStoreDataProfile",
+        "fullName": "google.privacy.dlp.v2.Client.DeleteFileStoreDataProfile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.DeleteFileStoreDataProfileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "DeleteFileStoreDataProfile",
+          "fullName": "google.privacy.dlp.v2.DlpService.DeleteFileStoreDataProfile",
           "service": {
             "shortName": "DlpService",
             "fullName": "google.privacy.dlp.v2.DlpService"
@@ -695,6 +831,51 @@
       ]
     },
     {
+      "regionTag": "dlp_v2_generated_DlpService_DeleteTableDataProfile_sync",
+      "title": "dlp DeleteTableDataProfile Sample",
+      "description": "DeleteTableDataProfile delete a TableDataProfile. Will not prevent the profile from being\nregenerated if the table is still included in a discovery configuration.",
+      "file": "Client/DeleteTableDataProfile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteTableDataProfile",
+        "fullName": "google.privacy.dlp.v2.Client.DeleteTableDataProfile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.DeleteTableDataProfileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "DeleteTableDataProfile",
+          "fullName": "google.privacy.dlp.v2.DlpService.DeleteTableDataProfile",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dlp_v2_generated_DlpService_FinishDlpJob_sync",
       "title": "dlp FinishDlpJob Sample",
       "description": "FinishDlpJob finish a running hybrid DlpJob. Triggers the finalization steps and running\nof any enabled actions that have not yet run.",
@@ -770,6 +951,52 @@
         "method": {
           "shortName": "GetColumnDataProfile",
           "fullName": "google.privacy.dlp.v2.DlpService.GetColumnDataProfile",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_GetConnection_sync",
+      "title": "dlp GetConnection Sample",
+      "description": "GetConnection get a Connection by name.",
+      "file": "Client/GetConnection/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetConnection",
+        "fullName": "google.privacy.dlp.v2.Client.GetConnection",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.GetConnectionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dlppb.Connection",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "GetConnection",
+          "fullName": "google.privacy.dlp.v2.DlpService.GetConnection",
           "service": {
             "shortName": "DlpService",
             "fullName": "google.privacy.dlp.v2.DlpService"
@@ -908,6 +1135,52 @@
         "method": {
           "shortName": "GetDlpJob",
           "fullName": "google.privacy.dlp.v2.DlpService.GetDlpJob",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_GetFileStoreDataProfile_sync",
+      "title": "dlp GetFileStoreDataProfile Sample",
+      "description": "GetFileStoreDataProfile gets a file store data profile.",
+      "file": "Client/GetFileStoreDataProfile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetFileStoreDataProfile",
+        "fullName": "google.privacy.dlp.v2.Client.GetFileStoreDataProfile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.GetFileStoreDataProfileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dlppb.FileStoreDataProfile",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "GetFileStoreDataProfile",
+          "fullName": "google.privacy.dlp.v2.DlpService.GetFileStoreDataProfile",
           "service": {
             "shortName": "DlpService",
             "fullName": "google.privacy.dlp.v2.DlpService"
@@ -1294,7 +1567,7 @@
     {
       "regionTag": "dlp_v2_generated_DlpService_ListColumnDataProfiles_sync",
       "title": "dlp ListColumnDataProfiles Sample",
-      "description": "ListColumnDataProfiles lists data profiles for an organization.",
+      "description": "ListColumnDataProfiles lists column data profiles for an organization.",
       "file": "Client/ListColumnDataProfiles/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1322,6 +1595,52 @@
         "method": {
           "shortName": "ListColumnDataProfiles",
           "fullName": "google.privacy.dlp.v2.DlpService.ListColumnDataProfiles",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_ListConnections_sync",
+      "title": "dlp ListConnections Sample",
+      "description": "ListConnections lists Connections in a parent. Use SearchConnections to see all connections\nwithin an organization.",
+      "file": "Client/ListConnections/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListConnections",
+        "fullName": "google.privacy.dlp.v2.Client.ListConnections",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.ListConnectionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ConnectionIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "ListConnections",
+          "fullName": "google.privacy.dlp.v2.DlpService.ListConnections",
           "service": {
             "shortName": "DlpService",
             "fullName": "google.privacy.dlp.v2.DlpService"
@@ -1460,6 +1779,52 @@
         "method": {
           "shortName": "ListDlpJobs",
           "fullName": "google.privacy.dlp.v2.DlpService.ListDlpJobs",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_ListFileStoreDataProfiles_sync",
+      "title": "dlp ListFileStoreDataProfiles Sample",
+      "description": "ListFileStoreDataProfiles lists file store data profiles for an organization.",
+      "file": "Client/ListFileStoreDataProfiles/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListFileStoreDataProfiles",
+        "fullName": "google.privacy.dlp.v2.Client.ListFileStoreDataProfiles",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.ListFileStoreDataProfilesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "FileStoreDataProfileIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "ListFileStoreDataProfiles",
+          "fullName": "google.privacy.dlp.v2.DlpService.ListFileStoreDataProfiles",
           "service": {
             "shortName": "DlpService",
             "fullName": "google.privacy.dlp.v2.DlpService"
@@ -1616,7 +1981,7 @@
     {
       "regionTag": "dlp_v2_generated_DlpService_ListProjectDataProfiles_sync",
       "title": "dlp ListProjectDataProfiles Sample",
-      "description": "ListProjectDataProfiles lists data profiles for an organization.",
+      "description": "ListProjectDataProfiles lists project data profiles for an organization.",
       "file": "Client/ListProjectDataProfiles/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1708,7 +2073,7 @@
     {
       "regionTag": "dlp_v2_generated_DlpService_ListTableDataProfiles_sync",
       "title": "dlp ListTableDataProfiles Sample",
-      "description": "ListTableDataProfiles lists data profiles for an organization.",
+      "description": "ListTableDataProfiles lists table data profiles for an organization.",
       "file": "Client/ListTableDataProfiles/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1828,6 +2193,98 @@
         "method": {
           "shortName": "ReidentifyContent",
           "fullName": "google.privacy.dlp.v2.DlpService.ReidentifyContent",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_SearchConnections_sync",
+      "title": "dlp SearchConnections Sample",
+      "description": "SearchConnections searches for Connections in a parent.",
+      "file": "Client/SearchConnections/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SearchConnections",
+        "fullName": "google.privacy.dlp.v2.Client.SearchConnections",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.SearchConnectionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ConnectionIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "SearchConnections",
+          "fullName": "google.privacy.dlp.v2.DlpService.SearchConnections",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_UpdateConnection_sync",
+      "title": "dlp UpdateConnection Sample",
+      "description": "UpdateConnection update a Connection.",
+      "file": "Client/UpdateConnection/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateConnection",
+        "fullName": "google.privacy.dlp.v2.Client.UpdateConnection",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.UpdateConnectionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dlppb.Connection",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "UpdateConnection",
+          "fullName": "google.privacy.dlp.v2.DlpService.UpdateConnection",
           "service": {
             "shortName": "DlpService",
             "fullName": "google.privacy.dlp.v2.DlpService"

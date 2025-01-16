@@ -109,7 +109,7 @@ func TestDialWithDirectPathEnabled(t *testing.T) {
 
 	pool, err := Dial(ctx, true, &Options{
 		Credentials: auth.NewCredentials(&auth.CredentialsOptions{
-			TokenProvider: staticTP("hey"),
+			TokenProvider: &staticTP{tok: &auth.Token{Value: "hey"}},
 		}),
 		GRPCDialOpts: []grpc.DialOption{userDialer},
 		Endpoint:     "example.google.com:443",

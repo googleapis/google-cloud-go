@@ -25,22 +25,22 @@ import (
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/auth/credentials/downscope"
+	"cloud.google.com/go/auth/internal/credsfile"
 	"cloud.google.com/go/auth/internal/testutil"
 	"cloud.google.com/go/auth/internal/testutil/testgcs"
 )
 
 const (
-	rootTokenScope        = "https://www.googleapis.com/auth/cloud-platform"
-	envServiceAccountFile = "GOOGLE_APPLICATION_CREDENTIALS"
-	object1               = "cab-first-c45wknuy.txt"
-	object2               = "cab-second-c45wknuy.txt"
-	bucket                = "dulcet-port-762"
+	rootTokenScope = "https://www.googleapis.com/auth/cloud-platform"
+	object1        = "cab-first-c45wknuy.txt"
+	object2        = "cab-second-c45wknuy.txt"
+	bucket         = "dulcet-port-762"
 )
 
 func TestDownscopedToken(t *testing.T) {
 	testutil.IntegrationTestCheck(t)
 	creds, err := credentials.DetectDefault(&credentials.DetectOptions{
-		CredentialsFile: os.Getenv(envServiceAccountFile),
+		CredentialsFile: os.Getenv(credsfile.GoogleAppCredsEnvVar),
 		Scopes:          []string{rootTokenScope},
 	})
 	if err != nil {

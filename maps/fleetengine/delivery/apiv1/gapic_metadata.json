@@ -50,11 +50,6 @@
                 "ListTasks"
               ]
             },
-            "SearchTasks": {
-              "methods": [
-                "SearchTasks"
-              ]
-            },
             "UpdateDeliveryVehicle": {
               "methods": [
                 "UpdateDeliveryVehicle"
@@ -108,11 +103,6 @@
             "ListTasks": {
               "methods": [
                 "ListTasks"
-              ]
-            },
-            "SearchTasks": {
-              "methods": [
-                "SearchTasks"
               ]
             },
             "UpdateDeliveryVehicle": {

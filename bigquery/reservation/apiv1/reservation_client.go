@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	reservationpb "cloud.google.com/go/bigquery/reservation/apiv1/reservationpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -49,6 +48,7 @@ type CallOptions struct {
 	GetReservation           []gax.CallOption
 	DeleteReservation        []gax.CallOption
 	UpdateReservation        []gax.CallOption
+	FailoverReservation      []gax.CallOption
 	CreateCapacityCommitment []gax.CallOption
 	ListCapacityCommitments  []gax.CallOption
 	GetCapacityCommitment    []gax.CallOption
@@ -76,6 +76,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://bigqueryreservation.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -128,6 +129,7 @@ func defaultCallOptions() *CallOptions {
 		UpdateReservation: []gax.CallOption{
 			gax.WithTimeout(300000 * time.Millisecond),
 		},
+		FailoverReservation: []gax.CallOption{},
 		CreateCapacityCommitment: []gax.CallOption{
 			gax.WithTimeout(300000 * time.Millisecond),
 		},
@@ -289,6 +291,7 @@ func defaultRESTCallOptions() *CallOptions {
 		UpdateReservation: []gax.CallOption{
 			gax.WithTimeout(300000 * time.Millisecond),
 		},
+		FailoverReservation: []gax.CallOption{},
 		CreateCapacityCommitment: []gax.CallOption{
 			gax.WithTimeout(300000 * time.Millisecond),
 		},
@@ -409,6 +412,7 @@ type internalClient interface {
 	GetReservation(context.Context, *reservationpb.GetReservationRequest, ...gax.CallOption) (*reservationpb.Reservation, error)
 	DeleteReservation(context.Context, *reservationpb.DeleteReservationRequest, ...gax.CallOption) error
 	UpdateReservation(context.Context, *reservationpb.UpdateReservationRequest, ...gax.CallOption) (*reservationpb.Reservation, error)
+	FailoverReservation(context.Context, *reservationpb.FailoverReservationRequest, ...gax.CallOption) (*reservationpb.Reservation, error)
 	CreateCapacityCommitment(context.Context, *reservationpb.CreateCapacityCommitmentRequest, ...gax.CallOption) (*reservationpb.CapacityCommitment, error)
 	ListCapacityCommitments(context.Context, *reservationpb.ListCapacityCommitmentsRequest, ...gax.CallOption) *CapacityCommitmentIterator
 	GetCapacityCommitment(context.Context, *reservationpb.GetCapacityCommitmentRequest, ...gax.CallOption) (*reservationpb.CapacityCommitment, error)
@@ -501,6 +505,15 @@ func (c *Client) DeleteReservation(ctx context.Context, req *reservationpb.Delet
 // UpdateReservation updates an existing reservation resource.
 func (c *Client) UpdateReservation(ctx context.Context, req *reservationpb.UpdateReservationRequest, opts ...gax.CallOption) (*reservationpb.Reservation, error) {
 	return c.internalClient.UpdateReservation(ctx, req, opts...)
+}
+
+// FailoverReservation fail over a reservation to the secondary location. The operation should be
+// done in the current secondary location, which will be promoted to the
+// new primary location for the reservation.
+// Attempting to failover a reservation in the current primary location will
+// fail with the error code google.rpc.Code.FAILED_PRECONDITION.
+func (c *Client) FailoverReservation(ctx context.Context, req *reservationpb.FailoverReservationRequest, opts ...gax.CallOption) (*reservationpb.Reservation, error) {
+	return c.internalClient.FailoverReservation(ctx, req, opts...)
 }
 
 // CreateCapacityCommitment creates a new capacity commitment resource.
@@ -756,6 +769,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new reservation service client based on gRPC.
@@ -796,6 +811,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      reservationpb.NewReservationServiceClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -818,7 +834,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -840,6 +858,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new reservation service rest client.
@@ -871,6 +891,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -885,6 +906,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://bigqueryreservation.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -894,7 +916,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -920,7 +944,7 @@ func (c *gRPCClient) CreateReservation(ctx context.Context, req *reservationpb.C
 	var resp *reservationpb.Reservation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateReservation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateReservation, req, settings.GRPC, c.logger, "CreateReservation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -949,7 +973,7 @@ func (c *gRPCClient) ListReservations(ctx context.Context, req *reservationpb.Li
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListReservations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListReservations, req, settings.GRPC, c.logger, "ListReservations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -984,7 +1008,7 @@ func (c *gRPCClient) GetReservation(ctx context.Context, req *reservationpb.GetR
 	var resp *reservationpb.Reservation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetReservation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetReservation, req, settings.GRPC, c.logger, "GetReservation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1001,7 +1025,7 @@ func (c *gRPCClient) DeleteReservation(ctx context.Context, req *reservationpb.D
 	opts = append((*c.CallOptions).DeleteReservation[0:len((*c.CallOptions).DeleteReservation):len((*c.CallOptions).DeleteReservation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteReservation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteReservation, req, settings.GRPC, c.logger, "DeleteReservation")
 		return err
 	}, opts...)
 	return err
@@ -1016,7 +1040,25 @@ func (c *gRPCClient) UpdateReservation(ctx context.Context, req *reservationpb.U
 	var resp *reservationpb.Reservation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateReservation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateReservation, req, settings.GRPC, c.logger, "UpdateReservation")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) FailoverReservation(ctx context.Context, req *reservationpb.FailoverReservationRequest, opts ...gax.CallOption) (*reservationpb.Reservation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).FailoverReservation[0:len((*c.CallOptions).FailoverReservation):len((*c.CallOptions).FailoverReservation)], opts...)
+	var resp *reservationpb.Reservation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.FailoverReservation, req, settings.GRPC, c.logger, "FailoverReservation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1034,7 +1076,7 @@ func (c *gRPCClient) CreateCapacityCommitment(ctx context.Context, req *reservat
 	var resp *reservationpb.CapacityCommitment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateCapacityCommitment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateCapacityCommitment, req, settings.GRPC, c.logger, "CreateCapacityCommitment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1063,7 +1105,7 @@ func (c *gRPCClient) ListCapacityCommitments(ctx context.Context, req *reservati
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListCapacityCommitments(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListCapacityCommitments, req, settings.GRPC, c.logger, "ListCapacityCommitments")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1098,7 +1140,7 @@ func (c *gRPCClient) GetCapacityCommitment(ctx context.Context, req *reservation
 	var resp *reservationpb.CapacityCommitment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetCapacityCommitment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetCapacityCommitment, req, settings.GRPC, c.logger, "GetCapacityCommitment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1115,7 +1157,7 @@ func (c *gRPCClient) DeleteCapacityCommitment(ctx context.Context, req *reservat
 	opts = append((*c.CallOptions).DeleteCapacityCommitment[0:len((*c.CallOptions).DeleteCapacityCommitment):len((*c.CallOptions).DeleteCapacityCommitment)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteCapacityCommitment(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteCapacityCommitment, req, settings.GRPC, c.logger, "DeleteCapacityCommitment")
 		return err
 	}, opts...)
 	return err
@@ -1130,7 +1172,7 @@ func (c *gRPCClient) UpdateCapacityCommitment(ctx context.Context, req *reservat
 	var resp *reservationpb.CapacityCommitment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateCapacityCommitment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateCapacityCommitment, req, settings.GRPC, c.logger, "UpdateCapacityCommitment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1148,7 +1190,7 @@ func (c *gRPCClient) SplitCapacityCommitment(ctx context.Context, req *reservati
 	var resp *reservationpb.SplitCapacityCommitmentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.SplitCapacityCommitment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.SplitCapacityCommitment, req, settings.GRPC, c.logger, "SplitCapacityCommitment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1166,7 +1208,7 @@ func (c *gRPCClient) MergeCapacityCommitments(ctx context.Context, req *reservat
 	var resp *reservationpb.CapacityCommitment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.MergeCapacityCommitments(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.MergeCapacityCommitments, req, settings.GRPC, c.logger, "MergeCapacityCommitments")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1184,7 +1226,7 @@ func (c *gRPCClient) CreateAssignment(ctx context.Context, req *reservationpb.Cr
 	var resp *reservationpb.Assignment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateAssignment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateAssignment, req, settings.GRPC, c.logger, "CreateAssignment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1213,7 +1255,7 @@ func (c *gRPCClient) ListAssignments(ctx context.Context, req *reservationpb.Lis
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListAssignments(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListAssignments, req, settings.GRPC, c.logger, "ListAssignments")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1247,7 +1289,7 @@ func (c *gRPCClient) DeleteAssignment(ctx context.Context, req *reservationpb.De
 	opts = append((*c.CallOptions).DeleteAssignment[0:len((*c.CallOptions).DeleteAssignment):len((*c.CallOptions).DeleteAssignment)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteAssignment(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteAssignment, req, settings.GRPC, c.logger, "DeleteAssignment")
 		return err
 	}, opts...)
 	return err
@@ -1273,7 +1315,7 @@ func (c *gRPCClient) SearchAssignments(ctx context.Context, req *reservationpb.S
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.SearchAssignments(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.SearchAssignments, req, settings.GRPC, c.logger, "SearchAssignments")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1319,7 +1361,7 @@ func (c *gRPCClient) SearchAllAssignments(ctx context.Context, req *reservationp
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.SearchAllAssignments(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.SearchAllAssignments, req, settings.GRPC, c.logger, "SearchAllAssignments")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1354,7 +1396,7 @@ func (c *gRPCClient) MoveAssignment(ctx context.Context, req *reservationpb.Move
 	var resp *reservationpb.Assignment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.MoveAssignment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.MoveAssignment, req, settings.GRPC, c.logger, "MoveAssignment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1372,7 +1414,7 @@ func (c *gRPCClient) UpdateAssignment(ctx context.Context, req *reservationpb.Up
 	var resp *reservationpb.Assignment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateAssignment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateAssignment, req, settings.GRPC, c.logger, "UpdateAssignment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1390,7 +1432,7 @@ func (c *gRPCClient) GetBiReservation(ctx context.Context, req *reservationpb.Ge
 	var resp *reservationpb.BiReservation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetBiReservation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetBiReservation, req, settings.GRPC, c.logger, "GetBiReservation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1408,7 +1450,7 @@ func (c *gRPCClient) UpdateBiReservation(ctx context.Context, req *reservationpb
 	var resp *reservationpb.BiReservation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateBiReservation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateBiReservation, req, settings.GRPC, c.logger, "UpdateBiReservation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1460,17 +1502,7 @@ func (c *restClient) CreateReservation(ctx context.Context, req *reservationpb.C
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateReservation")
 		if err != nil {
 			return err
 		}
@@ -1532,21 +1564,10 @@ func (c *restClient) ListReservations(ctx context.Context, req *reservationpb.Li
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListReservations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1609,17 +1630,7 @@ func (c *restClient) GetReservation(ctx context.Context, req *reservationpb.GetR
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetReservation")
 		if err != nil {
 			return err
 		}
@@ -1668,15 +1679,8 @@ func (c *restClient) DeleteReservation(ctx context.Context, req *reservationpb.D
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteReservation")
+		return err
 	}, opts...)
 }
 
@@ -1698,11 +1702,11 @@ func (c *restClient) UpdateReservation(ctx context.Context, req *reservationpb.U
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1727,17 +1731,67 @@ func (c *restClient) UpdateReservation(ctx context.Context, req *reservationpb.U
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateReservation")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
 
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
+		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
 
-		buf, err := io.ReadAll(httpRsp.Body)
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// FailoverReservation fail over a reservation to the secondary location. The operation should be
+// done in the current secondary location, which will be promoted to the
+// new primary location for the reservation.
+// Attempting to failover a reservation in the current primary location will
+// fail with the error code google.rpc.Code.FAILED_PRECONDITION.
+func (c *restClient) FailoverReservation(ctx context.Context, req *reservationpb.FailoverReservationRequest, opts ...gax.CallOption) (*reservationpb.Reservation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:failoverReservation", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).FailoverReservation[0:len((*c.CallOptions).FailoverReservation):len((*c.CallOptions).FailoverReservation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &reservationpb.Reservation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "FailoverReservation")
 		if err != nil {
 			return err
 		}
@@ -1800,17 +1854,7 @@ func (c *restClient) CreateCapacityCommitment(ctx context.Context, req *reservat
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateCapacityCommitment")
 		if err != nil {
 			return err
 		}
@@ -1872,21 +1916,10 @@ func (c *restClient) ListCapacityCommitments(ctx context.Context, req *reservati
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListCapacityCommitments")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1949,17 +1982,7 @@ func (c *restClient) GetCapacityCommitment(ctx context.Context, req *reservation
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCapacityCommitment")
 		if err != nil {
 			return err
 		}
@@ -2011,15 +2034,8 @@ func (c *restClient) DeleteCapacityCommitment(ctx context.Context, req *reservat
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteCapacityCommitment")
+		return err
 	}, opts...)
 }
 
@@ -2047,11 +2063,11 @@ func (c *restClient) UpdateCapacityCommitment(ctx context.Context, req *reservat
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2076,17 +2092,7 @@ func (c *restClient) UpdateCapacityCommitment(ctx context.Context, req *reservat
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateCapacityCommitment")
 		if err != nil {
 			return err
 		}
@@ -2149,17 +2155,7 @@ func (c *restClient) SplitCapacityCommitment(ctx context.Context, req *reservati
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SplitCapacityCommitment")
 		if err != nil {
 			return err
 		}
@@ -2221,17 +2217,7 @@ func (c *restClient) MergeCapacityCommitments(ctx context.Context, req *reservat
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "MergeCapacityCommitments")
 		if err != nil {
 			return err
 		}
@@ -2326,17 +2312,7 @@ func (c *restClient) CreateAssignment(ctx context.Context, req *reservationpb.Cr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateAssignment")
 		if err != nil {
 			return err
 		}
@@ -2420,21 +2396,10 @@ func (c *restClient) ListAssignments(ctx context.Context, req *reservationpb.Lis
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAssignments")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2510,15 +2475,8 @@ func (c *restClient) DeleteAssignment(ctx context.Context, req *reservationpb.De
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteAssignment")
+		return err
 	}, opts...)
 }
 
@@ -2598,21 +2556,10 @@ func (c *restClient) SearchAssignments(ctx context.Context, req *reservationpb.S
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "SearchAssignments")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2713,21 +2660,10 @@ func (c *restClient) SearchAllAssignments(ctx context.Context, req *reservationp
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "SearchAllAssignments")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2800,17 +2736,7 @@ func (c *restClient) MoveAssignment(ctx context.Context, req *reservationpb.Move
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "MoveAssignment")
 		if err != nil {
 			return err
 		}
@@ -2847,11 +2773,11 @@ func (c *restClient) UpdateAssignment(ctx context.Context, req *reservationpb.Up
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2876,17 +2802,7 @@ func (c *restClient) UpdateAssignment(ctx context.Context, req *reservationpb.Up
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateAssignment")
 		if err != nil {
 			return err
 		}
@@ -2936,17 +2852,7 @@ func (c *restClient) GetBiReservation(ctx context.Context, req *reservationpb.Ge
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetBiReservation")
 		if err != nil {
 			return err
 		}
@@ -2988,11 +2894,11 @@ func (c *restClient) UpdateBiReservation(ctx context.Context, req *reservationpb
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3017,17 +2923,7 @@ func (c *restClient) UpdateBiReservation(ctx context.Context, req *reservationpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateBiReservation")
 		if err != nil {
 			return err
 		}

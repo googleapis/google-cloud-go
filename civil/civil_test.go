@@ -163,6 +163,106 @@ func TestDateArithmetic(t *testing.T) {
 	}
 }
 
+func TestDateArithmeticMonths(t *testing.T) {
+	for _, test := range []struct {
+		desc   string
+		start  Date
+		end    Date
+		months int
+	}{
+		{
+			desc:   "zero months noop",
+			start:  Date{2024, 12, 16},
+			end:    Date{2024, 12, 16},
+			months: 0,
+		},
+		{
+			desc:   "crossing a year boundary",
+			start:  Date{2014, 8, 31},
+			end:    Date{2015, 1, 31},
+			months: 5,
+		},
+		{
+			desc:   "negative number of months",
+			start:  Date{2015, 1, 1},
+			end:    Date{2014, 12, 1},
+			months: -1,
+		},
+		{
+			desc:   "full leap year",
+			start:  Date{2008, 1, 1},
+			end:    Date{2009, 1, 1},
+			months: 12,
+		},
+		{
+			desc:   "full non-leap year",
+			start:  Date{1997, 1, 1},
+			end:    Date{1998, 1, 1},
+			months: 12,
+		},
+		{
+			desc:   "crossing a leap second",
+			start:  Date{1972, 6, 30},
+			end:    Date{1972, 7, 30},
+			months: 1,
+		},
+		{
+			desc:   "dates before the unix epoch",
+			start:  Date{101, 1, 1},
+			end:    Date{101, 6, 1},
+			months: 5,
+		},
+	} {
+		if got := test.start.AddMonths(test.months); got.Compare(test.end) != 0 {
+			t.Errorf("[%s] %#v.AddMonths(%v) = %#v, want %#v", test.desc, test.start, test.months, got, test.end)
+		}
+	}
+}
+
+func TestDateArithmeticYears(t *testing.T) {
+	for _, test := range []struct {
+		desc  string
+		start Date
+		end   Date
+		years int
+	}{
+		{
+			desc:  "zero years noop",
+			start: Date{2024, 6, 19},
+			end:   Date{2024, 6, 19},
+			years: 0,
+		},
+		{
+			desc:  "positive number of years",
+			start: Date{2012, 4, 29},
+			end:   Date{2014, 4, 29},
+			years: 2,
+		},
+		{
+			desc:  "negative number of years",
+			start: Date{2027, 1, 1},
+			end:   Date{2024, 1, 1},
+			years: -3,
+		},
+		{
+			desc:  "crossing a leap second",
+			start: Date{1972, 6, 30},
+			end:   Date{1973, 6, 30},
+			years: 1,
+		},
+		{
+			desc:  "dates before the unix epoch",
+			start: Date{99, 1, 1},
+			end:   Date{102, 1, 1},
+			years: 3,
+		},
+	} {
+		if got := test.start.AddYears(test.years); got.Compare(test.end) != 0 {
+			t.Errorf("[%s] %#v.AddDays(%v) = %#v, want %#v", test.desc, test.start, test.years, got, test.end)
+		}
+	}
+}
+
 func TestDateBefore(t *testing.T) {
 	for _, test := range []struct {
 		d1, d2 Date
@@ -193,6 +293,21 @@ func TestDateAfter(t *testing.T) {
 	}
 }
 
+func TestDateCompare(t *testing.T) {
+	for _, test := range []struct {
+		d1, d2 Date
+		want   int
+	}{
+		{Date{2016, 12, 31}, Date{2017, 1, 1}, -1},
+		{Date{2016, 1, 1}, Date{2016, 1, 1}, 0},
+		{Date{2016, 12, 31}, Date{2016, 12, 30}, +1},
+	} {
+		if got := test.d1.Compare(test.d2); got != test.want {
+			t.Errorf("%v.Compare(%v): got %d, want %d", test.d1, test.d2, got, test.want)
+		}
+	}
+}
+
 func TestDateIsZero(t *testing.T) {
 	for _, test := range []struct {
 		date Date
@@ -207,6 +322,22 @@ func TestDateIsZero(t *testing.T) {
 		got := test.date.IsZero()
 		if got != test.want {
 			t.Errorf("%#v: got %t, want %t", test.date, got, test.want)
+		}
+	}
+}
+
+func TestDateWeekday(t *testing.T) {
+	for _, test := range []struct {
+		date Date
+		want time.Weekday
+	}{
+		{Date{2024, 12, 21}, time.Saturday},
+		{Date{1900, 1, 1}, time.Monday},
+		{Date{2482, 3, 17}, time.Tuesday},
+	} {
+		got := test.date.Weekday()
+		if got != test.want {
+			t.Errorf("%#v: got %v, want %v", test.date, got, test.want)
 		}
 	}
 }
@@ -330,6 +461,27 @@ func TestTimeAfter(t *testing.T) {
 	}
 }
 
+func TestTimeCompare(t *testing.T) {
+	for _, test := range []struct {
+		t1, t2 Time
+		want   int
+	}{
+		{Time{12, 0, 0, 0}, Time{14, 0, 0, 0}, -1},
+		{Time{12, 20, 0, 0}, Time{12, 30, 0, 0}, -1},
+		{Time{12, 20, 10, 0}, Time{12, 20, 20, 0}, -1},
+		{Time{12, 20, 10, 5}, Time{12, 20, 10, 10}, -1},
+		{Time{14, 0, 0, 0}, Time{12, 0, 0, 0}, +1},
+		{Time{12, 30, 0, 0}, Time{12, 20, 0, 0}, +1},
+		{Time{12, 20, 20, 0}, Time{12, 20, 10, 0}, +1},
+		{Time{12, 20, 10, 10}, Time{12, 20, 10, 5}, +1},
+		{Time{12, 20, 10, 5}, Time{12, 20, 10, 5}, 0},
+	} {
+		if got := test.t1.Compare(test.t2); got != test.want {
+			t.Errorf("%v.Compare(%v): got %d, want %d", test.t1, test.t2, got, test.want)
+		}
+	}
+}
+
 func TestDateTimeToString(t *testing.T) {
 	for _, test := range []struct {
 		str       string
@@ -449,6 +601,27 @@ func TestDateTimeAfter(t *testing.T) {
 	} {
 		if got := test.dt1.After(test.dt2); got != test.want {
 			t.Errorf("%v.After(%v): got %t, want %t", test.dt1, test.dt2, got, test.want)
+		}
+	}
+}
+
+func TestDateTimeCompare(t *testing.T) {
+	d1 := Date{2016, 12, 31}
+	d2 := Date{2017, 1, 1}
+	t1 := Time{5, 6, 7, 8}
+	t2 := Time{5, 6, 7, 9}
+	for _, test := range []struct {
+		dt1, dt2 DateTime
+		want     int
+	}{
+		{DateTime{d1, t1}, DateTime{d2, t1}, -1},
+		{DateTime{d1, t1}, DateTime{d1, t2}, -1},
+		{DateTime{d2, t1}, DateTime{d1, t1}, +1},
+		{DateTime{d1, t2}, DateTime{d1, t1}, +1},
+		{DateTime{d2, t1}, DateTime{d2, t1}, 0},
+	} {
+		if got := test.dt1.Compare(test.dt2); got != test.want {
+			t.Errorf("%v.Compare(%v): got %d, want %d", test.dt1, test.dt2, got, test.want)
 		}
 	}
 }

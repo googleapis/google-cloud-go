@@ -37,7 +37,7 @@ import (
 
 	vkit "cloud.google.com/go/pubsublite/apiv1"
 	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
-	tspb "github.com/golang/protobuf/ptypes/timestamp"
+	tspb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (
@@ -427,7 +427,8 @@ func TestIntegration_PublishSubscribeSinglePartition(t *testing.T) {
 		publishMessages(t, DefaultPublishSettings, topicPath, msg1, msg2)
 
 		// Case A: Default nack handler. Terminates subscriber.
-		cctx, _ := context.WithTimeout(context.Background(), defaultTestTimeout)
+		cctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
+		defer cancel()
 		messageReceiver1 := func(ctx context.Context, got *pubsub.Message) {
 			if diff := messageDiff(got, msg1); diff != "" {
 				t.Errorf("Received message got: -, want: +\n%s", diff)
@@ -495,6 +496,7 @@ func TestIntegration_PublishSubscribeSinglePartition(t *testing.T) {
 			// New cctx must be created for each iteration as it is cancelled each
 			// time stopSubscriber is called.
 			cctx, stopSubscriber = context.WithTimeout(context.Background(), defaultTestTimeout)
+			defer stopSubscriber()
 			if err := subscriber.Receive(cctx, messageReceiver); err != nil {
 				t.Errorf("Receive() got err: %v", err)
 			}
@@ -852,7 +854,7 @@ func TestIntegration_SubscribeFanOut(t *testing.T) {
 	}
 }
 
-func validateNewSeekOperation(t *testing.T, subscription wire.SubscriptionPath, seekOp *pubsublite.SeekSubscriptionOperation) {
+func validateNewSeekOperation(t *testing.T, _ wire.SubscriptionPath, seekOp *pubsublite.SeekSubscriptionOperation) {
 	t.Helper()
 
 	if len(seekOp.Name()) == 0 {
@@ -870,7 +872,7 @@ func validateNewSeekOperation(t *testing.T, subscription wire.SubscriptionPath, 
 	t.Logf("Seek operation initiated: %s, metadata: %v", seekOp.Name(), m)
 }
 
-func validateCompleteSeekOperation(ctx context.Context, t *testing.T, subscription wire.SubscriptionPath, seekOp *pubsublite.SeekSubscriptionOperation) {
+func validateCompleteSeekOperation(ctx context.Context, t *testing.T, _ wire.SubscriptionPath, seekOp *pubsublite.SeekSubscriptionOperation) {
 	t.Helper()
 
 	_, err := seekOp.Wait(ctx)

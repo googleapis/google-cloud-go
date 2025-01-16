@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package gkemulticloud
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 	"time"
@@ -65,6 +66,7 @@ func defaultAttachedClustersGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://gkemulticloud.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -151,7 +153,7 @@ func defaultAttachedClustersCallOptions() *AttachedClustersCallOptions {
 	}
 }
 
-// internalAttachedClustersClient is an interface that defines the methods available from Anthos Multi-Cloud API.
+// internalAttachedClustersClient is an interface that defines the methods available from GKE Multi-Cloud API.
 type internalAttachedClustersClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -175,7 +177,7 @@ type internalAttachedClustersClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// AttachedClustersClient is a client for interacting with Anthos Multi-Cloud API.
+// AttachedClustersClient is a client for interacting with GKE Multi-Cloud API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The AttachedClusters API provides a single centrally managed service
@@ -330,7 +332,7 @@ func (c *AttachedClustersClient) ListOperations(ctx context.Context, req *longru
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// attachedClustersGRPCClient is a client for interacting with Anthos Multi-Cloud API over gRPC transport.
+// attachedClustersGRPCClient is a client for interacting with GKE Multi-Cloud API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type attachedClustersGRPCClient struct {
@@ -352,6 +354,8 @@ type attachedClustersGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewAttachedClustersClient creates a new attached clusters client based on gRPC.
@@ -380,6 +384,7 @@ func NewAttachedClustersClient(ctx context.Context, opts ...option.ClientOption)
 		connPool:               connPool,
 		attachedClustersClient: gkemulticloudpb.NewAttachedClustersClient(connPool),
 		CallOptions:            &client.CallOptions,
+		logger:                 internaloption.GetLogger(opts),
 		operationsClient:       longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -414,7 +419,9 @@ func (c *attachedClustersGRPCClient) Connection() *grpc.ClientConn {
 func (c *attachedClustersGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -432,7 +439,7 @@ func (c *attachedClustersGRPCClient) CreateAttachedCluster(ctx context.Context, 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.attachedClustersClient.CreateAttachedCluster(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.attachedClustersClient.CreateAttachedCluster, req, settings.GRPC, c.logger, "CreateAttachedCluster")
 		return err
 	}, opts...)
 	if err != nil {
@@ -452,7 +459,7 @@ func (c *attachedClustersGRPCClient) UpdateAttachedCluster(ctx context.Context, 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.attachedClustersClient.UpdateAttachedCluster(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.attachedClustersClient.UpdateAttachedCluster, req, settings.GRPC, c.logger, "UpdateAttachedCluster")
 		return err
 	}, opts...)
 	if err != nil {
@@ -472,7 +479,7 @@ func (c *attachedClustersGRPCClient) ImportAttachedCluster(ctx context.Context, 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.attachedClustersClient.ImportAttachedCluster(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.attachedClustersClient.ImportAttachedCluster, req, settings.GRPC, c.logger, "ImportAttachedCluster")
 		return err
 	}, opts...)
 	if err != nil {
@@ -492,7 +499,7 @@ func (c *attachedClustersGRPCClient) GetAttachedCluster(ctx context.Context, req
 	var resp *gkemulticloudpb.AttachedCluster
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.attachedClustersClient.GetAttachedCluster(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.attachedClustersClient.GetAttachedCluster, req, settings.GRPC, c.logger, "GetAttachedCluster")
 		return err
 	}, opts...)
 	if err != nil {
@@ -521,7 +528,7 @@ func (c *attachedClustersGRPCClient) ListAttachedClusters(ctx context.Context, r
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.attachedClustersClient.ListAttachedClusters(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.attachedClustersClient.ListAttachedClusters, req, settings.GRPC, c.logger, "ListAttachedClusters")
 			return err
 		}, opts...)
 		if err != nil {
@@ -556,7 +563,7 @@ func (c *attachedClustersGRPCClient) DeleteAttachedCluster(ctx context.Context, 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.attachedClustersClient.DeleteAttachedCluster(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.attachedClustersClient.DeleteAttachedCluster, req, settings.GRPC, c.logger, "DeleteAttachedCluster")
 		return err
 	}, opts...)
 	if err != nil {
@@ -576,7 +583,7 @@ func (c *attachedClustersGRPCClient) GetAttachedServerConfig(ctx context.Context
 	var resp *gkemulticloudpb.AttachedServerConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.attachedClustersClient.GetAttachedServerConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.attachedClustersClient.GetAttachedServerConfig, req, settings.GRPC, c.logger, "GetAttachedServerConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -594,7 +601,7 @@ func (c *attachedClustersGRPCClient) GenerateAttachedClusterInstallManifest(ctx 
 	var resp *gkemulticloudpb.GenerateAttachedClusterInstallManifestResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.attachedClustersClient.GenerateAttachedClusterInstallManifest(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.attachedClustersClient.GenerateAttachedClusterInstallManifest, req, settings.GRPC, c.logger, "GenerateAttachedClusterInstallManifest")
 		return err
 	}, opts...)
 	if err != nil {
@@ -612,7 +619,7 @@ func (c *attachedClustersGRPCClient) GenerateAttachedClusterAgentToken(ctx conte
 	var resp *gkemulticloudpb.GenerateAttachedClusterAgentTokenResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.attachedClustersClient.GenerateAttachedClusterAgentToken(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.attachedClustersClient.GenerateAttachedClusterAgentToken, req, settings.GRPC, c.logger, "GenerateAttachedClusterAgentToken")
 		return err
 	}, opts...)
 	if err != nil {
@@ -629,7 +636,7 @@ func (c *attachedClustersGRPCClient) CancelOperation(ctx context.Context, req *l
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -643,7 +650,7 @@ func (c *attachedClustersGRPCClient) DeleteOperation(ctx context.Context, req *l
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -658,7 +665,7 @@ func (c *attachedClustersGRPCClient) GetOperation(ctx context.Context, req *long
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -687,7 +694,7 @@ func (c *attachedClustersGRPCClient) ListOperations(ctx context.Context, req *lo
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {

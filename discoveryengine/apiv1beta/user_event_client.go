@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -50,7 +49,9 @@ var newUserEventClientHook clientHook
 type UserEventCallOptions struct {
 	WriteUserEvent   []gax.CallOption
 	CollectUserEvent []gax.CallOption
+	PurgeUserEvents  []gax.CallOption
 	ImportUserEvents []gax.CallOption
+	CancelOperation  []gax.CallOption
 	GetOperation     []gax.CallOption
 	ListOperations   []gax.CallOption
 }
@@ -64,6 +65,7 @@ func defaultUserEventGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://discoveryengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -95,6 +97,18 @@ func defaultUserEventCallOptions() *UserEventCallOptions {
 				})
 			}),
 		},
+		PurgeUserEvents: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		ImportUserEvents: []gax.CallOption{
 			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -103,6 +117,18 @@ func defaultUserEventCallOptions() *UserEventCallOptions {
 				}, gax.Backoff{
 					Initial:    1000 * time.Millisecond,
 					Max:        30000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CancelOperation: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
 			}),
@@ -158,12 +184,34 @@ func defaultUserEventRESTCallOptions() *UserEventCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		PurgeUserEvents: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		ImportUserEvents: []gax.CallOption{
 			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
 					Max:        30000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		CancelOperation: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
 					http.StatusServiceUnavailable)
@@ -201,8 +249,11 @@ type internalUserEventClient interface {
 	Connection() *grpc.ClientConn
 	WriteUserEvent(context.Context, *discoveryenginepb.WriteUserEventRequest, ...gax.CallOption) (*discoveryenginepb.UserEvent, error)
 	CollectUserEvent(context.Context, *discoveryenginepb.CollectUserEventRequest, ...gax.CallOption) (*httpbodypb.HttpBody, error)
+	PurgeUserEvents(context.Context, *discoveryenginepb.PurgeUserEventsRequest, ...gax.CallOption) (*PurgeUserEventsOperation, error)
+	PurgeUserEventsOperation(name string) *PurgeUserEventsOperation
 	ImportUserEvents(context.Context, *discoveryenginepb.ImportUserEventsRequest, ...gax.CallOption) (*ImportUserEventsOperation, error)
 	ImportUserEventsOperation(name string) *ImportUserEventsOperation
+	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
@@ -261,7 +312,21 @@ func (c *UserEventClient) CollectUserEvent(ctx context.Context, req *discoveryen
 	return c.internalClient.CollectUserEvent(ctx, req, opts...)
 }
 
-// ImportUserEvents bulk import of User events. Request processing might be
+// PurgeUserEvents deletes permanently all user events specified by the filter provided.
+// Depending on the number of events specified by the filter, this operation
+// could take hours or days to complete. To test a filter, use the list
+// command first.
+func (c *UserEventClient) PurgeUserEvents(ctx context.Context, req *discoveryenginepb.PurgeUserEventsRequest, opts ...gax.CallOption) (*PurgeUserEventsOperation, error) {
+	return c.internalClient.PurgeUserEvents(ctx, req, opts...)
+}
+
+// PurgeUserEventsOperation returns a new PurgeUserEventsOperation from a given name.
+// The name must be that of a previously created PurgeUserEventsOperation, possibly from a different process.
+func (c *UserEventClient) PurgeUserEventsOperation(name string) *PurgeUserEventsOperation {
+	return c.internalClient.PurgeUserEventsOperation(name)
+}
+
+// ImportUserEvents bulk import of user events. Request processing might be
 // synchronous. Events that already exist are skipped.
 // Use this method for backfilling historical user events.
 //
@@ -276,6 +341,11 @@ func (c *UserEventClient) ImportUserEvents(ctx context.Context, req *discoveryen
 // The name must be that of a previously created ImportUserEventsOperation, possibly from a different process.
 func (c *UserEventClient) ImportUserEventsOperation(name string) *ImportUserEventsOperation {
 	return c.internalClient.ImportUserEventsOperation(name)
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *UserEventClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.CancelOperation(ctx, req, opts...)
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.
@@ -310,6 +380,8 @@ type userEventGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewUserEventClient creates a new user event service client based on gRPC.
@@ -336,6 +408,7 @@ func NewUserEventClient(ctx context.Context, opts ...option.ClientOption) (*User
 		connPool:         connPool,
 		userEventClient:  discoveryenginepb.NewUserEventServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -370,7 +443,9 @@ func (c *userEventGRPCClient) Connection() *grpc.ClientConn {
 func (c *userEventGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -397,6 +472,8 @@ type userEventRESTClient struct {
 
 	// Points back to the CallOptions field of the containing UserEventClient
 	CallOptions **UserEventCallOptions
+
+	logger *slog.Logger
 }
 
 // NewUserEventRESTClient creates a new user event service rest client.
@@ -414,6 +491,7 @@ func NewUserEventRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -438,6 +516,7 @@ func defaultUserEventRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://discoveryengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -447,7 +526,9 @@ func defaultUserEventRESTClientOptions() []option.ClientOption {
 func (c *userEventRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -473,7 +554,7 @@ func (c *userEventGRPCClient) WriteUserEvent(ctx context.Context, req *discovery
 	var resp *discoveryenginepb.UserEvent
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.userEventClient.WriteUserEvent(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.userEventClient.WriteUserEvent, req, settings.GRPC, c.logger, "WriteUserEvent")
 		return err
 	}, opts...)
 	if err != nil {
@@ -491,13 +572,33 @@ func (c *userEventGRPCClient) CollectUserEvent(ctx context.Context, req *discove
 	var resp *httpbodypb.HttpBody
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.userEventClient.CollectUserEvent(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.userEventClient.CollectUserEvent, req, settings.GRPC, c.logger, "CollectUserEvent")
 		return err
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *userEventGRPCClient) PurgeUserEvents(ctx context.Context, req *discoveryenginepb.PurgeUserEventsRequest, opts ...gax.CallOption) (*PurgeUserEventsOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).PurgeUserEvents[0:len((*c.CallOptions).PurgeUserEvents):len((*c.CallOptions).PurgeUserEvents)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.userEventClient.PurgeUserEvents, req, settings.GRPC, c.logger, "PurgeUserEvents")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &PurgeUserEventsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *userEventGRPCClient) ImportUserEvents(ctx context.Context, req *discoveryenginepb.ImportUserEventsRequest, opts ...gax.CallOption) (*ImportUserEventsOperation, error) {
@@ -509,7 +610,7 @@ func (c *userEventGRPCClient) ImportUserEvents(ctx context.Context, req *discove
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.userEventClient.ImportUserEvents(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.userEventClient.ImportUserEvents, req, settings.GRPC, c.logger, "ImportUserEvents")
 		return err
 	}, opts...)
 	if err != nil {
@@ -518,6 +619,20 @@ func (c *userEventGRPCClient) ImportUserEvents(ctx context.Context, req *discove
 	return &ImportUserEventsOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *userEventGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
+		return err
+	}, opts...)
+	return err
 }
 
 func (c *userEventGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
@@ -529,7 +644,7 @@ func (c *userEventGRPCClient) GetOperation(ctx context.Context, req *longrunning
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -558,7 +673,7 @@ func (c *userEventGRPCClient) ListOperations(ctx context.Context, req *longrunni
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -601,6 +716,9 @@ func (c *userEventRESTClient) WriteUserEvent(ctx context.Context, req *discovery
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetWriteAsync() {
+		params.Add("writeAsync", fmt.Sprintf("%v", req.GetWriteAsync()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -624,17 +742,7 @@ func (c *userEventRESTClient) WriteUserEvent(ctx context.Context, req *discovery
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "WriteUserEvent")
 		if err != nil {
 			return err
 		}
@@ -694,17 +802,7 @@ func (c *userEventRESTClient) CollectUserEvent(ctx context.Context, req *discove
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, httpRsp, err := executeHTTPRequestWithResponse(ctx, c.httpClient, httpReq, c.logger, nil, "CollectUserEvent")
 		if err != nil {
 			return err
 		}
@@ -722,7 +820,69 @@ func (c *userEventRESTClient) CollectUserEvent(ctx context.Context, req *discove
 	return resp, nil
 }
 
-// ImportUserEvents bulk import of User events. Request processing might be
+// PurgeUserEvents deletes permanently all user events specified by the filter provided.
+// Depending on the number of events specified by the filter, this operation
+// could take hours or days to complete. To test a filter, use the list
+// command first.
+func (c *userEventRESTClient) PurgeUserEvents(ctx context.Context, req *discoveryenginepb.PurgeUserEventsRequest, opts ...gax.CallOption) (*PurgeUserEventsOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v/userEvents:purge", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PurgeUserEvents")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	return &PurgeUserEventsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ImportUserEvents bulk import of user events. Request processing might be
 // synchronous. Events that already exist are skipped.
 // Use this method for backfilling historical user events.
 //
@@ -766,21 +926,10 @@ func (c *userEventRESTClient) ImportUserEvents(ctx context.Context, req *discove
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ImportUserEvents")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -796,6 +945,47 @@ func (c *userEventRESTClient) ImportUserEvents(ctx context.Context, req *discove
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *userEventRESTClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v:cancel", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelOperation")
+		return err
+	}, opts...)
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.
@@ -831,17 +1021,7 @@ func (c *userEventRESTClient) GetOperation(ctx context.Context, req *longrunning
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -906,21 +1086,10 @@ func (c *userEventRESTClient) ListOperations(ctx context.Context, req *longrunni
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -963,6 +1132,24 @@ func (c *userEventGRPCClient) ImportUserEventsOperation(name string) *ImportUser
 func (c *userEventRESTClient) ImportUserEventsOperation(name string) *ImportUserEventsOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &ImportUserEventsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// PurgeUserEventsOperation returns a new PurgeUserEventsOperation from a given name.
+// The name must be that of a previously created PurgeUserEventsOperation, possibly from a different process.
+func (c *userEventGRPCClient) PurgeUserEventsOperation(name string) *PurgeUserEventsOperation {
+	return &PurgeUserEventsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// PurgeUserEventsOperation returns a new PurgeUserEventsOperation from a given name.
+// The name must be that of a previously created PurgeUserEventsOperation, possibly from a different process.
+func (c *userEventRESTClient) PurgeUserEventsOperation(name string) *PurgeUserEventsOperation {
+	override := fmt.Sprintf("/v1beta/%s", name)
+	return &PurgeUserEventsOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

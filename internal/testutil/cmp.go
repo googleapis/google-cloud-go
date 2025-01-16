@@ -18,8 +18,8 @@ import (
 	"math"
 	"math/big"
 
-	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/protobuf/proto"
 )
 
 var (

@@ -149,9 +149,9 @@ func (r *continuousReads) run(ctx context.Context) error {
 
 				var span trace.Span
 				ctx, span = otel.GetTracerProvider().Tracer(tracerName).Start(ctx, "continuous_reads")
-				span.SetAttributes(attribute.KeyValue{"workload", attribute.StringValue("9")},
-					attribute.KeyValue{"api", attribute.StringValue(string(r.api))},
-					attribute.KeyValue{"object_size", attribute.Int64Value(r.objectSize)})
+				span.SetAttributes(attribute.KeyValue{Key: "workload", Value: attribute.StringValue("9")},
+					attribute.KeyValue{Key: "api", Value: attribute.StringValue(string(r.api))},
+					attribute.KeyValue{Key: "object_size", Value: attribute.Int64Value(r.objectSize)})
 				defer span.End()
 
 				// Download full object (range is not supported)

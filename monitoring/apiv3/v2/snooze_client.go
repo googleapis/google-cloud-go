@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package monitoring
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 	"time"
@@ -53,6 +54,7 @@ func defaultSnoozeGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://monitoring.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -180,6 +182,8 @@ type snoozeGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewSnoozeClient creates a new snooze service client based on gRPC.
@@ -208,6 +212,7 @@ func NewSnoozeClient(ctx context.Context, opts ...option.ClientOption) (*SnoozeC
 		connPool:     connPool,
 		snoozeClient: monitoringpb.NewSnoozeServiceClient(connPool),
 		CallOptions:  &client.CallOptions,
+		logger:       internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -230,7 +235,9 @@ func (c *snoozeGRPCClient) Connection() *grpc.ClientConn {
 func (c *snoozeGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -248,7 +255,7 @@ func (c *snoozeGRPCClient) CreateSnooze(ctx context.Context, req *monitoringpb.C
 	var resp *monitoringpb.Snooze
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.snoozeClient.CreateSnooze(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.snoozeClient.CreateSnooze, req, settings.GRPC, c.logger, "CreateSnooze")
 		return err
 	}, opts...)
 	if err != nil {
@@ -277,7 +284,7 @@ func (c *snoozeGRPCClient) ListSnoozes(ctx context.Context, req *monitoringpb.Li
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.snoozeClient.ListSnoozes(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.snoozeClient.ListSnoozes, req, settings.GRPC, c.logger, "ListSnoozes")
 			return err
 		}, opts...)
 		if err != nil {
@@ -312,7 +319,7 @@ func (c *snoozeGRPCClient) GetSnooze(ctx context.Context, req *monitoringpb.GetS
 	var resp *monitoringpb.Snooze
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.snoozeClient.GetSnooze(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.snoozeClient.GetSnooze, req, settings.GRPC, c.logger, "GetSnooze")
 		return err
 	}, opts...)
 	if err != nil {
@@ -330,7 +337,7 @@ func (c *snoozeGRPCClient) UpdateSnooze(ctx context.Context, req *monitoringpb.U
 	var resp *monitoringpb.Snooze
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.snoozeClient.UpdateSnooze(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.snoozeClient.UpdateSnooze, req, settings.GRPC, c.logger, "UpdateSnooze")
 		return err
 	}, opts...)
 	if err != nil {

@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -430,7 +430,7 @@ type AnnotatedDatasetIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*datalabelingpb.AnnotatedDataset, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AnnotatedDatasetIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -477,7 +477,7 @@ type AnnotationSpecSetIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*datalabelingpb.AnnotationSpecSet, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AnnotationSpecSetIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -524,7 +524,7 @@ type DataItemIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*datalabelingpb.DataItem, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *DataItemIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -571,7 +571,7 @@ type DatasetIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*datalabelingpb.Dataset, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *DatasetIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -618,7 +618,7 @@ type EvaluationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*datalabelingpb.Evaluation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *EvaluationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -665,7 +665,7 @@ type EvaluationJobIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*datalabelingpb.EvaluationJob, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *EvaluationJobIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -712,7 +712,7 @@ type ExampleIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*datalabelingpb.Example, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ExampleIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -759,7 +759,7 @@ type InstructionIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*datalabelingpb.Instruction, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *InstructionIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -806,7 +806,7 @@ type SearchExampleComparisonsResponse_ExampleComparisonIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*datalabelingpb.SearchExampleComparisonsResponse_ExampleComparison, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *SearchExampleComparisonsResponse_ExampleComparisonIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

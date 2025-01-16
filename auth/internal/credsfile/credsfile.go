@@ -26,8 +26,10 @@ import (
 )
 
 const (
-	envGoogApCreds    = "GOOGLE_APPLICATION_CREDENTIALS"
-	userCredsFilename = "application_default_credentials.json"
+	// GoogleAppCredsEnvVar is the environment variable for setting the
+	// application default credentials.
+	GoogleAppCredsEnvVar = "GOOGLE_APPLICATION_CREDENTIALS"
+	userCredsFilename    = "application_default_credentials.json"
 )
 
 // CredentialType represents different credential filetypes Google credentials
@@ -80,7 +82,7 @@ func GetFileNameFromEnv(override string) string {
 	if override != "" {
 		return override
 	}
-	return os.Getenv(envGoogApCreds)
+	return os.Getenv(GoogleAppCredsEnvVar)
 }
 
 // GetWellKnownFileName tries to locate the filepath for the user credential

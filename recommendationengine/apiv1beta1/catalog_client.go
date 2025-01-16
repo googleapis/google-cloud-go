@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	recommendationenginepb "cloud.google.com/go/recommendationengine/apiv1beta1/recommendationenginepb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -64,6 +63,7 @@ func defaultCatalogGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://recommendationengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -345,6 +345,8 @@ type catalogGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewCatalogClient creates a new catalog service client based on gRPC.
@@ -371,6 +373,7 @@ func NewCatalogClient(ctx context.Context, opts ...option.ClientOption) (*Catalo
 		connPool:      connPool,
 		catalogClient: recommendationenginepb.NewCatalogServiceClient(connPool),
 		CallOptions:   &client.CallOptions,
+		logger:        internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -404,7 +407,9 @@ func (c *catalogGRPCClient) Connection() *grpc.ClientConn {
 func (c *catalogGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -431,6 +436,8 @@ type catalogRESTClient struct {
 
 	// Points back to the CallOptions field of the containing CatalogClient
 	CallOptions **CatalogCallOptions
+
+	logger *slog.Logger
 }
 
 // NewCatalogRESTClient creates a new catalog service rest client.
@@ -448,6 +455,7 @@ func NewCatalogRESTClient(ctx context.Context, opts ...option.ClientOption) (*Ca
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -472,6 +480,7 @@ func defaultCatalogRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://recommendationengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -481,7 +490,9 @@ func defaultCatalogRESTClientOptions() []option.ClientOption {
 func (c *catalogRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -507,7 +518,7 @@ func (c *catalogGRPCClient) CreateCatalogItem(ctx context.Context, req *recommen
 	var resp *recommendationenginepb.CatalogItem
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.catalogClient.CreateCatalogItem(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.catalogClient.CreateCatalogItem, req, settings.GRPC, c.logger, "CreateCatalogItem")
 		return err
 	}, opts...)
 	if err != nil {
@@ -525,7 +536,7 @@ func (c *catalogGRPCClient) GetCatalogItem(ctx context.Context, req *recommendat
 	var resp *recommendationenginepb.CatalogItem
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.catalogClient.GetCatalogItem(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.catalogClient.GetCatalogItem, req, settings.GRPC, c.logger, "GetCatalogItem")
 		return err
 	}, opts...)
 	if err != nil {
@@ -554,7 +565,7 @@ func (c *catalogGRPCClient) ListCatalogItems(ctx context.Context, req *recommend
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.catalogClient.ListCatalogItems(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.catalogClient.ListCatalogItems, req, settings.GRPC, c.logger, "ListCatalogItems")
 			return err
 		}, opts...)
 		if err != nil {
@@ -589,7 +600,7 @@ func (c *catalogGRPCClient) UpdateCatalogItem(ctx context.Context, req *recommen
 	var resp *recommendationenginepb.CatalogItem
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.catalogClient.UpdateCatalogItem(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.catalogClient.UpdateCatalogItem, req, settings.GRPC, c.logger, "UpdateCatalogItem")
 		return err
 	}, opts...)
 	if err != nil {
@@ -606,7 +617,7 @@ func (c *catalogGRPCClient) DeleteCatalogItem(ctx context.Context, req *recommen
 	opts = append((*c.CallOptions).DeleteCatalogItem[0:len((*c.CallOptions).DeleteCatalogItem):len((*c.CallOptions).DeleteCatalogItem)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.catalogClient.DeleteCatalogItem(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.catalogClient.DeleteCatalogItem, req, settings.GRPC, c.logger, "DeleteCatalogItem")
 		return err
 	}, opts...)
 	return err
@@ -621,7 +632,7 @@ func (c *catalogGRPCClient) ImportCatalogItems(ctx context.Context, req *recomme
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.catalogClient.ImportCatalogItems(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.catalogClient.ImportCatalogItems, req, settings.GRPC, c.logger, "ImportCatalogItems")
 		return err
 	}, opts...)
 	if err != nil {
@@ -672,17 +683,7 @@ func (c *catalogRESTClient) CreateCatalogItem(ctx context.Context, req *recommen
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateCatalogItem")
 		if err != nil {
 			return err
 		}
@@ -732,17 +733,7 @@ func (c *catalogRESTClient) GetCatalogItem(ctx context.Context, req *recommendat
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCatalogItem")
 		if err != nil {
 			return err
 		}
@@ -807,21 +798,10 @@ func (c *catalogRESTClient) ListCatalogItems(ctx context.Context, req *recommend
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListCatalogItems")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -870,11 +850,11 @@ func (c *catalogRESTClient) UpdateCatalogItem(ctx context.Context, req *recommen
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -899,17 +879,7 @@ func (c *catalogRESTClient) UpdateCatalogItem(ctx context.Context, req *recommen
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateCatalogItem")
 		if err != nil {
 			return err
 		}
@@ -956,15 +926,8 @@ func (c *catalogRESTClient) DeleteCatalogItem(ctx context.Context, req *recommen
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteCatalogItem")
+		return err
 	}, opts...)
 }
 
@@ -1011,21 +974,10 @@ func (c *catalogRESTClient) ImportCatalogItems(ctx context.Context, req *recomme
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ImportCatalogItems")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}

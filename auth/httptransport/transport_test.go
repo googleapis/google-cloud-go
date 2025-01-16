@@ -22,27 +22,46 @@ import (
 
 func TestAuthTransport_GetClientUniverseDomain(t *testing.T) {
 	nonDefault := "example.com"
+	nonDefault2 := "other-example.com"
 	tests := []struct {
-		name           string
-		universeDomain string
-		want           string
+		name                 string
+		clientUniverseDomain string
+		envUniverseDomain    string
+		want                 string
 	}{
 		{
-			name:           "default",
-			universeDomain: "",
-			want:           internal.DefaultUniverseDomain,
+			name:                 "default",
+			clientUniverseDomain: "",
+			want:                 internal.DefaultUniverseDomain,
 		},
 		{
-			name:           "non-default",
-			universeDomain: nonDefault,
-			want:           nonDefault,
+			name:                 "client option",
+			clientUniverseDomain: nonDefault,
+			want:                 nonDefault,
+		},
+		{
+			name:                 "env var",
+			clientUniverseDomain: "",
+			envUniverseDomain:    nonDefault2,
+			want:                 nonDefault2,
+		},
+		{
+			name:                 "client option and env var",
+			clientUniverseDomain: nonDefault,
+			envUniverseDomain:    nonDefault2,
+			want:                 nonDefault,
 		},
 	}
 	for _, tt := range tests {
-		at := &authTransport{clientUniverseDomain: tt.universeDomain}
-		got := at.getClientUniverseDomain()
-		if got != tt.want {
-			t.Errorf("%s: got %q, want %q", tt.name, got, tt.want)
-		}
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.envUniverseDomain != "" {
+				t.Setenv(internal.UniverseDomainEnvVar, tt.envUniverseDomain)
+			}
+			at := &authTransport{clientUniverseDomain: tt.clientUniverseDomain}
+			got := at.getClientUniverseDomain()
+			if got != tt.want {
+				t.Errorf("got %q, want %q", got, tt.want)
+			}
+		})
 	}
 }

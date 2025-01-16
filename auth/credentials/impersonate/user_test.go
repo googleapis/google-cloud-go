@@ -37,6 +37,8 @@ func TestNewCredentials_user(t *testing.T) {
 		lifetime        time.Duration
 		subject         string
 		wantErr         bool
+		wantTokenErr    bool
+		universeDomain  string
 	}{
 		{
 			name:    "missing targetPrincipal",
@@ -59,7 +61,16 @@ func TestNewCredentials_user(t *testing.T) {
 			targetPrincipal: "foo@project-id.iam.gserviceaccount.com",
 			scopes:          []string{"scope"},
 			subject:         "admin@example.com",
-			wantErr:         false,
+		},
+		{
+			name:            "universeDomain",
+			targetPrincipal: "foo@project-id.iam.gserviceaccount.com",
+			scopes:          []string{"scope"},
+			subject:         "admin@example.com",
+			wantTokenErr:    true,
+			// Non-GDU Universe Domain should result in error if
+			// CredentialsConfig.Subject is present for domain-wide delegation.
+			universeDomain: "example.com",
 		},
 	}
 
@@ -132,6 +143,7 @@ func TestNewCredentials_user(t *testing.T) {
 				Lifetime:        tt.lifetime,
 				Subject:         tt.subject,
 				Client:          client,
+				UniverseDomain:  tt.universeDomain,
 			})
 			if tt.wantErr && err != nil {
 				return
@@ -140,6 +152,9 @@ func TestNewCredentials_user(t *testing.T) {
 				t.Fatal(err)
 			}
 			tok, err := ts.Token(ctx)
+			if tt.wantTokenErr && err != nil {
+				return
+			}
 			if err != nil {
 				t.Fatal(err)
 			}

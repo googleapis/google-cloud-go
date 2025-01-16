@@ -25,12 +25,12 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	ipb "cloud.google.com/go/rpcreplay/proto/intstore"
 	rpb "cloud.google.com/go/rpcreplay/proto/rpcreplay"
-	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/testing/protocmp"
 )
 

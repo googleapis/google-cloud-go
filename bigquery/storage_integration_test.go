@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 	"testing"
 	"time"
 
@@ -40,20 +41,22 @@ func TestIntegration_StorageReadBasicTypes(t *testing.T) {
 	initQueryParameterTestCases()
 
 	for _, c := range queryParameterTestCases {
-		q := storageOptimizedClient.Query(c.query)
-		q.Parameters = c.parameters
-		q.forceStorageAPI = true
-		it, err := q.Read(ctx)
-		if err != nil {
-			t.Fatal(err)
-		}
-		err = checkIteratorRead(it, c.wantRow)
-		if err != nil {
-			t.Fatalf("%s: error on query `%s`[%v]: %v", it.SourceJob().ID(), c.query, c.parameters, err)
-		}
-		if !it.IsAccelerated() {
-			t.Fatalf("%s: expected storage api to be used", it.SourceJob().ID())
-		}
+		t.Run(c.name, func(t *testing.T) {
+			q := storageOptimizedClient.Query(c.query)
+			q.Parameters = c.parameters
+			q.forceStorageAPI = true
+			it, err := q.Read(ctx)
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = checkIteratorRead(it, c.wantRow)
+			if err != nil {
+				t.Fatalf("%s: error on query `%s`[%v]: %v", it.SourceJob().ID(), c.query, c.parameters, err)
+			}
+			if !it.IsAccelerated() {
+				t.Fatalf("%s: expected storage api to be used", it.SourceJob().ID())
+			}
+		})
 	}
 }
 
@@ -82,6 +85,32 @@ func TestIntegration_StorageReadEmptyResultSet(t *testing.T) {
 	}
 	if !it.IsAccelerated() {
 		t.Fatal("expected storage api to be used")
+	}
+}
+
+func TestIntegration_StorageReadClientProject(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	defer cancel()
+
+	table := storageOptimizedClient.Dataset("usa_names").Table("usa_1910_current")
+	table.ProjectID = "bigquery-public-data"
+
+	it := table.Read(ctx)
+	_, err := countIteratorRows(it)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !it.IsAccelerated() {
+		t.Fatal("expected storage api to be used")
+	}
+
+	session := it.arrowIterator.(*storageArrowIterator).rs
+	expectedPrefix := fmt.Sprintf("projects/%s", storageOptimizedClient.projectID)
+	if !strings.HasPrefix(session.bqSession.Name, expectedPrefix) {
+		t.Fatalf("expected read session to have prefix %q: but found %s:", expectedPrefix, session.bqSession.Name)
 	}
 }
 
@@ -255,7 +284,7 @@ func TestIntegration_StorageReadQueryOrdering(t *testing.T) {
 		}
 		total++ // as we read the first value separately
 
-		session := it.arrowIterator.(*storageArrowIterator).session
+		session := it.arrowIterator.(*storageArrowIterator).rs
 		bqSession := session.bqSession
 		if len(bqSession.Streams) == 0 {
 			t.Fatalf("%s: expected to use at least one stream but found %d", tc.name, len(bqSession.Streams))
@@ -323,7 +352,7 @@ func TestIntegration_StorageReadQueryStruct(t *testing.T) {
 		total++
 	}
 
-	bqSession := it.arrowIterator.(*storageArrowIterator).session.bqSession
+	bqSession := it.arrowIterator.(*storageArrowIterator).rs.bqSession
 	if len(bqSession.Streams) == 0 {
 		t.Fatalf("should use more than one stream but found %d", len(bqSession.Streams))
 	}
@@ -372,7 +401,7 @@ func TestIntegration_StorageReadQueryMorePages(t *testing.T) {
 	}
 	total++ // as we read the first value separately
 
-	bqSession := it.arrowIterator.(*storageArrowIterator).session.bqSession
+	bqSession := it.arrowIterator.(*storageArrowIterator).rs.bqSession
 	if len(bqSession.Streams) == 0 {
 		t.Fatalf("should use more than one stream but found %d", len(bqSession.Streams))
 	}

@@ -419,6 +419,7 @@ func TestLoad(t *testing.T) {
 						Value: "session_id_1234567890",
 					},
 				},
+				ColumnNameCharacterMap: StrictColumnNameCharacterMap,
 			},
 			want: func() *bq.Job {
 				j := defaultLoadJob()
@@ -429,6 +430,7 @@ func TestLoad(t *testing.T) {
 						Value: "session_id_1234567890",
 					},
 				}
+				j.Configuration.Load.ColumnNameCharacterMap = "STRICT"
 				return j
 			}(),
 		},

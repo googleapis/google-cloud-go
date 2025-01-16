@@ -28,12 +28,12 @@ import (
 	"cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/auth/credentials/idtoken"
 	"cloud.google.com/go/auth/credentials/impersonate"
+	"cloud.google.com/go/auth/internal/credsfile"
 	"cloud.google.com/go/auth/internal/testutil"
 	"cloud.google.com/go/auth/internal/testutil/testgcs"
 )
 
 const (
-	envAppCreds    = "GOOGLE_APPLICATION_CREDENTIALS"
 	envProjectID   = "GCLOUD_TESTS_GOLANG_PROJECT_ID"
 	envReaderCreds = "GCLOUD_TESTS_IMPERSONATE_READER_KEY"
 	envReaderEmail = "GCLOUD_TESTS_IMPERSONATE_READER_EMAIL"
@@ -52,21 +52,34 @@ var (
 func TestMain(m *testing.M) {
 	flag.Parse()
 	random = rand.New(rand.NewSource(time.Now().UnixNano()))
-	baseKeyFile = os.Getenv(envAppCreds)
+	baseKeyFile = os.Getenv(credsfile.GoogleAppCredsEnvVar)
 	projectID = os.Getenv(envProjectID)
 	readerKeyFile = os.Getenv(envReaderCreds)
 	readerEmail = os.Getenv(envReaderEmail)
 	writerEmail = os.Getenv(envWriterEmail)
 
-	if !testing.Short() && (baseKeyFile == "" ||
-		readerKeyFile == "" ||
-		readerEmail == "" ||
-		writerEmail == "" ||
-		projectID == "") {
-		log.Println("required environment variable not set, skipping")
-		os.Exit(0)
+	if !testing.Short() {
+		missing := []string{}
+		if baseKeyFile == "" {
+			missing = append(missing, credsfile.GoogleAppCredsEnvVar)
+		}
+		if projectID == "" {
+			missing = append(missing, envProjectID)
+		}
+		if readerKeyFile == "" {
+			missing = append(missing, envReaderCreds)
+		}
+		if readerEmail == "" {
+			missing = append(missing, envReaderEmail)
+		}
+		if writerEmail == "" {
+			missing = append(missing, envWriterEmail)
+		}
+		if len(missing) > 0 {
+			log.Printf("skipping, required environment variable(s) not set: %s\n", missing)
+			os.Exit(0)
+		}
 	}
-
 	os.Exit(m.Run())
 }
 

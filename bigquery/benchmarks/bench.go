@@ -288,7 +288,7 @@ func main() {
 	var createTable = flag.Bool("create_table", false, "create result table if it does not exist")
 
 	var tags tags
-	flag.Var(&tags, "tag", "an optional key and value seperated by colon (:) character")
+	flag.Var(&tags, "tag", "an optional key and value separated by colon (:) character")
 	flag.Parse()
 
 	// Validate flags.

@@ -341,6 +341,90 @@
         }
       }
     },
+    "GenerativeQuestionService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "GenerativeQuestionClient",
+          "rpcs": {
+            "BatchUpdateGenerativeQuestionConfigs": {
+              "methods": [
+                "BatchUpdateGenerativeQuestionConfigs"
+              ]
+            },
+            "GetGenerativeQuestionsFeatureConfig": {
+              "methods": [
+                "GetGenerativeQuestionsFeatureConfig"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListGenerativeQuestionConfigs": {
+              "methods": [
+                "ListGenerativeQuestionConfigs"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateGenerativeQuestionConfig": {
+              "methods": [
+                "UpdateGenerativeQuestionConfig"
+              ]
+            },
+            "UpdateGenerativeQuestionsFeatureConfig": {
+              "methods": [
+                "UpdateGenerativeQuestionsFeatureConfig"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "GenerativeQuestionClient",
+          "rpcs": {
+            "BatchUpdateGenerativeQuestionConfigs": {
+              "methods": [
+                "BatchUpdateGenerativeQuestionConfigs"
+              ]
+            },
+            "GetGenerativeQuestionsFeatureConfig": {
+              "methods": [
+                "GetGenerativeQuestionsFeatureConfig"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListGenerativeQuestionConfigs": {
+              "methods": [
+                "ListGenerativeQuestionConfigs"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateGenerativeQuestionConfig": {
+              "methods": [
+                "UpdateGenerativeQuestionConfig"
+              ]
+            },
+            "UpdateGenerativeQuestionsFeatureConfig": {
+              "methods": [
+                "UpdateGenerativeQuestionsFeatureConfig"
+              ]
+            }
+          }
+        }
+      }
+    },
     "ModelService": {
       "clients": {
         "grpc": {
@@ -524,6 +608,11 @@
                 "DeleteProduct"
               ]
             },
+            "ExportProducts": {
+              "methods": [
+                "ExportProducts"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
@@ -547,6 +636,11 @@
             "ListProducts": {
               "methods": [
                 "ListProducts"
+              ]
+            },
+            "PurgeProducts": {
+              "methods": [
+                "PurgeProducts"
               ]
             },
             "RemoveFulfillmentPlaces": {
@@ -594,6 +688,11 @@
                 "DeleteProduct"
               ]
             },
+            "ExportProducts": {
+              "methods": [
+                "ExportProducts"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
@@ -619,6 +718,11 @@
                 "ListProducts"
               ]
             },
+            "PurgeProducts": {
+              "methods": [
+                "PurgeProducts"
+              ]
+            },
             "RemoveFulfillmentPlaces": {
               "methods": [
                 "RemoveFulfillmentPlaces"
@@ -637,6 +741,60 @@
             "UpdateProduct": {
               "methods": [
                 "UpdateProduct"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "ProjectService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ProjectClient",
+          "rpcs": {
+            "GetAlertConfig": {
+              "methods": [
+                "GetAlertConfig"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateAlertConfig": {
+              "methods": [
+                "UpdateAlertConfig"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ProjectClient",
+          "rpcs": {
+            "GetAlertConfig": {
+              "methods": [
+                "GetAlertConfig"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateAlertConfig": {
+              "methods": [
+                "UpdateAlertConfig"
               ]
             }
           }
@@ -801,6 +959,11 @@
                 "CollectUserEvent"
               ]
             },
+            "ExportUserEvents": {
+              "methods": [
+                "ExportUserEvents"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
@@ -839,6 +1002,11 @@
             "CollectUserEvent": {
               "methods": [
                 "CollectUserEvent"
+              ]
+            },
+            "ExportUserEvents": {
+              "methods": [
+                "ExportUserEvents"
               ]
             },
             "GetOperation": {

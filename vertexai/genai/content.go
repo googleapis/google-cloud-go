@@ -134,3 +134,27 @@ func (c *GenerationConfig) SetTopP(x float32) { c.TopP = &x }
 
 // SetTopK sets the TopK field.
 func (c *GenerationConfig) SetTopK(x int32) { c.TopK = &x }
+
+// FunctionCalls return all the FunctionCall parts in the candidate.
+func (c *Candidate) FunctionCalls() []FunctionCall {
+	if c.Content == nil {
+		return nil
+	}
+	var fcs []FunctionCall
+	for _, p := range c.Content.Parts {
+		if fc, ok := p.(FunctionCall); ok {
+			fcs = append(fcs, fc)
+		}
+	}
+	return fcs
+}
+
+// NewUserContent returns a [Content] with a "user" role set and one or more
+// parts.
+func NewUserContent(parts ...Part) *Content {
+	content := &Content{Role: roleUser, Parts: []Part{}}
+	for _, part := range parts {
+		content.Parts = append(content.Parts, part)
+	}
+	return content
+}

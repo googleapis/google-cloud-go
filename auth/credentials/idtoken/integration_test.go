@@ -24,24 +24,29 @@ import (
 
 	"cloud.google.com/go/auth/credentials/idtoken"
 	"cloud.google.com/go/auth/httptransport"
+	"cloud.google.com/go/auth/internal/credsfile"
 	"cloud.google.com/go/auth/internal/testutil"
 )
 
 const (
-	envCredentialFile = "GOOGLE_APPLICATION_CREDENTIALS"
-	aud               = "http://example.com"
+	aud = "http://example.com"
 )
 
 func TestNewCredentials_CredentialsFile(t *testing.T) {
 	testutil.IntegrationTestCheck(t)
 	ctx := context.Background()
-	ts, err := idtoken.NewCredentials(&idtoken.Options{
+	opts := &idtoken.Options{
 		Audience:        "http://example.com",
-		CredentialsFile: os.Getenv(envCredentialFile),
-	})
+		CredentialsFile: os.Getenv(credsfile.GoogleAppCredsEnvVar),
+	}
+	if opts.CredentialsFile == "" {
+		t.Skipf("credentials file is empty: skipping test")
+	}
+	ts, err := idtoken.NewCredentials(opts)
 	if err != nil {
 		t.Fatalf("unable to create credentials: %v", err)
 	}
+
 	tok, err := ts.Token(ctx)
 	if err != nil {
 		t.Fatalf("unable to retrieve Token: %v", err)
@@ -63,9 +68,14 @@ func TestNewCredentials_CredentialsFile(t *testing.T) {
 func TestNewCredentials_CredentialsJSON(t *testing.T) {
 	testutil.IntegrationTestCheck(t)
 	ctx := context.Background()
-	b, err := os.ReadFile(os.Getenv(envCredentialFile))
+	f := os.Getenv(credsfile.GoogleAppCredsEnvVar)
+	if f == "" {
+		t.Skipf("credentials file is empty: skipping test")
+	}
+
+	b, err := os.ReadFile(f)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("os.ReadFile(%q): %v", f, err)
 	}
 	creds, err := idtoken.NewCredentials(&idtoken.Options{
 		Audience:        aud,

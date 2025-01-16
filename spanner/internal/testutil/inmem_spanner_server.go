@@ -25,24 +25,25 @@ import (
 	"sort"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"cloud.google.com/go/spanner/apiv1/spannerpb"
-	"github.com/golang/protobuf/ptypes"
-	emptypb "github.com/golang/protobuf/ptypes/empty"
-	structpb "github.com/golang/protobuf/ptypes/struct"
-	"github.com/golang/protobuf/ptypes/timestamp"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	gstatus "google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/durationpb"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	structpb "google.golang.org/protobuf/types/known/structpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-var (
-	// KvMeta is the Metadata for mocked KV table.
-	KvMeta = spannerpb.ResultSetMetadata{
+// KvMeta is the Metadata for mocked KV table.
+func KvMeta() *spannerpb.ResultSetMetadata {
+	return &spannerpb.ResultSetMetadata{
 		RowType: &spannerpb.StructType{
 			Fields: []*spannerpb.StructType_Field{
 				{
@@ -56,7 +57,7 @@ var (
 			},
 		},
 	}
-)
+}
 
 // StatementResultType indicates the type of result returned by a SQL
 // statement.
@@ -90,6 +91,7 @@ const (
 	MethodExecuteBatchDml     string = "EXECUTE_BATCH_DML"
 	MethodStreamingRead       string = "EXECUTE_STREAMING_READ"
 	MethodBatchWrite          string = "BATCH_WRITE"
+	MethodPartitionQuery      string = "PARTITION_QUERY"
 )
 
 // StatementResult represents a mocked result on the test server. The result is
@@ -332,7 +334,8 @@ type inMemSpannerServer struct {
 	// counters.
 	transactionCounters map[string]*uint64
 	// The transactions that have been created on this mock server.
-	transactions map[string]*spannerpb.Transaction
+	transactions                          map[string]*spannerpb.Transaction
+	multiplexedSessionTransactionsToSeqNo map[string]*atomic.Int32
 	// The transactions that have been (manually) aborted on the server.
 	abortedTransactions map[string]bool
 	// The transactions that are marked as PartitionedDMLTransaction
@@ -520,13 +523,30 @@ func (s *inMemSpannerServer) initDefaults() {
 	s.sessions = make(map[string]*spannerpb.Session)
 	s.sessionLastUseTime = make(map[string]time.Time)
 	s.transactions = make(map[string]*spannerpb.Transaction)
+	s.multiplexedSessionTransactionsToSeqNo = make(map[string]*atomic.Int32)
 	s.abortedTransactions = make(map[string]bool)
 	s.partitionedDmlTransactions = make(map[string]bool)
 	s.transactionCounters = make(map[string]*uint64)
 }
 
-func (s *inMemSpannerServer) generateSessionNameLocked(database string) string {
+func (s *inMemSpannerServer) getPreCommitToken(transactionID, operation string) *spannerpb.MultiplexedSessionPrecommitToken {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	sequence, ok := s.multiplexedSessionTransactionsToSeqNo[transactionID]
+	if !ok {
+		return nil
+	}
+	return &spannerpb.MultiplexedSessionPrecommitToken{
+		SeqNum:         sequence.Add(1),
+		PrecommitToken: []byte(fmt.Sprintf("precommit-token-%v-%v", operation, sequence.Load())),
+	}
+}
+
+func (s *inMemSpannerServer) generateSessionNameLocked(database string, isMultiplexed bool) string {
 	s.sessionCounter++
+	if isMultiplexed {
+		return fmt.Sprintf("%s/sessions/multiplexed-%d", database, s.sessionCounter)
+	}
 	return fmt.Sprintf("%s/sessions/%d", database, s.sessionCounter)
 }
 
@@ -555,9 +575,9 @@ func (s *inMemSpannerServer) updateSessionLastUseTime(session string) {
 	s.sessionLastUseTime[session] = time.Now()
 }
 
-func getCurrentTimestamp() *timestamp.Timestamp {
+func getCurrentTimestamp() *timestamppb.Timestamp {
 	t := time.Now()
-	return &timestamp.Timestamp{Seconds: t.Unix(), Nanos: int32(t.Nanosecond())}
+	return &timestamppb.Timestamp{Seconds: t.Unix(), Nanos: int32(t.Nanosecond())}
 }
 
 // Gets the transaction id from the transaction selector. If the selector
@@ -593,6 +613,9 @@ func (s *inMemSpannerServer) beginTransaction(session *spannerpb.Session, option
 		ReadTimestamp: getCurrentTimestamp(),
 	}
 	s.mu.Lock()
+	if options.GetReadWrite() != nil && session.Multiplexed {
+		s.multiplexedSessionTransactionsToSeqNo[id] = new(atomic.Int32)
+	}
 	s.transactions[id] = res
 	s.partitionedDmlTransactions[id] = options.GetPartitionedDml() != nil
 	s.mu.Unlock()
@@ -620,7 +643,7 @@ func (s *inMemSpannerServer) getTransactionByID(session *spannerpb.Session, id [
 func newAbortedErrorWithMinimalRetryDelay() error {
 	st := gstatus.New(codes.Aborted, "Transaction has been aborted")
 	retry := &errdetails.RetryInfo{
-		RetryDelay: ptypes.DurationProto(time.Nanosecond),
+		RetryDelay: durationpb.New(time.Nanosecond),
 	}
 	st, _ = st.WithDetails(retry)
 	return st.Err()
@@ -630,6 +653,7 @@ func (s *inMemSpannerServer) removeTransaction(tx *spannerpb.Transaction) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	delete(s.transactions, string(tx.Id))
+	delete(s.multiplexedSessionTransactionsToSeqNo, string(tx.Id))
 	delete(s.partitionedDmlTransactions, string(tx.Id))
 }
 
@@ -680,7 +704,7 @@ func (s *inMemSpannerServer) simulateExecutionTime(method string, req interface{
 		totalExecutionTime := time.Duration(int64(executionTime.MinimumExecutionTime) + randTime)
 		<-time.After(totalExecutionTime)
 		s.mu.Lock()
-		if executionTime.Errors != nil && len(executionTime.Errors) > 0 {
+		if len(executionTime.Errors) > 0 {
 			err := executionTime.Errors[0]
 			if !executionTime.KeepError {
 				executionTime.Errors = executionTime.Errors[1:]
@@ -705,13 +729,21 @@ func (s *inMemSpannerServer) CreateSession(ctx context.Context, req *spannerpb.C
 	if s.maxSessionsReturnedByServerInTotal > int32(0) && int32(len(s.sessions)) == s.maxSessionsReturnedByServerInTotal {
 		return nil, gstatus.Error(codes.ResourceExhausted, "No more sessions available")
 	}
-	sessionName := s.generateSessionNameLocked(req.Database)
 	ts := getCurrentTimestamp()
-	var creatorRole string
+	var (
+		creatorRole   string
+		isMultiplexed bool
+	)
 	if req.Session != nil {
 		creatorRole = req.Session.CreatorRole
+		isMultiplexed = req.Session.Multiplexed
 	}
-	session := &spannerpb.Session{Name: sessionName, CreateTime: ts, ApproximateLastUseTime: ts, CreatorRole: creatorRole}
+	sessionName := s.generateSessionNameLocked(req.Database, isMultiplexed)
+	header := metadata.New(map[string]string{"server-timing": "gfet4t7; dur=123"})
+	if err := grpc.SendHeader(ctx, header); err != nil {
+		return nil, gstatus.Errorf(codes.Internal, "unable to send 'server-timing' header")
+	}
+	session := &spannerpb.Session{Name: sessionName, CreateTime: ts, ApproximateLastUseTime: ts, CreatorRole: creatorRole, Multiplexed: isMultiplexed}
 	s.totalSessionsCreated++
 	s.sessions[sessionName] = session
 	return session, nil
@@ -730,8 +762,9 @@ func (s *inMemSpannerServer) BatchCreateSessions(ctx context.Context, req *spann
 	sessionsToCreate := req.SessionCount
 	s.mu.Lock()
 	defer s.mu.Unlock()
+	// return a non-retryable error if the limit is reached
 	if s.maxSessionsReturnedByServerInTotal > int32(0) && int32(len(s.sessions)) >= s.maxSessionsReturnedByServerInTotal {
-		return nil, gstatus.Error(codes.ResourceExhausted, "No more sessions available")
+		return nil, gstatus.Error(codes.OutOfRange, "No more sessions available")
 	}
 	if sessionsToCreate > s.maxSessionsReturnedByServerPerBatchRequest {
 		sessionsToCreate = s.maxSessionsReturnedByServerPerBatchRequest
@@ -741,7 +774,7 @@ func (s *inMemSpannerServer) BatchCreateSessions(ctx context.Context, req *spann
 	}
 	sessions := make([]*spannerpb.Session, sessionsToCreate)
 	for i := int32(0); i < sessionsToCreate; i++ {
-		sessionName := s.generateSessionNameLocked(req.Database)
+		sessionName := s.generateSessionNameLocked(req.Database, false)
 		ts := getCurrentTimestamp()
 		var creatorRole string
 		if req.SessionTemplate != nil {
@@ -857,9 +890,16 @@ func (s *inMemSpannerServer) ExecuteSql(ctx context.Context, req *spannerpb.Exec
 	case StatementResultError:
 		return nil, statementResult.Err
 	case StatementResultResultSet:
+
+		// if request's session is multiplexed and transaction is Read/Write then add Pre-commit Token in Metadata
+		if statementResult.ResultSet != nil {
+			statementResult.ResultSet.PrecommitToken = s.getPreCommitToken(string(id), "ResultSetPrecommitToken")
+		}
 		return statementResult.ResultSet, nil
 	case StatementResultUpdateCount:
-		return statementResult.convertUpdateCountToResultSet(!isPartitionedDml), nil
+		res := statementResult.convertUpdateCountToResultSet(!isPartitionedDml)
+		res.PrecommitToken = s.getPreCommitToken(string(id), "ResultSetPrecommitToken")
+		return res, nil
 	}
 	return nil, gstatus.Error(codes.Internal, "Unknown result type")
 }
@@ -925,6 +965,9 @@ func (s *inMemSpannerServer) executeStreamingSQL(req *spannerpb.ExecuteSqlReques
 					return nextPartialResultSetError.Err
 				}
 			}
+			// For every PartialResultSet, if request's session is multiplexed and transaction is Read/Write then add Pre-commit Token in Metadata
+			// and increment the sequence number
+			part.PrecommitToken = s.getPreCommitToken(string(id), "PartialResultSetPrecommitToken")
 			if err := stream.Send(part); err != nil {
 				return err
 			}
@@ -984,6 +1027,7 @@ func (s *inMemSpannerServer) ExecuteBatchDml(ctx context.Context, req *spannerpb
 			resp.ResultSets[idx] = statementResult.convertUpdateCountToResultSet(!isPartitionedDml)
 		}
 	}
+	resp.PrecommitToken = s.getPreCommitToken(string(id), "ExecuteBatchDmlResponsePrecommitToken")
 	return resp, nil
 }
 
@@ -1034,6 +1078,9 @@ func (s *inMemSpannerServer) BeginTransaction(ctx context.Context, req *spannerp
 	}
 	s.updateSessionLastUseTime(session.Name)
 	tx := s.beginTransaction(session, req.Options)
+	if session.Multiplexed && req.MutationKey != nil {
+		tx.PrecommitToken = s.getPreCommitToken(string(tx.Id), "TransactionPrecommitToken")
+	}
 	return tx, nil
 }
 
@@ -1095,6 +1142,9 @@ func (s *inMemSpannerServer) Rollback(ctx context.Context, req *spannerpb.Rollba
 }
 
 func (s *inMemSpannerServer) PartitionQuery(ctx context.Context, req *spannerpb.PartitionQueryRequest) (*spannerpb.PartitionResponse, error) {
+	if err := s.simulateExecutionTime(MethodPartitionQuery, req); err != nil {
+		return nil, err
+	}
 	s.mu.Lock()
 	if s.stopped {
 		s.mu.Unlock()

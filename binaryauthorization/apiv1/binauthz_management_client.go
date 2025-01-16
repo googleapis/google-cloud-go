@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	binaryauthorizationpb "cloud.google.com/go/binaryauthorization/apiv1/binaryauthorizationpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -62,6 +61,7 @@ func defaultBinauthzManagementGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://binaryauthorization.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -356,6 +356,8 @@ type binauthzManagementGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewBinauthzManagementClient creates a new binauthz management service v1 client based on gRPC.
@@ -389,6 +391,7 @@ func NewBinauthzManagementClient(ctx context.Context, opts ...option.ClientOptio
 		connPool:                 connPool,
 		binauthzManagementClient: binaryauthorizationpb.NewBinauthzManagementServiceV1Client(connPool),
 		CallOptions:              &client.CallOptions,
+		logger:                   internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -411,7 +414,9 @@ func (c *binauthzManagementGRPCClient) Connection() *grpc.ClientConn {
 func (c *binauthzManagementGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -433,6 +438,8 @@ type binauthzManagementRESTClient struct {
 
 	// Points back to the CallOptions field of the containing BinauthzManagementClient
 	CallOptions **BinauthzManagementCallOptions
+
+	logger *slog.Logger
 }
 
 // NewBinauthzManagementRESTClient creates a new binauthz management service v1 rest client.
@@ -457,6 +464,7 @@ func NewBinauthzManagementRESTClient(ctx context.Context, opts ...option.ClientO
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -471,6 +479,7 @@ func defaultBinauthzManagementRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://binaryauthorization.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -480,7 +489,9 @@ func defaultBinauthzManagementRESTClientOptions() []option.ClientOption {
 func (c *binauthzManagementRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -506,7 +517,7 @@ func (c *binauthzManagementGRPCClient) GetPolicy(ctx context.Context, req *binar
 	var resp *binaryauthorizationpb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.binauthzManagementClient.GetPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.binauthzManagementClient.GetPolicy, req, settings.GRPC, c.logger, "GetPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -524,7 +535,7 @@ func (c *binauthzManagementGRPCClient) UpdatePolicy(ctx context.Context, req *bi
 	var resp *binaryauthorizationpb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.binauthzManagementClient.UpdatePolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.binauthzManagementClient.UpdatePolicy, req, settings.GRPC, c.logger, "UpdatePolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -542,7 +553,7 @@ func (c *binauthzManagementGRPCClient) CreateAttestor(ctx context.Context, req *
 	var resp *binaryauthorizationpb.Attestor
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.binauthzManagementClient.CreateAttestor(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.binauthzManagementClient.CreateAttestor, req, settings.GRPC, c.logger, "CreateAttestor")
 		return err
 	}, opts...)
 	if err != nil {
@@ -560,7 +571,7 @@ func (c *binauthzManagementGRPCClient) GetAttestor(ctx context.Context, req *bin
 	var resp *binaryauthorizationpb.Attestor
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.binauthzManagementClient.GetAttestor(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.binauthzManagementClient.GetAttestor, req, settings.GRPC, c.logger, "GetAttestor")
 		return err
 	}, opts...)
 	if err != nil {
@@ -578,7 +589,7 @@ func (c *binauthzManagementGRPCClient) UpdateAttestor(ctx context.Context, req *
 	var resp *binaryauthorizationpb.Attestor
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.binauthzManagementClient.UpdateAttestor(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.binauthzManagementClient.UpdateAttestor, req, settings.GRPC, c.logger, "UpdateAttestor")
 		return err
 	}, opts...)
 	if err != nil {
@@ -607,7 +618,7 @@ func (c *binauthzManagementGRPCClient) ListAttestors(ctx context.Context, req *b
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.binauthzManagementClient.ListAttestors(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.binauthzManagementClient.ListAttestors, req, settings.GRPC, c.logger, "ListAttestors")
 			return err
 		}, opts...)
 		if err != nil {
@@ -641,7 +652,7 @@ func (c *binauthzManagementGRPCClient) DeleteAttestor(ctx context.Context, req *
 	opts = append((*c.CallOptions).DeleteAttestor[0:len((*c.CallOptions).DeleteAttestor):len((*c.CallOptions).DeleteAttestor)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.binauthzManagementClient.DeleteAttestor(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.binauthzManagementClient.DeleteAttestor, req, settings.GRPC, c.logger, "DeleteAttestor")
 		return err
 	}, opts...)
 	return err
@@ -686,17 +697,7 @@ func (c *binauthzManagementRESTClient) GetPolicy(ctx context.Context, req *binar
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetPolicy")
 		if err != nil {
 			return err
 		}
@@ -757,17 +758,7 @@ func (c *binauthzManagementRESTClient) UpdatePolicy(ctx context.Context, req *bi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdatePolicy")
 		if err != nil {
 			return err
 		}
@@ -828,17 +819,7 @@ func (c *binauthzManagementRESTClient) CreateAttestor(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateAttestor")
 		if err != nil {
 			return err
 		}
@@ -889,17 +870,7 @@ func (c *binauthzManagementRESTClient) GetAttestor(ctx context.Context, req *bin
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAttestor")
 		if err != nil {
 			return err
 		}
@@ -957,17 +928,7 @@ func (c *binauthzManagementRESTClient) UpdateAttestor(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateAttestor")
 		if err != nil {
 			return err
 		}
@@ -1030,21 +991,10 @@ func (c *binauthzManagementRESTClient) ListAttestors(ctx context.Context, req *b
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAttestors")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1105,14 +1055,7 @@ func (c *binauthzManagementRESTClient) DeleteAttestor(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteAttestor")
+		return err
 	}, opts...)
 }

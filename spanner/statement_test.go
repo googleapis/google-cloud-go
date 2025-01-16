@@ -17,14 +17,16 @@ limitations under the License.
 package spanner
 
 import (
+	"bytes"
 	"math"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/civil"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
-	"github.com/golang/protobuf/proto"
-	proto3 "github.com/golang/protobuf/ptypes/struct"
+	"google.golang.org/protobuf/encoding/prototext"
+	"google.golang.org/protobuf/proto"
+	proto3 "google.golang.org/protobuf/types/known/structpb"
 )
 
 func TestConvertParams(t *testing.T) {
@@ -188,10 +190,18 @@ func TestConvertParams(t *testing.T) {
 		gotParamField := gotParams.Fields["var"]
 		if !proto.Equal(gotParamField, test.wantField) {
 			// handle NaN
-			if test.wantType.Code == floatType().Code && proto.MarshalTextString(gotParamField) == proto.MarshalTextString(test.wantField) {
+			gotParamFieldText, err := prototext.Marshal(gotParamField)
+			if err != nil {
+				t.Fatal(err)
+			}
+			wantParamFieldText, err := prototext.Marshal(test.wantField)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if test.wantType.Code == floatType().Code && bytes.Equal(gotParamFieldText, wantParamFieldText) {
 				continue
 			}
-			if test.wantType.Code == float32Type().Code && proto.MarshalTextString(gotParamField) == proto.MarshalTextString(test.wantField) {
+			if test.wantType.Code == float32Type().Code && bytes.Equal(gotParamFieldText, wantParamFieldText) {
 				continue
 			}
 			t.Errorf("%#v:\n got: %v\nwant: %v\n", test.val, gotParamField, test.wantField)

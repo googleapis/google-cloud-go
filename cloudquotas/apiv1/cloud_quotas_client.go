@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	cloudquotaspb "cloud.google.com/go/cloudquotas/apiv1/cloudquotaspb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -61,6 +60,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://cloudquotas.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -317,6 +317,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new cloud quotas client based on gRPC.
@@ -352,6 +354,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      cloudquotaspb.NewCloudQuotasClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -374,7 +377,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -396,6 +401,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new cloud quotas rest client.
@@ -422,6 +429,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -436,6 +444,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudquotas.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -445,7 +454,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -482,7 +493,7 @@ func (c *gRPCClient) ListQuotaInfos(ctx context.Context, req *cloudquotaspb.List
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListQuotaInfos(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListQuotaInfos, req, settings.GRPC, c.logger, "ListQuotaInfos")
 			return err
 		}, opts...)
 		if err != nil {
@@ -517,7 +528,7 @@ func (c *gRPCClient) GetQuotaInfo(ctx context.Context, req *cloudquotaspb.GetQuo
 	var resp *cloudquotaspb.QuotaInfo
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetQuotaInfo(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetQuotaInfo, req, settings.GRPC, c.logger, "GetQuotaInfo")
 		return err
 	}, opts...)
 	if err != nil {
@@ -546,7 +557,7 @@ func (c *gRPCClient) ListQuotaPreferences(ctx context.Context, req *cloudquotasp
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListQuotaPreferences(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListQuotaPreferences, req, settings.GRPC, c.logger, "ListQuotaPreferences")
 			return err
 		}, opts...)
 		if err != nil {
@@ -581,7 +592,7 @@ func (c *gRPCClient) GetQuotaPreference(ctx context.Context, req *cloudquotaspb.
 	var resp *cloudquotaspb.QuotaPreference
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetQuotaPreference(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetQuotaPreference, req, settings.GRPC, c.logger, "GetQuotaPreference")
 		return err
 	}, opts...)
 	if err != nil {
@@ -599,7 +610,7 @@ func (c *gRPCClient) CreateQuotaPreference(ctx context.Context, req *cloudquotas
 	var resp *cloudquotaspb.QuotaPreference
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateQuotaPreference(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateQuotaPreference, req, settings.GRPC, c.logger, "CreateQuotaPreference")
 		return err
 	}, opts...)
 	if err != nil {
@@ -617,7 +628,7 @@ func (c *gRPCClient) UpdateQuotaPreference(ctx context.Context, req *cloudquotas
 	var resp *cloudquotaspb.QuotaPreference
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateQuotaPreference(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateQuotaPreference, req, settings.GRPC, c.logger, "UpdateQuotaPreference")
 		return err
 	}, opts...)
 	if err != nil {
@@ -671,21 +682,10 @@ func (c *restClient) ListQuotaInfos(ctx context.Context, req *cloudquotaspb.List
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListQuotaInfos")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -748,17 +748,7 @@ func (c *restClient) GetQuotaInfo(ctx context.Context, req *cloudquotaspb.GetQuo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetQuotaInfo")
 		if err != nil {
 			return err
 		}
@@ -826,21 +816,10 @@ func (c *restClient) ListQuotaPreferences(ctx context.Context, req *cloudquotasp
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListQuotaPreferences")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -903,17 +882,7 @@ func (c *restClient) GetQuotaPreference(ctx context.Context, req *cloudquotaspb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetQuotaPreference")
 		if err != nil {
 			return err
 		}
@@ -978,17 +947,7 @@ func (c *restClient) CreateQuotaPreference(ctx context.Context, req *cloudquotas
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateQuotaPreference")
 		if err != nil {
 			return err
 		}
@@ -1032,11 +991,11 @@ func (c *restClient) UpdateQuotaPreference(ctx context.Context, req *cloudquotas
 		}
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 	if req.GetValidateOnly() {
 		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
@@ -1064,17 +1023,7 @@ func (c *restClient) UpdateQuotaPreference(ctx context.Context, req *cloudquotas
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateQuotaPreference")
 		if err != nil {
 			return err
 		}

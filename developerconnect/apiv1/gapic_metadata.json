@@ -1,0 +1,223 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.developerconnect.v1",
+  "libraryPackage": "cloud.google.com/go/developerconnect/apiv1",
+  "services": {
+    "DeveloperConnect": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateConnection": {
+              "methods": [
+                "CreateConnection"
+              ]
+            },
+            "CreateGitRepositoryLink": {
+              "methods": [
+                "CreateGitRepositoryLink"
+              ]
+            },
+            "DeleteConnection": {
+              "methods": [
+                "DeleteConnection"
+              ]
+            },
+            "DeleteGitRepositoryLink": {
+              "methods": [
+                "DeleteGitRepositoryLink"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "FetchGitHubInstallations": {
+              "methods": [
+                "FetchGitHubInstallations"
+              ]
+            },
+            "FetchGitRefs": {
+              "methods": [
+                "FetchGitRefs"
+              ]
+            },
+            "FetchLinkableGitRepositories": {
+              "methods": [
+                "FetchLinkableGitRepositories"
+              ]
+            },
+            "FetchReadToken": {
+              "methods": [
+                "FetchReadToken"
+              ]
+            },
+            "FetchReadWriteToken": {
+              "methods": [
+                "FetchReadWriteToken"
+              ]
+            },
+            "GetConnection": {
+              "methods": [
+                "GetConnection"
+              ]
+            },
+            "GetGitRepositoryLink": {
+              "methods": [
+                "GetGitRepositoryLink"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListConnections": {
+              "methods": [
+                "ListConnections"
+              ]
+            },
+            "ListGitRepositoryLinks": {
+              "methods": [
+                "ListGitRepositoryLinks"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateConnection": {
+              "methods": [
+                "UpdateConnection"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateConnection": {
+              "methods": [
+                "CreateConnection"
+              ]
+            },
+            "CreateGitRepositoryLink": {
+              "methods": [
+                "CreateGitRepositoryLink"
+              ]
+            },
+            "DeleteConnection": {
+              "methods": [
+                "DeleteConnection"
+              ]
+            },
+            "DeleteGitRepositoryLink": {
+              "methods": [
+                "DeleteGitRepositoryLink"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "FetchGitHubInstallations": {
+              "methods": [
+                "FetchGitHubInstallations"
+              ]
+            },
+            "FetchGitRefs": {
+              "methods": [
+                "FetchGitRefs"
+              ]
+            },
+            "FetchLinkableGitRepositories": {
+              "methods": [
+                "FetchLinkableGitRepositories"
+              ]
+            },
+            "FetchReadToken": {
+              "methods": [
+                "FetchReadToken"
+              ]
+            },
+            "FetchReadWriteToken": {
+              "methods": [
+                "FetchReadWriteToken"
+              ]
+            },
+            "GetConnection": {
+              "methods": [
+                "GetConnection"
+              ]
+            },
+            "GetGitRepositoryLink": {
+              "methods": [
+                "GetGitRepositoryLink"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListConnections": {
+              "methods": [
+                "ListConnections"
+              ]
+            },
+            "ListGitRepositoryLinks": {
+              "methods": [
+                "ListGitRepositoryLinks"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateConnection": {
+              "methods": [
+                "UpdateConnection"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

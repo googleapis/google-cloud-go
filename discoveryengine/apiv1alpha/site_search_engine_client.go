@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -59,6 +58,9 @@ type SiteSearchEngineCallOptions struct {
 	RecrawlUris                   []gax.CallOption
 	BatchVerifyTargetSites        []gax.CallOption
 	FetchDomainVerificationStatus []gax.CallOption
+	SetUriPatternDocumentData     []gax.CallOption
+	GetUriPatternDocumentData     []gax.CallOption
+	CancelOperation               []gax.CallOption
 	GetOperation                  []gax.CallOption
 	ListOperations                []gax.CallOption
 }
@@ -72,6 +74,7 @@ func defaultSiteSearchEngineGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://discoveryengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -91,6 +94,20 @@ func defaultSiteSearchEngineCallOptions() *SiteSearchEngineCallOptions {
 		RecrawlUris:                   []gax.CallOption{},
 		BatchVerifyTargetSites:        []gax.CallOption{},
 		FetchDomainVerificationStatus: []gax.CallOption{},
+		SetUriPatternDocumentData:     []gax.CallOption{},
+		GetUriPatternDocumentData:     []gax.CallOption{},
+		CancelOperation: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GetOperation: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -132,6 +149,19 @@ func defaultSiteSearchEngineRESTCallOptions() *SiteSearchEngineCallOptions {
 		RecrawlUris:                   []gax.CallOption{},
 		BatchVerifyTargetSites:        []gax.CallOption{},
 		FetchDomainVerificationStatus: []gax.CallOption{},
+		SetUriPatternDocumentData:     []gax.CallOption{},
+		GetUriPatternDocumentData:     []gax.CallOption{},
+		CancelOperation: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetOperation: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -182,6 +212,10 @@ type internalSiteSearchEngineClient interface {
 	BatchVerifyTargetSites(context.Context, *discoveryenginepb.BatchVerifyTargetSitesRequest, ...gax.CallOption) (*BatchVerifyTargetSitesOperation, error)
 	BatchVerifyTargetSitesOperation(name string) *BatchVerifyTargetSitesOperation
 	FetchDomainVerificationStatus(context.Context, *discoveryenginepb.FetchDomainVerificationStatusRequest, ...gax.CallOption) *TargetSiteIterator
+	SetUriPatternDocumentData(context.Context, *discoveryenginepb.SetUriPatternDocumentDataRequest, ...gax.CallOption) (*SetUriPatternDocumentDataOperation, error)
+	SetUriPatternDocumentDataOperation(name string) *SetUriPatternDocumentDataOperation
+	GetUriPatternDocumentData(context.Context, *discoveryenginepb.GetUriPatternDocumentDataRequest, ...gax.CallOption) (*discoveryenginepb.GetUriPatternDocumentDataResponse, error)
+	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
@@ -341,6 +375,29 @@ func (c *SiteSearchEngineClient) FetchDomainVerificationStatus(ctx context.Conte
 	return c.internalClient.FetchDomainVerificationStatus(ctx, req, opts...)
 }
 
+// SetUriPatternDocumentData sets the URI Pattern to Document data mapping for an Advanced Site Search
+// DataStore.
+func (c *SiteSearchEngineClient) SetUriPatternDocumentData(ctx context.Context, req *discoveryenginepb.SetUriPatternDocumentDataRequest, opts ...gax.CallOption) (*SetUriPatternDocumentDataOperation, error) {
+	return c.internalClient.SetUriPatternDocumentData(ctx, req, opts...)
+}
+
+// SetUriPatternDocumentDataOperation returns a new SetUriPatternDocumentDataOperation from a given name.
+// The name must be that of a previously created SetUriPatternDocumentDataOperation, possibly from a different process.
+func (c *SiteSearchEngineClient) SetUriPatternDocumentDataOperation(name string) *SetUriPatternDocumentDataOperation {
+	return c.internalClient.SetUriPatternDocumentDataOperation(name)
+}
+
+// GetUriPatternDocumentData gets the URI Pattern to Document data mapping for an Advanced Site Search
+// DataStore.
+func (c *SiteSearchEngineClient) GetUriPatternDocumentData(ctx context.Context, req *discoveryenginepb.GetUriPatternDocumentDataRequest, opts ...gax.CallOption) (*discoveryenginepb.GetUriPatternDocumentDataResponse, error) {
+	return c.internalClient.GetUriPatternDocumentData(ctx, req, opts...)
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *SiteSearchEngineClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.CancelOperation(ctx, req, opts...)
+}
+
 // GetOperation is a utility method from google.longrunning.Operations.
 func (c *SiteSearchEngineClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	return c.internalClient.GetOperation(ctx, req, opts...)
@@ -373,6 +430,8 @@ type siteSearchEngineGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewSiteSearchEngineClient creates a new site search engine service client based on gRPC.
@@ -399,6 +458,7 @@ func NewSiteSearchEngineClient(ctx context.Context, opts ...option.ClientOption)
 		connPool:               connPool,
 		siteSearchEngineClient: discoveryenginepb.NewSiteSearchEngineServiceClient(connPool),
 		CallOptions:            &client.CallOptions,
+		logger:                 internaloption.GetLogger(opts),
 		operationsClient:       longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -433,7 +493,9 @@ func (c *siteSearchEngineGRPCClient) Connection() *grpc.ClientConn {
 func (c *siteSearchEngineGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -460,6 +522,8 @@ type siteSearchEngineRESTClient struct {
 
 	// Points back to the CallOptions field of the containing SiteSearchEngineClient
 	CallOptions **SiteSearchEngineCallOptions
+
+	logger *slog.Logger
 }
 
 // NewSiteSearchEngineRESTClient creates a new site search engine service rest client.
@@ -477,6 +541,7 @@ func NewSiteSearchEngineRESTClient(ctx context.Context, opts ...option.ClientOpt
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -501,6 +566,7 @@ func defaultSiteSearchEngineRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://discoveryengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -510,7 +576,9 @@ func defaultSiteSearchEngineRESTClientOptions() []option.ClientOption {
 func (c *siteSearchEngineRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -536,7 +604,7 @@ func (c *siteSearchEngineGRPCClient) GetSiteSearchEngine(ctx context.Context, re
 	var resp *discoveryenginepb.SiteSearchEngine
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.siteSearchEngineClient.GetSiteSearchEngine(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.siteSearchEngineClient.GetSiteSearchEngine, req, settings.GRPC, c.logger, "GetSiteSearchEngine")
 		return err
 	}, opts...)
 	if err != nil {
@@ -554,7 +622,7 @@ func (c *siteSearchEngineGRPCClient) CreateTargetSite(ctx context.Context, req *
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.siteSearchEngineClient.CreateTargetSite(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.siteSearchEngineClient.CreateTargetSite, req, settings.GRPC, c.logger, "CreateTargetSite")
 		return err
 	}, opts...)
 	if err != nil {
@@ -574,7 +642,7 @@ func (c *siteSearchEngineGRPCClient) BatchCreateTargetSites(ctx context.Context,
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.siteSearchEngineClient.BatchCreateTargetSites(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.siteSearchEngineClient.BatchCreateTargetSites, req, settings.GRPC, c.logger, "BatchCreateTargetSites")
 		return err
 	}, opts...)
 	if err != nil {
@@ -594,7 +662,7 @@ func (c *siteSearchEngineGRPCClient) GetTargetSite(ctx context.Context, req *dis
 	var resp *discoveryenginepb.TargetSite
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.siteSearchEngineClient.GetTargetSite(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.siteSearchEngineClient.GetTargetSite, req, settings.GRPC, c.logger, "GetTargetSite")
 		return err
 	}, opts...)
 	if err != nil {
@@ -612,7 +680,7 @@ func (c *siteSearchEngineGRPCClient) UpdateTargetSite(ctx context.Context, req *
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.siteSearchEngineClient.UpdateTargetSite(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.siteSearchEngineClient.UpdateTargetSite, req, settings.GRPC, c.logger, "UpdateTargetSite")
 		return err
 	}, opts...)
 	if err != nil {
@@ -632,7 +700,7 @@ func (c *siteSearchEngineGRPCClient) DeleteTargetSite(ctx context.Context, req *
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.siteSearchEngineClient.DeleteTargetSite(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.siteSearchEngineClient.DeleteTargetSite, req, settings.GRPC, c.logger, "DeleteTargetSite")
 		return err
 	}, opts...)
 	if err != nil {
@@ -663,7 +731,7 @@ func (c *siteSearchEngineGRPCClient) ListTargetSites(ctx context.Context, req *d
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.siteSearchEngineClient.ListTargetSites(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.siteSearchEngineClient.ListTargetSites, req, settings.GRPC, c.logger, "ListTargetSites")
 			return err
 		}, opts...)
 		if err != nil {
@@ -698,7 +766,7 @@ func (c *siteSearchEngineGRPCClient) EnableAdvancedSiteSearch(ctx context.Contex
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.siteSearchEngineClient.EnableAdvancedSiteSearch(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.siteSearchEngineClient.EnableAdvancedSiteSearch, req, settings.GRPC, c.logger, "EnableAdvancedSiteSearch")
 		return err
 	}, opts...)
 	if err != nil {
@@ -718,7 +786,7 @@ func (c *siteSearchEngineGRPCClient) DisableAdvancedSiteSearch(ctx context.Conte
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.siteSearchEngineClient.DisableAdvancedSiteSearch(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.siteSearchEngineClient.DisableAdvancedSiteSearch, req, settings.GRPC, c.logger, "DisableAdvancedSiteSearch")
 		return err
 	}, opts...)
 	if err != nil {
@@ -738,7 +806,7 @@ func (c *siteSearchEngineGRPCClient) RecrawlUris(ctx context.Context, req *disco
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.siteSearchEngineClient.RecrawlUris(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.siteSearchEngineClient.RecrawlUris, req, settings.GRPC, c.logger, "RecrawlUris")
 		return err
 	}, opts...)
 	if err != nil {
@@ -758,7 +826,7 @@ func (c *siteSearchEngineGRPCClient) BatchVerifyTargetSites(ctx context.Context,
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.siteSearchEngineClient.BatchVerifyTargetSites(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.siteSearchEngineClient.BatchVerifyTargetSites, req, settings.GRPC, c.logger, "BatchVerifyTargetSites")
 		return err
 	}, opts...)
 	if err != nil {
@@ -789,7 +857,7 @@ func (c *siteSearchEngineGRPCClient) FetchDomainVerificationStatus(ctx context.C
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.siteSearchEngineClient.FetchDomainVerificationStatus(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.siteSearchEngineClient.FetchDomainVerificationStatus, req, settings.GRPC, c.logger, "FetchDomainVerificationStatus")
 			return err
 		}, opts...)
 		if err != nil {
@@ -815,6 +883,58 @@ func (c *siteSearchEngineGRPCClient) FetchDomainVerificationStatus(ctx context.C
 	return it
 }
 
+func (c *siteSearchEngineGRPCClient) SetUriPatternDocumentData(ctx context.Context, req *discoveryenginepb.SetUriPatternDocumentDataRequest, opts ...gax.CallOption) (*SetUriPatternDocumentDataOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "site_search_engine", url.QueryEscape(req.GetSiteSearchEngine()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).SetUriPatternDocumentData[0:len((*c.CallOptions).SetUriPatternDocumentData):len((*c.CallOptions).SetUriPatternDocumentData)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.siteSearchEngineClient.SetUriPatternDocumentData, req, settings.GRPC, c.logger, "SetUriPatternDocumentData")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &SetUriPatternDocumentDataOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *siteSearchEngineGRPCClient) GetUriPatternDocumentData(ctx context.Context, req *discoveryenginepb.GetUriPatternDocumentDataRequest, opts ...gax.CallOption) (*discoveryenginepb.GetUriPatternDocumentDataResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "site_search_engine", url.QueryEscape(req.GetSiteSearchEngine()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetUriPatternDocumentData[0:len((*c.CallOptions).GetUriPatternDocumentData):len((*c.CallOptions).GetUriPatternDocumentData)], opts...)
+	var resp *discoveryenginepb.GetUriPatternDocumentDataResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.siteSearchEngineClient.GetUriPatternDocumentData, req, settings.GRPC, c.logger, "GetUriPatternDocumentData")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *siteSearchEngineGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
+		return err
+	}, opts...)
+	return err
+}
+
 func (c *siteSearchEngineGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -824,7 +944,7 @@ func (c *siteSearchEngineGRPCClient) GetOperation(ctx context.Context, req *long
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -853,7 +973,7 @@ func (c *siteSearchEngineGRPCClient) ListOperations(ctx context.Context, req *lo
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -913,17 +1033,7 @@ func (c *siteSearchEngineRESTClient) GetSiteSearchEngine(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSiteSearchEngine")
 		if err != nil {
 			return err
 		}
@@ -979,21 +1089,10 @@ func (c *siteSearchEngineRESTClient) CreateTargetSite(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateTargetSite")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1050,21 +1149,10 @@ func (c *siteSearchEngineRESTClient) BatchCreateTargetSites(ctx context.Context,
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchCreateTargetSites")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1115,17 +1203,7 @@ func (c *siteSearchEngineRESTClient) GetTargetSite(ctx context.Context, req *dis
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetTargetSite")
 		if err != nil {
 			return err
 		}
@@ -1181,21 +1259,10 @@ func (c *siteSearchEngineRESTClient) UpdateTargetSite(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateTargetSite")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1245,21 +1312,10 @@ func (c *siteSearchEngineRESTClient) DeleteTargetSite(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteTargetSite")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1323,21 +1379,10 @@ func (c *siteSearchEngineRESTClient) ListTargetSites(ctx context.Context, req *d
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListTargetSites")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1405,21 +1450,10 @@ func (c *siteSearchEngineRESTClient) EnableAdvancedSiteSearch(ctx context.Contex
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "EnableAdvancedSiteSearch")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1475,21 +1509,10 @@ func (c *siteSearchEngineRESTClient) DisableAdvancedSiteSearch(ctx context.Conte
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "DisableAdvancedSiteSearch")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1545,21 +1568,10 @@ func (c *siteSearchEngineRESTClient) RecrawlUris(ctx context.Context, req *disco
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RecrawlUris")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1617,21 +1629,10 @@ func (c *siteSearchEngineRESTClient) BatchVerifyTargetSites(ctx context.Context,
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchVerifyTargetSites")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1696,21 +1697,10 @@ func (c *siteSearchEngineRESTClient) FetchDomainVerificationStatus(ctx context.C
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FetchDomainVerificationStatus")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1738,6 +1728,158 @@ func (c *siteSearchEngineRESTClient) FetchDomainVerificationStatus(ctx context.C
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// SetUriPatternDocumentData sets the URI Pattern to Document data mapping for an Advanced Site Search
+// DataStore.
+func (c *siteSearchEngineRESTClient) SetUriPatternDocumentData(ctx context.Context, req *discoveryenginepb.SetUriPatternDocumentDataRequest, opts ...gax.CallOption) (*SetUriPatternDocumentDataOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:setUriPatternDocumentData", req.GetSiteSearchEngine())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "site_search_engine", url.QueryEscape(req.GetSiteSearchEngine()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetUriPatternDocumentData")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
+	return &SetUriPatternDocumentDataOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// GetUriPatternDocumentData gets the URI Pattern to Document data mapping for an Advanced Site Search
+// DataStore.
+func (c *siteSearchEngineRESTClient) GetUriPatternDocumentData(ctx context.Context, req *discoveryenginepb.GetUriPatternDocumentDataRequest, opts ...gax.CallOption) (*discoveryenginepb.GetUriPatternDocumentDataResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:getUriPatternDocumentData", req.GetSiteSearchEngine())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "site_search_engine", url.QueryEscape(req.GetSiteSearchEngine()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetUriPatternDocumentData[0:len((*c.CallOptions).GetUriPatternDocumentData):len((*c.CallOptions).GetUriPatternDocumentData)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &discoveryenginepb.GetUriPatternDocumentDataResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetUriPatternDocumentData")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *siteSearchEngineRESTClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:cancel", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelOperation")
+		return err
+	}, opts...)
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.
@@ -1773,17 +1915,7 @@ func (c *siteSearchEngineRESTClient) GetOperation(ctx context.Context, req *long
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -1848,21 +1980,10 @@ func (c *siteSearchEngineRESTClient) ListOperations(ctx context.Context, req *lo
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2013,6 +2134,24 @@ func (c *siteSearchEngineGRPCClient) RecrawlUrisOperation(name string) *RecrawlU
 func (c *siteSearchEngineRESTClient) RecrawlUrisOperation(name string) *RecrawlUrisOperation {
 	override := fmt.Sprintf("/v1alpha/%s", name)
 	return &RecrawlUrisOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// SetUriPatternDocumentDataOperation returns a new SetUriPatternDocumentDataOperation from a given name.
+// The name must be that of a previously created SetUriPatternDocumentDataOperation, possibly from a different process.
+func (c *siteSearchEngineGRPCClient) SetUriPatternDocumentDataOperation(name string) *SetUriPatternDocumentDataOperation {
+	return &SetUriPatternDocumentDataOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// SetUriPatternDocumentDataOperation returns a new SetUriPatternDocumentDataOperation from a given name.
+// The name must be that of a previously created SetUriPatternDocumentDataOperation, possibly from a different process.
+func (c *siteSearchEngineRESTClient) SetUriPatternDocumentDataOperation(name string) *SetUriPatternDocumentDataOperation {
+	override := fmt.Sprintf("/v1alpha/%s", name)
+	return &SetUriPatternDocumentDataOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

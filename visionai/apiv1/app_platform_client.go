@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -30,7 +30,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	visionaipb "cloud.google.com/go/visionai/apiv1/visionaipb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -86,6 +85,7 @@ func defaultAppPlatformGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://visionai.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -545,6 +545,8 @@ type appPlatformGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewAppPlatformClient creates a new app platform client based on gRPC.
@@ -571,6 +573,7 @@ func NewAppPlatformClient(ctx context.Context, opts ...option.ClientOption) (*Ap
 		connPool:          connPool,
 		appPlatformClient: visionaipb.NewAppPlatformClient(connPool),
 		CallOptions:       &client.CallOptions,
+		logger:            internaloption.GetLogger(opts),
 		operationsClient:  longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -605,7 +608,9 @@ func (c *appPlatformGRPCClient) Connection() *grpc.ClientConn {
 func (c *appPlatformGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -632,6 +637,8 @@ type appPlatformRESTClient struct {
 
 	// Points back to the CallOptions field of the containing AppPlatformClient
 	CallOptions **AppPlatformCallOptions
+
+	logger *slog.Logger
 }
 
 // NewAppPlatformRESTClient creates a new app platform rest client.
@@ -649,6 +656,7 @@ func NewAppPlatformRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -673,6 +681,7 @@ func defaultAppPlatformRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://visionai.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -682,7 +691,9 @@ func defaultAppPlatformRESTClientOptions() []option.ClientOption {
 func (c *appPlatformRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -719,7 +730,7 @@ func (c *appPlatformGRPCClient) ListApplications(ctx context.Context, req *visio
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.appPlatformClient.ListApplications(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.appPlatformClient.ListApplications, req, settings.GRPC, c.logger, "ListApplications")
 			return err
 		}, opts...)
 		if err != nil {
@@ -754,7 +765,7 @@ func (c *appPlatformGRPCClient) GetApplication(ctx context.Context, req *visiona
 	var resp *visionaipb.Application
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.appPlatformClient.GetApplication(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.appPlatformClient.GetApplication, req, settings.GRPC, c.logger, "GetApplication")
 		return err
 	}, opts...)
 	if err != nil {
@@ -772,7 +783,7 @@ func (c *appPlatformGRPCClient) CreateApplication(ctx context.Context, req *visi
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.appPlatformClient.CreateApplication(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.appPlatformClient.CreateApplication, req, settings.GRPC, c.logger, "CreateApplication")
 		return err
 	}, opts...)
 	if err != nil {
@@ -792,7 +803,7 @@ func (c *appPlatformGRPCClient) UpdateApplication(ctx context.Context, req *visi
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.appPlatformClient.UpdateApplication(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.appPlatformClient.UpdateApplication, req, settings.GRPC, c.logger, "UpdateApplication")
 		return err
 	}, opts...)
 	if err != nil {
@@ -812,7 +823,7 @@ func (c *appPlatformGRPCClient) DeleteApplication(ctx context.Context, req *visi
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.appPlatformClient.DeleteApplication(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.appPlatformClient.DeleteApplication, req, settings.GRPC, c.logger, "DeleteApplication")
 		return err
 	}, opts...)
 	if err != nil {
@@ -832,7 +843,7 @@ func (c *appPlatformGRPCClient) DeployApplication(ctx context.Context, req *visi
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.appPlatformClient.DeployApplication(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.appPlatformClient.DeployApplication, req, settings.GRPC, c.logger, "DeployApplication")
 		return err
 	}, opts...)
 	if err != nil {
@@ -852,7 +863,7 @@ func (c *appPlatformGRPCClient) UndeployApplication(ctx context.Context, req *vi
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.appPlatformClient.UndeployApplication(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.appPlatformClient.UndeployApplication, req, settings.GRPC, c.logger, "UndeployApplication")
 		return err
 	}, opts...)
 	if err != nil {
@@ -872,7 +883,7 @@ func (c *appPlatformGRPCClient) AddApplicationStreamInput(ctx context.Context, r
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.appPlatformClient.AddApplicationStreamInput(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.appPlatformClient.AddApplicationStreamInput, req, settings.GRPC, c.logger, "AddApplicationStreamInput")
 		return err
 	}, opts...)
 	if err != nil {
@@ -892,7 +903,7 @@ func (c *appPlatformGRPCClient) RemoveApplicationStreamInput(ctx context.Context
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.appPlatformClient.RemoveApplicationStreamInput(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.appPlatformClient.RemoveApplicationStreamInput, req, settings.GRPC, c.logger, "RemoveApplicationStreamInput")
 		return err
 	}, opts...)
 	if err != nil {
@@ -912,7 +923,7 @@ func (c *appPlatformGRPCClient) UpdateApplicationStreamInput(ctx context.Context
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.appPlatformClient.UpdateApplicationStreamInput(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.appPlatformClient.UpdateApplicationStreamInput, req, settings.GRPC, c.logger, "UpdateApplicationStreamInput")
 		return err
 	}, opts...)
 	if err != nil {
@@ -943,7 +954,7 @@ func (c *appPlatformGRPCClient) ListInstances(ctx context.Context, req *visionai
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.appPlatformClient.ListInstances(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.appPlatformClient.ListInstances, req, settings.GRPC, c.logger, "ListInstances")
 			return err
 		}, opts...)
 		if err != nil {
@@ -978,7 +989,7 @@ func (c *appPlatformGRPCClient) GetInstance(ctx context.Context, req *visionaipb
 	var resp *visionaipb.Instance
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.appPlatformClient.GetInstance(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.appPlatformClient.GetInstance, req, settings.GRPC, c.logger, "GetInstance")
 		return err
 	}, opts...)
 	if err != nil {
@@ -996,7 +1007,7 @@ func (c *appPlatformGRPCClient) CreateApplicationInstances(ctx context.Context, 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.appPlatformClient.CreateApplicationInstances(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.appPlatformClient.CreateApplicationInstances, req, settings.GRPC, c.logger, "CreateApplicationInstances")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1016,7 +1027,7 @@ func (c *appPlatformGRPCClient) DeleteApplicationInstances(ctx context.Context, 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.appPlatformClient.DeleteApplicationInstances(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.appPlatformClient.DeleteApplicationInstances, req, settings.GRPC, c.logger, "DeleteApplicationInstances")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1036,7 +1047,7 @@ func (c *appPlatformGRPCClient) UpdateApplicationInstances(ctx context.Context, 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.appPlatformClient.UpdateApplicationInstances(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.appPlatformClient.UpdateApplicationInstances, req, settings.GRPC, c.logger, "UpdateApplicationInstances")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1067,7 +1078,7 @@ func (c *appPlatformGRPCClient) ListDrafts(ctx context.Context, req *visionaipb.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.appPlatformClient.ListDrafts(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.appPlatformClient.ListDrafts, req, settings.GRPC, c.logger, "ListDrafts")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1102,7 +1113,7 @@ func (c *appPlatformGRPCClient) GetDraft(ctx context.Context, req *visionaipb.Ge
 	var resp *visionaipb.Draft
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.appPlatformClient.GetDraft(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.appPlatformClient.GetDraft, req, settings.GRPC, c.logger, "GetDraft")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1120,7 +1131,7 @@ func (c *appPlatformGRPCClient) CreateDraft(ctx context.Context, req *visionaipb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.appPlatformClient.CreateDraft(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.appPlatformClient.CreateDraft, req, settings.GRPC, c.logger, "CreateDraft")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1140,7 +1151,7 @@ func (c *appPlatformGRPCClient) UpdateDraft(ctx context.Context, req *visionaipb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.appPlatformClient.UpdateDraft(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.appPlatformClient.UpdateDraft, req, settings.GRPC, c.logger, "UpdateDraft")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1160,7 +1171,7 @@ func (c *appPlatformGRPCClient) DeleteDraft(ctx context.Context, req *visionaipb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.appPlatformClient.DeleteDraft(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.appPlatformClient.DeleteDraft, req, settings.GRPC, c.logger, "DeleteDraft")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1191,7 +1202,7 @@ func (c *appPlatformGRPCClient) ListProcessors(ctx context.Context, req *visiona
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.appPlatformClient.ListProcessors(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.appPlatformClient.ListProcessors, req, settings.GRPC, c.logger, "ListProcessors")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1226,7 +1237,7 @@ func (c *appPlatformGRPCClient) ListPrebuiltProcessors(ctx context.Context, req 
 	var resp *visionaipb.ListPrebuiltProcessorsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.appPlatformClient.ListPrebuiltProcessors(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.appPlatformClient.ListPrebuiltProcessors, req, settings.GRPC, c.logger, "ListPrebuiltProcessors")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1244,7 +1255,7 @@ func (c *appPlatformGRPCClient) GetProcessor(ctx context.Context, req *visionaip
 	var resp *visionaipb.Processor
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.appPlatformClient.GetProcessor(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.appPlatformClient.GetProcessor, req, settings.GRPC, c.logger, "GetProcessor")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1262,7 +1273,7 @@ func (c *appPlatformGRPCClient) CreateProcessor(ctx context.Context, req *vision
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.appPlatformClient.CreateProcessor(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.appPlatformClient.CreateProcessor, req, settings.GRPC, c.logger, "CreateProcessor")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1282,7 +1293,7 @@ func (c *appPlatformGRPCClient) UpdateProcessor(ctx context.Context, req *vision
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.appPlatformClient.UpdateProcessor(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.appPlatformClient.UpdateProcessor, req, settings.GRPC, c.logger, "UpdateProcessor")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1302,7 +1313,7 @@ func (c *appPlatformGRPCClient) DeleteProcessor(ctx context.Context, req *vision
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.appPlatformClient.DeleteProcessor(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.appPlatformClient.DeleteProcessor, req, settings.GRPC, c.logger, "DeleteProcessor")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1321,7 +1332,7 @@ func (c *appPlatformGRPCClient) CancelOperation(ctx context.Context, req *longru
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -1335,7 +1346,7 @@ func (c *appPlatformGRPCClient) DeleteOperation(ctx context.Context, req *longru
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -1350,7 +1361,7 @@ func (c *appPlatformGRPCClient) GetOperation(ctx context.Context, req *longrunni
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1379,7 +1390,7 @@ func (c *appPlatformGRPCClient) ListOperations(ctx context.Context, req *longrun
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1456,21 +1467,10 @@ func (c *appPlatformRESTClient) ListApplications(ctx context.Context, req *visio
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListApplications")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1533,17 +1533,7 @@ func (c *appPlatformRESTClient) GetApplication(ctx context.Context, req *visiona
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetApplication")
 		if err != nil {
 			return err
 		}
@@ -1603,21 +1593,10 @@ func (c *appPlatformRESTClient) CreateApplication(ctx context.Context, req *visi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateApplication")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1656,11 +1635,11 @@ func (c *appPlatformRESTClient) UpdateApplication(ctx context.Context, req *visi
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1684,21 +1663,10 @@ func (c *appPlatformRESTClient) UpdateApplication(ctx context.Context, req *visi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateApplication")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1754,21 +1722,10 @@ func (c *appPlatformRESTClient) DeleteApplication(ctx context.Context, req *visi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteApplication")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1824,21 +1781,10 @@ func (c *appPlatformRESTClient) DeployApplication(ctx context.Context, req *visi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "DeployApplication")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1894,21 +1840,10 @@ func (c *appPlatformRESTClient) UndeployApplication(ctx context.Context, req *vi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UndeployApplication")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1967,21 +1902,10 @@ func (c *appPlatformRESTClient) AddApplicationStreamInput(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AddApplicationStreamInput")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2039,21 +1963,10 @@ func (c *appPlatformRESTClient) RemoveApplicationStreamInput(ctx context.Context
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RemoveApplicationStreamInput")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2111,21 +2024,10 @@ func (c *appPlatformRESTClient) UpdateApplicationStreamInput(ctx context.Context
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateApplicationStreamInput")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2194,21 +2096,10 @@ func (c *appPlatformRESTClient) ListInstances(ctx context.Context, req *visionai
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListInstances")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2271,17 +2162,7 @@ func (c *appPlatformRESTClient) GetInstance(ctx context.Context, req *visionaipb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetInstance")
 		if err != nil {
 			return err
 		}
@@ -2339,21 +2220,10 @@ func (c *appPlatformRESTClient) CreateApplicationInstances(ctx context.Context, 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateApplicationInstances")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2411,21 +2281,10 @@ func (c *appPlatformRESTClient) DeleteApplicationInstances(ctx context.Context, 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "DeleteApplicationInstances")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2484,21 +2343,10 @@ func (c *appPlatformRESTClient) UpdateApplicationInstances(ctx context.Context, 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateApplicationInstances")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2567,21 +2415,10 @@ func (c *appPlatformRESTClient) ListDrafts(ctx context.Context, req *visionaipb.
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDrafts")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2644,17 +2481,7 @@ func (c *appPlatformRESTClient) GetDraft(ctx context.Context, req *visionaipb.Ge
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDraft")
 		if err != nil {
 			return err
 		}
@@ -2714,21 +2541,10 @@ func (c *appPlatformRESTClient) CreateDraft(ctx context.Context, req *visionaipb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDraft")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2770,11 +2586,11 @@ func (c *appPlatformRESTClient) UpdateDraft(ctx context.Context, req *visionaipb
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2798,21 +2614,10 @@ func (c *appPlatformRESTClient) UpdateDraft(ctx context.Context, req *visionaipb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateDraft")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2865,21 +2670,10 @@ func (c *appPlatformRESTClient) DeleteDraft(ctx context.Context, req *visionaipb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDraft")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2948,21 +2742,10 @@ func (c *appPlatformRESTClient) ListProcessors(ctx context.Context, req *visiona
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListProcessors")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3032,17 +2815,7 @@ func (c *appPlatformRESTClient) ListPrebuiltProcessors(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ListPrebuiltProcessors")
 		if err != nil {
 			return err
 		}
@@ -3092,17 +2865,7 @@ func (c *appPlatformRESTClient) GetProcessor(ctx context.Context, req *visionaip
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetProcessor")
 		if err != nil {
 			return err
 		}
@@ -3162,21 +2925,10 @@ func (c *appPlatformRESTClient) CreateProcessor(ctx context.Context, req *vision
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateProcessor")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3215,11 +2967,11 @@ func (c *appPlatformRESTClient) UpdateProcessor(ctx context.Context, req *vision
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3243,21 +2995,10 @@ func (c *appPlatformRESTClient) UpdateProcessor(ctx context.Context, req *vision
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateProcessor")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3310,21 +3051,10 @@ func (c *appPlatformRESTClient) DeleteProcessor(ctx context.Context, req *vision
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteProcessor")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3378,15 +3108,8 @@ func (c *appPlatformRESTClient) CancelOperation(ctx context.Context, req *longru
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -3420,15 +3143,8 @@ func (c *appPlatformRESTClient) DeleteOperation(ctx context.Context, req *longru
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOperation")
+		return err
 	}, opts...)
 }
 
@@ -3465,17 +3181,7 @@ func (c *appPlatformRESTClient) GetOperation(ctx context.Context, req *longrunni
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -3540,21 +3246,10 @@ func (c *appPlatformRESTClient) ListOperations(ctx context.Context, req *longrun
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

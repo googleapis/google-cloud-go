@@ -26,9 +26,9 @@ import (
 	"time"
 
 	"cloud.google.com/go/bigtable"
+	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	pb "github.com/googleapis/cloud-bigtable-clients-test/testproxypb"
 	"google.golang.org/api/option"
-	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
 	statpb "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -441,7 +441,8 @@ func (s *goTestProxyServer) CreateClient(ctx context.Context, req *pb.CreateClie
 	}
 
 	config := bigtable.ClientConfig{
-		AppProfile: req.AppProfileId,
+		AppProfile:      req.AppProfileId,
+		MetricsProvider: bigtable.NoopMetricsProvider{},
 	}
 	c, err := bigtable.NewClientWithConfig(ctx, req.ProjectId, req.InstanceId, config, option.WithGRPCConn(conn))
 	if err != nil {
@@ -572,11 +573,13 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 	var c int32
 	var rowsPb []*btpb.Row
 	lim := req.GetCancelAfterRows()
-	readOptions := []bigtable.ReadOption{}
-	if rrq.GetRowsLimit() != 0 {
-		readOptions = append(readOptions, bigtable.LimitRows(rrq.GetRowsLimit()))
-	}
 
+
+	reversed := req.GetRequest().GetReversed()
+	opts := []bigtable.ReadOption{}
+	if reversed {
+		opts = append(opts, bigtable.ReverseScan())
+	}
 	err = t.ReadRows(ctx, rs, func(r bigtable.Row) bool {
 
 		c++
@@ -589,7 +592,9 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 		}
 		rowsPb = append(rowsPb, rpb)
 		return true
-	}, readOptions...)
+
+	}, opts...)
+
 
 	res := &pb.RowsResult{
 		Status: &statpb.Status{
@@ -712,7 +717,6 @@ func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRo
 	for i, e := range errs {
 		var me *btpb.MutateRowsResponse_Entry
 		if e != nil {
-			fmt.Printf("i: %v, e: %v\n", i, e)
 			st := statusFromError(e)
 			me = &btpb.MutateRowsResponse_Entry{
 				Index:  int64(i),

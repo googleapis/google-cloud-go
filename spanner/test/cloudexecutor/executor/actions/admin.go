@@ -347,6 +347,9 @@ func executeGetCloudInstance(ctx context.Context, action *executorpb.GetCloudIns
 	instanceObj, err := instanceAdminClient.GetInstance(ctx, &instancepb.GetInstanceRequest{
 		Name: fmt.Sprintf("projects/%s/instances/%s", projectID, instanceID),
 	})
+	if err != nil {
+		return err
+	}
 	spannerActionOutcome := &executorpb.SpannerActionOutcome{
 		Status: &spb.Status{Code: int32(codes.OK)},
 		AdminResult: &executorpb.AdminResult{

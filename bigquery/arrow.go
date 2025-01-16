@@ -241,18 +241,14 @@ func convertArrowValue(col arrow.Array, i int, ft arrow.DataType, fs *FieldSchem
 	case *arrow.Decimal128Type:
 		dft := ft.(*arrow.Decimal128Type)
 		v := col.(*array.Decimal128).Value(i)
-		rat := big.NewRat(1, 1)
-		rat.Num().SetBytes(v.BigInt().Bytes())
-		d := rat.Denom()
-		d.Exp(big.NewInt(10), big.NewInt(int64(dft.Scale)), nil)
+		rat := new(big.Rat)
+		rat.SetString(v.ToString(dft.Scale))
 		return Value(rat), nil
 	case *arrow.Decimal256Type:
 		dft := ft.(*arrow.Decimal256Type)
 		v := col.(*array.Decimal256).Value(i)
-		rat := big.NewRat(1, 1)
-		rat.Num().SetBytes(v.BigInt().Bytes())
-		d := rat.Denom()
-		d.Exp(big.NewInt(10), big.NewInt(int64(dft.Scale)), nil)
+		rat := new(big.Rat)
+		rat.SetString(v.ToString(dft.Scale))
 		return Value(rat), nil
 	case *arrow.ListType:
 		arr := col.(*array.List)
@@ -272,6 +268,21 @@ func convertArrowValue(col arrow.Array, i int, ft arrow.DataType, fs *FieldSchem
 		arr := col.(*array.Struct)
 		nestedValues := []Value{}
 		fields := ft.(*arrow.StructType).Fields()
+		if fs.Type == RangeFieldType {
+			rangeFieldSchema := &FieldSchema{
+				Type: fs.RangeElementType.Type,
+			}
+			start, err := convertArrowValue(arr.Field(0), i, fields[0].Type, rangeFieldSchema)
+			if err != nil {
+				return nil, err
+			}
+			end, err := convertArrowValue(arr.Field(1), i, fields[1].Type, rangeFieldSchema)
+			if err != nil {
+				return nil, err
+			}
+			rangeValue := &RangeValue{Start: start, End: end}
+			return Value(rangeValue), nil
+		}
 		for fIndex, f := range fields {
 			v, err := convertArrowValue(arr.Field(fIndex), i, f.Type, fs.Schema[fIndex])
 			if err != nil {

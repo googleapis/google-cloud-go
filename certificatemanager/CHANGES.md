@@ -1,5 +1,76 @@
 # Changes
 
+## [1.9.3](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v1.9.2...certificatemanager/v1.9.3) (2025-01-02)
+
+
+### Bug Fixes
+
+* **certificatemanager:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+## [1.9.2](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v1.9.1...certificatemanager/v1.9.2) (2024-10-23)
+
+
+### Bug Fixes
+
+* **certificatemanager:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **certificatemanager:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
+## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v1.9.0...certificatemanager/v1.9.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **certificatemanager:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v1.8.6...certificatemanager/v1.9.0) (2024-08-20)
+
+
+### Features
+
+* **certificatemanager:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.8.6](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v1.8.5...certificatemanager/v1.8.6) (2024-08-08)
+
+
+### Bug Fixes
+
+* **certificatemanager:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+## [1.8.5](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v1.8.4...certificatemanager/v1.8.5) (2024-07-24)
+
+
+### Bug Fixes
+
+* **certificatemanager:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+## [1.8.4](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v1.8.3...certificatemanager/v1.8.4) (2024-07-10)
+
+
+### Bug Fixes
+
+* **certificatemanager:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.8.3](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v1.8.2...certificatemanager/v1.8.3) (2024-07-01)
+
+
+### Bug Fixes
+
+* **certificatemanager:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.8.2](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v1.8.1...certificatemanager/v1.8.2) (2024-06-26)
+
+
+### Bug Fixes
+
+* **certificatemanager:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
+## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v1.8.0...certificatemanager/v1.8.1) (2024-05-01)
+
+
+### Bug Fixes
+
+* **certificatemanager:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v1.7.6...certificatemanager/v1.8.0) (2024-03-19)
 
 
@@ -230,4 +301,3 @@
 
 * **certificatemanager:** release 0.1.0 ([#5743](https://github.com/googleapis/google-cloud-go/issues/5743)) ([24a817a](https://github.com/googleapis/google-cloud-go/commit/24a817a2a75dde10bcbecf2ced8f399cb05dc011))
 * ****certificatemanager**:** release v0.1.0 ([#5758](https://github.com/googleapis/google-cloud-go/issues/5758)) ([809f4ba](https://github.com/googleapis/google-cloud-go/commit/809f4ba385e2e9ed61df8ecbb6df7b371dc10641))
-

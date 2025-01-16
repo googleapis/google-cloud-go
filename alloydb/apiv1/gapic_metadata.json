@@ -75,6 +75,11 @@
                 "DeleteUser"
               ]
             },
+            "ExecuteSql": {
+              "methods": [
+                "ExecuteSql"
+              ]
+            },
             "FailoverInstance": {
               "methods": [
                 "FailoverInstance"
@@ -135,6 +140,11 @@
                 "ListClusters"
               ]
             },
+            "ListDatabases": {
+              "methods": [
+                "ListDatabases"
+              ]
+            },
             "ListInstances": {
               "methods": [
                 "ListInstances"
@@ -173,6 +183,11 @@
             "RestoreCluster": {
               "methods": [
                 "RestoreCluster"
+              ]
+            },
+            "SwitchoverCluster": {
+              "methods": [
+                "SwitchoverCluster"
               ]
             },
             "UpdateBackup": {
@@ -265,6 +280,11 @@
                 "DeleteUser"
               ]
             },
+            "ExecuteSql": {
+              "methods": [
+                "ExecuteSql"
+              ]
+            },
             "FailoverInstance": {
               "methods": [
                 "FailoverInstance"
@@ -325,6 +345,11 @@
                 "ListClusters"
               ]
             },
+            "ListDatabases": {
+              "methods": [
+                "ListDatabases"
+              ]
+            },
             "ListInstances": {
               "methods": [
                 "ListInstances"
@@ -363,6 +388,11 @@
             "RestoreCluster": {
               "methods": [
                 "RestoreCluster"
+              ]
+            },
+            "SwitchoverCluster": {
+              "methods": [
+                "SwitchoverCluster"
               ]
             },
             "UpdateBackup": {
