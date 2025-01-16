@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	publishingpb "cloud.google.com/go/eventarc/publishing/apiv1/publishingpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -183,6 +182,8 @@ type publisherGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewPublisherClient creates a new publisher client based on gRPC.
@@ -232,6 +233,7 @@ func NewPublisherClient(ctx context.Context, opts ...option.ClientOption) (*Publ
 		connPool:        connPool,
 		publisherClient: publishingpb.NewPublisherClient(connPool),
 		CallOptions:     &client.CallOptions,
+		logger:          internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -278,6 +280,8 @@ type publisherRESTClient struct {
 
 	// Points back to the CallOptions field of the containing PublisherClient
 	CallOptions **PublisherCallOptions
+
+	logger *slog.Logger
 }
 
 // NewPublisherRESTClient creates a new publisher rest client.
@@ -318,6 +322,7 @@ func NewPublisherRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -370,7 +375,7 @@ func (c *publisherGRPCClient) PublishChannelConnectionEvents(ctx context.Context
 	var resp *publishingpb.PublishChannelConnectionEventsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.publisherClient.PublishChannelConnectionEvents(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.publisherClient.PublishChannelConnectionEvents, req, settings.GRPC, c.logger, "PublishChannelConnectionEvents")
 		return err
 	}, opts...)
 	if err != nil {
@@ -388,7 +393,7 @@ func (c *publisherGRPCClient) PublishEvents(ctx context.Context, req *publishing
 	var resp *publishingpb.PublishEventsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.publisherClient.PublishEvents(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.publisherClient.PublishEvents, req, settings.GRPC, c.logger, "PublishEvents")
 		return err
 	}, opts...)
 	if err != nil {
@@ -406,7 +411,7 @@ func (c *publisherGRPCClient) Publish(ctx context.Context, req *publishingpb.Pub
 	var resp *publishingpb.PublishResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.publisherClient.Publish(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.publisherClient.Publish, req, settings.GRPC, c.logger, "Publish")
 		return err
 	}, opts...)
 	if err != nil {
@@ -454,17 +459,7 @@ func (c *publisherRESTClient) PublishChannelConnectionEvents(ctx context.Context
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PublishChannelConnectionEvents")
 		if err != nil {
 			return err
 		}
@@ -520,17 +515,7 @@ func (c *publisherRESTClient) PublishEvents(ctx context.Context, req *publishing
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PublishEvents")
 		if err != nil {
 			return err
 		}
@@ -586,17 +571,7 @@ func (c *publisherRESTClient) Publish(ctx context.Context, req *publishingpb.Pub
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "Publish")
 		if err != nil {
 			return err
 		}

@@ -36,7 +36,7 @@ jobs:
     strategy:
       matrix:
         # Bigtable test proxy can be run on any of these Go versions
-        go: [ '1.21', '1.23']
+        go: [ '1.22', '1.23']
         folders: ['bigtable']
     steps:
     - uses: actions/checkout@v4

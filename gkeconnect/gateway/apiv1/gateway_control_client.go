@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,14 +19,13 @@ package gateway
 import (
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"time"
 
 	gatewaypb "cloud.google.com/go/gkeconnect/gateway/apiv1/gatewaypb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	httptransport "google.golang.org/api/transport/http"
@@ -119,6 +118,8 @@ type gatewayControlRESTClient struct {
 
 	// Points back to the CallOptions field of the containing GatewayControlClient
 	CallOptions **GatewayControlCallOptions
+
+	logger *slog.Logger
 }
 
 // NewGatewayControlRESTClient creates a new gateway control rest client.
@@ -136,6 +137,7 @@ func NewGatewayControlRESTClient(ctx context.Context, opts ...option.ClientOptio
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -226,17 +228,7 @@ func (c *gatewayControlRESTClient) GenerateCredentials(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GenerateCredentials")
 		if err != nil {
 			return err
 		}

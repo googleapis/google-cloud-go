@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,6 +36,12 @@ func (it *GroupIterator) All() iter.Seq2[*networkconnectivitypb.Group, error] {
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *HubIterator) All() iter.Seq2[*networkconnectivitypb.Hub, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *HubStatusEntryIterator) All() iter.Seq2[*networkconnectivitypb.HubStatusEntry, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 

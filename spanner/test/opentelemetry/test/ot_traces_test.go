@@ -24,7 +24,6 @@ import (
 	"errors"
 	"testing"
 
-	"cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/spanner"
 	stestutil "cloud.google.com/go/spanner/internal/testutil"
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
@@ -33,20 +32,10 @@ import (
 func TestSpannerTracesWithOpenTelemetry(t *testing.T) {
 	ctx := context.Background()
 	te := newOpenTelemetryTestExporter(false, true)
-	old := trace.IsOpenTelemetryTracingEnabled()
-	trace.SetOpenTelemetryTracingEnabledField(true)
 
 	t.Cleanup(func() {
-		trace.SetOpenTelemetryTracingEnabledField(old)
 		te.Unregister(ctx)
 	})
-
-	if trace.IsOpenCensusTracingEnabled() {
-		t.Errorf("got true, want false")
-	}
-	if !trace.IsOpenTelemetryTracingEnabled() {
-		t.Errorf("got false, want true")
-	}
 
 	minOpened := uint64(1)
 	server, client, teardown := setupMockedTestServerWithConfig(t, spanner.ClientConfig{

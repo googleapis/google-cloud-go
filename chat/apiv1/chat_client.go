@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	chatpb "cloud.google.com/go/chat/apiv1/chatpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -842,8 +841,11 @@ func (c *Client) Connection() *grpc.ClientConn {
 // CreateMessage creates a message in a Google Chat space. For an example, see Send a
 // message (at https://developers.google.com/workspace/chat/create-messages).
 //
-// The create() method requires either user or app authentication. Chat
-// attributes the message sender differently depending on the type of
+// The create() method requires either user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+// or app
+// authentication (at https://developers.google.com/workspace/chat/authorize-import).
+// Chat attributes the message sender differently depending on the type of
 // authentication that you use in your request.
 //
 // The following image shows how Chat attributes a message when you use app
@@ -857,6 +859,12 @@ func (c *Client) Connection() *grpc.ClientConn {
 // can only contain text (text).
 //
 // The maximum message size, including the message contents, is 32,000 bytes.
+//
+// For
+// webhook (at https://developers.google.com/workspace/chat/quickstart/webhooks)
+// requests, the response doesn’t contain the full message. The response only
+// populates the name and thread.name fields in addition to the
+// information that was in the request.
 func (c *Client) CreateMessage(ctx context.Context, req *chatpb.CreateMessageRequest, opts ...gax.CallOption) (*chatpb.Message, error) {
 	return c.internalClient.CreateMessage(ctx, req, opts...)
 }
@@ -868,6 +876,7 @@ func (c *Client) CreateMessage(ctx context.Context, req *chatpb.CreateMessageReq
 // For an example, see
 // List
 // messages (at https://developers.google.com/workspace/chat/api/guides/v1/messages/list).
+//
 // Requires user
 // authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
 func (c *Client) ListMessages(ctx context.Context, req *chatpb.ListMessagesRequest, opts ...gax.CallOption) *MessageIterator {
@@ -886,13 +895,16 @@ func (c *Client) ListMessages(ctx context.Context, req *chatpb.ListMessagesReque
 // authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
 // lists memberships in spaces that the authenticated user has access to.
 //
-// Requires
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize).
-// Supports
-// app
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
-// and user
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+// Supports the following types of
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize):
+//
+//	App
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+//
+//	User
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+//	You can authenticate and authorize this method with administrator
+//	privileges by setting the use_admin_access field in the request.
 func (c *Client) ListMemberships(ctx context.Context, req *chatpb.ListMembershipsRequest, opts ...gax.CallOption) *MembershipIterator {
 	return c.internalClient.ListMemberships(ctx, req, opts...)
 }
@@ -901,13 +913,16 @@ func (c *Client) ListMemberships(ctx context.Context, req *chatpb.ListMembership
 // Get details about a user’s or Google Chat app’s
 // membership (at https://developers.google.com/workspace/chat/get-members).
 //
-// Requires
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize).
-// Supports
-// app
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
-// and user
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+// Supports the following types of
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize):
+//
+//	App
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+//
+//	User
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+//	You can authenticate and authorize this method with administrator
+//	privileges by setting the use_admin_access field in the request.
 func (c *Client) GetMembership(ctx context.Context, req *chatpb.GetMembershipRequest, opts ...gax.CallOption) (*chatpb.Membership, error) {
 	return c.internalClient.GetMembership(ctx, req, opts...)
 }
@@ -916,13 +931,14 @@ func (c *Client) GetMembership(ctx context.Context, req *chatpb.GetMembershipReq
 // For an example, see Get details about a
 // message (at https://developers.google.com/workspace/chat/get-messages).
 //
-// Requires
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize).
-// Supports
-// app
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
-// and user
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+// Supports the following types of
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize):
+//
+//	App
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+//
+//	User
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
 //
 // Note: Might return a message from a blocked member or space.
 func (c *Client) GetMessage(ctx context.Context, req *chatpb.GetMessageRequest, opts ...gax.CallOption) (*chatpb.Message, error) {
@@ -936,13 +952,15 @@ func (c *Client) GetMessage(ctx context.Context, req *chatpb.GetMessageRequest, 
 // Update a
 // message (at https://developers.google.com/workspace/chat/update-messages).
 //
-// Requires
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize).
-// Supports
-// app
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
-// and user
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+// Supports the following types of
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize):
+//
+//	App
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+//
+//	User
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+//
 // When using app authentication, requests can only update messages
 // created by the calling Chat app.
 func (c *Client) UpdateMessage(ctx context.Context, req *chatpb.UpdateMessageRequest, opts ...gax.CallOption) (*chatpb.Message, error) {
@@ -953,13 +971,15 @@ func (c *Client) UpdateMessage(ctx context.Context, req *chatpb.UpdateMessageReq
 // For an example, see Delete a
 // message (at https://developers.google.com/workspace/chat/delete-messages).
 //
-// Requires
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize).
-// Supports
-// app
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
-// and user
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+// Supports the following types of
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize):
+//
+//	App
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+//
+//	User
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+//
 // When using app authentication, requests can only delete messages
 // created by the calling Chat app.
 func (c *Client) DeleteMessage(ctx context.Context, req *chatpb.DeleteMessageRequest, opts ...gax.CallOption) error {
@@ -981,6 +1001,7 @@ func (c *Client) GetAttachment(ctx context.Context, req *chatpb.GetAttachmentReq
 // UploadAttachment uploads an attachment. For an example, see
 // Upload media as a file
 // attachment (at https://developers.google.com/workspace/chat/upload-media-attachments).
+//
 // Requires user
 // authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
 //
@@ -996,16 +1017,14 @@ func (c *Client) UploadAttachment(ctx context.Context, req *chatpb.UploadAttachm
 // List
 // spaces (at https://developers.google.com/workspace/chat/list-spaces).
 //
-// Requires
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize).
-// Supports
-// app
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
-// and user
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+// Supports the following types of
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize):
 //
-// Lists spaces visible to the caller or authenticated user. Group chats
-// and DMs aren’t listed until the first message is sent.
+//	App
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+//
+//	User
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
 //
 // To list all named spaces by Google Workspace organization, use the
 // spaces.search() (at https://developers.google.com/workspace/chat/api/reference/rest/v1/spaces/search)
@@ -1015,7 +1034,9 @@ func (c *Client) ListSpaces(ctx context.Context, req *chatpb.ListSpacesRequest, 
 }
 
 // SearchSpaces returns a list of spaces in a Google Workspace organization based on an
-// administrator’s search. Requires user
+// administrator’s search.
+//
+// Requires user
 // authentication with administrator
 // privileges (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user#admin-privileges).
 // In the request, set use_admin_access to true.
@@ -1027,32 +1048,41 @@ func (c *Client) SearchSpaces(ctx context.Context, req *chatpb.SearchSpacesReque
 // Get details about a
 // space (at https://developers.google.com/workspace/chat/get-spaces).
 //
-// Requires
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize).
-// Supports
-// app
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
-// and user
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+// Supports the following types of
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize):
+//
+//	App
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+//
+//	User
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+//	You can authenticate and authorize this method with administrator
+//	privileges by setting the use_admin_access field in the request.
 func (c *Client) GetSpace(ctx context.Context, req *chatpb.GetSpaceRequest, opts ...gax.CallOption) (*chatpb.Space, error) {
 	return c.internalClient.GetSpace(ctx, req, opts...)
 }
 
-// CreateSpace creates a space with no members. Can be used to create a named space.
-// Spaces grouped by topics aren’t supported. For an example, see
-// Create a
+// CreateSpace creates a space with no members. Can be used to create a named space, or a
+// group chat in Import mode. For an example, see Create a
 // space (at https://developers.google.com/workspace/chat/create-spaces).
 //
 // If you receive the error message ALREADY_EXISTS when creating
 // a space, try a different displayName. An existing space within
 // the Google Workspace organization might already use this display name.
 //
-// If you’re a member of the Developer Preview
-// program (at https://developers.google.com/workspace/preview), you can create a
-// group chat in import mode using spaceType.GROUP_CHAT.
+// Supports the following types of
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize):
 //
-// Requires user
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+//	App
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+//	with administrator approval (at https://support.google.com/a?p=chat-app-auth)
+//	in Developer Preview (at https://developers.google.com/workspace/preview)
+//
+//	User
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+//
+// When authenticating as an app, the space.customer field must be set in
+// the request.
 func (c *Client) CreateSpace(ctx context.Context, req *chatpb.CreateSpaceRequest, opts ...gax.CallOption) (*chatpb.Space, error) {
 	return c.internalClient.CreateSpace(ctx, req, opts...)
 }
@@ -1121,8 +1151,18 @@ func (c *Client) SetUpSpace(ctx context.Context, req *chatpb.SetUpSpaceRequest, 
 // ALREADY_EXISTS, try a different display name… An existing space within
 // the Google Workspace organization might already use this display name.
 //
-// Requires user
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+// Supports the following types of
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize):
+//
+//	App
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+//	with administrator approval (at https://support.google.com/a?p=chat-app-auth)
+//	in Developer Preview (at https://developers.google.com/workspace/preview)
+//
+//	User
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+//	You can authenticate and authorize this method with administrator
+//	privileges by setting the use_admin_access field in the request.
 func (c *Client) UpdateSpace(ctx context.Context, req *chatpb.UpdateSpaceRequest, opts ...gax.CallOption) (*chatpb.Space, error) {
 	return c.internalClient.UpdateSpace(ctx, req, opts...)
 }
@@ -1132,9 +1172,19 @@ func (c *Client) UpdateSpace(ctx context.Context, req *chatpb.UpdateSpaceRequest
 // memberships in the space—are also deleted. For an example, see
 // Delete a
 // space (at https://developers.google.com/workspace/chat/delete-spaces).
-// Requires user
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
-// from a user who has permission to delete the space.
+//
+// Supports the following types of
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize):
+//
+//	App
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+//	with administrator approval (at https://support.google.com/a?p=chat-app-auth)
+//	in Developer Preview (at https://developers.google.com/workspace/preview)
+//
+//	User
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+//	You can authenticate and authorize this method with administrator
+//	privileges by setting the use_admin_access field in the request.
 func (c *Client) DeleteSpace(ctx context.Context, req *chatpb.DeleteSpaceRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteSpace(ctx, req, opts...)
 }
@@ -1142,8 +1192,11 @@ func (c *Client) DeleteSpace(ctx context.Context, req *chatpb.DeleteSpaceRequest
 // CompleteImportSpace completes the
 // import process (at https://developers.google.com/workspace/chat/import-data)
 // for the specified space and makes it visible to users.
-// Requires app authentication and domain-wide delegation. For more
-// information, see Authorize Google Chat apps to import
+//
+// Requires app
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+// and domain-wide delegation. For more information, see Authorize Google
+// Chat apps to import
 // data (at https://developers.google.com/workspace/chat/authorize-import).
 func (c *Client) CompleteImportSpace(ctx context.Context, req *chatpb.CompleteImportSpaceRequest, opts ...gax.CallOption) (*chatpb.CompleteImportSpaceResponse, error) {
 	return c.internalClient.CompleteImportSpace(ctx, req, opts...)
@@ -1154,20 +1207,24 @@ func (c *Client) CompleteImportSpace(ctx context.Context, req *chatpb.CompleteIm
 // see
 // Find a direct message (at /chat/api/guides/v1/spaces/find-direct-message).
 //
-// With user
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user),
-// returns the direct message space between the specified user and the
-// authenticated user.
-//
 // With app
 // authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app),
 // returns the direct message space between the specified user and the calling
 // Chat app.
 //
-// Requires user
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
-// or app
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app).
+// With user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user),
+// returns the direct message space between the specified user and the
+// authenticated user.
+//
+// // Supports the following types of
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize):
+//
+//	App
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+//
+//	User
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
 func (c *Client) FindDirectMessage(ctx context.Context, req *chatpb.FindDirectMessageRequest, opts ...gax.CallOption) (*chatpb.Space, error) {
 	return c.internalClient.FindDirectMessage(ctx, req, opts...)
 }
@@ -1178,8 +1235,19 @@ func (c *Client) FindDirectMessage(ctx context.Context, req *chatpb.FindDirectMe
 // policy turned off, then they’re invited, and must accept the space
 // invitation before joining. Otherwise, creating a membership adds the member
 // directly to the specified space.
-// Requires user
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+//
+// Supports the following types of
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize):
+//
+//	App
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+//	with administrator approval (at https://support.google.com/a?p=chat-app-auth)
+//	in Developer Preview (at https://developers.google.com/workspace/preview)
+//
+//	User
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+//	You can authenticate and authorize this method with administrator
+//	privileges by setting the use_admin_access field in the request.
 //
 // For example usage, see:
 //
@@ -1198,8 +1266,18 @@ func (c *Client) CreateMembership(ctx context.Context, req *chatpb.CreateMembers
 // UpdateMembership updates a membership. For an example, see Update a user’s membership in
 // a space (at https://developers.google.com/workspace/chat/update-members).
 //
-// Requires user
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+// Supports the following types of
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize):
+//
+//	App
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+//	with administrator approval (at https://support.google.com/a?p=chat-app-auth)
+//	in Developer Preview (at https://developers.google.com/workspace/preview)
+//
+//	User
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+//	You can authenticate and authorize this method with administrator
+//	privileges by setting the use_admin_access field in the request.
 func (c *Client) UpdateMembership(ctx context.Context, req *chatpb.UpdateMembershipRequest, opts ...gax.CallOption) (*chatpb.Membership, error) {
 	return c.internalClient.UpdateMembership(ctx, req, opts...)
 }
@@ -1208,8 +1286,18 @@ func (c *Client) UpdateMembership(ctx context.Context, req *chatpb.UpdateMembers
 // Remove a user or a Google Chat app from a
 // space (at https://developers.google.com/workspace/chat/delete-members).
 //
-// Requires user
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+// Supports the following types of
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize):
+//
+//	App
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+//	with administrator approval (at https://support.google.com/a?p=chat-app-auth)
+//	in Developer Preview (at https://developers.google.com/workspace/preview)
+//
+//	User
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+//	You can authenticate and authorize this method with administrator
+//	privileges by setting the use_admin_access field in the request.
 func (c *Client) DeleteMembership(ctx context.Context, req *chatpb.DeleteMembershipRequest, opts ...gax.CallOption) (*chatpb.Membership, error) {
 	return c.internalClient.DeleteMembership(ctx, req, opts...)
 }
@@ -1218,6 +1306,7 @@ func (c *Client) DeleteMembership(ctx context.Context, req *chatpb.DeleteMembers
 // supported. For an example, see
 // Add a reaction to a
 // message (at https://developers.google.com/workspace/chat/create-reactions).
+//
 // Requires user
 // authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
 func (c *Client) CreateReaction(ctx context.Context, req *chatpb.CreateReactionRequest, opts ...gax.CallOption) (*chatpb.Reaction, error) {
@@ -1227,6 +1316,7 @@ func (c *Client) CreateReaction(ctx context.Context, req *chatpb.CreateReactionR
 // ListReactions lists reactions to a message. For an example, see
 // List reactions for a
 // message (at https://developers.google.com/workspace/chat/list-reactions).
+//
 // Requires user
 // authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
 func (c *Client) ListReactions(ctx context.Context, req *chatpb.ListReactionsRequest, opts ...gax.CallOption) *ReactionIterator {
@@ -1237,6 +1327,7 @@ func (c *Client) ListReactions(ctx context.Context, req *chatpb.ListReactionsReq
 // For an example, see
 // Delete a
 // reaction (at https://developers.google.com/workspace/chat/delete-reactions).
+//
 // Requires user
 // authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
 func (c *Client) DeleteReaction(ctx context.Context, req *chatpb.DeleteReactionRequest, opts ...gax.CallOption) error {
@@ -1329,6 +1420,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new chat service client based on gRPC.
@@ -1356,6 +1449,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      chatpb.NewChatServiceClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -1402,6 +1496,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new chat service rest client.
@@ -1420,6 +1516,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -1472,7 +1569,7 @@ func (c *gRPCClient) CreateMessage(ctx context.Context, req *chatpb.CreateMessag
 	var resp *chatpb.Message
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateMessage(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateMessage, req, settings.GRPC, c.logger, "CreateMessage")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1501,7 +1598,7 @@ func (c *gRPCClient) ListMessages(ctx context.Context, req *chatpb.ListMessagesR
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListMessages(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListMessages, req, settings.GRPC, c.logger, "ListMessages")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1547,7 +1644,7 @@ func (c *gRPCClient) ListMemberships(ctx context.Context, req *chatpb.ListMember
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListMemberships(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListMemberships, req, settings.GRPC, c.logger, "ListMemberships")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1582,7 +1679,7 @@ func (c *gRPCClient) GetMembership(ctx context.Context, req *chatpb.GetMembershi
 	var resp *chatpb.Membership
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetMembership(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetMembership, req, settings.GRPC, c.logger, "GetMembership")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1600,7 +1697,7 @@ func (c *gRPCClient) GetMessage(ctx context.Context, req *chatpb.GetMessageReque
 	var resp *chatpb.Message
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetMessage(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetMessage, req, settings.GRPC, c.logger, "GetMessage")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1618,7 +1715,7 @@ func (c *gRPCClient) UpdateMessage(ctx context.Context, req *chatpb.UpdateMessag
 	var resp *chatpb.Message
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateMessage(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateMessage, req, settings.GRPC, c.logger, "UpdateMessage")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1635,7 +1732,7 @@ func (c *gRPCClient) DeleteMessage(ctx context.Context, req *chatpb.DeleteMessag
 	opts = append((*c.CallOptions).DeleteMessage[0:len((*c.CallOptions).DeleteMessage):len((*c.CallOptions).DeleteMessage)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteMessage(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteMessage, req, settings.GRPC, c.logger, "DeleteMessage")
 		return err
 	}, opts...)
 	return err
@@ -1650,7 +1747,7 @@ func (c *gRPCClient) GetAttachment(ctx context.Context, req *chatpb.GetAttachmen
 	var resp *chatpb.Attachment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetAttachment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetAttachment, req, settings.GRPC, c.logger, "GetAttachment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1668,7 +1765,7 @@ func (c *gRPCClient) UploadAttachment(ctx context.Context, req *chatpb.UploadAtt
 	var resp *chatpb.UploadAttachmentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UploadAttachment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UploadAttachment, req, settings.GRPC, c.logger, "UploadAttachment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1694,7 +1791,7 @@ func (c *gRPCClient) ListSpaces(ctx context.Context, req *chatpb.ListSpacesReque
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListSpaces(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListSpaces, req, settings.GRPC, c.logger, "ListSpaces")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1737,7 +1834,7 @@ func (c *gRPCClient) SearchSpaces(ctx context.Context, req *chatpb.SearchSpacesR
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.SearchSpaces(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.SearchSpaces, req, settings.GRPC, c.logger, "SearchSpaces")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1772,7 +1869,7 @@ func (c *gRPCClient) GetSpace(ctx context.Context, req *chatpb.GetSpaceRequest, 
 	var resp *chatpb.Space
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetSpace(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetSpace, req, settings.GRPC, c.logger, "GetSpace")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1787,7 +1884,7 @@ func (c *gRPCClient) CreateSpace(ctx context.Context, req *chatpb.CreateSpaceReq
 	var resp *chatpb.Space
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateSpace(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateSpace, req, settings.GRPC, c.logger, "CreateSpace")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1802,7 +1899,7 @@ func (c *gRPCClient) SetUpSpace(ctx context.Context, req *chatpb.SetUpSpaceReque
 	var resp *chatpb.Space
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.SetUpSpace(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.SetUpSpace, req, settings.GRPC, c.logger, "SetUpSpace")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1820,7 +1917,7 @@ func (c *gRPCClient) UpdateSpace(ctx context.Context, req *chatpb.UpdateSpaceReq
 	var resp *chatpb.Space
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateSpace(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateSpace, req, settings.GRPC, c.logger, "UpdateSpace")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1837,7 +1934,7 @@ func (c *gRPCClient) DeleteSpace(ctx context.Context, req *chatpb.DeleteSpaceReq
 	opts = append((*c.CallOptions).DeleteSpace[0:len((*c.CallOptions).DeleteSpace):len((*c.CallOptions).DeleteSpace)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteSpace(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteSpace, req, settings.GRPC, c.logger, "DeleteSpace")
 		return err
 	}, opts...)
 	return err
@@ -1852,7 +1949,7 @@ func (c *gRPCClient) CompleteImportSpace(ctx context.Context, req *chatpb.Comple
 	var resp *chatpb.CompleteImportSpaceResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CompleteImportSpace(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CompleteImportSpace, req, settings.GRPC, c.logger, "CompleteImportSpace")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1867,7 +1964,7 @@ func (c *gRPCClient) FindDirectMessage(ctx context.Context, req *chatpb.FindDire
 	var resp *chatpb.Space
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.FindDirectMessage(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.FindDirectMessage, req, settings.GRPC, c.logger, "FindDirectMessage")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1885,7 +1982,7 @@ func (c *gRPCClient) CreateMembership(ctx context.Context, req *chatpb.CreateMem
 	var resp *chatpb.Membership
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateMembership(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateMembership, req, settings.GRPC, c.logger, "CreateMembership")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1903,7 +2000,7 @@ func (c *gRPCClient) UpdateMembership(ctx context.Context, req *chatpb.UpdateMem
 	var resp *chatpb.Membership
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateMembership(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateMembership, req, settings.GRPC, c.logger, "UpdateMembership")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1921,7 +2018,7 @@ func (c *gRPCClient) DeleteMembership(ctx context.Context, req *chatpb.DeleteMem
 	var resp *chatpb.Membership
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteMembership(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteMembership, req, settings.GRPC, c.logger, "DeleteMembership")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1939,7 +2036,7 @@ func (c *gRPCClient) CreateReaction(ctx context.Context, req *chatpb.CreateReact
 	var resp *chatpb.Reaction
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateReaction(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateReaction, req, settings.GRPC, c.logger, "CreateReaction")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1968,7 +2065,7 @@ func (c *gRPCClient) ListReactions(ctx context.Context, req *chatpb.ListReaction
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListReactions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListReactions, req, settings.GRPC, c.logger, "ListReactions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2002,7 +2099,7 @@ func (c *gRPCClient) DeleteReaction(ctx context.Context, req *chatpb.DeleteReact
 	opts = append((*c.CallOptions).DeleteReaction[0:len((*c.CallOptions).DeleteReaction):len((*c.CallOptions).DeleteReaction)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteReaction(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteReaction, req, settings.GRPC, c.logger, "DeleteReaction")
 		return err
 	}, opts...)
 	return err
@@ -2017,7 +2114,7 @@ func (c *gRPCClient) GetSpaceReadState(ctx context.Context, req *chatpb.GetSpace
 	var resp *chatpb.SpaceReadState
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetSpaceReadState(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetSpaceReadState, req, settings.GRPC, c.logger, "GetSpaceReadState")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2035,7 +2132,7 @@ func (c *gRPCClient) UpdateSpaceReadState(ctx context.Context, req *chatpb.Updat
 	var resp *chatpb.SpaceReadState
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateSpaceReadState(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateSpaceReadState, req, settings.GRPC, c.logger, "UpdateSpaceReadState")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2053,7 +2150,7 @@ func (c *gRPCClient) GetThreadReadState(ctx context.Context, req *chatpb.GetThre
 	var resp *chatpb.ThreadReadState
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetThreadReadState(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetThreadReadState, req, settings.GRPC, c.logger, "GetThreadReadState")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2071,7 +2168,7 @@ func (c *gRPCClient) GetSpaceEvent(ctx context.Context, req *chatpb.GetSpaceEven
 	var resp *chatpb.SpaceEvent
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetSpaceEvent(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetSpaceEvent, req, settings.GRPC, c.logger, "GetSpaceEvent")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2100,7 +2197,7 @@ func (c *gRPCClient) ListSpaceEvents(ctx context.Context, req *chatpb.ListSpaceE
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListSpaceEvents(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListSpaceEvents, req, settings.GRPC, c.logger, "ListSpaceEvents")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2129,8 +2226,11 @@ func (c *gRPCClient) ListSpaceEvents(ctx context.Context, req *chatpb.ListSpaceE
 // CreateMessage creates a message in a Google Chat space. For an example, see Send a
 // message (at https://developers.google.com/workspace/chat/create-messages).
 //
-// The create() method requires either user or app authentication. Chat
-// attributes the message sender differently depending on the type of
+// The create() method requires either user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+// or app
+// authentication (at https://developers.google.com/workspace/chat/authorize-import).
+// Chat attributes the message sender differently depending on the type of
 // authentication that you use in your request.
 //
 // The following image shows how Chat attributes a message when you use app
@@ -2144,6 +2244,12 @@ func (c *gRPCClient) ListSpaceEvents(ctx context.Context, req *chatpb.ListSpaceE
 // can only contain text (text).
 //
 // The maximum message size, including the message contents, is 32,000 bytes.
+//
+// For
+// webhook (at https://developers.google.com/workspace/chat/quickstart/webhooks)
+// requests, the response doesn’t contain the full message. The response only
+// populates the name and thread.name fields in addition to the
+// information that was in the request.
 func (c *restClient) CreateMessage(ctx context.Context, req *chatpb.CreateMessageRequest, opts ...gax.CallOption) (*chatpb.Message, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetMessage()
@@ -2195,17 +2301,7 @@ func (c *restClient) CreateMessage(ctx context.Context, req *chatpb.CreateMessag
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateMessage")
 		if err != nil {
 			return err
 		}
@@ -2229,6 +2325,7 @@ func (c *restClient) CreateMessage(ctx context.Context, req *chatpb.CreateMessag
 // For an example, see
 // List
 // messages (at https://developers.google.com/workspace/chat/api/guides/v1/messages/list).
+//
 // Requires user
 // authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
 func (c *restClient) ListMessages(ctx context.Context, req *chatpb.ListMessagesRequest, opts ...gax.CallOption) *MessageIterator {
@@ -2284,21 +2381,10 @@ func (c *restClient) ListMessages(ctx context.Context, req *chatpb.ListMessagesR
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListMessages")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2340,13 +2426,16 @@ func (c *restClient) ListMessages(ctx context.Context, req *chatpb.ListMessagesR
 // authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
 // lists memberships in spaces that the authenticated user has access to.
 //
-// Requires
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize).
-// Supports
-// app
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
-// and user
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+// Supports the following types of
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize):
+//
+//	App
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+//
+//	User
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+//	You can authenticate and authorize this method with administrator
+//	privileges by setting the use_admin_access field in the request.
 func (c *restClient) ListMemberships(ctx context.Context, req *chatpb.ListMembershipsRequest, opts ...gax.CallOption) *MembershipIterator {
 	it := &MembershipIterator{}
 	req = proto.Clone(req).(*chatpb.ListMembershipsRequest)
@@ -2403,21 +2492,10 @@ func (c *restClient) ListMemberships(ctx context.Context, req *chatpb.ListMember
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListMemberships")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2451,13 +2529,16 @@ func (c *restClient) ListMemberships(ctx context.Context, req *chatpb.ListMember
 // Get details about a user’s or Google Chat app’s
 // membership (at https://developers.google.com/workspace/chat/get-members).
 //
-// Requires
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize).
-// Supports
-// app
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
-// and user
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+// Supports the following types of
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize):
+//
+//	App
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+//
+//	User
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+//	You can authenticate and authorize this method with administrator
+//	privileges by setting the use_admin_access field in the request.
 func (c *restClient) GetMembership(ctx context.Context, req *chatpb.GetMembershipRequest, opts ...gax.CallOption) (*chatpb.Membership, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -2493,17 +2574,7 @@ func (c *restClient) GetMembership(ctx context.Context, req *chatpb.GetMembershi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetMembership")
 		if err != nil {
 			return err
 		}
@@ -2524,13 +2595,14 @@ func (c *restClient) GetMembership(ctx context.Context, req *chatpb.GetMembershi
 // For an example, see Get details about a
 // message (at https://developers.google.com/workspace/chat/get-messages).
 //
-// Requires
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize).
-// Supports
-// app
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
-// and user
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+// Supports the following types of
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize):
+//
+//	App
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+//
+//	User
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
 //
 // Note: Might return a message from a blocked member or space.
 func (c *restClient) GetMessage(ctx context.Context, req *chatpb.GetMessageRequest, opts ...gax.CallOption) (*chatpb.Message, error) {
@@ -2565,17 +2637,7 @@ func (c *restClient) GetMessage(ctx context.Context, req *chatpb.GetMessageReque
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetMessage")
 		if err != nil {
 			return err
 		}
@@ -2599,13 +2661,15 @@ func (c *restClient) GetMessage(ctx context.Context, req *chatpb.GetMessageReque
 // Update a
 // message (at https://developers.google.com/workspace/chat/update-messages).
 //
-// Requires
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize).
-// Supports
-// app
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
-// and user
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+// Supports the following types of
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize):
+//
+//	App
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+//
+//	User
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+//
 // When using app authentication, requests can only update messages
 // created by the calling Chat app.
 func (c *restClient) UpdateMessage(ctx context.Context, req *chatpb.UpdateMessageRequest, opts ...gax.CallOption) (*chatpb.Message, error) {
@@ -2657,17 +2721,7 @@ func (c *restClient) UpdateMessage(ctx context.Context, req *chatpb.UpdateMessag
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateMessage")
 		if err != nil {
 			return err
 		}
@@ -2688,13 +2742,15 @@ func (c *restClient) UpdateMessage(ctx context.Context, req *chatpb.UpdateMessag
 // For an example, see Delete a
 // message (at https://developers.google.com/workspace/chat/delete-messages).
 //
-// Requires
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize).
-// Supports
-// app
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
-// and user
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+// Supports the following types of
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize):
+//
+//	App
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+//
+//	User
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+//
 // When using app authentication, requests can only delete messages
 // created by the calling Chat app.
 func (c *restClient) DeleteMessage(ctx context.Context, req *chatpb.DeleteMessageRequest, opts ...gax.CallOption) error {
@@ -2729,15 +2785,8 @@ func (c *restClient) DeleteMessage(ctx context.Context, req *chatpb.DeleteMessag
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteMessage")
+		return err
 	}, opts...)
 }
 
@@ -2781,17 +2830,7 @@ func (c *restClient) GetAttachment(ctx context.Context, req *chatpb.GetAttachmen
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAttachment")
 		if err != nil {
 			return err
 		}
@@ -2811,6 +2850,7 @@ func (c *restClient) GetAttachment(ctx context.Context, req *chatpb.GetAttachmen
 // UploadAttachment uploads an attachment. For an example, see
 // Upload media as a file
 // attachment (at https://developers.google.com/workspace/chat/upload-media-attachments).
+//
 // Requires user
 // authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
 //
@@ -2855,17 +2895,7 @@ func (c *restClient) UploadAttachment(ctx context.Context, req *chatpb.UploadAtt
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UploadAttachment")
 		if err != nil {
 			return err
 		}
@@ -2887,16 +2917,14 @@ func (c *restClient) UploadAttachment(ctx context.Context, req *chatpb.UploadAtt
 // List
 // spaces (at https://developers.google.com/workspace/chat/list-spaces).
 //
-// Requires
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize).
-// Supports
-// app
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
-// and user
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+// Supports the following types of
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize):
 //
-// Lists spaces visible to the caller or authenticated user. Group chats
-// and DMs aren’t listed until the first message is sent.
+//	App
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+//
+//	User
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
 //
 // To list all named spaces by Google Workspace organization, use the
 // spaces.search() (at https://developers.google.com/workspace/chat/api/reference/rest/v1/spaces/search)
@@ -2948,21 +2976,10 @@ func (c *restClient) ListSpaces(ctx context.Context, req *chatpb.ListSpacesReque
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSpaces")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2993,7 +3010,9 @@ func (c *restClient) ListSpaces(ctx context.Context, req *chatpb.ListSpacesReque
 }
 
 // SearchSpaces returns a list of spaces in a Google Workspace organization based on an
-// administrator’s search. Requires user
+// administrator’s search.
+//
+// Requires user
 // authentication with administrator
 // privileges (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user#admin-privileges).
 // In the request, set use_admin_access to true.
@@ -3048,21 +3067,10 @@ func (c *restClient) SearchSpaces(ctx context.Context, req *chatpb.SearchSpacesR
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "SearchSpaces")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3096,13 +3104,16 @@ func (c *restClient) SearchSpaces(ctx context.Context, req *chatpb.SearchSpacesR
 // Get details about a
 // space (at https://developers.google.com/workspace/chat/get-spaces).
 //
-// Requires
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize).
-// Supports
-// app
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
-// and user
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+// Supports the following types of
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize):
+//
+//	App
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+//
+//	User
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+//	You can authenticate and authorize this method with administrator
+//	privileges by setting the use_admin_access field in the request.
 func (c *restClient) GetSpace(ctx context.Context, req *chatpb.GetSpaceRequest, opts ...gax.CallOption) (*chatpb.Space, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -3138,17 +3149,7 @@ func (c *restClient) GetSpace(ctx context.Context, req *chatpb.GetSpaceRequest, 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSpace")
 		if err != nil {
 			return err
 		}
@@ -3165,21 +3166,27 @@ func (c *restClient) GetSpace(ctx context.Context, req *chatpb.GetSpaceRequest, 
 	return resp, nil
 }
 
-// CreateSpace creates a space with no members. Can be used to create a named space.
-// Spaces grouped by topics aren’t supported. For an example, see
-// Create a
+// CreateSpace creates a space with no members. Can be used to create a named space, or a
+// group chat in Import mode. For an example, see Create a
 // space (at https://developers.google.com/workspace/chat/create-spaces).
 //
 // If you receive the error message ALREADY_EXISTS when creating
 // a space, try a different displayName. An existing space within
 // the Google Workspace organization might already use this display name.
 //
-// If you’re a member of the Developer Preview
-// program (at https://developers.google.com/workspace/preview), you can create a
-// group chat in import mode using spaceType.GROUP_CHAT.
+// Supports the following types of
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize):
 //
-// Requires user
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+//	App
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+//	with administrator approval (at https://support.google.com/a?p=chat-app-auth)
+//	in Developer Preview (at https://developers.google.com/workspace/preview)
+//
+//	User
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+//
+// When authenticating as an app, the space.customer field must be set in
+// the request.
 func (c *restClient) CreateSpace(ctx context.Context, req *chatpb.CreateSpaceRequest, opts ...gax.CallOption) (*chatpb.Space, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetSpace()
@@ -3219,17 +3226,7 @@ func (c *restClient) CreateSpace(ctx context.Context, req *chatpb.CreateSpaceReq
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateSpace")
 		if err != nil {
 			return err
 		}
@@ -3333,17 +3330,7 @@ func (c *restClient) SetUpSpace(ctx context.Context, req *chatpb.SetUpSpaceReque
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetUpSpace")
 		if err != nil {
 			return err
 		}
@@ -3368,8 +3355,18 @@ func (c *restClient) SetUpSpace(ctx context.Context, req *chatpb.SetUpSpaceReque
 // ALREADY_EXISTS, try a different display name… An existing space within
 // the Google Workspace organization might already use this display name.
 //
-// Requires user
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+// Supports the following types of
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize):
+//
+//	App
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+//	with administrator approval (at https://support.google.com/a?p=chat-app-auth)
+//	in Developer Preview (at https://developers.google.com/workspace/preview)
+//
+//	User
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+//	You can authenticate and authorize this method with administrator
+//	privileges by setting the use_admin_access field in the request.
 func (c *restClient) UpdateSpace(ctx context.Context, req *chatpb.UpdateSpaceRequest, opts ...gax.CallOption) (*chatpb.Space, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetSpace()
@@ -3419,17 +3416,7 @@ func (c *restClient) UpdateSpace(ctx context.Context, req *chatpb.UpdateSpaceReq
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateSpace")
 		if err != nil {
 			return err
 		}
@@ -3451,9 +3438,19 @@ func (c *restClient) UpdateSpace(ctx context.Context, req *chatpb.UpdateSpaceReq
 // memberships in the space—are also deleted. For an example, see
 // Delete a
 // space (at https://developers.google.com/workspace/chat/delete-spaces).
-// Requires user
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
-// from a user who has permission to delete the space.
+//
+// Supports the following types of
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize):
+//
+//	App
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+//	with administrator approval (at https://support.google.com/a?p=chat-app-auth)
+//	in Developer Preview (at https://developers.google.com/workspace/preview)
+//
+//	User
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+//	You can authenticate and authorize this method with administrator
+//	privileges by setting the use_admin_access field in the request.
 func (c *restClient) DeleteSpace(ctx context.Context, req *chatpb.DeleteSpaceRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -3486,23 +3483,19 @@ func (c *restClient) DeleteSpace(ctx context.Context, req *chatpb.DeleteSpaceReq
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteSpace")
+		return err
 	}, opts...)
 }
 
 // CompleteImportSpace completes the
 // import process (at https://developers.google.com/workspace/chat/import-data)
 // for the specified space and makes it visible to users.
-// Requires app authentication and domain-wide delegation. For more
-// information, see Authorize Google Chat apps to import
+//
+// Requires app
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+// and domain-wide delegation. For more information, see Authorize Google
+// Chat apps to import
 // data (at https://developers.google.com/workspace/chat/authorize-import).
 func (c *restClient) CompleteImportSpace(ctx context.Context, req *chatpb.CompleteImportSpaceRequest, opts ...gax.CallOption) (*chatpb.CompleteImportSpaceResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -3542,17 +3535,7 @@ func (c *restClient) CompleteImportSpace(ctx context.Context, req *chatpb.Comple
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CompleteImportSpace")
 		if err != nil {
 			return err
 		}
@@ -3574,20 +3557,24 @@ func (c *restClient) CompleteImportSpace(ctx context.Context, req *chatpb.Comple
 // see
 // Find a direct message (at /chat/api/guides/v1/spaces/find-direct-message).
 //
-// With user
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user),
-// returns the direct message space between the specified user and the
-// authenticated user.
-//
 // With app
 // authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app),
 // returns the direct message space between the specified user and the calling
 // Chat app.
 //
-// Requires user
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
-// or app
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app).
+// With user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user),
+// returns the direct message space between the specified user and the
+// authenticated user.
+//
+// // Supports the following types of
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize):
+//
+//	App
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+//
+//	User
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
 func (c *restClient) FindDirectMessage(ctx context.Context, req *chatpb.FindDirectMessageRequest, opts ...gax.CallOption) (*chatpb.Space, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -3618,17 +3605,7 @@ func (c *restClient) FindDirectMessage(ctx context.Context, req *chatpb.FindDire
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FindDirectMessage")
 		if err != nil {
 			return err
 		}
@@ -3651,8 +3628,19 @@ func (c *restClient) FindDirectMessage(ctx context.Context, req *chatpb.FindDire
 // policy turned off, then they’re invited, and must accept the space
 // invitation before joining. Otherwise, creating a membership adds the member
 // directly to the specified space.
-// Requires user
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+//
+// Supports the following types of
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize):
+//
+//	App
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+//	with administrator approval (at https://support.google.com/a?p=chat-app-auth)
+//	in Developer Preview (at https://developers.google.com/workspace/preview)
+//
+//	User
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+//	You can authenticate and authorize this method with administrator
+//	privileges by setting the use_admin_access field in the request.
 //
 // For example usage, see:
 //
@@ -3706,17 +3694,7 @@ func (c *restClient) CreateMembership(ctx context.Context, req *chatpb.CreateMem
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateMembership")
 		if err != nil {
 			return err
 		}
@@ -3736,8 +3714,18 @@ func (c *restClient) CreateMembership(ctx context.Context, req *chatpb.CreateMem
 // UpdateMembership updates a membership. For an example, see Update a user’s membership in
 // a space (at https://developers.google.com/workspace/chat/update-members).
 //
-// Requires user
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+// Supports the following types of
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize):
+//
+//	App
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+//	with administrator approval (at https://support.google.com/a?p=chat-app-auth)
+//	in Developer Preview (at https://developers.google.com/workspace/preview)
+//
+//	User
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+//	You can authenticate and authorize this method with administrator
+//	privileges by setting the use_admin_access field in the request.
 func (c *restClient) UpdateMembership(ctx context.Context, req *chatpb.UpdateMembershipRequest, opts ...gax.CallOption) (*chatpb.Membership, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetMembership()
@@ -3787,17 +3775,7 @@ func (c *restClient) UpdateMembership(ctx context.Context, req *chatpb.UpdateMem
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateMembership")
 		if err != nil {
 			return err
 		}
@@ -3818,8 +3796,18 @@ func (c *restClient) UpdateMembership(ctx context.Context, req *chatpb.UpdateMem
 // Remove a user or a Google Chat app from a
 // space (at https://developers.google.com/workspace/chat/delete-members).
 //
-// Requires user
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+// Supports the following types of
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize):
+//
+//	App
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+//	with administrator approval (at https://support.google.com/a?p=chat-app-auth)
+//	in Developer Preview (at https://developers.google.com/workspace/preview)
+//
+//	User
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+//	You can authenticate and authorize this method with administrator
+//	privileges by setting the use_admin_access field in the request.
 func (c *restClient) DeleteMembership(ctx context.Context, req *chatpb.DeleteMembershipRequest, opts ...gax.CallOption) (*chatpb.Membership, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -3855,17 +3843,7 @@ func (c *restClient) DeleteMembership(ctx context.Context, req *chatpb.DeleteMem
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteMembership")
 		if err != nil {
 			return err
 		}
@@ -3886,6 +3864,7 @@ func (c *restClient) DeleteMembership(ctx context.Context, req *chatpb.DeleteMem
 // supported. For an example, see
 // Add a reaction to a
 // message (at https://developers.google.com/workspace/chat/create-reactions).
+//
 // Requires user
 // authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
 func (c *restClient) CreateReaction(ctx context.Context, req *chatpb.CreateReactionRequest, opts ...gax.CallOption) (*chatpb.Reaction, error) {
@@ -3927,17 +3906,7 @@ func (c *restClient) CreateReaction(ctx context.Context, req *chatpb.CreateReact
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateReaction")
 		if err != nil {
 			return err
 		}
@@ -3957,6 +3926,7 @@ func (c *restClient) CreateReaction(ctx context.Context, req *chatpb.CreateReact
 // ListReactions lists reactions to a message. For an example, see
 // List reactions for a
 // message (at https://developers.google.com/workspace/chat/list-reactions).
+//
 // Requires user
 // authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
 func (c *restClient) ListReactions(ctx context.Context, req *chatpb.ListReactionsRequest, opts ...gax.CallOption) *ReactionIterator {
@@ -4006,21 +3976,10 @@ func (c *restClient) ListReactions(ctx context.Context, req *chatpb.ListReaction
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListReactions")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4054,6 +4013,7 @@ func (c *restClient) ListReactions(ctx context.Context, req *chatpb.ListReaction
 // For an example, see
 // Delete a
 // reaction (at https://developers.google.com/workspace/chat/delete-reactions).
+//
 // Requires user
 // authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
 func (c *restClient) DeleteReaction(ctx context.Context, req *chatpb.DeleteReactionRequest, opts ...gax.CallOption) error {
@@ -4085,15 +4045,8 @@ func (c *restClient) DeleteReaction(ctx context.Context, req *chatpb.DeleteReact
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteReaction")
+		return err
 	}, opts...)
 }
 
@@ -4136,17 +4089,7 @@ func (c *restClient) GetSpaceReadState(ctx context.Context, req *chatpb.GetSpace
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSpaceReadState")
 		if err != nil {
 			return err
 		}
@@ -4215,17 +4158,7 @@ func (c *restClient) UpdateSpaceReadState(ctx context.Context, req *chatpb.Updat
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateSpaceReadState")
 		if err != nil {
 			return err
 		}
@@ -4281,17 +4214,7 @@ func (c *restClient) GetThreadReadState(ctx context.Context, req *chatpb.GetThre
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetThreadReadState")
 		if err != nil {
 			return err
 		}
@@ -4357,17 +4280,7 @@ func (c *restClient) GetSpaceEvent(ctx context.Context, req *chatpb.GetSpaceEven
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSpaceEvent")
 		if err != nil {
 			return err
 		}
@@ -4443,21 +4356,10 @@ func (c *restClient) ListSpaceEvents(ctx context.Context, req *chatpb.ListSpaceE
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSpaceEvents")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

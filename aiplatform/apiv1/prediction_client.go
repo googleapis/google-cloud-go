@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package aiplatform
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 
@@ -346,6 +347,8 @@ type predictionGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewPredictionClient creates a new prediction service client based on gRPC.
@@ -372,6 +375,7 @@ func NewPredictionClient(ctx context.Context, opts ...option.ClientOption) (*Pre
 		connPool:         connPool,
 		predictionClient: aiplatformpb.NewPredictionServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:  iampb.NewIAMPolicyClient(connPool),
 		locationsClient:  locationpb.NewLocationsClient(connPool),
@@ -417,7 +421,7 @@ func (c *predictionGRPCClient) Predict(ctx context.Context, req *aiplatformpb.Pr
 	var resp *aiplatformpb.PredictResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.predictionClient.Predict(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.predictionClient.Predict, req, settings.GRPC, c.logger, "Predict")
 		return err
 	}, opts...)
 	if err != nil {
@@ -435,7 +439,7 @@ func (c *predictionGRPCClient) RawPredict(ctx context.Context, req *aiplatformpb
 	var resp *httpbodypb.HttpBody
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.predictionClient.RawPredict(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.predictionClient.RawPredict, req, settings.GRPC, c.logger, "RawPredict")
 		return err
 	}, opts...)
 	if err != nil {
@@ -453,7 +457,9 @@ func (c *predictionGRPCClient) StreamRawPredict(ctx context.Context, req *aiplat
 	var resp aiplatformpb.PredictionService_StreamRawPredictClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "StreamRawPredict")
 		resp, err = c.predictionClient.StreamRawPredict(ctx, req, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "StreamRawPredict")
 		return err
 	}, opts...)
 	if err != nil {
@@ -471,7 +477,7 @@ func (c *predictionGRPCClient) DirectPredict(ctx context.Context, req *aiplatfor
 	var resp *aiplatformpb.DirectPredictResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.predictionClient.DirectPredict(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.predictionClient.DirectPredict, req, settings.GRPC, c.logger, "DirectPredict")
 		return err
 	}, opts...)
 	if err != nil {
@@ -489,7 +495,7 @@ func (c *predictionGRPCClient) DirectRawPredict(ctx context.Context, req *aiplat
 	var resp *aiplatformpb.DirectRawPredictResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.predictionClient.DirectRawPredict(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.predictionClient.DirectRawPredict, req, settings.GRPC, c.logger, "DirectRawPredict")
 		return err
 	}, opts...)
 	if err != nil {
@@ -504,7 +510,9 @@ func (c *predictionGRPCClient) StreamDirectPredict(ctx context.Context, opts ...
 	opts = append((*c.CallOptions).StreamDirectPredict[0:len((*c.CallOptions).StreamDirectPredict):len((*c.CallOptions).StreamDirectPredict)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "StreamDirectPredict")
 		resp, err = c.predictionClient.StreamDirectPredict(ctx, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "StreamDirectPredict")
 		return err
 	}, opts...)
 	if err != nil {
@@ -519,7 +527,9 @@ func (c *predictionGRPCClient) StreamDirectRawPredict(ctx context.Context, opts 
 	opts = append((*c.CallOptions).StreamDirectRawPredict[0:len((*c.CallOptions).StreamDirectRawPredict):len((*c.CallOptions).StreamDirectRawPredict)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "StreamDirectRawPredict")
 		resp, err = c.predictionClient.StreamDirectRawPredict(ctx, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "StreamDirectRawPredict")
 		return err
 	}, opts...)
 	if err != nil {
@@ -534,7 +544,9 @@ func (c *predictionGRPCClient) StreamingPredict(ctx context.Context, opts ...gax
 	opts = append((*c.CallOptions).StreamingPredict[0:len((*c.CallOptions).StreamingPredict):len((*c.CallOptions).StreamingPredict)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "StreamingPredict")
 		resp, err = c.predictionClient.StreamingPredict(ctx, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "StreamingPredict")
 		return err
 	}, opts...)
 	if err != nil {
@@ -552,7 +564,9 @@ func (c *predictionGRPCClient) ServerStreamingPredict(ctx context.Context, req *
 	var resp aiplatformpb.PredictionService_ServerStreamingPredictClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "ServerStreamingPredict")
 		resp, err = c.predictionClient.ServerStreamingPredict(ctx, req, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "ServerStreamingPredict")
 		return err
 	}, opts...)
 	if err != nil {
@@ -567,7 +581,9 @@ func (c *predictionGRPCClient) StreamingRawPredict(ctx context.Context, opts ...
 	opts = append((*c.CallOptions).StreamingRawPredict[0:len((*c.CallOptions).StreamingRawPredict):len((*c.CallOptions).StreamingRawPredict)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "StreamingRawPredict")
 		resp, err = c.predictionClient.StreamingRawPredict(ctx, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "StreamingRawPredict")
 		return err
 	}, opts...)
 	if err != nil {
@@ -585,7 +601,7 @@ func (c *predictionGRPCClient) Explain(ctx context.Context, req *aiplatformpb.Ex
 	var resp *aiplatformpb.ExplainResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.predictionClient.Explain(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.predictionClient.Explain, req, settings.GRPC, c.logger, "Explain")
 		return err
 	}, opts...)
 	if err != nil {
@@ -603,7 +619,7 @@ func (c *predictionGRPCClient) GenerateContent(ctx context.Context, req *aiplatf
 	var resp *aiplatformpb.GenerateContentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.predictionClient.GenerateContent(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.predictionClient.GenerateContent, req, settings.GRPC, c.logger, "GenerateContent")
 		return err
 	}, opts...)
 	if err != nil {
@@ -621,7 +637,9 @@ func (c *predictionGRPCClient) StreamGenerateContent(ctx context.Context, req *a
 	var resp aiplatformpb.PredictionService_StreamGenerateContentClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "StreamGenerateContent")
 		resp, err = c.predictionClient.StreamGenerateContent(ctx, req, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "StreamGenerateContent")
 		return err
 	}, opts...)
 	if err != nil {
@@ -639,7 +657,7 @@ func (c *predictionGRPCClient) GetLocation(ctx context.Context, req *locationpb.
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -668,7 +686,7 @@ func (c *predictionGRPCClient) ListLocations(ctx context.Context, req *locationp
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -703,7 +721,7 @@ func (c *predictionGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetI
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -721,7 +739,7 @@ func (c *predictionGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetI
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -739,7 +757,7 @@ func (c *predictionGRPCClient) TestIamPermissions(ctx context.Context, req *iamp
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -756,7 +774,7 @@ func (c *predictionGRPCClient) CancelOperation(ctx context.Context, req *longrun
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -770,7 +788,7 @@ func (c *predictionGRPCClient) DeleteOperation(ctx context.Context, req *longrun
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -785,7 +803,7 @@ func (c *predictionGRPCClient) GetOperation(ctx context.Context, req *longrunnin
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -814,7 +832,7 @@ func (c *predictionGRPCClient) ListOperations(ctx context.Context, req *longrunn
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -849,7 +867,7 @@ func (c *predictionGRPCClient) WaitOperation(ctx context.Context, req *longrunni
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.WaitOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.WaitOperation, req, settings.GRPC, c.logger, "WaitOperation")
 		return err
 	}, opts...)
 	if err != nil {

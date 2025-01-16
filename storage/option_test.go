@@ -22,6 +22,7 @@ import (
 	"cloud.google.com/go/storage/experimental"
 	"github.com/google/go-cmp/cmp"
 	"go.opentelemetry.io/otel/exporters/stdout/stdoutmetric"
+	"go.opentelemetry.io/otel/sdk/metric"
 	"google.golang.org/api/option"
 )
 
@@ -137,6 +138,13 @@ func TestApplyStorageOpt(t *testing.T) {
 				},
 			},
 		},
+		{
+			desc: "use gRPC bidi reads",
+			opts: []option.ClientOption{withGRPCBidiReads()},
+			want: storageConfig{
+				grpcBidiReads: true,
+			},
+		},
 	} {
 		t.Run(test.desc, func(t *testing.T) {
 			var got storageConfig
@@ -146,7 +154,8 @@ func TestApplyStorageOpt(t *testing.T) {
 				}
 			}
 			if !cmp.Equal(got, test.want, cmp.AllowUnexported(storageConfig{}, experimental.ReadStallTimeoutConfig{})) {
-				t.Errorf(cmp.Diff(got, test.want, cmp.AllowUnexported(storageConfig{}, experimental.ReadStallTimeoutConfig{})))
+				diff := cmp.Diff(got, test.want, cmp.AllowUnexported(storageConfig{}, experimental.ReadStallTimeoutConfig{}))
+				t.Errorf("options: diff got, want: %v", diff)
 			}
 		})
 	}
@@ -167,6 +176,21 @@ func TestSetCustomExporter(t *testing.T) {
 	}
 	if got.metricExporter != want.metricExporter {
 		t.Errorf("TestSetCustomExpoerter: metricExporter want=%v, got=%v", want.metricExporter, got.metricExporter)
+	}
+}
+
+func TestSetManualReader(t *testing.T) {
+	manualReader := metric.NewManualReader()
+	want := storageConfig{
+		manualReader: manualReader,
+	}
+	var got storageConfig
+	opt := withTestMetricReader(manualReader)
+	if storageOpt, ok := opt.(storageClientOption); ok {
+		storageOpt.ApplyStorageOpt(&got)
+	}
+	if got.manualReader != want.manualReader {
+		t.Errorf("TestSetCustomExpoerter: manualReader want=%v, got=%v", want.manualReader, got.manualReader)
 	}
 }
 

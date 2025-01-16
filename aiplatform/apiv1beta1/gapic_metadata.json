@@ -4270,6 +4270,11 @@
                 "DeleteOperation"
               ]
             },
+            "DeployPublisherModel": {
+              "methods": [
+                "DeployPublisherModel"
+              ]
+            },
             "GetIamPolicy": {
               "methods": [
                 "GetIamPolicy"
@@ -4333,6 +4338,11 @@
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
+              ]
+            },
+            "DeployPublisherModel": {
+              "methods": [
+                "DeployPublisherModel"
               ]
             },
             "GetIamPolicy": {
@@ -5903,6 +5913,11 @@
                 "SetIamPolicy"
               ]
             },
+            "StreamQueryReasoningEngine": {
+              "methods": [
+                "StreamQueryReasoningEngine"
+              ]
+            },
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
@@ -5961,6 +5976,11 @@
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
+              ]
+            },
+            "StreamQueryReasoningEngine": {
+              "methods": [
+                "StreamQueryReasoningEngine"
               ]
             },
             "TestIamPermissions": {
@@ -7122,9 +7142,19 @@
         "grpc": {
           "libraryClient": "VertexRagClient",
           "rpcs": {
+            "AugmentPrompt": {
+              "methods": [
+                "AugmentPrompt"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
+              ]
+            },
+            "CorroborateContent": {
+              "methods": [
+                "CorroborateContent"
               ]
             },
             "DeleteOperation": {
@@ -7182,9 +7212,19 @@
         "rest": {
           "libraryClient": "VertexRagClient",
           "rpcs": {
+            "AugmentPrompt": {
+              "methods": [
+                "AugmentPrompt"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
+              ]
+            },
+            "CorroborateContent": {
+              "methods": [
+                "CorroborateContent"
               ]
             },
             "DeleteOperation": {

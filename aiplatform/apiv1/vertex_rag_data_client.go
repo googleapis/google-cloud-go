@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package aiplatform
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 
@@ -342,6 +343,8 @@ type vertexRagDataGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewVertexRagDataClient creates a new vertex rag data service client based on gRPC.
@@ -368,6 +371,7 @@ func NewVertexRagDataClient(ctx context.Context, opts ...option.ClientOption) (*
 		connPool:            connPool,
 		vertexRagDataClient: aiplatformpb.NewVertexRagDataServiceClient(connPool),
 		CallOptions:         &client.CallOptions,
+		logger:              internaloption.GetLogger(opts),
 		operationsClient:    longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:     iampb.NewIAMPolicyClient(connPool),
 		locationsClient:     locationpb.NewLocationsClient(connPool),
@@ -424,7 +428,7 @@ func (c *vertexRagDataGRPCClient) CreateRagCorpus(ctx context.Context, req *aipl
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.vertexRagDataClient.CreateRagCorpus(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.vertexRagDataClient.CreateRagCorpus, req, settings.GRPC, c.logger, "CreateRagCorpus")
 		return err
 	}, opts...)
 	if err != nil {
@@ -444,7 +448,7 @@ func (c *vertexRagDataGRPCClient) UpdateRagCorpus(ctx context.Context, req *aipl
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.vertexRagDataClient.UpdateRagCorpus(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.vertexRagDataClient.UpdateRagCorpus, req, settings.GRPC, c.logger, "UpdateRagCorpus")
 		return err
 	}, opts...)
 	if err != nil {
@@ -464,7 +468,7 @@ func (c *vertexRagDataGRPCClient) GetRagCorpus(ctx context.Context, req *aiplatf
 	var resp *aiplatformpb.RagCorpus
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.vertexRagDataClient.GetRagCorpus(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.vertexRagDataClient.GetRagCorpus, req, settings.GRPC, c.logger, "GetRagCorpus")
 		return err
 	}, opts...)
 	if err != nil {
@@ -493,7 +497,7 @@ func (c *vertexRagDataGRPCClient) ListRagCorpora(ctx context.Context, req *aipla
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.vertexRagDataClient.ListRagCorpora(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.vertexRagDataClient.ListRagCorpora, req, settings.GRPC, c.logger, "ListRagCorpora")
 			return err
 		}, opts...)
 		if err != nil {
@@ -528,7 +532,7 @@ func (c *vertexRagDataGRPCClient) DeleteRagCorpus(ctx context.Context, req *aipl
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.vertexRagDataClient.DeleteRagCorpus(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.vertexRagDataClient.DeleteRagCorpus, req, settings.GRPC, c.logger, "DeleteRagCorpus")
 		return err
 	}, opts...)
 	if err != nil {
@@ -548,7 +552,7 @@ func (c *vertexRagDataGRPCClient) UploadRagFile(ctx context.Context, req *aiplat
 	var resp *aiplatformpb.UploadRagFileResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.vertexRagDataClient.UploadRagFile(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.vertexRagDataClient.UploadRagFile, req, settings.GRPC, c.logger, "UploadRagFile")
 		return err
 	}, opts...)
 	if err != nil {
@@ -566,7 +570,7 @@ func (c *vertexRagDataGRPCClient) ImportRagFiles(ctx context.Context, req *aipla
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.vertexRagDataClient.ImportRagFiles(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.vertexRagDataClient.ImportRagFiles, req, settings.GRPC, c.logger, "ImportRagFiles")
 		return err
 	}, opts...)
 	if err != nil {
@@ -586,7 +590,7 @@ func (c *vertexRagDataGRPCClient) GetRagFile(ctx context.Context, req *aiplatfor
 	var resp *aiplatformpb.RagFile
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.vertexRagDataClient.GetRagFile(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.vertexRagDataClient.GetRagFile, req, settings.GRPC, c.logger, "GetRagFile")
 		return err
 	}, opts...)
 	if err != nil {
@@ -615,7 +619,7 @@ func (c *vertexRagDataGRPCClient) ListRagFiles(ctx context.Context, req *aiplatf
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.vertexRagDataClient.ListRagFiles(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.vertexRagDataClient.ListRagFiles, req, settings.GRPC, c.logger, "ListRagFiles")
 			return err
 		}, opts...)
 		if err != nil {
@@ -650,7 +654,7 @@ func (c *vertexRagDataGRPCClient) DeleteRagFile(ctx context.Context, req *aiplat
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.vertexRagDataClient.DeleteRagFile(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.vertexRagDataClient.DeleteRagFile, req, settings.GRPC, c.logger, "DeleteRagFile")
 		return err
 	}, opts...)
 	if err != nil {
@@ -670,7 +674,7 @@ func (c *vertexRagDataGRPCClient) GetLocation(ctx context.Context, req *location
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -699,7 +703,7 @@ func (c *vertexRagDataGRPCClient) ListLocations(ctx context.Context, req *locati
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -734,7 +738,7 @@ func (c *vertexRagDataGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.G
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -752,7 +756,7 @@ func (c *vertexRagDataGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.S
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -770,7 +774,7 @@ func (c *vertexRagDataGRPCClient) TestIamPermissions(ctx context.Context, req *i
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -787,7 +791,7 @@ func (c *vertexRagDataGRPCClient) CancelOperation(ctx context.Context, req *long
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -801,7 +805,7 @@ func (c *vertexRagDataGRPCClient) DeleteOperation(ctx context.Context, req *long
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -816,7 +820,7 @@ func (c *vertexRagDataGRPCClient) GetOperation(ctx context.Context, req *longrun
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -845,7 +849,7 @@ func (c *vertexRagDataGRPCClient) ListOperations(ctx context.Context, req *longr
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -880,7 +884,7 @@ func (c *vertexRagDataGRPCClient) WaitOperation(ctx context.Context, req *longru
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.WaitOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.WaitOperation, req, settings.GRPC, c.logger, "WaitOperation")
 		return err
 	}, opts...)
 	if err != nil {

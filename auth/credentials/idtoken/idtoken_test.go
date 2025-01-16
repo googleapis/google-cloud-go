@@ -15,14 +15,19 @@
 package idtoken
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"strings"
 	"testing"
 
+	"cloud.google.com/go/auth/credentials/internal/impersonate"
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/credsfile"
 )
@@ -66,7 +71,8 @@ func TestNewCredentials_Validate(t *testing.T) {
 	}
 }
 
-func TestNewCredentials_ServiceAccount_NoClient(t *testing.T) {
+func TestNewCredentials_ServiceAccount(t *testing.T) {
+	ctx := context.Background()
 	wantTok, _ := createRS256JWT(t)
 	b, err := os.ReadFile("../../internal/testdata/sa.json")
 	if err != nil {
@@ -97,12 +103,109 @@ func TestNewCredentials_ServiceAccount_NoClient(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	tok, err := creds.Token(context.Background())
+	tok, err := creds.Token(ctx)
 	if err != nil {
 		t.Fatalf("tp.Token() = %v", err)
 	}
 	if tok.Value != wantTok {
 		t.Errorf("got %q, want %q", tok.Value, wantTok)
+	}
+	if got, _ := creds.UniverseDomain(ctx); got != internal.DefaultUniverseDomain {
+		t.Errorf("got %q, want %q", got, internal.DefaultUniverseDomain)
+	}
+}
+
+func TestNewCredentials_ServiceAccount_UniverseDomain(t *testing.T) {
+	wantAudience := "aud"
+	wantClientEmail := "gopher@fake_project.iam.gserviceaccount.com"
+	wantUniverseDomain := "example.com"
+	wantTok := "id-token"
+	client := &http.Client{
+		Transport: RoundTripFn(func(req *http.Request) *http.Response {
+			defer req.Body.Close()
+			b, err := io.ReadAll(req.Body)
+			if err != nil {
+				t.Error(err)
+			}
+			var r impersonate.GenerateIDTokenRequest
+			if err := json.Unmarshal(b, &r); err != nil {
+				t.Error(err)
+			}
+			if r.Audience != wantAudience {
+				t.Errorf("got %q, want %q", r.Audience, wantAudience)
+			}
+			if r.IncludeEmail {
+				t.Errorf("got %t, want %t", r.IncludeEmail, false)
+			}
+			if !strings.Contains(req.URL.Path, wantClientEmail) {
+				t.Errorf("got %q, want %q", req.URL.Path, wantClientEmail)
+			}
+			if !strings.Contains(req.URL.Hostname(), wantUniverseDomain) {
+				t.Errorf("got %q, want %q", req.URL.Hostname(), wantUniverseDomain)
+			}
+			if !strings.Contains(req.URL.Path, "generateIdToken") {
+				t.Fatal("path must contain 'generateIdToken'")
+			}
+
+			resp := impersonate.GenerateIDTokenResponse{
+				Token: wantTok,
+			}
+			b, err = json.Marshal(&resp)
+			if err != nil {
+				t.Fatalf("unable to marshal response: %v", err)
+			}
+			return &http.Response{
+				StatusCode: 200,
+				Body:       io.NopCloser(bytes.NewReader(b)),
+				Header:     http.Header{},
+			}
+		}),
+	}
+
+	ctx := context.Background()
+	creds, err := NewCredentials(&Options{
+		Audience:        wantAudience,
+		CredentialsFile: "../../internal/testdata/sa_universe_domain.json",
+		Client:          client,
+		UniverseDomain:  wantUniverseDomain,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	tok, err := creds.Token(ctx)
+	if err != nil {
+		t.Fatalf("tp.Token() = %v", err)
+	}
+	if tok.Value != wantTok {
+		t.Errorf("got %q, want %q", tok.Value, wantTok)
+	}
+	if got, _ := creds.UniverseDomain(ctx); got != wantUniverseDomain {
+		t.Errorf("got %q, want %q", got, wantUniverseDomain)
+	}
+}
+
+func TestNewCredentials_ServiceAccount_UniverseDomain_NoClient(t *testing.T) {
+	wantUniverseDomain := "example.com"
+	ctx := context.Background()
+	creds, err := NewCredentials(&Options{
+		Audience:        "aud",
+		CredentialsFile: "../../internal/testdata/sa_universe_domain.json",
+		UniverseDomain:  wantUniverseDomain,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	// To test client creation and usage without a mock client, we must expect a failed token request.
+	_, err = creds.Token(ctx)
+	if err == nil {
+		t.Fatal("token call to example.com did not fail")
+	}
+	// Assert that the failed token request targeted the universe domain.
+	if !strings.Contains(err.Error(), wantUniverseDomain) {
+		t.Errorf("got %q, want %q", err.Error(), wantUniverseDomain)
+	}
+	if got, _ := creds.UniverseDomain(ctx); got != wantUniverseDomain {
+		t.Errorf("got %q, want %q", got, wantUniverseDomain)
 	}
 }
 
@@ -147,6 +250,7 @@ func TestNewCredentials_ImpersonatedAndExternal(t *testing.T) {
 					"foo": "bar",
 				},
 				Client: client,
+				Logger: slog.New(slog.NewTextHandler(io.Discard, nil)),
 			}
 			if tt.file != "" {
 				opts.CredentialsFile = tt.file

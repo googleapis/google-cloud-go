@@ -2,6 +2,33 @@
 
 
 
+## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/maps/v1.17.0...maps/v1.17.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **maps:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.16.0...maps/v1.17.0) (2024-12-11)
+
+
+### Features
+
+* **maps/routing:** Add API for experimental flyover and narrow road polyline details ([#11220](https://github.com/googleapis/google-cloud-go/issues/11220)) ([57fdec7](https://github.com/googleapis/google-cloud-go/commit/57fdec7ce3792753c419298b9e526c4889f4101d))
+
+
+### Documentation
+
+* **maps/fleetengine:** Correct SearchVehiclesRequest.ordered_by description ([76266a6](https://github.com/googleapis/google-cloud-go/commit/76266a619b4a2178c21de4d330f751bffc84994e))
+* **maps/routeoptimization:** Update reference doc links ([38385d4](https://github.com/googleapis/google-cloud-go/commit/38385d441ba43e7bf6166ee5507a70e77c0b01f5))
+
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.15.0...maps/v1.16.0) (2024-12-04)
+
+
+### Features
+
+* **maps/routing:** Add API for shorter distance reference routes ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+
 ## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.14.1...maps/v1.15.0) (2024-11-14)
 
 

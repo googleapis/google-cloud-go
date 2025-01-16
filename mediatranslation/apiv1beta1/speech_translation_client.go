@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package mediatranslation
 
 import (
 	"context"
+	"log/slog"
 	"math"
 
 	mediatranslationpb "cloud.google.com/go/mediatranslation/apiv1beta1/mediatranslationpb"
@@ -120,6 +121,8 @@ type speechTranslationGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewSpeechTranslationClient creates a new speech translation service client based on gRPC.
@@ -146,6 +149,7 @@ func NewSpeechTranslationClient(ctx context.Context, opts ...option.ClientOption
 		connPool:                connPool,
 		speechTranslationClient: mediatranslationpb.NewSpeechTranslationServiceClient(connPool),
 		CallOptions:             &client.CallOptions,
+		logger:                  internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -185,7 +189,9 @@ func (c *speechTranslationGRPCClient) StreamingTranslateSpeech(ctx context.Conte
 	opts = append((*c.CallOptions).StreamingTranslateSpeech[0:len((*c.CallOptions).StreamingTranslateSpeech):len((*c.CallOptions).StreamingTranslateSpeech)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "StreamingTranslateSpeech")
 		resp, err = c.speechTranslationClient.StreamingTranslateSpeech(ctx, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "StreamingTranslateSpeech")
 		return err
 	}, opts...)
 	if err != nil {

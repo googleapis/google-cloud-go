@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package dataplex
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 
@@ -368,6 +369,8 @@ type dataTaxonomyGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewDataTaxonomyClient creates a new data taxonomy service client based on gRPC.
@@ -395,6 +398,7 @@ func NewDataTaxonomyClient(ctx context.Context, opts ...option.ClientOption) (*D
 		connPool:           connPool,
 		dataTaxonomyClient: dataplexpb.NewDataTaxonomyServiceClient(connPool),
 		CallOptions:        &client.CallOptions,
+		logger:             internaloption.GetLogger(opts),
 		operationsClient:   longrunningpb.NewOperationsClient(connPool),
 		locationsClient:    locationpb.NewLocationsClient(connPool),
 	}
@@ -450,7 +454,7 @@ func (c *dataTaxonomyGRPCClient) CreateDataTaxonomy(ctx context.Context, req *da
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataTaxonomyClient.CreateDataTaxonomy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataTaxonomyClient.CreateDataTaxonomy, req, settings.GRPC, c.logger, "CreateDataTaxonomy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -470,7 +474,7 @@ func (c *dataTaxonomyGRPCClient) UpdateDataTaxonomy(ctx context.Context, req *da
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataTaxonomyClient.UpdateDataTaxonomy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataTaxonomyClient.UpdateDataTaxonomy, req, settings.GRPC, c.logger, "UpdateDataTaxonomy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -490,7 +494,7 @@ func (c *dataTaxonomyGRPCClient) DeleteDataTaxonomy(ctx context.Context, req *da
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataTaxonomyClient.DeleteDataTaxonomy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataTaxonomyClient.DeleteDataTaxonomy, req, settings.GRPC, c.logger, "DeleteDataTaxonomy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -521,7 +525,7 @@ func (c *dataTaxonomyGRPCClient) ListDataTaxonomies(ctx context.Context, req *da
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.dataTaxonomyClient.ListDataTaxonomies(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.dataTaxonomyClient.ListDataTaxonomies, req, settings.GRPC, c.logger, "ListDataTaxonomies")
 			return err
 		}, opts...)
 		if err != nil {
@@ -556,7 +560,7 @@ func (c *dataTaxonomyGRPCClient) GetDataTaxonomy(ctx context.Context, req *datap
 	var resp *dataplexpb.DataTaxonomy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataTaxonomyClient.GetDataTaxonomy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataTaxonomyClient.GetDataTaxonomy, req, settings.GRPC, c.logger, "GetDataTaxonomy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -574,7 +578,7 @@ func (c *dataTaxonomyGRPCClient) CreateDataAttributeBinding(ctx context.Context,
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataTaxonomyClient.CreateDataAttributeBinding(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataTaxonomyClient.CreateDataAttributeBinding, req, settings.GRPC, c.logger, "CreateDataAttributeBinding")
 		return err
 	}, opts...)
 	if err != nil {
@@ -594,7 +598,7 @@ func (c *dataTaxonomyGRPCClient) UpdateDataAttributeBinding(ctx context.Context,
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataTaxonomyClient.UpdateDataAttributeBinding(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataTaxonomyClient.UpdateDataAttributeBinding, req, settings.GRPC, c.logger, "UpdateDataAttributeBinding")
 		return err
 	}, opts...)
 	if err != nil {
@@ -614,7 +618,7 @@ func (c *dataTaxonomyGRPCClient) DeleteDataAttributeBinding(ctx context.Context,
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataTaxonomyClient.DeleteDataAttributeBinding(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataTaxonomyClient.DeleteDataAttributeBinding, req, settings.GRPC, c.logger, "DeleteDataAttributeBinding")
 		return err
 	}, opts...)
 	if err != nil {
@@ -645,7 +649,7 @@ func (c *dataTaxonomyGRPCClient) ListDataAttributeBindings(ctx context.Context, 
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.dataTaxonomyClient.ListDataAttributeBindings(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.dataTaxonomyClient.ListDataAttributeBindings, req, settings.GRPC, c.logger, "ListDataAttributeBindings")
 			return err
 		}, opts...)
 		if err != nil {
@@ -680,7 +684,7 @@ func (c *dataTaxonomyGRPCClient) GetDataAttributeBinding(ctx context.Context, re
 	var resp *dataplexpb.DataAttributeBinding
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataTaxonomyClient.GetDataAttributeBinding(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataTaxonomyClient.GetDataAttributeBinding, req, settings.GRPC, c.logger, "GetDataAttributeBinding")
 		return err
 	}, opts...)
 	if err != nil {
@@ -698,7 +702,7 @@ func (c *dataTaxonomyGRPCClient) CreateDataAttribute(ctx context.Context, req *d
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataTaxonomyClient.CreateDataAttribute(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataTaxonomyClient.CreateDataAttribute, req, settings.GRPC, c.logger, "CreateDataAttribute")
 		return err
 	}, opts...)
 	if err != nil {
@@ -718,7 +722,7 @@ func (c *dataTaxonomyGRPCClient) UpdateDataAttribute(ctx context.Context, req *d
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataTaxonomyClient.UpdateDataAttribute(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataTaxonomyClient.UpdateDataAttribute, req, settings.GRPC, c.logger, "UpdateDataAttribute")
 		return err
 	}, opts...)
 	if err != nil {
@@ -738,7 +742,7 @@ func (c *dataTaxonomyGRPCClient) DeleteDataAttribute(ctx context.Context, req *d
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataTaxonomyClient.DeleteDataAttribute(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataTaxonomyClient.DeleteDataAttribute, req, settings.GRPC, c.logger, "DeleteDataAttribute")
 		return err
 	}, opts...)
 	if err != nil {
@@ -769,7 +773,7 @@ func (c *dataTaxonomyGRPCClient) ListDataAttributes(ctx context.Context, req *da
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.dataTaxonomyClient.ListDataAttributes(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.dataTaxonomyClient.ListDataAttributes, req, settings.GRPC, c.logger, "ListDataAttributes")
 			return err
 		}, opts...)
 		if err != nil {
@@ -804,7 +808,7 @@ func (c *dataTaxonomyGRPCClient) GetDataAttribute(ctx context.Context, req *data
 	var resp *dataplexpb.DataAttribute
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.dataTaxonomyClient.GetDataAttribute(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.dataTaxonomyClient.GetDataAttribute, req, settings.GRPC, c.logger, "GetDataAttribute")
 		return err
 	}, opts...)
 	if err != nil {
@@ -822,7 +826,7 @@ func (c *dataTaxonomyGRPCClient) GetLocation(ctx context.Context, req *locationp
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -851,7 +855,7 @@ func (c *dataTaxonomyGRPCClient) ListLocations(ctx context.Context, req *locatio
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -885,7 +889,7 @@ func (c *dataTaxonomyGRPCClient) CancelOperation(ctx context.Context, req *longr
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -899,7 +903,7 @@ func (c *dataTaxonomyGRPCClient) DeleteOperation(ctx context.Context, req *longr
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -914,7 +918,7 @@ func (c *dataTaxonomyGRPCClient) GetOperation(ctx context.Context, req *longrunn
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -943,7 +947,7 @@ func (c *dataTaxonomyGRPCClient) ListOperations(ctx context.Context, req *longru
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {

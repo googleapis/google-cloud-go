@@ -1597,7 +1597,7 @@ func TestWriteLogEntriesSizeLimit(t *testing.T) {
 	}
 
 	client.OnError = func(e error) {
-		t.Fatalf(e.Error())
+		t.Fatal(e.Error())
 	}
 
 	defer client.Close()

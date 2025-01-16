@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -32,7 +32,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -872,6 +871,8 @@ type backupForGKEGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewBackupForGKEClient creates a new backup forgke client based on gRPC.
@@ -899,6 +900,7 @@ func NewBackupForGKEClient(ctx context.Context, opts ...option.ClientOption) (*B
 		connPool:           connPool,
 		backupForGKEClient: gkebackuppb.NewBackupForGKEClient(connPool),
 		CallOptions:        &client.CallOptions,
+		logger:             internaloption.GetLogger(opts),
 		operationsClient:   longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:    iampb.NewIAMPolicyClient(connPool),
 		locationsClient:    locationpb.NewLocationsClient(connPool),
@@ -964,6 +966,8 @@ type backupForGKERESTClient struct {
 
 	// Points back to the CallOptions field of the containing BackupForGKEClient
 	CallOptions **BackupForGKECallOptions
+
+	logger *slog.Logger
 }
 
 // NewBackupForGKERESTClient creates a new backup forgke rest client.
@@ -982,6 +986,7 @@ func NewBackupForGKERESTClient(ctx context.Context, opts ...option.ClientOption)
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -1044,7 +1049,7 @@ func (c *backupForGKEGRPCClient) CreateBackupPlan(ctx context.Context, req *gkeb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.backupForGKEClient.CreateBackupPlan(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.backupForGKEClient.CreateBackupPlan, req, settings.GRPC, c.logger, "CreateBackupPlan")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1075,7 +1080,7 @@ func (c *backupForGKEGRPCClient) ListBackupPlans(ctx context.Context, req *gkeba
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.backupForGKEClient.ListBackupPlans(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.backupForGKEClient.ListBackupPlans, req, settings.GRPC, c.logger, "ListBackupPlans")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1110,7 +1115,7 @@ func (c *backupForGKEGRPCClient) GetBackupPlan(ctx context.Context, req *gkeback
 	var resp *gkebackuppb.BackupPlan
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.backupForGKEClient.GetBackupPlan(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.backupForGKEClient.GetBackupPlan, req, settings.GRPC, c.logger, "GetBackupPlan")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1128,7 +1133,7 @@ func (c *backupForGKEGRPCClient) UpdateBackupPlan(ctx context.Context, req *gkeb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.backupForGKEClient.UpdateBackupPlan(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.backupForGKEClient.UpdateBackupPlan, req, settings.GRPC, c.logger, "UpdateBackupPlan")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1148,7 +1153,7 @@ func (c *backupForGKEGRPCClient) DeleteBackupPlan(ctx context.Context, req *gkeb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.backupForGKEClient.DeleteBackupPlan(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.backupForGKEClient.DeleteBackupPlan, req, settings.GRPC, c.logger, "DeleteBackupPlan")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1168,7 +1173,7 @@ func (c *backupForGKEGRPCClient) CreateBackup(ctx context.Context, req *gkebacku
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.backupForGKEClient.CreateBackup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.backupForGKEClient.CreateBackup, req, settings.GRPC, c.logger, "CreateBackup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1199,7 +1204,7 @@ func (c *backupForGKEGRPCClient) ListBackups(ctx context.Context, req *gkebackup
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.backupForGKEClient.ListBackups(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.backupForGKEClient.ListBackups, req, settings.GRPC, c.logger, "ListBackups")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1234,7 +1239,7 @@ func (c *backupForGKEGRPCClient) GetBackup(ctx context.Context, req *gkebackuppb
 	var resp *gkebackuppb.Backup
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.backupForGKEClient.GetBackup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.backupForGKEClient.GetBackup, req, settings.GRPC, c.logger, "GetBackup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1252,7 +1257,7 @@ func (c *backupForGKEGRPCClient) UpdateBackup(ctx context.Context, req *gkebacku
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.backupForGKEClient.UpdateBackup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.backupForGKEClient.UpdateBackup, req, settings.GRPC, c.logger, "UpdateBackup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1272,7 +1277,7 @@ func (c *backupForGKEGRPCClient) DeleteBackup(ctx context.Context, req *gkebacku
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.backupForGKEClient.DeleteBackup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.backupForGKEClient.DeleteBackup, req, settings.GRPC, c.logger, "DeleteBackup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1303,7 +1308,7 @@ func (c *backupForGKEGRPCClient) ListVolumeBackups(ctx context.Context, req *gke
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.backupForGKEClient.ListVolumeBackups(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.backupForGKEClient.ListVolumeBackups, req, settings.GRPC, c.logger, "ListVolumeBackups")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1338,7 +1343,7 @@ func (c *backupForGKEGRPCClient) GetVolumeBackup(ctx context.Context, req *gkeba
 	var resp *gkebackuppb.VolumeBackup
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.backupForGKEClient.GetVolumeBackup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.backupForGKEClient.GetVolumeBackup, req, settings.GRPC, c.logger, "GetVolumeBackup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1356,7 +1361,7 @@ func (c *backupForGKEGRPCClient) CreateRestorePlan(ctx context.Context, req *gke
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.backupForGKEClient.CreateRestorePlan(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.backupForGKEClient.CreateRestorePlan, req, settings.GRPC, c.logger, "CreateRestorePlan")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1387,7 +1392,7 @@ func (c *backupForGKEGRPCClient) ListRestorePlans(ctx context.Context, req *gkeb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.backupForGKEClient.ListRestorePlans(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.backupForGKEClient.ListRestorePlans, req, settings.GRPC, c.logger, "ListRestorePlans")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1422,7 +1427,7 @@ func (c *backupForGKEGRPCClient) GetRestorePlan(ctx context.Context, req *gkebac
 	var resp *gkebackuppb.RestorePlan
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.backupForGKEClient.GetRestorePlan(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.backupForGKEClient.GetRestorePlan, req, settings.GRPC, c.logger, "GetRestorePlan")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1440,7 +1445,7 @@ func (c *backupForGKEGRPCClient) UpdateRestorePlan(ctx context.Context, req *gke
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.backupForGKEClient.UpdateRestorePlan(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.backupForGKEClient.UpdateRestorePlan, req, settings.GRPC, c.logger, "UpdateRestorePlan")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1460,7 +1465,7 @@ func (c *backupForGKEGRPCClient) DeleteRestorePlan(ctx context.Context, req *gke
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.backupForGKEClient.DeleteRestorePlan(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.backupForGKEClient.DeleteRestorePlan, req, settings.GRPC, c.logger, "DeleteRestorePlan")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1480,7 +1485,7 @@ func (c *backupForGKEGRPCClient) CreateRestore(ctx context.Context, req *gkeback
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.backupForGKEClient.CreateRestore(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.backupForGKEClient.CreateRestore, req, settings.GRPC, c.logger, "CreateRestore")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1511,7 +1516,7 @@ func (c *backupForGKEGRPCClient) ListRestores(ctx context.Context, req *gkebacku
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.backupForGKEClient.ListRestores(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.backupForGKEClient.ListRestores, req, settings.GRPC, c.logger, "ListRestores")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1546,7 +1551,7 @@ func (c *backupForGKEGRPCClient) GetRestore(ctx context.Context, req *gkebackupp
 	var resp *gkebackuppb.Restore
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.backupForGKEClient.GetRestore(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.backupForGKEClient.GetRestore, req, settings.GRPC, c.logger, "GetRestore")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1564,7 +1569,7 @@ func (c *backupForGKEGRPCClient) UpdateRestore(ctx context.Context, req *gkeback
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.backupForGKEClient.UpdateRestore(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.backupForGKEClient.UpdateRestore, req, settings.GRPC, c.logger, "UpdateRestore")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1584,7 +1589,7 @@ func (c *backupForGKEGRPCClient) DeleteRestore(ctx context.Context, req *gkeback
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.backupForGKEClient.DeleteRestore(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.backupForGKEClient.DeleteRestore, req, settings.GRPC, c.logger, "DeleteRestore")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1615,7 +1620,7 @@ func (c *backupForGKEGRPCClient) ListVolumeRestores(ctx context.Context, req *gk
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.backupForGKEClient.ListVolumeRestores(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.backupForGKEClient.ListVolumeRestores, req, settings.GRPC, c.logger, "ListVolumeRestores")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1650,7 +1655,7 @@ func (c *backupForGKEGRPCClient) GetVolumeRestore(ctx context.Context, req *gkeb
 	var resp *gkebackuppb.VolumeRestore
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.backupForGKEClient.GetVolumeRestore(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.backupForGKEClient.GetVolumeRestore, req, settings.GRPC, c.logger, "GetVolumeRestore")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1668,7 +1673,7 @@ func (c *backupForGKEGRPCClient) GetBackupIndexDownloadUrl(ctx context.Context, 
 	var resp *gkebackuppb.GetBackupIndexDownloadUrlResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.backupForGKEClient.GetBackupIndexDownloadUrl(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.backupForGKEClient.GetBackupIndexDownloadUrl, req, settings.GRPC, c.logger, "GetBackupIndexDownloadUrl")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1686,7 +1691,7 @@ func (c *backupForGKEGRPCClient) GetLocation(ctx context.Context, req *locationp
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1715,7 +1720,7 @@ func (c *backupForGKEGRPCClient) ListLocations(ctx context.Context, req *locatio
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1750,7 +1755,7 @@ func (c *backupForGKEGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1768,7 +1773,7 @@ func (c *backupForGKEGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1786,7 +1791,7 @@ func (c *backupForGKEGRPCClient) TestIamPermissions(ctx context.Context, req *ia
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1803,7 +1808,7 @@ func (c *backupForGKEGRPCClient) CancelOperation(ctx context.Context, req *longr
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -1817,7 +1822,7 @@ func (c *backupForGKEGRPCClient) DeleteOperation(ctx context.Context, req *longr
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -1832,7 +1837,7 @@ func (c *backupForGKEGRPCClient) GetOperation(ctx context.Context, req *longrunn
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1861,7 +1866,7 @@ func (c *backupForGKEGRPCClient) ListOperations(ctx context.Context, req *longru
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1927,21 +1932,10 @@ func (c *backupForGKERESTClient) CreateBackupPlan(ctx context.Context, req *gkeb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateBackupPlan")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2010,21 +2004,10 @@ func (c *backupForGKERESTClient) ListBackupPlans(ctx context.Context, req *gkeba
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListBackupPlans")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2087,17 +2070,7 @@ func (c *backupForGKERESTClient) GetBackupPlan(ctx context.Context, req *gkeback
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetBackupPlan")
 		if err != nil {
 			return err
 		}
@@ -2160,21 +2133,10 @@ func (c *backupForGKERESTClient) UpdateBackupPlan(ctx context.Context, req *gkeb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateBackupPlan")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2227,21 +2189,10 @@ func (c *backupForGKERESTClient) DeleteBackupPlan(ctx context.Context, req *gkeb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteBackupPlan")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2301,21 +2252,10 @@ func (c *backupForGKERESTClient) CreateBackup(ctx context.Context, req *gkebacku
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateBackup")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2384,21 +2324,10 @@ func (c *backupForGKERESTClient) ListBackups(ctx context.Context, req *gkebackup
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListBackups")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2461,17 +2390,7 @@ func (c *backupForGKERESTClient) GetBackup(ctx context.Context, req *gkebackuppb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetBackup")
 		if err != nil {
 			return err
 		}
@@ -2534,21 +2453,10 @@ func (c *backupForGKERESTClient) UpdateBackup(ctx context.Context, req *gkebacku
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateBackup")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2604,21 +2512,10 @@ func (c *backupForGKERESTClient) DeleteBackup(ctx context.Context, req *gkebacku
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteBackup")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2687,21 +2584,10 @@ func (c *backupForGKERESTClient) ListVolumeBackups(ctx context.Context, req *gke
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListVolumeBackups")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2764,17 +2650,7 @@ func (c *backupForGKERESTClient) GetVolumeBackup(ctx context.Context, req *gkeba
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetVolumeBackup")
 		if err != nil {
 			return err
 		}
@@ -2831,21 +2707,10 @@ func (c *backupForGKERESTClient) CreateRestorePlan(ctx context.Context, req *gke
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateRestorePlan")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2914,21 +2779,10 @@ func (c *backupForGKERESTClient) ListRestorePlans(ctx context.Context, req *gkeb
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListRestorePlans")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2991,17 +2845,7 @@ func (c *backupForGKERESTClient) GetRestorePlan(ctx context.Context, req *gkebac
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetRestorePlan")
 		if err != nil {
 			return err
 		}
@@ -3064,21 +2908,10 @@ func (c *backupForGKERESTClient) UpdateRestorePlan(ctx context.Context, req *gke
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateRestorePlan")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3134,21 +2967,10 @@ func (c *backupForGKERESTClient) DeleteRestorePlan(ctx context.Context, req *gke
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteRestorePlan")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3206,21 +3028,10 @@ func (c *backupForGKERESTClient) CreateRestore(ctx context.Context, req *gkeback
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateRestore")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3289,21 +3100,10 @@ func (c *backupForGKERESTClient) ListRestores(ctx context.Context, req *gkebacku
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListRestores")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3366,17 +3166,7 @@ func (c *backupForGKERESTClient) GetRestore(ctx context.Context, req *gkebackupp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetRestore")
 		if err != nil {
 			return err
 		}
@@ -3439,21 +3229,10 @@ func (c *backupForGKERESTClient) UpdateRestore(ctx context.Context, req *gkeback
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateRestore")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3509,21 +3288,10 @@ func (c *backupForGKERESTClient) DeleteRestore(ctx context.Context, req *gkeback
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteRestore")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3592,21 +3360,10 @@ func (c *backupForGKERESTClient) ListVolumeRestores(ctx context.Context, req *gk
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListVolumeRestores")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3669,17 +3426,7 @@ func (c *backupForGKERESTClient) GetVolumeRestore(ctx context.Context, req *gkeb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetVolumeRestore")
 		if err != nil {
 			return err
 		}
@@ -3729,17 +3476,7 @@ func (c *backupForGKERESTClient) GetBackupIndexDownloadUrl(ctx context.Context, 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetBackupIndexDownloadUrl")
 		if err != nil {
 			return err
 		}
@@ -3789,17 +3526,7 @@ func (c *backupForGKERESTClient) GetLocation(ctx context.Context, req *locationp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -3864,21 +3591,10 @@ func (c *backupForGKERESTClient) ListLocations(ctx context.Context, req *locatio
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3945,17 +3661,7 @@ func (c *backupForGKERESTClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -4015,17 +3721,7 @@ func (c *backupForGKERESTClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -4087,17 +3783,7 @@ func (c *backupForGKERESTClient) TestIamPermissions(ctx context.Context, req *ia
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
 		if err != nil {
 			return err
 		}
@@ -4150,15 +3836,8 @@ func (c *backupForGKERESTClient) CancelOperation(ctx context.Context, req *longr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -4192,15 +3871,8 @@ func (c *backupForGKERESTClient) DeleteOperation(ctx context.Context, req *longr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOperation")
+		return err
 	}, opts...)
 }
 
@@ -4237,17 +3909,7 @@ func (c *backupForGKERESTClient) GetOperation(ctx context.Context, req *longrunn
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -4312,21 +3974,10 @@ func (c *backupForGKERESTClient) ListOperations(ctx context.Context, req *longru
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	visionpb "cloud.google.com/go/vision/v2/apiv1/visionpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -876,6 +875,8 @@ type productSearchGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewProductSearchClient creates a new product search client based on gRPC.
@@ -917,6 +918,7 @@ func NewProductSearchClient(ctx context.Context, opts ...option.ClientOption) (*
 		connPool:            connPool,
 		productSearchClient: visionpb.NewProductSearchClient(connPool),
 		CallOptions:         &client.CallOptions,
+		logger:              internaloption.GetLogger(opts),
 		operationsClient:    longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -980,6 +982,8 @@ type productSearchRESTClient struct {
 
 	// Points back to the CallOptions field of the containing ProductSearchClient
 	CallOptions **ProductSearchCallOptions
+
+	logger *slog.Logger
 }
 
 // NewProductSearchRESTClient creates a new product search rest client.
@@ -1012,6 +1016,7 @@ func NewProductSearchRESTClient(ctx context.Context, opts ...option.ClientOption
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -1074,7 +1079,7 @@ func (c *productSearchGRPCClient) CreateProductSet(ctx context.Context, req *vis
 	var resp *visionpb.ProductSet
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.productSearchClient.CreateProductSet(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.productSearchClient.CreateProductSet, req, settings.GRPC, c.logger, "CreateProductSet")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1103,7 +1108,7 @@ func (c *productSearchGRPCClient) ListProductSets(ctx context.Context, req *visi
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.productSearchClient.ListProductSets(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.productSearchClient.ListProductSets, req, settings.GRPC, c.logger, "ListProductSets")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1138,7 +1143,7 @@ func (c *productSearchGRPCClient) GetProductSet(ctx context.Context, req *vision
 	var resp *visionpb.ProductSet
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.productSearchClient.GetProductSet(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.productSearchClient.GetProductSet, req, settings.GRPC, c.logger, "GetProductSet")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1156,7 +1161,7 @@ func (c *productSearchGRPCClient) UpdateProductSet(ctx context.Context, req *vis
 	var resp *visionpb.ProductSet
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.productSearchClient.UpdateProductSet(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.productSearchClient.UpdateProductSet, req, settings.GRPC, c.logger, "UpdateProductSet")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1173,7 +1178,7 @@ func (c *productSearchGRPCClient) DeleteProductSet(ctx context.Context, req *vis
 	opts = append((*c.CallOptions).DeleteProductSet[0:len((*c.CallOptions).DeleteProductSet):len((*c.CallOptions).DeleteProductSet)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.productSearchClient.DeleteProductSet(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.productSearchClient.DeleteProductSet, req, settings.GRPC, c.logger, "DeleteProductSet")
 		return err
 	}, opts...)
 	return err
@@ -1188,7 +1193,7 @@ func (c *productSearchGRPCClient) CreateProduct(ctx context.Context, req *vision
 	var resp *visionpb.Product
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.productSearchClient.CreateProduct(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.productSearchClient.CreateProduct, req, settings.GRPC, c.logger, "CreateProduct")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1217,7 +1222,7 @@ func (c *productSearchGRPCClient) ListProducts(ctx context.Context, req *visionp
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.productSearchClient.ListProducts(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.productSearchClient.ListProducts, req, settings.GRPC, c.logger, "ListProducts")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1252,7 +1257,7 @@ func (c *productSearchGRPCClient) GetProduct(ctx context.Context, req *visionpb.
 	var resp *visionpb.Product
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.productSearchClient.GetProduct(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.productSearchClient.GetProduct, req, settings.GRPC, c.logger, "GetProduct")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1270,7 +1275,7 @@ func (c *productSearchGRPCClient) UpdateProduct(ctx context.Context, req *vision
 	var resp *visionpb.Product
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.productSearchClient.UpdateProduct(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.productSearchClient.UpdateProduct, req, settings.GRPC, c.logger, "UpdateProduct")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1287,7 +1292,7 @@ func (c *productSearchGRPCClient) DeleteProduct(ctx context.Context, req *vision
 	opts = append((*c.CallOptions).DeleteProduct[0:len((*c.CallOptions).DeleteProduct):len((*c.CallOptions).DeleteProduct)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.productSearchClient.DeleteProduct(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.productSearchClient.DeleteProduct, req, settings.GRPC, c.logger, "DeleteProduct")
 		return err
 	}, opts...)
 	return err
@@ -1302,7 +1307,7 @@ func (c *productSearchGRPCClient) CreateReferenceImage(ctx context.Context, req 
 	var resp *visionpb.ReferenceImage
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.productSearchClient.CreateReferenceImage(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.productSearchClient.CreateReferenceImage, req, settings.GRPC, c.logger, "CreateReferenceImage")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1319,7 +1324,7 @@ func (c *productSearchGRPCClient) DeleteReferenceImage(ctx context.Context, req 
 	opts = append((*c.CallOptions).DeleteReferenceImage[0:len((*c.CallOptions).DeleteReferenceImage):len((*c.CallOptions).DeleteReferenceImage)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.productSearchClient.DeleteReferenceImage(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.productSearchClient.DeleteReferenceImage, req, settings.GRPC, c.logger, "DeleteReferenceImage")
 		return err
 	}, opts...)
 	return err
@@ -1345,7 +1350,7 @@ func (c *productSearchGRPCClient) ListReferenceImages(ctx context.Context, req *
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.productSearchClient.ListReferenceImages(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.productSearchClient.ListReferenceImages, req, settings.GRPC, c.logger, "ListReferenceImages")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1380,7 +1385,7 @@ func (c *productSearchGRPCClient) GetReferenceImage(ctx context.Context, req *vi
 	var resp *visionpb.ReferenceImage
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.productSearchClient.GetReferenceImage(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.productSearchClient.GetReferenceImage, req, settings.GRPC, c.logger, "GetReferenceImage")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1397,7 +1402,7 @@ func (c *productSearchGRPCClient) AddProductToProductSet(ctx context.Context, re
 	opts = append((*c.CallOptions).AddProductToProductSet[0:len((*c.CallOptions).AddProductToProductSet):len((*c.CallOptions).AddProductToProductSet)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.productSearchClient.AddProductToProductSet(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.productSearchClient.AddProductToProductSet, req, settings.GRPC, c.logger, "AddProductToProductSet")
 		return err
 	}, opts...)
 	return err
@@ -1411,7 +1416,7 @@ func (c *productSearchGRPCClient) RemoveProductFromProductSet(ctx context.Contex
 	opts = append((*c.CallOptions).RemoveProductFromProductSet[0:len((*c.CallOptions).RemoveProductFromProductSet):len((*c.CallOptions).RemoveProductFromProductSet)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.productSearchClient.RemoveProductFromProductSet(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.productSearchClient.RemoveProductFromProductSet, req, settings.GRPC, c.logger, "RemoveProductFromProductSet")
 		return err
 	}, opts...)
 	return err
@@ -1437,7 +1442,7 @@ func (c *productSearchGRPCClient) ListProductsInProductSet(ctx context.Context, 
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.productSearchClient.ListProductsInProductSet(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.productSearchClient.ListProductsInProductSet, req, settings.GRPC, c.logger, "ListProductsInProductSet")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1472,7 +1477,7 @@ func (c *productSearchGRPCClient) ImportProductSets(ctx context.Context, req *vi
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.productSearchClient.ImportProductSets(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.productSearchClient.ImportProductSets, req, settings.GRPC, c.logger, "ImportProductSets")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1492,7 +1497,7 @@ func (c *productSearchGRPCClient) PurgeProducts(ctx context.Context, req *vision
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.productSearchClient.PurgeProducts(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.productSearchClient.PurgeProducts, req, settings.GRPC, c.logger, "PurgeProducts")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1512,7 +1517,7 @@ func (c *productSearchGRPCClient) GetOperation(ctx context.Context, req *longrun
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1569,17 +1574,7 @@ func (c *productSearchRESTClient) CreateProductSet(ctx context.Context, req *vis
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateProductSet")
 		if err != nil {
 			return err
 		}
@@ -1646,21 +1641,10 @@ func (c *productSearchRESTClient) ListProductSets(ctx context.Context, req *visi
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListProductSets")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1727,17 +1711,7 @@ func (c *productSearchRESTClient) GetProductSet(ctx context.Context, req *vision
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetProductSet")
 		if err != nil {
 			return err
 		}
@@ -1809,17 +1783,7 @@ func (c *productSearchRESTClient) UpdateProductSet(ctx context.Context, req *vis
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateProductSet")
 		if err != nil {
 			return err
 		}
@@ -1869,15 +1833,8 @@ func (c *productSearchRESTClient) DeleteProductSet(ctx context.Context, req *vis
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteProductSet")
+		return err
 	}, opts...)
 }
 
@@ -1933,17 +1890,7 @@ func (c *productSearchRESTClient) CreateProduct(ctx context.Context, req *vision
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateProduct")
 		if err != nil {
 			return err
 		}
@@ -2009,21 +1956,10 @@ func (c *productSearchRESTClient) ListProducts(ctx context.Context, req *visionp
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListProducts")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2090,17 +2026,7 @@ func (c *productSearchRESTClient) GetProduct(ctx context.Context, req *visionpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetProduct")
 		if err != nil {
 			return err
 		}
@@ -2181,17 +2107,7 @@ func (c *productSearchRESTClient) UpdateProduct(ctx context.Context, req *vision
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateProduct")
 		if err != nil {
 			return err
 		}
@@ -2242,15 +2158,8 @@ func (c *productSearchRESTClient) DeleteProduct(ctx context.Context, req *vision
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteProduct")
+		return err
 	}, opts...)
 }
 
@@ -2318,17 +2227,7 @@ func (c *productSearchRESTClient) CreateReferenceImage(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateReferenceImage")
 		if err != nil {
 			return err
 		}
@@ -2381,15 +2280,8 @@ func (c *productSearchRESTClient) DeleteReferenceImage(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteReferenceImage")
+		return err
 	}, opts...)
 }
 
@@ -2445,21 +2337,10 @@ func (c *productSearchRESTClient) ListReferenceImages(ctx context.Context, req *
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListReferenceImages")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2526,17 +2407,7 @@ func (c *productSearchRESTClient) GetReferenceImage(ctx context.Context, req *vi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetReferenceImage")
 		if err != nil {
 			return err
 		}
@@ -2596,15 +2467,8 @@ func (c *productSearchRESTClient) AddProductToProductSet(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AddProductToProductSet")
+		return err
 	}, opts...)
 }
 
@@ -2644,15 +2508,8 @@ func (c *productSearchRESTClient) RemoveProductFromProductSet(ctx context.Contex
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RemoveProductFromProductSet")
+		return err
 	}, opts...)
 }
 
@@ -2707,21 +2564,10 @@ func (c *productSearchRESTClient) ListProductsInProductSet(ctx context.Context, 
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListProductsInProductSet")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2799,21 +2645,10 @@ func (c *productSearchRESTClient) ImportProductSets(ctx context.Context, req *vi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ImportProductSets")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2892,21 +2727,10 @@ func (c *productSearchRESTClient) PurgeProducts(ctx context.Context, req *vision
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PurgeProducts")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2957,17 +2781,7 @@ func (c *productSearchRESTClient) GetOperation(ctx context.Context, req *longrun
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}

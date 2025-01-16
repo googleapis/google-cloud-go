@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package aiplatform
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 
@@ -365,6 +366,8 @@ type featureRegistryGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewFeatureRegistryClient creates a new feature registry service client based on gRPC.
@@ -392,6 +395,7 @@ func NewFeatureRegistryClient(ctx context.Context, opts ...option.ClientOption) 
 		connPool:              connPool,
 		featureRegistryClient: aiplatformpb.NewFeatureRegistryServiceClient(connPool),
 		CallOptions:           &client.CallOptions,
+		logger:                internaloption.GetLogger(opts),
 		operationsClient:      longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:       iampb.NewIAMPolicyClient(connPool),
 		locationsClient:       locationpb.NewLocationsClient(connPool),
@@ -448,7 +452,7 @@ func (c *featureRegistryGRPCClient) CreateFeatureGroup(ctx context.Context, req 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featureRegistryClient.CreateFeatureGroup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featureRegistryClient.CreateFeatureGroup, req, settings.GRPC, c.logger, "CreateFeatureGroup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -468,7 +472,7 @@ func (c *featureRegistryGRPCClient) GetFeatureGroup(ctx context.Context, req *ai
 	var resp *aiplatformpb.FeatureGroup
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featureRegistryClient.GetFeatureGroup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featureRegistryClient.GetFeatureGroup, req, settings.GRPC, c.logger, "GetFeatureGroup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -497,7 +501,7 @@ func (c *featureRegistryGRPCClient) ListFeatureGroups(ctx context.Context, req *
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.featureRegistryClient.ListFeatureGroups(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.featureRegistryClient.ListFeatureGroups, req, settings.GRPC, c.logger, "ListFeatureGroups")
 			return err
 		}, opts...)
 		if err != nil {
@@ -532,7 +536,7 @@ func (c *featureRegistryGRPCClient) UpdateFeatureGroup(ctx context.Context, req 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featureRegistryClient.UpdateFeatureGroup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featureRegistryClient.UpdateFeatureGroup, req, settings.GRPC, c.logger, "UpdateFeatureGroup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -552,7 +556,7 @@ func (c *featureRegistryGRPCClient) DeleteFeatureGroup(ctx context.Context, req 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featureRegistryClient.DeleteFeatureGroup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featureRegistryClient.DeleteFeatureGroup, req, settings.GRPC, c.logger, "DeleteFeatureGroup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -572,7 +576,7 @@ func (c *featureRegistryGRPCClient) CreateFeature(ctx context.Context, req *aipl
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featureRegistryClient.CreateFeature(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featureRegistryClient.CreateFeature, req, settings.GRPC, c.logger, "CreateFeature")
 		return err
 	}, opts...)
 	if err != nil {
@@ -592,7 +596,7 @@ func (c *featureRegistryGRPCClient) BatchCreateFeatures(ctx context.Context, req
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featureRegistryClient.BatchCreateFeatures(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featureRegistryClient.BatchCreateFeatures, req, settings.GRPC, c.logger, "BatchCreateFeatures")
 		return err
 	}, opts...)
 	if err != nil {
@@ -612,7 +616,7 @@ func (c *featureRegistryGRPCClient) GetFeature(ctx context.Context, req *aiplatf
 	var resp *aiplatformpb.Feature
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featureRegistryClient.GetFeature(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featureRegistryClient.GetFeature, req, settings.GRPC, c.logger, "GetFeature")
 		return err
 	}, opts...)
 	if err != nil {
@@ -641,7 +645,7 @@ func (c *featureRegistryGRPCClient) ListFeatures(ctx context.Context, req *aipla
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.featureRegistryClient.ListFeatures(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.featureRegistryClient.ListFeatures, req, settings.GRPC, c.logger, "ListFeatures")
 			return err
 		}, opts...)
 		if err != nil {
@@ -676,7 +680,7 @@ func (c *featureRegistryGRPCClient) UpdateFeature(ctx context.Context, req *aipl
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featureRegistryClient.UpdateFeature(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featureRegistryClient.UpdateFeature, req, settings.GRPC, c.logger, "UpdateFeature")
 		return err
 	}, opts...)
 	if err != nil {
@@ -696,7 +700,7 @@ func (c *featureRegistryGRPCClient) DeleteFeature(ctx context.Context, req *aipl
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featureRegistryClient.DeleteFeature(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featureRegistryClient.DeleteFeature, req, settings.GRPC, c.logger, "DeleteFeature")
 		return err
 	}, opts...)
 	if err != nil {
@@ -716,7 +720,7 @@ func (c *featureRegistryGRPCClient) GetLocation(ctx context.Context, req *locati
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -745,7 +749,7 @@ func (c *featureRegistryGRPCClient) ListLocations(ctx context.Context, req *loca
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -780,7 +784,7 @@ func (c *featureRegistryGRPCClient) GetIamPolicy(ctx context.Context, req *iampb
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -798,7 +802,7 @@ func (c *featureRegistryGRPCClient) SetIamPolicy(ctx context.Context, req *iampb
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -816,7 +820,7 @@ func (c *featureRegistryGRPCClient) TestIamPermissions(ctx context.Context, req 
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -833,7 +837,7 @@ func (c *featureRegistryGRPCClient) CancelOperation(ctx context.Context, req *lo
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -847,7 +851,7 @@ func (c *featureRegistryGRPCClient) DeleteOperation(ctx context.Context, req *lo
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -862,7 +866,7 @@ func (c *featureRegistryGRPCClient) GetOperation(ctx context.Context, req *longr
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -891,7 +895,7 @@ func (c *featureRegistryGRPCClient) ListOperations(ctx context.Context, req *lon
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -926,7 +930,7 @@ func (c *featureRegistryGRPCClient) WaitOperation(ctx context.Context, req *long
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.WaitOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.WaitOperation, req, settings.GRPC, c.logger, "WaitOperation")
 		return err
 	}, opts...)
 	if err != nil {

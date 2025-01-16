@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package accounts
 import (
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -27,7 +27,6 @@ import (
 
 	accountspb "cloud.google.com/go/shopping/merchant/accounts/apiv1beta/accountspb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -190,6 +189,8 @@ type onlineReturnPolicyGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewOnlineReturnPolicyClient creates a new online return policy service client based on gRPC.
@@ -219,6 +220,7 @@ func NewOnlineReturnPolicyClient(ctx context.Context, opts ...option.ClientOptio
 		connPool:                 connPool,
 		onlineReturnPolicyClient: accountspb.NewOnlineReturnPolicyServiceClient(connPool),
 		CallOptions:              &client.CallOptions,
+		logger:                   internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -265,6 +267,8 @@ type onlineReturnPolicyRESTClient struct {
 
 	// Points back to the CallOptions field of the containing OnlineReturnPolicyClient
 	CallOptions **OnlineReturnPolicyCallOptions
+
+	logger *slog.Logger
 }
 
 // NewOnlineReturnPolicyRESTClient creates a new online return policy service rest client.
@@ -285,6 +289,7 @@ func NewOnlineReturnPolicyRESTClient(ctx context.Context, opts ...option.ClientO
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -337,7 +342,7 @@ func (c *onlineReturnPolicyGRPCClient) GetOnlineReturnPolicy(ctx context.Context
 	var resp *accountspb.OnlineReturnPolicy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.onlineReturnPolicyClient.GetOnlineReturnPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.onlineReturnPolicyClient.GetOnlineReturnPolicy, req, settings.GRPC, c.logger, "GetOnlineReturnPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -366,7 +371,7 @@ func (c *onlineReturnPolicyGRPCClient) ListOnlineReturnPolicies(ctx context.Cont
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.onlineReturnPolicyClient.ListOnlineReturnPolicies(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.onlineReturnPolicyClient.ListOnlineReturnPolicies, req, settings.GRPC, c.logger, "ListOnlineReturnPolicies")
 			return err
 		}, opts...)
 		if err != nil {
@@ -425,17 +430,7 @@ func (c *onlineReturnPolicyRESTClient) GetOnlineReturnPolicy(ctx context.Context
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOnlineReturnPolicy")
 		if err != nil {
 			return err
 		}
@@ -497,21 +492,10 @@ func (c *onlineReturnPolicyRESTClient) ListOnlineReturnPolicies(ctx context.Cont
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOnlineReturnPolicies")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

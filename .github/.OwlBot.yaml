@@ -5,6 +5,7 @@ deep-remove-regex:
   - /accessapproval/apiv1/
   - /accesscontextmanager/apiv1/
   - /ai/generativelanguage/apiv1/
+  - /ai/generativelanguage/apiv1alpha/
   - /ai/generativelanguage/apiv1beta/
   - /ai/generativelanguage/apiv1beta2/
   - /aiplatform/apiv1/
@@ -78,6 +79,7 @@ deep-remove-regex:
   - /clouddms/apiv1/
   - /cloudprofiler/apiv2/
   - /cloudquotas/apiv1/
+  - /cloudquotas/apiv1beta/
   - /cloudtasks/apiv2/
   - /cloudtasks/apiv2beta2/
   - /cloudtasks/apiv2beta3/
@@ -146,6 +148,7 @@ deep-remove-regex:
   - /internal/generated/snippets/accessapproval/apiv1/
   - /internal/generated/snippets/accesscontextmanager/apiv1/
   - /internal/generated/snippets/ai/generativelanguage/apiv1/
+  - /internal/generated/snippets/ai/generativelanguage/apiv1alpha/
   - /internal/generated/snippets/ai/generativelanguage/apiv1beta/
   - /internal/generated/snippets/ai/generativelanguage/apiv1beta2/
   - /internal/generated/snippets/aiplatform/apiv1/
@@ -214,6 +217,7 @@ deep-remove-regex:
   - /internal/generated/snippets/clouddms/apiv1/
   - /internal/generated/snippets/cloudprofiler/apiv2/
   - /internal/generated/snippets/cloudquotas/apiv1/
+  - /internal/generated/snippets/cloudquotas/apiv1beta/
   - /internal/generated/snippets/cloudtasks/apiv2/
   - /internal/generated/snippets/cloudtasks/apiv2beta2/
   - /internal/generated/snippets/cloudtasks/apiv2beta3/
@@ -298,6 +302,8 @@ deep-remove-regex:
   - /internal/generated/snippets/mediatranslation/apiv1beta1/
   - /internal/generated/snippets/memcache/apiv1/
   - /internal/generated/snippets/memcache/apiv1beta2/
+  - /internal/generated/snippets/memorystore/apiv1/
+  - /internal/generated/snippets/memorystore/apiv1beta/
   - /internal/generated/snippets/metastore/apiv1/
   - /internal/generated/snippets/metastore/apiv1alpha/
   - /internal/generated/snippets/metastore/apiv1beta/
@@ -383,6 +389,7 @@ deep-remove-regex:
   - /internal/generated/snippets/shopping/merchant/quota/apiv1beta/
   - /internal/generated/snippets/shopping/merchant/inventories/apiv1beta/
   - /internal/generated/snippets/shopping/merchant/reports/apiv1beta/
+  - /internal/generated/snippets/shopping/merchant/reviews/apiv1beta/
   - /internal/generated/snippets/shopping/merchant/lfp/apiv1beta/
   - /internal/generated/snippets/spanner/admin/database/apiv1/
   - /internal/generated/snippets/spanner/admin/instance/apiv1/
@@ -447,6 +454,8 @@ deep-remove-regex:
   - /mediatranslation/apiv1beta1/
   - /memcache/apiv1/
   - /memcache/apiv1beta2/
+  - /memorystore/apiv1/
+  - /memorystore/apiv1beta/
   - /metastore/apiv1/
   - /metastore/apiv1alpha/
   - /metastore/apiv1beta/
@@ -535,6 +544,7 @@ deep-remove-regex:
   - /shopping/merchant/inventories/apiv1beta/
   - /shopping/merchant/lfp/apiv1beta/
   - /shopping/merchant/reports/apiv1beta/
+  - /shopping/merchant/reviews/apiv1beta/
   - /shopping/type/
   - /spanner/admin/database/apiv1/
   - /spanner/admin/instance/apiv1/
@@ -624,6 +634,8 @@ deep-copy-regex:
     dest: /
   - source: /google/ai/generativelanguage/v1/cloud.google.com/go
     dest: /
+  - source: /google/ai/generativelanguage/v1alpha/cloud.google.com/go
+    dest: /
   - source: /google/ai/generativelanguage/v1beta/cloud.google.com/go
     dest: /
   - source: /google/ai/generativelanguage/v1beta2/cloud.google.com/go
@@ -665,6 +677,8 @@ deep-copy-regex:
   - source: /google/api/apikeys/v2/cloud.google.com/go
     dest: /
   - source: /google/api/cloudquotas/v1/cloud.google.com/go
+    dest: /
+  - source: /google/api/cloudquotas/v1beta/cloud.google.com/go
     dest: /
   - source: /google/appengine/v1/cloud.google.com/go
     dest: /
@@ -946,6 +960,10 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/memcache/v1beta2/cloud.google.com/go
     dest: /
+  - source: /google/cloud/memorystore/v1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/memorystore/v1beta/cloud.google.com/go
+    dest: /
   - source: /google/cloud/metastore/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/metastore/v1alpha/cloud.google.com/go
@@ -1125,6 +1143,8 @@ deep-copy-regex:
   - source: /google/shopping/merchant/lfp/v1beta/cloud.google.com/go
     dest: /
   - source: /google/shopping/merchant/reports/v1beta/cloud.google.com/go
+    dest: /
+  - source: /google/shopping/merchant/reviews/v1beta/cloud.google.com/go
     dest: /
   - source: /google/shopping/type/cloud.google.com/go
     dest: /

@@ -1340,8 +1340,10 @@ func (ua *BucketAttrsToUpdate) toRawBucket() *raw.Bucket {
 	}
 	if ua.SoftDeletePolicy != nil {
 		if ua.SoftDeletePolicy.RetentionDuration == 0 {
-			rb.NullFields = append(rb.NullFields, "SoftDeletePolicy")
-			rb.SoftDeletePolicy = nil
+			rb.SoftDeletePolicy = &raw.BucketSoftDeletePolicy{
+				RetentionDurationSeconds: 0,
+				ForceSendFields:          []string{"RetentionDurationSeconds"},
+			}
 		} else {
 			rb.SoftDeletePolicy = ua.SoftDeletePolicy.toRawSoftDeletePolicy()
 		}

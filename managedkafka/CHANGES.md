@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/managedkafka/v0.3.1...managedkafka/v0.4.0) (2025-01-08)
+
+
+### Features
+
+* **managedkafka:** Adds new resource_definition option ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+
+## [0.3.1](https://github.com/googleapis/google-cloud-go/compare/managedkafka/v0.3.0...managedkafka/v0.3.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **managedkafka:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/managedkafka/v0.2.3...managedkafka/v0.3.0) (2024-12-04)
+
+
+### Features
+
+* **managedkafka:** A new field `satisfies_pzi` is added to message `.google.cloud.managedkafka.v1.Cluster` ([#11213](https://github.com/googleapis/google-cloud-go/issues/11213)) ([d3de944](https://github.com/googleapis/google-cloud-go/commit/d3de9448192d4caf8506964cdc494d33f6b82070))
+* **managedkafka:** A new field `satisfies_pzs` is added to message `.google.cloud.managedkafka.v1.Cluster` ([d3de944](https://github.com/googleapis/google-cloud-go/commit/d3de9448192d4caf8506964cdc494d33f6b82070))
+
 ## [0.2.3](https://github.com/googleapis/google-cloud-go/compare/managedkafka/v0.2.2...managedkafka/v0.2.3) (2024-11-19)
 
 

@@ -1,5 +1,34 @@
 # Changelog
 
+## [0.9.2](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.9.1...parallelstore/v0.9.2) (2025-01-08)
+
+
+### Documentation
+
+* **parallelstore:** Fix links in documentation ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+
+## [0.9.1](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.9.0...parallelstore/v0.9.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **parallelstore:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+
+### Documentation
+
+* **parallelstore:** A comment for field `requested_cancellation` in message `.google.cloud.parallelstore.v1beta.ExportDataMetadata` is changed ([e2796a8](https://github.com/googleapis/google-cloud-go/commit/e2796a8c1460211fc2f4e78f37e15e8e2b6e8179))
+* **parallelstore:** A comment for field `requested_cancellation` in message `.google.cloud.parallelstore.v1beta.ImportDataMetadata` is changed ([e2796a8](https://github.com/googleapis/google-cloud-go/commit/e2796a8c1460211fc2f4e78f37e15e8e2b6e8179))
+* **parallelstore:** A comment for field `requested_cancellation` in message `.google.cloud.parallelstore.v1beta.OperationMetadata` is changed ([e2796a8](https://github.com/googleapis/google-cloud-go/commit/e2796a8c1460211fc2f4e78f37e15e8e2b6e8179))
+
+## [0.9.0](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.8.0...parallelstore/v0.9.0) (2024-12-11)
+
+
+### Features
+
+* **parallelstore:** A new enum `DeploymentType` is added ([57fdec7](https://github.com/googleapis/google-cloud-go/commit/57fdec7ce3792753c419298b9e526c4889f4101d))
+* **parallelstore:** A new field `deployment_type` is added to message `.google.cloud.parallelstore.v1beta.Instance` ([57fdec7](https://github.com/googleapis/google-cloud-go/commit/57fdec7ce3792753c419298b9e526c4889f4101d))
+
 ## [0.8.0](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.7.1...parallelstore/v0.8.0) (2024-11-06)
 
 

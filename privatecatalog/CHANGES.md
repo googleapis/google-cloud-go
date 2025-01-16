@@ -1,5 +1,19 @@
 # Changes
 
+## [0.10.4](https://github.com/googleapis/google-cloud-go/compare/privatecatalog/v0.10.3...privatecatalog/v0.10.4) (2025-01-08)
+
+
+### Documentation
+
+* **privatecatalog:** Fixed format string formatting ([e4e1a49](https://github.com/googleapis/google-cloud-go/commit/e4e1a498f21b0792e0a7662f82f9e062e5aa0fe9))
+
+## [0.10.3](https://github.com/googleapis/google-cloud-go/compare/privatecatalog/v0.10.2...privatecatalog/v0.10.3) (2025-01-02)
+
+
+### Bug Fixes
+
+* **privatecatalog:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [0.10.2](https://github.com/googleapis/google-cloud-go/compare/privatecatalog/v0.10.1...privatecatalog/v0.10.2) (2024-10-23)
 
 

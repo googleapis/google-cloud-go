@@ -1,5 +1,19 @@
 # Changes
 
+## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/storagetransfer/v1.12.0...storagetransfer/v1.12.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **storagetransfer:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/storagetransfer/v1.11.2...storagetransfer/v1.12.0) (2024-12-18)
+
+
+### Features
+
+* **storagetransfer:** Support cross-bucket replication ([#11291](https://github.com/googleapis/google-cloud-go/issues/11291)) ([4254053](https://github.com/googleapis/google-cloud-go/commit/42540530e44e5f331e66e0777c4aabf449f5fd90))
+
 ## [1.11.2](https://github.com/googleapis/google-cloud-go/compare/storagetransfer/v1.11.1...storagetransfer/v1.11.2) (2024-10-23)
 
 

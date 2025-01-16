@@ -319,49 +319,87 @@ func commitRequestForSet() *pb.CommitRequest {
 
 func TestUpdateProcess(t *testing.T) {
 	for _, test := range []struct {
+		desc    string
 		in      Update
 		want    fpv
 		wantErr bool
+		wantStr string
 	}{
 		{
-			in:   Update{Path: "a", Value: 1},
-			want: fpv{fieldPath: []string{"a"}, value: 1},
+			desc:    "Integer value",
+			in:      Update{Path: "a", Value: 1},
+			want:    fpv{fieldPath: []string{"a"}, value: 1},
+			wantStr: "{Path:a FieldPath:[] Value:%!s(int=1)}",
 		},
 		{
-			in:   Update{Path: "c.d", Value: Delete},
-			want: fpv{fieldPath: []string{"c", "d"}, value: Delete},
+			desc:    "Delete transform",
+			in:      Update{Path: "c.d", Value: Delete},
+			want:    fpv{fieldPath: []string{"c", "d"}, value: Delete},
+			wantStr: "{Path:c.d FieldPath:[] Value:Delete}",
 		},
 		{
-			in:   Update{FieldPath: []string{"*", "~"}, Value: ServerTimestamp},
-			want: fpv{fieldPath: []string{"*", "~"}, value: ServerTimestamp},
+			desc: "Increment transform",
+			in:   Update{Path: "c.d", Value: Increment(8)},
+			want: fpv{fieldPath: []string{"c", "d"}, value: transform{
+				t: &pb.DocumentTransform_FieldTransform{
+					TransformType: &pb.DocumentTransform_FieldTransform_Increment{
+						Increment: &pb.Value{
+							ValueType: &pb.Value_IntegerValue{IntegerValue: 8},
+						},
+					},
+				},
+				err: nil,
+			}},
+			wantStr: "{Path:c.d FieldPath:[] Value:{t:increment:{integer_value:8}}}",
 		},
 		{
+			desc:    "ServerTimestamp transform",
+			in:      Update{FieldPath: []string{"*", "~"}, Value: ServerTimestamp},
+			want:    fpv{fieldPath: []string{"*", "~"}, value: ServerTimestamp},
+			wantStr: "{Path: FieldPath:[* ~] Value:ServerTimestamp}",
+		},
+		{
+			desc:    "bad rune in path",
 			in:      Update{Path: "*"},
 			wantErr: true, // bad rune in path
+			wantStr: "{Path:* FieldPath:[] Value:%!s(<nil>)}",
 		},
 		{
+			desc:    "both Path and FieldPath",
 			in:      Update{Path: "a", FieldPath: []string{"b"}},
 			wantErr: true, // both Path and FieldPath
+			wantStr: "{Path:a FieldPath:[b] Value:%!s(<nil>)}",
 		},
 		{
+			desc:    "neither Path nor FieldPath",
 			in:      Update{Value: 1},
 			wantErr: true, // neither Path nor FieldPath
+			wantStr: "{Path: FieldPath:[] Value:%!s(int=1)}",
 		},
 		{
+			desc:    "empty FieldPath component",
 			in:      Update{FieldPath: []string{"", "a"}},
 			wantErr: true, // empty FieldPath component
+			wantStr: "{Path: FieldPath:[ a] Value:%!s(<nil>)}",
 		},
 	} {
-		got, err := test.in.process()
-		if test.wantErr {
-			if err == nil {
-				t.Errorf("%+v: got nil, want error", test.in)
+		t.Run(test.desc, func(t *testing.T) {
+			got, err := test.in.process()
+			if test.wantErr {
+				if err == nil {
+					t.Errorf("%+v: got nil, want error", test.in)
+				}
+			} else if err != nil {
+				t.Errorf("%+v: got error %v, want nil", test.in, err)
+			} else if !testEqual(got, test.want) {
+				t.Errorf("%+v: got %+v, want %+v", test.in, got, test.want)
 			}
-		} else if err != nil {
-			t.Errorf("%+v: got error %v, want nil", test.in, err)
-		} else if !testEqual(got, test.want) {
-			t.Errorf("%+v: got %+v, want %+v", test.in, got, test.want)
-		}
+
+			gotStr := test.in.String()
+			if gotStr != test.wantStr {
+				t.Errorf("%+v: got %q, want %q", test.in, gotStr, test.wantStr)
+			}
+		})
 	}
 }
 
