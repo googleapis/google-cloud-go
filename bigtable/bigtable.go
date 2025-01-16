@@ -1038,7 +1038,7 @@ func (t *Table) apply(ctx context.Context, mt *builtinMetricsTracer, row string,
 	}
 
 	var callOptions []gax.CallOption
-	if m.cond == nil {
+	if !m.isConditional {
 		req := &btpb.MutateRowRequest{
 			AppProfileId: t.c.appProfile,
 			RowKey:       []byte(row),
@@ -1065,9 +1065,11 @@ func (t *Table) apply(ctx context.Context, mt *builtinMetricsTracer, row string,
 	}
 
 	req := &btpb.CheckAndMutateRowRequest{
-		AppProfileId:    t.c.appProfile,
-		RowKey:          []byte(row),
-		PredicateFilter: m.cond.proto(),
+		AppProfileId: t.c.appProfile,
+		RowKey:       []byte(row),
+	}
+	if m.cond != nil {
+		req.PredicateFilter = m.cond.proto()
 	}
 	if t.authorizedView == "" {
 		req.TableName = t.c.fullTableName(t.table)
@@ -1119,10 +1121,10 @@ func GetCondMutationResult(matched *bool) ApplyOption {
 
 // Mutation represents a set of changes for a single row of a table.
 type Mutation struct {
-	ops []*btpb.Mutation
-
+	ops  []*btpb.Mutation
+	cond Filter
 	// for conditional mutations
-	cond          Filter
+	isConditional bool
 	mtrue, mfalse *Mutation
 }
 
@@ -1140,7 +1142,7 @@ func NewMutation() *Mutation {
 // The application of a ReadModifyWrite is atomic; concurrent ReadModifyWrites will
 // be executed serially by the server.
 func NewCondMutation(cond Filter, mtrue, mfalse *Mutation) *Mutation {
-	return &Mutation{cond: cond, mtrue: mtrue, mfalse: mfalse}
+	return &Mutation{cond: cond, mtrue: mtrue, mfalse: mfalse, isConditional: true}
 }
 
 // Set sets a value in a specified column, with the given timestamp.
@@ -1248,7 +1250,7 @@ func (t *Table) ApplyBulk(ctx context.Context, rowKeys []string, muts []*Mutatio
 	origEntries := make([]*entryErr, len(rowKeys))
 	for i, key := range rowKeys {
 		mut := muts[i]
-		if mut.cond != nil {
+		if mut.isConditional {
 			return nil, errors.New("conditional mutations cannot be applied in bulk")
 		}
 		origEntries[i] = &entryErr{Entry: &btpb.MutateRowsRequest_Entry{RowKey: []byte(key), Mutations: mut.ops}}

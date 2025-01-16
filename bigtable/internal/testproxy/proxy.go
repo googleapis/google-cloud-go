@@ -748,7 +748,7 @@ func (s *goTestProxyServer) CheckAndMutateRow(ctx context.Context, req *pb.Check
 	falseMuts := mutationFromProto(rrq.FalseMutations)
 
 	rfPb := rrq.PredicateFilter
-	f := bigtable.PassAllFilter()
+	var f bigtable.Filter
 
 	if rfPb != nil {
 		f = *filterFromProto(rfPb)
