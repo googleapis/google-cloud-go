@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.5.1](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v1.5.0...gkemulticloud/v1.5.1) (2025-01-15)
+
+
+### Documentation
+
+* **gkemulticloud:** Fix comments of existing field ([baeccc8](https://github.com/googleapis/google-cloud-go/commit/baeccc85c512ff67a63f13bb5822fee3b8e432fc))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v1.4.1...gkemulticloud/v1.5.0) (2025-01-02)
 
 
