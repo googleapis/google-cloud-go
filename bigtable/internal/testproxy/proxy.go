@@ -574,7 +574,6 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 	var rowsPb []*btpb.Row
 	lim := req.GetCancelAfterRows()
 
-
 	reversed := req.GetRequest().GetReversed()
 	opts := []bigtable.ReadOption{}
 	if reversed {
@@ -592,9 +591,7 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 		}
 		rowsPb = append(rowsPb, rpb)
 		return true
-
 	}, opts...)
-
 
 	res := &pb.RowsResult{
 		Status: &statpb.Status{
@@ -751,8 +748,7 @@ func (s *goTestProxyServer) CheckAndMutateRow(ctx context.Context, req *pb.Check
 	falseMuts := mutationFromProto(rrq.FalseMutations)
 
 	rfPb := rrq.PredicateFilter
-	var f bigtable.Filter
-	// f := bigtable.PassAllFilter()
+	f := bigtable.PassAllFilter()
 
 	if rfPb != nil {
 		f = *filterFromProto(rfPb)
