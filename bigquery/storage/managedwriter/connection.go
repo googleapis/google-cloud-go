@@ -37,6 +37,8 @@ const (
 
 var (
 	errNoRouterForPool = errors.New("no router for connection pool")
+	// TODO: consider if this should be user configurable
+	gracefulReconnectDuration = 20 * time.Second
 )
 
 // connectionPool represents a pooled set of connections.
@@ -491,10 +493,9 @@ func (co *connection) getStream(arc *storagepb.BigQueryWrite_AppendRowsClient, f
 	}
 	if co.cancel != nil {
 		// Delay cancellation to give queued writes a chance to drain normally.
-		// TODO: Revisit this to see if this should be user configurable.
 		oldCancel := co.cancel
 		go func() {
-			time.Sleep(20 * time.Second)
+			time.Sleep(gracefulReconnectDuration)
 			oldCancel()
 		}()
 		co.ctx, co.cancel = context.WithCancel(co.pool.ctx)

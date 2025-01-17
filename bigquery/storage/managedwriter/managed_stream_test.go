@@ -552,7 +552,7 @@ func TestManagedStream_LeakingGoroutinesReconnect(t *testing.T) {
 		}
 	}
 	// Verify goroutine count drops after graceful shutdowns should have concluded.
-	time.Sleep(22 * time.Second)
+	time.Sleep(gracefulReconnectDuration)
 	threshold = threshold - (2 * appendCount)
 
 	if current := runtime.NumGoroutine(); current > threshold {
