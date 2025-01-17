@@ -519,7 +519,7 @@ func TestManagedStream_LeakingGoroutinesReconnect(t *testing.T) {
 		[]byte("foo"),
 	}
 
-	appendCount := 10
+	appendCount := 15
 	// Give a small budget for additional goroutines to account for jitter.
 	threshold := runtime.NumGoroutine() + 5
 
@@ -545,7 +545,7 @@ func TestManagedStream_LeakingGoroutinesReconnect(t *testing.T) {
 		// and a graceful cancellation, but this should recover over time.
 		threshold = threshold + 2
 
-		if i%10 == 0 {
+		if i%5 == 0 {
 			if current := runtime.NumGoroutine(); current > threshold {
 				t.Errorf("potential goroutine leak, append %d: current %d, threshold %d", i, current, threshold)
 			}
