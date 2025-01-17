@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"io"
 	"sync"
+	"time"
 
 	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"github.com/googleapis/gax-go/v2"
@@ -489,7 +490,13 @@ func (co *connection) getStream(arc *storagepb.BigQueryWrite_AppendRowsClient, f
 		close(co.pending)
 	}
 	if co.cancel != nil {
-		co.cancel()
+		// Delay cancellation to give queued writes a chance to drain normally.
+		// TODO: Revisit this to see if this should be user configurable.
+		oldCancel := co.cancel
+		go func() {
+			time.Sleep(20 * time.Second)
+			oldCancel()
+		}()
 		co.ctx, co.cancel = context.WithCancel(co.pool.ctx)
 	}
 

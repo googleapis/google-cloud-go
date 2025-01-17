@@ -519,11 +519,13 @@ func TestManagedStream_LeakingGoroutinesReconnect(t *testing.T) {
 		[]byte("foo"),
 	}
 
+	appendCount := 10
+	// Give a small budget for additional goroutines to account for jitter.
 	threshold := runtime.NumGoroutine() + 5
 
 	// Send a bunch of appends that will trigger reconnects and monitor that
 	// goroutine growth stays within bounded threshold.
-	for i := 0; i < 30; i++ {
+	for i := 0; i < appendCount; i++ {
 		writeCtx := context.Background()
 		r, err := ms.AppendRows(writeCtx, fakeData)
 		if err != nil {
@@ -539,12 +541,24 @@ func TestManagedStream_LeakingGoroutinesReconnect(t *testing.T) {
 		if testArc.openCount != i+2 {
 			t.Errorf("should trigger a reconnect, but found openCount %d", testArc.openCount)
 		}
+		// Bump our threshold each append.  We add 2 goroutines each reconnect due to a new processor
+		// and a graceful cancellation, but this should recover over time.
+		threshold = threshold + 2
+
 		if i%10 == 0 {
 			if current := runtime.NumGoroutine(); current > threshold {
 				t.Errorf("potential goroutine leak, append %d: current %d, threshold %d", i, current, threshold)
 			}
 		}
 	}
+	// Verify goroutine count drops after graceful shutdowns should have concluded.
+	time.Sleep(22 * time.Second)
+	threshold = threshold - (2 * appendCount)
+
+	if current := runtime.NumGoroutine(); current > threshold {
+		t.Errorf("potential goroutine leak after recovery: current %d, threshold %d", current, threshold)
+	}
+
 }
 
 func TestManagedWriter_CancellationDuringRetry(t *testing.T) {
