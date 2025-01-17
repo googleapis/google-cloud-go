@@ -404,8 +404,6 @@ func (KeyOperationAttestation_AttestationFormat) EnumDescriptor() ([]byte, []int
 // The suffix following `HMAC_` corresponds to the hash algorithm being used
 // (eg. SHA256).
 //
-// Algorithms beginning with `PQ_` are post-quantum.
-//
 // For more information, see [Key purposes and algorithms]
 // (https://cloud.google.com/kms/docs/algorithms).
 type CryptoKeyVersion_CryptoKeyVersionAlgorithm int32
@@ -1081,7 +1079,7 @@ type CryptoKey struct {
 	// where all related cryptographic operations are performed. Only applicable
 	// if [CryptoKeyVersions][google.cloud.kms.v1.CryptoKeyVersion] have a
 	// [ProtectionLevel][google.cloud.kms.v1.ProtectionLevel] of
-	// [EXTERNAL_VPC][CryptoKeyVersion.ProtectionLevel.EXTERNAL_VPC], with the
+	// [EXTERNAL_VPC][google.cloud.kms.v1.ProtectionLevel.EXTERNAL_VPC], with the
 	// resource name in the format `projects/*/locations/*/ekmConnections/*`.
 	// Note, this list is non-exhaustive and may apply to additional
 	// [ProtectionLevels][google.cloud.kms.v1.ProtectionLevel] in the future.

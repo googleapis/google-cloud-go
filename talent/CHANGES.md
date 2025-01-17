@@ -1,6 +1,26 @@
 # Changes
 
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/talent/v1.7.3...talent/v1.8.0) (2025-01-08)
+
+
+### Features
+
+* **talent:** A new enum `RelevanceThreshold` is added ([#11363](https://github.com/googleapis/google-cloud-go/issues/11363)) ([4fb6ad9](https://github.com/googleapis/google-cloud-go/commit/4fb6ad96e22d7e1da6e183593f59b6d725fc144f))
+* **talent:** A new field `relevance_threshold` is added to message `.google.cloud.talent.v4.SearchJobsRequest` ([4fb6ad9](https://github.com/googleapis/google-cloud-go/commit/4fb6ad96e22d7e1da6e183593f59b6d725fc144f))
+
+
+### Documentation
+
+* **talent:** Multiple fixes for links in documentation ([4fb6ad9](https://github.com/googleapis/google-cloud-go/commit/4fb6ad96e22d7e1da6e183593f59b6d725fc144f))
+
+## [1.7.3](https://github.com/googleapis/google-cloud-go/compare/talent/v1.7.2...talent/v1.7.3) (2025-01-02)
+
+
+### Bug Fixes
+
+* **talent:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [1.7.2](https://github.com/googleapis/google-cloud-go/compare/talent/v1.7.1...talent/v1.7.2) (2024-10-23)
 
 

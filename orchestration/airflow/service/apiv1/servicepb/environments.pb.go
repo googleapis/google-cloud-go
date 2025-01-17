@@ -7849,7 +7849,7 @@ type EnvironmentsClient interface {
 	// runs a single Composer component.
 	//
 	// This method is supported for Cloud Composer environments in versions
-	// composer-3.*.*-airflow-*.*.* and newer.
+	// composer-2.*.*-airflow-*.*.* and newer.
 	ListWorkloads(ctx context.Context, in *ListWorkloadsRequest, opts ...grpc.CallOption) (*ListWorkloadsResponse, error)
 	// Check if an upgrade operation on the environment will succeed.
 	//
@@ -8168,7 +8168,7 @@ type EnvironmentsServer interface {
 	// runs a single Composer component.
 	//
 	// This method is supported for Cloud Composer environments in versions
-	// composer-3.*.*-airflow-*.*.* and newer.
+	// composer-2.*.*-airflow-*.*.* and newer.
 	ListWorkloads(context.Context, *ListWorkloadsRequest) (*ListWorkloadsResponse, error)
 	// Check if an upgrade operation on the environment will succeed.
 	//

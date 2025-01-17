@@ -1,6 +1,28 @@
 # Changes
 
 
+## [2.19.4](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.19.3...recaptchaenterprise/v2.19.4) (2025-01-15)
+
+
+### Documentation
+
+* **recaptchaenterprise:** Tweak comments ([baeccc8](https://github.com/googleapis/google-cloud-go/commit/baeccc85c512ff67a63f13bb5822fee3b8e432fc))
+
+## [2.19.3](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.19.2...recaptchaenterprise/v2.19.3) (2025-01-08)
+
+
+### Documentation
+
+* **recaptchaenterprise:** Challenge is also returned for INVISIBLE keys ([e4e1a49](https://github.com/googleapis/google-cloud-go/commit/e4e1a498f21b0792e0a7662f82f9e062e5aa0fe9))
+* **recaptchaenterprise:** Update docs for FraudPrevention field in CreateAssessment ([e4e1a49](https://github.com/googleapis/google-cloud-go/commit/e4e1a498f21b0792e0a7662f82f9e062e5aa0fe9))
+
+## [2.19.2](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.19.1...recaptchaenterprise/v2.19.2) (2025-01-02)
+
+
+### Bug Fixes
+
+* **recaptchaenterprise:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [2.19.1](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.19.0...recaptchaenterprise/v2.19.1) (2024-12-04)
 
 

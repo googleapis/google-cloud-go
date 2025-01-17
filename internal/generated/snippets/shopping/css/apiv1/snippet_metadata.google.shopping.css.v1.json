@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/shopping/css/apiv1",
-    "version": "0.13.0",
+    "version": "0.16.0",
     "language": "GO",
     "apis": [
       {
@@ -408,6 +408,52 @@
         "method": {
           "shortName": "InsertCssProductInput",
           "fullName": "google.shopping.css.v1.CssProductInputsService.InsertCssProductInput",
+          "service": {
+            "shortName": "CssProductInputsService",
+            "fullName": "google.shopping.css.v1.CssProductInputsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "css_v1_generated_CssProductInputsService_UpdateCssProductInput_sync",
+      "title": "css UpdateCssProductInput Sample",
+      "description": "UpdateCssProductInput updates the existing Css Product input in your CSS Center account.\n\nAfter inserting, updating, or deleting a CSS Product input, it may take\nseveral minutes before the processed Css Product can be retrieved.",
+      "file": "CssProductInputsClient/UpdateCssProductInput/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateCssProductInput",
+        "fullName": "google.shopping.css.v1.CssProductInputsClient.UpdateCssProductInput",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "csspb.UpdateCssProductInputRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*csspb.CssProductInput",
+        "client": {
+          "shortName": "CssProductInputsClient",
+          "fullName": "google.shopping.css.v1.CssProductInputsClient"
+        },
+        "method": {
+          "shortName": "UpdateCssProductInput",
+          "fullName": "google.shopping.css.v1.CssProductInputsService.UpdateCssProductInput",
           "service": {
             "shortName": "CssProductInputsService",
             "fullName": "google.shopping.css.v1.CssProductInputsService"

@@ -1,5 +1,19 @@
 # Changes
 
+## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.22.1...monitoring/v1.23.0) (2025-01-15)
+
+
+### Features
+
+* **monitoring:** Add active_only field to ListMetricDescriptorsRequest ([#11430](https://github.com/googleapis/google-cloud-go/issues/11430)) ([43c6b83](https://github.com/googleapis/google-cloud-go/commit/43c6b83c636503b0d0c45b8845e3516f80dbc86d))
+
+## [1.22.1](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.22.0...monitoring/v1.22.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **monitoring:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.21.2...monitoring/v1.22.0) (2024-12-04)
 
 

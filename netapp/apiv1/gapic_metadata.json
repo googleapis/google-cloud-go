@@ -305,6 +305,11 @@
                 "UpdateVolume"
               ]
             },
+            "ValidateDirectoryService": {
+              "methods": [
+                "ValidateDirectoryService"
+              ]
+            },
             "VerifyKmsConfig": {
               "methods": [
                 "VerifyKmsConfig"
@@ -608,6 +613,11 @@
             "UpdateVolume": {
               "methods": [
                 "UpdateVolume"
+              ]
+            },
+            "ValidateDirectoryService": {
+              "methods": [
+                "ValidateDirectoryService"
               ]
             },
             "VerifyKmsConfig": {

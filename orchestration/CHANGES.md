@@ -1,6 +1,20 @@
 # Changes
 
 
+## [1.11.4](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.11.3...orchestration/v1.11.4) (2025-01-15)
+
+
+### Documentation
+
+* **orchestration/airflow/service:** A comment for method `ListWorkloads` in service `Environments` is changed ([#11439](https://github.com/googleapis/google-cloud-go/issues/11439)) ([973e3d2](https://github.com/googleapis/google-cloud-go/commit/973e3d267844d251f5bfc33f473b853ac288b959))
+
+## [1.11.3](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.11.2...orchestration/v1.11.3) (2025-01-02)
+
+
+### Bug Fixes
+
+* **orchestration:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [1.11.2](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.11.1...orchestration/v1.11.2) (2024-12-11)
 
 

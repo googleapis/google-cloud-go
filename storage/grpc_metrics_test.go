@@ -34,7 +34,7 @@ func TestMetricFormatter(t *testing.T) {
 	}
 }
 
-func TestNewPreparedResource(t *testing.T) {
+func TestStorageMonitoredResource(t *testing.T) {
 	ctx := context.Background()
 	for _, test := range []struct {
 		desc               string
@@ -52,16 +52,22 @@ func TestNewPreparedResource(t *testing.T) {
 			}, attribute.KeyValue{
 				Key:   "host_id",
 				Value: attribute.StringValue("unknown"),
+			}, attribute.KeyValue{
+				Key:   "project_id",
+				Value: attribute.StringValue("project-id"),
+			}, attribute.KeyValue{
+				Key:   "api",
+				Value: attribute.StringValue("grpc"),
 			}),
 		},
 		{
-			desc: "use detected values when GCP attributes are detected",
+			desc: "use detected values when GCE attributes are detected",
 			detectedAttributes: []attribute.KeyValue{
-				{Key: "location",
+				{Key: "cloud.region",
 					Value: attribute.StringValue("us-central1")},
-				{Key: "cloud_platform",
-					Value: attribute.StringValue("gcp")},
-				{Key: "host_id",
+				{Key: "cloud.platform",
+					Value: attribute.StringValue("gce")},
+				{Key: "host.id",
 					Value: attribute.StringValue("gce-instance-id")},
 			},
 			wantAttributes: attribute.NewSet(attribute.KeyValue{
@@ -69,48 +75,60 @@ func TestNewPreparedResource(t *testing.T) {
 				Value: attribute.StringValue("us-central1"),
 			}, attribute.KeyValue{
 				Key:   "cloud_platform",
-				Value: attribute.StringValue("gcp"),
+				Value: attribute.StringValue("gce"),
 			}, attribute.KeyValue{
 				Key:   "host_id",
 				Value: attribute.StringValue("gce-instance-id"),
+			}, attribute.KeyValue{
+				Key:   "project_id",
+				Value: attribute.StringValue("project-id"),
+			}, attribute.KeyValue{
+				Key:   "api",
+				Value: attribute.StringValue("grpc"),
 			}),
-		}, {
-			desc: "use default when value is empty string",
+		},
+		{
+			desc: "use detected values when FAAS attributes are detected",
 			detectedAttributes: []attribute.KeyValue{
-				{Key: "location",
+				{Key: "cloud.region",
 					Value: attribute.StringValue("us-central1")},
-				{Key: "cloud_platform",
-					Value: attribute.StringValue("")},
-				{Key: "host_id",
-					Value: attribute.StringValue("")},
+				{Key: "cloud.platform",
+					Value: attribute.StringValue("cloud-run")},
+				{Key: "faas.id",
+					Value: attribute.StringValue("run-instance-id")},
 			},
 			wantAttributes: attribute.NewSet(attribute.KeyValue{
 				Key:   "location",
 				Value: attribute.StringValue("us-central1"),
 			}, attribute.KeyValue{
 				Key:   "cloud_platform",
-				Value: attribute.StringValue("unknown"),
+				Value: attribute.StringValue("cloud-run"),
 			}, attribute.KeyValue{
 				Key:   "host_id",
-				Value: attribute.StringValue("unknown"),
+				Value: attribute.StringValue("run-instance-id"),
+			}, attribute.KeyValue{
+				Key:   "project_id",
+				Value: attribute.StringValue("project-id"),
+			}, attribute.KeyValue{
+				Key:   "api",
+				Value: attribute.StringValue("grpc"),
 			}),
 		},
 	} {
 		t.Run(test.desc, func(t *testing.T) {
-			resourceOptions := []resource.Option{resource.WithAttributes(test.detectedAttributes...)}
-			result, err := newPreparedResource(ctx, "project", resourceOptions)
+			smr, err := newStorageMonitoredResource(ctx, "project-id", "grpc", resource.WithAttributes(test.detectedAttributes...))
 			if err != nil {
-				t.Errorf("newPreparedResource: %v", err)
+				t.Errorf("newStorageMonitoredResource: %v", err)
 			}
-			resultSet := result.resource.Set()
+			resultSet := smr.resource.Set()
 			for _, want := range test.wantAttributes.ToSlice() {
 				got, exists := resultSet.Value(want.Key)
 				if !exists {
-					t.Errorf("newPreparedResource: %v not set", want.Key)
+					t.Errorf("resultSet[%v] not set", want.Key)
 					continue
 				}
 				if got != want.Value {
-					t.Errorf("newPreparedResource: want[%v] = %v, got: %v", want.Key, want.Value, got)
+					t.Errorf("want[%v] = %v, got: %v", want.Key, want.Value.AsString(), got.AsString())
 					continue
 				}
 			}
@@ -118,9 +136,56 @@ func TestNewPreparedResource(t *testing.T) {
 	}
 }
 
+func TestNewGRPCMetricContext(t *testing.T) {
+	ctx := context.Background()
+	mr := metric.NewManualReader()
+	attrs := []attribute.KeyValue{
+		{Key: "cloud.region",
+			Value: attribute.StringValue("us-central1")},
+		{Key: "cloud.platform",
+			Value: attribute.StringValue("gcp")},
+		{Key: "host.id",
+			Value: attribute.StringValue("gce-instance-id")},
+	}
+	cfg := metricsConfig{
+		project:         "project-id",
+		manualReader:    mr,
+		disableExporter: true, // disable since this is a unit test
+		resourceOpts:    []resource.Option{resource.WithAttributes(attrs...)},
+	}
+	mc, err := newGRPCMetricContext(ctx, cfg)
+	if err != nil {
+		t.Errorf("newGRPCMetricContext: %v", err)
+	}
+	defer mc.close()
+	rm := metricdata.ResourceMetrics{}
+	if err := mr.Collect(ctx, &rm); err != nil {
+		t.Errorf("ManualReader.Collect: %v", err)
+	}
+	monitoredResourceWant := map[string]string{
+		"gcp.resource_type": "storage.googleapis.com/Client",
+		"api":               "grpc",
+		"cloud_platform":    "gcp",
+		"host_id":           "gce-instance-id",
+		"location":          "us-central1",
+		"project_id":        "project-id",
+		"instance_id":       "ignore",
+	}
+	for _, attr := range rm.Resource.Attributes() {
+		want := monitoredResourceWant[string(attr.Key)]
+		if want == "ignore" {
+			continue
+		}
+		got := attr.Value.AsString()
+		if want != got {
+			t.Errorf("got: %v want: %v", got, want)
+		}
+	}
+}
+
 func TestNewExporterLogSuppressor(t *testing.T) {
 	ctx := context.Background()
-	s := &exporterLogSuppressor{exporter: &failingExporter{}}
+	s := &exporterLogSuppressor{Exporter: &failingExporter{}}
 	if err := s.Export(ctx, nil); err == nil {
 		t.Errorf("exporterLogSuppressor: did not emit an error when one was expected")
 	}
@@ -129,24 +194,10 @@ func TestNewExporterLogSuppressor(t *testing.T) {
 	}
 }
 
-type failingExporter struct{}
+type failingExporter struct {
+	metric.Exporter
+}
 
 func (f *failingExporter) Export(ctx context.Context, rm *metricdata.ResourceMetrics) error {
 	return fmt.Errorf("PermissionDenied")
-}
-
-func (f *failingExporter) Temporality(m metric.InstrumentKind) metricdata.Temporality {
-	return metricdata.CumulativeTemporality
-}
-
-func (f *failingExporter) Aggregation(ik metric.InstrumentKind) metric.Aggregation {
-	return metric.AggregationDefault{}
-}
-
-func (f *failingExporter) ForceFlush(ctx context.Context) error {
-	return nil
-}
-
-func (f *failingExporter) Shutdown(ctx context.Context) error {
-	return nil
 }

@@ -58,6 +58,10 @@ type Error struct {
 	// additionalInformation optionally contains any additional information
 	// about the error.
 	additionalInformation string
+
+	// RequestID is the associated ID that was sent to Google Cloud Spanner's
+	// backend, as the value in the "x-goog-spanner-request-id" gRPC header.
+	RequestID string
 }
 
 // TransactionOutcomeUnknownError is wrapped in a Spanner error when the error
@@ -85,10 +89,17 @@ func (e *Error) Error() string {
 		return "spanner: OK"
 	}
 	code := ErrCode(e)
+
+	var s string
 	if e.additionalInformation == "" {
-		return fmt.Sprintf("spanner: code = %q, desc = %q", code, e.Desc)
+		s = fmt.Sprintf("spanner: code = %q, desc = %q", code, e.Desc)
+	} else {
+		s = fmt.Sprintf("spanner: code = %q, desc = %q, additional information = %s", code, e.Desc, e.additionalInformation)
 	}
-	return fmt.Sprintf("spanner: code = %q, desc = %q, additional information = %s", code, e.Desc, e.additionalInformation)
+	if e.RequestID != "" {
+		s = fmt.Sprintf("%s, requestID = %q", s, e.RequestID)
+	}
+	return s
 }
 
 // Unwrap returns the wrapped error (if any).
@@ -123,6 +134,10 @@ func (e *Error) decorate(info string) {
 // APIError error having given error code as its status.
 func spannerErrorf(code codes.Code, format string, args ...interface{}) error {
 	msg := fmt.Sprintf(format, args...)
+	return spannerError(code, msg)
+}
+
+func spannerError(code codes.Code, msg string) error {
 	wrapped, _ := apierror.FromError(status.Error(code, msg))
 	return &Error{
 		Code: code,
@@ -172,9 +187,9 @@ func toSpannerErrorWithCommitInfo(err error, errorDuringCommit bool) error {
 			desc = fmt.Sprintf("%s, %s", desc, transactionOutcomeUnknownMsg)
 			wrapped = &TransactionOutcomeUnknownError{err: wrapped}
 		}
-		return &Error{status.FromContextError(err).Code(), toAPIError(wrapped), desc, ""}
+		return &Error{status.FromContextError(err).Code(), toAPIError(wrapped), desc, "", ""}
 	case status.Code(err) == codes.Unknown:
-		return &Error{codes.Unknown, toAPIError(err), err.Error(), ""}
+		return &Error{codes.Unknown, toAPIError(err), err.Error(), "", ""}
 	default:
 		statusErr := status.Convert(err)
 		code, desc := statusErr.Code(), statusErr.Message()
@@ -183,7 +198,7 @@ func toSpannerErrorWithCommitInfo(err error, errorDuringCommit bool) error {
 			desc = fmt.Sprintf("%s, %s", desc, transactionOutcomeUnknownMsg)
 			wrapped = &TransactionOutcomeUnknownError{err: wrapped}
 		}
-		return &Error{code, toAPIError(wrapped), desc, ""}
+		return &Error{code, toAPIError(wrapped), desc, "", ""}
 	}
 }
 
