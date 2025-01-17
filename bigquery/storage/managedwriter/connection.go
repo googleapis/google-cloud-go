@@ -37,7 +37,7 @@ const (
 
 var (
 	errNoRouterForPool = errors.New("no router for connection pool")
-	// TODO: consider if this should be user configurable
+	// TODO(https://github.com/googleapis/google-cloud-go/issues/11460): revisit if this should be user configurable
 	gracefulReconnectDuration = 20 * time.Second
 )
 
