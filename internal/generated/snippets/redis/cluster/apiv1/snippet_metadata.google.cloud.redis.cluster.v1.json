@@ -12,6 +12,52 @@
   },
   "snippets": [
     {
+      "regionTag": "redis_v1_generated_CloudRedisCluster_BackupCluster_sync",
+      "title": "redis BackupCluster Sample",
+      "description": "BackupCluster backup Redis Cluster.\nIf this is the first time a backup is being created, a backup collection\nwill be created at the backend, and this backup belongs to this collection.\nBoth collection and backup will have a resource name. Backup will be\nexecuted for each shard. A replica (primary if nonHA) will be selected to\nperform the execution. Backup call will be rejected if there is an ongoing\nbackup or update operation. Be aware that during preview, if the cluster's\ninternal software version is too old, critical update will be performed\nbefore actual backup. Once the internal software version is updated to the\nminimum version required by the backup feature, subsequent backups will not\nrequire critical update. After preview, there will be no critical update\nneeded for backup.",
+      "file": "CloudRedisClusterClient/BackupCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BackupCluster",
+        "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient.BackupCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clusterpb.BackupClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BackupClusterOperation",
+        "client": {
+          "shortName": "CloudRedisClusterClient",
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient"
+        },
+        "method": {
+          "shortName": "BackupCluster",
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster.BackupCluster",
+          "service": {
+            "shortName": "CloudRedisCluster",
+            "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "redis_v1_generated_CloudRedisCluster_CancelOperation_sync",
       "title": "redis CancelOperation Sample",
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",
@@ -103,6 +149,52 @@
       ]
     },
     {
+      "regionTag": "redis_v1_generated_CloudRedisCluster_DeleteBackup_sync",
+      "title": "redis DeleteBackup Sample",
+      "description": "DeleteBackup deletes a specific backup.",
+      "file": "CloudRedisClusterClient/DeleteBackup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteBackup",
+        "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient.DeleteBackup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clusterpb.DeleteBackupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteBackupOperation",
+        "client": {
+          "shortName": "CloudRedisClusterClient",
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient"
+        },
+        "method": {
+          "shortName": "DeleteBackup",
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster.DeleteBackup",
+          "service": {
+            "shortName": "CloudRedisCluster",
+            "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "redis_v1_generated_CloudRedisCluster_DeleteCluster_sync",
       "title": "redis DeleteCluster Sample",
       "description": "DeleteCluster deletes a specific Redis cluster. Cluster stops serving and data is\ndeleted.",
@@ -189,6 +281,144 @@
         {
           "start": 18,
           "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "redis_v1_generated_CloudRedisCluster_ExportBackup_sync",
+      "title": "redis ExportBackup Sample",
+      "description": "ExportBackup exports a specific backup to a customer target Cloud Storage URI.",
+      "file": "CloudRedisClusterClient/ExportBackup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportBackup",
+        "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient.ExportBackup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clusterpb.ExportBackupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExportBackupOperation",
+        "client": {
+          "shortName": "CloudRedisClusterClient",
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient"
+        },
+        "method": {
+          "shortName": "ExportBackup",
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster.ExportBackup",
+          "service": {
+            "shortName": "CloudRedisCluster",
+            "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "redis_v1_generated_CloudRedisCluster_GetBackup_sync",
+      "title": "redis GetBackup Sample",
+      "description": "GetBackup gets the details of a specific backup.",
+      "file": "CloudRedisClusterClient/GetBackup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetBackup",
+        "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient.GetBackup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clusterpb.GetBackupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*clusterpb.Backup",
+        "client": {
+          "shortName": "CloudRedisClusterClient",
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient"
+        },
+        "method": {
+          "shortName": "GetBackup",
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster.GetBackup",
+          "service": {
+            "shortName": "CloudRedisCluster",
+            "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "redis_v1_generated_CloudRedisCluster_GetBackupCollection_sync",
+      "title": "redis GetBackupCollection Sample",
+      "description": "GetBackupCollection get a backup collection.",
+      "file": "CloudRedisClusterClient/GetBackupCollection/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetBackupCollection",
+        "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient.GetBackupCollection",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clusterpb.GetBackupCollectionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*clusterpb.BackupCollection",
+        "client": {
+          "shortName": "CloudRedisClusterClient",
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient"
+        },
+        "method": {
+          "shortName": "GetBackupCollection",
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster.GetBackupCollection",
+          "service": {
+            "shortName": "CloudRedisCluster",
+            "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -378,6 +608,98 @@
       ]
     },
     {
+      "regionTag": "redis_v1_generated_CloudRedisCluster_ListBackupCollections_sync",
+      "title": "redis ListBackupCollections Sample",
+      "description": "ListBackupCollections lists all backup collections owned by a consumer project in either the\nspecified location (region) or all locations.\n\nIf `location_id` is specified as `-` (wildcard), then all regions\navailable to the project are queried, and the results are aggregated.",
+      "file": "CloudRedisClusterClient/ListBackupCollections/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListBackupCollections",
+        "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient.ListBackupCollections",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clusterpb.ListBackupCollectionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BackupCollectionIterator",
+        "client": {
+          "shortName": "CloudRedisClusterClient",
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient"
+        },
+        "method": {
+          "shortName": "ListBackupCollections",
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster.ListBackupCollections",
+          "service": {
+            "shortName": "CloudRedisCluster",
+            "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "redis_v1_generated_CloudRedisCluster_ListBackups_sync",
+      "title": "redis ListBackups Sample",
+      "description": "ListBackups lists all backups owned by a backup collection.",
+      "file": "CloudRedisClusterClient/ListBackups/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListBackups",
+        "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient.ListBackups",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clusterpb.ListBackupsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BackupIterator",
+        "client": {
+          "shortName": "CloudRedisClusterClient",
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient"
+        },
+        "method": {
+          "shortName": "ListBackups",
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster.ListBackups",
+          "service": {
+            "shortName": "CloudRedisCluster",
+            "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "redis_v1_generated_CloudRedisCluster_ListClusters_sync",
       "title": "redis ListClusters Sample",
       "description": "ListClusters lists all Redis clusters owned by a project in either the specified\nlocation (region) or all locations.\n\nThe location should have the following format: \n\n* `projects/{project_id}/locations/{location_id}`\n\nIf `location_id` is specified as `-` (wildcard), then all regions\navailable to the project are queried, and the results are aggregated.",
@@ -511,6 +833,52 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "redis_v1_generated_CloudRedisCluster_RescheduleClusterMaintenance_sync",
+      "title": "redis RescheduleClusterMaintenance Sample",
+      "description": "RescheduleClusterMaintenance reschedules upcoming maintenance event.",
+      "file": "CloudRedisClusterClient/RescheduleClusterMaintenance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RescheduleClusterMaintenance",
+        "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient.RescheduleClusterMaintenance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clusterpb.RescheduleClusterMaintenanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RescheduleClusterMaintenanceOperation",
+        "client": {
+          "shortName": "CloudRedisClusterClient",
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisClusterClient"
+        },
+        "method": {
+          "shortName": "RescheduleClusterMaintenance",
+          "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster.RescheduleClusterMaintenance",
+          "service": {
+            "shortName": "CloudRedisCluster",
+            "fullName": "google.cloud.redis.cluster.v1.CloudRedisCluster"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
