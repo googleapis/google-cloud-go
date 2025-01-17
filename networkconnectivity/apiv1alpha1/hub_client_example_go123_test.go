@@ -44,7 +44,7 @@ func ExampleHubClient_ListHubs_all() {
 	}
 	for resp, err := range c.ListHubs(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -70,7 +70,7 @@ func ExampleHubClient_ListSpokes_all() {
 	}
 	for resp, err := range c.ListSpokes(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp

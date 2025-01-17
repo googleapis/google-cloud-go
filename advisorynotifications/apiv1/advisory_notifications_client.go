@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	advisorynotificationspb "cloud.google.com/go/advisorynotifications/apiv1/advisorynotificationspb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -206,6 +205,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new advisory notifications service client based on gRPC.
@@ -232,6 +233,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      advisorynotificationspb.NewAdvisoryNotificationsServiceClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -278,6 +280,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new advisory notifications service rest client.
@@ -295,6 +299,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -358,7 +363,7 @@ func (c *gRPCClient) ListNotifications(ctx context.Context, req *advisorynotific
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListNotifications(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListNotifications, req, settings.GRPC, c.logger, "ListNotifications")
 			return err
 		}, opts...)
 		if err != nil {
@@ -393,7 +398,7 @@ func (c *gRPCClient) GetNotification(ctx context.Context, req *advisorynotificat
 	var resp *advisorynotificationspb.Notification
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetNotification(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetNotification, req, settings.GRPC, c.logger, "GetNotification")
 		return err
 	}, opts...)
 	if err != nil {
@@ -411,7 +416,7 @@ func (c *gRPCClient) GetSettings(ctx context.Context, req *advisorynotifications
 	var resp *advisorynotificationspb.Settings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetSettings, req, settings.GRPC, c.logger, "GetSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -429,7 +434,7 @@ func (c *gRPCClient) UpdateSettings(ctx context.Context, req *advisorynotificati
 	var resp *advisorynotificationspb.Settings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateSettings, req, settings.GRPC, c.logger, "UpdateSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -489,21 +494,10 @@ func (c *restClient) ListNotifications(ctx context.Context, req *advisorynotific
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListNotifications")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -569,17 +563,7 @@ func (c *restClient) GetNotification(ctx context.Context, req *advisorynotificat
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetNotification")
 		if err != nil {
 			return err
 		}
@@ -629,17 +613,7 @@ func (c *restClient) GetSettings(ctx context.Context, req *advisorynotifications
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSettings")
 		if err != nil {
 			return err
 		}
@@ -696,17 +670,7 @@ func (c *restClient) UpdateSettings(ctx context.Context, req *advisorynotificati
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateSettings")
 		if err != nil {
 			return err
 		}

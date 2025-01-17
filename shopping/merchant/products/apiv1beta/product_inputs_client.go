@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	productspb "cloud.google.com/go/shopping/merchant/products/apiv1beta/productspb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -195,6 +194,8 @@ type productInputsGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewProductInputsClient creates a new product inputs service client based on gRPC.
@@ -222,6 +223,7 @@ func NewProductInputsClient(ctx context.Context, opts ...option.ClientOption) (*
 		connPool:            connPool,
 		productInputsClient: productspb.NewProductInputsServiceClient(connPool),
 		CallOptions:         &client.CallOptions,
+		logger:              internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -268,6 +270,8 @@ type productInputsRESTClient struct {
 
 	// Points back to the CallOptions field of the containing ProductInputsClient
 	CallOptions **ProductInputsCallOptions
+
+	logger *slog.Logger
 }
 
 // NewProductInputsRESTClient creates a new product inputs service rest client.
@@ -286,6 +290,7 @@ func NewProductInputsRESTClient(ctx context.Context, opts ...option.ClientOption
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -338,7 +343,7 @@ func (c *productInputsGRPCClient) InsertProductInput(ctx context.Context, req *p
 	var resp *productspb.ProductInput
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.productInputsClient.InsertProductInput(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.productInputsClient.InsertProductInput, req, settings.GRPC, c.logger, "InsertProductInput")
 		return err
 	}, opts...)
 	if err != nil {
@@ -355,7 +360,7 @@ func (c *productInputsGRPCClient) DeleteProductInput(ctx context.Context, req *p
 	opts = append((*c.CallOptions).DeleteProductInput[0:len((*c.CallOptions).DeleteProductInput):len((*c.CallOptions).DeleteProductInput)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.productInputsClient.DeleteProductInput(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.productInputsClient.DeleteProductInput, req, settings.GRPC, c.logger, "DeleteProductInput")
 		return err
 	}, opts...)
 	return err
@@ -407,17 +412,7 @@ func (c *productInputsRESTClient) InsertProductInput(ctx context.Context, req *p
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "InsertProductInput")
 		if err != nil {
 			return err
 		}
@@ -468,14 +463,7 @@ func (c *productInputsRESTClient) DeleteProductInput(ctx context.Context, req *p
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteProductInput")
+		return err
 	}, opts...)
 }
