@@ -18,7 +18,6 @@ package spanner
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"hash/fnv"
 	"log"
@@ -231,23 +230,24 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath string, metricsP
 
 	tracerFactory.isDirectPathEnabled = false
 	tracerFactory.enabled = false
-	var meterProvider *sdkmetric.MeterProvider
+	var meterProvider metric.MeterProvider
 	if metricsProvider == nil {
 		// Create default meter provider
 		mpOptions, err := builtInMeterProviderOptions(project, compression, opts...)
 		if err != nil {
 			return tracerFactory, err
 		}
-		meterProvider = sdkmetric.NewMeterProvider(mpOptions...)
+		sdkMeterProvider := sdkmetric.NewMeterProvider(mpOptions...)
+		meterProvider = sdkMeterProvider
 
 		tracerFactory.enabled = true
-		tracerFactory.shutdown = func(ctx context.Context) { meterProvider.Shutdown(ctx) }
+		tracerFactory.shutdown = func(ctx context.Context) { sdkMeterProvider.Shutdown(ctx) }
 	} else {
 		switch metricsProvider.(type) {
 		case noop.MeterProvider:
 			return tracerFactory, nil
 		default:
-			return tracerFactory, errors.New("unknown MetricsProvider type")
+			meterProvider = metricsProvider
 		}
 	}
 
