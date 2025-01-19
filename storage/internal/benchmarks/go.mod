@@ -2,8 +2,6 @@ module main
 
 go 1.22.0
 
-toolchain go1.23.4
-
 require (
 	cloud.google.com/go/storage v1.50.0
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v1.25.0

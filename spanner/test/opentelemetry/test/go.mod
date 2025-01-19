@@ -2,8 +2,6 @@ module cloud.google.com/go/spanner/test
 
 go 1.22.0
 
-toolchain go1.23.4
-
 replace (
 	cloud.google.com/go => ../../../../
 	cloud.google.com/go/spanner => ../../..

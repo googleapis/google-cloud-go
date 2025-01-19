@@ -293,6 +293,12 @@ func (it *RagFileIterator) All() iter.Seq2[*aiplatformpb.RagFile, error] {
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *ReasoningEngineIterator) All() iter.Seq2[*aiplatformpb.ReasoningEngine, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *SavedQueryIterator) All() iter.Seq2[*aiplatformpb.SavedQuery, error] {
 	return iterator.RangeAdapter(it.Next)
 }
