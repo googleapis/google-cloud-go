@@ -956,6 +956,17 @@ type ObjectHandle struct {
 	overrideRetention *bool
 	softDeleted       bool
 	readHandle        ReadHandle
+	limitPerStream    int64
+}
+
+// LimitPerStream returns a new ObjectHandle that uses the LimitPerStream to
+// define the threshold when to create a subsequent stream.
+//
+// Note that this will be a noop unless it's set on a gRPC client using MultiRangeDownloader.
+func (o *ObjectHandle) LimitPerStream(l int64) *ObjectHandle {
+	o2 := *o
+	o2.limitPerStream = l
+	return &o2
 }
 
 // ReadHandle returns a new ObjectHandle that uses the ReadHandle to open the objects.
