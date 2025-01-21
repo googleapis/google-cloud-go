@@ -3,9 +3,9 @@ module cloud.google.com/go/internal/generated
 go 1.22.10
 
 require (
-	cloud.google.com/go v0.117.0
+	cloud.google.com/go v0.118.0
 	cloud.google.com/go/accessapproval v1.8.2
-	cloud.google.com/go/accesscontextmanager v1.9.2
+	cloud.google.com/go/accesscontextmanager v1.9.3
 	cloud.google.com/go/advisorynotifications v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/aiplatform v1.69.0
 	cloud.google.com/go/alloydb v0.0.0-00010101000000-000000000000
@@ -36,7 +36,7 @@ require (
 	cloud.google.com/go/contactcenterinsights v1.15.1
 	cloud.google.com/go/container v1.42.0
 	cloud.google.com/go/containeranalysis v0.13.2
-	cloud.google.com/go/datacatalog v1.23.0
+	cloud.google.com/go/datacatalog v1.24.3
 	cloud.google.com/go/dataflow v0.10.2
 	cloud.google.com/go/dataform v0.10.2
 	cloud.google.com/go/datafusion v1.8.2
@@ -64,34 +64,34 @@ require (
 	cloud.google.com/go/gkehub v0.15.2
 	cloud.google.com/go/gkemulticloud v1.4.1
 	cloud.google.com/go/gsuiteaddons v1.7.2
-	cloud.google.com/go/iam v1.2.2
+	cloud.google.com/go/iam v1.3.1
 	cloud.google.com/go/iap v1.10.2
 	cloud.google.com/go/ids v1.5.2
 	cloud.google.com/go/iot v1.8.2
-	cloud.google.com/go/kms v1.20.1
+	cloud.google.com/go/kms v1.20.5
 	cloud.google.com/go/language v1.14.2
 	cloud.google.com/go/lifesciences v0.10.2
 	cloud.google.com/go/logging v1.12.0
-	cloud.google.com/go/longrunning v0.6.2
+	cloud.google.com/go/longrunning v0.6.4
 	cloud.google.com/go/managedidentities v1.7.2
 	cloud.google.com/go/maps v1.15.0
 	cloud.google.com/go/mediatranslation v0.9.2
 	cloud.google.com/go/memcache v1.11.2
 	cloud.google.com/go/metastore v1.14.2
-	cloud.google.com/go/monitoring v1.21.2
+	cloud.google.com/go/monitoring v1.22.1
 	cloud.google.com/go/networkconnectivity v1.15.2
 	cloud.google.com/go/networkmanagement v1.16.0
 	cloud.google.com/go/networksecurity v0.10.2
 	cloud.google.com/go/notebooks v1.12.2
 	cloud.google.com/go/optimization v1.7.2
 	cloud.google.com/go/orchestration v1.11.1
-	cloud.google.com/go/orgpolicy v1.14.1
-	cloud.google.com/go/osconfig v1.14.2
+	cloud.google.com/go/orgpolicy v1.14.2
+	cloud.google.com/go/osconfig v1.14.3
 	cloud.google.com/go/oslogin v1.14.2
 	cloud.google.com/go/phishingprotection v0.9.2
 	cloud.google.com/go/policytroubleshooter v1.11.2
 	cloud.google.com/go/privatecatalog v0.10.2
-	cloud.google.com/go/pubsub v1.45.1
+	cloud.google.com/go/pubsub v1.45.3
 	cloud.google.com/go/pubsublite v1.8.2
 	cloud.google.com/go/recaptchaenterprise/v2 v2.19.0
 	cloud.google.com/go/recommendationengine v0.9.2
@@ -130,7 +130,7 @@ require (
 	cloud.google.com/go/websecurityscanner v1.7.2
 	cloud.google.com/go/workflows v1.13.2
 	cloud.google.com/go/workstations v0.0.0-00010101000000-000000000000
-	google.golang.org/api v0.214.0
+	google.golang.org/api v0.217.0
 	google.golang.org/genproto v0.0.0-20241118233622-e639e219e697
 )
 
@@ -164,39 +164,40 @@ require (
 	cloud.google.com/go/securityposture v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/servicehealth v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/shopping v0.0.0-00010101000000-000000000000
-	cloud.google.com/go/storage v1.43.0
+	cloud.google.com/go/storage v1.50.0
 	cloud.google.com/go/streetview v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/telcoautomation v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/visionai v0.0.0-00010101000000-000000000000
-	google.golang.org/protobuf v1.35.2
+	google.golang.org/protobuf v1.36.3
 )
 
 require (
-	cloud.google.com/go/auth v0.13.0 // indirect
-	cloud.google.com/go/auth/oauth2adapt v0.2.6 // indirect
+	cloud.google.com/go/auth v0.14.0 // indirect
+	cloud.google.com/go/auth/oauth2adapt v0.2.7 // indirect
 	cloud.google.com/go/compute/metadata v0.6.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
-	github.com/google/s2a-go v0.1.8 // indirect
+	github.com/google/s2a-go v0.1.9 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.4 // indirect
-	github.com/googleapis/gax-go/v2 v2.14.0 // indirect
+	github.com/googleapis/gax-go/v2 v2.14.1 // indirect
+	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.54.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.54.0 // indirect
-	go.opentelemetry.io/otel v1.29.0 // indirect
-	go.opentelemetry.io/otel/metric v1.29.0 // indirect
-	go.opentelemetry.io/otel/trace v1.29.0 // indirect
-	golang.org/x/crypto v0.31.0 // indirect
-	golang.org/x/net v0.33.0 // indirect
-	golang.org/x/oauth2 v0.24.0 // indirect
+	go.opentelemetry.io/otel v1.33.0 // indirect
+	go.opentelemetry.io/otel/metric v1.33.0 // indirect
+	go.opentelemetry.io/otel/trace v1.33.0 // indirect
+	golang.org/x/crypto v0.32.0 // indirect
+	golang.org/x/net v0.34.0 // indirect
+	golang.org/x/oauth2 v0.25.0 // indirect
 	golang.org/x/sync v0.10.0 // indirect
-	golang.org/x/sys v0.28.0 // indirect
+	golang.org/x/sys v0.29.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
-	golang.org/x/time v0.8.0 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20241118233622-e639e219e697 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20241209162323-e6fa225c2576 // indirect
-	google.golang.org/grpc v1.67.3 // indirect
+	golang.org/x/time v0.9.0 // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20250115164207-1a7da9e5054f // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250115164207-1a7da9e5054f // indirect
+	google.golang.org/grpc v1.69.4 // indirect
 )
 
 replace cloud.google.com/go/storageinsights => ../../../storageinsights
