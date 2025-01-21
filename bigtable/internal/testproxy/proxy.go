@@ -709,20 +709,30 @@ func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRo
 
 	var entries []*btpb.MutateRowsResponse_Entry
 
-	// Iterate over any errors returned, matching indices with errors. If
-	// errs is nil, this block is skipped.
-	for i, e := range errs {
-		var me *btpb.MutateRowsResponse_Entry
-		if e != nil {
-			st := statusFromError(e)
-			me = &btpb.MutateRowsResponse_Entry{
+	if res.Status.Code != int32(codes.OK) {
+		// Copy overall error to per mutation error
+		for i := range len(muts) {
+			me := &btpb.MutateRowsResponse_Entry{
 				Index:  int64(i),
-				Status: st,
+				Status: res.Status,
 			}
 			entries = append(entries, me)
 		}
+	} else {
+		// Iterate over any errors returned, matching indices with errors. If
+		// errs is nil, this block is skipped.
+		for i, e := range errs {
+			var me *btpb.MutateRowsResponse_Entry
+			if e != nil {
+				st := statusFromError(e)
+				me = &btpb.MutateRowsResponse_Entry{
+					Index:  int64(i),
+					Status: st,
+				}
+				entries = append(entries, me)
+			}
+		}
 	}
-
 	res.Entries = entries
 	return res, nil
 }
