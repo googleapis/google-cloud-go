@@ -3,6 +3,18 @@
 
 
 
+## [1.66.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.65.0...bigquery/v1.66.0) (2025-01-20)
+
+
+### Features
+
+* **bigquery/storage/managedwriter:** Graceful connection drains ([#11463](https://github.com/googleapis/google-cloud-go/issues/11463)) ([b29912f](https://github.com/googleapis/google-cloud-go/commit/b29912faab73a2e708127eeb2f729ae581e7a24e))
+
+
+### Bug Fixes
+
+* **bigquery:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [1.65.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.64.0...bigquery/v1.65.0) (2024-12-05)
 
 
