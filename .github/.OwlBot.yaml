@@ -333,6 +333,7 @@ deep-remove-regex:
   - /internal/generated/snippets/oslogin/apiv1beta/
   - /internal/generated/snippets/parallelstore/apiv1/
   - /internal/generated/snippets/parallelstore/apiv1beta/
+  - /internal/generated/snippets/parametermanager/apiv1/
   - /internal/generated/snippets/phishingprotection/apiv1beta1/
   - /internal/generated/snippets/policysimulator/apiv1/
   - /internal/generated/snippets/policytroubleshooter/apiv1/
@@ -487,6 +488,7 @@ deep-remove-regex:
   - /oslogin/common/
   - /parallelstore/apiv1/
   - /parallelstore/apiv1beta/
+  - /parametermanager/apiv1/
   - /phishingprotection/apiv1beta1/
   - /policysimulator/apiv1/
   - /policytroubleshooter/apiv1/
@@ -1025,6 +1027,8 @@ deep-copy-regex:
   - source: /google/cloud/parallelstore/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/parallelstore/v1beta/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/parametermanager/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/phishingprotection/v1beta1/cloud.google.com/go
     dest: /
