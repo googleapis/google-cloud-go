@@ -2,7 +2,7 @@ module cloud.google.com/go/bigtable
 
 go 1.22.7
 
-toolchain go1.22.10
+toolchain go1.23.5
 
 require (
 	cloud.google.com/go v0.118.0
@@ -25,7 +25,7 @@ require (
 )
 
 require (
-	cloud.google.com/go/monitoring v1.22.1
+	cloud.google.com/go/monitoring v1.23.0
 	github.com/google/uuid v1.6.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20250115164207-1a7da9e5054f
 )

@@ -378,8 +378,8 @@ cloud.google.com/go/monitoring v1.7.0/go.mod h1:HpYse6kkGo//7p6sT0wsIC6IBDET0RhI
 cloud.google.com/go/monitoring v1.8.0/go.mod h1:E7PtoMJ1kQXWxPjB6mv2fhC5/15jInuulFdYYtlcvT4=
 cloud.google.com/go/monitoring v1.12.0/go.mod h1:yx8Jj2fZNEkL/GYZyTLS4ZtZEZN8WtDEiEqG4kLK50w=
 cloud.google.com/go/monitoring v1.13.0/go.mod h1:k2yMBAB1H9JT/QETjNkgdCGD9bPF712XiLTVr+cBrpw=
-cloud.google.com/go/monitoring v1.22.1 h1:KQbnAC4IAH+5x3iWuPZT5iN9VXqKMzzOgqcYB6fqPDE=
-cloud.google.com/go/monitoring v1.22.1/go.mod h1:AuZZXAoN0WWWfsSvET1Cpc4/1D8LXq8KRDU87fMS6XY=
+cloud.google.com/go/monitoring v1.23.0 h1:M3nXww2gn9oZ/qWN2bZ35CjolnVHM3qnSbu6srCPgjk=
+cloud.google.com/go/monitoring v1.23.0/go.mod h1:034NnlQPDzrQ64G2Gavhl0LUHZs9H3rRmhtnp7jiJgg=
 cloud.google.com/go/networkconnectivity v1.4.0/go.mod h1:nOl7YL8odKyAOtzNX73/M5/mGZgqqMeryi6UPZTk/rA=
 cloud.google.com/go/networkconnectivity v1.5.0/go.mod h1:3GzqJx7uhtlM3kln0+x5wyFvuVH1pIBJjhCpjzSt75o=
 cloud.google.com/go/networkconnectivity v1.6.0/go.mod h1:OJOoEXW+0LAxHh89nXd64uGG+FbQoeH8DtxCHVOMlaM=

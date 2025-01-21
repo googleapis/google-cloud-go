@@ -2,11 +2,11 @@ module cloud.google.com/go/internal/godocfx
 
 go 1.22.0
 
-toolchain go1.22.10
+toolchain go1.23.5
 
 require (
 	cloud.google.com/go v0.118.0
-	cloud.google.com/go/bigquery v1.65.0
+	cloud.google.com/go/bigquery v1.66.0
 	cloud.google.com/go/datastore v1.20.0
 	github.com/google/go-cmp v0.6.0
 	golang.org/x/tools v0.29.0

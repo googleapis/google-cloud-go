@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go v0.118.0
 	cloud.google.com/go/iam v1.3.1
 	cloud.google.com/go/longrunning v0.6.4
-	cloud.google.com/go/monitoring v1.22.1
+	cloud.google.com/go/monitoring v1.23.0
 	github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp v1.5.2
 	github.com/google/go-cmp v0.6.0
 	github.com/google/uuid v1.6.0
