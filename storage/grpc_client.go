@@ -25,6 +25,7 @@ import (
 	"net/url"
 	"os"
 	"sync"
+	"time"
 
 	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/internal/trace"
@@ -1723,10 +1724,28 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 					return err
 				}
 
+				retryDeadline := defaultWriteChunkRetryDeadline
+				if params.chunkRetryDeadline != 0 {
+					retryDeadline = params.chunkRetryDeadline
+				}
+				quitAfterTimer := time.NewTimer(retryDeadline)
+
 				var o *storagepb.Object
+				var lastErr error
+				attempts := 1
 				uploadBuff := func(ctx context.Context) error {
+					select {
+					case <-quitAfterTimer.C:
+						if lastErr == nil {
+							return errors.New("storage: upload request not sent, choose a larger value for the retry deadline")
+						}
+						return fmt.Errorf("storage: chunk retry timed out after %v attempts; last error: %w", attempts, err)
+					default:
+					}
+
 					obj, err := gw.uploadBuffer(ctx, recvd, offset, doneReading)
 					o = obj
+					attempts++
 					return err
 				}
 
