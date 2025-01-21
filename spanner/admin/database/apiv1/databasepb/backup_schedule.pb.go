@@ -21,15 +21,14 @@
 package databasepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -264,7 +263,7 @@ type CrontabSpec struct {
 
 	// Required. Textual representation of the crontab. User can customize the
 	// backup frequency and the backup version time using the cron
-	// expression. The version time must be in UTC timzeone.
+	// expression. The version time must be in UTC timezone.
 	//
 	// The backup will contain an externally consistent copy of the
 	// database at the version time. Allowed frequencies are 12 hour, 1 day,
