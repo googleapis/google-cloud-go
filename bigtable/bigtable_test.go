@@ -20,6 +20,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/binary"
+	"errors"
 	"reflect"
 	"testing"
 	"time"
@@ -773,6 +774,7 @@ func TestReadRowsLimit(t *testing.T) {
 		desc         string
 		limit        *int64
 		wantRowCount int64
+		wantErr      error
 	}{
 		{
 			desc:         "No limit",
@@ -788,6 +790,11 @@ func TestReadRowsLimit(t *testing.T) {
 			limit:        ptr(int64(5)),
 			wantRowCount: 3,
 		},
+		{
+			desc:    "Negative row limit",
+			limit:   ptr(int64(-1)),
+			wantErr: errNegativeRowLimit,
+		},
 	} {
 		gotRowCount := int64(0)
 		t.Run(test.desc, func(t *testing.T) {
@@ -798,8 +805,8 @@ func TestReadRowsLimit(t *testing.T) {
 			if err := table.ReadRows(ctx, InfiniteRange(""), func(r Row) bool {
 				gotRowCount++
 				return true
-			}, opts...); err != nil {
-				t.Errorf("ReadRows failed: %v", err)
+			}, opts...); !errors.Is(err, test.wantErr) {
+				t.Errorf("ReadRows err got: %v, want: %v", err, test.wantErr)
 			}
 
 			if gotRowCount != test.wantRowCount {
