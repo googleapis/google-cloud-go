@@ -56,17 +56,18 @@
         }
       ],
       "methods": [
-        {"name": "storage.buckets.patch",         "resources": ["BUCKET"]},
-        {"name": "storage.buckets.setIamPolicy",  "resources": ["BUCKET"]},
-        {"name": "storage.buckets.update",        "resources": ["BUCKET"]},
-        {"name": "storage.hmacKey.update",        "resources": ["HMAC_KEY"]},
-        {"name": "storage.objects.compose",       "resources": ["BUCKET", "OBJECT"]},
-        {"name": "storage.objects.copy",          "resources": ["BUCKET", "OBJECT"]},
-        {"name": "storage.objects.delete",        "resources": ["BUCKET", "OBJECT"]},
-        {"name": "storage.objects.insert",        "resources": ["BUCKET"]},
-        {"name": "storage.objects.patch",         "resources": ["BUCKET", "OBJECT"]},
-        {"name": "storage.objects.rewrite",       "resources": ["BUCKET", "OBJECT"]},
-        {"name": "storage.objects.update",        "resources": ["BUCKET", "OBJECT"]}
+        {"name": "storage.buckets.patch",                                        "resources": ["BUCKET"]},
+        {"name": "storage.buckets.setIamPolicy",                                 "resources": ["BUCKET"]},
+        {"name": "storage.buckets.update",                                       "resources": ["BUCKET"]},
+        {"name": "storage.hmacKey.update",                                       "resources": ["HMAC_KEY"]},
+        {"name": "storage.objects.compose",                                      "resources": ["BUCKET", "OBJECT"]},
+        {"name": "storage.objects.copy",                                         "resources": ["BUCKET", "OBJECT"]},
+        {"name": "storage.objects.delete",                                       "resources": ["BUCKET", "OBJECT"]},
+        {"name": "storage.objects.insert",                                       "resources": ["BUCKET"]},
+        {"name": "storage.objects.insert", "group": "storage.appendable.upload", "resources": []},
+        {"name": "storage.objects.patch",                                        "resources": ["BUCKET", "OBJECT"]},
+        {"name": "storage.objects.rewrite",                                      "resources": ["BUCKET", "OBJECT"]},
+        {"name": "storage.objects.update",                                       "resources": ["BUCKET", "OBJECT"]}
       ],
       "preconditionProvided": true,
       "expectSuccess": true
@@ -92,7 +93,8 @@
         {"name": "storage.objects.delete",        "resources": ["BUCKET", "OBJECT"]},
         {"name": "storage.objects.patch",         "resources": ["BUCKET", "OBJECT"]},
         {"name": "storage.objects.rewrite",       "resources": ["BUCKET", "OBJECT"]},
-        {"name": "storage.objects.update",        "resources": ["BUCKET", "OBJECT"]}
+        {"name": "storage.objects.update",        "resources": ["BUCKET", "OBJECT"]},
+        {"name": "storage.objects.insert",        "resources": ["BUCKET"]}
       ],
       "preconditionProvided": false,
       "expectSuccess": false
@@ -139,53 +141,54 @@
         }
       ],
       "methods": [
-        {"name": "storage.bucket_acl.delete",             "resources": ["BUCKET"]},
-        {"name": "storage.bucket_acl.get",                "resources": ["BUCKET"]},
-        {"name": "storage.bucket_acl.insert",             "resources": ["BUCKET"]},
-        {"name": "storage.bucket_acl.list",               "resources": ["BUCKET"]},
-        {"name": "storage.bucket_acl.patch",              "resources": ["BUCKET"]},
-        {"name": "storage.bucket_acl.update",             "resources": ["BUCKET"]},
-        {"name": "storage.buckets.delete",                "resources": ["BUCKET"]},
-        {"name": "storage.buckets.get",                   "resources": ["BUCKET"]},
-        {"name": "storage.buckets.getIamPolicy",          "resources": ["BUCKET"]},
-        {"name": "storage.buckets.insert",                "resources": ["BUCKET"]},
-        {"name": "storage.buckets.list",                  "resources": ["BUCKET"]},
-        {"name": "storage.buckets.lockRetentionPolicy",   "resources": ["BUCKET"]},
-        {"name": "storage.buckets.patch",                 "resources": ["BUCKET"]},
-        {"name": "storage.buckets.setIamPolicy",          "resources": ["BUCKET"]},
-        {"name": "storage.buckets.testIamPermissions",    "resources": ["BUCKET"]},
-        {"name": "storage.buckets.update",                "resources": ["BUCKET"]},
-        {"name": "storage.default_object_acl.delete",     "resources": ["BUCKET"]},
-        {"name": "storage.default_object_acl.get",        "resources": ["BUCKET"]},
-        {"name": "storage.default_object_acl.insert",     "resources": ["BUCKET"]},
-        {"name": "storage.default_object_acl.list",       "resources": ["BUCKET"]},
-        {"name": "storage.default_object_acl.patch",      "resources": ["BUCKET"]},
-        {"name": "storage.default_object_acl.update",     "resources": ["BUCKET"]},
-        {"name": "storage.hmacKey.create",                "resources": []},
-        {"name": "storage.hmacKey.delete",                "resources": ["HMAC_KEY"]},
-        {"name": "storage.hmacKey.get",                   "resources": ["HMAC_KEY"]},
-        {"name": "storage.hmacKey.list",                  "resources": ["HMAC_KEY"]},
-        {"name": "storage.hmacKey.update",                "resources": ["HMAC_KEY"]},
-        {"name": "storage.notifications.delete",          "resources": ["BUCKET", "NOTIFICATION"]},
-        {"name": "storage.notifications.get",             "resources": ["BUCKET", "NOTIFICATION"]},
-        {"name": "storage.notifications.insert",          "resources": ["BUCKET", "NOTIFICATION"]},
-        {"name": "storage.notifications.list",            "resources": ["BUCKET", "NOTIFICATION"]},
-        {"name": "storage.object_acl.delete",             "resources": ["BUCKET", "OBJECT"]},
-        {"name": "storage.object_acl.get",                "resources": ["BUCKET", "OBJECT"]},
-        {"name": "storage.object_acl.insert",             "resources": ["BUCKET", "OBJECT"]},
-        {"name": "storage.object_acl.list",               "resources": ["BUCKET", "OBJECT"]},
-        {"name": "storage.object_acl.patch",              "resources": ["BUCKET", "OBJECT"]},
-        {"name": "storage.object_acl.update",             "resources": ["BUCKET", "OBJECT"]},
-        {"name": "storage.objects.compose",               "resources": ["BUCKET", "OBJECT"]},
-        {"name": "storage.objects.copy",                  "resources": ["BUCKET", "OBJECT"]},
-        {"name": "storage.objects.delete",                "resources": ["BUCKET", "OBJECT"]},
-        {"name": "storage.objects.get",                   "resources": ["BUCKET", "OBJECT"]},
-        {"name": "storage.objects.insert",                "resources": ["BUCKET"]},
-        {"name": "storage.objects.list",                  "resources": ["BUCKET", "OBJECT"]},
-        {"name": "storage.objects.patch",                 "resources": ["BUCKET", "OBJECT"]},
-        {"name": "storage.objects.rewrite",               "resources": ["BUCKET", "OBJECT"]},
-        {"name": "storage.objects.update",                "resources": ["BUCKET", "OBJECT"]},
-        {"name": "storage.serviceaccount.get",            "resources": []}
+        {"name": "storage.bucket_acl.delete",                                    "resources": ["BUCKET"]},
+        {"name": "storage.bucket_acl.get",                                       "resources": ["BUCKET"]},
+        {"name": "storage.bucket_acl.insert",                                    "resources": ["BUCKET"]},
+        {"name": "storage.bucket_acl.list",                                      "resources": ["BUCKET"]},
+        {"name": "storage.bucket_acl.patch",                                     "resources": ["BUCKET"]},
+        {"name": "storage.bucket_acl.update",                                    "resources": ["BUCKET"]},
+        {"name": "storage.buckets.delete",                                       "resources": ["BUCKET"]},
+        {"name": "storage.buckets.get",                                          "resources": ["BUCKET"]},
+        {"name": "storage.buckets.getIamPolicy",                                 "resources": ["BUCKET"]},
+        {"name": "storage.buckets.insert",                                       "resources": ["BUCKET"]},
+        {"name": "storage.buckets.list",                                         "resources": ["BUCKET"]},
+        {"name": "storage.buckets.lockRetentionPolicy",                          "resources": ["BUCKET"]},
+        {"name": "storage.buckets.patch",                                        "resources": ["BUCKET"]},
+        {"name": "storage.buckets.setIamPolicy",                                 "resources": ["BUCKET"]},
+        {"name": "storage.buckets.testIamPermissions",                           "resources": ["BUCKET"]},
+        {"name": "storage.buckets.update",                                       "resources": ["BUCKET"]},
+        {"name": "storage.default_object_acl.delete",                            "resources": ["BUCKET"]},
+        {"name": "storage.default_object_acl.get",                               "resources": ["BUCKET"]},
+        {"name": "storage.default_object_acl.insert",                            "resources": ["BUCKET"]},
+        {"name": "storage.default_object_acl.list",                              "resources": ["BUCKET"]},
+        {"name": "storage.default_object_acl.patch",                             "resources": ["BUCKET"]},
+        {"name": "storage.default_object_acl.update",                            "resources": ["BUCKET"]},
+        {"name": "storage.hmacKey.create",                                       "resources": []},
+        {"name": "storage.hmacKey.delete",                                       "resources": ["HMAC_KEY"]},
+        {"name": "storage.hmacKey.get",                                          "resources": ["HMAC_KEY"]},
+        {"name": "storage.hmacKey.list",                                         "resources": ["HMAC_KEY"]},
+        {"name": "storage.hmacKey.update",                                       "resources": ["HMAC_KEY"]},
+        {"name": "storage.notifications.delete",                                 "resources": ["BUCKET", "NOTIFICATION"]},
+        {"name": "storage.notifications.get",                                    "resources": ["BUCKET", "NOTIFICATION"]},
+        {"name": "storage.notifications.insert",                                 "resources": ["BUCKET", "NOTIFICATION"]},
+        {"name": "storage.notifications.list",                                   "resources": ["BUCKET", "NOTIFICATION"]},
+        {"name": "storage.object_acl.delete",                                    "resources": ["BUCKET", "OBJECT"]},
+        {"name": "storage.object_acl.get",                                       "resources": ["BUCKET", "OBJECT"]},
+        {"name": "storage.object_acl.insert",                                    "resources": ["BUCKET", "OBJECT"]},
+        {"name": "storage.object_acl.list",                                      "resources": ["BUCKET", "OBJECT"]},
+        {"name": "storage.object_acl.patch",                                     "resources": ["BUCKET", "OBJECT"]},
+        {"name": "storage.object_acl.update",                                    "resources": ["BUCKET", "OBJECT"]},
+        {"name": "storage.objects.compose",                                      "resources": ["BUCKET", "OBJECT"]},
+        {"name": "storage.objects.copy",                                         "resources": ["BUCKET", "OBJECT"]},
+        {"name": "storage.objects.delete",                                       "resources": ["BUCKET", "OBJECT"]},
+        {"name": "storage.objects.get",                                          "resources": ["BUCKET", "OBJECT"]},
+        {"name": "storage.objects.insert",                                       "resources": ["BUCKET"]},
+        {"name": "storage.objects.insert", "group": "storage.appendable.upload", "resources": []},
+        {"name": "storage.objects.list",                                         "resources": ["BUCKET", "OBJECT"]},
+        {"name": "storage.objects.patch",                                        "resources": ["BUCKET", "OBJECT"]},
+        {"name": "storage.objects.rewrite",                                      "resources": ["BUCKET", "OBJECT"]},
+        {"name": "storage.objects.update",                                       "resources": ["BUCKET", "OBJECT"]},
+        {"name": "storage.serviceaccount.get",                                   "resources": []}
       ],
       "preconditionProvided": false,
       "expectSuccess": false
@@ -202,39 +205,40 @@
         }
       ],
       "methods": [
-        {"name": "storage.bucket_acl.get",                "resources": ["BUCKET"]},
-        {"name": "storage.bucket_acl.list",               "resources": ["BUCKET"]},
-        {"name": "storage.buckets.delete",                "resources": ["BUCKET"]},
-        {"name": "storage.buckets.get",                   "resources": ["BUCKET"]},
-        {"name": "storage.buckets.getIamPolicy",          "resources": ["BUCKET"]},
-        {"name": "storage.buckets.insert",                "resources": []},
-        {"name": "storage.buckets.list",                  "resources": ["BUCKET"]},
-        {"name": "storage.buckets.lockRetentionPolicy",   "resources": ["BUCKET"]},
-        {"name": "storage.buckets.patch",                 "resources": ["BUCKET"]},
-        {"name": "storage.buckets.setIamPolicy",          "resources": ["BUCKET"]},
-        {"name": "storage.buckets.testIamPermissions",    "resources": ["BUCKET"]},
-        {"name": "storage.buckets.update",                "resources": ["BUCKET"]},
-        {"name": "storage.default_object_acl.get",        "resources": ["BUCKET"]},
-        {"name": "storage.default_object_acl.list",       "resources": ["BUCKET"]},
-        {"name": "storage.hmacKey.delete",                "resources": ["HMAC_KEY"]},
-        {"name": "storage.hmacKey.get",                   "resources": ["HMAC_KEY"]},
-        {"name": "storage.hmacKey.list",                  "resources": ["HMAC_KEY"]},
-        {"name": "storage.hmacKey.update",                "resources": ["HMAC_KEY"]},
-        {"name": "storage.notifications.delete",          "resources": ["BUCKET", "NOTIFICATION"]},
-        {"name": "storage.notifications.get",             "resources": ["BUCKET", "NOTIFICATION"]},
-        {"name": "storage.notifications.list",            "resources": ["BUCKET", "NOTIFICATION"]},
-        {"name": "storage.object_acl.get",                "resources": ["BUCKET", "OBJECT"]},
-        {"name": "storage.object_acl.list",               "resources": ["BUCKET", "OBJECT"]},
-        {"name": "storage.objects.compose",               "resources": ["BUCKET", "OBJECT"]},
-        {"name": "storage.objects.copy",                  "resources": ["BUCKET", "OBJECT"]},
-        {"name": "storage.objects.delete",                "resources": ["BUCKET", "OBJECT"]},
-        {"name": "storage.objects.get",                   "resources": ["BUCKET", "OBJECT"]},
-        {"name": "storage.objects.list",                  "resources": ["BUCKET", "OBJECT"]},
-        {"name": "storage.objects.insert",                "resources": ["BUCKET"]},
-        {"name": "storage.objects.patch",                 "resources": ["BUCKET", "OBJECT"]},
-        {"name": "storage.objects.rewrite",               "resources": ["BUCKET", "OBJECT"]},
-        {"name": "storage.objects.update",                "resources": ["BUCKET", "OBJECT"]},
-        {"name": "storage.serviceaccount.get",            "resources": []}
+        {"name": "storage.bucket_acl.get",                                       "resources": ["BUCKET"]},
+        {"name": "storage.bucket_acl.list",                                      "resources": ["BUCKET"]},
+        {"name": "storage.buckets.delete",                                       "resources": ["BUCKET"]},
+        {"name": "storage.buckets.get",                                          "resources": ["BUCKET"]},
+        {"name": "storage.buckets.getIamPolicy",                                 "resources": ["BUCKET"]},
+        {"name": "storage.buckets.insert",                                       "resources": []},
+        {"name": "storage.buckets.list",                                         "resources": ["BUCKET"]},
+        {"name": "storage.buckets.lockRetentionPolicy",                          "resources": ["BUCKET"]},
+        {"name": "storage.buckets.patch",                                        "resources": ["BUCKET"]},
+        {"name": "storage.buckets.setIamPolicy",                                 "resources": ["BUCKET"]},
+        {"name": "storage.buckets.testIamPermissions",                           "resources": ["BUCKET"]},
+        {"name": "storage.buckets.update",                                       "resources": ["BUCKET"]},
+        {"name": "storage.default_object_acl.get",                               "resources": ["BUCKET"]},
+        {"name": "storage.default_object_acl.list",                              "resources": ["BUCKET"]},
+        {"name": "storage.hmacKey.delete",                                       "resources": ["HMAC_KEY"]},
+        {"name": "storage.hmacKey.get",                                          "resources": ["HMAC_KEY"]},
+        {"name": "storage.hmacKey.list",                                         "resources": ["HMAC_KEY"]},
+        {"name": "storage.hmacKey.update",                                       "resources": ["HMAC_KEY"]},
+        {"name": "storage.notifications.delete",                                 "resources": ["BUCKET", "NOTIFICATION"]},
+        {"name": "storage.notifications.get",                                    "resources": ["BUCKET", "NOTIFICATION"]},
+        {"name": "storage.notifications.list",                                   "resources": ["BUCKET", "NOTIFICATION"]},
+        {"name": "storage.object_acl.get",                                       "resources": ["BUCKET", "OBJECT"]},
+        {"name": "storage.object_acl.list",                                      "resources": ["BUCKET", "OBJECT"]},
+        {"name": "storage.objects.compose",                                      "resources": ["BUCKET", "OBJECT"]},
+        {"name": "storage.objects.copy",                                         "resources": ["BUCKET", "OBJECT"]},
+        {"name": "storage.objects.delete",                                       "resources": ["BUCKET", "OBJECT"]},
+        {"name": "storage.objects.get",                                          "resources": ["BUCKET", "OBJECT"]},
+        {"name": "storage.objects.list",                                         "resources": ["BUCKET", "OBJECT"]},
+        {"name": "storage.objects.insert",                                       "resources": ["BUCKET"]},
+        {"name": "storage.objects.insert", "group": "storage.appendable.upload", "resources": []},
+        {"name": "storage.objects.patch",                                        "resources": ["BUCKET", "OBJECT"]},
+        {"name": "storage.objects.rewrite",                                      "resources": ["BUCKET", "OBJECT"]},
+        {"name": "storage.objects.update",                                       "resources": ["BUCKET", "OBJECT"]},
+        {"name": "storage.serviceaccount.get",                                   "resources": []}
       ],
       "preconditionProvided": true,
       "expectSuccess": false
@@ -278,6 +282,54 @@
       ],
       "preconditionProvided": false,
       "expectSuccess": true
+    },
+    {
+      "id": 9,
+      "description": "appendable_handle_retries_after_first_response",
+      "cases": [
+        {
+          "instructions": ["return-503-after-2048K"]
+        },
+        {
+          "instructions": ["return-503-after-2048K", "return-408"]
+        }
+      ],
+      "methods": [
+        {"name": "storage.objects.insert", "group": "storage.appendable.upload", "resources": []}
+      ],
+      "preconditionProvided": true,
+      "expectSuccess": true
+    },
+    {
+      "id": 10,
+      "description": "appendable_fail_retries_before_first_response",
+      "cases": [
+        {
+          "instructions": ["return-408"]
+        },
+        {
+          "instructions": ["return-503-after-256K"]
+        }
+      ],
+      "methods": [
+        {"name": "storage.objects.insert", "group": "storage.appendable.upload", "resources": []}
+      ],
+      "preconditionProvided": false,
+      "expectSuccess": false
+    },
+    {
+      "id": 11,
+      "description": "appendable_fail_after_create_with_precondition",
+      "cases": [
+        {
+          "instructions": ["return-503-after-256K"]
+        }
+      ],
+      "methods": [
+        {"name": "storage.objects.insert", "group": "storage.appendable.upload", "resources": []}
+      ],
+      "preconditionProvided": true,
+      "expectSuccess": false
     }
   ]
 }

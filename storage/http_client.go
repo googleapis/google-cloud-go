@@ -34,7 +34,6 @@ import (
 	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/trace"
-	"github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
@@ -801,6 +800,10 @@ func (c *httpStorageClient) ComposeObject(ctx context.Context, req *composeObjec
 	retryCall := func(ctx context.Context) error { obj, err = call.Context(ctx).Do(); return err }
 
 	if err := run(ctx, retryCall, s.retry, s.idempotent); err != nil {
+		var e *googleapi.Error
+		if errors.As(err, &e) && e.Code == http.StatusNotFound {
+			return nil, fmt.Errorf("%w: %w", ErrObjectNotExist, err)
+		}
 		return nil, err
 	}
 	return newObject(obj), nil
@@ -848,6 +851,10 @@ func (c *httpStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 	retryCall := func(ctx context.Context) error { res, err = call.Context(ctx).Do(); return err }
 
 	if err := run(ctx, retryCall, s.retry, s.idempotent); err != nil {
+		var e *googleapi.Error
+		if errors.As(err, &e) && e.Code == http.StatusNotFound {
+			return nil, fmt.Errorf("%w: %w", ErrObjectNotExist, err)
+		}
 		return nil, err
 	}
 
@@ -860,6 +867,11 @@ func (c *httpStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 	}
 
 	return r, nil
+}
+
+// NewMultiRangeDownloader is not supported by http client.
+func (c *httpStorageClient) NewMultiRangeDownloader(ctx context.Context, params *newMultiRangeDownloaderParams, opts ...storageOption) (mr *MultiRangeDownloader, err error) {
+	return nil, errMethodNotSupported
 }
 
 func (c *httpStorageClient) NewRangeReader(ctx context.Context, params *newRangeReaderParams, opts ...storageOption) (r *Reader, err error) {
@@ -978,6 +990,10 @@ func (c *httpStorageClient) newRangeReaderJSON(ctx context.Context, params *newR
 }
 
 func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storageOption) (*io.PipeWriter, error) {
+	if params.append {
+		return nil, errors.New("storage: append not supported on HTTP Client; use gRPC")
+	}
+
 	s := callSettings(c.settings, opts...)
 	errorf := params.setError
 	setObj := params.setObj
@@ -1051,13 +1067,7 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 			}
 			if useRetry {
 				if s.retry != nil {
-					bo := &gax.Backoff{}
-					if s.retry.backoff != nil {
-						bo.Multiplier = s.retry.backoff.GetMultiplier()
-						bo.Initial = s.retry.backoff.GetInitial()
-						bo.Max = s.retry.backoff.GetMax()
-					}
-					call.WithRetry(bo, s.retry.shouldRetry)
+					call.WithRetry(s.retry.backoff, s.retry.shouldRetry)
 				} else {
 					call.WithRetry(nil, nil)
 				}

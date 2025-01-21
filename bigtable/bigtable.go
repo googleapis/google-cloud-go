@@ -1013,7 +1013,8 @@ func mutationsAreRetryable(muts []*btpb.Mutation) bool {
 	return true
 }
 
-const maxMutations = 100000
+// Overriden in tests
+var maxMutations = 100000
 
 // Apply mutates a row atomically. A mutation must contain at least one
 // operation and at most 100000 operations.
@@ -1086,15 +1087,12 @@ func (t *Table) apply(ctx context.Context, mt *builtinMetricsTracer, row string,
 		}
 		req.FalseMutations = m.mfalse.ops
 	}
-	if mutationsAreRetryable(req.TrueMutations) && mutationsAreRetryable(req.FalseMutations) {
-		callOptions = retryOptions
-	}
 	var cmRes *btpb.CheckAndMutateRowResponse
 	err = gaxInvokeWithRecorder(ctx, mt, "CheckAndMutateRow", func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
 		var err error
 		cmRes, err = t.c.client.CheckAndMutateRow(ctx, req, grpc.Header(headerMD), grpc.Trailer(trailerMD))
 		return err
-	}, callOptions...)
+	})
 	if err == nil {
 		after(cmRes)
 	}
@@ -1227,9 +1225,14 @@ func (m *Mutation) mergeToCell(family, column string, ts Timestamp, value *btpb.
 type entryErr struct {
 	Entry *btpb.MutateRowsRequest_Entry
 	Err   error
+
+	// TopLevelErr is the error received either from
+	// 1. client.MutateRows
+	// 2. stream.Recv
+	TopLevelErr error
 }
 
-// ApplyBulk applies multiple Mutations, up to a maximum of 100,000.
+// ApplyBulk applies multiple Mutations.
 // Each mutation is individually applied atomically,
 // but the set of mutations may be applied in any order.
 //
@@ -1257,17 +1260,31 @@ func (t *Table) ApplyBulk(ctx context.Context, rowKeys []string, muts []*Mutatio
 		origEntries[i] = &entryErr{Entry: &btpb.MutateRowsRequest_Entry{RowKey: []byte(key), Mutations: mut.ops}}
 	}
 
-	for _, group := range groupEntries(origEntries, maxMutations) {
+	var firstGroupErr error
+	numFailed := 0
+	groups := groupEntries(origEntries, maxMutations)
+	for _, group := range groups {
 		err := t.applyGroup(ctx, group, opts...)
 		if err != nil {
-			return nil, err
+			if firstGroupErr == nil {
+				firstGroupErr = err
+			}
+			numFailed++
 		}
+	}
+
+	if numFailed == len(groups) {
+		return nil, firstGroupErr
 	}
 
 	// All the errors are accumulated into an array and returned, interspersed with nils for successful
 	// entries. The absence of any errors means we should return nil.
 	var foundErr bool
 	for _, entry := range origEntries {
+		if entry.Err == nil && entry.TopLevelErr != nil {
+			// Populate per mutation error if top level error is not nil
+			entry.Err = entry.TopLevelErr
+		}
 		if entry.Err != nil {
 			foundErr = true
 		}
@@ -1292,6 +1309,7 @@ func (t *Table) applyGroup(ctx context.Context, group []*entryErr, opts ...Apply
 			// We want to retry the entire request with the current group
 			return err
 		}
+		// Get the entries that need to be retried
 		group = t.getApplyBulkRetries(group)
 		if len(group) > 0 && len(idempotentRetryCodes) > 0 {
 			// We have at least one mutation that needs to be retried.
@@ -1327,6 +1345,11 @@ func (t *Table) doApplyBulk(ctx context.Context, entryErrs []*entryErr, headerMD
 		}
 	}
 
+	var topLevelErr error
+	defer func() {
+		populateTopLevelError(entryErrs, topLevelErr)
+	}()
+
 	entries := make([]*btpb.MutateRowsRequest_Entry, len(entryErrs))
 	for i, entryErr := range entryErrs {
 		entries[i] = entryErr.Entry
@@ -1343,6 +1366,7 @@ func (t *Table) doApplyBulk(ctx context.Context, entryErrs []*entryErr, headerMD
 
 	stream, err := t.c.client.MutateRows(ctx, req)
 	if err != nil {
+		_, topLevelErr = convertToGrpcStatusErr(err)
 		return err
 	}
 
@@ -1357,20 +1381,27 @@ func (t *Table) doApplyBulk(ctx context.Context, entryErrs []*entryErr, headerMD
 		}
 		if err != nil {
 			*trailerMD = stream.Trailer()
+			_, topLevelErr = convertToGrpcStatusErr(err)
 			return err
 		}
 
-		for i, entry := range res.Entries {
+		for _, entry := range res.Entries {
 			s := entry.Status
 			if s.Code == int32(codes.OK) {
-				entryErrs[i].Err = nil
+				entryErrs[entry.Index].Err = nil
 			} else {
-				entryErrs[i].Err = status.Errorf(codes.Code(s.Code), s.Message)
+				entryErrs[entry.Index].Err = status.Errorf(codes.Code(s.Code), s.Message)
 			}
 		}
 		after(res)
 	}
 	return nil
+}
+
+func populateTopLevelError(entries []*entryErr, topLevelErr error) {
+	for _, entry := range entries {
+		entry.TopLevelErr = topLevelErr
+	}
 }
 
 // groupEntries groups entries into groups of a specified size without breaking up

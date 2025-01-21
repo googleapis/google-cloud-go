@@ -119,16 +119,9 @@ func TestRetryApply(t *testing.T) {
 	condMut := NewCondMutation(ValueFilter(".*"), mutTrue, mutFalse)
 
 	errCount = 0
-	code = codes.Unavailable // Will be retried
-	if err := tbl.Apply(ctx, "row1", condMut); err != nil {
-		t.Errorf("conditionally mutating row with retries: %v", err)
-	}
-	row, err = tbl.ReadRow(ctx, "row1") // row1 already in the table
-	if err != nil {
-		t.Errorf("reading single value after conditional mutation: %v", err)
-	}
-	if row != nil {
-		t.Errorf("reading single value after conditional mutation: row not deleted")
+	code = codes.Unavailable // Won't be retried
+	if err := tbl.Apply(ctx, "row1", condMut); err == nil {
+		t.Errorf("conditionally mutating row with no retries: no error")
 	}
 
 	errCount = 0

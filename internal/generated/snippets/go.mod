@@ -1,8 +1,6 @@
 module cloud.google.com/go/internal/generated
 
-go 1.21.13
-
-toolchain go1.23.0
+go 1.22.10
 
 require (
 	cloud.google.com/go v0.117.0

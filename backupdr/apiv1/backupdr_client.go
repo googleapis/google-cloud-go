@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -75,6 +75,7 @@ type CallOptions struct {
 	ListBackupPlanAssociations  []gax.CallOption
 	DeleteBackupPlanAssociation []gax.CallOption
 	TriggerBackup               []gax.CallOption
+	InitializeService           []gax.CallOption
 	GetLocation                 []gax.CallOption
 	ListLocations               []gax.CallOption
 	GetIamPolicy                []gax.CallOption
@@ -263,15 +264,27 @@ func defaultCallOptions() *CallOptions {
 		ListBackupPlanAssociations:  []gax.CallOption{},
 		DeleteBackupPlanAssociation: []gax.CallOption{},
 		TriggerBackup:               []gax.CallOption{},
-		GetLocation:                 []gax.CallOption{},
-		ListLocations:               []gax.CallOption{},
-		GetIamPolicy:                []gax.CallOption{},
-		SetIamPolicy:                []gax.CallOption{},
-		TestIamPermissions:          []gax.CallOption{},
-		CancelOperation:             []gax.CallOption{},
-		DeleteOperation:             []gax.CallOption{},
-		GetOperation:                []gax.CallOption{},
-		ListOperations:              []gax.CallOption{},
+		InitializeService: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetLocation:        []gax.CallOption{},
+		ListLocations:      []gax.CallOption{},
+		GetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+		CancelOperation:    []gax.CallOption{},
+		DeleteOperation:    []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
+		ListOperations:     []gax.CallOption{},
 	}
 }
 
@@ -426,15 +439,26 @@ func defaultRESTCallOptions() *CallOptions {
 		ListBackupPlanAssociations:  []gax.CallOption{},
 		DeleteBackupPlanAssociation: []gax.CallOption{},
 		TriggerBackup:               []gax.CallOption{},
-		GetLocation:                 []gax.CallOption{},
-		ListLocations:               []gax.CallOption{},
-		GetIamPolicy:                []gax.CallOption{},
-		SetIamPolicy:                []gax.CallOption{},
-		TestIamPermissions:          []gax.CallOption{},
-		CancelOperation:             []gax.CallOption{},
-		DeleteOperation:             []gax.CallOption{},
-		GetOperation:                []gax.CallOption{},
-		ListOperations:              []gax.CallOption{},
+		InitializeService: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetLocation:        []gax.CallOption{},
+		ListLocations:      []gax.CallOption{},
+		GetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+		CancelOperation:    []gax.CallOption{},
+		DeleteOperation:    []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
+		ListOperations:     []gax.CallOption{},
 	}
 }
 
@@ -484,6 +508,8 @@ type internalClient interface {
 	DeleteBackupPlanAssociationOperation(name string) *DeleteBackupPlanAssociationOperation
 	TriggerBackup(context.Context, *backupdrpb.TriggerBackupRequest, ...gax.CallOption) (*TriggerBackupOperation, error)
 	TriggerBackupOperation(name string) *TriggerBackupOperation
+	InitializeService(context.Context, *backupdrpb.InitializeServiceRequest, ...gax.CallOption) (*InitializeServiceOperation, error)
+	InitializeServiceOperation(name string) *InitializeServiceOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -754,6 +780,17 @@ func (c *Client) TriggerBackup(ctx context.Context, req *backupdrpb.TriggerBacku
 // The name must be that of a previously created TriggerBackupOperation, possibly from a different process.
 func (c *Client) TriggerBackupOperation(name string) *TriggerBackupOperation {
 	return c.internalClient.TriggerBackupOperation(name)
+}
+
+// InitializeService initializes the service related config for a project.
+func (c *Client) InitializeService(ctx context.Context, req *backupdrpb.InitializeServiceRequest, opts ...gax.CallOption) (*InitializeServiceOperation, error) {
+	return c.internalClient.InitializeService(ctx, req, opts...)
+}
+
+// InitializeServiceOperation returns a new InitializeServiceOperation from a given name.
+// The name must be that of a previously created InitializeServiceOperation, possibly from a different process.
+func (c *Client) InitializeServiceOperation(name string) *InitializeServiceOperation {
+	return c.internalClient.InitializeServiceOperation(name)
 }
 
 // GetLocation gets information about a location.
@@ -1715,6 +1752,26 @@ func (c *gRPCClient) TriggerBackup(ctx context.Context, req *backupdrpb.TriggerB
 	}, nil
 }
 
+func (c *gRPCClient) InitializeService(ctx context.Context, req *backupdrpb.InitializeServiceRequest, opts ...gax.CallOption) (*InitializeServiceOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).InitializeService[0:len((*c.CallOptions).InitializeService):len((*c.CallOptions).InitializeService)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.InitializeService, req, settings.GRPC, c.logger, "InitializeService")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &InitializeServiceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -2566,6 +2623,9 @@ func (c *restClient) DeleteBackupVault(ctx context.Context, req *backupdrpb.Dele
 	}
 	if req.GetForce() {
 		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
+	}
+	if req.GetIgnoreBackupPlanReferences() {
+		params.Add("ignoreBackupPlanReferences", fmt.Sprintf("%v", req.GetIgnoreBackupPlanReferences()))
 	}
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
@@ -3712,6 +3772,65 @@ func (c *restClient) TriggerBackup(ctx context.Context, req *backupdrpb.TriggerB
 	}, nil
 }
 
+// InitializeService initializes the service related config for a project.
+func (c *restClient) InitializeService(ctx context.Context, req *backupdrpb.InitializeServiceRequest, opts ...gax.CallOption) (*InitializeServiceOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:initialize", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "InitializeService")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &InitializeServiceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // GetLocation gets information about a location.
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -4383,6 +4502,24 @@ func (c *gRPCClient) DeleteManagementServerOperation(name string) *DeleteManagem
 func (c *restClient) DeleteManagementServerOperation(name string) *DeleteManagementServerOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteManagementServerOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// InitializeServiceOperation returns a new InitializeServiceOperation from a given name.
+// The name must be that of a previously created InitializeServiceOperation, possibly from a different process.
+func (c *gRPCClient) InitializeServiceOperation(name string) *InitializeServiceOperation {
+	return &InitializeServiceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// InitializeServiceOperation returns a new InitializeServiceOperation from a given name.
+// The name must be that of a previously created InitializeServiceOperation, possibly from a different process.
+func (c *restClient) InitializeServiceOperation(name string) *InitializeServiceOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &InitializeServiceOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
