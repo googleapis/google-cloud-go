@@ -78,6 +78,7 @@ func TestTraceStorageTraceStartEndSpan(t *testing.T) {
 }
 
 func TestTraceSpansMultiEmulated(t *testing.T) {
+	checkEmulatorEnvironment(t)
 	ctx := skipJSONReads(context.Background(), "no reads in test")
 	// To only test storage library layer instrumentation,
 	// we disable transport layer traces for testing purposes.
