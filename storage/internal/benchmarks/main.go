@@ -66,6 +66,7 @@ type benchmarkOptions struct {
 	numSamples int
 	numWorkers int
 	api        benchmarkAPI
+	integrity  benchmarkIC
 
 	objectSize    int64
 	minObjectSize int64
@@ -130,6 +131,7 @@ func (b *benchmarkOptions) String() string {
 
 	stringifiedOpts := []string{
 		fmt.Sprintf("api:\t\t\t%s", b.api),
+		fmt.Sprintf("interity check:\t\t%d", b.integrity),
 		fmt.Sprintf("region:\t\t\t%s", b.region),
 		fmt.Sprintf("timeout:\t\t%s", b.timeout),
 		fmt.Sprintf("number of samples:\t%d", b.numSamples),
@@ -163,6 +165,7 @@ func parseFlags() {
 	flag.IntVar(&opts.numSamples, "samples", 8000, "number of samples to report")
 	flag.IntVar(&opts.numWorkers, "workers", 16, "number of concurrent workers")
 	flag.StringVar((*string)(&opts.api), "api", string(mixedAPIs), "api used to upload/download objects; JSON or XML values will use JSON to uplaod and XML to download")
+	flag.StringVar((*string)(&opts.integrity), "integrity", string(randomIC), "integrity check performed on uploads; crc32c, md5, none, or random (default) to randomly choose which to check on each upload")
 
 	objectRange := flag.String("object_size", fmt.Sprint(1024*kib), "object size in bytes")
 
@@ -327,6 +330,15 @@ const (
 	grpcAPI    benchmarkAPI = "GRPC"
 	mixedAPIs  benchmarkAPI = "Mixed"
 	directPath benchmarkAPI = "DirectPath"
+)
+
+type benchmarkIC string
+
+const (
+	crc32cIC benchmarkIC = "crc32c"
+	md5IC    benchmarkIC = "md5"
+	noneIC   benchmarkIC = "none"
+	randomIC benchmarkIC = "random"
 )
 
 func (api benchmarkAPI) validate() error {
