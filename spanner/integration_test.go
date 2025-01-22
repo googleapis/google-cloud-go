@@ -46,6 +46,7 @@ import (
 	v1 "cloud.google.com/go/spanner/apiv1"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"cloud.google.com/go/spanner/internal"
+	stestutil "cloud.google.com/go/spanner/internal/testutil"
 	pb "cloud.google.com/go/spanner/testdata/protos"
 	"github.com/google/go-cmp/cmp"
 	"go.opencensus.io/stats/view"
@@ -5347,7 +5348,7 @@ func TestIntegration_GFE_Latency(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 
-	te := testutil.NewTestExporter(GFEHeaderMissingCountView, GFELatencyView)
+	te := stestutil.NewTestExporter(GFEHeaderMissingCountView, GFELatencyView)
 	setGFELatencyMetricsFlag(true)
 
 	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][singerDDLStatements])
