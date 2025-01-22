@@ -245,8 +245,10 @@ func recordGFELatencyMetricsOT(ctx context.Context, md metadata.MD, keyMethod st
 		return nil
 	}
 	attr := otConfig.attributeMap
-	if len(md.Get("server-timing")) == 0 && otConfig.gfeHeaderMissingCount != nil {
-		otConfig.gfeHeaderMissingCount.Add(ctx, 1, metric.WithAttributes(attr...))
+	if len(md.Get("server-timing")) == 0 {
+		if otConfig.gfeHeaderMissingCount != nil {
+			otConfig.gfeHeaderMissingCount.Add(ctx, 1, metric.WithAttributes(attr...))
+		}
 		return nil
 	}
 	serverTiming := md.Get("server-timing")[0]
