@@ -29,6 +29,18 @@ import (
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *BackupCollectionIterator) All() iter.Seq2[*clusterpb.BackupCollection, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BackupIterator) All() iter.Seq2[*clusterpb.Backup, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *ClusterIterator) All() iter.Seq2[*clusterpb.Cluster, error] {
 	return iterator.RangeAdapter(it.Next)
 }

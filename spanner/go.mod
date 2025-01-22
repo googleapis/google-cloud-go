@@ -2,8 +2,6 @@ module cloud.google.com/go/spanner
 
 go 1.22.0
 
-toolchain go1.23.4
-
 require (
 	cloud.google.com/go v0.118.0
 	cloud.google.com/go/iam v1.3.1

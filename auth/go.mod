@@ -2,8 +2,6 @@ module cloud.google.com/go/auth
 
 go 1.22.7
 
-toolchain go1.23.4
-
 require (
 	cloud.google.com/go/compute/metadata v0.6.0
 	github.com/google/go-cmp v0.6.0

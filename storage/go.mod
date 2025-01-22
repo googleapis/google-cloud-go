@@ -2,8 +2,6 @@ module cloud.google.com/go/storage
 
 go 1.22.0
 
-toolchain go1.23.4
-
 retract [v1.25.0, v1.27.0] // due to https://github.com/googleapis/google-cloud-go/issues/6857
 
 require (
