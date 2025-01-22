@@ -20,6 +20,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/binary"
+	"errors"
 	"reflect"
 	"testing"
 	"time"
@@ -28,6 +29,8 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 var disableMetricsConfig = ClientConfig{MetricsProvider: NoopMetricsProvider{}}
@@ -713,6 +716,110 @@ func TestReadRowsRequestStats(t *testing.T) {
 	}
 }
 
+func TestReadRowsLimit(t *testing.T) {
+	testEnv, err := NewEmulatedEnv(IntegrationTestConfig{})
+	if err != nil {
+		t.Fatalf("NewEmulatedEnv failed: %v", err)
+	}
+	conn, err := grpc.Dial(testEnv.server.Addr, grpc.WithInsecure(), grpc.WithBlock(),
+		grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(100<<20), grpc.MaxCallRecvMsgSize(100<<20)),
+	)
+	if err != nil {
+		t.Fatalf("grpc.Dial failed: %v", err)
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+	adminClient, err := NewAdminClient(ctx, testEnv.config.Project, testEnv.config.Instance, option.WithGRPCConn(conn))
+	if err != nil {
+		t.Fatalf("NewClient failed: %v", err)
+	}
+	defer adminClient.Close()
+	tableConf := &TableConf{
+		TableID: testEnv.config.Table,
+		Families: map[string]GCPolicy{
+			"f": NoGcPolicy(),
+		},
+	}
+	if err := adminClient.CreateTableFromConf(ctx, tableConf); err != nil {
+		t.Fatalf("CreateTable(%v) failed: %v", testEnv.config.Table, err)
+	}
+
+	client, err := NewClientWithConfig(ctx, testEnv.config.Project, testEnv.config.Instance, disableMetricsConfig, option.WithGRPCConn(conn))
+	if err != nil {
+		t.Fatalf("NewClientWithConfig failed: %v", err)
+	}
+	defer client.Close()
+	table := client.Open(testEnv.config.Table)
+
+	m := NewMutation()
+	m.Set("f", "q", ServerTime, []byte("value"))
+	if err = table.Apply(ctx, "row1", m); err != nil {
+		t.Fatalf("Apply failed: %v", err)
+	}
+
+	m = NewMutation()
+	m.Set("f", "q", ServerTime, []byte("value"))
+	m.Set("f", "q2", ServerTime, []byte("value2"))
+	if err = table.Apply(ctx, "row2", m); err != nil {
+		t.Fatalf("Apply failed: %v", err)
+	}
+
+	m = NewMutation()
+	m.Set("f", "excluded", ServerTime, []byte("value"))
+	if err = table.Apply(ctx, "row3", m); err != nil {
+		t.Fatalf("Apply failed: %v", err)
+	}
+
+	for _, test := range []struct {
+		desc         string
+		limit        *int64
+		wantRowCount int64
+		wantErr      error
+	}{
+		{
+			desc:         "No limit",
+			wantRowCount: 3,
+		},
+		{
+			desc:         "Limit less than number of rows in table",
+			limit:        ptr(int64(2)),
+			wantRowCount: 2,
+		},
+		{
+			desc:         "Limit greater than number of rows in table",
+			limit:        ptr(int64(5)),
+			wantRowCount: 3,
+		},
+		{
+			desc:    "Negative row limit",
+			limit:   ptr(int64(-1)),
+			wantErr: errNegativeRowLimit,
+		},
+	} {
+		gotRowCount := int64(0)
+		t.Run(test.desc, func(t *testing.T) {
+			opts := []ReadOption{}
+			if test.limit != nil {
+				opts = append(opts, LimitRows(*test.limit))
+			}
+			if err := table.ReadRows(ctx, InfiniteRange(""), func(r Row) bool {
+				gotRowCount++
+				return true
+			}, opts...); !errors.Is(err, test.wantErr) {
+				t.Errorf("ReadRows err got: %v, want: %v", err, test.wantErr)
+			}
+
+			if gotRowCount != test.wantRowCount {
+				t.Errorf("ReadRows returned %d rows, want %d", gotRowCount, test.wantRowCount)
+			}
+		})
+	}
+}
+
+// ptr returns a pointer to its argument.
+// It can be used to initialize pointer fields:
+func ptr[T any](t T) *T { return &t }
+
 // TestHeaderPopulatedWithAppProfile verifies that request params header is populated with table name and app profile
 func TestHeaderPopulatedWithAppProfile(t *testing.T) {
 	testEnv, err := NewEmulatedEnv(IntegrationTestConfig{})
@@ -873,5 +980,141 @@ func TestMutateRowsWithAggregates_MergeToCell(t *testing.T) {
 	row, err := table.ReadRow(ctx, "row1")
 	if !bytes.Equal(row["f"][0].Value, binary.BigEndian.AppendUint64([]byte{}, 3000)) {
 		t.Error()
+	}
+}
+
+type rowKeyCheckingInterceptor struct {
+	grpc.ClientStream
+	failRow        string
+	failErr        error // error to use while sending failed reponse for fail row
+	requestCounter *int
+}
+
+func (i *rowKeyCheckingInterceptor) SendMsg(m interface{}) error {
+	*i.requestCounter = *i.requestCounter + 1
+	if req, ok := m.(*btpb.MutateRowsRequest); ok {
+		for _, entry := range req.Entries {
+			if string(entry.RowKey) == i.failRow {
+				return i.failErr
+			}
+		}
+	}
+	return i.ClientStream.SendMsg(m)
+}
+
+func (i *rowKeyCheckingInterceptor) RecvMsg(m interface{}) error {
+	return i.ClientStream.RecvMsg(m)
+}
+
+// Mutations are broken down into groups of 'maxMutations' and then MutateRowsRequest is sent to Cloud Bigtable Service
+// This test validates that even if one of the group receives error, requests are sent for further groups
+func TestApplyBulk_MutationsSucceedAfterGroupError(t *testing.T) {
+	testEnv, gotErr := NewEmulatedEnv(IntegrationTestConfig{})
+	if gotErr != nil {
+		t.Fatalf("NewEmulatedEnv failed: %v", gotErr)
+	}
+
+	// Add interceptor to fail rows
+	failedRow := "row2"
+	failErr := status.Error(codes.InvalidArgument, "Invalid row key")
+	reqCount := 0
+	conn, gotErr := grpc.Dial(testEnv.server.Addr, grpc.WithInsecure(), grpc.WithBlock(),
+		grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(100<<20), grpc.MaxCallRecvMsgSize(100<<20)),
+		grpc.WithStreamInterceptor(func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+			clientStream, err := streamer(ctx, desc, cc, method, opts...)
+			return &rowKeyCheckingInterceptor{
+				ClientStream:   clientStream,
+				failRow:        failedRow,
+				requestCounter: &reqCount,
+				failErr:        failErr,
+			}, err
+		}),
+	)
+	if gotErr != nil {
+		t.Fatalf("grpc.Dial failed: %v", gotErr)
+	}
+
+	// Create client and table
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+	adminClient, gotErr := NewAdminClient(ctx, testEnv.config.Project, testEnv.config.Instance, option.WithGRPCConn(conn))
+	if gotErr != nil {
+		t.Fatalf("NewClient failed: %v", gotErr)
+	}
+	defer adminClient.Close()
+	tableConf := &TableConf{
+		TableID: testEnv.config.Table,
+		ColumnFamilies: map[string]Family{
+			"f": {
+				ValueType: AggregateType{
+					Input:      Int64Type{},
+					Aggregator: SumAggregator{},
+				},
+			},
+		},
+	}
+	if err := adminClient.CreateTableFromConf(ctx, tableConf); err != nil {
+		t.Fatalf("CreateTable(%v) failed: %v", testEnv.config.Table, err)
+	}
+	client, gotErr := NewClientWithConfig(ctx, testEnv.config.Project, testEnv.config.Instance, disableMetricsConfig, option.WithGRPCConn(conn))
+	if gotErr != nil {
+		t.Fatalf("NewClientWithConfig failed: %v", gotErr)
+	}
+	defer client.Close()
+	table := client.Open(testEnv.config.Table)
+
+	// Override maxMutations to break mutations into smaller groups
+	origMaxMutations := maxMutations
+	t.Cleanup(func() {
+		maxMutations = origMaxMutations
+	})
+	maxMutations = 2
+
+	// Create mutations
+	m1 := NewMutation()
+	m1.AddIntToCell("f", "q", 0, 1000)
+	m2 := NewMutation()
+	m2.AddIntToCell("f", "q", 0, 2000)
+
+	// Perform ApplyBulk operation and compare errors
+	rowKeys := []string{"row1", "row1", failedRow, failedRow, "row3", "row3"}
+	var wantErr error
+	wantErrs := []error{nil, nil, failErr, failErr, nil, nil}
+	gotErrs, gotErr := table.ApplyBulk(ctx, rowKeys, []*Mutation{m1, m2, m1, m2, m1, m2})
+
+	// Assert overall error
+	if !equalErrs(gotErr, wantErr) {
+		t.Fatalf("ApplyBulk err got: %v, want: %v", gotErr, wantErr)
+	}
+
+	// Assert individual muation errors
+	if len(gotErrs) != len(wantErrs) {
+		t.Fatalf("ApplyBulk errs got: %v, want: %v", gotErrs, wantErrs)
+	}
+	for i := range gotErrs {
+		if !equalErrs(gotErrs[i], wantErrs[i]) {
+			t.Errorf("#%d ApplyBulk err got: %v, want: %v", i, gotErrs[i], wantErrs[i])
+		}
+	}
+
+	// Assert number of requests sent
+	wantReqCount := len(rowKeys) / maxMutations
+	if reqCount != wantReqCount {
+		t.Errorf("Number of requests got: %v, want: %v", reqCount, wantReqCount)
+	}
+
+	// Assert individual mutation apply success/failure by reading rows
+	gotErr = table.ReadRows(ctx, RowList{"row1", failedRow, "row3"}, func(row Row) bool {
+		rowMutated := bytes.Equal(row["f"][0].Value, binary.BigEndian.AppendUint64([]byte{}, 3000))
+		if rowMutated && row.Key() == failedRow {
+			t.Error("Expected mutation to fail for row " + row.Key())
+		}
+		if !rowMutated && row.Key() != failedRow {
+			t.Error("Expected mutation to succeed for row " + row.Key())
+		}
+		return true
+	})
+	if gotErr != nil {
+		t.Fatalf("ReadRows failed: %v", gotErr)
 	}
 }

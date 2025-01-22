@@ -53,6 +53,8 @@ const prodAddr = "bigtable.googleapis.com:443"
 const mtlsProdAddr = "bigtable.mtls.googleapis.com:443"
 const featureFlagsHeaderKey = "bigtable-features"
 
+var errNegativeRowLimit = errors.New("bigtable: row limit cannot be negative")
+
 // Client is a client for reading and writing data to tables in an instance.
 //
 // A Client is safe to use concurrently, except for its Close method.
@@ -391,7 +393,25 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, mt *builtinMetricsTracer, opts ...ReadOption) (err error) {
 	var prevRowKey string
 	attrMap := make(map[string]interface{})
+
+	numRowsRead := int64(0)
+	rowLimitSet := false
+	intialRowLimit := int64(0)
+	for _, opt := range opts {
+		if l, ok := opt.(limitRows); ok {
+			rowLimitSet = true
+			intialRowLimit = l.limit
+		}
+	}
+	if intialRowLimit < 0 {
+		return errNegativeRowLimit
+	}
+
 	err = gaxInvokeWithRecorder(ctx, mt, "ReadRows", func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
+		if rowLimitSet && numRowsRead >= intialRowLimit {
+			return nil
+		}
+
 		req := &btpb.ReadRowsRequest{
 			AppProfileId: t.c.appProfile,
 		}
@@ -410,7 +430,7 @@ func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, mt *
 			}
 			req.Rows = arg.proto()
 		}
-		settings := makeReadSettings(req)
+		settings := makeReadSettings(req, numRowsRead)
 		for _, opt := range opts {
 			opt.set(&settings)
 		}
@@ -473,7 +493,9 @@ func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, mt *
 					continue
 				}
 				prevRowKey = row.Key()
-				if !f(row) {
+				continueReading := f(row)
+				numRowsRead++
+				if !continueReading {
 					// Cancel and drain stream.
 					cancel()
 					for {
@@ -939,14 +961,16 @@ type FullReadStatsFunc func(*FullReadStats)
 type readSettings struct {
 	req               *btpb.ReadRowsRequest
 	fullReadStatsFunc FullReadStatsFunc
+	numRowsRead       int64
 }
 
-func makeReadSettings(req *btpb.ReadRowsRequest) readSettings {
-	return readSettings{req, nil}
+func makeReadSettings(req *btpb.ReadRowsRequest, numRowsRead int64) readSettings {
+	return readSettings{req, nil, numRowsRead}
 }
 
 // A ReadOption is an optional argument to ReadRows.
 type ReadOption interface {
+	// set modifies the request stored in the settings
 	set(settings *readSettings)
 }
 
@@ -965,7 +989,11 @@ func LimitRows(limit int64) ReadOption { return limitRows{limit} }
 
 type limitRows struct{ limit int64 }
 
-func (lr limitRows) set(settings *readSettings) { settings.req.RowsLimit = lr.limit }
+func (lr limitRows) set(settings *readSettings) {
+	// Since 'numRowsRead' out of 'limit' requested rows have already been read,
+	// the subsequest requests should fetch only the remaining rows.
+	settings.req.RowsLimit = lr.limit - settings.numRowsRead
+}
 
 // WithFullReadStats returns a ReadOption that will request FullReadStats
 // and invoke the given callback on the resulting FullReadStats.
@@ -1013,7 +1041,8 @@ func mutationsAreRetryable(muts []*btpb.Mutation) bool {
 	return true
 }
 
-const maxMutations = 100000
+// Overriden in tests
+var maxMutations = 100000
 
 // Apply mutates a row atomically. A mutation must contain at least one
 // operation and at most 100000 operations.
@@ -1226,9 +1255,14 @@ func (m *Mutation) mergeToCell(family, column string, ts Timestamp, value *btpb.
 type entryErr struct {
 	Entry *btpb.MutateRowsRequest_Entry
 	Err   error
+
+	// TopLevelErr is the error received either from
+	// 1. client.MutateRows
+	// 2. stream.Recv
+	TopLevelErr error
 }
 
-// ApplyBulk applies multiple Mutations, up to a maximum of 100,000.
+// ApplyBulk applies multiple Mutations.
 // Each mutation is individually applied atomically,
 // but the set of mutations may be applied in any order.
 //
@@ -1256,17 +1290,31 @@ func (t *Table) ApplyBulk(ctx context.Context, rowKeys []string, muts []*Mutatio
 		origEntries[i] = &entryErr{Entry: &btpb.MutateRowsRequest_Entry{RowKey: []byte(key), Mutations: mut.ops}}
 	}
 
-	for _, group := range groupEntries(origEntries, maxMutations) {
+	var firstGroupErr error
+	numFailed := 0
+	groups := groupEntries(origEntries, maxMutations)
+	for _, group := range groups {
 		err := t.applyGroup(ctx, group, opts...)
 		if err != nil {
-			return nil, err
+			if firstGroupErr == nil {
+				firstGroupErr = err
+			}
+			numFailed++
 		}
+	}
+
+	if numFailed == len(groups) {
+		return nil, firstGroupErr
 	}
 
 	// All the errors are accumulated into an array and returned, interspersed with nils for successful
 	// entries. The absence of any errors means we should return nil.
 	var foundErr bool
 	for _, entry := range origEntries {
+		if entry.Err == nil && entry.TopLevelErr != nil {
+			// Populate per mutation error if top level error is not nil
+			entry.Err = entry.TopLevelErr
+		}
 		if entry.Err != nil {
 			foundErr = true
 		}
@@ -1291,6 +1339,7 @@ func (t *Table) applyGroup(ctx context.Context, group []*entryErr, opts ...Apply
 			// We want to retry the entire request with the current group
 			return err
 		}
+		// Get the entries that need to be retried
 		group = t.getApplyBulkRetries(group)
 		if len(group) > 0 && len(idempotentRetryCodes) > 0 {
 			// We have at least one mutation that needs to be retried.
@@ -1326,6 +1375,11 @@ func (t *Table) doApplyBulk(ctx context.Context, entryErrs []*entryErr, headerMD
 		}
 	}
 
+	var topLevelErr error
+	defer func() {
+		populateTopLevelError(entryErrs, topLevelErr)
+	}()
+
 	entries := make([]*btpb.MutateRowsRequest_Entry, len(entryErrs))
 	for i, entryErr := range entryErrs {
 		entries[i] = entryErr.Entry
@@ -1342,6 +1396,7 @@ func (t *Table) doApplyBulk(ctx context.Context, entryErrs []*entryErr, headerMD
 
 	stream, err := t.c.client.MutateRows(ctx, req)
 	if err != nil {
+		_, topLevelErr = convertToGrpcStatusErr(err)
 		return err
 	}
 
@@ -1356,6 +1411,7 @@ func (t *Table) doApplyBulk(ctx context.Context, entryErrs []*entryErr, headerMD
 		}
 		if err != nil {
 			*trailerMD = stream.Trailer()
+			_, topLevelErr = convertToGrpcStatusErr(err)
 			return err
 		}
 
@@ -1370,6 +1426,12 @@ func (t *Table) doApplyBulk(ctx context.Context, entryErrs []*entryErr, headerMD
 		after(res)
 	}
 	return nil
+}
+
+func populateTopLevelError(entries []*entryErr, topLevelErr error) {
+	for _, entry := range entries {
+		entry.TopLevelErr = topLevelErr
+	}
 }
 
 // groupEntries groups entries into groups of a specified size without breaking up
