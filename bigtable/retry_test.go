@@ -460,6 +460,62 @@ func TestRetryReadRows(t *testing.T) {
 	}
 }
 
+func TestRetryReadRowsLimit(t *testing.T) {
+	ctx := context.Background()
+
+	// Intercept requests and delegate to an interceptor defined by the test case
+	errCount := 0
+	var f func(grpc.ServerStream) error
+	errInjector := func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+		if strings.HasSuffix(info.FullMethod, "ReadRows") {
+			return f(ss)
+		}
+		return handler(ctx, ss)
+	}
+
+	tbl, cleanup, err := setupDefaultFakeServer(grpc.StreamInterceptor(errInjector))
+	defer cleanup()
+	if err != nil {
+		t.Fatalf("fake server setup: %v", err)
+	}
+
+	initialRowLimit := int64(3)
+
+	errCount = 0
+	// Test overall request failure and retries
+	f = func(ss grpc.ServerStream) error {
+		var err error
+		req := new(btpb.ReadRowsRequest)
+		must(ss.RecvMsg(req))
+		switch errCount {
+		case 0:
+			if want, got := initialRowLimit, req.RowsLimit; want != got {
+				t.Errorf("RowsLimit: got %v, want %v", got, want)
+			}
+			must(writeReadRowsResponse(ss, "a", "b"))
+			err = status.Errorf(codes.Unavailable, "")
+		case 1:
+			if want, got := initialRowLimit-2, req.RowsLimit; want != got {
+				t.Errorf("RowsLimit: got %v, want %v", got, want)
+			}
+			must(writeReadRowsResponse(ss, "c"))
+			err = nil
+		}
+		errCount++
+		return err
+	}
+
+	var got []string
+	must(tbl.ReadRows(ctx, NewRange("a", "z"), func(r Row) bool {
+		got = append(got, r.Key())
+		return true
+	}, LimitRows(initialRowLimit)))
+	want := []string{"a", "b", "c"}
+	if !testutil.Equal(got, want) {
+		t.Errorf("retry range integration: got %v, want %v", got, want)
+	}
+}
+
 func TestRetryReverseReadRows(t *testing.T) {
 	ctx := context.Background()
 

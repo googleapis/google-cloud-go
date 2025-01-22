@@ -7,9 +7,8 @@ require (
 	github.com/google/go-cmp v0.6.0
 	github.com/google/martian/v3 v3.3.3
 	github.com/googleapis/gax-go/v2 v2.14.1
-	go.opencensus.io v0.24.0
 	go.opentelemetry.io/otel v1.34.0
-	go.opentelemetry.io/otel/sdk v1.34.0
+	go.opentelemetry.io/otel/sdk v1.33.0
 	go.opentelemetry.io/otel/trace v1.34.0
 	golang.org/x/oauth2 v0.25.0
 	google.golang.org/api v0.218.0
@@ -37,7 +36,6 @@ require (
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
-	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/s2a-go v0.1.9 // indirect
 	github.com/google/uuid v1.6.0 // indirect
