@@ -53,6 +53,8 @@ const prodAddr = "bigtable.googleapis.com:443"
 const mtlsProdAddr = "bigtable.mtls.googleapis.com:443"
 const featureFlagsHeaderKey = "bigtable-features"
 
+var errNegativeRowLimit = errors.New("bigtable: row limit cannot be negative")
+
 // Client is a client for reading and writing data to tables in an instance.
 //
 // A Client is safe to use concurrently, except for its Close method.
@@ -391,7 +393,25 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, mt *builtinMetricsTracer, opts ...ReadOption) (err error) {
 	var prevRowKey string
 	attrMap := make(map[string]interface{})
+
+	numRowsRead := int64(0)
+	rowLimitSet := false
+	intialRowLimit := int64(0)
+	for _, opt := range opts {
+		if l, ok := opt.(limitRows); ok {
+			rowLimitSet = true
+			intialRowLimit = l.limit
+		}
+	}
+	if intialRowLimit < 0 {
+		return errNegativeRowLimit
+	}
+
 	err = gaxInvokeWithRecorder(ctx, mt, "ReadRows", func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
+		if rowLimitSet && numRowsRead >= intialRowLimit {
+			return nil
+		}
+
 		req := &btpb.ReadRowsRequest{
 			AppProfileId: t.c.appProfile,
 		}
@@ -410,7 +430,7 @@ func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, mt *
 			}
 			req.Rows = arg.proto()
 		}
-		settings := makeReadSettings(req)
+		settings := makeReadSettings(req, numRowsRead)
 		for _, opt := range opts {
 			opt.set(&settings)
 		}
@@ -473,7 +493,9 @@ func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, mt *
 					continue
 				}
 				prevRowKey = row.Key()
-				if !f(row) {
+				continueReading := f(row)
+				numRowsRead++
+				if !continueReading {
 					// Cancel and drain stream.
 					cancel()
 					for {
@@ -939,14 +961,16 @@ type FullReadStatsFunc func(*FullReadStats)
 type readSettings struct {
 	req               *btpb.ReadRowsRequest
 	fullReadStatsFunc FullReadStatsFunc
+	numRowsRead       int64
 }
 
-func makeReadSettings(req *btpb.ReadRowsRequest) readSettings {
-	return readSettings{req, nil}
+func makeReadSettings(req *btpb.ReadRowsRequest, numRowsRead int64) readSettings {
+	return readSettings{req, nil, numRowsRead}
 }
 
 // A ReadOption is an optional argument to ReadRows.
 type ReadOption interface {
+	// set modifies the request stored in the settings
 	set(settings *readSettings)
 }
 
@@ -965,7 +989,11 @@ func LimitRows(limit int64) ReadOption { return limitRows{limit} }
 
 type limitRows struct{ limit int64 }
 
-func (lr limitRows) set(settings *readSettings) { settings.req.RowsLimit = lr.limit }
+func (lr limitRows) set(settings *readSettings) {
+	// Since 'numRowsRead' out of 'limit' requested rows have already been read,
+	// the subsequest requests should fetch only the remaining rows.
+	settings.req.RowsLimit = lr.limit - settings.numRowsRead
+}
 
 // WithFullReadStats returns a ReadOption that will request FullReadStats
 // and invoke the given callback on the resulting FullReadStats.
