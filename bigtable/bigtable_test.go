@@ -986,7 +986,7 @@ func TestMutateRowsWithAggregates_MergeToCell(t *testing.T) {
 type rowKeyCheckingInterceptor struct {
 	grpc.ClientStream
 	failRow        string
-	failErr        error // error to use while sending failed reponse for fail row
+	failErr        error // error to use while sending failed response for fail row
 	requestCounter *int
 }
 
