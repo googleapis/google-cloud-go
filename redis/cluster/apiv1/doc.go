@@ -56,11 +56,11 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	req := &clusterpb.CreateClusterRequest{
+//	req := &clusterpb.BackupClusterRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/redis/cluster/apiv1/clusterpb#CreateClusterRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/redis/cluster/apiv1/clusterpb#BackupClusterRequest.
 //	}
-//	op, err := c.CreateCluster(ctx, req)
+//	op, err := c.BackupCluster(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
