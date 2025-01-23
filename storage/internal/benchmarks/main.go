@@ -82,6 +82,8 @@ type benchmarkOptions struct {
 	minChunkSize int64
 	maxChunkSize int64
 
+	appendWrites bool
+
 	forceGC      bool
 	connPoolSize int
 
@@ -142,6 +144,7 @@ func (b *benchmarkOptions) String() string {
 		fmt.Sprintf("chunk size:\t\t%d - %d kib (library buffer for uploads)", b.minChunkSize/kib, b.maxChunkSize/kib),
 		fmt.Sprintf("range offset:\t\t%d - %d bytes ", b.minReadOffset, b.maxReadOffset),
 		fmt.Sprintf("range size:\t\t%d bytes (0 -> full object)", b.rangeSize),
+		fmt.Sprintf("append writes:\t\t%t", b.appendWrites),
 		fmt.Sprintf("connection pool size:\t%d (GRPC)", b.connPoolSize),
 		fmt.Sprintf("num workers:\t\t%d (max number of concurrent benchmark runs at a time)", b.numWorkers),
 		fmt.Sprintf("force garbage collection:%t", b.forceGC),
@@ -185,6 +188,8 @@ func parseFlags() {
 	flag.Int64Var(&opts.minChunkSize, "min_chunksize", useDefault, "min chunksize in bytes")
 	flag.Int64Var(&opts.maxChunkSize, "max_chunksize", useDefault, "max chunksize in bytes")
 
+	flag.BoolVar(&opts.appendWrites, "append_writes", false, "use the append writer")
+
 	flag.IntVar(&opts.connPoolSize, "connection_pool_size", 4, "GRPC connection pool size")
 
 	flag.BoolVar(&opts.forceGC, "force_garbage_collection", false, "force garbage collection at the beginning of each upload")
@@ -226,6 +231,10 @@ func parseFlags() {
 		if err != nil {
 			log.Fatalln("Could not parse object size")
 		}
+	}
+
+	if opts.appendWrites && (opts.api != grpcAPI && opts.api != directPath) {
+		log.Fatalf("--append_writes requires GRPC or DirectPath; got %v", opts.api)
 	}
 }
 
