@@ -1684,7 +1684,6 @@ func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions
 	}
 	t.state = txClosed // No further operations after commit.
 	close(t.txReadyOrClosed)
-	precommitToken := t.precommitToken
 	t.mu.Unlock()
 	if err != nil {
 		return resp, err
@@ -1703,13 +1702,13 @@ func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions
 	if options.MaxCommitDelay != nil {
 		maxCommitDelay = durationpb.New(*(options.MaxCommitDelay))
 	}
-	performCommit := func(token *sppb.MultiplexedSessionPrecommitToken, includeMutations bool) (*sppb.CommitResponse, error) {
+	performCommit := func(includeMutations bool) (*sppb.CommitResponse, error) {
 		req := &sppb.CommitRequest{
 			Session: sid,
 			Transaction: &sppb.CommitRequest_TransactionId{
 				TransactionId: t.tx,
 			},
-			PrecommitToken:    token,
+			PrecommitToken:    t.precommitToken,
 			RequestOptions:    createRequestOptions(t.txOpts.CommitPriority, "", t.txOpts.TransactionTag),
 			ReturnCommitStats: options.ReturnCommitStats,
 			MaxCommitDelay:    maxCommitDelay,
@@ -1720,13 +1719,14 @@ func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions
 		return client.Commit(contextWithOutgoingMetadata(ctx, t.sh.getMetadata(), t.disableRouteToLeader), req, gax.WithGRPCOptions(grpc.Header(&md)))
 	}
 	// Initial commit attempt with mutations
-	res, err := performCommit(precommitToken, true)
+	res, err := performCommit(true)
 	if err != nil {
 		return resp, t.txReadOnly.updateTxState(toSpannerErrorWithCommitInfo(err, true))
 	}
 	// Retry if MultiplexedSessionRetry is present, without mutations
 	if res.GetMultiplexedSessionRetry() != nil {
-		res, err = performCommit(res.GetPrecommitToken(), false)
+		t.updatePrecommitToken(res.GetPrecommitToken())
+		res, err = performCommit(false)
 	}
 	if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
 		if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "commit"); err != nil {

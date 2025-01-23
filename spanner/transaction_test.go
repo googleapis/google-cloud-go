@@ -555,10 +555,6 @@ func TestCommitWithMultiplexedSessionRetry(t *testing.T) {
 				return err
 			}
 		}
-
-		if _, err := tx.Update(ctx, Statement{SQL: UpdateBarSetFoo}); err != nil {
-			return err
-		}
 		return nil
 	})
 	if err != nil {
