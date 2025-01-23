@@ -521,6 +521,7 @@ func TestCommitWithMultiplexedSessionRetry(t *testing.T) {
 	newCommitResponseWithPrecommitToken := func() *sppb.CommitResponse {
 		precommitToken := &sppb.MultiplexedSessionPrecommitToken{
 			PrecommitToken: []byte("commit-retry-precommit-token"),
+			SeqNum:         4,
 		}
 
 		// Create a CommitResponse with the PrecommitToken
