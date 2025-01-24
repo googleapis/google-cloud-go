@@ -8,7 +8,7 @@
   "firestore": "1.18.0",
   "logging": "1.13.0",
   "profiler": "0.4.2",
-  "pubsub": "1.45.3",
+  "pubsub": "1.46.0",
   "pubsublite": "1.8.2",
   "spanner": "1.73.0",
   "storage": "1.50.0",
