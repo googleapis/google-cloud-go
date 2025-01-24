@@ -21,14 +21,13 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	date "google.golang.org/genproto/googleapis/type/date"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -103,6 +102,71 @@ func (HarmCategory) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_aiplatform_v1beta1_content_proto_rawDescGZIP(), []int{0}
 }
 
+// Content Part modality
+type Modality int32
+
+const (
+	// Unspecified modality.
+	Modality_MODALITY_UNSPECIFIED Modality = 0
+	// Plain text.
+	Modality_TEXT Modality = 1
+	// Image.
+	Modality_IMAGE Modality = 2
+	// Video.
+	Modality_VIDEO Modality = 3
+	// Audio.
+	Modality_AUDIO Modality = 4
+	// Document, e.g. PDF.
+	Modality_DOCUMENT Modality = 5
+)
+
+// Enum value maps for Modality.
+var (
+	Modality_name = map[int32]string{
+		0: "MODALITY_UNSPECIFIED",
+		1: "TEXT",
+		2: "IMAGE",
+		3: "VIDEO",
+		4: "AUDIO",
+		5: "DOCUMENT",
+	}
+	Modality_value = map[string]int32{
+		"MODALITY_UNSPECIFIED": 0,
+		"TEXT":                 1,
+		"IMAGE":                2,
+		"VIDEO":                3,
+		"AUDIO":                4,
+		"DOCUMENT":             5,
+	}
+)
+
+func (x Modality) Enum() *Modality {
+	p := new(Modality)
+	*p = x
+	return p
+}
+
+func (x Modality) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Modality) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_aiplatform_v1beta1_content_proto_enumTypes[1].Descriptor()
+}
+
+func (Modality) Type() protoreflect.EnumType {
+	return &file_google_cloud_aiplatform_v1beta1_content_proto_enumTypes[1]
+}
+
+func (x Modality) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Modality.Descriptor instead.
+func (Modality) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1beta1_content_proto_rawDescGZIP(), []int{1}
+}
+
 // The modalities of the response.
 type GenerationConfig_Modality int32
 
@@ -144,11 +208,11 @@ func (x GenerationConfig_Modality) String() string {
 }
 
 func (GenerationConfig_Modality) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_aiplatform_v1beta1_content_proto_enumTypes[1].Descriptor()
+	return file_google_cloud_aiplatform_v1beta1_content_proto_enumTypes[2].Descriptor()
 }
 
 func (GenerationConfig_Modality) Type() protoreflect.EnumType {
-	return &file_google_cloud_aiplatform_v1beta1_content_proto_enumTypes[1]
+	return &file_google_cloud_aiplatform_v1beta1_content_proto_enumTypes[2]
 }
 
 func (x GenerationConfig_Modality) Number() protoreflect.EnumNumber {
@@ -201,11 +265,11 @@ func (x GenerationConfig_MediaResolution) String() string {
 }
 
 func (GenerationConfig_MediaResolution) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_aiplatform_v1beta1_content_proto_enumTypes[2].Descriptor()
+	return file_google_cloud_aiplatform_v1beta1_content_proto_enumTypes[3].Descriptor()
 }
 
 func (GenerationConfig_MediaResolution) Type() protoreflect.EnumType {
-	return &file_google_cloud_aiplatform_v1beta1_content_proto_enumTypes[2]
+	return &file_google_cloud_aiplatform_v1beta1_content_proto_enumTypes[3]
 }
 
 func (x GenerationConfig_MediaResolution) Number() protoreflect.EnumNumber {
@@ -258,11 +322,11 @@ func (x GenerationConfig_RoutingConfig_AutoRoutingMode_ModelRoutingPreference) S
 }
 
 func (GenerationConfig_RoutingConfig_AutoRoutingMode_ModelRoutingPreference) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_aiplatform_v1beta1_content_proto_enumTypes[3].Descriptor()
+	return file_google_cloud_aiplatform_v1beta1_content_proto_enumTypes[4].Descriptor()
 }
 
 func (GenerationConfig_RoutingConfig_AutoRoutingMode_ModelRoutingPreference) Type() protoreflect.EnumType {
-	return &file_google_cloud_aiplatform_v1beta1_content_proto_enumTypes[3]
+	return &file_google_cloud_aiplatform_v1beta1_content_proto_enumTypes[4]
 }
 
 func (x GenerationConfig_RoutingConfig_AutoRoutingMode_ModelRoutingPreference) Number() protoreflect.EnumNumber {
@@ -323,11 +387,11 @@ func (x SafetySetting_HarmBlockThreshold) String() string {
 }
 
 func (SafetySetting_HarmBlockThreshold) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_aiplatform_v1beta1_content_proto_enumTypes[4].Descriptor()
+	return file_google_cloud_aiplatform_v1beta1_content_proto_enumTypes[5].Descriptor()
 }
 
 func (SafetySetting_HarmBlockThreshold) Type() protoreflect.EnumType {
-	return &file_google_cloud_aiplatform_v1beta1_content_proto_enumTypes[4]
+	return &file_google_cloud_aiplatform_v1beta1_content_proto_enumTypes[5]
 }
 
 func (x SafetySetting_HarmBlockThreshold) Number() protoreflect.EnumNumber {
@@ -376,11 +440,11 @@ func (x SafetySetting_HarmBlockMethod) String() string {
 }
 
 func (SafetySetting_HarmBlockMethod) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_aiplatform_v1beta1_content_proto_enumTypes[5].Descriptor()
+	return file_google_cloud_aiplatform_v1beta1_content_proto_enumTypes[6].Descriptor()
 }
 
 func (SafetySetting_HarmBlockMethod) Type() protoreflect.EnumType {
-	return &file_google_cloud_aiplatform_v1beta1_content_proto_enumTypes[5]
+	return &file_google_cloud_aiplatform_v1beta1_content_proto_enumTypes[6]
 }
 
 func (x SafetySetting_HarmBlockMethod) Number() protoreflect.EnumNumber {
@@ -437,11 +501,11 @@ func (x SafetyRating_HarmProbability) String() string {
 }
 
 func (SafetyRating_HarmProbability) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_aiplatform_v1beta1_content_proto_enumTypes[6].Descriptor()
+	return file_google_cloud_aiplatform_v1beta1_content_proto_enumTypes[7].Descriptor()
 }
 
 func (SafetyRating_HarmProbability) Type() protoreflect.EnumType {
-	return &file_google_cloud_aiplatform_v1beta1_content_proto_enumTypes[6]
+	return &file_google_cloud_aiplatform_v1beta1_content_proto_enumTypes[7]
 }
 
 func (x SafetyRating_HarmProbability) Number() protoreflect.EnumNumber {
@@ -498,11 +562,11 @@ func (x SafetyRating_HarmSeverity) String() string {
 }
 
 func (SafetyRating_HarmSeverity) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_aiplatform_v1beta1_content_proto_enumTypes[7].Descriptor()
+	return file_google_cloud_aiplatform_v1beta1_content_proto_enumTypes[8].Descriptor()
 }
 
 func (SafetyRating_HarmSeverity) Type() protoreflect.EnumType {
-	return &file_google_cloud_aiplatform_v1beta1_content_proto_enumTypes[7]
+	return &file_google_cloud_aiplatform_v1beta1_content_proto_enumTypes[8]
 }
 
 func (x SafetyRating_HarmSeverity) Number() protoreflect.EnumNumber {
@@ -586,11 +650,11 @@ func (x Candidate_FinishReason) String() string {
 }
 
 func (Candidate_FinishReason) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_aiplatform_v1beta1_content_proto_enumTypes[8].Descriptor()
+	return file_google_cloud_aiplatform_v1beta1_content_proto_enumTypes[9].Descriptor()
 }
 
 func (Candidate_FinishReason) Type() protoreflect.EnumType {
-	return &file_google_cloud_aiplatform_v1beta1_content_proto_enumTypes[8]
+	return &file_google_cloud_aiplatform_v1beta1_content_proto_enumTypes[9]
 }
 
 func (x Candidate_FinishReason) Number() protoreflect.EnumNumber {
@@ -2329,6 +2393,62 @@ func (x *RetrievalMetadata) GetGoogleSearchDynamicRetrievalScore() float32 {
 	return 0
 }
 
+// Represents token counting info for a single modality.
+type ModalityTokenCount struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// The modality associated with this token count.
+	Modality Modality `protobuf:"varint,1,opt,name=modality,proto3,enum=google.cloud.aiplatform.v1beta1.Modality" json:"modality,omitempty"`
+	// Number of tokens.
+	TokenCount int32 `protobuf:"varint,2,opt,name=token_count,json=tokenCount,proto3" json:"token_count,omitempty"`
+}
+
+func (x *ModalityTokenCount) Reset() {
+	*x = ModalityTokenCount{}
+	mi := &file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ModalityTokenCount) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ModalityTokenCount) ProtoMessage() {}
+
+func (x *ModalityTokenCount) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ModalityTokenCount.ProtoReflect.Descriptor instead.
+func (*ModalityTokenCount) Descriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1beta1_content_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *ModalityTokenCount) GetModality() Modality {
+	if x != nil {
+		return x.Modality
+	}
+	return Modality_MODALITY_UNSPECIFIED
+}
+
+func (x *ModalityTokenCount) GetTokenCount() int32 {
+	if x != nil {
+		return x.TokenCount
+	}
+	return 0
+}
+
 // The configuration for routing the request to a specific model.
 type GenerationConfig_RoutingConfig struct {
 	state         protoimpl.MessageState
@@ -2346,7 +2466,7 @@ type GenerationConfig_RoutingConfig struct {
 
 func (x *GenerationConfig_RoutingConfig) Reset() {
 	*x = GenerationConfig_RoutingConfig{}
-	mi := &file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes[21]
+	mi := &file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2358,7 +2478,7 @@ func (x *GenerationConfig_RoutingConfig) String() string {
 func (*GenerationConfig_RoutingConfig) ProtoMessage() {}
 
 func (x *GenerationConfig_RoutingConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes[21]
+	mi := &file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2427,7 +2547,7 @@ type GenerationConfig_RoutingConfig_AutoRoutingMode struct {
 
 func (x *GenerationConfig_RoutingConfig_AutoRoutingMode) Reset() {
 	*x = GenerationConfig_RoutingConfig_AutoRoutingMode{}
-	mi := &file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes[22]
+	mi := &file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2439,7 +2559,7 @@ func (x *GenerationConfig_RoutingConfig_AutoRoutingMode) String() string {
 func (*GenerationConfig_RoutingConfig_AutoRoutingMode) ProtoMessage() {}
 
 func (x *GenerationConfig_RoutingConfig_AutoRoutingMode) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes[22]
+	mi := &file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2475,7 +2595,7 @@ type GenerationConfig_RoutingConfig_ManualRoutingMode struct {
 
 func (x *GenerationConfig_RoutingConfig_ManualRoutingMode) Reset() {
 	*x = GenerationConfig_RoutingConfig_ManualRoutingMode{}
-	mi := &file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes[23]
+	mi := &file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2487,7 +2607,7 @@ func (x *GenerationConfig_RoutingConfig_ManualRoutingMode) String() string {
 func (*GenerationConfig_RoutingConfig_ManualRoutingMode) ProtoMessage() {}
 
 func (x *GenerationConfig_RoutingConfig_ManualRoutingMode) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes[23]
+	mi := &file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2526,7 +2646,7 @@ type LogprobsResult_Candidate struct {
 
 func (x *LogprobsResult_Candidate) Reset() {
 	*x = LogprobsResult_Candidate{}
-	mi := &file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes[24]
+	mi := &file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2538,7 +2658,7 @@ func (x *LogprobsResult_Candidate) String() string {
 func (*LogprobsResult_Candidate) ProtoMessage() {}
 
 func (x *LogprobsResult_Candidate) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes[24]
+	mi := &file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2587,7 +2707,7 @@ type LogprobsResult_TopCandidates struct {
 
 func (x *LogprobsResult_TopCandidates) Reset() {
 	*x = LogprobsResult_TopCandidates{}
-	mi := &file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes[25]
+	mi := &file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2599,7 +2719,7 @@ func (x *LogprobsResult_TopCandidates) String() string {
 func (*LogprobsResult_TopCandidates) ProtoMessage() {}
 
 func (x *LogprobsResult_TopCandidates) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes[25]
+	mi := &file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2636,7 +2756,7 @@ type GroundingChunk_Web struct {
 
 func (x *GroundingChunk_Web) Reset() {
 	*x = GroundingChunk_Web{}
-	mi := &file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes[26]
+	mi := &file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2648,7 +2768,7 @@ func (x *GroundingChunk_Web) String() string {
 func (*GroundingChunk_Web) ProtoMessage() {}
 
 func (x *GroundingChunk_Web) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes[26]
+	mi := &file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2694,7 +2814,7 @@ type GroundingChunk_RetrievedContext struct {
 
 func (x *GroundingChunk_RetrievedContext) Reset() {
 	*x = GroundingChunk_RetrievedContext{}
-	mi := &file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes[27]
+	mi := &file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2706,7 +2826,7 @@ func (x *GroundingChunk_RetrievedContext) String() string {
 func (*GroundingChunk_RetrievedContext) ProtoMessage() {}
 
 func (x *GroundingChunk_RetrievedContext) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes[27]
+	mi := &file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3276,36 +3396,50 @@ var file_google_cloud_aiplatform_v1beta1_content_proto_rawDesc = []byte{
 	0x63, 0x5f, 0x72, 0x65, 0x74, 0x72, 0x69, 0x65, 0x76, 0x61, 0x6c, 0x5f, 0x73, 0x63, 0x6f, 0x72,
 	0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x02, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x21, 0x67, 0x6f,
 	0x6f, 0x67, 0x6c, 0x65, 0x53, 0x65, 0x61, 0x72, 0x63, 0x68, 0x44, 0x79, 0x6e, 0x61, 0x6d, 0x69,
-	0x63, 0x52, 0x65, 0x74, 0x72, 0x69, 0x65, 0x76, 0x61, 0x6c, 0x53, 0x63, 0x6f, 0x72, 0x65, 0x2a,
-	0xd7, 0x01, 0x0a, 0x0c, 0x48, 0x61, 0x72, 0x6d, 0x43, 0x61, 0x74, 0x65, 0x67, 0x6f, 0x72, 0x79,
-	0x12, 0x1d, 0x0a, 0x19, 0x48, 0x41, 0x52, 0x4d, 0x5f, 0x43, 0x41, 0x54, 0x45, 0x47, 0x4f, 0x52,
-	0x59, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12,
-	0x1d, 0x0a, 0x19, 0x48, 0x41, 0x52, 0x4d, 0x5f, 0x43, 0x41, 0x54, 0x45, 0x47, 0x4f, 0x52, 0x59,
-	0x5f, 0x48, 0x41, 0x54, 0x45, 0x5f, 0x53, 0x50, 0x45, 0x45, 0x43, 0x48, 0x10, 0x01, 0x12, 0x23,
-	0x0a, 0x1f, 0x48, 0x41, 0x52, 0x4d, 0x5f, 0x43, 0x41, 0x54, 0x45, 0x47, 0x4f, 0x52, 0x59, 0x5f,
-	0x44, 0x41, 0x4e, 0x47, 0x45, 0x52, 0x4f, 0x55, 0x53, 0x5f, 0x43, 0x4f, 0x4e, 0x54, 0x45, 0x4e,
-	0x54, 0x10, 0x02, 0x12, 0x1c, 0x0a, 0x18, 0x48, 0x41, 0x52, 0x4d, 0x5f, 0x43, 0x41, 0x54, 0x45,
-	0x47, 0x4f, 0x52, 0x59, 0x5f, 0x48, 0x41, 0x52, 0x41, 0x53, 0x53, 0x4d, 0x45, 0x4e, 0x54, 0x10,
-	0x03, 0x12, 0x23, 0x0a, 0x1f, 0x48, 0x41, 0x52, 0x4d, 0x5f, 0x43, 0x41, 0x54, 0x45, 0x47, 0x4f,
-	0x52, 0x59, 0x5f, 0x53, 0x45, 0x58, 0x55, 0x41, 0x4c, 0x4c, 0x59, 0x5f, 0x45, 0x58, 0x50, 0x4c,
-	0x49, 0x43, 0x49, 0x54, 0x10, 0x04, 0x12, 0x21, 0x0a, 0x1d, 0x48, 0x41, 0x52, 0x4d, 0x5f, 0x43,
-	0x41, 0x54, 0x45, 0x47, 0x4f, 0x52, 0x59, 0x5f, 0x43, 0x49, 0x56, 0x49, 0x43, 0x5f, 0x49, 0x4e,
-	0x54, 0x45, 0x47, 0x52, 0x49, 0x54, 0x59, 0x10, 0x05, 0x42, 0xe3, 0x01, 0x0a, 0x23, 0x63, 0x6f,
-	0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x61,
-	0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61,
-	0x31, 0x42, 0x0c, 0x43, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50,
-	0x01, 0x5a, 0x43, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
-	0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72,
-	0x6d, 0x2f, 0x61, 0x70, 0x69, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2f, 0x61, 0x69, 0x70,
-	0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x70, 0x62, 0x3b, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74,
-	0x66, 0x6f, 0x72, 0x6d, 0x70, 0x62, 0xaa, 0x02, 0x1f, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
-	0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x41, 0x49, 0x50, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d,
-	0x2e, 0x56, 0x31, 0x42, 0x65, 0x74, 0x61, 0x31, 0xca, 0x02, 0x1f, 0x47, 0x6f, 0x6f, 0x67, 0x6c,
-	0x65, 0x5c, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x5c, 0x41, 0x49, 0x50, 0x6c, 0x61, 0x74, 0x66, 0x6f,
-	0x72, 0x6d, 0x5c, 0x56, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0xea, 0x02, 0x22, 0x47, 0x6f, 0x6f,
-	0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x3a, 0x3a, 0x41, 0x49, 0x50, 0x6c,
-	0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x62,
-	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x63, 0x52, 0x65, 0x74, 0x72, 0x69, 0x65, 0x76, 0x61, 0x6c, 0x53, 0x63, 0x6f, 0x72, 0x65, 0x22,
+	0x7c, 0x0a, 0x12, 0x4d, 0x6f, 0x64, 0x61, 0x6c, 0x69, 0x74, 0x79, 0x54, 0x6f, 0x6b, 0x65, 0x6e,
+	0x43, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x45, 0x0a, 0x08, 0x6d, 0x6f, 0x64, 0x61, 0x6c, 0x69, 0x74,
+	0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x29, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72,
+	0x6d, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x4d, 0x6f, 0x64, 0x61, 0x6c, 0x69,
+	0x74, 0x79, 0x52, 0x08, 0x6d, 0x6f, 0x64, 0x61, 0x6c, 0x69, 0x74, 0x79, 0x12, 0x1f, 0x0a, 0x0b,
+	0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x5f, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x05, 0x52, 0x0a, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x2a, 0xd7, 0x01,
+	0x0a, 0x0c, 0x48, 0x61, 0x72, 0x6d, 0x43, 0x61, 0x74, 0x65, 0x67, 0x6f, 0x72, 0x79, 0x12, 0x1d,
+	0x0a, 0x19, 0x48, 0x41, 0x52, 0x4d, 0x5f, 0x43, 0x41, 0x54, 0x45, 0x47, 0x4f, 0x52, 0x59, 0x5f,
+	0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x1d, 0x0a,
+	0x19, 0x48, 0x41, 0x52, 0x4d, 0x5f, 0x43, 0x41, 0x54, 0x45, 0x47, 0x4f, 0x52, 0x59, 0x5f, 0x48,
+	0x41, 0x54, 0x45, 0x5f, 0x53, 0x50, 0x45, 0x45, 0x43, 0x48, 0x10, 0x01, 0x12, 0x23, 0x0a, 0x1f,
+	0x48, 0x41, 0x52, 0x4d, 0x5f, 0x43, 0x41, 0x54, 0x45, 0x47, 0x4f, 0x52, 0x59, 0x5f, 0x44, 0x41,
+	0x4e, 0x47, 0x45, 0x52, 0x4f, 0x55, 0x53, 0x5f, 0x43, 0x4f, 0x4e, 0x54, 0x45, 0x4e, 0x54, 0x10,
+	0x02, 0x12, 0x1c, 0x0a, 0x18, 0x48, 0x41, 0x52, 0x4d, 0x5f, 0x43, 0x41, 0x54, 0x45, 0x47, 0x4f,
+	0x52, 0x59, 0x5f, 0x48, 0x41, 0x52, 0x41, 0x53, 0x53, 0x4d, 0x45, 0x4e, 0x54, 0x10, 0x03, 0x12,
+	0x23, 0x0a, 0x1f, 0x48, 0x41, 0x52, 0x4d, 0x5f, 0x43, 0x41, 0x54, 0x45, 0x47, 0x4f, 0x52, 0x59,
+	0x5f, 0x53, 0x45, 0x58, 0x55, 0x41, 0x4c, 0x4c, 0x59, 0x5f, 0x45, 0x58, 0x50, 0x4c, 0x49, 0x43,
+	0x49, 0x54, 0x10, 0x04, 0x12, 0x21, 0x0a, 0x1d, 0x48, 0x41, 0x52, 0x4d, 0x5f, 0x43, 0x41, 0x54,
+	0x45, 0x47, 0x4f, 0x52, 0x59, 0x5f, 0x43, 0x49, 0x56, 0x49, 0x43, 0x5f, 0x49, 0x4e, 0x54, 0x45,
+	0x47, 0x52, 0x49, 0x54, 0x59, 0x10, 0x05, 0x2a, 0x5d, 0x0a, 0x08, 0x4d, 0x6f, 0x64, 0x61, 0x6c,
+	0x69, 0x74, 0x79, 0x12, 0x18, 0x0a, 0x14, 0x4d, 0x4f, 0x44, 0x41, 0x4c, 0x49, 0x54, 0x59, 0x5f,
+	0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x08, 0x0a,
+	0x04, 0x54, 0x45, 0x58, 0x54, 0x10, 0x01, 0x12, 0x09, 0x0a, 0x05, 0x49, 0x4d, 0x41, 0x47, 0x45,
+	0x10, 0x02, 0x12, 0x09, 0x0a, 0x05, 0x56, 0x49, 0x44, 0x45, 0x4f, 0x10, 0x03, 0x12, 0x09, 0x0a,
+	0x05, 0x41, 0x55, 0x44, 0x49, 0x4f, 0x10, 0x04, 0x12, 0x0c, 0x0a, 0x08, 0x44, 0x4f, 0x43, 0x55,
+	0x4d, 0x45, 0x4e, 0x54, 0x10, 0x05, 0x42, 0xe3, 0x01, 0x0a, 0x23, 0x63, 0x6f, 0x6d, 0x2e, 0x67,
+	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x61, 0x69, 0x70, 0x6c,
+	0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x42, 0x0c,
+	0x43, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x43,
+	0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d,
+	0x2f, 0x67, 0x6f, 0x2f, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2f, 0x61,
+	0x70, 0x69, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2f, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74,
+	0x66, 0x6f, 0x72, 0x6d, 0x70, 0x62, 0x3b, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72,
+	0x6d, 0x70, 0x62, 0xaa, 0x02, 0x1f, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f,
+	0x75, 0x64, 0x2e, 0x41, 0x49, 0x50, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x56, 0x31,
+	0x42, 0x65, 0x74, 0x61, 0x31, 0xca, 0x02, 0x1f, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x5c, 0x43,
+	0x6c, 0x6f, 0x75, 0x64, 0x5c, 0x41, 0x49, 0x50, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x5c,
+	0x56, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0xea, 0x02, 0x22, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x3a, 0x3a, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x3a, 0x3a, 0x41, 0x49, 0x50, 0x6c, 0x61, 0x74, 0x66,
+	0x6f, 0x72, 0x6d, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x62, 0x06, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -3320,104 +3454,107 @@ func file_google_cloud_aiplatform_v1beta1_content_proto_rawDescGZIP() []byte {
 	return file_google_cloud_aiplatform_v1beta1_content_proto_rawDescData
 }
 
-var file_google_cloud_aiplatform_v1beta1_content_proto_enumTypes = make([]protoimpl.EnumInfo, 9)
-var file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes = make([]protoimpl.MessageInfo, 28)
+var file_google_cloud_aiplatform_v1beta1_content_proto_enumTypes = make([]protoimpl.EnumInfo, 10)
+var file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes = make([]protoimpl.MessageInfo, 29)
 var file_google_cloud_aiplatform_v1beta1_content_proto_goTypes = []any{
 	(HarmCategory)(0),                     // 0: google.cloud.aiplatform.v1beta1.HarmCategory
-	(GenerationConfig_Modality)(0),        // 1: google.cloud.aiplatform.v1beta1.GenerationConfig.Modality
-	(GenerationConfig_MediaResolution)(0), // 2: google.cloud.aiplatform.v1beta1.GenerationConfig.MediaResolution
-	(GenerationConfig_RoutingConfig_AutoRoutingMode_ModelRoutingPreference)(0), // 3: google.cloud.aiplatform.v1beta1.GenerationConfig.RoutingConfig.AutoRoutingMode.ModelRoutingPreference
-	(SafetySetting_HarmBlockThreshold)(0),                                      // 4: google.cloud.aiplatform.v1beta1.SafetySetting.HarmBlockThreshold
-	(SafetySetting_HarmBlockMethod)(0),                                         // 5: google.cloud.aiplatform.v1beta1.SafetySetting.HarmBlockMethod
-	(SafetyRating_HarmProbability)(0),                                          // 6: google.cloud.aiplatform.v1beta1.SafetyRating.HarmProbability
-	(SafetyRating_HarmSeverity)(0),                                             // 7: google.cloud.aiplatform.v1beta1.SafetyRating.HarmSeverity
-	(Candidate_FinishReason)(0),                                                // 8: google.cloud.aiplatform.v1beta1.Candidate.FinishReason
-	(*Content)(nil),                                                            // 9: google.cloud.aiplatform.v1beta1.Content
-	(*Part)(nil),                                                               // 10: google.cloud.aiplatform.v1beta1.Part
-	(*Blob)(nil),                                                               // 11: google.cloud.aiplatform.v1beta1.Blob
-	(*FileData)(nil),                                                           // 12: google.cloud.aiplatform.v1beta1.FileData
-	(*VideoMetadata)(nil),                                                      // 13: google.cloud.aiplatform.v1beta1.VideoMetadata
-	(*PrebuiltVoiceConfig)(nil),                                                // 14: google.cloud.aiplatform.v1beta1.PrebuiltVoiceConfig
-	(*VoiceConfig)(nil),                                                        // 15: google.cloud.aiplatform.v1beta1.VoiceConfig
-	(*SpeechConfig)(nil),                                                       // 16: google.cloud.aiplatform.v1beta1.SpeechConfig
-	(*GenerationConfig)(nil),                                                   // 17: google.cloud.aiplatform.v1beta1.GenerationConfig
-	(*SafetySetting)(nil),                                                      // 18: google.cloud.aiplatform.v1beta1.SafetySetting
-	(*SafetyRating)(nil),                                                       // 19: google.cloud.aiplatform.v1beta1.SafetyRating
-	(*CitationMetadata)(nil),                                                   // 20: google.cloud.aiplatform.v1beta1.CitationMetadata
-	(*Citation)(nil),                                                           // 21: google.cloud.aiplatform.v1beta1.Citation
-	(*Candidate)(nil),                                                          // 22: google.cloud.aiplatform.v1beta1.Candidate
-	(*LogprobsResult)(nil),                                                     // 23: google.cloud.aiplatform.v1beta1.LogprobsResult
-	(*Segment)(nil),                                                            // 24: google.cloud.aiplatform.v1beta1.Segment
-	(*GroundingChunk)(nil),                                                     // 25: google.cloud.aiplatform.v1beta1.GroundingChunk
-	(*GroundingSupport)(nil),                                                   // 26: google.cloud.aiplatform.v1beta1.GroundingSupport
-	(*GroundingMetadata)(nil),                                                  // 27: google.cloud.aiplatform.v1beta1.GroundingMetadata
-	(*SearchEntryPoint)(nil),                                                   // 28: google.cloud.aiplatform.v1beta1.SearchEntryPoint
-	(*RetrievalMetadata)(nil),                                                  // 29: google.cloud.aiplatform.v1beta1.RetrievalMetadata
-	(*GenerationConfig_RoutingConfig)(nil),                                     // 30: google.cloud.aiplatform.v1beta1.GenerationConfig.RoutingConfig
-	(*GenerationConfig_RoutingConfig_AutoRoutingMode)(nil),                     // 31: google.cloud.aiplatform.v1beta1.GenerationConfig.RoutingConfig.AutoRoutingMode
-	(*GenerationConfig_RoutingConfig_ManualRoutingMode)(nil),                   // 32: google.cloud.aiplatform.v1beta1.GenerationConfig.RoutingConfig.ManualRoutingMode
-	(*LogprobsResult_Candidate)(nil),                                           // 33: google.cloud.aiplatform.v1beta1.LogprobsResult.Candidate
-	(*LogprobsResult_TopCandidates)(nil),                                       // 34: google.cloud.aiplatform.v1beta1.LogprobsResult.TopCandidates
-	(*GroundingChunk_Web)(nil),                                                 // 35: google.cloud.aiplatform.v1beta1.GroundingChunk.Web
-	(*GroundingChunk_RetrievedContext)(nil),                                    // 36: google.cloud.aiplatform.v1beta1.GroundingChunk.RetrievedContext
-	(*FunctionCall)(nil),                                                       // 37: google.cloud.aiplatform.v1beta1.FunctionCall
-	(*FunctionResponse)(nil),                                                   // 38: google.cloud.aiplatform.v1beta1.FunctionResponse
-	(*ExecutableCode)(nil),                                                     // 39: google.cloud.aiplatform.v1beta1.ExecutableCode
-	(*CodeExecutionResult)(nil),                                                // 40: google.cloud.aiplatform.v1beta1.CodeExecutionResult
-	(*durationpb.Duration)(nil),                                                // 41: google.protobuf.Duration
-	(*Schema)(nil),                                                             // 42: google.cloud.aiplatform.v1beta1.Schema
-	(*date.Date)(nil),                                                          // 43: google.type.Date
+	(Modality)(0),                         // 1: google.cloud.aiplatform.v1beta1.Modality
+	(GenerationConfig_Modality)(0),        // 2: google.cloud.aiplatform.v1beta1.GenerationConfig.Modality
+	(GenerationConfig_MediaResolution)(0), // 3: google.cloud.aiplatform.v1beta1.GenerationConfig.MediaResolution
+	(GenerationConfig_RoutingConfig_AutoRoutingMode_ModelRoutingPreference)(0), // 4: google.cloud.aiplatform.v1beta1.GenerationConfig.RoutingConfig.AutoRoutingMode.ModelRoutingPreference
+	(SafetySetting_HarmBlockThreshold)(0),                                      // 5: google.cloud.aiplatform.v1beta1.SafetySetting.HarmBlockThreshold
+	(SafetySetting_HarmBlockMethod)(0),                                         // 6: google.cloud.aiplatform.v1beta1.SafetySetting.HarmBlockMethod
+	(SafetyRating_HarmProbability)(0),                                          // 7: google.cloud.aiplatform.v1beta1.SafetyRating.HarmProbability
+	(SafetyRating_HarmSeverity)(0),                                             // 8: google.cloud.aiplatform.v1beta1.SafetyRating.HarmSeverity
+	(Candidate_FinishReason)(0),                                                // 9: google.cloud.aiplatform.v1beta1.Candidate.FinishReason
+	(*Content)(nil),                                                            // 10: google.cloud.aiplatform.v1beta1.Content
+	(*Part)(nil),                                                               // 11: google.cloud.aiplatform.v1beta1.Part
+	(*Blob)(nil),                                                               // 12: google.cloud.aiplatform.v1beta1.Blob
+	(*FileData)(nil),                                                           // 13: google.cloud.aiplatform.v1beta1.FileData
+	(*VideoMetadata)(nil),                                                      // 14: google.cloud.aiplatform.v1beta1.VideoMetadata
+	(*PrebuiltVoiceConfig)(nil),                                                // 15: google.cloud.aiplatform.v1beta1.PrebuiltVoiceConfig
+	(*VoiceConfig)(nil),                                                        // 16: google.cloud.aiplatform.v1beta1.VoiceConfig
+	(*SpeechConfig)(nil),                                                       // 17: google.cloud.aiplatform.v1beta1.SpeechConfig
+	(*GenerationConfig)(nil),                                                   // 18: google.cloud.aiplatform.v1beta1.GenerationConfig
+	(*SafetySetting)(nil),                                                      // 19: google.cloud.aiplatform.v1beta1.SafetySetting
+	(*SafetyRating)(nil),                                                       // 20: google.cloud.aiplatform.v1beta1.SafetyRating
+	(*CitationMetadata)(nil),                                                   // 21: google.cloud.aiplatform.v1beta1.CitationMetadata
+	(*Citation)(nil),                                                           // 22: google.cloud.aiplatform.v1beta1.Citation
+	(*Candidate)(nil),                                                          // 23: google.cloud.aiplatform.v1beta1.Candidate
+	(*LogprobsResult)(nil),                                                     // 24: google.cloud.aiplatform.v1beta1.LogprobsResult
+	(*Segment)(nil),                                                            // 25: google.cloud.aiplatform.v1beta1.Segment
+	(*GroundingChunk)(nil),                                                     // 26: google.cloud.aiplatform.v1beta1.GroundingChunk
+	(*GroundingSupport)(nil),                                                   // 27: google.cloud.aiplatform.v1beta1.GroundingSupport
+	(*GroundingMetadata)(nil),                                                  // 28: google.cloud.aiplatform.v1beta1.GroundingMetadata
+	(*SearchEntryPoint)(nil),                                                   // 29: google.cloud.aiplatform.v1beta1.SearchEntryPoint
+	(*RetrievalMetadata)(nil),                                                  // 30: google.cloud.aiplatform.v1beta1.RetrievalMetadata
+	(*ModalityTokenCount)(nil),                                                 // 31: google.cloud.aiplatform.v1beta1.ModalityTokenCount
+	(*GenerationConfig_RoutingConfig)(nil),                                     // 32: google.cloud.aiplatform.v1beta1.GenerationConfig.RoutingConfig
+	(*GenerationConfig_RoutingConfig_AutoRoutingMode)(nil),                     // 33: google.cloud.aiplatform.v1beta1.GenerationConfig.RoutingConfig.AutoRoutingMode
+	(*GenerationConfig_RoutingConfig_ManualRoutingMode)(nil),                   // 34: google.cloud.aiplatform.v1beta1.GenerationConfig.RoutingConfig.ManualRoutingMode
+	(*LogprobsResult_Candidate)(nil),                                           // 35: google.cloud.aiplatform.v1beta1.LogprobsResult.Candidate
+	(*LogprobsResult_TopCandidates)(nil),                                       // 36: google.cloud.aiplatform.v1beta1.LogprobsResult.TopCandidates
+	(*GroundingChunk_Web)(nil),                                                 // 37: google.cloud.aiplatform.v1beta1.GroundingChunk.Web
+	(*GroundingChunk_RetrievedContext)(nil),                                    // 38: google.cloud.aiplatform.v1beta1.GroundingChunk.RetrievedContext
+	(*FunctionCall)(nil),                                                       // 39: google.cloud.aiplatform.v1beta1.FunctionCall
+	(*FunctionResponse)(nil),                                                   // 40: google.cloud.aiplatform.v1beta1.FunctionResponse
+	(*ExecutableCode)(nil),                                                     // 41: google.cloud.aiplatform.v1beta1.ExecutableCode
+	(*CodeExecutionResult)(nil),                                                // 42: google.cloud.aiplatform.v1beta1.CodeExecutionResult
+	(*durationpb.Duration)(nil),                                                // 43: google.protobuf.Duration
+	(*Schema)(nil),                                                             // 44: google.cloud.aiplatform.v1beta1.Schema
+	(*date.Date)(nil),                                                          // 45: google.type.Date
 }
 var file_google_cloud_aiplatform_v1beta1_content_proto_depIdxs = []int32{
-	10, // 0: google.cloud.aiplatform.v1beta1.Content.parts:type_name -> google.cloud.aiplatform.v1beta1.Part
-	11, // 1: google.cloud.aiplatform.v1beta1.Part.inline_data:type_name -> google.cloud.aiplatform.v1beta1.Blob
-	12, // 2: google.cloud.aiplatform.v1beta1.Part.file_data:type_name -> google.cloud.aiplatform.v1beta1.FileData
-	37, // 3: google.cloud.aiplatform.v1beta1.Part.function_call:type_name -> google.cloud.aiplatform.v1beta1.FunctionCall
-	38, // 4: google.cloud.aiplatform.v1beta1.Part.function_response:type_name -> google.cloud.aiplatform.v1beta1.FunctionResponse
-	39, // 5: google.cloud.aiplatform.v1beta1.Part.executable_code:type_name -> google.cloud.aiplatform.v1beta1.ExecutableCode
-	40, // 6: google.cloud.aiplatform.v1beta1.Part.code_execution_result:type_name -> google.cloud.aiplatform.v1beta1.CodeExecutionResult
-	13, // 7: google.cloud.aiplatform.v1beta1.Part.video_metadata:type_name -> google.cloud.aiplatform.v1beta1.VideoMetadata
-	41, // 8: google.cloud.aiplatform.v1beta1.VideoMetadata.start_offset:type_name -> google.protobuf.Duration
-	41, // 9: google.cloud.aiplatform.v1beta1.VideoMetadata.end_offset:type_name -> google.protobuf.Duration
-	14, // 10: google.cloud.aiplatform.v1beta1.VoiceConfig.prebuilt_voice_config:type_name -> google.cloud.aiplatform.v1beta1.PrebuiltVoiceConfig
-	15, // 11: google.cloud.aiplatform.v1beta1.SpeechConfig.voice_config:type_name -> google.cloud.aiplatform.v1beta1.VoiceConfig
-	42, // 12: google.cloud.aiplatform.v1beta1.GenerationConfig.response_schema:type_name -> google.cloud.aiplatform.v1beta1.Schema
-	30, // 13: google.cloud.aiplatform.v1beta1.GenerationConfig.routing_config:type_name -> google.cloud.aiplatform.v1beta1.GenerationConfig.RoutingConfig
-	1,  // 14: google.cloud.aiplatform.v1beta1.GenerationConfig.response_modalities:type_name -> google.cloud.aiplatform.v1beta1.GenerationConfig.Modality
-	2,  // 15: google.cloud.aiplatform.v1beta1.GenerationConfig.media_resolution:type_name -> google.cloud.aiplatform.v1beta1.GenerationConfig.MediaResolution
-	16, // 16: google.cloud.aiplatform.v1beta1.GenerationConfig.speech_config:type_name -> google.cloud.aiplatform.v1beta1.SpeechConfig
+	11, // 0: google.cloud.aiplatform.v1beta1.Content.parts:type_name -> google.cloud.aiplatform.v1beta1.Part
+	12, // 1: google.cloud.aiplatform.v1beta1.Part.inline_data:type_name -> google.cloud.aiplatform.v1beta1.Blob
+	13, // 2: google.cloud.aiplatform.v1beta1.Part.file_data:type_name -> google.cloud.aiplatform.v1beta1.FileData
+	39, // 3: google.cloud.aiplatform.v1beta1.Part.function_call:type_name -> google.cloud.aiplatform.v1beta1.FunctionCall
+	40, // 4: google.cloud.aiplatform.v1beta1.Part.function_response:type_name -> google.cloud.aiplatform.v1beta1.FunctionResponse
+	41, // 5: google.cloud.aiplatform.v1beta1.Part.executable_code:type_name -> google.cloud.aiplatform.v1beta1.ExecutableCode
+	42, // 6: google.cloud.aiplatform.v1beta1.Part.code_execution_result:type_name -> google.cloud.aiplatform.v1beta1.CodeExecutionResult
+	14, // 7: google.cloud.aiplatform.v1beta1.Part.video_metadata:type_name -> google.cloud.aiplatform.v1beta1.VideoMetadata
+	43, // 8: google.cloud.aiplatform.v1beta1.VideoMetadata.start_offset:type_name -> google.protobuf.Duration
+	43, // 9: google.cloud.aiplatform.v1beta1.VideoMetadata.end_offset:type_name -> google.protobuf.Duration
+	15, // 10: google.cloud.aiplatform.v1beta1.VoiceConfig.prebuilt_voice_config:type_name -> google.cloud.aiplatform.v1beta1.PrebuiltVoiceConfig
+	16, // 11: google.cloud.aiplatform.v1beta1.SpeechConfig.voice_config:type_name -> google.cloud.aiplatform.v1beta1.VoiceConfig
+	44, // 12: google.cloud.aiplatform.v1beta1.GenerationConfig.response_schema:type_name -> google.cloud.aiplatform.v1beta1.Schema
+	32, // 13: google.cloud.aiplatform.v1beta1.GenerationConfig.routing_config:type_name -> google.cloud.aiplatform.v1beta1.GenerationConfig.RoutingConfig
+	2,  // 14: google.cloud.aiplatform.v1beta1.GenerationConfig.response_modalities:type_name -> google.cloud.aiplatform.v1beta1.GenerationConfig.Modality
+	3,  // 15: google.cloud.aiplatform.v1beta1.GenerationConfig.media_resolution:type_name -> google.cloud.aiplatform.v1beta1.GenerationConfig.MediaResolution
+	17, // 16: google.cloud.aiplatform.v1beta1.GenerationConfig.speech_config:type_name -> google.cloud.aiplatform.v1beta1.SpeechConfig
 	0,  // 17: google.cloud.aiplatform.v1beta1.SafetySetting.category:type_name -> google.cloud.aiplatform.v1beta1.HarmCategory
-	4,  // 18: google.cloud.aiplatform.v1beta1.SafetySetting.threshold:type_name -> google.cloud.aiplatform.v1beta1.SafetySetting.HarmBlockThreshold
-	5,  // 19: google.cloud.aiplatform.v1beta1.SafetySetting.method:type_name -> google.cloud.aiplatform.v1beta1.SafetySetting.HarmBlockMethod
+	5,  // 18: google.cloud.aiplatform.v1beta1.SafetySetting.threshold:type_name -> google.cloud.aiplatform.v1beta1.SafetySetting.HarmBlockThreshold
+	6,  // 19: google.cloud.aiplatform.v1beta1.SafetySetting.method:type_name -> google.cloud.aiplatform.v1beta1.SafetySetting.HarmBlockMethod
 	0,  // 20: google.cloud.aiplatform.v1beta1.SafetyRating.category:type_name -> google.cloud.aiplatform.v1beta1.HarmCategory
-	6,  // 21: google.cloud.aiplatform.v1beta1.SafetyRating.probability:type_name -> google.cloud.aiplatform.v1beta1.SafetyRating.HarmProbability
-	7,  // 22: google.cloud.aiplatform.v1beta1.SafetyRating.severity:type_name -> google.cloud.aiplatform.v1beta1.SafetyRating.HarmSeverity
-	21, // 23: google.cloud.aiplatform.v1beta1.CitationMetadata.citations:type_name -> google.cloud.aiplatform.v1beta1.Citation
-	43, // 24: google.cloud.aiplatform.v1beta1.Citation.publication_date:type_name -> google.type.Date
-	9,  // 25: google.cloud.aiplatform.v1beta1.Candidate.content:type_name -> google.cloud.aiplatform.v1beta1.Content
-	23, // 26: google.cloud.aiplatform.v1beta1.Candidate.logprobs_result:type_name -> google.cloud.aiplatform.v1beta1.LogprobsResult
-	8,  // 27: google.cloud.aiplatform.v1beta1.Candidate.finish_reason:type_name -> google.cloud.aiplatform.v1beta1.Candidate.FinishReason
-	19, // 28: google.cloud.aiplatform.v1beta1.Candidate.safety_ratings:type_name -> google.cloud.aiplatform.v1beta1.SafetyRating
-	20, // 29: google.cloud.aiplatform.v1beta1.Candidate.citation_metadata:type_name -> google.cloud.aiplatform.v1beta1.CitationMetadata
-	27, // 30: google.cloud.aiplatform.v1beta1.Candidate.grounding_metadata:type_name -> google.cloud.aiplatform.v1beta1.GroundingMetadata
-	34, // 31: google.cloud.aiplatform.v1beta1.LogprobsResult.top_candidates:type_name -> google.cloud.aiplatform.v1beta1.LogprobsResult.TopCandidates
-	33, // 32: google.cloud.aiplatform.v1beta1.LogprobsResult.chosen_candidates:type_name -> google.cloud.aiplatform.v1beta1.LogprobsResult.Candidate
-	35, // 33: google.cloud.aiplatform.v1beta1.GroundingChunk.web:type_name -> google.cloud.aiplatform.v1beta1.GroundingChunk.Web
-	36, // 34: google.cloud.aiplatform.v1beta1.GroundingChunk.retrieved_context:type_name -> google.cloud.aiplatform.v1beta1.GroundingChunk.RetrievedContext
-	24, // 35: google.cloud.aiplatform.v1beta1.GroundingSupport.segment:type_name -> google.cloud.aiplatform.v1beta1.Segment
-	28, // 36: google.cloud.aiplatform.v1beta1.GroundingMetadata.search_entry_point:type_name -> google.cloud.aiplatform.v1beta1.SearchEntryPoint
-	25, // 37: google.cloud.aiplatform.v1beta1.GroundingMetadata.grounding_chunks:type_name -> google.cloud.aiplatform.v1beta1.GroundingChunk
-	26, // 38: google.cloud.aiplatform.v1beta1.GroundingMetadata.grounding_supports:type_name -> google.cloud.aiplatform.v1beta1.GroundingSupport
-	29, // 39: google.cloud.aiplatform.v1beta1.GroundingMetadata.retrieval_metadata:type_name -> google.cloud.aiplatform.v1beta1.RetrievalMetadata
-	31, // 40: google.cloud.aiplatform.v1beta1.GenerationConfig.RoutingConfig.auto_mode:type_name -> google.cloud.aiplatform.v1beta1.GenerationConfig.RoutingConfig.AutoRoutingMode
-	32, // 41: google.cloud.aiplatform.v1beta1.GenerationConfig.RoutingConfig.manual_mode:type_name -> google.cloud.aiplatform.v1beta1.GenerationConfig.RoutingConfig.ManualRoutingMode
-	3,  // 42: google.cloud.aiplatform.v1beta1.GenerationConfig.RoutingConfig.AutoRoutingMode.model_routing_preference:type_name -> google.cloud.aiplatform.v1beta1.GenerationConfig.RoutingConfig.AutoRoutingMode.ModelRoutingPreference
-	33, // 43: google.cloud.aiplatform.v1beta1.LogprobsResult.TopCandidates.candidates:type_name -> google.cloud.aiplatform.v1beta1.LogprobsResult.Candidate
-	44, // [44:44] is the sub-list for method output_type
-	44, // [44:44] is the sub-list for method input_type
-	44, // [44:44] is the sub-list for extension type_name
-	44, // [44:44] is the sub-list for extension extendee
-	0,  // [0:44] is the sub-list for field type_name
+	7,  // 21: google.cloud.aiplatform.v1beta1.SafetyRating.probability:type_name -> google.cloud.aiplatform.v1beta1.SafetyRating.HarmProbability
+	8,  // 22: google.cloud.aiplatform.v1beta1.SafetyRating.severity:type_name -> google.cloud.aiplatform.v1beta1.SafetyRating.HarmSeverity
+	22, // 23: google.cloud.aiplatform.v1beta1.CitationMetadata.citations:type_name -> google.cloud.aiplatform.v1beta1.Citation
+	45, // 24: google.cloud.aiplatform.v1beta1.Citation.publication_date:type_name -> google.type.Date
+	10, // 25: google.cloud.aiplatform.v1beta1.Candidate.content:type_name -> google.cloud.aiplatform.v1beta1.Content
+	24, // 26: google.cloud.aiplatform.v1beta1.Candidate.logprobs_result:type_name -> google.cloud.aiplatform.v1beta1.LogprobsResult
+	9,  // 27: google.cloud.aiplatform.v1beta1.Candidate.finish_reason:type_name -> google.cloud.aiplatform.v1beta1.Candidate.FinishReason
+	20, // 28: google.cloud.aiplatform.v1beta1.Candidate.safety_ratings:type_name -> google.cloud.aiplatform.v1beta1.SafetyRating
+	21, // 29: google.cloud.aiplatform.v1beta1.Candidate.citation_metadata:type_name -> google.cloud.aiplatform.v1beta1.CitationMetadata
+	28, // 30: google.cloud.aiplatform.v1beta1.Candidate.grounding_metadata:type_name -> google.cloud.aiplatform.v1beta1.GroundingMetadata
+	36, // 31: google.cloud.aiplatform.v1beta1.LogprobsResult.top_candidates:type_name -> google.cloud.aiplatform.v1beta1.LogprobsResult.TopCandidates
+	35, // 32: google.cloud.aiplatform.v1beta1.LogprobsResult.chosen_candidates:type_name -> google.cloud.aiplatform.v1beta1.LogprobsResult.Candidate
+	37, // 33: google.cloud.aiplatform.v1beta1.GroundingChunk.web:type_name -> google.cloud.aiplatform.v1beta1.GroundingChunk.Web
+	38, // 34: google.cloud.aiplatform.v1beta1.GroundingChunk.retrieved_context:type_name -> google.cloud.aiplatform.v1beta1.GroundingChunk.RetrievedContext
+	25, // 35: google.cloud.aiplatform.v1beta1.GroundingSupport.segment:type_name -> google.cloud.aiplatform.v1beta1.Segment
+	29, // 36: google.cloud.aiplatform.v1beta1.GroundingMetadata.search_entry_point:type_name -> google.cloud.aiplatform.v1beta1.SearchEntryPoint
+	26, // 37: google.cloud.aiplatform.v1beta1.GroundingMetadata.grounding_chunks:type_name -> google.cloud.aiplatform.v1beta1.GroundingChunk
+	27, // 38: google.cloud.aiplatform.v1beta1.GroundingMetadata.grounding_supports:type_name -> google.cloud.aiplatform.v1beta1.GroundingSupport
+	30, // 39: google.cloud.aiplatform.v1beta1.GroundingMetadata.retrieval_metadata:type_name -> google.cloud.aiplatform.v1beta1.RetrievalMetadata
+	1,  // 40: google.cloud.aiplatform.v1beta1.ModalityTokenCount.modality:type_name -> google.cloud.aiplatform.v1beta1.Modality
+	33, // 41: google.cloud.aiplatform.v1beta1.GenerationConfig.RoutingConfig.auto_mode:type_name -> google.cloud.aiplatform.v1beta1.GenerationConfig.RoutingConfig.AutoRoutingMode
+	34, // 42: google.cloud.aiplatform.v1beta1.GenerationConfig.RoutingConfig.manual_mode:type_name -> google.cloud.aiplatform.v1beta1.GenerationConfig.RoutingConfig.ManualRoutingMode
+	4,  // 43: google.cloud.aiplatform.v1beta1.GenerationConfig.RoutingConfig.AutoRoutingMode.model_routing_preference:type_name -> google.cloud.aiplatform.v1beta1.GenerationConfig.RoutingConfig.AutoRoutingMode.ModelRoutingPreference
+	35, // 44: google.cloud.aiplatform.v1beta1.LogprobsResult.TopCandidates.candidates:type_name -> google.cloud.aiplatform.v1beta1.LogprobsResult.Candidate
+	45, // [45:45] is the sub-list for method output_type
+	45, // [45:45] is the sub-list for method input_type
+	45, // [45:45] is the sub-list for extension type_name
+	45, // [45:45] is the sub-list for extension extendee
+	0,  // [0:45] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_aiplatform_v1beta1_content_proto_init() }
@@ -3449,22 +3586,22 @@ func file_google_cloud_aiplatform_v1beta1_content_proto_init() {
 	}
 	file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes[17].OneofWrappers = []any{}
 	file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes[18].OneofWrappers = []any{}
-	file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes[21].OneofWrappers = []any{
+	file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes[22].OneofWrappers = []any{
 		(*GenerationConfig_RoutingConfig_AutoMode)(nil),
 		(*GenerationConfig_RoutingConfig_ManualMode)(nil),
 	}
-	file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes[22].OneofWrappers = []any{}
 	file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes[23].OneofWrappers = []any{}
 	file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes[24].OneofWrappers = []any{}
-	file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes[26].OneofWrappers = []any{}
+	file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes[25].OneofWrappers = []any{}
 	file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes[27].OneofWrappers = []any{}
+	file_google_cloud_aiplatform_v1beta1_content_proto_msgTypes[28].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_google_cloud_aiplatform_v1beta1_content_proto_rawDesc,
-			NumEnums:      9,
-			NumMessages:   28,
+			NumEnums:      10,
+			NumMessages:   29,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
