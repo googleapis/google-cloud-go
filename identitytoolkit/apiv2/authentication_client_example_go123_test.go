@@ -17,3 +17,7 @@
 //go:build go1.23
 
 package identitytoolkit_test
+
+import (
+	identitytoolkit "cloud.google.com/go/identitytoolkit/apiv2"
+)
