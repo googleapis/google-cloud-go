@@ -131,7 +131,7 @@ require (
 	cloud.google.com/go/workflows v1.13.3
 	cloud.google.com/go/workstations v0.0.0-00010101000000-000000000000
 	google.golang.org/api v0.218.0
-	google.golang.org/genproto v0.0.0-20250122153221-138b5a5a4fd4
+	google.golang.org/genproto v0.0.0-20250124145028-65684f501c47
 )
 
 require (
@@ -156,6 +156,7 @@ require (
 	cloud.google.com/go/networkservices v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/oracledatabase v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/parallelstore v0.0.0-00010101000000-000000000000
+	cloud.google.com/go/parametermanager v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/policysimulator v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/privilegedaccessmanager v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/rapidmigrationassessment v0.0.0-00010101000000-000000000000
@@ -168,7 +169,7 @@ require (
 	cloud.google.com/go/streetview v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/telcoautomation v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/visionai v0.0.0-00010101000000-000000000000
-	google.golang.org/protobuf v1.36.3
+	google.golang.org/protobuf v1.36.4
 )
 
 require (
@@ -195,9 +196,9 @@ require (
 	golang.org/x/sys v0.29.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
 	golang.org/x/time v0.9.0 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20250115164207-1a7da9e5054f // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20250124145028-65684f501c47 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250115164207-1a7da9e5054f // indirect
-	google.golang.org/grpc v1.69.4 // indirect
+	google.golang.org/grpc v1.70.0 // indirect
 )
 
 replace cloud.google.com/go/storageinsights => ../../../storageinsights
