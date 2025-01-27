@@ -101,6 +101,7 @@
     "osconfig": "1.14.3",
     "oslogin": "1.14.3",
     "parallelstore": "0.9.2",
+    "parametermanager": "0.0.0",
     "phishingprotection": "0.9.3",
     "policysimulator": "0.3.3",
     "policytroubleshooter": "1.11.3",

@@ -38,6 +38,7 @@ type gRPCAppendBidiWriteBufferSender struct {
 	objectChecksums *storagepb.ObjectChecksums
 
 	forceFirstMessage bool
+	progress          func(int64)
 	flushOffset       int64
 
 	// Fields used to report responses from the receive side of the stream
@@ -60,6 +61,7 @@ func (w *gRPCWriter) newGRPCAppendBidiWriteBufferSender() (*gRPCAppendBidiWriteB
 		},
 		objectChecksums:   toProtoChecksums(w.sendCRC32C, w.attrs),
 		forceFirstMessage: true,
+		progress:          w.progress,
 	}
 	return s, nil
 }
@@ -244,25 +246,34 @@ func (s *gRPCAppendBidiWriteBufferSender) sendOnConnectedStream(buf []byte, offs
 		if s.recvErr != io.EOF {
 			return nil, s.recvErr
 		}
+		if obj.GetSize() > s.flushOffset {
+			s.flushOffset = obj.GetSize()
+			s.progress(s.flushOffset)
+		}
 		return
 	}
 
 	if flush {
 		// We don't necessarily expect multiple responses for a single flush, but
 		// this allows the server to send multiple responses if it wants to.
-		for s.flushOffset < offset+int64(len(buf)) {
+		flushOffset := s.flushOffset
+		for flushOffset < offset+int64(len(buf)) {
 			resp, ok := <-s.recvs
 			if !ok {
 				return nil, s.recvErr
 			}
 			pSize := resp.GetPersistedSize()
 			rSize := resp.GetResource().GetSize()
-			if s.flushOffset < pSize {
-				s.flushOffset = pSize
+			if flushOffset < pSize {
+				flushOffset = pSize
 			}
-			if s.flushOffset < rSize {
-				s.flushOffset = rSize
+			if flushOffset < rSize {
+				flushOffset = rSize
 			}
+		}
+		if s.flushOffset < flushOffset {
+			s.flushOffset = flushOffset
+			s.progress(s.flushOffset)
 		}
 	}
 
