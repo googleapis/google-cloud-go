@@ -800,6 +800,10 @@ func (c *httpStorageClient) ComposeObject(ctx context.Context, req *composeObjec
 	retryCall := func(ctx context.Context) error { obj, err = call.Context(ctx).Do(); return err }
 
 	if err := run(ctx, retryCall, s.retry, s.idempotent); err != nil {
+		var e *googleapi.Error
+		if errors.As(err, &e) && e.Code == http.StatusNotFound {
+			return nil, fmt.Errorf("%w: %w", ErrObjectNotExist, err)
+		}
 		return nil, err
 	}
 	return newObject(obj), nil
@@ -847,6 +851,10 @@ func (c *httpStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 	retryCall := func(ctx context.Context) error { res, err = call.Context(ctx).Do(); return err }
 
 	if err := run(ctx, retryCall, s.retry, s.idempotent); err != nil {
+		var e *googleapi.Error
+		if errors.As(err, &e) && e.Code == http.StatusNotFound {
+			return nil, fmt.Errorf("%w: %w", ErrObjectNotExist, err)
+		}
 		return nil, err
 	}
 
@@ -1273,9 +1281,6 @@ func (c *httpStorageClient) DeleteHMACKey(ctx context.Context, project string, a
 // Note: This API does not support pagination. However, entity limits cap the number of notifications on a single bucket,
 // so all results will be returned in the first response. See https://cloud.google.com/storage/quotas#buckets.
 func (c *httpStorageClient) ListNotifications(ctx context.Context, bucket string, opts ...storageOption) (n map[string]*Notification, err error) {
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.httpStorageClient.ListNotifications")
-	defer func() { trace.EndSpan(ctx, err) }()
-
 	s := callSettings(c.settings, opts...)
 	call := c.raw.Notifications.List(bucket)
 	if s.userProject != "" {
@@ -1293,9 +1298,6 @@ func (c *httpStorageClient) ListNotifications(ctx context.Context, bucket string
 }
 
 func (c *httpStorageClient) CreateNotification(ctx context.Context, bucket string, n *Notification, opts ...storageOption) (ret *Notification, err error) {
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.httpStorageClient.CreateNotification")
-	defer func() { trace.EndSpan(ctx, err) }()
-
 	s := callSettings(c.settings, opts...)
 	call := c.raw.Notifications.Insert(bucket, toRawNotification(n))
 	if s.userProject != "" {
@@ -1313,9 +1315,6 @@ func (c *httpStorageClient) CreateNotification(ctx context.Context, bucket strin
 }
 
 func (c *httpStorageClient) DeleteNotification(ctx context.Context, bucket string, id string, opts ...storageOption) (err error) {
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.httpStorageClient.DeleteNotification")
-	defer func() { trace.EndSpan(ctx, err) }()
-
 	s := callSettings(c.settings, opts...)
 	call := c.raw.Notifications.Delete(bucket, id)
 	if s.userProject != "" {

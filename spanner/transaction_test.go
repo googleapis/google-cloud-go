@@ -504,6 +504,98 @@ func TestReadWriteTransaction_PrecommitToken(t *testing.T) {
 	}
 }
 
+func TestCommitWithMultiplexedSessionRetry(t *testing.T) {
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened:                     1,
+			MaxOpened:                     1,
+			enableMultiplexSession:        true,
+			enableMultiplexedSessionForRW: true,
+		},
+	})
+	defer teardown()
+
+	// newCommitResponseWithPrecommitToken creates a simulated response with a PrecommitToken
+	newCommitResponseWithPrecommitToken := func() *sppb.CommitResponse {
+		precommitToken := &sppb.MultiplexedSessionPrecommitToken{
+			PrecommitToken: []byte("commit-retry-precommit-token"),
+			SeqNum:         4,
+		}
+
+		// Create a CommitResponse with the PrecommitToken
+		return &sppb.CommitResponse{
+			MultiplexedSessionRetry: &sppb.CommitResponse_PrecommitToken{PrecommitToken: precommitToken},
+		}
+	}
+
+	// Simulate a commit response with a MultiplexedSessionRetry
+	server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
+		SimulatedExecutionTime{
+			Responses: []interface{}{newCommitResponseWithPrecommitToken()},
+		})
+
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		ms := []*Mutation{
+			Insert("t_foo", []string{"col1", "col2"}, []interface{}{int64(1), int64(2)}),
+			Update("t_foo", []string{"col1", "col2"}, []interface{}{"one", []byte(nil)}),
+		}
+		if err := tx.BufferWrite(ms); err != nil {
+			return err
+		}
+
+		iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+		defer iter.Stop()
+		for {
+			_, err := iter.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatalf("Commit failed: %v", err)
+	}
+
+	// Verify that the commit was retried
+	requests := drainRequestsFromServer(server.TestSpanner)
+	commitCount := 0
+	for _, req := range requests {
+		if commitReq, ok := req.(*sppb.CommitRequest); ok {
+			if !strings.Contains(commitReq.GetSession(), "multiplexed") {
+				t.Errorf("Expected session to be multiplexed")
+			}
+			commitCount++
+			if commitCount == 1 {
+				// Validate that the first commit had mutations set
+				if len(commitReq.Mutations) == 0 {
+					t.Fatalf("Expected first commit to have mutations set")
+				}
+				if commitReq.PrecommitToken == nil || !strings.Contains(string(commitReq.PrecommitToken.PrecommitToken), "ResultSetPrecommitToken") {
+					t.Fatalf("Expected first commit to have precommit token 'ResultSetPrecommitToken', got: %v", commitReq.PrecommitToken)
+				}
+			} else if commitCount == 2 {
+				// Validate that the second commit attempt had mutations un-set
+				if len(commitReq.Mutations) != 0 {
+					t.Fatalf("Expected second commit to have no mutations set")
+				}
+				// Validate that the second commit had the precommit token set
+				if commitReq.PrecommitToken == nil || string(commitReq.PrecommitToken.PrecommitToken) != "commit-retry-precommit-token" {
+					t.Fatalf("Expected second commit to have precommit token 'commit-retry-precommit-token', got: %v", commitReq.PrecommitToken)
+				}
+			}
+		}
+	}
+	if commitCount != 2 {
+		t.Fatalf("Expected 2 commit attempts, got %d", commitCount)
+	}
+}
+
 func TestMutationOnlyCaseAborted(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
@@ -888,10 +980,13 @@ func testReadWriteStmtBasedTransaction(t *testing.T, executionTimes map[string]S
 		if attempts > 1 {
 			tx, err = tx.ResetForRetry(ctx)
 		} else {
-			tx, err = NewReadWriteStmtBasedTransaction(ctx, client)
+			tx, err = NewReadWriteStmtBasedTransactionWithOptions(ctx, client, TransactionOptions{TransactionTag: "test"})
 		}
 		if err != nil {
 			return 0, attempts, fmt.Errorf("failed to begin a transaction: %v", err)
+		}
+		if g, w := tx.options.TransactionTag, "test"; g != w {
+			t.Errorf("transaction tag mismatch\n Got: %v\nWant: %v", g, w)
 		}
 		rowCount, err = f(tx)
 		if err != nil && status.Code(err) != codes.Aborted {

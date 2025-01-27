@@ -178,15 +178,19 @@ func defaultFirestoreAdminCallOptions() *FirestoreAdminCallOptions {
 		BulkDeleteDocuments: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
-		CreateDatabase:       []gax.CallOption{},
-		GetDatabase:          []gax.CallOption{},
-		ListDatabases:        []gax.CallOption{},
-		UpdateDatabase:       []gax.CallOption{},
-		DeleteDatabase:       []gax.CallOption{},
-		GetBackup:            []gax.CallOption{},
-		ListBackups:          []gax.CallOption{},
-		DeleteBackup:         []gax.CallOption{},
-		RestoreDatabase:      []gax.CallOption{},
+		CreateDatabase: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		GetDatabase:    []gax.CallOption{},
+		ListDatabases:  []gax.CallOption{},
+		UpdateDatabase: []gax.CallOption{},
+		DeleteDatabase: []gax.CallOption{},
+		GetBackup:      []gax.CallOption{},
+		ListBackups:    []gax.CallOption{},
+		DeleteBackup:   []gax.CallOption{},
+		RestoreDatabase: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
 		CreateBackupSchedule: []gax.CallOption{},
 		GetBackupSchedule:    []gax.CallOption{},
 		ListBackupSchedules:  []gax.CallOption{},
@@ -281,15 +285,19 @@ func defaultFirestoreAdminRESTCallOptions() *FirestoreAdminCallOptions {
 		BulkDeleteDocuments: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
-		CreateDatabase:       []gax.CallOption{},
-		GetDatabase:          []gax.CallOption{},
-		ListDatabases:        []gax.CallOption{},
-		UpdateDatabase:       []gax.CallOption{},
-		DeleteDatabase:       []gax.CallOption{},
-		GetBackup:            []gax.CallOption{},
-		ListBackups:          []gax.CallOption{},
-		DeleteBackup:         []gax.CallOption{},
-		RestoreDatabase:      []gax.CallOption{},
+		CreateDatabase: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		GetDatabase:    []gax.CallOption{},
+		ListDatabases:  []gax.CallOption{},
+		UpdateDatabase: []gax.CallOption{},
+		DeleteDatabase: []gax.CallOption{},
+		GetBackup:      []gax.CallOption{},
+		ListBackups:    []gax.CallOption{},
+		DeleteBackup:   []gax.CallOption{},
+		RestoreDatabase: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
 		CreateBackupSchedule: []gax.CallOption{},
 		GetBackupSchedule:    []gax.CallOption{},
 		ListBackupSchedules:  []gax.CallOption{},
@@ -2494,6 +2502,9 @@ func (c *firestoreAdminRESTClient) ListBackups(ctx context.Context, req *adminpb
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetFilter() != "" {
+		params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 

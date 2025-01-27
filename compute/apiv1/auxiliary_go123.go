@@ -135,6 +135,12 @@ func (it *FirewallIterator) All() iter.Seq2[*computepb.Firewall, error] {
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *FirewallPoliciesScopedListPairIterator) All() iter.Seq2[FirewallPoliciesScopedListPair, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *FirewallPolicyIterator) All() iter.Seq2[*computepb.FirewallPolicy, error] {
 	return iterator.RangeAdapter(it.Next)
 }

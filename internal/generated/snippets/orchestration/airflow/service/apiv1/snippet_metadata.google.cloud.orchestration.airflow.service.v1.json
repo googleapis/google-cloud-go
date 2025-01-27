@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/orchestration/airflow/service/apiv1",
-    "version": "1.11.3",
+    "version": "1.11.4",
     "language": "GO",
     "apis": [
       {
@@ -885,7 +885,7 @@
     {
       "regionTag": "composer_v1_generated_Environments_ListWorkloads_sync",
       "title": "composer ListWorkloads Sample",
-      "description": "ListWorkloads lists workloads in a Cloud Composer environment. Workload is a unit that\nruns a single Composer component.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3.*.*-airflow-*.*.* and newer.",
+      "description": "ListWorkloads lists workloads in a Cloud Composer environment. Workload is a unit that\nruns a single Composer component.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-2.*.*-airflow-*.*.* and newer.",
       "file": "EnvironmentsClient/ListWorkloads/main.go",
       "language": "GO",
       "clientMethod": {
