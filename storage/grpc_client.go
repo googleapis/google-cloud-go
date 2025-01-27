@@ -1210,6 +1210,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 						delete(rr.mp, key)
 					}
 				}
+				drainInboundReadStream(rr.stream)
 				rr.mu.Unlock()
 				return
 			case currentSpec = <-rr.data:
@@ -1480,10 +1481,6 @@ func (mr *gRPCBidiReader) close() error {
 	if err := mr.stream.CloseSend(); err != nil {
 		return err
 	}
-	err := drainInboundReadStream(mr.stream)
-	if err == io.EOF {
-		err = nil
-	}
 	if mr.cancel != nil {
 		mr.cancel()
 	}
@@ -1493,7 +1490,7 @@ func (mr *gRPCBidiReader) close() error {
 	mr.mu.Unlock()
 	mr.closeReceiver <- true
 	mr.closeManager <- true
-	return err
+	return nil
 }
 
 // drainInboundReadStream calls stream.Recv() repeatedly until an error is returned.
