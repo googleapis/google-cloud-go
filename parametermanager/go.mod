@@ -2,7 +2,7 @@ module cloud.google.com/go/parametermanager
 
 go 1.22.7
 
-toolchain go1.22.11
+toolchain go1.23.5
 
 require (
 	cloud.google.com/go/iam v1.3.1
