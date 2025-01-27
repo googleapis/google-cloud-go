@@ -1381,6 +1381,8 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 }
 
 func getActiveRange(r *gRPCBidiReader) []rangeSpec {
+	r.mu.Lock()
+	defer r.mu.Unlock()
 	var activeRange []rangeSpec
 	for k, v := range r.mp {
 		activeRange = append(activeRange, rangeSpec{
@@ -1478,6 +1480,10 @@ func (mr *gRPCBidiReader) close() error {
 	if err := mr.stream.CloseSend(); err != nil {
 		return err
 	}
+	err := drainInboundReadStream(mr.stream)
+	if err == io.EOF {
+		err = nil
+	}
 	if mr.cancel != nil {
 		mr.cancel()
 	}
@@ -1487,7 +1493,17 @@ func (mr *gRPCBidiReader) close() error {
 	mr.mu.Unlock()
 	mr.closeReceiver <- true
 	mr.closeManager <- true
-	return nil
+	return err
+}
+
+// drainInboundReadStream calls stream.Recv() repeatedly until an error is returned.
+// drainInboundReadStream always returns a non-nil error. io.EOF indicates all
+// messages were successfully read.
+func drainInboundReadStream(stream storagepb.Storage_BidiReadObjectClient) (err error) {
+	for err == nil {
+		_, err = stream.Recv()
+	}
+	return err
 }
 
 func (mrr *gRPCBidiReader) getHandle() []byte {
@@ -2632,11 +2648,11 @@ func bucketContext(ctx context.Context, bucket string) context.Context {
 	return gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 }
 
-// drainInboundStream calls stream.Recv() repeatedly until an error is returned.
+// drainInboundWriteStream calls stream.Recv() repeatedly until an error is returned.
 // It returns the last Resource received on the stream, or nil if no Resource
-// was returned. drainInboundStream always returns a non-nil error. io.EOF
+// was returned. drainInboundWriteStream always returns a non-nil error. io.EOF
 // indicates all messages were successfully read.
-func drainInboundStream(stream storagepb.Storage_BidiWriteObjectClient) (object *storagepb.Object, err error) {
+func drainInboundWriteStream(stream storagepb.Storage_BidiWriteObjectClient) (object *storagepb.Object, err error) {
 	for err == nil {
 		var resp *storagepb.BidiWriteObjectResponse
 		resp, err = stream.Recv()
@@ -2718,7 +2734,7 @@ func (s *gRPCOneshotBidiWriteBufferSender) sendBuffer(buf []byte, offset int64, 
 
 	sendErr := s.stream.Send(req)
 	if sendErr != nil {
-		obj, err = drainInboundStream(s.stream)
+		obj, err = drainInboundWriteStream(s.stream)
 		s.stream = nil
 		if sendErr != io.EOF {
 			err = sendErr
@@ -2731,7 +2747,7 @@ func (s *gRPCOneshotBidiWriteBufferSender) sendBuffer(buf []byte, offset int64, 
 		s.stream.CloseSend()
 		// Oneshot uploads only read from the response stream on completion or
 		// failure
-		obj, err = drainInboundStream(s.stream)
+		obj, err = drainInboundWriteStream(s.stream)
 		s.stream = nil
 		if err == io.EOF {
 			err = nil
@@ -2846,7 +2862,7 @@ func (s *gRPCResumableBidiWriteBufferSender) sendBuffer(buf []byte, offset int64
 
 	sendErr := s.stream.Send(req)
 	if sendErr != nil {
-		obj, err = drainInboundStream(s.stream)
+		obj, err = drainInboundWriteStream(s.stream)
 		s.stream = nil
 		if err == io.EOF {
 			// This is unexpected - we got an error on Send(), but not on Recv().
@@ -2858,7 +2874,7 @@ func (s *gRPCResumableBidiWriteBufferSender) sendBuffer(buf []byte, offset int64
 
 	if finishWrite {
 		s.stream.CloseSend()
-		obj, err = drainInboundStream(s.stream)
+		obj, err = drainInboundWriteStream(s.stream)
 		s.stream = nil
 		if err == io.EOF {
 			err = nil
