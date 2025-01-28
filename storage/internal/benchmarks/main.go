@@ -134,7 +134,7 @@ func (b *benchmarkOptions) String() string {
 
 	stringifiedOpts := []string{
 		fmt.Sprintf("api:\t\t\t%s", b.api),
-		fmt.Sprintf("interity check:\t\t%d", b.integrity),
+		fmt.Sprintf("interity check:\t\t%v", b.integrity),
 		fmt.Sprintf("region:\t\t\t%s", b.region),
 		fmt.Sprintf("timeout:\t\t%s", b.timeout),
 		fmt.Sprintf("number of samples:\t%d", b.numSamples),

@@ -24,6 +24,7 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"sort"
 	"time"
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
@@ -43,6 +44,7 @@ var newNetworkFirewallPoliciesClientHook clientHook
 type NetworkFirewallPoliciesCallOptions struct {
 	AddAssociation     []gax.CallOption
 	AddRule            []gax.CallOption
+	AggregatedList     []gax.CallOption
 	CloneRules         []gax.CallOption
 	Delete             []gax.CallOption
 	Get                []gax.CallOption
@@ -66,6 +68,18 @@ func defaultNetworkFirewallPoliciesRESTCallOptions() *NetworkFirewallPoliciesCal
 		},
 		AddRule: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		AggregatedList: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
 		},
 		CloneRules: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
@@ -164,6 +178,7 @@ type internalNetworkFirewallPoliciesClient interface {
 	Connection() *grpc.ClientConn
 	AddAssociation(context.Context, *computepb.AddAssociationNetworkFirewallPolicyRequest, ...gax.CallOption) (*Operation, error)
 	AddRule(context.Context, *computepb.AddRuleNetworkFirewallPolicyRequest, ...gax.CallOption) (*Operation, error)
+	AggregatedList(context.Context, *computepb.AggregatedListNetworkFirewallPoliciesRequest, ...gax.CallOption) *FirewallPoliciesScopedListPairIterator
 	CloneRules(context.Context, *computepb.CloneRulesNetworkFirewallPolicyRequest, ...gax.CallOption) (*Operation, error)
 	Delete(context.Context, *computepb.DeleteNetworkFirewallPolicyRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetNetworkFirewallPolicyRequest, ...gax.CallOption) (*computepb.FirewallPolicy, error)
@@ -223,6 +238,11 @@ func (c *NetworkFirewallPoliciesClient) AddAssociation(ctx context.Context, req 
 // AddRule inserts a rule into a firewall policy.
 func (c *NetworkFirewallPoliciesClient) AddRule(ctx context.Context, req *computepb.AddRuleNetworkFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.AddRule(ctx, req, opts...)
+}
+
+// AggregatedList retrieves an aggregated list of network firewall policies, listing network firewall policies from all applicable scopes (global and regional) and grouping the results per scope. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+func (c *NetworkFirewallPoliciesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListNetworkFirewallPoliciesRequest, opts ...gax.CallOption) *FirewallPoliciesScopedListPairIterator {
+	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
 
 // CloneRules copies rules to the specified firewall policy.
@@ -527,6 +547,105 @@ func (c *networkFirewallPoliciesRESTClient) AddRule(ctx context.Context, req *co
 		},
 	}
 	return op, nil
+}
+
+// AggregatedList retrieves an aggregated list of network firewall policies, listing network firewall policies from all applicable scopes (global and regional) and grouping the results per scope. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+func (c *networkFirewallPoliciesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListNetworkFirewallPoliciesRequest, opts ...gax.CallOption) *FirewallPoliciesScopedListPairIterator {
+	it := &FirewallPoliciesScopedListPairIterator{}
+	req = proto.Clone(req).(*computepb.AggregatedListNetworkFirewallPoliciesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]FirewallPoliciesScopedListPair, string, error) {
+		resp := &computepb.NetworkFirewallPolicyAggregatedList{}
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
+		}
+		if pageSize > math.MaxInt32 {
+			req.MaxResults = proto.Uint32(uint32(math.MaxInt32))
+		} else if pageSize != 0 {
+			req.MaxResults = proto.Uint32(uint32(pageSize))
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/firewallPolicies", req.GetProject())
+
+		params := url.Values{}
+		if req != nil && req.Filter != nil {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req != nil && req.IncludeAllScopes != nil {
+			params.Add("includeAllScopes", fmt.Sprintf("%v", req.GetIncludeAllScopes()))
+		}
+		if req != nil && req.MaxResults != nil {
+			params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
+		}
+		if req != nil && req.OrderBy != nil {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req != nil && req.PageToken != nil {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req != nil && req.ReturnPartialSuccess != nil {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+		if req != nil && req.ServiceProjectNumber != nil {
+			params.Add("serviceProjectNumber", fmt.Sprintf("%v", req.GetServiceProjectNumber()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "AggregatedList")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+
+		elems := make([]FirewallPoliciesScopedListPair, 0, len(resp.GetItems()))
+		for k, v := range resp.GetItems() {
+			elems = append(elems, FirewallPoliciesScopedListPair{k, v})
+		}
+		sort.Slice(elems, func(i, j int) bool { return elems[i].Key < elems[j].Key })
+
+		return elems, resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetMaxResults())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // CloneRules copies rules to the specified firewall policy.
