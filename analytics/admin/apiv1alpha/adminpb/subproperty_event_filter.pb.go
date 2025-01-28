@@ -460,7 +460,7 @@ func (x *SubpropertyEventFilterClause) GetFilterExpression() *SubpropertyEventFi
 	return nil
 }
 
-// A resource message representing a GA4 Subproperty event filter.
+// A resource message representing a Google Analytics subproperty event filter.
 type SubpropertyEventFilter struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
