@@ -21,12 +21,11 @@
 package adminpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -460,7 +459,7 @@ func (x *SubpropertyEventFilterClause) GetFilterExpression() *SubpropertyEventFi
 	return nil
 }
 
-// A resource message representing a GA4 Subproperty event filter.
+// A resource message representing a Google Analytics subproperty event filter.
 type SubpropertyEventFilter struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

@@ -21,13 +21,12 @@
 package adminpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -336,7 +335,7 @@ func (x *ExpandedDataSetFilterExpressionList) GetFilterExpressions() []*Expanded
 	return nil
 }
 
-// A resource message representing a GA4 ExpandedDataSet.
+// A resource message representing an `ExpandedDataSet`.
 type ExpandedDataSet struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

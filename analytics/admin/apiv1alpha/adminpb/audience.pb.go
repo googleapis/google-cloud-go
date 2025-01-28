@@ -21,14 +21,13 @@
 package adminpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1070,7 +1069,7 @@ func (x *AudienceEventTrigger) GetLogCondition() AudienceEventTrigger_LogConditi
 	return AudienceEventTrigger_LOG_CONDITION_UNSPECIFIED
 }
 
-// A resource message representing a GA4 Audience.
+// A resource message representing an Audience.
 type Audience struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

@@ -22,9 +22,6 @@ package adminpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -54,9 +53,9 @@ type RunAccessReportRequest struct {
 	// access for all properties under that account.
 	//
 	// To request at the property level, entity should be for example
-	// 'properties/123' if "123" is your GA4 property ID. To request at the
-	// account level, entity should be for example 'accounts/1234' if "1234" is
-	// your GA4 Account ID.
+	// 'properties/123' if "123" is your Google Analytics property ID. To request
+	// at the account level, entity should be for example 'accounts/1234' if
+	// "1234" is your Google Analytics Account ID.
 	Entity string `protobuf:"bytes,1,opt,name=entity,proto3" json:"entity,omitempty"`
 	// The dimensions requested and displayed in the response. Requests are
 	// allowed up to 9 dimensions.
@@ -1977,9 +1976,14 @@ type SearchChangeHistoryEventsRequest struct {
 	// Optional. If set, only return changes made before this time (inclusive).
 	LatestChangeTime *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=latest_change_time,json=latestChangeTime,proto3" json:"latest_change_time,omitempty"`
 	// Optional. The maximum number of ChangeHistoryEvent items to return.
-	// The service may return fewer than this value, even if there are additional
-	// pages. If unspecified, at most 50 items will be returned.
-	// The maximum value is 200 (higher values will be coerced to the maximum).
+	// If unspecified, at most 50 items will be returned. The maximum value is 200
+	// (higher values will be coerced to the maximum).
+	//
+	// Note that the service may return a page with fewer items than this value
+	// specifies (potentially even zero), and that there still may be additional
+	// pages. If you want a particular number of items, you'll need to continue
+	// requesting additional pages using `page_token` until you get the needed
+	// number.
 	PageSize int32 `protobuf:"varint,8,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// Optional. A page token, received from a previous
 	// `SearchChangeHistoryEvents` call. Provide this to retrieve the subsequent
@@ -15977,7 +15981,7 @@ type AnalyticsAdminServiceClient interface {
 	GetAccount(ctx context.Context, in *GetAccountRequest, opts ...grpc.CallOption) (*Account, error)
 	// Returns all accounts accessible by the caller.
 	//
-	// Note that these accounts might not currently have GA4 properties.
+	// Note that these accounts might not currently have GA properties.
 	// Soft-deleted (ie: "trashed") accounts are excluded by default.
 	// Returns an empty list if no relevant accounts are found.
 	ListAccounts(ctx context.Context, in *ListAccountsRequest, opts ...grpc.CallOption) (*ListAccountsResponse, error)
@@ -15999,16 +16003,16 @@ type AnalyticsAdminServiceClient interface {
 	ProvisionAccountTicket(ctx context.Context, in *ProvisionAccountTicketRequest, opts ...grpc.CallOption) (*ProvisionAccountTicketResponse, error)
 	// Returns summaries of all accounts accessible by the caller.
 	ListAccountSummaries(ctx context.Context, in *ListAccountSummariesRequest, opts ...grpc.CallOption) (*ListAccountSummariesResponse, error)
-	// Lookup for a single "GA4" Property.
+	// Lookup for a single GA Property.
 	GetProperty(ctx context.Context, in *GetPropertyRequest, opts ...grpc.CallOption) (*Property, error)
 	// Returns child Properties under the specified parent Account.
 	//
-	// Only "GA4" properties will be returned.
 	// Properties will be excluded if the caller does not have access.
 	// Soft-deleted (ie: "trashed") properties are excluded by default.
 	// Returns an empty list if no relevant properties are found.
 	ListProperties(ctx context.Context, in *ListPropertiesRequest, opts ...grpc.CallOption) (*ListPropertiesResponse, error)
-	// Creates an "GA4" property with the specified location and attributes.
+	// Creates a Google Analytics property with the specified location and
+	// attributes.
 	CreateProperty(ctx context.Context, in *CreatePropertyRequest, opts ...grpc.CallOption) (*Property, error)
 	// Marks target Property as soft-deleted (ie: "trashed") and returns it.
 	//
@@ -16020,7 +16024,7 @@ type AnalyticsAdminServiceClient interface {
 	// will be permanently purged.
 	// https://support.google.com/analytics/answer/6154772
 	//
-	// Returns an error if the target is not found, or is not a GA4 Property.
+	// Returns an error if the target is not found.
 	DeleteProperty(ctx context.Context, in *DeletePropertyRequest, opts ...grpc.CallOption) (*Property, error)
 	// Updates a property.
 	UpdateProperty(ctx context.Context, in *UpdatePropertyRequest, opts ...grpc.CallOption) (*Property, error)
@@ -16047,7 +16051,7 @@ type AnalyticsAdminServiceClient interface {
 	// Get data sharing settings on an account.
 	// Data sharing settings are singletons.
 	GetDataSharingSettings(ctx context.Context, in *GetDataSharingSettingsRequest, opts ...grpc.CallOption) (*DataSharingSettings, error)
-	// Lookup for a single "GA4" MeasurementProtocolSecret.
+	// Lookup for a single MeasurementProtocolSecret.
 	GetMeasurementProtocolSecret(ctx context.Context, in *GetMeasurementProtocolSecretRequest, opts ...grpc.CallOption) (*MeasurementProtocolSecret, error)
 	// Returns child MeasurementProtocolSecrets under the specified parent
 	// Property.
@@ -16077,6 +16081,9 @@ type AnalyticsAdminServiceClient interface {
 	ListSKAdNetworkConversionValueSchemas(ctx context.Context, in *ListSKAdNetworkConversionValueSchemasRequest, opts ...grpc.CallOption) (*ListSKAdNetworkConversionValueSchemasResponse, error)
 	// Searches through all changes to an account or its children given the
 	// specified set of filters.
+	//
+	// Only returns the subset of changes supported by the API. The UI may return
+	// additional changes.
 	SearchChangeHistoryEvents(ctx context.Context, in *SearchChangeHistoryEventsRequest, opts ...grpc.CallOption) (*SearchChangeHistoryEventsResponse, error)
 	// Lookup for Google Signals settings for a property.
 	GetGoogleSignalsSettings(ctx context.Context, in *GetGoogleSignalsSettingsRequest, opts ...grpc.CallOption) (*GoogleSignalsSettings, error)
@@ -16219,12 +16226,17 @@ type AnalyticsAdminServiceClient interface {
 	// only be requested on Google Analytics 360 properties. This method is only
 	// available to Administrators.
 	//
-	// These data access records include GA4 UI Reporting, GA4 UI Explorations,
-	// GA4 Data API, and other products like Firebase & Admob that can retrieve
+	// These data access records include GA UI Reporting, GA UI Explorations,
+	// GA Data API, and other products like Firebase & Admob that can retrieve
 	// data from Google Analytics through a linkage. These records don't include
 	// property configuration changes like adding a stream or changing a
 	// property's time zone. For configuration change history, see
 	// [searchChangeHistoryEvents](https://developers.google.com/analytics/devguides/config/admin/v1/rest/v1alpha/accounts/searchChangeHistoryEvents).
+	//
+	// To give your feedback on this API, complete the [Google Analytics Access
+	// Reports
+	// feedback](https://docs.google.com/forms/d/e/1FAIpQLSdmEBUrMzAEdiEKk5TV5dEHvDUZDRlgWYdQdAeSdtR4hVjEhw/viewform)
+	// form.
 	RunAccessReport(ctx context.Context, in *RunAccessReportRequest, opts ...grpc.CallOption) (*RunAccessReportResponse, error)
 	// Creates an access binding on an account or property.
 	CreateAccessBinding(ctx context.Context, in *CreateAccessBindingRequest, opts ...grpc.CallOption) (*AccessBinding, error)
@@ -17755,7 +17767,7 @@ type AnalyticsAdminServiceServer interface {
 	GetAccount(context.Context, *GetAccountRequest) (*Account, error)
 	// Returns all accounts accessible by the caller.
 	//
-	// Note that these accounts might not currently have GA4 properties.
+	// Note that these accounts might not currently have GA properties.
 	// Soft-deleted (ie: "trashed") accounts are excluded by default.
 	// Returns an empty list if no relevant accounts are found.
 	ListAccounts(context.Context, *ListAccountsRequest) (*ListAccountsResponse, error)
@@ -17777,16 +17789,16 @@ type AnalyticsAdminServiceServer interface {
 	ProvisionAccountTicket(context.Context, *ProvisionAccountTicketRequest) (*ProvisionAccountTicketResponse, error)
 	// Returns summaries of all accounts accessible by the caller.
 	ListAccountSummaries(context.Context, *ListAccountSummariesRequest) (*ListAccountSummariesResponse, error)
-	// Lookup for a single "GA4" Property.
+	// Lookup for a single GA Property.
 	GetProperty(context.Context, *GetPropertyRequest) (*Property, error)
 	// Returns child Properties under the specified parent Account.
 	//
-	// Only "GA4" properties will be returned.
 	// Properties will be excluded if the caller does not have access.
 	// Soft-deleted (ie: "trashed") properties are excluded by default.
 	// Returns an empty list if no relevant properties are found.
 	ListProperties(context.Context, *ListPropertiesRequest) (*ListPropertiesResponse, error)
-	// Creates an "GA4" property with the specified location and attributes.
+	// Creates a Google Analytics property with the specified location and
+	// attributes.
 	CreateProperty(context.Context, *CreatePropertyRequest) (*Property, error)
 	// Marks target Property as soft-deleted (ie: "trashed") and returns it.
 	//
@@ -17798,7 +17810,7 @@ type AnalyticsAdminServiceServer interface {
 	// will be permanently purged.
 	// https://support.google.com/analytics/answer/6154772
 	//
-	// Returns an error if the target is not found, or is not a GA4 Property.
+	// Returns an error if the target is not found.
 	DeleteProperty(context.Context, *DeletePropertyRequest) (*Property, error)
 	// Updates a property.
 	UpdateProperty(context.Context, *UpdatePropertyRequest) (*Property, error)
@@ -17825,7 +17837,7 @@ type AnalyticsAdminServiceServer interface {
 	// Get data sharing settings on an account.
 	// Data sharing settings are singletons.
 	GetDataSharingSettings(context.Context, *GetDataSharingSettingsRequest) (*DataSharingSettings, error)
-	// Lookup for a single "GA4" MeasurementProtocolSecret.
+	// Lookup for a single MeasurementProtocolSecret.
 	GetMeasurementProtocolSecret(context.Context, *GetMeasurementProtocolSecretRequest) (*MeasurementProtocolSecret, error)
 	// Returns child MeasurementProtocolSecrets under the specified parent
 	// Property.
@@ -17855,6 +17867,9 @@ type AnalyticsAdminServiceServer interface {
 	ListSKAdNetworkConversionValueSchemas(context.Context, *ListSKAdNetworkConversionValueSchemasRequest) (*ListSKAdNetworkConversionValueSchemasResponse, error)
 	// Searches through all changes to an account or its children given the
 	// specified set of filters.
+	//
+	// Only returns the subset of changes supported by the API. The UI may return
+	// additional changes.
 	SearchChangeHistoryEvents(context.Context, *SearchChangeHistoryEventsRequest) (*SearchChangeHistoryEventsResponse, error)
 	// Lookup for Google Signals settings for a property.
 	GetGoogleSignalsSettings(context.Context, *GetGoogleSignalsSettingsRequest) (*GoogleSignalsSettings, error)
@@ -17997,12 +18012,17 @@ type AnalyticsAdminServiceServer interface {
 	// only be requested on Google Analytics 360 properties. This method is only
 	// available to Administrators.
 	//
-	// These data access records include GA4 UI Reporting, GA4 UI Explorations,
-	// GA4 Data API, and other products like Firebase & Admob that can retrieve
+	// These data access records include GA UI Reporting, GA UI Explorations,
+	// GA Data API, and other products like Firebase & Admob that can retrieve
 	// data from Google Analytics through a linkage. These records don't include
 	// property configuration changes like adding a stream or changing a
 	// property's time zone. For configuration change history, see
 	// [searchChangeHistoryEvents](https://developers.google.com/analytics/devguides/config/admin/v1/rest/v1alpha/accounts/searchChangeHistoryEvents).
+	//
+	// To give your feedback on this API, complete the [Google Analytics Access
+	// Reports
+	// feedback](https://docs.google.com/forms/d/e/1FAIpQLSdmEBUrMzAEdiEKk5TV5dEHvDUZDRlgWYdQdAeSdtR4hVjEhw/viewform)
+	// form.
 	RunAccessReport(context.Context, *RunAccessReportRequest) (*RunAccessReportResponse, error)
 	// Creates an access binding on an account or property.
 	CreateAccessBinding(context.Context, *CreateAccessBindingRequest) (*AccessBinding, error)
