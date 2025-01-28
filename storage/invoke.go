@@ -22,6 +22,7 @@ import (
 	"net"
 	"net/url"
 	"strings"
+	"time"
 
 	"cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/version"
@@ -46,7 +47,7 @@ const (
 // idempotency information. It then calls the function with or without retries
 // as appropriate, using the configured settings.
 func run(ctx context.Context, call func(ctx context.Context) error, retry *retryConfig, isIdempotent bool) error {
-	attempts := 1
+	attempts := 0
 	invocationID := uuid.New().String()
 
 	if retry == nil {
@@ -67,14 +68,32 @@ func run(ctx context.Context, call func(ctx context.Context) error, retry *retry
 		errorFunc = retry.shouldRetry
 	}
 
+	var quitAfterTimer *time.Timer
+	if retry.maxDuration != 0 {
+		quitAfterTimer = time.NewTimer(retry.maxDuration)
+		defer quitAfterTimer.Stop()
+	}
+
+	var lastErr error
 	return internal.Retry(ctx, bo, func() (stop bool, err error) {
-		ctxWithHeaders := setInvocationHeaders(ctx, invocationID, attempts)
-		err = call(ctxWithHeaders)
-		if err != nil && retry.maxAttempts != nil && attempts >= *retry.maxAttempts {
-			return true, fmt.Errorf("storage: retry failed after %v attempts; last error: %w", *retry.maxAttempts, err)
+		if retry.maxDuration != 0 {
+			select {
+			case <-quitAfterTimer.C:
+				if lastErr == nil {
+					return true, errors.New("storage: request not sent, choose a larger value for the retry deadline")
+				}
+				return true, fmt.Errorf("storage: retry timed out after %v attempts; last error: %w", attempts, lastErr)
+			default:
+			}
 		}
+
+		ctxWithHeaders := setInvocationHeaders(ctx, invocationID, attempts)
 		attempts++
-		retryable := errorFunc(err)
+		lastErr = call(ctxWithHeaders)
+		if lastErr != nil && retry.maxAttempts != nil && attempts >= *retry.maxAttempts {
+			return true, fmt.Errorf("storage: retry failed after %v attempts; last error: %w", *retry.maxAttempts, lastErr)
+		}
+		retryable := errorFunc(lastErr)
 		// Explicitly check context cancellation so that we can distinguish between a
 		// DEADLINE_EXCEEDED error from the server and a user-set context deadline.
 		// Unfortunately gRPC will codes.DeadlineExceeded (which may be retryable if it's
@@ -82,7 +101,7 @@ func run(ctx context.Context, call func(ctx context.Context) error, retry *retry
 		if ctxErr := ctx.Err(); errors.Is(ctxErr, context.Canceled) || errors.Is(ctxErr, context.DeadlineExceeded) {
 			retryable = false
 		}
-		return !retryable, err
+		return !retryable, lastErr
 	})
 }
 

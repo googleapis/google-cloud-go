@@ -2420,6 +2420,7 @@ type retryConfig struct {
 	policy      RetryPolicy
 	shouldRetry func(err error) bool
 	maxAttempts *int
+	maxDuration time.Duration
 }
 
 func (r *retryConfig) clone() *retryConfig {
@@ -2441,6 +2442,7 @@ func (r *retryConfig) clone() *retryConfig {
 		policy:      r.policy,
 		shouldRetry: r.shouldRetry,
 		maxAttempts: r.maxAttempts,
+		maxDuration: r.maxDuration,
 	}
 }
 
