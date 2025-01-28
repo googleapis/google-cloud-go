@@ -2,8 +2,6 @@ module cloud.google.com/go/parametermanager
 
 go 1.22.7
 
-toolchain go1.22.11
-
 require (
 	cloud.google.com/go/iam v1.3.1
 	github.com/googleapis/gax-go/v2 v2.14.1
