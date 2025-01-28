@@ -1002,12 +1002,22 @@ func TestOpenAppendableWriterMultipleFlushesEmulated(t *testing.T) {
 		w.Append = true
 		// This should chunk the request into three separate flushes to storage.
 		w.ChunkSize = MiB
+		var lastReportedOffset int64
+		w.ProgressFunc = func(offset int64) {
+			if offset != lastReportedOffset+MiB {
+				t.Errorf("incorrect progress report: got %d; want %d", offset, lastReportedOffset+MiB)
+			}
+			lastReportedOffset = offset
+		}
 		_, err = w.Write(randomBytes3MiB)
 		if err != nil {
 			t.Fatalf("writing test data: got %v; want ok", err)
 		}
 		if err := w.Close(); err != nil {
 			t.Fatalf("closing test data writer: got %v; want ok", err)
+		}
+		if lastReportedOffset != 3*MiB {
+			t.Errorf("incorrect final progress report: got %d; want %d", lastReportedOffset, 3*MiB)
 		}
 
 		if diff := cmp.Diff(w.Attrs().Name, objName); diff != "" {

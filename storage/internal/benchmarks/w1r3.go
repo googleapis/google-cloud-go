@@ -169,6 +169,7 @@ func (r *w1r3) run(ctx context.Context) error {
 			useDefaultChunkSize: opts.minChunkSize == useDefault || opts.maxChunkSize == useDefault,
 			objectPath:          r.objectPath,
 			timeout:             r.opts.timeoutPerOp,
+			appendWrites:        r.opts.appendWrites,
 		})
 	}, r.isWarmup)
 
