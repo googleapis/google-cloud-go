@@ -47,7 +47,7 @@ const (
 // idempotency information. It then calls the function with or without retries
 // as appropriate, using the configured settings.
 func run(ctx context.Context, call func(ctx context.Context) error, retry *retryConfig, isIdempotent bool) error {
-	attempts := 0
+	attempts := 1
 	invocationID := uuid.New().String()
 
 	if retry == nil {
@@ -88,11 +88,11 @@ func run(ctx context.Context, call func(ctx context.Context) error, retry *retry
 		}
 
 		ctxWithHeaders := setInvocationHeaders(ctx, invocationID, attempts)
-		attempts++
 		lastErr = call(ctxWithHeaders)
 		if lastErr != nil && retry.maxAttempts != nil && attempts >= *retry.maxAttempts {
 			return true, fmt.Errorf("storage: retry failed after %v attempts; last error: %w", *retry.maxAttempts, lastErr)
 		}
+		attempts++
 		retryable := errorFunc(lastErr)
 		// Explicitly check context cancellation so that we can distinguish between a
 		// DEADLINE_EXCEEDED error from the server and a user-set context deadline.
