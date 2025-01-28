@@ -1730,12 +1730,12 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 
 				var o *storagepb.Object
 				uploadBuff := func(ctx context.Context) error {
-					obj, err := gw.uploadBuffer(recvd, offset, doneReading)
+					obj, err := gw.uploadBuffer(ctx, recvd, offset, doneReading)
 					o = obj
 					return err
 				}
 
-				err = run(gw.ctx, uploadBuff, gw.settings.retry, s.idempotent)
+				err = run(bucketContext(gw.ctx, gw.bucket), uploadBuff, gw.settings.retry, s.idempotent)
 				if err != nil {
 					return err
 				}
@@ -2671,11 +2671,10 @@ type gRPCBidiWriteBufferSender interface {
 	// If flush is true, implementations must not return until the data in buf is
 	// stable. If finishWrite is true, implementations must return the object on
 	// success.
-	sendBuffer(buf []byte, offset int64, flush, finishWrite bool) (*storagepb.Object, error)
+	sendBuffer(ctx context.Context, buf []byte, offset int64, flush, finishWrite bool) (*storagepb.Object, error)
 }
 
 type gRPCOneshotBidiWriteBufferSender struct {
-	ctx          context.Context
 	firstMessage *storagepb.BidiWriteObjectRequest
 	raw          *gapic.Client
 	stream       storagepb.Storage_BidiWriteObjectClient
@@ -2696,17 +2695,16 @@ func (w *gRPCWriter) newGRPCOneshotBidiWriteBufferSender() (*gRPCOneshotBidiWrit
 	}
 
 	return &gRPCOneshotBidiWriteBufferSender{
-		ctx:          bucketContext(w.ctx, w.bucket),
 		firstMessage: firstMessage,
 		raw:          w.c.raw,
 		settings:     w.settings,
 	}, nil
 }
 
-func (s *gRPCOneshotBidiWriteBufferSender) sendBuffer(buf []byte, offset int64, flush, finishWrite bool) (obj *storagepb.Object, err error) {
+func (s *gRPCOneshotBidiWriteBufferSender) sendBuffer(ctx context.Context, buf []byte, offset int64, flush, finishWrite bool) (obj *storagepb.Object, err error) {
 	var firstMessage *storagepb.BidiWriteObjectRequest
 	if s.stream == nil {
-		s.stream, err = s.raw.BidiWriteObject(s.ctx, s.settings.gax...)
+		s.stream, err = s.raw.BidiWriteObject(ctx, s.settings.gax...)
 		if err != nil {
 			return
 		}
@@ -2742,7 +2740,6 @@ func (s *gRPCOneshotBidiWriteBufferSender) sendBuffer(buf []byte, offset int64, 
 }
 
 type gRPCResumableBidiWriteBufferSender struct {
-	ctx               context.Context
 	queryRetry        *retryConfig
 	upid              string
 	progress          func(int64)
@@ -2753,7 +2750,7 @@ type gRPCResumableBidiWriteBufferSender struct {
 	settings          *settings
 }
 
-func (w *gRPCWriter) newGRPCResumableBidiWriteBufferSender() (*gRPCResumableBidiWriteBufferSender, error) {
+func (w *gRPCWriter) newGRPCResumableBidiWriteBufferSender(ctx context.Context) (*gRPCResumableBidiWriteBufferSender, error) {
 	req := &storagepb.StartResumableWriteRequest{
 		WriteObjectSpec:           w.spec,
 		CommonObjectRequestParams: toProtoCommonObjectRequestParams(w.encryptionKey),
@@ -2763,7 +2760,6 @@ func (w *gRPCWriter) newGRPCResumableBidiWriteBufferSender() (*gRPCResumableBidi
 		ObjectChecksums: toProtoChecksums(w.sendCRC32C, w.attrs),
 	}
 
-	ctx := bucketContext(w.ctx, w.bucket)
 	var upid string
 	err := run(ctx, func(ctx context.Context) error {
 		upres, err := w.c.raw.StartResumableWrite(ctx, req, w.settings.gax...)
@@ -2783,7 +2779,6 @@ func (w *gRPCWriter) newGRPCResumableBidiWriteBufferSender() (*gRPCResumableBidi
 	}
 
 	return &gRPCResumableBidiWriteBufferSender{
-		ctx:               ctx,
 		queryRetry:        w.settings.retry,
 		upid:              upid,
 		progress:          w.progress,
@@ -2796,9 +2791,9 @@ func (w *gRPCWriter) newGRPCResumableBidiWriteBufferSender() (*gRPCResumableBidi
 
 // queryProgress is a helper that queries the status of the resumable upload
 // associated with the given upload ID.
-func (s *gRPCResumableBidiWriteBufferSender) queryProgress() (int64, error) {
+func (s *gRPCResumableBidiWriteBufferSender) queryProgress(ctx context.Context) (int64, error) {
 	var persistedSize int64
-	err := run(s.ctx, func(ctx context.Context) error {
+	err := run(ctx, func(ctx context.Context) error {
 		q, err := s.raw.QueryWriteStatus(ctx, &storagepb.QueryWriteStatusRequest{
 			UploadId: s.upid,
 		}, s.settings.gax...)
@@ -2810,15 +2805,15 @@ func (s *gRPCResumableBidiWriteBufferSender) queryProgress() (int64, error) {
 	return persistedSize, err
 }
 
-func (s *gRPCResumableBidiWriteBufferSender) sendBuffer(buf []byte, offset int64, flush, finishWrite bool) (obj *storagepb.Object, err error) {
+func (s *gRPCResumableBidiWriteBufferSender) sendBuffer(ctx context.Context, buf []byte, offset int64, flush, finishWrite bool) (obj *storagepb.Object, err error) {
 	reconnected := false
 	if s.stream == nil {
 		// Determine offset and reconnect
-		s.flushOffset, err = s.queryProgress()
+		s.flushOffset, err = s.queryProgress(ctx)
 		if err != nil {
 			return
 		}
-		s.stream, err = s.raw.BidiWriteObject(s.ctx, s.settings.gax...)
+		s.stream, err = s.raw.BidiWriteObject(ctx, s.settings.gax...)
 		if err != nil {
 			return
 		}
@@ -2890,7 +2885,7 @@ func (s *gRPCResumableBidiWriteBufferSender) sendBuffer(buf []byte, offset int64
 // The final Object is returned on success if doneReading is true.
 //
 // Returns object and any error that is not retriable.
-func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (obj *storagepb.Object, err error) {
+func (w *gRPCWriter) uploadBuffer(ctx context.Context, recvd int, start int64, doneReading bool) (obj *storagepb.Object, err error) {
 	if w.streamSender == nil {
 		if w.append {
 			// Appendable object semantics
@@ -2900,7 +2895,7 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (obj
 			w.streamSender, err = w.newGRPCOneshotBidiWriteBufferSender()
 		} else {
 			// Resumable write semantics
-			w.streamSender, err = w.newGRPCResumableBidiWriteBufferSender()
+			w.streamSender, err = w.newGRPCResumableBidiWriteBufferSender(ctx)
 		}
 		if err != nil {
 			return
@@ -2920,7 +2915,7 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (obj
 			l = len(data)
 			flush = true
 		}
-		obj, err = w.streamSender.sendBuffer(data[:l], offset, flush, flush && doneReading)
+		obj, err = w.streamSender.sendBuffer(ctx, data[:l], offset, flush, flush && doneReading)
 		if err != nil {
 			return nil, err
 		}

@@ -710,7 +710,7 @@ func (ac *AdminClient) SetGCPolicyWithOptions(ctx context.Context, table, family
 	return ac.UpdateFamily(ctx, table, family, Family{GCPolicy: policy}, familyOpts...)
 }
 
-// UpdateFamily updates column families' garbage colleciton policies and value type.
+// UpdateFamily updates column families' garbage collection policies and value type.
 func (ac *AdminClient) UpdateFamily(ctx context.Context, table, familyName string, family Family, opts ...UpdateFamilyOption) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
@@ -1436,7 +1436,7 @@ func (iac *InstanceAdminClient) InstanceInfo(ctx context.Context, instanceID str
 // AutoscalingConfig contains autoscaling configuration for a cluster.
 // For details, see https://cloud.google.com/bigtable/docs/autoscaling.
 type AutoscalingConfig struct {
-	// MinNodes sets the minumum number of nodes in a cluster. MinNodes must
+	// MinNodes sets the minimum number of nodes in a cluster. MinNodes must
 	// be 1 or greater.
 	MinNodes int
 	// MaxNodes sets the maximum number of nodes in a cluster. MaxNodes must be
@@ -1584,7 +1584,7 @@ func (iac *InstanceAdminClient) DeleteCluster(ctx context.Context, instanceID, c
 }
 
 // SetAutoscaling enables autoscaling on a cluster. To remove autoscaling, use
-// UpdateCluster. See AutoscalingConfig documentation for deatils.
+// UpdateCluster. See AutoscalingConfig documentation for details.
 func (iac *InstanceAdminClient) SetAutoscaling(ctx context.Context, instanceID, clusterID string, conf AutoscalingConfig) error {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	cluster := &btapb.Cluster{
@@ -2051,7 +2051,7 @@ func UpdateInstanceAndSyncClusters(ctx context.Context, iac *InstanceAdminClient
 			continue
 		}
 
-		// We update teh clusters autoscaling config, or its number of serve
+		// We update the clusters autoscaling config, or its number of serve
 		// nodes.
 		var updateErr error
 		if cluster.AutoscalingConfig != nil {
