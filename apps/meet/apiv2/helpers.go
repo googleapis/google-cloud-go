@@ -51,6 +51,7 @@ func DefaultAuthScopes() []string {
 	return []string{
 		"https://www.googleapis.com/auth/meetings.space.created",
 		"https://www.googleapis.com/auth/meetings.space.readonly",
+		"https://www.googleapis.com/auth/meetings.space.settings",
 	}
 }
 
