@@ -287,12 +287,8 @@ func (c *httpStorageClient) GetBucket(ctx context.Context, bucket string, conds 
 		return err
 	}, s.retry, s.idempotent)
 
-	var e *googleapi.Error
-	if ok := errors.As(err, &e); ok && e.Code == http.StatusNotFound {
-		return nil, ErrBucketNotExist
-	}
 	if err != nil {
-		return nil, err
+		return nil, formatBucketError(err)
 	}
 	return newBucket(resp)
 }
@@ -382,11 +378,7 @@ func (c *httpStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 			return err
 		}, s.retry, s.idempotent)
 		if err != nil {
-			var e *googleapi.Error
-			if ok := errors.As(err, &e); ok && e.Code == http.StatusNotFound {
-				err = ErrBucketNotExist
-			}
-			return "", err
+			return "", formatBucketError(err)
 		}
 		for _, item := range resp.Items {
 			it.items = append(it.items, newObject(item))
@@ -416,11 +408,7 @@ func (c *httpStorageClient) DeleteObject(ctx context.Context, bucket, object str
 		req.UserProject(s.userProject)
 	}
 	err := run(ctx, func(ctx context.Context) error { return req.Context(ctx).Do() }, s.retry, s.idempotent)
-	var e *googleapi.Error
-	if ok := errors.As(err, &e); ok && e.Code == http.StatusNotFound {
-		return ErrObjectNotExist
-	}
-	return err
+	return formatObjectErr(err)
 }
 
 func (c *httpStorageClient) GetObject(ctx context.Context, params *getObjectParams, opts ...storageOption) (*ObjectAttrs, error) {
@@ -445,12 +433,8 @@ func (c *httpStorageClient) GetObject(ctx context.Context, params *getObjectPara
 		obj, err = req.Context(ctx).Do()
 		return err
 	}, s.retry, s.idempotent)
-	var e *googleapi.Error
-	if ok := errors.As(err, &e); ok && e.Code == http.StatusNotFound {
-		return nil, ErrObjectNotExist
-	}
 	if err != nil {
-		return nil, err
+		return nil, formatObjectErr(err)
 	}
 	return newObject(obj), nil
 }
@@ -555,12 +539,8 @@ func (c *httpStorageClient) UpdateObject(ctx context.Context, params *updateObje
 	var obj *raw.Object
 	var err error
 	err = run(ctx, func(ctx context.Context) error { obj, err = call.Context(ctx).Do(); return err }, s.retry, s.idempotent)
-	var e *googleapi.Error
-	if errors.As(err, &e) && e.Code == http.StatusNotFound {
-		return nil, ErrObjectNotExist
-	}
 	if err != nil {
-		return nil, err
+		return nil, formatObjectErr(err)
 	}
 	return newObject(obj), nil
 }
@@ -585,9 +565,8 @@ func (c *httpStorageClient) RestoreObject(ctx context.Context, params *restoreOb
 	var obj *raw.Object
 	var err error
 	err = run(ctx, func(ctx context.Context) error { obj, err = req.Context(ctx).Do(); return err }, s.retry, s.idempotent)
-	var e *googleapi.Error
-	if ok := errors.As(err, &e); ok && e.Code == http.StatusNotFound {
-		return nil, ErrObjectNotExist
+	if err != nil {
+		return nil, formatObjectErr(err)
 	}
 	return newObject(obj), err
 }
@@ -610,9 +589,8 @@ func (c *httpStorageClient) MoveObject(ctx context.Context, params *moveObjectPa
 	var obj *raw.Object
 	var err error
 	err = run(ctx, func(ctx context.Context) error { obj, err = req.Context(ctx).Do(); return err }, s.retry, s.idempotent)
-	var e *googleapi.Error
-	if ok := errors.As(err, &e); ok && e.Code == http.StatusNotFound {
-		return nil, ErrObjectNotExist
+	if err != nil {
+		return nil, formatObjectErr(err)
 	}
 	return newObject(obj), err
 }
@@ -800,11 +778,7 @@ func (c *httpStorageClient) ComposeObject(ctx context.Context, req *composeObjec
 	retryCall := func(ctx context.Context) error { obj, err = call.Context(ctx).Do(); return err }
 
 	if err := run(ctx, retryCall, s.retry, s.idempotent); err != nil {
-		var e *googleapi.Error
-		if errors.As(err, &e) && e.Code == http.StatusNotFound {
-			return nil, fmt.Errorf("%w: %w", ErrObjectNotExist, err)
-		}
-		return nil, err
+		return nil, formatObjectErr(err)
 	}
 	return newObject(obj), nil
 }
@@ -851,11 +825,7 @@ func (c *httpStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 	retryCall := func(ctx context.Context) error { res, err = call.Context(ctx).Do(); return err }
 
 	if err := run(ctx, retryCall, s.retry, s.idempotent); err != nil {
-		var e *googleapi.Error
-		if errors.As(err, &e) && e.Code == http.StatusNotFound {
-			return nil, fmt.Errorf("%w: %w", ErrObjectNotExist, err)
-		}
-		return nil, err
+		return nil, formatObjectErr(err)
 	}
 
 	r := &rewriteObjectResponse{
@@ -1419,13 +1389,7 @@ func readerReopen(ctx context.Context, header http.Header, params *newRangeReade
 		err = run(ctx, func(ctx context.Context) error {
 			res, err = doDownload(ctx)
 			if err != nil {
-				var e *googleapi.Error
-				if errors.As(err, &e) {
-					if e.Code == http.StatusNotFound {
-						return ErrObjectNotExist
-					}
-				}
-				return err
+				return formatObjectErr(err)
 			}
 
 			if res.StatusCode == http.StatusNotFound {
@@ -1434,7 +1398,7 @@ func readerReopen(ctx context.Context, header http.Header, params *newRangeReade
 				return ErrObjectNotExist
 			}
 			if res.StatusCode < 200 || res.StatusCode > 299 {
-				body, _ := ioutil.ReadAll(res.Body)
+				body, _ := io.ReadAll(res.Body)
 				res.Body.Close()
 				return &googleapi.Error{
 					Code:   res.StatusCode,
