@@ -67,9 +67,11 @@ import (
 var signedURLMethods = map[string]bool{"DELETE": true, "GET": true, "HEAD": true, "POST": true, "PUT": true}
 
 var (
-	// ErrBucketNotExist indicates that the bucket does not exist.
+	// ErrBucketNotExist indicates that the bucket does not exist. It should be
+	// checked for using [errors.Is] instead of direct equality.
 	ErrBucketNotExist = errors.New("storage: bucket doesn't exist")
-	// ErrObjectNotExist indicates that the object does not exist.
+	// ErrObjectNotExist indicates that the object does not exist. It should be
+	// checked for using [errors.Is] instead of direct equality.
 	ErrObjectNotExist = errors.New("storage: object doesn't exist")
 	// errMethodNotSupported indicates that the method called is not currently supported by the client.
 	// TODO: Export this error when launching the transport-agnostic client.
