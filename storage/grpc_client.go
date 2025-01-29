@@ -1723,6 +1723,16 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 					return err
 				}
 
+				retryDeadline := defaultWriteChunkRetryDeadline
+				if params.chunkRetryDeadline != 0 {
+					retryDeadline = params.chunkRetryDeadline
+				}
+
+				if gw.settings.retry == nil {
+					gw.settings.retry = defaultRetry
+				}
+				gw.settings.retry.maxRetryDuration = retryDeadline
+
 				var o *storagepb.Object
 				uploadBuff := func(ctx context.Context) error {
 					obj, err := gw.uploadBuffer(ctx, recvd, offset, doneReading)
