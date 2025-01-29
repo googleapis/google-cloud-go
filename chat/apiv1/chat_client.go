@@ -1302,8 +1302,7 @@ func (c *Client) DeleteMembership(ctx context.Context, req *chatpb.DeleteMembers
 	return c.internalClient.DeleteMembership(ctx, req, opts...)
 }
 
-// CreateReaction creates a reaction and adds it to a message. Only unicode emojis are
-// supported. For an example, see
+// CreateReaction creates a reaction and adds it to a message. For an example, see
 // Add a reaction to a
 // message (at https://developers.google.com/workspace/chat/create-reactions).
 //
@@ -1323,8 +1322,7 @@ func (c *Client) ListReactions(ctx context.Context, req *chatpb.ListReactionsReq
 	return c.internalClient.ListReactions(ctx, req, opts...)
 }
 
-// DeleteReaction deletes a reaction to a message. Only unicode emojis are supported.
-// For an example, see
+// DeleteReaction deletes a reaction to a message. For an example, see
 // Delete a
 // reaction (at https://developers.google.com/workspace/chat/delete-reactions).
 //
@@ -3860,8 +3858,7 @@ func (c *restClient) DeleteMembership(ctx context.Context, req *chatpb.DeleteMem
 	return resp, nil
 }
 
-// CreateReaction creates a reaction and adds it to a message. Only unicode emojis are
-// supported. For an example, see
+// CreateReaction creates a reaction and adds it to a message. For an example, see
 // Add a reaction to a
 // message (at https://developers.google.com/workspace/chat/create-reactions).
 //
@@ -4009,8 +4006,7 @@ func (c *restClient) ListReactions(ctx context.Context, req *chatpb.ListReaction
 	return it
 }
 
-// DeleteReaction deletes a reaction to a message. Only unicode emojis are supported.
-// For an example, see
+// DeleteReaction deletes a reaction to a message. For an example, see
 // Delete a
 // reaction (at https://developers.google.com/workspace/chat/delete-reactions).
 //

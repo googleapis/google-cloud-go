@@ -336,7 +336,7 @@ func (x *ExpandedDataSetFilterExpressionList) GetFilterExpressions() []*Expanded
 	return nil
 }
 
-// A resource message representing a GA4 ExpandedDataSet.
+// A resource message representing an `ExpandedDataSet`.
 type ExpandedDataSet struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

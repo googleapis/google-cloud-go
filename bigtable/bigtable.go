@@ -1041,7 +1041,7 @@ func mutationsAreRetryable(muts []*btpb.Mutation) bool {
 	return true
 }
 
-// Overriden in tests
+// Overridden in tests
 var maxMutations = 100000
 
 // Apply mutates a row atomically. A mutation must contain at least one

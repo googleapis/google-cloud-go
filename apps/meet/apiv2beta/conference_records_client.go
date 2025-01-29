@@ -411,26 +411,23 @@ func (c *ConferenceRecordsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// GetConferenceRecord Developer Preview (at https://developers.google.com/workspace/preview).
-// Gets a conference record by conference ID.
+// GetConferenceRecord gets a conference record by conference ID.
 func (c *ConferenceRecordsClient) GetConferenceRecord(ctx context.Context, req *meetpb.GetConferenceRecordRequest, opts ...gax.CallOption) (*meetpb.ConferenceRecord, error) {
 	return c.internalClient.GetConferenceRecord(ctx, req, opts...)
 }
 
-// ListConferenceRecords Developer Preview (at https://developers.google.com/workspace/preview).
-// Lists the conference records by start time and in descending order.
+// ListConferenceRecords lists the conference records. By default, ordered by start time and in
+// descending order.
 func (c *ConferenceRecordsClient) ListConferenceRecords(ctx context.Context, req *meetpb.ListConferenceRecordsRequest, opts ...gax.CallOption) *ConferenceRecordIterator {
 	return c.internalClient.ListConferenceRecords(ctx, req, opts...)
 }
 
-// GetParticipant Developer Preview (at https://developers.google.com/workspace/preview).
-// Gets a participant by participant ID.
+// GetParticipant gets a participant by participant ID.
 func (c *ConferenceRecordsClient) GetParticipant(ctx context.Context, req *meetpb.GetParticipantRequest, opts ...gax.CallOption) (*meetpb.Participant, error) {
 	return c.internalClient.GetParticipant(ctx, req, opts...)
 }
 
-// ListParticipants Developer Preview (at https://developers.google.com/workspace/preview).
-// Lists the participants in a conference record, by default ordered by join
+// ListParticipants lists the participants in a conference record. By default, ordered by join
 // time and in descending order. This API supports fields as standard
 // parameters like every other API. However, when the fields request
 // parameter is omitted, this API defaults to 'participants/*, next_page_token'.
@@ -438,15 +435,13 @@ func (c *ConferenceRecordsClient) ListParticipants(ctx context.Context, req *mee
 	return c.internalClient.ListParticipants(ctx, req, opts...)
 }
 
-// GetParticipantSession Developer Preview (at https://developers.google.com/workspace/preview).
-// Gets a participant session by participant session ID.
+// GetParticipantSession gets a participant session by participant session ID.
 func (c *ConferenceRecordsClient) GetParticipantSession(ctx context.Context, req *meetpb.GetParticipantSessionRequest, opts ...gax.CallOption) (*meetpb.ParticipantSession, error) {
 	return c.internalClient.GetParticipantSession(ctx, req, opts...)
 }
 
-// ListParticipantSessions Developer Preview (at https://developers.google.com/workspace/preview).
-// Lists the participant sessions of a participant in a conference record, by
-// default ordered by join time and in descending order. This API supports
+// ListParticipantSessions lists the participant sessions of a participant in a conference record. By
+// default, ordered by join time and in descending order. This API supports
 // fields as standard parameters like every other API. However, when the
 // fields request parameter is omitted this API defaults to
 // 'participantsessions/*, next_page_token'.
@@ -454,32 +449,29 @@ func (c *ConferenceRecordsClient) ListParticipantSessions(ctx context.Context, r
 	return c.internalClient.ListParticipantSessions(ctx, req, opts...)
 }
 
-// GetRecording Developer Preview (at https://developers.google.com/workspace/preview).
-// Gets a recording by recording ID.
+// GetRecording gets a recording by recording ID.
 func (c *ConferenceRecordsClient) GetRecording(ctx context.Context, req *meetpb.GetRecordingRequest, opts ...gax.CallOption) (*meetpb.Recording, error) {
 	return c.internalClient.GetRecording(ctx, req, opts...)
 }
 
-// ListRecordings Developer Preview (at https://developers.google.com/workspace/preview).
-// Lists the recording resources from the conference record.
+// ListRecordings lists the recording resources from the conference record. By default,
+// ordered by start time and in ascending order.
 func (c *ConferenceRecordsClient) ListRecordings(ctx context.Context, req *meetpb.ListRecordingsRequest, opts ...gax.CallOption) *RecordingIterator {
 	return c.internalClient.ListRecordings(ctx, req, opts...)
 }
 
-// GetTranscript Developer Preview (at https://developers.google.com/workspace/preview).
-// Gets a transcript by transcript ID.
+// GetTranscript gets a transcript by transcript ID.
 func (c *ConferenceRecordsClient) GetTranscript(ctx context.Context, req *meetpb.GetTranscriptRequest, opts ...gax.CallOption) (*meetpb.Transcript, error) {
 	return c.internalClient.GetTranscript(ctx, req, opts...)
 }
 
-// ListTranscripts Developer Preview (at https://developers.google.com/workspace/preview).
-// Lists the set of transcripts from the conference record.
+// ListTranscripts lists the set of transcripts from the conference record. By default,
+// ordered by start time and in ascending order.
 func (c *ConferenceRecordsClient) ListTranscripts(ctx context.Context, req *meetpb.ListTranscriptsRequest, opts ...gax.CallOption) *TranscriptIterator {
 	return c.internalClient.ListTranscripts(ctx, req, opts...)
 }
 
-// GetTranscriptEntry Developer Preview (at https://developers.google.com/workspace/preview).
-// Gets a TranscriptEntry resource by entry ID.
+// GetTranscriptEntry gets a TranscriptEntry resource by entry ID.
 //
 // Note: The transcript entries returned by the Google Meet API might not
 // match the transcription found in the Google Docs transcript file. This can
@@ -488,8 +480,7 @@ func (c *ConferenceRecordsClient) GetTranscriptEntry(ctx context.Context, req *m
 	return c.internalClient.GetTranscriptEntry(ctx, req, opts...)
 }
 
-// ListTranscriptEntries Developer Preview (at https://developers.google.com/workspace/preview).
-// Lists the structured transcript entries per transcript. By default, ordered
+// ListTranscriptEntries lists the structured transcript entries per transcript. By default, ordered
 // by start time and in ascending order.
 //
 // Note: The transcript entries returned by the Google Meet API might not
@@ -1033,8 +1024,7 @@ func (c *conferenceRecordsGRPCClient) ListTranscriptEntries(ctx context.Context,
 	return it
 }
 
-// GetConferenceRecord Developer Preview (at https://developers.google.com/workspace/preview).
-// Gets a conference record by conference ID.
+// GetConferenceRecord gets a conference record by conference ID.
 func (c *conferenceRecordsRESTClient) GetConferenceRecord(ctx context.Context, req *meetpb.GetConferenceRecordRequest, opts ...gax.CallOption) (*meetpb.ConferenceRecord, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1084,8 +1074,8 @@ func (c *conferenceRecordsRESTClient) GetConferenceRecord(ctx context.Context, r
 	return resp, nil
 }
 
-// ListConferenceRecords Developer Preview (at https://developers.google.com/workspace/preview).
-// Lists the conference records by start time and in descending order.
+// ListConferenceRecords lists the conference records. By default, ordered by start time and in
+// descending order.
 func (c *conferenceRecordsRESTClient) ListConferenceRecords(ctx context.Context, req *meetpb.ListConferenceRecordsRequest, opts ...gax.CallOption) *ConferenceRecordIterator {
 	it := &ConferenceRecordIterator{}
 	req = proto.Clone(req).(*meetpb.ListConferenceRecordsRequest)
@@ -1166,8 +1156,7 @@ func (c *conferenceRecordsRESTClient) ListConferenceRecords(ctx context.Context,
 	return it
 }
 
-// GetParticipant Developer Preview (at https://developers.google.com/workspace/preview).
-// Gets a participant by participant ID.
+// GetParticipant gets a participant by participant ID.
 func (c *conferenceRecordsRESTClient) GetParticipant(ctx context.Context, req *meetpb.GetParticipantRequest, opts ...gax.CallOption) (*meetpb.Participant, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1217,8 +1206,7 @@ func (c *conferenceRecordsRESTClient) GetParticipant(ctx context.Context, req *m
 	return resp, nil
 }
 
-// ListParticipants Developer Preview (at https://developers.google.com/workspace/preview).
-// Lists the participants in a conference record, by default ordered by join
+// ListParticipants lists the participants in a conference record. By default, ordered by join
 // time and in descending order. This API supports fields as standard
 // parameters like every other API. However, when the fields request
 // parameter is omitted, this API defaults to 'participants/*, next_page_token'.
@@ -1302,8 +1290,7 @@ func (c *conferenceRecordsRESTClient) ListParticipants(ctx context.Context, req 
 	return it
 }
 
-// GetParticipantSession Developer Preview (at https://developers.google.com/workspace/preview).
-// Gets a participant session by participant session ID.
+// GetParticipantSession gets a participant session by participant session ID.
 func (c *conferenceRecordsRESTClient) GetParticipantSession(ctx context.Context, req *meetpb.GetParticipantSessionRequest, opts ...gax.CallOption) (*meetpb.ParticipantSession, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1353,9 +1340,8 @@ func (c *conferenceRecordsRESTClient) GetParticipantSession(ctx context.Context,
 	return resp, nil
 }
 
-// ListParticipantSessions Developer Preview (at https://developers.google.com/workspace/preview).
-// Lists the participant sessions of a participant in a conference record, by
-// default ordered by join time and in descending order. This API supports
+// ListParticipantSessions lists the participant sessions of a participant in a conference record. By
+// default, ordered by join time and in descending order. This API supports
 // fields as standard parameters like every other API. However, when the
 // fields request parameter is omitted this API defaults to
 // 'participantsessions/*, next_page_token'.
@@ -1439,8 +1425,7 @@ func (c *conferenceRecordsRESTClient) ListParticipantSessions(ctx context.Contex
 	return it
 }
 
-// GetRecording Developer Preview (at https://developers.google.com/workspace/preview).
-// Gets a recording by recording ID.
+// GetRecording gets a recording by recording ID.
 func (c *conferenceRecordsRESTClient) GetRecording(ctx context.Context, req *meetpb.GetRecordingRequest, opts ...gax.CallOption) (*meetpb.Recording, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1490,8 +1475,8 @@ func (c *conferenceRecordsRESTClient) GetRecording(ctx context.Context, req *mee
 	return resp, nil
 }
 
-// ListRecordings Developer Preview (at https://developers.google.com/workspace/preview).
-// Lists the recording resources from the conference record.
+// ListRecordings lists the recording resources from the conference record. By default,
+// ordered by start time and in ascending order.
 func (c *conferenceRecordsRESTClient) ListRecordings(ctx context.Context, req *meetpb.ListRecordingsRequest, opts ...gax.CallOption) *RecordingIterator {
 	it := &RecordingIterator{}
 	req = proto.Clone(req).(*meetpb.ListRecordingsRequest)
@@ -1569,8 +1554,7 @@ func (c *conferenceRecordsRESTClient) ListRecordings(ctx context.Context, req *m
 	return it
 }
 
-// GetTranscript Developer Preview (at https://developers.google.com/workspace/preview).
-// Gets a transcript by transcript ID.
+// GetTranscript gets a transcript by transcript ID.
 func (c *conferenceRecordsRESTClient) GetTranscript(ctx context.Context, req *meetpb.GetTranscriptRequest, opts ...gax.CallOption) (*meetpb.Transcript, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1620,8 +1604,8 @@ func (c *conferenceRecordsRESTClient) GetTranscript(ctx context.Context, req *me
 	return resp, nil
 }
 
-// ListTranscripts Developer Preview (at https://developers.google.com/workspace/preview).
-// Lists the set of transcripts from the conference record.
+// ListTranscripts lists the set of transcripts from the conference record. By default,
+// ordered by start time and in ascending order.
 func (c *conferenceRecordsRESTClient) ListTranscripts(ctx context.Context, req *meetpb.ListTranscriptsRequest, opts ...gax.CallOption) *TranscriptIterator {
 	it := &TranscriptIterator{}
 	req = proto.Clone(req).(*meetpb.ListTranscriptsRequest)
@@ -1699,8 +1683,7 @@ func (c *conferenceRecordsRESTClient) ListTranscripts(ctx context.Context, req *
 	return it
 }
 
-// GetTranscriptEntry Developer Preview (at https://developers.google.com/workspace/preview).
-// Gets a TranscriptEntry resource by entry ID.
+// GetTranscriptEntry gets a TranscriptEntry resource by entry ID.
 //
 // Note: The transcript entries returned by the Google Meet API might not
 // match the transcription found in the Google Docs transcript file. This can
@@ -1754,8 +1737,7 @@ func (c *conferenceRecordsRESTClient) GetTranscriptEntry(ctx context.Context, re
 	return resp, nil
 }
 
-// ListTranscriptEntries Developer Preview (at https://developers.google.com/workspace/preview).
-// Lists the structured transcript entries per transcript. By default, ordered
+// ListTranscriptEntries lists the structured transcript entries per transcript. By default, ordered
 // by start time and in ascending order.
 //
 // Note: The transcript entries returned by the Google Meet API might not

@@ -22,6 +22,7 @@ import (
 	"net"
 	"net/url"
 	"strings"
+	"time"
 
 	"cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/version"
@@ -67,14 +68,32 @@ func run(ctx context.Context, call func(ctx context.Context) error, retry *retry
 		errorFunc = retry.shouldRetry
 	}
 
+	var quitAfterTimer *time.Timer
+	if retry.maxRetryDuration != 0 {
+		quitAfterTimer = time.NewTimer(retry.maxRetryDuration)
+		defer quitAfterTimer.Stop()
+	}
+
+	var lastErr error
 	return internal.Retry(ctx, bo, func() (stop bool, err error) {
+		if retry.maxRetryDuration != 0 {
+			select {
+			case <-quitAfterTimer.C:
+				if lastErr == nil {
+					return true, fmt.Errorf("storage: request not sent, choose a larger value for the retry deadline (currently set to %s)", retry.maxRetryDuration)
+				}
+				return true, fmt.Errorf("storage: retry deadline of %s reached after %v attempts; last error: %w", retry.maxRetryDuration, attempts, lastErr)
+			default:
+			}
+		}
+
 		ctxWithHeaders := setInvocationHeaders(ctx, invocationID, attempts)
-		err = call(ctxWithHeaders)
-		if err != nil && retry.maxAttempts != nil && attempts >= *retry.maxAttempts {
-			return true, fmt.Errorf("storage: retry failed after %v attempts; last error: %w", *retry.maxAttempts, err)
+		lastErr = call(ctxWithHeaders)
+		if lastErr != nil && retry.maxAttempts != nil && attempts >= *retry.maxAttempts {
+			return true, fmt.Errorf("storage: retry failed after %v attempts; last error: %w", *retry.maxAttempts, lastErr)
 		}
 		attempts++
-		retryable := errorFunc(err)
+		retryable := errorFunc(lastErr)
 		// Explicitly check context cancellation so that we can distinguish between a
 		// DEADLINE_EXCEEDED error from the server and a user-set context deadline.
 		// Unfortunately gRPC will codes.DeadlineExceeded (which may be retryable if it's
@@ -82,7 +101,7 @@ func run(ctx context.Context, call func(ctx context.Context) error, retry *retry
 		if ctxErr := ctx.Err(); errors.Is(ctxErr, context.Canceled) || errors.Is(ctxErr, context.DeadlineExceeded) {
 			retryable = false
 		}
-		return !retryable, err
+		return !retryable, lastErr
 	})
 }
 

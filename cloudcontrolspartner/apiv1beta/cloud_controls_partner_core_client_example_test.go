@@ -58,6 +58,54 @@ func ExampleNewCloudControlsPartnerCoreRESTClient() {
 	_ = c
 }
 
+func ExampleCloudControlsPartnerCoreClient_CreateCustomer() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := cloudcontrolspartner.NewCloudControlsPartnerCoreClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cloudcontrolspartnerpb.CreateCustomerRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudcontrolspartner/apiv1beta/cloudcontrolspartnerpb#CreateCustomerRequest.
+	}
+	resp, err := c.CreateCustomer(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCloudControlsPartnerCoreClient_DeleteCustomer() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := cloudcontrolspartner.NewCloudControlsPartnerCoreClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cloudcontrolspartnerpb.DeleteCustomerRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudcontrolspartner/apiv1beta/cloudcontrolspartnerpb#DeleteCustomerRequest.
+	}
+	err = c.DeleteCustomer(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleCloudControlsPartnerCoreClient_GetCustomer() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -292,4 +340,29 @@ func ExampleCloudControlsPartnerCoreClient_ListWorkloads() {
 		// first call to Next(). Not safe for concurrent access.
 		_ = it.Response.(*cloudcontrolspartnerpb.ListWorkloadsResponse)
 	}
+}
+
+func ExampleCloudControlsPartnerCoreClient_UpdateCustomer() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := cloudcontrolspartner.NewCloudControlsPartnerCoreClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cloudcontrolspartnerpb.UpdateCustomerRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudcontrolspartner/apiv1beta/cloudcontrolspartnerpb#UpdateCustomerRequest.
+	}
+	resp, err := c.UpdateCustomer(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }
