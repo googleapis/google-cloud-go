@@ -1731,7 +1731,7 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 				if gw.settings.retry == nil {
 					gw.settings.retry = defaultRetry
 				}
-				gw.settings.retry.maxDuration = retryDeadline
+				gw.settings.retry.maxRetryDuration = retryDeadline
 
 				var o *storagepb.Object
 				uploadBuff := func(ctx context.Context) error {

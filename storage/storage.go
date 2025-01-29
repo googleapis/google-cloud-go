@@ -2420,7 +2420,10 @@ type retryConfig struct {
 	policy      RetryPolicy
 	shouldRetry func(err error) bool
 	maxAttempts *int
-	maxDuration time.Duration
+	// maxRetryDuration, if set, specifies a deadline after which the request
+	// will no longer be retried. A value of 0 allows infinite retries.
+	// maxRetryDuration is currently only set by Writer.ChunkRetryDeadline.
+	maxRetryDuration time.Duration
 }
 
 func (r *retryConfig) clone() *retryConfig {
@@ -2438,11 +2441,11 @@ func (r *retryConfig) clone() *retryConfig {
 	}
 
 	return &retryConfig{
-		backoff:     bo,
-		policy:      r.policy,
-		shouldRetry: r.shouldRetry,
-		maxAttempts: r.maxAttempts,
-		maxDuration: r.maxDuration,
+		backoff:          bo,
+		policy:           r.policy,
+		shouldRetry:      r.shouldRetry,
+		maxAttempts:      r.maxAttempts,
+		maxRetryDuration: r.maxRetryDuration,
 	}
 }
 

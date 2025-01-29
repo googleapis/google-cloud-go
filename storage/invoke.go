@@ -69,20 +69,20 @@ func run(ctx context.Context, call func(ctx context.Context) error, retry *retry
 	}
 
 	var quitAfterTimer *time.Timer
-	if retry.maxDuration != 0 {
-		quitAfterTimer = time.NewTimer(retry.maxDuration)
+	if retry.maxRetryDuration != 0 {
+		quitAfterTimer = time.NewTimer(retry.maxRetryDuration)
 		defer quitAfterTimer.Stop()
 	}
 
 	var lastErr error
 	return internal.Retry(ctx, bo, func() (stop bool, err error) {
-		if retry.maxDuration != 0 {
+		if retry.maxRetryDuration != 0 {
 			select {
 			case <-quitAfterTimer.C:
 				if lastErr == nil {
-					return true, errors.New("storage: request not sent, choose a larger value for the retry deadline")
+					return true, fmt.Errorf("storage: request not sent, choose a larger value for the retry deadline (currently set to %s)", retry.maxRetryDuration)
 				}
-				return true, fmt.Errorf("storage: retry timed out after %v attempts; last error: %w", attempts, lastErr)
+				return true, fmt.Errorf("storage: retry deadline of %s reached after %v attempts; last error: %w", retry.maxRetryDuration, attempts, lastErr)
 			default:
 			}
 		}
