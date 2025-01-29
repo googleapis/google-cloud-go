@@ -3750,7 +3750,7 @@ type internalAnalyticsAdminClient interface {
 // AnalyticsAdminClient is a client for interacting with Google Analytics Admin API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Service Interface for the Analytics Admin API (GA4).
+// Service Interface for the Google Analytics Admin API.
 type AnalyticsAdminClient struct {
 	// The internal transport-dependent client.
 	internalClient internalAnalyticsAdminClient
@@ -3789,7 +3789,7 @@ func (c *AnalyticsAdminClient) GetAccount(ctx context.Context, req *adminpb.GetA
 
 // ListAccounts returns all accounts accessible by the caller.
 //
-// Note that these accounts might not currently have GA4 properties.
+// Note that these accounts might not currently have GA properties.
 // Soft-deleted (ie: “trashed”) accounts are excluded by default.
 // Returns an empty list if no relevant accounts are found.
 func (c *AnalyticsAdminClient) ListAccounts(ctx context.Context, req *adminpb.ListAccountsRequest, opts ...gax.CallOption) *AccountIterator {
@@ -3826,14 +3826,13 @@ func (c *AnalyticsAdminClient) ListAccountSummaries(ctx context.Context, req *ad
 	return c.internalClient.ListAccountSummaries(ctx, req, opts...)
 }
 
-// GetProperty lookup for a single “GA4” Property.
+// GetProperty lookup for a single GA Property.
 func (c *AnalyticsAdminClient) GetProperty(ctx context.Context, req *adminpb.GetPropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
 	return c.internalClient.GetProperty(ctx, req, opts...)
 }
 
 // ListProperties returns child Properties under the specified parent Account.
 //
-// Only “GA4” properties will be returned.
 // Properties will be excluded if the caller does not have access.
 // Soft-deleted (ie: “trashed”) properties are excluded by default.
 // Returns an empty list if no relevant properties are found.
@@ -3841,7 +3840,8 @@ func (c *AnalyticsAdminClient) ListProperties(ctx context.Context, req *adminpb.
 	return c.internalClient.ListProperties(ctx, req, opts...)
 }
 
-// CreateProperty creates an “GA4” property with the specified location and attributes.
+// CreateProperty creates a Google Analytics property with the specified location and
+// attributes.
 func (c *AnalyticsAdminClient) CreateProperty(ctx context.Context, req *adminpb.CreatePropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
 	return c.internalClient.CreateProperty(ctx, req, opts...)
 }
@@ -3856,7 +3856,7 @@ func (c *AnalyticsAdminClient) CreateProperty(ctx context.Context, req *adminpb.
 // will be permanently purged.
 // https://support.google.com/analytics/answer/6154772 (at https://support.google.com/analytics/answer/6154772)
 //
-// Returns an error if the target is not found, or is not a GA4 Property.
+// Returns an error if the target is not found.
 func (c *AnalyticsAdminClient) DeleteProperty(ctx context.Context, req *adminpb.DeletePropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
 	return c.internalClient.DeleteProperty(ctx, req, opts...)
 }
@@ -3916,7 +3916,7 @@ func (c *AnalyticsAdminClient) GetDataSharingSettings(ctx context.Context, req *
 	return c.internalClient.GetDataSharingSettings(ctx, req, opts...)
 }
 
-// GetMeasurementProtocolSecret lookup for a single “GA4” MeasurementProtocolSecret.
+// GetMeasurementProtocolSecret lookup for a single MeasurementProtocolSecret.
 func (c *AnalyticsAdminClient) GetMeasurementProtocolSecret(ctx context.Context, req *adminpb.GetMeasurementProtocolSecretRequest, opts ...gax.CallOption) (*adminpb.MeasurementProtocolSecret, error) {
 	return c.internalClient.GetMeasurementProtocolSecret(ctx, req, opts...)
 }
@@ -3979,6 +3979,9 @@ func (c *AnalyticsAdminClient) ListSKAdNetworkConversionValueSchemas(ctx context
 
 // SearchChangeHistoryEvents searches through all changes to an account or its children given the
 // specified set of filters.
+//
+// Only returns the subset of changes supported by the API. The UI may return
+// additional changes.
 func (c *AnalyticsAdminClient) SearchChangeHistoryEvents(ctx context.Context, req *adminpb.SearchChangeHistoryEventsRequest, opts ...gax.CallOption) *ChangeHistoryEventIterator {
 	return c.internalClient.SearchChangeHistoryEvents(ctx, req, opts...)
 }
@@ -4287,12 +4290,17 @@ func (c *AnalyticsAdminClient) UpdateAttributionSettings(ctx context.Context, re
 // only be requested on Google Analytics 360 properties. This method is only
 // available to Administrators.
 //
-// These data access records include GA4 UI Reporting, GA4 UI Explorations,
-// GA4 Data API, and other products like Firebase & Admob that can retrieve
+// These data access records include GA UI Reporting, GA UI Explorations,
+// GA Data API, and other products like Firebase & Admob that can retrieve
 // data from Google Analytics through a linkage. These records don’t include
 // property configuration changes like adding a stream or changing a
 // property’s time zone. For configuration change history, see
 // searchChangeHistoryEvents (at https://developers.google.com/analytics/devguides/config/admin/v1/rest/v1alpha/accounts/searchChangeHistoryEvents).
+//
+// To give your feedback on this API, complete the Google Analytics Access
+// Reports
+// feedback (at https://docs.google.com/forms/d/e/1FAIpQLSdmEBUrMzAEdiEKk5TV5dEHvDUZDRlgWYdQdAeSdtR4hVjEhw/viewform)
+// form.
 func (c *AnalyticsAdminClient) RunAccessReport(ctx context.Context, req *adminpb.RunAccessReportRequest, opts ...gax.CallOption) (*adminpb.RunAccessReportResponse, error) {
 	return c.internalClient.RunAccessReport(ctx, req, opts...)
 }
@@ -4672,7 +4680,7 @@ type analyticsAdminGRPCClient struct {
 // NewAnalyticsAdminClient creates a new analytics admin service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Service Interface for the Analytics Admin API (GA4).
+// Service Interface for the Google Analytics Admin API.
 func NewAnalyticsAdminClient(ctx context.Context, opts ...option.ClientOption) (*AnalyticsAdminClient, error) {
 	clientOpts := defaultAnalyticsAdminGRPCClientOptions()
 	if newAnalyticsAdminClientHook != nil {
@@ -4746,7 +4754,7 @@ type analyticsAdminRESTClient struct {
 
 // NewAnalyticsAdminRESTClient creates a new analytics admin service rest client.
 //
-// Service Interface for the Analytics Admin API (GA4).
+// Service Interface for the Google Analytics Admin API.
 func NewAnalyticsAdminRESTClient(ctx context.Context, opts ...option.ClientOption) (*AnalyticsAdminClient, error) {
 	clientOpts := append(defaultAnalyticsAdminRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -8164,7 +8172,7 @@ func (c *analyticsAdminRESTClient) GetAccount(ctx context.Context, req *adminpb.
 
 // ListAccounts returns all accounts accessible by the caller.
 //
-// Note that these accounts might not currently have GA4 properties.
+// Note that these accounts might not currently have GA properties.
 // Soft-deleted (ie: “trashed”) accounts are excluded by default.
 // Returns an empty list if no relevant accounts are found.
 func (c *analyticsAdminRESTClient) ListAccounts(ctx context.Context, req *adminpb.ListAccountsRequest, opts ...gax.CallOption) *AccountIterator {
@@ -8487,7 +8495,7 @@ func (c *analyticsAdminRESTClient) ListAccountSummaries(ctx context.Context, req
 	return it
 }
 
-// GetProperty lookup for a single “GA4” Property.
+// GetProperty lookup for a single GA Property.
 func (c *analyticsAdminRESTClient) GetProperty(ctx context.Context, req *adminpb.GetPropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -8539,7 +8547,6 @@ func (c *analyticsAdminRESTClient) GetProperty(ctx context.Context, req *adminpb
 
 // ListProperties returns child Properties under the specified parent Account.
 //
-// Only “GA4” properties will be returned.
 // Properties will be excluded if the caller does not have access.
 // Soft-deleted (ie: “trashed”) properties are excluded by default.
 // Returns an empty list if no relevant properties are found.
@@ -8624,7 +8631,8 @@ func (c *analyticsAdminRESTClient) ListProperties(ctx context.Context, req *admi
 	return it
 }
 
-// CreateProperty creates an “GA4” property with the specified location and attributes.
+// CreateProperty creates a Google Analytics property with the specified location and
+// attributes.
 func (c *analyticsAdminRESTClient) CreateProperty(ctx context.Context, req *adminpb.CreatePropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetProperty()
@@ -8688,7 +8696,7 @@ func (c *analyticsAdminRESTClient) CreateProperty(ctx context.Context, req *admi
 // will be permanently purged.
 // https://support.google.com/analytics/answer/6154772 (at https://support.google.com/analytics/answer/6154772)
 //
-// Returns an error if the target is not found, or is not a GA4 Property.
+// Returns an error if the target is not found.
 func (c *analyticsAdminRESTClient) DeleteProperty(ctx context.Context, req *adminpb.DeletePropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -9311,7 +9319,7 @@ func (c *analyticsAdminRESTClient) GetDataSharingSettings(ctx context.Context, r
 	return resp, nil
 }
 
-// GetMeasurementProtocolSecret lookup for a single “GA4” MeasurementProtocolSecret.
+// GetMeasurementProtocolSecret lookup for a single MeasurementProtocolSecret.
 func (c *analyticsAdminRESTClient) GetMeasurementProtocolSecret(ctx context.Context, req *adminpb.GetMeasurementProtocolSecretRequest, opts ...gax.CallOption) (*adminpb.MeasurementProtocolSecret, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -9943,6 +9951,9 @@ func (c *analyticsAdminRESTClient) ListSKAdNetworkConversionValueSchemas(ctx con
 
 // SearchChangeHistoryEvents searches through all changes to an account or its children given the
 // specified set of filters.
+//
+// Only returns the subset of changes supported by the API. The UI may return
+// additional changes.
 func (c *analyticsAdminRESTClient) SearchChangeHistoryEvents(ctx context.Context, req *adminpb.SearchChangeHistoryEventsRequest, opts ...gax.CallOption) *ChangeHistoryEventIterator {
 	it := &ChangeHistoryEventIterator{}
 	req = proto.Clone(req).(*adminpb.SearchChangeHistoryEventsRequest)
@@ -13028,12 +13039,17 @@ func (c *analyticsAdminRESTClient) UpdateAttributionSettings(ctx context.Context
 // only be requested on Google Analytics 360 properties. This method is only
 // available to Administrators.
 //
-// These data access records include GA4 UI Reporting, GA4 UI Explorations,
-// GA4 Data API, and other products like Firebase & Admob that can retrieve
+// These data access records include GA UI Reporting, GA UI Explorations,
+// GA Data API, and other products like Firebase & Admob that can retrieve
 // data from Google Analytics through a linkage. These records don’t include
 // property configuration changes like adding a stream or changing a
 // property’s time zone. For configuration change history, see
 // searchChangeHistoryEvents (at https://developers.google.com/analytics/devguides/config/admin/v1/rest/v1alpha/accounts/searchChangeHistoryEvents).
+//
+// To give your feedback on this API, complete the Google Analytics Access
+// Reports
+// feedback (at https://docs.google.com/forms/d/e/1FAIpQLSdmEBUrMzAEdiEKk5TV5dEHvDUZDRlgWYdQdAeSdtR4hVjEhw/viewform)
+// form.
 func (c *analyticsAdminRESTClient) RunAccessReport(ctx context.Context, req *adminpb.RunAccessReportRequest, opts ...gax.CallOption) (*adminpb.RunAccessReportResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
