@@ -1,6 +1,4 @@
-go 1.21.13
-
-toolchain go1.23.0
+go 1.22.7
 
 use (
 	.
@@ -108,6 +106,7 @@ use (
 	./maps
 	./mediatranslation
 	./memcache
+	./memorystore
 	./metastore
 	./migrationcenter
 	./monitoring
@@ -124,6 +123,7 @@ use (
 	./osconfig
 	./oslogin
 	./parallelstore
+	./parametermanager
 	./phishingprotection
 	./policysimulator
 	./policytroubleshooter

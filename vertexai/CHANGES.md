@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.3](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.13.2...vertexai/v0.13.3) (2024-12-19)
+
+
+### Bug Fixes
+
+* **vertexai:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [0.13.2](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.13.1...vertexai/v0.13.2) (2024-11-04)
 
 

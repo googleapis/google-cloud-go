@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -29,7 +29,6 @@ import (
 	cxpb "cloud.google.com/go/dialogflow/cx/apiv3/cxpb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -333,6 +332,8 @@ type securitySettingsGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewSecuritySettingsClient creates a new security settings service client based on gRPC.
@@ -359,6 +360,7 @@ func NewSecuritySettingsClient(ctx context.Context, opts ...option.ClientOption)
 		connPool:               connPool,
 		securitySettingsClient: cxpb.NewSecuritySettingsServiceClient(connPool),
 		CallOptions:            &client.CallOptions,
+		logger:                 internaloption.GetLogger(opts),
 		operationsClient:       longrunningpb.NewOperationsClient(connPool),
 		locationsClient:        locationpb.NewLocationsClient(connPool),
 	}
@@ -407,6 +409,8 @@ type securitySettingsRESTClient struct {
 
 	// Points back to the CallOptions field of the containing SecuritySettingsClient
 	CallOptions **SecuritySettingsCallOptions
+
+	logger *slog.Logger
 }
 
 // NewSecuritySettingsRESTClient creates a new security settings service rest client.
@@ -424,6 +428,7 @@ func NewSecuritySettingsRESTClient(ctx context.Context, opts ...option.ClientOpt
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -476,7 +481,7 @@ func (c *securitySettingsGRPCClient) CreateSecuritySettings(ctx context.Context,
 	var resp *cxpb.SecuritySettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.securitySettingsClient.CreateSecuritySettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.securitySettingsClient.CreateSecuritySettings, req, settings.GRPC, c.logger, "CreateSecuritySettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -494,7 +499,7 @@ func (c *securitySettingsGRPCClient) GetSecuritySettings(ctx context.Context, re
 	var resp *cxpb.SecuritySettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.securitySettingsClient.GetSecuritySettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.securitySettingsClient.GetSecuritySettings, req, settings.GRPC, c.logger, "GetSecuritySettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -512,7 +517,7 @@ func (c *securitySettingsGRPCClient) UpdateSecuritySettings(ctx context.Context,
 	var resp *cxpb.SecuritySettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.securitySettingsClient.UpdateSecuritySettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.securitySettingsClient.UpdateSecuritySettings, req, settings.GRPC, c.logger, "UpdateSecuritySettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -541,7 +546,7 @@ func (c *securitySettingsGRPCClient) ListSecuritySettings(ctx context.Context, r
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.securitySettingsClient.ListSecuritySettings(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.securitySettingsClient.ListSecuritySettings, req, settings.GRPC, c.logger, "ListSecuritySettings")
 			return err
 		}, opts...)
 		if err != nil {
@@ -575,7 +580,7 @@ func (c *securitySettingsGRPCClient) DeleteSecuritySettings(ctx context.Context,
 	opts = append((*c.CallOptions).DeleteSecuritySettings[0:len((*c.CallOptions).DeleteSecuritySettings):len((*c.CallOptions).DeleteSecuritySettings)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.securitySettingsClient.DeleteSecuritySettings(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.securitySettingsClient.DeleteSecuritySettings, req, settings.GRPC, c.logger, "DeleteSecuritySettings")
 		return err
 	}, opts...)
 	return err
@@ -590,7 +595,7 @@ func (c *securitySettingsGRPCClient) GetLocation(ctx context.Context, req *locat
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -619,7 +624,7 @@ func (c *securitySettingsGRPCClient) ListLocations(ctx context.Context, req *loc
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -653,7 +658,7 @@ func (c *securitySettingsGRPCClient) CancelOperation(ctx context.Context, req *l
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -668,7 +673,7 @@ func (c *securitySettingsGRPCClient) GetOperation(ctx context.Context, req *long
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -697,7 +702,7 @@ func (c *securitySettingsGRPCClient) ListOperations(ctx context.Context, req *lo
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -763,17 +768,7 @@ func (c *securitySettingsRESTClient) CreateSecuritySettings(ctx context.Context,
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateSecuritySettings")
 		if err != nil {
 			return err
 		}
@@ -825,17 +820,7 @@ func (c *securitySettingsRESTClient) GetSecuritySettings(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSecuritySettings")
 		if err != nil {
 			return err
 		}
@@ -900,17 +885,7 @@ func (c *securitySettingsRESTClient) UpdateSecuritySettings(ctx context.Context,
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateSecuritySettings")
 		if err != nil {
 			return err
 		}
@@ -972,21 +947,10 @@ func (c *securitySettingsRESTClient) ListSecuritySettings(ctx context.Context, r
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSecuritySettings")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1047,15 +1011,8 @@ func (c *securitySettingsRESTClient) DeleteSecuritySettings(ctx context.Context,
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteSecuritySettings")
+		return err
 	}, opts...)
 }
 
@@ -1092,17 +1049,7 @@ func (c *securitySettingsRESTClient) GetLocation(ctx context.Context, req *locat
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -1167,21 +1114,10 @@ func (c *securitySettingsRESTClient) ListLocations(ctx context.Context, req *loc
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1241,15 +1177,8 @@ func (c *securitySettingsRESTClient) CancelOperation(ctx context.Context, req *l
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -1286,17 +1215,7 @@ func (c *securitySettingsRESTClient) GetOperation(ctx context.Context, req *long
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -1361,21 +1280,10 @@ func (c *securitySettingsRESTClient) ListOperations(ctx context.Context, req *lo
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

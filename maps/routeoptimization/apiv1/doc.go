@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,9 @@
 // Package routeoptimization is an auto-generated package for the
 // Route Optimization API.
 //
-// Route Optimization API.
+// The Route Optimization API assigns tasks and routes to a vehicle fleet,
+// optimizing against the objectives and constraints that you supply for your
+// transportation goals.
 //
 //	NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //

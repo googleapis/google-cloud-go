@@ -13,10 +13,7 @@
     "commitMessageAction": "update",
     "groupName": "deps",
     "ignoreDeps": [
-        "golang.org/x/mod",
-        "golang.org/x/tools",
-        "google.golang.org/genproto",
-        "github.com/google/pprof"
+        "google.golang.org/genproto"
     ],
     "ignorePaths": [
         "**/snippets/**"
@@ -33,7 +30,7 @@
     ],
     "force": {
         "constraints": {
-            "go": "1.21"
+            "go": "1.22"
         }
     }
 }

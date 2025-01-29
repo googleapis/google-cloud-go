@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	lfppb "cloud.google.com/go/shopping/merchant/lfp/apiv1beta/lfppb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -252,6 +251,8 @@ type lfpStoreGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewLfpStoreClient creates a new lfp store service client based on gRPC.
@@ -280,6 +281,7 @@ func NewLfpStoreClient(ctx context.Context, opts ...option.ClientOption) (*LfpSt
 		connPool:       connPool,
 		lfpStoreClient: lfppb.NewLfpStoreServiceClient(connPool),
 		CallOptions:    &client.CallOptions,
+		logger:         internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -326,6 +328,8 @@ type lfpStoreRESTClient struct {
 
 	// Points back to the CallOptions field of the containing LfpStoreClient
 	CallOptions **LfpStoreCallOptions
+
+	logger *slog.Logger
 }
 
 // NewLfpStoreRESTClient creates a new lfp store service rest client.
@@ -345,6 +349,7 @@ func NewLfpStoreRESTClient(ctx context.Context, opts ...option.ClientOption) (*L
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -397,7 +402,7 @@ func (c *lfpStoreGRPCClient) GetLfpStore(ctx context.Context, req *lfppb.GetLfpS
 	var resp *lfppb.LfpStore
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.lfpStoreClient.GetLfpStore(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.lfpStoreClient.GetLfpStore, req, settings.GRPC, c.logger, "GetLfpStore")
 		return err
 	}, opts...)
 	if err != nil {
@@ -415,7 +420,7 @@ func (c *lfpStoreGRPCClient) InsertLfpStore(ctx context.Context, req *lfppb.Inse
 	var resp *lfppb.LfpStore
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.lfpStoreClient.InsertLfpStore(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.lfpStoreClient.InsertLfpStore, req, settings.GRPC, c.logger, "InsertLfpStore")
 		return err
 	}, opts...)
 	if err != nil {
@@ -432,7 +437,7 @@ func (c *lfpStoreGRPCClient) DeleteLfpStore(ctx context.Context, req *lfppb.Dele
 	opts = append((*c.CallOptions).DeleteLfpStore[0:len((*c.CallOptions).DeleteLfpStore):len((*c.CallOptions).DeleteLfpStore)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.lfpStoreClient.DeleteLfpStore(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.lfpStoreClient.DeleteLfpStore, req, settings.GRPC, c.logger, "DeleteLfpStore")
 		return err
 	}, opts...)
 	return err
@@ -458,7 +463,7 @@ func (c *lfpStoreGRPCClient) ListLfpStores(ctx context.Context, req *lfppb.ListL
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.lfpStoreClient.ListLfpStores(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.lfpStoreClient.ListLfpStores, req, settings.GRPC, c.logger, "ListLfpStores")
 			return err
 		}, opts...)
 		if err != nil {
@@ -517,17 +522,7 @@ func (c *lfpStoreRESTClient) GetLfpStore(ctx context.Context, req *lfppb.GetLfpS
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLfpStore")
 		if err != nil {
 			return err
 		}
@@ -585,17 +580,7 @@ func (c *lfpStoreRESTClient) InsertLfpStore(ctx context.Context, req *lfppb.Inse
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "InsertLfpStore")
 		if err != nil {
 			return err
 		}
@@ -642,15 +627,8 @@ func (c *lfpStoreRESTClient) DeleteLfpStore(ctx context.Context, req *lfppb.Dele
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteLfpStore")
+		return err
 	}, opts...)
 }
 
@@ -701,21 +679,10 @@ func (c *lfpStoreRESTClient) ListLfpStores(ctx context.Context, req *lfppb.ListL
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLfpStores")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

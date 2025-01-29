@@ -89,6 +89,7 @@ modules:
   - maps
   - mediatranslation
   - memcache
+  - memorystore
   - metastore
   - migrationcenter
   - monitoring
@@ -105,6 +106,7 @@ modules:
   - osconfig
   - oslogin
   - parallelstore
+  - parametermanager
   - phishingprotection
   - policysimulator
   - policytroubleshooter
@@ -287,6 +289,9 @@ service-configs:
   - input-directory: google/ai/generativelanguage/v1
     service-config: generativelanguage_v1.yaml
     import-path: cloud.google.com/go/ai/generativelanguage/apiv1
+  - input-directory: google/ai/generativelanguage/v1alpha
+    service-config: generativelanguage_v1alpha.yaml
+    import-path: cloud.google.com/go/ai/generativelanguage/apiv1alpha
   - input-directory: google/ai/generativelanguage/v1beta
     service-config: generativelanguage_v1beta.yaml
     import-path: cloud.google.com/go/ai/generativelanguage/apiv1beta
@@ -500,6 +505,9 @@ service-configs:
   - input-directory: google/api/cloudquotas/v1
     service-config: cloudquotas_v1.yaml
     import-path: cloud.google.com/go/cloudquotas/apiv1
+  - input-directory: google/api/cloudquotas/v1beta
+    service-config: cloudquotas_v1beta.yaml
+    import-path: cloud.google.com/go/cloudquotas/apiv1beta
   - input-directory: google/cloud/commerce/consumer/procurement/v1
     service-config: cloudcommerceconsumerprocurement_v1.yaml
     import-path: cloud.google.com/go/commerce/consumer/procurement/apiv1
@@ -675,6 +683,12 @@ service-configs:
   - input-directory: google/cloud/memcache/v1beta2
     service-config: memcache_v1beta2.yaml
     import-path: cloud.google.com/go/memcache/apiv1beta2
+  - input-directory: google/cloud/memorystore/v1
+    service-config: memorystore_v1.yaml
+    import-path: cloud.google.com/go/memorystore/apiv1
+  - input-directory: google/cloud/memorystore/v1beta
+    service-config: memorystore_v1beta.yaml
+    import-path: cloud.google.com/go/memorystore/apiv1beta
   - input-directory: google/cloud/metastore/v1
     service-config: metastore_v1.yaml
     import-path: cloud.google.com/go/metastore/apiv1
@@ -759,6 +773,9 @@ service-configs:
   - input-directory: google/cloud/parallelstore/v1beta
     service-config: parallelstore_v1beta.yaml
     import-path: cloud.google.com/go/parallelstore/apiv1beta
+  - input-directory: google/cloud/parametermanager/v1
+    service-config: parametermanager_v1.yaml
+    import-path: cloud.google.com/go/parametermanager/apiv1
   - input-directory: google/cloud/phishingprotection/v1beta1
     service-config: phishingprotection_v1beta1.yaml
     import-path: cloud.google.com/go/phishingprotection/apiv1beta1
@@ -929,6 +946,9 @@ service-configs:
   - input-directory: google/shopping/merchant/reports/v1beta
     service-config: merchantapi_v1beta.yaml
     import-path: cloud.google.com/go/shopping/merchant/reports/apiv1beta
+  - input-directory: google/shopping/merchant/reviews/v1beta
+    service-config: merchantapi_v1beta.yaml
+    import-path: cloud.google.com/go/shopping/merchant/reviews/apiv1beta
   - input-directory: google/shopping/type
     service-config:
     import-path: cloud.google.com/go/shopping/type

@@ -1,6 +1,20 @@
 # Changelog
 
 
+## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.8.0...confidentialcomputing/v1.8.1) (2025-01-02)
+
+
+### Bug Fixes
+
+* **confidentialcomputing:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.7.2...confidentialcomputing/v1.8.0) (2024-12-04)
+
+
+### Features
+
+* **confidentialcomputing:** Add a token_type options proto to allow for customization of specific token types. Added the first token type option to hold principal tag token options ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+
 ## [1.7.2](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.7.1...confidentialcomputing/v1.7.2) (2024-10-23)
 
 

@@ -17,6 +17,7 @@ package storage
 import (
 	"bytes"
 	"crypto/md5"
+	"fmt"
 	"hash/crc32"
 	"math/rand"
 	"testing"
@@ -24,8 +25,12 @@ import (
 
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/mem"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/protoadapt"
+	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/testing/protocmp"
 )
 
@@ -88,39 +93,63 @@ func TestBytesCodecV2(t *testing.T) {
 
 	for _, test := range []struct {
 		desc        string
-		resp        *storagepb.ReadObjectResponse
+		resp        *storagepb.BidiReadObjectResponse
 		wantContent []byte
 	}{
 		{
 			desc: "filled object response",
-			resp: &storagepb.ReadObjectResponse{
-				ChecksummedData: &storagepb.ChecksummedData{
-					Content: content,
-					Crc32C:  &crc32c,
-				},
-				ObjectChecksums: &storagepb.ObjectChecksums{
-					Crc32C:  &crc32c,
-					Md5Hash: md5,
-				},
-				ContentRange: &storagepb.ContentRange{
-					Start:          0,
-					End:            1025,
-					CompleteLength: 1025,
+			resp: &storagepb.BidiReadObjectResponse{
+				ObjectDataRanges: []*storagepb.ObjectRangeData{
+					{
+						ChecksummedData: &storagepb.ChecksummedData{
+							Content: content,
+							Crc32C:  &crc32c,
+						},
+						ReadRange: &storagepb.ReadRange{
+							ReadOffset: 0,
+							ReadLength: 1025,
+							ReadId:     1,
+						},
+						RangeEnd: true,
+					},
 				},
 				Metadata: metadata,
+				ReadHandle: &storagepb.BidiReadHandle{
+					Handle: []byte("abcde"),
+				},
 			},
 			wantContent: content,
 		},
 		{
 			desc:        "empty object response",
-			resp:        &storagepb.ReadObjectResponse{},
+			resp:        &storagepb.BidiReadObjectResponse{},
 			wantContent: []byte{},
 		},
 		{
 			desc: "partially empty",
-			resp: &storagepb.ReadObjectResponse{
-				ChecksummedData: &storagepb.ChecksummedData{},
-				ObjectChecksums: &storagepb.ObjectChecksums{Md5Hash: md5},
+			resp: &storagepb.BidiReadObjectResponse{
+				ObjectDataRanges: []*storagepb.ObjectRangeData{
+					{
+						ChecksummedData: &storagepb.ChecksummedData{},
+					},
+				},
+				Metadata: &storagepb.Object{
+					Checksums: &storagepb.ObjectChecksums{
+						Md5Hash: md5,
+					},
+				},
+			},
+			wantContent: []byte{},
+		},
+		{
+			desc: "empty ObjectDataRanges",
+			resp: &storagepb.BidiReadObjectResponse{
+				ObjectDataRanges: []*storagepb.ObjectRangeData{},
+				Metadata: &storagepb.Object{
+					Checksums: &storagepb.ObjectChecksums{
+						Md5Hash: md5,
+					},
+				},
 			},
 			wantContent: []byte{},
 		},
@@ -199,7 +228,7 @@ func TestBytesCodecV2(t *testing.T) {
 					}
 
 					// Compare the result with the original ReadObjectResponse, without the content
-					if diff := cmp.Diff(decoder.msg, test.resp, protocmp.Transform(), protocmp.IgnoreMessages(&storagepb.ChecksummedData{})); diff != "" {
+					if diff := cmp.Diff(decoder.msg, test.resp, protocmp.Transform(), protocmp.IgnoreMessages(&storagepb.ObjectRangeData{})); diff != "" {
 						t.Errorf("cmp.Diff message: got(-),want(+):\n%s", diff)
 					}
 
@@ -216,5 +245,92 @@ func TestBytesCodecV2(t *testing.T) {
 				})
 			}
 		})
+	}
+}
+
+func str(s *status.Status) string {
+	if s == nil {
+		return "nil"
+	}
+	if s.Proto() == nil {
+		return "<Code=OK>"
+	}
+	return fmt.Sprintf("<Code=%v, Message=%q, Details=%+v>", s.Code(), s.Message(), s.Details())
+}
+
+func TestErrorGenerationAndRetrival(t *testing.T) {
+	for _, tc := range []struct {
+		desc    string
+		code    codes.Code
+		details []protoadapt.MessageV1
+	}{
+		{
+			desc: "redirect",
+			code: codes.Unavailable,
+			details: []protoadapt.MessageV1{
+				&storagepb.BidiReadObjectRedirectedError{
+					ReadHandle: &storagepb.BidiReadHandle{
+						Handle: []byte{1, 2, 3},
+					},
+					RoutingToken: proto.String("redirect-routing-1234"),
+				},
+			},
+		},
+		{
+			desc: "read-range",
+			code: codes.NotFound,
+			details: []protoadapt.MessageV1{
+				&storagepb.BidiReadObjectError{
+					ReadRangeErrors: []*storagepb.ReadRangeError{{ReadId: 4}},
+				},
+			},
+		},
+	} {
+		initialStatus := status.New(tc.code, tc.desc)
+		newStatus, err := initialStatus.WithDetails(tc.details...)
+		if err != nil {
+			t.Fatalf("(%v).WithDetails(%+v) failed: %v", str(newStatus), tc.details, err)
+		}
+		errorReceived := newStatus.Err()
+		finalStatus := status.Convert(errorReceived)
+		if finalStatus.Code() != tc.code {
+			t.Fatalf("status code expected: %v, received: %v", tc.code, finalStatus.Code())
+		}
+		detail := finalStatus.Details()
+		for i := range detail {
+			if !proto.Equal(detail[i].(protoreflect.ProtoMessage), tc.details[i].(protoreflect.ProtoMessage)) {
+				t.Fatalf("(%v).Details()[%d] = %+v, want %+v", str(finalStatus), i, detail[i], tc.details[i])
+			}
+		}
+		if finalStatus.Message() != tc.desc {
+			t.Fatalf("(%v)message()= %v, want %v", str(finalStatus), finalStatus.Message(), tc.desc)
+		}
+	}
+}
+
+func TestErrorExtension(t *testing.T) {
+	// Create an initial BidiReadObjectRedirectedError.
+	initialStatus := status.New(codes.Unavailable, "redirect")
+	reqDetails := &storagepb.BidiReadObjectRedirectedError{
+		ReadHandle: &storagepb.BidiReadHandle{
+			Handle: []byte{1, 2, 3},
+		},
+		RoutingToken: proto.String("redirect-routing-1234"),
+	}
+	newStatus, err := initialStatus.WithDetails(reqDetails)
+	if err != nil {
+		t.Fatalf("(%v).WithDetails(%+v) failed: %v", str(newStatus), reqDetails, err)
+	}
+	// Decode the above error extension to get BidiReadObjectRedirectedError.
+	errorReceived := newStatus.Err()
+	rpcStatus := status.Convert(errorReceived)
+	respDetails := rpcStatus.Details()
+	for _, detail := range respDetails {
+		if bidiError, ok := detail.(*storagepb.BidiReadObjectRedirectedError); ok {
+			// Compare the result with the original BidiReadObjectRedirectedError.
+			if diff := cmp.Diff(bidiError, reqDetails, protocmp.Transform()); diff != "" {
+				t.Errorf("cmp.Diff got(-),want(+):\n%s", diff)
+			}
+		}
 	}
 }

@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "CloudRedisClusterClient",
           "rpcs": {
+            "BackupCluster": {
+              "methods": [
+                "BackupCluster"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -20,6 +25,11 @@
                 "CreateCluster"
               ]
             },
+            "DeleteBackup": {
+              "methods": [
+                "DeleteBackup"
+              ]
+            },
             "DeleteCluster": {
               "methods": [
                 "DeleteCluster"
@@ -28,6 +38,21 @@
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
+              ]
+            },
+            "ExportBackup": {
+              "methods": [
+                "ExportBackup"
+              ]
+            },
+            "GetBackup": {
+              "methods": [
+                "GetBackup"
+              ]
+            },
+            "GetBackupCollection": {
+              "methods": [
+                "GetBackupCollection"
               ]
             },
             "GetCluster": {
@@ -50,6 +75,16 @@
                 "GetOperation"
               ]
             },
+            "ListBackupCollections": {
+              "methods": [
+                "ListBackupCollections"
+              ]
+            },
+            "ListBackups": {
+              "methods": [
+                "ListBackups"
+              ]
+            },
             "ListClusters": {
               "methods": [
                 "ListClusters"
@@ -63,6 +98,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "RescheduleClusterMaintenance": {
+              "methods": [
+                "RescheduleClusterMaintenance"
               ]
             },
             "UpdateCluster": {
@@ -75,6 +115,11 @@
         "rest": {
           "libraryClient": "CloudRedisClusterClient",
           "rpcs": {
+            "BackupCluster": {
+              "methods": [
+                "BackupCluster"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -85,6 +130,11 @@
                 "CreateCluster"
               ]
             },
+            "DeleteBackup": {
+              "methods": [
+                "DeleteBackup"
+              ]
+            },
             "DeleteCluster": {
               "methods": [
                 "DeleteCluster"
@@ -93,6 +143,21 @@
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
+              ]
+            },
+            "ExportBackup": {
+              "methods": [
+                "ExportBackup"
+              ]
+            },
+            "GetBackup": {
+              "methods": [
+                "GetBackup"
+              ]
+            },
+            "GetBackupCollection": {
+              "methods": [
+                "GetBackupCollection"
               ]
             },
             "GetCluster": {
@@ -115,6 +180,16 @@
                 "GetOperation"
               ]
             },
+            "ListBackupCollections": {
+              "methods": [
+                "ListBackupCollections"
+              ]
+            },
+            "ListBackups": {
+              "methods": [
+                "ListBackups"
+              ]
+            },
             "ListClusters": {
               "methods": [
                 "ListClusters"
@@ -128,6 +203,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "RescheduleClusterMaintenance": {
+              "methods": [
+                "RescheduleClusterMaintenance"
               ]
             },
             "UpdateCluster": {

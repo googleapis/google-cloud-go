@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package fleetengine
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 	"regexp"
@@ -203,6 +204,8 @@ type tripGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewTripClient creates a new trip service client based on gRPC.
@@ -229,6 +232,7 @@ func NewTripClient(ctx context.Context, opts ...option.ClientOption) (*TripClien
 		connPool:    connPool,
 		tripClient:  fleetenginepb.NewTripServiceClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -280,7 +284,7 @@ func (c *tripGRPCClient) CreateTrip(ctx context.Context, req *fleetenginepb.Crea
 	var resp *fleetenginepb.Trip
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tripClient.CreateTrip(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tripClient.CreateTrip, req, settings.GRPC, c.logger, "CreateTrip")
 		return err
 	}, opts...)
 	if err != nil {
@@ -307,7 +311,7 @@ func (c *tripGRPCClient) GetTrip(ctx context.Context, req *fleetenginepb.GetTrip
 	var resp *fleetenginepb.Trip
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tripClient.GetTrip(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tripClient.GetTrip, req, settings.GRPC, c.logger, "GetTrip")
 		return err
 	}, opts...)
 	if err != nil {
@@ -333,7 +337,7 @@ func (c *tripGRPCClient) ReportBillableTrip(ctx context.Context, req *fleetengin
 	opts = append((*c.CallOptions).ReportBillableTrip[0:len((*c.CallOptions).ReportBillableTrip):len((*c.CallOptions).ReportBillableTrip)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.tripClient.ReportBillableTrip(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.tripClient.ReportBillableTrip, req, settings.GRPC, c.logger, "ReportBillableTrip")
 		return err
 	}, opts...)
 	return err
@@ -368,7 +372,7 @@ func (c *tripGRPCClient) SearchTrips(ctx context.Context, req *fleetenginepb.Sea
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.tripClient.SearchTrips(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.tripClient.SearchTrips, req, settings.GRPC, c.logger, "SearchTrips")
 			return err
 		}, opts...)
 		if err != nil {
@@ -412,7 +416,7 @@ func (c *tripGRPCClient) UpdateTrip(ctx context.Context, req *fleetenginepb.Upda
 	var resp *fleetenginepb.Trip
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tripClient.UpdateTrip(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tripClient.UpdateTrip, req, settings.GRPC, c.logger, "UpdateTrip")
 		return err
 	}, opts...)
 	if err != nil {

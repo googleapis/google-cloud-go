@@ -592,6 +592,31 @@ func (c *httpStorageClient) RestoreObject(ctx context.Context, params *restoreOb
 	return newObject(obj), err
 }
 
+func (c *httpStorageClient) MoveObject(ctx context.Context, params *moveObjectParams, opts ...storageOption) (*ObjectAttrs, error) {
+	s := callSettings(c.settings, opts...)
+	req := c.raw.Objects.Move(params.bucket, params.srcObject, params.dstObject).Context(ctx)
+	if err := applyConds("MoveObjectDestination", defaultGen, params.dstConds, req); err != nil {
+		return nil, err
+	}
+	if err := applySourceConds("MoveObjectSource", defaultGen, params.srcConds, req); err != nil {
+		return nil, err
+	}
+	if s.userProject != "" {
+		req.UserProject(s.userProject)
+	}
+	if err := setEncryptionHeaders(req.Header(), params.encryptionKey, false); err != nil {
+		return nil, err
+	}
+	var obj *raw.Object
+	var err error
+	err = run(ctx, func(ctx context.Context) error { obj, err = req.Context(ctx).Do(); return err }, s.retry, s.idempotent)
+	var e *googleapi.Error
+	if ok := errors.As(err, &e); ok && e.Code == http.StatusNotFound {
+		return nil, ErrObjectNotExist
+	}
+	return newObject(obj), err
+}
+
 // Default Object ACL methods.
 
 func (c *httpStorageClient) DeleteDefaultObjectACL(ctx context.Context, bucket string, entity ACLEntity, opts ...storageOption) error {
@@ -775,6 +800,10 @@ func (c *httpStorageClient) ComposeObject(ctx context.Context, req *composeObjec
 	retryCall := func(ctx context.Context) error { obj, err = call.Context(ctx).Do(); return err }
 
 	if err := run(ctx, retryCall, s.retry, s.idempotent); err != nil {
+		var e *googleapi.Error
+		if errors.As(err, &e) && e.Code == http.StatusNotFound {
+			return nil, fmt.Errorf("%w: %w", ErrObjectNotExist, err)
+		}
 		return nil, err
 	}
 	return newObject(obj), nil
@@ -797,7 +826,7 @@ func (c *httpStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 	if err := applyConds("Copy destination", defaultGen, req.dstObject.conds, call); err != nil {
 		return nil, err
 	}
-	if err := applySourceConds(req.srcObject.gen, req.srcObject.conds, call); err != nil {
+	if err := applySourceConds("Copy source", req.srcObject.gen, req.srcObject.conds, call); err != nil {
 		return nil, err
 	}
 	if s.userProject != "" {
@@ -822,6 +851,10 @@ func (c *httpStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 	retryCall := func(ctx context.Context) error { res, err = call.Context(ctx).Do(); return err }
 
 	if err := run(ctx, retryCall, s.retry, s.idempotent); err != nil {
+		var e *googleapi.Error
+		if errors.As(err, &e) && e.Code == http.StatusNotFound {
+			return nil, fmt.Errorf("%w: %w", ErrObjectNotExist, err)
+		}
 		return nil, err
 	}
 
@@ -834,6 +867,11 @@ func (c *httpStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 	}
 
 	return r, nil
+}
+
+// NewMultiRangeDownloader is not supported by http client.
+func (c *httpStorageClient) NewMultiRangeDownloader(ctx context.Context, params *newMultiRangeDownloaderParams, opts ...storageOption) (mr *MultiRangeDownloader, err error) {
+	return nil, errMethodNotSupported
 }
 
 func (c *httpStorageClient) NewRangeReader(ctx context.Context, params *newRangeReaderParams, opts ...storageOption) (r *Reader, err error) {
@@ -952,6 +990,10 @@ func (c *httpStorageClient) newRangeReaderJSON(ctx context.Context, params *newR
 }
 
 func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storageOption) (*io.PipeWriter, error) {
+	if params.append {
+		return nil, errors.New("storage: append not supported on HTTP Client; use gRPC")
+	}
+
 	s := callSettings(c.settings, opts...)
 	errorf := params.setError
 	setObj := params.setObj
@@ -966,6 +1008,9 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 	}
 	if params.chunkRetryDeadline != 0 {
 		mediaOpts = append(mediaOpts, googleapi.ChunkRetryDeadline(params.chunkRetryDeadline))
+	}
+	if params.chunkTransferTimeout != 0 {
+		mediaOpts = append(mediaOpts, googleapi.ChunkTransferTimeout(params.chunkTransferTimeout))
 	}
 
 	pr, pw := io.Pipe()
@@ -1236,9 +1281,6 @@ func (c *httpStorageClient) DeleteHMACKey(ctx context.Context, project string, a
 // Note: This API does not support pagination. However, entity limits cap the number of notifications on a single bucket,
 // so all results will be returned in the first response. See https://cloud.google.com/storage/quotas#buckets.
 func (c *httpStorageClient) ListNotifications(ctx context.Context, bucket string, opts ...storageOption) (n map[string]*Notification, err error) {
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.httpStorageClient.ListNotifications")
-	defer func() { trace.EndSpan(ctx, err) }()
-
 	s := callSettings(c.settings, opts...)
 	call := c.raw.Notifications.List(bucket)
 	if s.userProject != "" {
@@ -1256,9 +1298,6 @@ func (c *httpStorageClient) ListNotifications(ctx context.Context, bucket string
 }
 
 func (c *httpStorageClient) CreateNotification(ctx context.Context, bucket string, n *Notification, opts ...storageOption) (ret *Notification, err error) {
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.httpStorageClient.CreateNotification")
-	defer func() { trace.EndSpan(ctx, err) }()
-
 	s := callSettings(c.settings, opts...)
 	call := c.raw.Notifications.Insert(bucket, toRawNotification(n))
 	if s.userProject != "" {
@@ -1276,9 +1315,6 @@ func (c *httpStorageClient) CreateNotification(ctx context.Context, bucket strin
 }
 
 func (c *httpStorageClient) DeleteNotification(ctx context.Context, bucket string, id string, opts ...storageOption) (err error) {
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.httpStorageClient.DeleteNotification")
-	defer func() { trace.EndSpan(ctx, err) }()
-
 	s := callSettings(c.settings, opts...)
 	call := c.raw.Notifications.Delete(bucket, id)
 	if s.userProject != "" {
@@ -1513,6 +1549,14 @@ func parseReadResponse(res *http.Response, params *newRangeReaderParams, reopen 
 		}
 	}
 
+	metadata := map[string]string{}
+	for key, values := range res.Header {
+		if len(values) > 0 && strings.HasPrefix(key, "X-Goog-Meta-") {
+			key := key[len("X-Goog-Meta-"):]
+			metadata[key] = values[0]
+		}
+	}
+
 	attrs := ReaderObjectAttrs{
 		Size:            size,
 		ContentType:     res.Header.Get("Content-Type"),
@@ -1526,10 +1570,11 @@ func parseReadResponse(res *http.Response, params *newRangeReaderParams, reopen 
 		Decompressed:    res.Uncompressed || uncompressedByServer(res),
 	}
 	return &Reader{
-		Attrs:    attrs,
-		size:     size,
-		remain:   remain,
-		checkCRC: checkCRC,
+		Attrs:          attrs,
+		objectMetadata: &metadata,
+		size:           size,
+		remain:         remain,
+		checkCRC:       checkCRC,
 		reader: &httpReader{
 			reopen:   reopen,
 			body:     body,

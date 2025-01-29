@@ -1089,6 +1089,11 @@
                 "Resize"
               ]
             },
+            "ResumeInstances": {
+              "methods": [
+                "ResumeInstances"
+              ]
+            },
             "SetInstanceTemplate": {
               "methods": [
                 "SetInstanceTemplate"
@@ -1097,6 +1102,21 @@
             "SetTargetPools": {
               "methods": [
                 "SetTargetPools"
+              ]
+            },
+            "StartInstances": {
+              "methods": [
+                "StartInstances"
+              ]
+            },
+            "StopInstances": {
+              "methods": [
+                "StopInstances"
+              ]
+            },
+            "SuspendInstances": {
+              "methods": [
+                "SuspendInstances"
               ]
             },
             "UpdatePerInstanceConfigs": {
@@ -1952,6 +1972,11 @@
                 "AddRule"
               ]
             },
+            "AggregatedList": {
+              "methods": [
+                "AggregatedList"
+              ]
+            },
             "CloneRules": {
               "methods": [
                 "CloneRules"
@@ -2020,6 +2045,25 @@
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "NetworkProfiles": {
+      "clients": {
+        "rest": {
+          "libraryClient": "NetworkProfilesClient",
+          "rpcs": {
+            "Get": {
+              "methods": [
+                "Get"
+              ]
+            },
+            "List": {
+              "methods": [
+                "List"
               ]
             }
           }
@@ -2876,6 +2920,11 @@
                 "Resize"
               ]
             },
+            "ResumeInstances": {
+              "methods": [
+                "ResumeInstances"
+              ]
+            },
             "SetInstanceTemplate": {
               "methods": [
                 "SetInstanceTemplate"
@@ -2884,6 +2933,21 @@
             "SetTargetPools": {
               "methods": [
                 "SetTargetPools"
+              ]
+            },
+            "StartInstances": {
+              "methods": [
+                "StartInstances"
+              ]
+            },
+            "StopInstances": {
+              "methods": [
+                "StopInstances"
+              ]
+            },
+            "SuspendInstances": {
+              "methods": [
+                "SuspendInstances"
               ]
             },
             "UpdatePerInstanceConfigs": {
@@ -3260,6 +3324,11 @@
             "RemoveRule": {
               "methods": [
                 "RemoveRule"
+              ]
+            },
+            "SetLabels": {
+              "methods": [
+                "SetLabels"
               ]
             }
           }

@@ -138,8 +138,8 @@ func TestValidateRS256(t *testing.T) {
 			now = tt.nowFunc
 
 			v, err := NewValidator(&ValidatorOptions{
-				Client:         client,
-				RSA256CertsURL: tt.certsURL,
+				Client:        client,
+				RS256CertsURL: tt.certsURL,
 			})
 			if err != nil {
 				t.Fatalf("NewValidator(...) = %q, want nil", err)

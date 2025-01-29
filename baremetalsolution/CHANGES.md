@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.3.3](https://github.com/googleapis/google-cloud-go/compare/baremetalsolution/v1.3.2...baremetalsolution/v1.3.3) (2025-01-02)
+
+
+### Bug Fixes
+
+* **baremetalsolution:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
 ## [1.3.2](https://github.com/googleapis/google-cloud-go/compare/baremetalsolution/v1.3.1...baremetalsolution/v1.3.2) (2024-10-23)
 
 

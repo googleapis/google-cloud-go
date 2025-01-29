@@ -1637,6 +1637,11 @@
                 "UpdateFeatureGroup"
               ]
             },
+            "UpdateFeatureMonitor": {
+              "methods": [
+                "UpdateFeatureMonitor"
+              ]
+            },
             "WaitOperation": {
               "methods": [
                 "WaitOperation"
@@ -1780,6 +1785,11 @@
             "UpdateFeatureGroup": {
               "methods": [
                 "UpdateFeatureGroup"
+              ]
+            },
+            "UpdateFeatureMonitor": {
+              "methods": [
+                "UpdateFeatureMonitor"
               ]
             },
             "WaitOperation": {
@@ -4270,6 +4280,11 @@
                 "DeleteOperation"
               ]
             },
+            "DeployPublisherModel": {
+              "methods": [
+                "DeployPublisherModel"
+              ]
+            },
             "GetIamPolicy": {
               "methods": [
                 "GetIamPolicy"
@@ -4333,6 +4348,11 @@
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
+              ]
+            },
+            "DeployPublisherModel": {
+              "methods": [
+                "DeployPublisherModel"
               ]
             },
             "GetIamPolicy": {
@@ -4708,6 +4728,11 @@
                 "ListModelEvaluations"
               ]
             },
+            "ListModelVersionCheckpoints": {
+              "methods": [
+                "ListModelVersionCheckpoints"
+              ]
+            },
             "ListModelVersions": {
               "methods": [
                 "ListModelVersions"
@@ -4851,6 +4876,11 @@
             "ListModelEvaluations": {
               "methods": [
                 "ListModelEvaluations"
+              ]
+            },
+            "ListModelVersionCheckpoints": {
+              "methods": [
+                "ListModelVersionCheckpoints"
               ]
             },
             "ListModelVersions": {
@@ -5903,6 +5933,11 @@
                 "SetIamPolicy"
               ]
             },
+            "StreamQueryReasoningEngine": {
+              "methods": [
+                "StreamQueryReasoningEngine"
+              ]
+            },
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
@@ -5961,6 +5996,11 @@
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
+              ]
+            },
+            "StreamQueryReasoningEngine": {
+              "methods": [
+                "StreamQueryReasoningEngine"
               ]
             },
             "TestIamPermissions": {
@@ -7122,9 +7162,19 @@
         "grpc": {
           "libraryClient": "VertexRagClient",
           "rpcs": {
+            "AugmentPrompt": {
+              "methods": [
+                "AugmentPrompt"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
+              ]
+            },
+            "CorroborateContent": {
+              "methods": [
+                "CorroborateContent"
               ]
             },
             "DeleteOperation": {
@@ -7182,9 +7232,19 @@
         "rest": {
           "libraryClient": "VertexRagClient",
           "rpcs": {
+            "AugmentPrompt": {
+              "methods": [
+                "AugmentPrompt"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
+              ]
+            },
+            "CorroborateContent": {
+              "methods": [
+                "CorroborateContent"
               ]
             },
             "DeleteOperation": {

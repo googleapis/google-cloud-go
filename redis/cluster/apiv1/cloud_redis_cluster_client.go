@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	clusterpb "cloud.google.com/go/redis/cluster/apiv1/clusterpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -53,6 +52,14 @@ type CloudRedisClusterCallOptions struct {
 	DeleteCluster                  []gax.CallOption
 	CreateCluster                  []gax.CallOption
 	GetClusterCertificateAuthority []gax.CallOption
+	RescheduleClusterMaintenance   []gax.CallOption
+	ListBackupCollections          []gax.CallOption
+	GetBackupCollection            []gax.CallOption
+	ListBackups                    []gax.CallOption
+	GetBackup                      []gax.CallOption
+	DeleteBackup                   []gax.CallOption
+	ExportBackup                   []gax.CallOption
+	BackupCluster                  []gax.CallOption
 	GetLocation                    []gax.CallOption
 	ListLocations                  []gax.CallOption
 	CancelOperation                []gax.CallOption
@@ -96,6 +103,30 @@ func defaultCloudRedisClusterCallOptions() *CloudRedisClusterCallOptions {
 		GetClusterCertificateAuthority: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		RescheduleClusterMaintenance: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		ListBackupCollections: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		GetBackupCollection: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		ListBackups: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		GetBackup: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		DeleteBackup: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		ExportBackup: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		BackupCluster: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -125,6 +156,30 @@ func defaultCloudRedisClusterRESTCallOptions() *CloudRedisClusterCallOptions {
 		GetClusterCertificateAuthority: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		RescheduleClusterMaintenance: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		ListBackupCollections: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		GetBackupCollection: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		ListBackups: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		GetBackup: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		DeleteBackup: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		ExportBackup: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		BackupCluster: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -148,6 +203,18 @@ type internalCloudRedisClusterClient interface {
 	CreateCluster(context.Context, *clusterpb.CreateClusterRequest, ...gax.CallOption) (*CreateClusterOperation, error)
 	CreateClusterOperation(name string) *CreateClusterOperation
 	GetClusterCertificateAuthority(context.Context, *clusterpb.GetClusterCertificateAuthorityRequest, ...gax.CallOption) (*clusterpb.CertificateAuthority, error)
+	RescheduleClusterMaintenance(context.Context, *clusterpb.RescheduleClusterMaintenanceRequest, ...gax.CallOption) (*RescheduleClusterMaintenanceOperation, error)
+	RescheduleClusterMaintenanceOperation(name string) *RescheduleClusterMaintenanceOperation
+	ListBackupCollections(context.Context, *clusterpb.ListBackupCollectionsRequest, ...gax.CallOption) *BackupCollectionIterator
+	GetBackupCollection(context.Context, *clusterpb.GetBackupCollectionRequest, ...gax.CallOption) (*clusterpb.BackupCollection, error)
+	ListBackups(context.Context, *clusterpb.ListBackupsRequest, ...gax.CallOption) *BackupIterator
+	GetBackup(context.Context, *clusterpb.GetBackupRequest, ...gax.CallOption) (*clusterpb.Backup, error)
+	DeleteBackup(context.Context, *clusterpb.DeleteBackupRequest, ...gax.CallOption) (*DeleteBackupOperation, error)
+	DeleteBackupOperation(name string) *DeleteBackupOperation
+	ExportBackup(context.Context, *clusterpb.ExportBackupRequest, ...gax.CallOption) (*ExportBackupOperation, error)
+	ExportBackupOperation(name string) *ExportBackupOperation
+	BackupCluster(context.Context, *clusterpb.BackupClusterRequest, ...gax.CallOption) (*BackupClusterOperation, error)
+	BackupClusterOperation(name string) *BackupClusterOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -179,16 +246,6 @@ type internalCloudRedisClusterClient interface {
 // Note that location_id must be a GCP region; for example:
 //
 //	projects/redpepper-1290/locations/us-central1/clusters/my-redis
-//
-// We use API version selector for Flex APIs
-//
-//	The versioning strategy is release-based versioning
-//
-//	Our backend CLH only deals with the superset version (called v1main)
-//
-//	Existing backend for Redis Gen1 and MRR is not touched.
-//
-//	More details in go/redis-flex-api-versioning
 type CloudRedisClusterClient struct {
 	// The internal transport-dependent client.
 	internalClient internalCloudRedisClusterClient
@@ -293,6 +350,85 @@ func (c *CloudRedisClusterClient) GetClusterCertificateAuthority(ctx context.Con
 	return c.internalClient.GetClusterCertificateAuthority(ctx, req, opts...)
 }
 
+// RescheduleClusterMaintenance reschedules upcoming maintenance event.
+func (c *CloudRedisClusterClient) RescheduleClusterMaintenance(ctx context.Context, req *clusterpb.RescheduleClusterMaintenanceRequest, opts ...gax.CallOption) (*RescheduleClusterMaintenanceOperation, error) {
+	return c.internalClient.RescheduleClusterMaintenance(ctx, req, opts...)
+}
+
+// RescheduleClusterMaintenanceOperation returns a new RescheduleClusterMaintenanceOperation from a given name.
+// The name must be that of a previously created RescheduleClusterMaintenanceOperation, possibly from a different process.
+func (c *CloudRedisClusterClient) RescheduleClusterMaintenanceOperation(name string) *RescheduleClusterMaintenanceOperation {
+	return c.internalClient.RescheduleClusterMaintenanceOperation(name)
+}
+
+// ListBackupCollections lists all backup collections owned by a consumer project in either the
+// specified location (region) or all locations.
+//
+// If location_id is specified as - (wildcard), then all regions
+// available to the project are queried, and the results are aggregated.
+func (c *CloudRedisClusterClient) ListBackupCollections(ctx context.Context, req *clusterpb.ListBackupCollectionsRequest, opts ...gax.CallOption) *BackupCollectionIterator {
+	return c.internalClient.ListBackupCollections(ctx, req, opts...)
+}
+
+// GetBackupCollection get a backup collection.
+func (c *CloudRedisClusterClient) GetBackupCollection(ctx context.Context, req *clusterpb.GetBackupCollectionRequest, opts ...gax.CallOption) (*clusterpb.BackupCollection, error) {
+	return c.internalClient.GetBackupCollection(ctx, req, opts...)
+}
+
+// ListBackups lists all backups owned by a backup collection.
+func (c *CloudRedisClusterClient) ListBackups(ctx context.Context, req *clusterpb.ListBackupsRequest, opts ...gax.CallOption) *BackupIterator {
+	return c.internalClient.ListBackups(ctx, req, opts...)
+}
+
+// GetBackup gets the details of a specific backup.
+func (c *CloudRedisClusterClient) GetBackup(ctx context.Context, req *clusterpb.GetBackupRequest, opts ...gax.CallOption) (*clusterpb.Backup, error) {
+	return c.internalClient.GetBackup(ctx, req, opts...)
+}
+
+// DeleteBackup deletes a specific backup.
+func (c *CloudRedisClusterClient) DeleteBackup(ctx context.Context, req *clusterpb.DeleteBackupRequest, opts ...gax.CallOption) (*DeleteBackupOperation, error) {
+	return c.internalClient.DeleteBackup(ctx, req, opts...)
+}
+
+// DeleteBackupOperation returns a new DeleteBackupOperation from a given name.
+// The name must be that of a previously created DeleteBackupOperation, possibly from a different process.
+func (c *CloudRedisClusterClient) DeleteBackupOperation(name string) *DeleteBackupOperation {
+	return c.internalClient.DeleteBackupOperation(name)
+}
+
+// ExportBackup exports a specific backup to a customer target Cloud Storage URI.
+func (c *CloudRedisClusterClient) ExportBackup(ctx context.Context, req *clusterpb.ExportBackupRequest, opts ...gax.CallOption) (*ExportBackupOperation, error) {
+	return c.internalClient.ExportBackup(ctx, req, opts...)
+}
+
+// ExportBackupOperation returns a new ExportBackupOperation from a given name.
+// The name must be that of a previously created ExportBackupOperation, possibly from a different process.
+func (c *CloudRedisClusterClient) ExportBackupOperation(name string) *ExportBackupOperation {
+	return c.internalClient.ExportBackupOperation(name)
+}
+
+// BackupCluster backup Redis Cluster.
+// If this is the first time a backup is being created, a backup collection
+// will be created at the backend, and this backup belongs to this collection.
+// Both collection and backup will have a resource name. Backup will be
+// executed for each shard. A replica (primary if nonHA) will be selected to
+// perform the execution. Backup call will be rejected if there is an ongoing
+// backup or update operation. Be aware that during preview, if the cluster’s
+// internal software version is too old, critical update will be performed
+// before actual backup. Once the internal software version is updated to the
+// minimum version required by the backup feature, subsequent backups will not
+// require critical update. After preview, there will be no critical update
+// needed for backup.
+func (c *CloudRedisClusterClient) BackupCluster(ctx context.Context, req *clusterpb.BackupClusterRequest, opts ...gax.CallOption) (*BackupClusterOperation, error) {
+	return c.internalClient.BackupCluster(ctx, req, opts...)
+}
+
+// BackupClusterOperation returns a new BackupClusterOperation from a given name.
+// The name must be that of a previously created BackupClusterOperation, possibly from a different process.
+func (c *CloudRedisClusterClient) BackupClusterOperation(name string) *BackupClusterOperation {
+	return c.internalClient.BackupClusterOperation(name)
+}
+
 // GetLocation gets information about a location.
 func (c *CloudRedisClusterClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
@@ -347,6 +483,8 @@ type cloudRedisClusterGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewCloudRedisClusterClient creates a new cloud redis cluster client based on gRPC.
@@ -372,16 +510,6 @@ type cloudRedisClusterGRPCClient struct {
 // Note that location_id must be a GCP region; for example:
 //
 //	projects/redpepper-1290/locations/us-central1/clusters/my-redis
-//
-// We use API version selector for Flex APIs
-//
-//	The versioning strategy is release-based versioning
-//
-//	Our backend CLH only deals with the superset version (called v1main)
-//
-//	Existing backend for Redis Gen1 and MRR is not touched.
-//
-//	More details in go/redis-flex-api-versioning
 func NewCloudRedisClusterClient(ctx context.Context, opts ...option.ClientOption) (*CloudRedisClusterClient, error) {
 	clientOpts := defaultCloudRedisClusterGRPCClientOptions()
 	if newCloudRedisClusterClientHook != nil {
@@ -402,6 +530,7 @@ func NewCloudRedisClusterClient(ctx context.Context, opts ...option.ClientOption
 		connPool:                connPool,
 		cloudRedisClusterClient: clusterpb.NewCloudRedisClusterClient(connPool),
 		CallOptions:             &client.CallOptions,
+		logger:                  internaloption.GetLogger(opts),
 		operationsClient:        longrunningpb.NewOperationsClient(connPool),
 		locationsClient:         locationpb.NewLocationsClient(connPool),
 	}
@@ -466,6 +595,8 @@ type cloudRedisClusterRESTClient struct {
 
 	// Points back to the CallOptions field of the containing CloudRedisClusterClient
 	CallOptions **CloudRedisClusterCallOptions
+
+	logger *slog.Logger
 }
 
 // NewCloudRedisClusterRESTClient creates a new cloud redis cluster rest client.
@@ -490,16 +621,6 @@ type cloudRedisClusterRESTClient struct {
 // Note that location_id must be a GCP region; for example:
 //
 //	projects/redpepper-1290/locations/us-central1/clusters/my-redis
-//
-// We use API version selector for Flex APIs
-//
-//	The versioning strategy is release-based versioning
-//
-//	Our backend CLH only deals with the superset version (called v1main)
-//
-//	Existing backend for Redis Gen1 and MRR is not touched.
-//
-//	More details in go/redis-flex-api-versioning
 func NewCloudRedisClusterRESTClient(ctx context.Context, opts ...option.ClientOption) (*CloudRedisClusterClient, error) {
 	clientOpts := append(defaultCloudRedisClusterRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -512,6 +633,7 @@ func NewCloudRedisClusterRESTClient(ctx context.Context, opts ...option.ClientOp
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -585,7 +707,7 @@ func (c *cloudRedisClusterGRPCClient) ListClusters(ctx context.Context, req *clu
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudRedisClusterClient.ListClusters(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudRedisClusterClient.ListClusters, req, settings.GRPC, c.logger, "ListClusters")
 			return err
 		}, opts...)
 		if err != nil {
@@ -620,7 +742,7 @@ func (c *cloudRedisClusterGRPCClient) GetCluster(ctx context.Context, req *clust
 	var resp *clusterpb.Cluster
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudRedisClusterClient.GetCluster(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudRedisClusterClient.GetCluster, req, settings.GRPC, c.logger, "GetCluster")
 		return err
 	}, opts...)
 	if err != nil {
@@ -638,7 +760,7 @@ func (c *cloudRedisClusterGRPCClient) UpdateCluster(ctx context.Context, req *cl
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudRedisClusterClient.UpdateCluster(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudRedisClusterClient.UpdateCluster, req, settings.GRPC, c.logger, "UpdateCluster")
 		return err
 	}, opts...)
 	if err != nil {
@@ -658,7 +780,7 @@ func (c *cloudRedisClusterGRPCClient) DeleteCluster(ctx context.Context, req *cl
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudRedisClusterClient.DeleteCluster(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudRedisClusterClient.DeleteCluster, req, settings.GRPC, c.logger, "DeleteCluster")
 		return err
 	}, opts...)
 	if err != nil {
@@ -678,7 +800,7 @@ func (c *cloudRedisClusterGRPCClient) CreateCluster(ctx context.Context, req *cl
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudRedisClusterClient.CreateCluster(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudRedisClusterClient.CreateCluster, req, settings.GRPC, c.logger, "CreateCluster")
 		return err
 	}, opts...)
 	if err != nil {
@@ -698,13 +820,221 @@ func (c *cloudRedisClusterGRPCClient) GetClusterCertificateAuthority(ctx context
 	var resp *clusterpb.CertificateAuthority
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudRedisClusterClient.GetClusterCertificateAuthority(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudRedisClusterClient.GetClusterCertificateAuthority, req, settings.GRPC, c.logger, "GetClusterCertificateAuthority")
 		return err
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *cloudRedisClusterGRPCClient) RescheduleClusterMaintenance(ctx context.Context, req *clusterpb.RescheduleClusterMaintenanceRequest, opts ...gax.CallOption) (*RescheduleClusterMaintenanceOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).RescheduleClusterMaintenance[0:len((*c.CallOptions).RescheduleClusterMaintenance):len((*c.CallOptions).RescheduleClusterMaintenance)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.cloudRedisClusterClient.RescheduleClusterMaintenance, req, settings.GRPC, c.logger, "RescheduleClusterMaintenance")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &RescheduleClusterMaintenanceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *cloudRedisClusterGRPCClient) ListBackupCollections(ctx context.Context, req *clusterpb.ListBackupCollectionsRequest, opts ...gax.CallOption) *BackupCollectionIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListBackupCollections[0:len((*c.CallOptions).ListBackupCollections):len((*c.CallOptions).ListBackupCollections)], opts...)
+	it := &BackupCollectionIterator{}
+	req = proto.Clone(req).(*clusterpb.ListBackupCollectionsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*clusterpb.BackupCollection, string, error) {
+		resp := &clusterpb.ListBackupCollectionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.cloudRedisClusterClient.ListBackupCollections, req, settings.GRPC, c.logger, "ListBackupCollections")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetBackupCollections(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *cloudRedisClusterGRPCClient) GetBackupCollection(ctx context.Context, req *clusterpb.GetBackupCollectionRequest, opts ...gax.CallOption) (*clusterpb.BackupCollection, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetBackupCollection[0:len((*c.CallOptions).GetBackupCollection):len((*c.CallOptions).GetBackupCollection)], opts...)
+	var resp *clusterpb.BackupCollection
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.cloudRedisClusterClient.GetBackupCollection, req, settings.GRPC, c.logger, "GetBackupCollection")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *cloudRedisClusterGRPCClient) ListBackups(ctx context.Context, req *clusterpb.ListBackupsRequest, opts ...gax.CallOption) *BackupIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListBackups[0:len((*c.CallOptions).ListBackups):len((*c.CallOptions).ListBackups)], opts...)
+	it := &BackupIterator{}
+	req = proto.Clone(req).(*clusterpb.ListBackupsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*clusterpb.Backup, string, error) {
+		resp := &clusterpb.ListBackupsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.cloudRedisClusterClient.ListBackups, req, settings.GRPC, c.logger, "ListBackups")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetBackups(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *cloudRedisClusterGRPCClient) GetBackup(ctx context.Context, req *clusterpb.GetBackupRequest, opts ...gax.CallOption) (*clusterpb.Backup, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetBackup[0:len((*c.CallOptions).GetBackup):len((*c.CallOptions).GetBackup)], opts...)
+	var resp *clusterpb.Backup
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.cloudRedisClusterClient.GetBackup, req, settings.GRPC, c.logger, "GetBackup")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *cloudRedisClusterGRPCClient) DeleteBackup(ctx context.Context, req *clusterpb.DeleteBackupRequest, opts ...gax.CallOption) (*DeleteBackupOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteBackup[0:len((*c.CallOptions).DeleteBackup):len((*c.CallOptions).DeleteBackup)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.cloudRedisClusterClient.DeleteBackup, req, settings.GRPC, c.logger, "DeleteBackup")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteBackupOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *cloudRedisClusterGRPCClient) ExportBackup(ctx context.Context, req *clusterpb.ExportBackupRequest, opts ...gax.CallOption) (*ExportBackupOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ExportBackup[0:len((*c.CallOptions).ExportBackup):len((*c.CallOptions).ExportBackup)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.cloudRedisClusterClient.ExportBackup, req, settings.GRPC, c.logger, "ExportBackup")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ExportBackupOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *cloudRedisClusterGRPCClient) BackupCluster(ctx context.Context, req *clusterpb.BackupClusterRequest, opts ...gax.CallOption) (*BackupClusterOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).BackupCluster[0:len((*c.CallOptions).BackupCluster):len((*c.CallOptions).BackupCluster)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.cloudRedisClusterClient.BackupCluster, req, settings.GRPC, c.logger, "BackupCluster")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &BackupClusterOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *cloudRedisClusterGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -716,7 +1046,7 @@ func (c *cloudRedisClusterGRPCClient) GetLocation(ctx context.Context, req *loca
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -745,7 +1075,7 @@ func (c *cloudRedisClusterGRPCClient) ListLocations(ctx context.Context, req *lo
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -779,7 +1109,7 @@ func (c *cloudRedisClusterGRPCClient) CancelOperation(ctx context.Context, req *
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -793,7 +1123,7 @@ func (c *cloudRedisClusterGRPCClient) DeleteOperation(ctx context.Context, req *
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -808,7 +1138,7 @@ func (c *cloudRedisClusterGRPCClient) GetOperation(ctx context.Context, req *lon
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -837,7 +1167,7 @@ func (c *cloudRedisClusterGRPCClient) ListOperations(ctx context.Context, req *l
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -916,21 +1246,10 @@ func (c *cloudRedisClusterRESTClient) ListClusters(ctx context.Context, req *clu
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListClusters")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -993,17 +1312,7 @@ func (c *cloudRedisClusterRESTClient) GetCluster(ctx context.Context, req *clust
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCluster")
 		if err != nil {
 			return err
 		}
@@ -1073,21 +1382,10 @@ func (c *cloudRedisClusterRESTClient) UpdateCluster(ctx context.Context, req *cl
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateCluster")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1141,21 +1439,10 @@ func (c *cloudRedisClusterRESTClient) DeleteCluster(ctx context.Context, req *cl
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteCluster")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1223,21 +1510,10 @@ func (c *cloudRedisClusterRESTClient) CreateCluster(ctx context.Context, req *cl
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateCluster")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1288,17 +1564,7 @@ func (c *cloudRedisClusterRESTClient) GetClusterCertificateAuthority(ctx context
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetClusterCertificateAuthority")
 		if err != nil {
 			return err
 		}
@@ -1313,6 +1579,510 @@ func (c *cloudRedisClusterRESTClient) GetClusterCertificateAuthority(ctx context
 		return nil, e
 	}
 	return resp, nil
+}
+
+// RescheduleClusterMaintenance reschedules upcoming maintenance event.
+func (c *cloudRedisClusterRESTClient) RescheduleClusterMaintenance(ctx context.Context, req *clusterpb.RescheduleClusterMaintenanceRequest, opts ...gax.CallOption) (*RescheduleClusterMaintenanceOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:rescheduleClusterMaintenance", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RescheduleClusterMaintenance")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &RescheduleClusterMaintenanceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ListBackupCollections lists all backup collections owned by a consumer project in either the
+// specified location (region) or all locations.
+//
+// If location_id is specified as - (wildcard), then all regions
+// available to the project are queried, and the results are aggregated.
+func (c *cloudRedisClusterRESTClient) ListBackupCollections(ctx context.Context, req *clusterpb.ListBackupCollectionsRequest, opts ...gax.CallOption) *BackupCollectionIterator {
+	it := &BackupCollectionIterator{}
+	req = proto.Clone(req).(*clusterpb.ListBackupCollectionsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*clusterpb.BackupCollection, string, error) {
+		resp := &clusterpb.ListBackupCollectionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/backupCollections", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListBackupCollections")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetBackupCollections(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetBackupCollection get a backup collection.
+func (c *cloudRedisClusterRESTClient) GetBackupCollection(ctx context.Context, req *clusterpb.GetBackupCollectionRequest, opts ...gax.CallOption) (*clusterpb.BackupCollection, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetBackupCollection[0:len((*c.CallOptions).GetBackupCollection):len((*c.CallOptions).GetBackupCollection)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &clusterpb.BackupCollection{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetBackupCollection")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListBackups lists all backups owned by a backup collection.
+func (c *cloudRedisClusterRESTClient) ListBackups(ctx context.Context, req *clusterpb.ListBackupsRequest, opts ...gax.CallOption) *BackupIterator {
+	it := &BackupIterator{}
+	req = proto.Clone(req).(*clusterpb.ListBackupsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*clusterpb.Backup, string, error) {
+		resp := &clusterpb.ListBackupsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/backups", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListBackups")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetBackups(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetBackup gets the details of a specific backup.
+func (c *cloudRedisClusterRESTClient) GetBackup(ctx context.Context, req *clusterpb.GetBackupRequest, opts ...gax.CallOption) (*clusterpb.Backup, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetBackup[0:len((*c.CallOptions).GetBackup):len((*c.CallOptions).GetBackup)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &clusterpb.Backup{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetBackup")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteBackup deletes a specific backup.
+func (c *cloudRedisClusterRESTClient) DeleteBackup(ctx context.Context, req *clusterpb.DeleteBackupRequest, opts ...gax.CallOption) (*DeleteBackupOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteBackup")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteBackupOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ExportBackup exports a specific backup to a customer target Cloud Storage URI.
+func (c *cloudRedisClusterRESTClient) ExportBackup(ctx context.Context, req *clusterpb.ExportBackupRequest, opts ...gax.CallOption) (*ExportBackupOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:export", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExportBackup")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &ExportBackupOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// BackupCluster backup Redis Cluster.
+// If this is the first time a backup is being created, a backup collection
+// will be created at the backend, and this backup belongs to this collection.
+// Both collection and backup will have a resource name. Backup will be
+// executed for each shard. A replica (primary if nonHA) will be selected to
+// perform the execution. Backup call will be rejected if there is an ongoing
+// backup or update operation. Be aware that during preview, if the cluster’s
+// internal software version is too old, critical update will be performed
+// before actual backup. Once the internal software version is updated to the
+// minimum version required by the backup feature, subsequent backups will not
+// require critical update. After preview, there will be no critical update
+// needed for backup.
+func (c *cloudRedisClusterRESTClient) BackupCluster(ctx context.Context, req *clusterpb.BackupClusterRequest, opts ...gax.CallOption) (*BackupClusterOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:backup", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BackupCluster")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &BackupClusterOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
 }
 
 // GetLocation gets information about a location.
@@ -1348,17 +2118,7 @@ func (c *cloudRedisClusterRESTClient) GetLocation(ctx context.Context, req *loca
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -1423,21 +2183,10 @@ func (c *cloudRedisClusterRESTClient) ListLocations(ctx context.Context, req *lo
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1497,15 +2246,8 @@ func (c *cloudRedisClusterRESTClient) CancelOperation(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -1539,15 +2281,8 @@ func (c *cloudRedisClusterRESTClient) DeleteOperation(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOperation")
+		return err
 	}, opts...)
 }
 
@@ -1584,17 +2319,7 @@ func (c *cloudRedisClusterRESTClient) GetOperation(ctx context.Context, req *lon
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -1659,21 +2384,10 @@ func (c *cloudRedisClusterRESTClient) ListOperations(ctx context.Context, req *l
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1703,6 +2417,24 @@ func (c *cloudRedisClusterRESTClient) ListOperations(ctx context.Context, req *l
 	return it
 }
 
+// BackupClusterOperation returns a new BackupClusterOperation from a given name.
+// The name must be that of a previously created BackupClusterOperation, possibly from a different process.
+func (c *cloudRedisClusterGRPCClient) BackupClusterOperation(name string) *BackupClusterOperation {
+	return &BackupClusterOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// BackupClusterOperation returns a new BackupClusterOperation from a given name.
+// The name must be that of a previously created BackupClusterOperation, possibly from a different process.
+func (c *cloudRedisClusterRESTClient) BackupClusterOperation(name string) *BackupClusterOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &BackupClusterOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // CreateClusterOperation returns a new CreateClusterOperation from a given name.
 // The name must be that of a previously created CreateClusterOperation, possibly from a different process.
 func (c *cloudRedisClusterGRPCClient) CreateClusterOperation(name string) *CreateClusterOperation {
@@ -1721,6 +2453,24 @@ func (c *cloudRedisClusterRESTClient) CreateClusterOperation(name string) *Creat
 	}
 }
 
+// DeleteBackupOperation returns a new DeleteBackupOperation from a given name.
+// The name must be that of a previously created DeleteBackupOperation, possibly from a different process.
+func (c *cloudRedisClusterGRPCClient) DeleteBackupOperation(name string) *DeleteBackupOperation {
+	return &DeleteBackupOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteBackupOperation returns a new DeleteBackupOperation from a given name.
+// The name must be that of a previously created DeleteBackupOperation, possibly from a different process.
+func (c *cloudRedisClusterRESTClient) DeleteBackupOperation(name string) *DeleteBackupOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteBackupOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // DeleteClusterOperation returns a new DeleteClusterOperation from a given name.
 // The name must be that of a previously created DeleteClusterOperation, possibly from a different process.
 func (c *cloudRedisClusterGRPCClient) DeleteClusterOperation(name string) *DeleteClusterOperation {
@@ -1734,6 +2484,42 @@ func (c *cloudRedisClusterGRPCClient) DeleteClusterOperation(name string) *Delet
 func (c *cloudRedisClusterRESTClient) DeleteClusterOperation(name string) *DeleteClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteClusterOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// ExportBackupOperation returns a new ExportBackupOperation from a given name.
+// The name must be that of a previously created ExportBackupOperation, possibly from a different process.
+func (c *cloudRedisClusterGRPCClient) ExportBackupOperation(name string) *ExportBackupOperation {
+	return &ExportBackupOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// ExportBackupOperation returns a new ExportBackupOperation from a given name.
+// The name must be that of a previously created ExportBackupOperation, possibly from a different process.
+func (c *cloudRedisClusterRESTClient) ExportBackupOperation(name string) *ExportBackupOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &ExportBackupOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// RescheduleClusterMaintenanceOperation returns a new RescheduleClusterMaintenanceOperation from a given name.
+// The name must be that of a previously created RescheduleClusterMaintenanceOperation, possibly from a different process.
+func (c *cloudRedisClusterGRPCClient) RescheduleClusterMaintenanceOperation(name string) *RescheduleClusterMaintenanceOperation {
+	return &RescheduleClusterMaintenanceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// RescheduleClusterMaintenanceOperation returns a new RescheduleClusterMaintenanceOperation from a given name.
+// The name must be that of a previously created RescheduleClusterMaintenanceOperation, possibly from a different process.
+func (c *cloudRedisClusterRESTClient) RescheduleClusterMaintenanceOperation(name string) *RescheduleClusterMaintenanceOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &RescheduleClusterMaintenanceOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

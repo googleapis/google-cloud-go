@@ -1,0 +1,1 @@
+{"level":"DEBUG","msg":"msg","response":{"headers":{"Foo":"bar"},"payload":{"access_token":"token","expires_in":600,"token_type":"Bearer"},"status":"200"}}

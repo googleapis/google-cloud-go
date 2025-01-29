@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,14 +20,13 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
 
 	placespb "cloud.google.com/go/maps/places/apiv1/placespb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -174,6 +173,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new places client based on gRPC.
@@ -204,6 +205,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      placespb.NewPlacesClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -250,6 +252,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new places rest client.
@@ -271,6 +275,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -320,7 +325,7 @@ func (c *gRPCClient) SearchNearby(ctx context.Context, req *placespb.SearchNearb
 	var resp *placespb.SearchNearbyResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.SearchNearby(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.SearchNearby, req, settings.GRPC, c.logger, "SearchNearby")
 		return err
 	}, opts...)
 	if err != nil {
@@ -335,7 +340,7 @@ func (c *gRPCClient) SearchText(ctx context.Context, req *placespb.SearchTextReq
 	var resp *placespb.SearchTextResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.SearchText(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.SearchText, req, settings.GRPC, c.logger, "SearchText")
 		return err
 	}, opts...)
 	if err != nil {
@@ -353,7 +358,7 @@ func (c *gRPCClient) GetPhotoMedia(ctx context.Context, req *placespb.GetPhotoMe
 	var resp *placespb.PhotoMedia
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetPhotoMedia(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetPhotoMedia, req, settings.GRPC, c.logger, "GetPhotoMedia")
 		return err
 	}, opts...)
 	if err != nil {
@@ -371,7 +376,7 @@ func (c *gRPCClient) GetPlace(ctx context.Context, req *placespb.GetPlaceRequest
 	var resp *placespb.Place
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetPlace(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetPlace, req, settings.GRPC, c.logger, "GetPlace")
 		return err
 	}, opts...)
 	if err != nil {
@@ -386,7 +391,7 @@ func (c *gRPCClient) AutocompletePlaces(ctx context.Context, req *placespb.Autoc
 	var resp *placespb.AutocompletePlacesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.AutocompletePlaces(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.AutocompletePlaces, req, settings.GRPC, c.logger, "AutocompletePlaces")
 		return err
 	}, opts...)
 	if err != nil {
@@ -431,17 +436,7 @@ func (c *restClient) SearchNearby(ctx context.Context, req *placespb.SearchNearb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SearchNearby")
 		if err != nil {
 			return err
 		}
@@ -494,17 +489,7 @@ func (c *restClient) SearchText(ctx context.Context, req *placespb.SearchTextReq
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SearchText")
 		if err != nil {
 			return err
 		}
@@ -563,17 +548,7 @@ func (c *restClient) GetPhotoMedia(ctx context.Context, req *placespb.GetPhotoMe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetPhotoMedia")
 		if err != nil {
 			return err
 		}
@@ -633,17 +608,7 @@ func (c *restClient) GetPlace(ctx context.Context, req *placespb.GetPlaceRequest
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetPlace")
 		if err != nil {
 			return err
 		}
@@ -696,17 +661,7 @@ func (c *restClient) AutocompletePlaces(ctx context.Context, req *placespb.Autoc
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AutocompletePlaces")
 		if err != nil {
 			return err
 		}
