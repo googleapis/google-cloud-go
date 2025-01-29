@@ -51,6 +51,7 @@ func DefaultAuthScopes() []string {
 	return []string{
 		"https://www.googleapis.com/auth/meetings.space.created",
 		"https://www.googleapis.com/auth/meetings.space.readonly",
+		"https://www.googleapis.com/auth/meetings.space.settings",
 	}
 }
 
@@ -66,7 +67,7 @@ func executeHTTPRequestWithResponse(ctx context.Context, client *http.Client, re
 		return nil, nil, err
 	}
 	logger.DebugContext(ctx, "api response", "serviceName", serviceName, "rpcName", rpc, "response", internallog.HTTPResponse(resp, buf))
-	if err = googleapi.CheckResponse(resp); err != nil {
+	if err = googleapi.CheckResponseWithBody(resp, buf); err != nil {
 		return nil, nil, err
 	}
 	return buf, resp, nil

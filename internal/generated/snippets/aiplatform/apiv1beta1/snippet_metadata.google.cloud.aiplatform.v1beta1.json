@@ -7580,6 +7580,52 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1beta1_generated_FeatureRegistryService_UpdateFeatureMonitor_sync",
+      "title": "aiplatform UpdateFeatureMonitor Sample",
+      "description": "UpdateFeatureMonitor updates the parameters of a single FeatureMonitor.",
+      "file": "FeatureRegistryClient/UpdateFeatureMonitor/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateFeatureMonitor",
+        "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryClient.UpdateFeatureMonitor",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.UpdateFeatureMonitorRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateFeatureMonitorOperation",
+        "client": {
+          "shortName": "FeatureRegistryClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryClient"
+        },
+        "method": {
+          "shortName": "UpdateFeatureMonitor",
+          "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryService.UpdateFeatureMonitor",
+          "service": {
+            "shortName": "FeatureRegistryService",
+            "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1beta1_generated_FeatureRegistryService_WaitOperation_sync",
       "title": "aiplatform WaitOperation Sample",
       "description": "WaitOperation is a utility method from google.longrunning.Operations.",
@@ -20545,6 +20591,52 @@
         "method": {
           "shortName": "ListModelEvaluations",
           "fullName": "google.cloud.aiplatform.v1beta1.ModelService.ListModelEvaluations",
+          "service": {
+            "shortName": "ModelService",
+            "fullName": "google.cloud.aiplatform.v1beta1.ModelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ModelService_ListModelVersionCheckpoints_sync",
+      "title": "aiplatform ListModelVersionCheckpoints Sample",
+      "description": "ListModelVersionCheckpoints lists checkpoints of the specified model version.",
+      "file": "ModelClient/ListModelVersionCheckpoints/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListModelVersionCheckpoints",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelClient.ListModelVersionCheckpoints",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.ListModelVersionCheckpointsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ModelVersionCheckpointIterator",
+        "client": {
+          "shortName": "ModelClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelClient"
+        },
+        "method": {
+          "shortName": "ListModelVersionCheckpoints",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelService.ListModelVersionCheckpoints",
           "service": {
             "shortName": "ModelService",
             "fullName": "google.cloud.aiplatform.v1beta1.ModelService"

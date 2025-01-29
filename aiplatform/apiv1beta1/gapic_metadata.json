@@ -1637,6 +1637,11 @@
                 "UpdateFeatureGroup"
               ]
             },
+            "UpdateFeatureMonitor": {
+              "methods": [
+                "UpdateFeatureMonitor"
+              ]
+            },
             "WaitOperation": {
               "methods": [
                 "WaitOperation"
@@ -1780,6 +1785,11 @@
             "UpdateFeatureGroup": {
               "methods": [
                 "UpdateFeatureGroup"
+              ]
+            },
+            "UpdateFeatureMonitor": {
+              "methods": [
+                "UpdateFeatureMonitor"
               ]
             },
             "WaitOperation": {
@@ -4718,6 +4728,11 @@
                 "ListModelEvaluations"
               ]
             },
+            "ListModelVersionCheckpoints": {
+              "methods": [
+                "ListModelVersionCheckpoints"
+              ]
+            },
             "ListModelVersions": {
               "methods": [
                 "ListModelVersions"
@@ -4861,6 +4876,11 @@
             "ListModelEvaluations": {
               "methods": [
                 "ListModelEvaluations"
+              ]
+            },
+            "ListModelVersionCheckpoints": {
+              "methods": [
+                "ListModelVersionCheckpoints"
               ]
             },
             "ListModelVersions": {

@@ -24,12 +24,12 @@ import (
 	"cloud.google.com/go/internal/fields"
 )
 
-func setFromProtoValue(x interface{}, vproto *pb.Value, c *Client) error {
-	v := reflect.ValueOf(x)
-	if v.Kind() != reflect.Ptr || v.IsNil() {
+func setFromProtoValue(dest interface{}, vprotoSrc *pb.Value, c *Client) error {
+	destV := reflect.ValueOf(dest)
+	if destV.Kind() != reflect.Ptr || destV.IsNil() {
 		return errors.New("firestore: nil or not a pointer")
 	}
-	return setReflectFromProtoValue(v.Elem(), vproto, c)
+	return setReflectFromProtoValue(destV.Elem(), vprotoSrc, c)
 }
 
 // setReflectFromProtoValue sets vDest from a Firestore Value.
@@ -277,29 +277,33 @@ func populateRepeated(vr reflect.Value, vals []*pb.Value, n int, c *Client) erro
 	return nil
 }
 
-// populateMap sets the elements of vm, which must be a map, from the
-// corresponding elements of pm.
+// populateMap sets the elements of destValueMap, which must be a map, from the
+// corresponding elements of srcPropMap.
 //
 // Since a map value is not settable, this function always creates a new
-// element for each corresponding map key. Existing values of vm are
+// element for each corresponding map key. Existing values of destValueMap are
 // overwritten. This happens even if the map value is something like a pointer
 // to a struct, where we could in theory populate the existing struct value
 // instead of discarding it. This behavior matches encoding/json.
-func populateMap(vm reflect.Value, pm map[string]*pb.Value, c *Client) error {
-	t := vm.Type()
-	if t.Key().Kind() != reflect.String {
+func populateMap(destValueMap reflect.Value, srcPropMap map[string]*pb.Value, c *Client) error {
+	destValueMapType := destValueMap.Type()
+	if destValueMapType.Key().Kind() != reflect.String {
 		return errors.New("firestore: map key type is not string")
 	}
-	if vm.IsNil() {
-		vm.Set(reflect.MakeMap(t))
+	if destValueMap.IsNil() {
+		destValueMap.Set(reflect.MakeMap(destValueMapType))
 	}
-	et := t.Elem()
-	for k, vproto := range pm {
+	et := destValueMapType.Elem()
+	for srcKey, srcVProto := range srcPropMap {
 		el := reflect.New(et).Elem()
-		if err := setReflectFromProtoValue(el, vproto, c); err != nil {
+		if err := setReflectFromProtoValue(el, srcVProto, c); err != nil {
 			return err
 		}
-		vm.SetMapIndex(reflect.ValueOf(k), el)
+		keyToSet := reflect.ValueOf(srcKey)
+		if reflect.ValueOf(srcKey).CanConvert(destValueMapType.Key()) {
+			keyToSet = reflect.ValueOf(srcKey).Convert(destValueMapType.Key())
+		}
+		destValueMap.SetMapIndex(keyToSet, el)
 	}
 	return nil
 }

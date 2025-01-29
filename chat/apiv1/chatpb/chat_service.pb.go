@@ -987,8 +987,7 @@ type ChatServiceClient interface {
 	// You can authenticate and authorize this method with administrator
 	// privileges by setting the `use_admin_access` field in the request.
 	DeleteMembership(ctx context.Context, in *DeleteMembershipRequest, opts ...grpc.CallOption) (*Membership, error)
-	// Creates a reaction and adds it to a message. Only unicode emojis are
-	// supported. For an example, see
+	// Creates a reaction and adds it to a message. For an example, see
 	// [Add a reaction to a
 	// message](https://developers.google.com/workspace/chat/create-reactions).
 	//
@@ -1002,8 +1001,7 @@ type ChatServiceClient interface {
 	// Requires [user
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
 	ListReactions(ctx context.Context, in *ListReactionsRequest, opts ...grpc.CallOption) (*ListReactionsResponse, error)
-	// Deletes a reaction to a message. Only unicode emojis are supported.
-	// For an example, see
+	// Deletes a reaction to a message. For an example, see
 	// [Delete a
 	// reaction](https://developers.google.com/workspace/chat/delete-reactions).
 	//
@@ -1746,8 +1744,7 @@ type ChatServiceServer interface {
 	// You can authenticate and authorize this method with administrator
 	// privileges by setting the `use_admin_access` field in the request.
 	DeleteMembership(context.Context, *DeleteMembershipRequest) (*Membership, error)
-	// Creates a reaction and adds it to a message. Only unicode emojis are
-	// supported. For an example, see
+	// Creates a reaction and adds it to a message. For an example, see
 	// [Add a reaction to a
 	// message](https://developers.google.com/workspace/chat/create-reactions).
 	//
@@ -1761,8 +1758,7 @@ type ChatServiceServer interface {
 	// Requires [user
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
 	ListReactions(context.Context, *ListReactionsRequest) (*ListReactionsResponse, error)
-	// Deletes a reaction to a message. Only unicode emojis are supported.
-	// For an example, see
+	// Deletes a reaction to a message. For an example, see
 	// [Delete a
 	// reaction](https://developers.google.com/workspace/chat/delete-reactions).
 	//
