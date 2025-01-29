@@ -2847,7 +2847,6 @@ func TestIntegration_SignedURL_EmptyStringObjectName(t *testing.T) {
 			t.Fatal(err)
 		}
 	})
-
 }
 
 func TestIntegration_BucketACL(t *testing.T) {
@@ -6962,11 +6961,17 @@ func extractErrCode(err error) int {
 	return -1
 }
 
+// errorIsStatusCode returns true if err is a:
+//   - googleapi.Error with httpStatusCode, or
+//   - apierror.APIError with grpcStatusCode, or
+//   - grpc/status.Status error with grpcStatusCode.
 func errorIsStatusCode(err error, httpStatusCode int, grpcStatusCode codes.Code) bool {
 	var httpErr *googleapi.Error
 	var grpcErr *apierror.APIError
+
 	return (errors.As(err, &httpErr) && httpErr.Code == httpStatusCode) ||
-		(errors.As(err, &grpcErr) && grpcErr.GRPCStatus().Code() == grpcStatusCode)
+		(errors.As(err, &grpcErr) && grpcErr.GRPCStatus().Code() == grpcStatusCode) ||
+		status.Code(err) == grpcStatusCode
 }
 
 func setUpRequesterPaysBucket(ctx context.Context, t *testing.T, bucket, object string, addOwnerEmail string) {
