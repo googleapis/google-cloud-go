@@ -946,10 +946,11 @@ func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRa
 			case <-timer:
 				log.Printf("stalled read-req (%p) cancelled after %fs", req, stallTimeout.Seconds())
 				cancel()
-				err = context.DeadlineExceeded
+				<-done
 				if res != nil && res.Body != nil {
 					res.Body.Close()
 				}
+				return res, context.DeadlineExceeded
 			case <-done:
 				cancel = nil
 			}
