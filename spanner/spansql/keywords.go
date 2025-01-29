@@ -127,9 +127,11 @@ var keywords = map[string]bool{
 
 // funcs is the set of reserved keywords that are functions.
 // https://cloud.google.com/spanner/docs/functions-and-operators
-var funcs = make(map[string]bool)
-var funcArgParsers = make(map[string]func(*parser) (Expr, *parseError))
-var aggregateFuncs = make(map[string]bool)
+var (
+	funcs          = make(map[string]bool)
+	funcArgParsers = make(map[string]func(*parser) (Expr, *parseError))
+	aggregateFuncs = make(map[string]bool)
+)
 
 func init() {
 	for _, f := range funcNames {
@@ -233,6 +235,11 @@ var funcNames = []string{
 	"TO_BASE32", "TO_BASE64", "TO_CODE_POINTS", "TO_HEX",
 	"TRIM",
 	"UPPER",
+
+	// Token functions.
+	"TOKENIZE_FULLTEXT",
+	"TOKENIZE_NUMBER",
+	"TOKEN",
 
 	// Array functions.
 	"ARRAY",

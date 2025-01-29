@@ -2186,6 +2186,62 @@ func TestParseDDL(t *testing.T) {
 				},
 			},
 		},
+		{
+			`CREATE TABLE TableTokens (
+				Name STRING(MAX) NOT NULL,
+				Name_Tokens TOKENLIST AS (TOKENIZE_FULLTEXT(Name)) HIDDEN,
+				Value INT64 NOT NULL,
+				Value_Tokens TOKENLIST AS (TOKENIZE_NUMBER(Value)) HIDDEN,
+				Values ARRAY<STRING(MAX)>,
+				Values_Tokens TOKENLIST AS (TOKEN(Values)) HIDDEN,
+				ValueTwo INT64 NOT NULL,
+			) PRIMARY KEY (Name);
+
+			CREATE SEARCH INDEX TableTokensSearch
+			ON TableTokens(Name_Tokens, Value_Tokens)
+			STORING (ValueTwo);`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&CreateTable{
+						Name: "TableTokens",
+						Columns: []ColumnDef{
+							{Name: "Name", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(2)},
+							{
+								Name: "Name_Tokens", Type: Type{Base: Tokenlist},
+								Generated: Func{Name: "TOKENIZE_FULLTEXT", Args: []Expr{ID("Name")}},
+								Position:  line(3),
+							},
+							{Name: "Value", Type: Type{Base: Int64}, NotNull: true, Position: line(4)},
+							{
+								Name: "Value_Tokens", Type: Type{Base: Tokenlist},
+								Generated: Func{Name: "TOKENIZE_NUMBER", Args: []Expr{ID("Value")}},
+								Position:  line(5),
+							},
+							{Name: "Values", Type: Type{Array: true, Base: String, Len: MaxLen}, NotNull: false, Position: line(6)},
+							{
+								Name: "Values_Tokens", Type: Type{Base: Tokenlist},
+								Generated: Func{Name: "TOKEN", Args: []Expr{ID("Values")}},
+								Position:  line(7),
+							},
+							{Name: "ValueTwo", Type: Type{Base: Int64}, NotNull: true, Position: line(8)},
+						},
+						PrimaryKey: []KeyPart{{Column: "Name"}},
+						Position:   line(1),
+					},
+					&CreateSearchIndex{
+						Name:  "TableTokensSearch",
+						Table: "TableTokens",
+						Columns: []KeyPart{
+							{Column: "Name_Tokens"},
+							{Column: "Value_Tokens"},
+						},
+						Storing:  []ID{"ValueTwo"},
+						Position: line(11),
+					},
+				},
+			},
+		},
 	}
 	for _, test := range tests {
 		got, err := ParseDDL("filename", test.in)

@@ -962,6 +962,19 @@ func (p *parser) eat(want ...string) bool {
 	return true
 }
 
+func (p *parser) expectAny(any ...string) *parseError {
+	tok := p.next()
+	if tok.err != nil {
+		return tok.err
+	}
+	for _, w := range any {
+		if tok.caseEqual(w) {
+			return nil
+		}
+	}
+	return p.errorf("got %q while expecting any of %q", tok.value, any)
+}
+
 func (p *parser) expect(want ...string) *parseError {
 	for _, w := range want {
 		tok := p.next()
@@ -980,7 +993,7 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 
 	/*
 		statement:
-			{ create_database | create_table | create_index | alter_table | drop_table | rename_table | drop_index | create_change_stream | alter_change_stream | drop_change_stream }
+			{ create_database | create_table | create_index | create_search_index | alter_table | drop_table | rename_table | drop_index | create_change_stream | alter_change_stream | drop_change_stream }
 	*/
 
 	// TODO: support create_database
@@ -990,6 +1003,9 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 		return ct, err
 	} else if p.sniff("CREATE", "INDEX") || p.sniff("CREATE", "UNIQUE", "INDEX") || p.sniff("CREATE", "NULL_FILTERED", "INDEX") || p.sniff("CREATE", "UNIQUE", "NULL_FILTERED", "INDEX") {
 		ci, err := p.parseCreateIndex()
+		return ci, err
+	} else if p.sniff("CREATE", "SEARCH", "INDEX") {
+		ci, err := p.parseCreateSearchIndex()
 		return ci, err
 	} else if p.sniff("CREATE", "VIEW") || p.sniff("CREATE", "OR", "REPLACE", "VIEW") {
 		cv, err := p.parseCreateView()
@@ -1361,6 +1377,132 @@ func (p *parser) parseCreateIndex() (*CreateIndex, *parseError) {
 	return ci, nil
 }
 
+func (p *parser) parseCreateSearchIndex() (*CreateSearchIndex, *parseError) {
+	debugf("parseCreateSearchIndex: %v", p)
+
+	/*
+		CREATE SEARCH INDEX index_name
+			ON table_name ( token_column_list )
+			[ storing_clause ] [ partition_clause ]
+			[ orderby_clause ] [ where_clause ]
+			[ interleave_clause ] [ options_clause ]
+
+		where index_name is:
+			{a—z|A—Z}[{a—z|A—Z|0—9|_}+]
+
+		and token_column_list is:
+		    column_name [, ...]
+
+		and storing_clause is:
+		    STORING ( column_name [, ...] )
+
+		and partition_clause is:
+		    PARTITION BY column_name [, ...]
+
+		and orderby_clause is:
+		    ORDER BY column_name [ {ASC | DESC} ] [, column_name [ {ASC | DESC} ]]
+
+		and where_clause is:
+		    WHERE column_name IS NOT NULL [AND ...]
+
+		and interleave_clause is:
+		    , INTERLEAVE IN table_name
+
+		and options_clause is:
+		    OPTIONS ( option_name=option_value [, ...] )
+
+	*/
+
+	if err := p.expect("CREATE"); err != nil {
+		return nil, err
+	}
+	pos := p.Pos()
+	if err := p.expect("SEARCH", "INDEX"); err != nil {
+		return nil, err
+	}
+
+	// Parse the index name
+	iname, err := p.parseTableOrIndexOrColumnName()
+	if err != nil {
+		return nil, err
+	}
+
+	// Parse the table name
+	if err := p.expect("ON"); err != nil {
+		return nil, err
+	}
+	tname, err := p.parseTableOrIndexOrColumnName()
+	if err != nil {
+		return nil, err
+	}
+	ci := &CreateSearchIndex{
+		Name:     iname,
+		Table:    tname,
+		Position: pos,
+	}
+	ci.Columns, err = p.parseKeyPartList()
+	if err != nil {
+		return nil, err
+	}
+
+	if p.eat("STORING") {
+		ci.Storing, err = p.parseColumnNameList()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if p.eat("PARTITION", "BY") {
+		ci.PartitionBy, err = p.parseColumnNameList()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if p.eat("ORDER", "BY") {
+		ci.OrderBy, err = p.parseColumnNameList()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if p.eat("WHERE") {
+		for {
+			name, err := p.parseTableOrIndexOrColumnName()
+			if err != nil {
+				return nil, err
+			}
+			if err := p.expect("IS", "NOT", "NULL"); err != nil {
+				return nil, err
+			}
+			ci.WhereIsNotNull = append(ci.WhereIsNotNull, name)
+
+			if !p.sniff("AND") {
+				break
+			}
+			if err := p.expect("AND"); err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	if p.eat(",", "INTERLEAVE", "IN") {
+		ci.Interleave, err = p.parseTableOrIndexOrColumnName()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if p.eat("OPTIONS") {
+		ci.Options, err = p.parseSearchIndexOptions()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return ci, nil
+}
+
 func (p *parser) parseCreateView() (*CreateView, *parseError) {
 	debugf("parseCreateView: %v", p)
 
@@ -1564,6 +1706,7 @@ func (p *parser) parseRevokeRole() (*RevokeRole, *parseError) {
 
 	return r, nil
 }
+
 func (p *parser) parseGrantOrRevokeRoleList(end string) ([]ID, *parseError) {
 	var roleList []ID
 	f := func(p *parser) *parseError {
@@ -1626,6 +1769,7 @@ func (p *parser) parsePrivileges() ([]Privilege, *parseError) {
 	}
 	return privs, nil
 }
+
 func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 	debugf("parseAlterTable: %v", p)
 
@@ -2054,7 +2198,7 @@ func (p *parser) parseColumnDef() (ColumnDef, *parseError) {
 
 	/*
 		column_def:
-			column_name {scalar_type | array_type} [NOT NULL] [{DEFAULT ( expression ) | AS ( expression ) STORED}] [options_def]
+			column_name {scalar_type | array_type} [NOT NULL] [{DEFAULT ( expression ) | AS ( expression ) {STORED | HIDDEN}}] [options_def]
 	*/
 
 	name, err := p.parseTableOrIndexOrColumnName()
@@ -2091,7 +2235,7 @@ func (p *parser) parseColumnDef() (ColumnDef, *parseError) {
 		if err := p.expect(")"); err != nil {
 			return ColumnDef{}, err
 		}
-		if err := p.expect("STORED"); err != nil {
+		if err := p.expectAny("STORED", "HIDDEN"); err != nil {
 			return ColumnDef{}, err
 		}
 	}
@@ -2161,6 +2305,70 @@ func (p *parser) parseColumnAlteration() (ColumnAlteration, *parseError) {
 	}
 
 	return sct, nil
+}
+
+func (p *parser) parseSearchIndexOptions() (SearchIndexOptions, *parseError) {
+	debugf("parseSearchIndexOptions: %v", p)
+	/*
+		options_def:
+			OPTIONS (sort_order_sharding  = { true | false }, disable_automatic_uid_column = { true | false })
+	*/
+
+	if err := p.expect("OPTIONS"); err != nil {
+		return SearchIndexOptions{}, err
+	}
+	if err := p.expect("("); err != nil {
+		return SearchIndexOptions{}, err
+	}
+
+	// TODO: Figure out if column options are case insensitive.
+	// We ignore case for the key (because it is easier) but not the value.
+	var opts SearchIndexOptions
+	for {
+		if p.eat("sort_order_sharding", "=") {
+			tok := p.next()
+			if tok.err != nil {
+				return SearchIndexOptions{}, tok.err
+			}
+			sortOrderSharding := new(bool)
+			switch tok.value {
+			case "true":
+				*sortOrderSharding = true
+			case "false":
+				*sortOrderSharding = false
+			default:
+				return SearchIndexOptions{}, p.errorf("got %q, want true or false", tok.value)
+			}
+			opts.SortOrderSharding = sortOrderSharding
+		} else if p.eat("disable_automatic_uid_column", "=") {
+			tok := p.next()
+			if tok.err != nil {
+				return SearchIndexOptions{}, tok.err
+			}
+			disableAutomaticUidColumn := new(bool)
+			switch tok.value {
+			case "true":
+				*disableAutomaticUidColumn = true
+			case "false":
+				*disableAutomaticUidColumn = false
+			default:
+				return SearchIndexOptions{}, p.errorf("got %q, want true or false", tok.value)
+			}
+			opts.DisableAutomaticUidColumn = disableAutomaticUidColumn
+		}
+		if p.sniff(")") {
+			break
+		}
+		if !p.eat(",") {
+			return SearchIndexOptions{}, p.errorf("missing ',' in options list")
+		}
+	}
+
+	if err := p.expect(")"); err != nil {
+		return SearchIndexOptions{}, err
+	}
+
+	return opts, nil
 }
 
 func (p *parser) parseColumnOptions() (ColumnOptions, *parseError) {
@@ -2891,6 +3099,7 @@ func (p *parser) parseCreateSequence() (*CreateSequence, *parseError) {
 
 	return cs, nil
 }
+
 func (p *parser) parseCreateProtoBundle() (*CreateProtoBundle, *parseError) {
 	debugf("parseCreateProtoBundle: %v", p)
 
@@ -3107,6 +3316,7 @@ var baseTypes = map[string]TypeBase{
 	"JSON":      JSON,
 	"PROTO":     Proto, // for use in CAST
 	"ENUM":      Enum,  // for use in CAST
+	"TOKENLIST": Tokenlist,
 }
 
 func (p *parser) parseBaseType() (Type, *parseError) {

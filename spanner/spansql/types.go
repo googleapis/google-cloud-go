@@ -121,6 +121,35 @@ func (*CreateIndex) isDDLStmt()        {}
 func (ci *CreateIndex) Pos() Position  { return ci.Position }
 func (ci *CreateIndex) clearOffset()   { ci.Position.Offset = 0 }
 
+// SearchIndexOptions represents options on a search index as part of a
+// CREATE SEARCH INDEX statement.
+type SearchIndexOptions struct {
+	SortOrderSharding         *bool
+	DisableAutomaticUidColumn *bool
+}
+
+// CreateSearchIndex represents a CREATE SEARCH INDEX statement.
+// https://cloud.google.com/spanner/docs/data-definition-language#create-search-index
+type CreateSearchIndex struct {
+	Name    ID
+	Table   ID
+	Columns []KeyPart
+
+	Storing        []ID
+	PartitionBy    []ID
+	OrderBy        []ID
+	WhereIsNotNull []ID
+	Interleave     ID
+	Options        SearchIndexOptions
+
+	Position Position // position of the "CREATE" token
+}
+
+func (ci *CreateSearchIndex) String() string { return fmt.Sprintf("%#v", ci) }
+func (*CreateSearchIndex) isDDLStmt()        {}
+func (ci *CreateSearchIndex) Pos() Position  { return ci.Position }
+func (ci *CreateSearchIndex) clearOffset()   { ci.Position.Offset = 0 }
+
 // CreateView represents a CREATE [OR REPLACE] VIEW statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#view_statements
 type CreateView struct {
@@ -549,6 +578,7 @@ const (
 	JSON
 	Proto
 	Enum // Enum used in CAST expressions
+	Tokenlist
 )
 
 type PrivilegeType int

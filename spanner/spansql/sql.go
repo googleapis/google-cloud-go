@@ -98,6 +98,63 @@ func (ci CreateIndex) SQL() string {
 	return str
 }
 
+func (csi CreateSearchIndex) SQL() string {
+	str := "CREATE SEARCH INDEX"
+
+	str += csi.Name.SQL() + " ON " + csi.Table.SQL() + "("
+	for i, c := range csi.Columns {
+		if i > 0 {
+			str += ", "
+		}
+		str += c.SQL()
+	}
+	str += ")"
+	if len(csi.Storing) > 0 {
+		str += " STORING (" + idList(csi.Storing, ", ") + ")"
+	}
+
+	if len(csi.PartitionBy) > 0 {
+		str += " PARTITION BY (" + idList(csi.PartitionBy, ", ") + ")"
+	}
+
+	if len(csi.OrderBy) > 0 {
+		str += " ORDER BY (" + idList(csi.OrderBy, ", ") + ")"
+	}
+
+	if len(csi.WhereIsNotNull) > 0 {
+		str += " WHERE " + idList(csi.WhereIsNotNull, " IS NOT NULL AND")
+		// Remove last " AND"
+		str = str[:len(str)-4]
+	}
+
+	if csi.Interleave != "" {
+		str += ", INTERLEAVE IN " + csi.Interleave.SQL()
+	}
+
+	if csi.Options != (SearchIndexOptions{}) {
+		str += " " + csi.Options.SQL()
+	}
+	return str
+}
+
+func (opts SearchIndexOptions) SQL() string {
+	str := "OPTIONS ("
+	hasOpt := false
+	if opts.DisableAutomaticUidColumn != nil {
+		hasOpt = true
+		str += fmt.Sprintf("disable_automatic_uid_column=%t", *opts.DisableAutomaticUidColumn)
+	}
+	if opts.DisableAutomaticUidColumn != nil {
+		if hasOpt {
+			str += ", "
+		}
+		hasOpt = true
+		str += fmt.Sprintf("sort_order_sharding=%t", *opts.SortOrderSharding)
+	}
+	str += ")"
+	return str
+}
+
 func (cp CreateProtoBundle) SQL() string {
 	typeList := ""
 	if len(cp.Types) > 0 {
@@ -570,6 +627,7 @@ func (d *Delete) SQL() string {
 func (do DropProtoBundle) SQL() string {
 	return "DROP PROTO BUNDLE"
 }
+
 func (ap AlterProtoBundle) SQL() string {
 	str := "ALTER PROTO BUNDLE"
 	if len(ap.AddTypes) > 0 {
@@ -741,6 +799,7 @@ func (pt PrivilegeType) SQL() string {
 	}
 	panic("unknown PrivilegeType")
 }
+
 func (kp KeyPart) SQL() string {
 	str := kp.Column.SQL()
 	if kp.Desc {
