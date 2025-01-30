@@ -3,7 +3,7 @@ module cloud.google.com/go/bigquery
 go 1.22.7
 
 require (
-	cloud.google.com/go v0.118.0
+	cloud.google.com/go v0.118.1
 	cloud.google.com/go/datacatalog v1.24.3
 	cloud.google.com/go/iam v1.3.1
 	cloud.google.com/go/longrunning v0.6.4
@@ -42,7 +42,6 @@ require (
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
-	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/google/flatbuffers v23.5.26+incompatible // indirect
 	github.com/google/martian/v3 v3.3.3 // indirect
 	github.com/google/s2a-go v0.1.9 // indirect
