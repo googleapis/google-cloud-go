@@ -1204,6 +1204,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 				rr.mu.Unlock()
 				return
 			case <-rr.managerRetry:
+				// We are not closing stream here as it is already closed and we are retring it.
 				return
 			case <-rr.closeManager:
 				rr.mu.Lock()
@@ -1269,6 +1270,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 				rr.mu.Unlock()
 				return
 			case <-rr.receiverRetry:
+				// We are not draining from stream here as it is already closed and we are retring it.
 				return
 			case <-rr.closeReceiver:
 				rr.mu.Lock()
