@@ -125,7 +125,7 @@ func (ci *CreateIndex) clearOffset()   { ci.Position.Offset = 0 }
 // CREATE SEARCH INDEX statement.
 type SearchIndexOptions struct {
 	SortOrderSharding         *bool
-	DisableAutomaticUidColumn *bool
+	DisableAutomaticUIDColumn *bool
 }
 
 // CreateSearchIndex represents a CREATE SEARCH INDEX statement.

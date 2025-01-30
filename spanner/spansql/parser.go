@@ -2345,16 +2345,16 @@ func (p *parser) parseSearchIndexOptions() (SearchIndexOptions, *parseError) {
 			if tok.err != nil {
 				return SearchIndexOptions{}, tok.err
 			}
-			disableAutomaticUidColumn := new(bool)
+			disableAutomaticUIDColumn := new(bool)
 			switch tok.value {
 			case "true":
-				*disableAutomaticUidColumn = true
+				*disableAutomaticUIDColumn = true
 			case "false":
-				*disableAutomaticUidColumn = false
+				*disableAutomaticUIDColumn = false
 			default:
 				return SearchIndexOptions{}, p.errorf("got %q, want true or false", tok.value)
 			}
-			opts.DisableAutomaticUidColumn = disableAutomaticUidColumn
+			opts.DisableAutomaticUIDColumn = disableAutomaticUIDColumn
 		}
 		if p.sniff(")") {
 			break

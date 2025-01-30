@@ -140,11 +140,11 @@ func (csi CreateSearchIndex) SQL() string {
 func (opts SearchIndexOptions) SQL() string {
 	str := "OPTIONS ("
 	hasOpt := false
-	if opts.DisableAutomaticUidColumn != nil {
+	if opts.DisableAutomaticUIDColumn != nil {
 		hasOpt = true
-		str += fmt.Sprintf("disable_automatic_uid_column=%t", *opts.DisableAutomaticUidColumn)
+		str += fmt.Sprintf("disable_automatic_uid_column=%t", *opts.DisableAutomaticUIDColumn)
 	}
-	if opts.DisableAutomaticUidColumn != nil {
+	if opts.DisableAutomaticUIDColumn != nil {
 		if hasOpt {
 			str += ", "
 		}
