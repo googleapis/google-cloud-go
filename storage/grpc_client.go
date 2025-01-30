@@ -1112,9 +1112,14 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, contextMetadataFromBidiReadObject(req)...)
 
-	openStream := func() (*bidiReadStreamResponse, context.CancelFunc, error) {
+	openStream := func(readHandle ReadHandle) (*bidiReadStreamResponse, context.CancelFunc, error) {
 		if err := applyCondsProto("grpcStorageClient.BidiReadObject", params.gen, params.conds, r); err != nil {
 			return nil, nil, err
+		}
+		if readHandle != nil {
+			req.GetReadObjectSpec().ReadHandle = &storagepb.BidiReadHandle{
+				Handle: readHandle,
+			}
 		}
 		var stream storagepb.Storage_BidiReadObjectClient
 		var resp *storagepb.BidiReadObjectResponse
@@ -1158,7 +1163,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 	}
 
 	// For the first time open stream without adding any range.
-	resp, cancel, err := openStream()
+	resp, cancel, err := openStream(nil)
 	if err != nil {
 		return nil, err
 	}
@@ -1419,7 +1424,7 @@ func (r *gRPCBidiReader) reopenStream(failSpec []rangeSpec) error {
 		r.cancel()
 	}
 
-	res, cancel, err := r.reopen()
+	res, cancel, err := r.reopen(r.readHandle)
 	if err != nil {
 		return err
 	}
@@ -1698,6 +1703,15 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 
 	s := callSettings(c.settings, opts...)
 
+	retryDeadline := defaultWriteChunkRetryDeadline
+	if params.chunkRetryDeadline != 0 {
+		retryDeadline = params.chunkRetryDeadline
+	}
+	if s.retry == nil {
+		s.retry = defaultRetry.clone()
+	}
+	s.retry.maxRetryDuration = retryDeadline
+
 	// This function reads the data sent to the pipe and sends sets of messages
 	// on the gRPC client-stream as the buffer is filled.
 	go func() {
@@ -1723,16 +1737,6 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 					return err
 				}
 
-				retryDeadline := defaultWriteChunkRetryDeadline
-				if params.chunkRetryDeadline != 0 {
-					retryDeadline = params.chunkRetryDeadline
-				}
-
-				if gw.settings.retry == nil {
-					gw.settings.retry = defaultRetry
-				}
-				gw.settings.retry.maxRetryDuration = retryDeadline
-
 				var o *storagepb.Object
 				uploadBuff := func(ctx context.Context) error {
 					obj, err := gw.uploadBuffer(ctx, recvd, offset, doneReading)
@@ -1740,7 +1744,14 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 					return err
 				}
 
-				err = run(bucketContext(gw.ctx, gw.bucket), uploadBuff, gw.settings.retry, s.idempotent)
+				// Add routing headers to the context metadata for single-shot and resumable
+				// writes. Append writes need to set this at a lower level to pass the routing
+				// token.
+				bctx := gw.ctx
+				if !gw.append {
+					bctx = bucketContext(bctx, gw.bucket)
+				}
+				err = run(bctx, uploadBuff, gw.settings.retry, s.idempotent)
 				if err != nil {
 					return err
 				}
@@ -1895,7 +1906,7 @@ type gRPCBidiReader struct {
 	settings         *settings
 	readHandle       ReadHandle
 	readID           int64
-	reopen           func() (*bidiReadStreamResponse, context.CancelFunc, error)
+	reopen           func(ReadHandle) (*bidiReadStreamResponse, context.CancelFunc, error)
 	readSpec         *storagepb.BidiReadObjectSpec
 	data             chan []rangeSpec
 	ctx              context.Context
