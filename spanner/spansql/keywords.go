@@ -243,6 +243,7 @@ var funcNames = []string{
 	"TOKENIZE_NGRAMS",
 	"TOKENIZE_NUMBER",
 	"TOKENIZE_SUBSTRING",
+	"TOKENLIST_CONCAT",
 
 	// Array functions.
 	"ARRAY",
