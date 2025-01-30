@@ -237,9 +237,12 @@ var funcNames = []string{
 	"UPPER",
 
 	// Token functions.
-	"TOKENIZE_FULLTEXT",
-	"TOKENIZE_NUMBER",
 	"TOKEN",
+	"TOKENIZE_BOOL",
+	"TOKENIZE_FULLTEXT",
+	"TOKENIZE_NGRAMS",
+	"TOKENIZE_NUMBER",
+	"TOKENIZE_SUBSTRING",
 
 	// Array functions.
 	"ARRAY",
