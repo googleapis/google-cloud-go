@@ -1210,7 +1210,6 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 						delete(rr.mp, key)
 					}
 				}
-				drainInboundReadStream(rr.stream)
 				rr.mu.Unlock()
 				return
 			case currentSpec = <-rr.data:
@@ -1260,11 +1259,18 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 			case <-rr.ctx.Done():
 				rr.mu.Lock()
 				rr.done = true
+				drainInboundReadStream(rr.stream)
 				rr.mu.Unlock()
 				return
 			case <-rr.receiverRetry:
+				rr.mu.Lock()
+				drainInboundReadStream(rr.stream)
+				rr.mu.Unlock()
 				return
 			case <-rr.closeReceiver:
+				rr.mu.Lock()
+				drainInboundReadStream(rr.stream)
+				rr.mu.Unlock()
 				return
 			default:
 				// This function reads the data sent for a particular range request and has a callback
@@ -1478,13 +1484,13 @@ func (mr *gRPCBidiReader) wait() {
 // Close will notify stream manager goroutine that the reader has been closed, if it's still running.
 func (mr *gRPCBidiReader) close() error {
 	// Before release of resource we close the client->server connection.
+	mr.mu.Lock()
 	if err := mr.stream.CloseSend(); err != nil {
 		return err
 	}
 	if mr.cancel != nil {
 		mr.cancel()
 	}
-	mr.mu.Lock()
 	mr.done = true
 	mr.activeTask = 0
 	mr.mu.Unlock()
