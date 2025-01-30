@@ -938,6 +938,24 @@ func (p *parser) sniff(want ...string) bool {
 	return true
 }
 
+// sniff reports whether the next N+skip tokens are as specified.
+func (p *parser) sniff_ahead(skip int, want ...string) bool {
+	// Store current parser state and restore on the way out.
+	orig := *p
+	defer func() { *p = orig }()
+
+	for i := 0; i < skip; i++ {
+		p.next()
+	}
+
+	for _, w := range want {
+		if !p.next().caseEqual(w) {
+			return false
+		}
+	}
+	return true
+}
+
 // sniffTokenType reports whether the next token type is as specified.
 func (p *parser) sniffTokenType(want tokenType) bool {
 	orig := *p
@@ -960,19 +978,6 @@ func (p *parser) eat(want ...string) bool {
 		}
 	}
 	return true
-}
-
-func (p *parser) expectAny(any ...string) *parseError {
-	tok := p.next()
-	if tok.err != nil {
-		return tok.err
-	}
-	for _, w := range any {
-		if tok.caseEqual(w) {
-			return nil
-		}
-	}
-	return p.errorf("got %q while expecting any of %q", tok.value, any)
 }
 
 func (p *parser) expect(want ...string) *parseError {
@@ -2235,8 +2240,12 @@ func (p *parser) parseColumnDef() (ColumnDef, *parseError) {
 		if err := p.expect(")"); err != nil {
 			return ColumnDef{}, err
 		}
-		if err := p.expectAny("STORED", "HIDDEN"); err != nil {
-			return ColumnDef{}, err
+		if p.eat("HIDDEN") {
+			cd.Hidden = true
+		} else {
+			if err := p.expect("STORED"); err != nil {
+				return ColumnDef{}, err
+			}
 		}
 	}
 
@@ -4127,6 +4136,29 @@ var sequenceArgParser = func(p *parser) (Expr, *parseError) {
 		return SequenceExpr{Name: name}, nil
 	}
 	return p.parseExpr()
+}
+
+var tokenDefinitionArgParser = func(p *parser) (Expr, *parseError) {
+	if p.sniff_ahead(1, "=", ">") {
+		tok := p.next()
+		if tok.err != nil {
+			return DefinitionExpr{}, tok.err
+		}
+		definition := tok.value
+		if err := p.expect("=", ">"); err != nil {
+			return DefinitionExpr{}, err
+		}
+		value, err := p.parseExpr()
+		if err != nil {
+			return DefinitionExpr{}, err
+		}
+		return DefinitionExpr{
+			Key:   definition,
+			Value: value,
+		}, nil
+	} else {
+		return p.parseExpr()
+	}
 }
 
 func (p *parser) parseAggregateFunc() (Func, *parseError) {

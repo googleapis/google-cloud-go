@@ -700,7 +700,12 @@ func (cd ColumnDef) SQL() string {
 		str += " DEFAULT (" + cd.Default.SQL() + ")"
 	}
 	if cd.Generated != nil {
-		str += " AS (" + cd.Generated.SQL() + ") STORED"
+		str += " AS (" + cd.Generated.SQL() + ")"
+		if cd.Hidden {
+			str += " HIDDEN"
+		} else {
+			str += " STORED"
+		}
 	}
 	if cd.Options != (ColumnOptions{}) {
 		str += " " + cd.Options.SQL()
@@ -782,7 +787,10 @@ func (tb TypeBase) SQL() string {
 		return "PROTO"
 	case Enum:
 		return "ENUM"
+	case Tokenlist:
+		return "TOKENLIST"
 	}
+
 	panic("unknown TypeBase")
 }
 
@@ -1086,6 +1094,13 @@ func (ee ExtractExpr) addSQL(sb *strings.Builder) {
 	sb.WriteString(ee.Part)
 	sb.WriteString(" FROM ")
 	ee.Expr.addSQL(sb)
+}
+
+func (de DefinitionExpr) SQL() string { return buildSQL(de) }
+func (de DefinitionExpr) addSQL(sb *strings.Builder) {
+	sb.WriteString(de.Key)
+	sb.WriteString(" => ")
+	de.Value.addSQL(sb)
 }
 
 func (aze AtTimeZoneExpr) SQL() string { return buildSQL(aze) }

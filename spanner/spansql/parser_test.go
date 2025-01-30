@@ -2201,6 +2201,8 @@ func TestParseDDL(t *testing.T) {
 				ValueFour STRING(MAX) NOT NULL,
 				ValueFour_Tokens TOKENLIST AS (TOKENIZE_FULLTEXT(ValueFour || "concat")) HIDDEN,
 				Combined_Tokens TOKENLIST AS (TOKENLIST_CONCAT([Name_Tokens, ValueFour_Tokens])) HIDDEN,
+				Argument_Tokens TOKENLIST AS (TOKENIZE_FULLTEXT(Name, token_category => "small")) HIDDEN,
+				ManyArgument_Tokens TOKENLIST AS (TOKENIZE_NUMBER(Value, comparison_type => "all", min => 1, max => 5)) HIDDEN,
 			) PRIMARY KEY (Name);
 
 			CREATE SEARCH INDEX TableTokensSearch
@@ -2216,42 +2218,78 @@ func TestParseDDL(t *testing.T) {
 							{
 								Name: "Name_Tokens", Type: Type{Base: Tokenlist},
 								Generated: Func{Name: "TOKENIZE_FULLTEXT", Args: []Expr{ID("Name")}},
+								Hidden:    true,
 								Position:  line(3),
 							},
 							{Name: "Value", Type: Type{Base: Int64}, NotNull: true, Position: line(4)},
 							{
 								Name: "Value_Tokens", Type: Type{Base: Tokenlist},
 								Generated: Func{Name: "TOKENIZE_NUMBER", Args: []Expr{ID("Value")}},
+								Hidden:    true,
 								Position:  line(5),
 							},
 							{Name: "Values", Type: Type{Array: true, Base: String, Len: MaxLen}, NotNull: false, Position: line(6)},
 							{
 								Name: "Values_Tokens", Type: Type{Base: Tokenlist},
 								Generated: Func{Name: "TOKEN", Args: []Expr{ID("Values")}},
+								Hidden:    true,
 								Position:  line(7),
 							},
 							{Name: "ValueTwo", Type: Type{Base: Bool}, NotNull: true, Position: line(8)},
 							{
 								Name: "ValueTwo_Tokens", Type: Type{Base: Tokenlist},
 								Generated: Func{Name: "TOKENIZE_BOOL", Args: []Expr{ID("ValueTwo")}},
+								Hidden:    true,
 								Position:  line(9),
 							},
 							{Name: "ValueThree", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(10)},
 							{
 								Name: "ValueThree_Tokens", Type: Type{Base: Tokenlist},
 								Generated: Func{Name: "TOKENIZE_NGRAMS", Args: []Expr{ID("ValueThree")}},
+								Hidden:    true,
 								Position:  line(11),
 							},
 							{Name: "ValueFour", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(12)},
 							{
 								Name: "ValueFour_Tokens", Type: Type{Base: Tokenlist},
 								Generated: Func{Name: "TOKENIZE_FULLTEXT", Args: []Expr{ArithOp{Op: 5, LHS: ID("ValueFour"), RHS: StringLiteral("concat")}}},
+								Hidden:    true,
 								Position:  line(13),
 							},
 							{
 								Name: "Combined_Tokens", Type: Type{Base: Tokenlist},
 								Generated: Func{Name: "TOKENLIST_CONCAT", Args: []Expr{Array{ID("Name_Tokens"), ID("ValueFour_Tokens")}}},
+								Hidden:    true,
 								Position:  line(14),
+							},
+							{
+								Name: "Argument_Tokens", Type: Type{Base: Tokenlist},
+								Generated: Func{Name: "TOKENIZE_FULLTEXT", Args: []Expr{ID("Name"), DefinitionExpr{
+									Key:   "token_category",
+									Value: StringLiteral("small"),
+								}}},
+								Hidden:   true,
+								Position: line(15),
+							},
+							{
+								Name: "ManyArgument_Tokens", Type: Type{Base: Tokenlist},
+								Generated: Func{Name: "TOKENIZE_NUMBER", Args: []Expr{
+									ID("Value"),
+									DefinitionExpr{
+										Key:   "comparison_type",
+										Value: StringLiteral("all"),
+									},
+									DefinitionExpr{
+										Key:   "min",
+										Value: IntegerLiteral(1),
+									},
+									DefinitionExpr{
+										Key:   "max",
+										Value: IntegerLiteral(5),
+									},
+								}},
+								Hidden:   true,
+								Position: line(16),
 							},
 						},
 						PrimaryKey: []KeyPart{{Column: "Name"}},
@@ -2265,7 +2303,7 @@ func TestParseDDL(t *testing.T) {
 							{Column: "Value_Tokens"},
 						},
 						Storing:  []ID{"ValueTwo"},
-						Position: line(17),
+						Position: line(19),
 					},
 				},
 			},

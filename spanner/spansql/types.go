@@ -501,6 +501,7 @@ type ColumnDef struct {
 	Name    ID
 	Type    Type
 	NotNull bool
+	Hidden  bool
 
 	Default   Expr // set if this column has a default value
 	Generated Expr // set of this is a generated column
@@ -848,6 +849,13 @@ type TypedExpr struct {
 
 func (TypedExpr) isBoolExpr() {} // possibly bool
 func (TypedExpr) isExpr()     {}
+
+type DefinitionExpr struct {
+	Key   string
+	Value Expr
+}
+
+func (DefinitionExpr) isExpr() {}
 
 type ExtractExpr struct {
 	Part string

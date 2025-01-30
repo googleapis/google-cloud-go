@@ -155,6 +155,11 @@ func init() {
 	// Special case of SEQUENCE arg for GET_NEXT_SEQUENCE_VALUE, GET_INTERNAL_SEQUENCE_STATE
 	funcArgParsers["GET_NEXT_SEQUENCE_VALUE"] = sequenceArgParser
 	funcArgParsers["GET_INTERNAL_SEQUENCE_STATE"] = sequenceArgParser
+	// Special case for tokenization, which uses `[, key => value]` definitions
+	funcArgParsers["TOKENIZE_FULLTEXT"] = tokenDefinitionArgParser
+	funcArgParsers["TOKENIZE_NGRAMS"] = tokenDefinitionArgParser
+	funcArgParsers["TOKENIZE_NUMBER"] = tokenDefinitionArgParser
+	funcArgParsers["TOKENIZE_SUBSTRING"] = tokenDefinitionArgParser
 }
 
 var funcNames = []string{
