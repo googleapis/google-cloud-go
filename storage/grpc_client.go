@@ -1703,6 +1703,15 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 
 	s := callSettings(c.settings, opts...)
 
+	retryDeadline := defaultWriteChunkRetryDeadline
+	if params.chunkRetryDeadline != 0 {
+		retryDeadline = params.chunkRetryDeadline
+	}
+	if s.retry == nil {
+		s.retry = defaultRetry.clone()
+	}
+	s.retry.maxRetryDuration = retryDeadline
+
 	// This function reads the data sent to the pipe and sends sets of messages
 	// on the gRPC client-stream as the buffer is filled.
 	go func() {
