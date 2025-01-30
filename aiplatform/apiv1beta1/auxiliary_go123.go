@@ -275,6 +275,12 @@ func (it *ModelMonitoringStatsIterator) All() iter.Seq2[*aiplatformpb.ModelMonit
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *ModelVersionCheckpointIterator) All() iter.Seq2[*aiplatformpb.ModelVersionCheckpoint, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *NasJobIterator) All() iter.Seq2[*aiplatformpb.NasJob, error] {
 	return iterator.RangeAdapter(it.Next)
 }

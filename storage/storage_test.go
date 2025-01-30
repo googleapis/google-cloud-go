@@ -962,7 +962,7 @@ func TestConditionErrors(t *testing.T) {
 	}
 }
 
-func expectedAttempts(value int) *int {
+func intPointer(value int) *int {
 	return &value
 }
 
@@ -1000,7 +1000,7 @@ func TestObjectRetryer(t *testing.T) {
 					Max:        30 * time.Second,
 					Multiplier: 3,
 				},
-				maxAttempts: expectedAttempts(5),
+				maxAttempts: intPointer(5),
 				policy:      RetryAlways,
 				shouldRetry: func(err error) bool { return false },
 			},
@@ -1033,7 +1033,7 @@ func TestObjectRetryer(t *testing.T) {
 				return o.Retryer(WithMaxAttempts(11))
 			},
 			want: &retryConfig{
-				maxAttempts: expectedAttempts(11),
+				maxAttempts: intPointer(11),
 			},
 		},
 		{
@@ -1097,7 +1097,7 @@ func TestClientSetRetry(t *testing.T) {
 					Max:        30 * time.Second,
 					Multiplier: 3,
 				},
-				maxAttempts: expectedAttempts(5),
+				maxAttempts: intPointer(5),
 				policy:      RetryAlways,
 				shouldRetry: func(err error) bool { return false },
 			},
@@ -1129,7 +1129,7 @@ func TestClientSetRetry(t *testing.T) {
 				WithMaxAttempts(7),
 			},
 			want: &retryConfig{
-				maxAttempts: expectedAttempts(7),
+				maxAttempts: intPointer(7),
 			},
 		},
 		{
@@ -1190,7 +1190,7 @@ func TestRetryer(t *testing.T) {
 			},
 			want: &retryConfig{
 				shouldRetry: ShouldRetry,
-				maxAttempts: expectedAttempts(5),
+				maxAttempts: intPointer(5),
 				policy:      RetryAlways,
 			},
 		},
@@ -1213,7 +1213,7 @@ func TestRetryer(t *testing.T) {
 					Multiplier: 6,
 				},
 				shouldRetry: ShouldRetry,
-				maxAttempts: expectedAttempts(11),
+				maxAttempts: intPointer(11),
 				policy:      RetryAlways,
 			},
 		},
@@ -1236,7 +1236,7 @@ func TestRetryer(t *testing.T) {
 					Multiplier: 6,
 				},
 				shouldRetry: ShouldRetry,
-				maxAttempts: expectedAttempts(7),
+				maxAttempts: intPointer(7),
 				policy:      RetryAlways,
 			},
 		},
@@ -1252,7 +1252,7 @@ func TestRetryer(t *testing.T) {
 			},
 			want: &retryConfig{
 				policy:      RetryNever,
-				maxAttempts: expectedAttempts(5),
+				maxAttempts: intPointer(5),
 				shouldRetry: ShouldRetry,
 			},
 		},
@@ -1268,7 +1268,7 @@ func TestRetryer(t *testing.T) {
 			},
 			want: &retryConfig{
 				policy:      RetryNever,
-				maxAttempts: expectedAttempts(11),
+				maxAttempts: intPointer(11),
 				shouldRetry: ShouldRetry,
 			},
 		},
@@ -1292,7 +1292,7 @@ func TestRetryer(t *testing.T) {
 			},
 			want: &retryConfig{
 				policy:      RetryAlways,
-				maxAttempts: expectedAttempts(5),
+				maxAttempts: intPointer(5),
 				shouldRetry: ShouldRetry,
 				backoff: &gax.Backoff{
 					Initial: time.Nanosecond,
@@ -1337,7 +1337,7 @@ func TestRetryer(t *testing.T) {
 			},
 			want: &retryConfig{
 				policy:      RetryNever,
-				maxAttempts: expectedAttempts(5),
+				maxAttempts: intPointer(5),
 				shouldRetry: ShouldRetry,
 				backoff: &gax.Backoff{
 					Initial: time.Nanosecond,

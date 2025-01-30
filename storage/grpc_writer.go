@@ -19,6 +19,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"time"
 
 	gapic "cloud.google.com/go/storage/internal/apiv2"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
@@ -27,6 +28,8 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 )
+
+const defaultWriteChunkRetryDeadline = 32 * time.Second
 
 type gRPCAppendBidiWriteBufferSender struct {
 	bucket          string
