@@ -1740,7 +1740,14 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 					return err
 				}
 
-				err = run(bucketContext(gw.ctx, gw.bucket), uploadBuff, gw.settings.retry, s.idempotent)
+				// Add routing headers to the context metadata for single-shot and resumable
+				// writes. Append writes need to set this at a lower level to pass the routing
+				// token.
+				bctx := gw.ctx
+				if !gw.append {
+					bctx = bucketContext(bctx, gw.bucket)
+				}
+				err = run(bctx, uploadBuff, gw.settings.retry, s.idempotent)
 				if err != nil {
 					return err
 				}
