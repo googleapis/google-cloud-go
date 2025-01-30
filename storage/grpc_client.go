@@ -1112,9 +1112,14 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, contextMetadataFromBidiReadObject(req)...)
 
-	openStream := func() (*bidiReadStreamResponse, context.CancelFunc, error) {
+	openStream := func(readHandle ReadHandle) (*bidiReadStreamResponse, context.CancelFunc, error) {
 		if err := applyCondsProto("grpcStorageClient.BidiReadObject", params.gen, params.conds, r); err != nil {
 			return nil, nil, err
+		}
+		if readHandle != nil {
+			req.GetReadObjectSpec().ReadHandle = &storagepb.BidiReadHandle{
+				Handle: readHandle,
+			}
 		}
 		var stream storagepb.Storage_BidiReadObjectClient
 		var resp *storagepb.BidiReadObjectResponse
@@ -1158,7 +1163,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 	}
 
 	// For the first time open stream without adding any range.
-	resp, cancel, err := openStream()
+	resp, cancel, err := openStream(nil)
 	if err != nil {
 		return nil, err
 	}
@@ -1419,7 +1424,7 @@ func (r *gRPCBidiReader) reopenStream(failSpec []rangeSpec) error {
 		r.cancel()
 	}
 
-	res, cancel, err := r.reopen()
+	res, cancel, err := r.reopen(r.readHandle)
 	if err != nil {
 		return err
 	}
@@ -1901,7 +1906,7 @@ type gRPCBidiReader struct {
 	settings         *settings
 	readHandle       ReadHandle
 	readID           int64
-	reopen           func() (*bidiReadStreamResponse, context.CancelFunc, error)
+	reopen           func(ReadHandle) (*bidiReadStreamResponse, context.CancelFunc, error)
 	readSpec         *storagepb.BidiReadObjectSpec
 	data             chan []rangeSpec
 	ctx              context.Context
