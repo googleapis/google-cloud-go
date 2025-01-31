@@ -3,7 +3,7 @@ module cloud.google.com/go/longrunning
 go 1.22.7
 
 require (
-	cloud.google.com/go v0.118.0
+	cloud.google.com/go v0.118.1
 	github.com/googleapis/gax-go/v2 v2.14.1
 	google.golang.org/api v0.218.0
 	google.golang.org/genproto v0.0.0-20250122153221-138b5a5a4fd4
