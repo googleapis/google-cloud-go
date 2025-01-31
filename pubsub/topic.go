@@ -659,34 +659,34 @@ func (i *IngestionDataSourceAzureEventHubs) isIngestionDataSource() bool {
 	return true
 }
 
-// MSKState denotes the possible states for ingestion from Amazon MSK.
-type MSKState int
+// AmazonMSKState denotes the possible states for ingestion from Amazon MSK.
+type AmazonMSKState int
 
 const (
-	// MSKStateUnspecified is the default value. This value is unused.
-	MSKStateUnspecified = iota
+	// AmazonMSKStateUnspecified is the default value. This value is unused.
+	AmazonMSKStateUnspecified = iota
 
-	// MSKActive indicates MSK topic is active.
-	MSKActive
+	// AmazonMSKActive indicates MSK topic is active.
+	AmazonMSKActive
 
-	// MSKPermissionDenied indicates permission denied encountered while consuming data from Amazon MSK.
-	MSKPermissionDenied
+	// AmazonMSKPermissionDenied indicates permission denied encountered while consuming data from Amazon MSK.
+	AmazonMSKPermissionDenied
 
-	// MSKPublishPermissionDenied indicates permission denied encountered while publishing to the topic.
-	MSKPublishPermissionDenied
+	// AmazonMSKPublishPermissionDenied indicates permission denied encountered while publishing to the topic.
+	AmazonMSKPublishPermissionDenied
 
-	// MSKClusterNotFound indicates the provided Msk cluster wasn't found.
-	MSKClusterNotFound
+	// AmazonMSKClusterNotFound indicates the provided Msk cluster wasn't found.
+	AmazonMSKClusterNotFound
 
-	// MSKTopicNotFound indicates the provided topic wasn't found.
-	MSKTopicNotFound
+	// AmazonMSKTopicNotFound indicates the provided topic wasn't found.
+	AmazonMSKTopicNotFound
 )
 
 // IngestionDataSourceAmazonMSK are ingestion settings for Amazon MSK.
 type IngestionDataSourceAmazonMSK struct {
 	// An output-only field that indicates the state of the Amazon
 	// MSK ingestion source.
-	State MSKState
+	State AmazonMSKState
 
 	// The Amazon Resource Name (ARN) that uniquely identifies the
 	// cluster.
@@ -821,7 +821,7 @@ func protoToIngestionDataSourceSettings(pbs *pb.IngestionDataSourceSettings) *In
 		}
 	} else if m := pbs.GetAwsMsk(); m != nil {
 		s.Source = &IngestionDataSourceAmazonMSK{
-			State:             MSKState(m.GetState()),
+			State:             AmazonMSKState(m.GetState()),
 			ClusterARN:        m.GetClusterArn(),
 			Topic:             m.GetTopic(),
 			AWSRoleARN:        m.GetAwsRoleArn(),
@@ -892,7 +892,6 @@ func (i *IngestionDataSourceSettings) toProto() *pb.IngestionDataSourceSettings 
 			case *IngestionDataSourceCloudStorageAvroFormat:
 				pbs.Source = &pb.IngestionDataSourceSettings_CloudStorage_{
 					CloudStorage: &pb.IngestionDataSourceSettings_CloudStorage{
-						State:  pb.IngestionDataSourceSettings_CloudStorage_State(cs.State),
 						Bucket: cs.Bucket,
 						InputFormat: &pb.IngestionDataSourceSettings_CloudStorage_AvroFormat_{
 							AvroFormat: &pb.IngestionDataSourceSettings_CloudStorage_AvroFormat{},
@@ -918,7 +917,6 @@ func (i *IngestionDataSourceSettings) toProto() *pb.IngestionDataSourceSettings 
 		if e, ok := out.(*IngestionDataSourceAzureEventHubs); ok {
 			pbs.Source = &pb.IngestionDataSourceSettings_AzureEventHubs_{
 				AzureEventHubs: &pb.IngestionDataSourceSettings_AzureEventHubs{
-					State:             pb.IngestionDataSourceSettings_AzureEventHubs_State(e.State),
 					ResourceGroup:     e.ResourceGroup,
 					Namespace:         e.Namespace,
 					EventHub:          e.EventHub,
@@ -932,7 +930,6 @@ func (i *IngestionDataSourceSettings) toProto() *pb.IngestionDataSourceSettings 
 		if m, ok := out.(*IngestionDataSourceAmazonMSK); ok {
 			pbs.Source = &pb.IngestionDataSourceSettings_AwsMsk_{
 				AwsMsk: &pb.IngestionDataSourceSettings_AwsMsk{
-					State:             pb.IngestionDataSourceSettings_AwsMsk_State(m.State),
 					ClusterArn:        m.ClusterARN,
 					Topic:             m.Topic,
 					AwsRoleArn:        m.AWSRoleARN,
@@ -943,7 +940,6 @@ func (i *IngestionDataSourceSettings) toProto() *pb.IngestionDataSourceSettings 
 		if c, ok := out.(*IngestionDataSourceConfluentCloud); ok {
 			pbs.Source = &pb.IngestionDataSourceSettings_ConfluentCloud_{
 				ConfluentCloud: &pb.IngestionDataSourceSettings_ConfluentCloud{
-					State:             pb.IngestionDataSourceSettings_ConfluentCloud_State(c.State),
 					BootstrapServer:   c.BootstrapServer,
 					ClusterId:         c.ClusterID,
 					Topic:             c.Topic,
