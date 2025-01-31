@@ -48,7 +48,9 @@ func getVersionClient() string {
 
 // DefaultAuthScopes reports the default set of authentication scopes to use with this package.
 func DefaultAuthScopes() []string {
-	return []string{}
+	return []string{
+		"https://www.googleapis.com/auth/cloud-platform",
+	}
 }
 
 func executeHTTPRequestWithResponse(ctx context.Context, client *http.Client, req *http.Request, logger *slog.Logger, body []byte, rpc string) ([]byte, *http.Response, error) {

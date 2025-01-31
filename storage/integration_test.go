@@ -2847,7 +2847,6 @@ func TestIntegration_SignedURL_EmptyStringObjectName(t *testing.T) {
 			t.Fatal(err)
 		}
 	})
-
 }
 
 func TestIntegration_BucketACL(t *testing.T) {
@@ -4847,6 +4846,24 @@ func TestIntegration_SoftDelete(t *testing.T) {
 			t.Fatalf("effective time of soft delete policy should not be in the past, got: %v, test start: %v", got.EffectiveTime, testStart.UTC())
 		}
 
+		// Update the soft delete policy of the bucket.
+		policy.RetentionDuration = time.Hour * 24 * 9
+		// Retry to account for metadata propagation delay.
+		if err := retry(ctx, func() error {
+			attrs, err = b.Update(ctx, BucketAttrsToUpdate{SoftDeletePolicy: policy})
+			if err != nil {
+				return fmt.Errorf("b.Update: %v", err)
+			}
+			return nil
+		}, func() error {
+			if got, expect := attrs.SoftDeletePolicy.RetentionDuration, policy.RetentionDuration; got != expect {
+				return fmt.Errorf("mismatching retention duration; got: %+v, expected: %+v", got, expect)
+			}
+			return nil
+		}); err != nil {
+			t.Error(err)
+		}
+
 		// Create a second bucket with an empty soft delete policy to verify
 		// that this leads to no retention.
 		b2 := client.Bucket(prefix + uidSpace.New())
@@ -4863,23 +4880,7 @@ func TestIntegration_SoftDelete(t *testing.T) {
 			t.Fatalf("mismatching retention duration; got: %+v, expected: %+v", got, expect)
 		}
 
-		// Update the soft delete policy of the original bucket.
-		policy.RetentionDuration = time.Hour * 24 * 9
-
-		retry(ctx, func() error {
-			attrs, err = b.Update(ctx, BucketAttrsToUpdate{SoftDeletePolicy: policy})
-			if err != nil {
-				return fmt.Errorf("b.Update: %v", err)
-			}
-			return nil
-		}, func() error {
-			if got, expect := attrs.SoftDeletePolicy.RetentionDuration, policy.RetentionDuration; got != expect {
-				return fmt.Errorf("mismatching retention duration; got: %+v, expected: %+v", got, expect)
-			}
-			return nil
-		})
-
-		// Create 2 objects and delete one of them.
+		// Create 2 objects in the original bucket and delete one of them.
 		deletedObject := b.Object("soft-delete" + uidSpaceObjects.New())
 		liveObject := b.Object("not-soft-delete" + uidSpaceObjects.New())
 
@@ -4938,8 +4939,14 @@ func TestIntegration_SoftDelete(t *testing.T) {
 		if oAttrs.SoftDeleteTime.Before(testStart) {
 			t.Fatalf("SoftDeleteTime of soft deleted object should not be in the past, got: %v, test start: %v", oAttrs.SoftDeleteTime, testStart.UTC())
 		}
-		if got, expected := oAttrs.HardDeleteTime, oAttrs.SoftDeleteTime.Add(policy.RetentionDuration); !expected.Equal(got) {
-			t.Fatalf("HardDeleteTime of soft deleted object should be equal to SoftDeleteTime+RetentionDuration, got: %v, expected: %v", got, expected)
+
+		if err := retry(ctx, func() error {
+			if got, expected := oAttrs.HardDeleteTime, oAttrs.SoftDeleteTime.Add(policy.RetentionDuration); !expected.Equal(got) {
+				return fmt.Errorf("HardDeleteTime of soft deleted object should be equal to SoftDeleteTime+RetentionDuration, got: %v, expected: %v", got, expected)
+			}
+			return nil
+		}, func() error { return nil }); err != nil {
+			t.Fatal(err)
 		}
 
 		// Restore a soft deleted object.
@@ -6962,11 +6969,17 @@ func extractErrCode(err error) int {
 	return -1
 }
 
+// errorIsStatusCode returns true if err is a:
+//   - googleapi.Error with httpStatusCode, or
+//   - apierror.APIError with grpcStatusCode, or
+//   - grpc/status.Status error with grpcStatusCode.
 func errorIsStatusCode(err error, httpStatusCode int, grpcStatusCode codes.Code) bool {
 	var httpErr *googleapi.Error
 	var grpcErr *apierror.APIError
+
 	return (errors.As(err, &httpErr) && httpErr.Code == httpStatusCode) ||
-		(errors.As(err, &grpcErr) && grpcErr.GRPCStatus().Code() == grpcStatusCode)
+		(errors.As(err, &grpcErr) && grpcErr.GRPCStatus().Code() == grpcStatusCode) ||
+		status.Code(err) == grpcStatusCode
 }
 
 func setUpRequesterPaysBucket(ctx context.Context, t *testing.T, bucket, object string, addOwnerEmail string) {
