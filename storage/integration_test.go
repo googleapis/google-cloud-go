@@ -934,7 +934,7 @@ func TestIntegration_BucketCreateDelete(t *testing.T) {
 					t.Fatalf("BucketHandle.Delete(%q): %v", newBucketName, err)
 				}
 				_, err = b.Attrs(ctx)
-				if err != ErrBucketNotExist {
+				if !errors.Is(err, ErrBucketNotExist) {
 					t.Fatalf("expected ErrBucketNotExist, got %v", err)
 				}
 			})
@@ -2442,7 +2442,7 @@ func TestIntegration_Encoding(t *testing.T) {
 
 		// Test NotFound.
 		_, err = bkt.Object("obj-not-exists").NewReader(ctx)
-		if err != ErrObjectNotExist {
+		if !errors.Is(err, ErrObjectNotExist) {
 			t.Errorf("Object should not exist, err found to be %v", err)
 		}
 	})
@@ -3325,11 +3325,11 @@ func TestIntegration_NonexistentBucket(t *testing.T) {
 	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
 		bkt := client.Bucket(prefix + uidSpace.New())
-		if _, err := bkt.Attrs(ctx); err != ErrBucketNotExist {
+		if _, err := bkt.Attrs(ctx); !errors.Is(err, ErrBucketNotExist) {
 			t.Errorf("Attrs: got %v, want ErrBucketNotExist", err)
 		}
 		it := bkt.Objects(ctx, nil)
-		if _, err := it.Next(); err != ErrBucketNotExist {
+		if _, err := it.Next(); !errors.Is(err, ErrBucketNotExist) {
 			t.Errorf("Objects: got %v, want ErrBucketNotExist", err)
 		}
 	})
