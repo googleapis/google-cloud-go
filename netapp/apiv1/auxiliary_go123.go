@@ -71,6 +71,12 @@ func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *QuotaRuleIterator) All() iter.Seq2[*netapppb.QuotaRule, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *ReplicationIterator) All() iter.Seq2[*netapppb.Replication, error] {
 	return iterator.RangeAdapter(it.Next)
 }
