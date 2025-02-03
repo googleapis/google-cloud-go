@@ -1,5 +1,80 @@
 # Changes
 
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.17.0...firestore/v1.18.0) (2025-01-02)
+
+
+### Features
+
+* **firestore:** Add String method for Update struct ([#11355](https://github.com/googleapis/google-cloud-go/issues/11355)) ([2320c35](https://github.com/googleapis/google-cloud-go/commit/2320c35ad9a7244c992bfe528e8d49fdc4089369))
+* **firestore:** Add WithCommitResponseTo TransactionOption ([#6967](https://github.com/googleapis/google-cloud-go/issues/6967)) ([eb25266](https://github.com/googleapis/google-cloud-go/commit/eb252663ad0bdabbd5de1767b42a69fd2aee54b2))
+* **firestore:** Surfacing the error returned from the service in Bulkwriter ([#10826](https://github.com/googleapis/google-cloud-go/issues/10826)) ([9ae039a](https://github.com/googleapis/google-cloud-go/commit/9ae039a38856133a2bde4c3bd70155d17538c974))
+
+
+### Bug Fixes
+
+* **firestore:** Add UTF-8 validation ([#10881](https://github.com/googleapis/google-cloud-go/issues/10881)) ([9199843](https://github.com/googleapis/google-cloud-go/commit/9199843947bc3a0fa415dba50ba2221850e0fbad))
+* **firestore:** Allow using != with nil ([#11112](https://github.com/googleapis/google-cloud-go/issues/11112)) ([5b59819](https://github.com/googleapis/google-cloud-go/commit/5b59819e2d603ef55c4cf056b70af6a08d335373))
+* **firestore:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+* **firestore:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **firestore:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.16.0...firestore/v1.17.0) (2024-09-11)
+
+
+### Features
+
+* **firestore/apiv1:** Add Database.CmekConfig and Database.cmek_config (information about CMEK enablement) ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+* **firestore/apiv1:** Add Database.delete_time (the time a database was deleted, if it ever was) ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+* **firestore/apiv1:** Add Database.previous_id (if a database was deleted, what ID it was using beforehand) ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+* **firestore/apiv1:** Add Database.SourceInfo and Database.source_info (information about database provenance, specifically for restored databases) ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+* **firestore/apiv1:** Allow specifying an encryption_config when restoring a database ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+* **firestore:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+* **firestore:** Expose the `FindNearest.distance_result_field` parameter ([9a5144e](https://github.com/googleapis/google-cloud-go/commit/9a5144e7d30c6f058b13fdf3fd9436904e77dff0))
+* **firestore:** Expose the `FindNearest.distance_threshold` parameter ([9a5144e](https://github.com/googleapis/google-cloud-go/commit/9a5144e7d30c6f058b13fdf3fd9436904e77dff0))
+* **firestore:** Query profiling ([#10164](https://github.com/googleapis/google-cloud-go/issues/10164)) ([58052a2](https://github.com/googleapis/google-cloud-go/commit/58052a2eefd56b3129e04f177398b3ffb688d4d7))
+
+
+### Bug Fixes
+
+* **firestore:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+* **firestore:** Retry batchwrite only on retryable errors ([#10603](https://github.com/googleapis/google-cloud-go/issues/10603)) ([23e5df5](https://github.com/googleapis/google-cloud-go/commit/23e5df5b8ee40317ab0d1ac6bb2b92ccc054426c))
+* **firestore:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+
+### Documentation
+
+* **firestore/apiv1:** Clarify maximum retention of backups (max 14 weeks) ([2710d0f](https://github.com/googleapis/google-cloud-go/commit/2710d0f8c66c17f1ddb1d4cc287f7aeb701c0f72))
+* **firestore/apiv1:** Clarify restore details ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+* **firestore/apiv1:** Fix assorted capitalization issues with the word "ID" ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+* **firestore/apiv1:** Remove note about backups running at a specific time ([2710d0f](https://github.com/googleapis/google-cloud-go/commit/2710d0f8c66c17f1ddb1d4cc287f7aeb701c0f72))
+* **firestore/apiv1:** Standardize on the capitalization of "ID" ([2710d0f](https://github.com/googleapis/google-cloud-go/commit/2710d0f8c66c17f1ddb1d4cc287f7aeb701c0f72))
+* **firestore:** Minor documentation clarifications on FindNearest DistanceMeasure options ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.15.0...firestore/v1.16.0) (2024-07-24)
+
+
+### Features
+
+* **firestore/apiv1:** Add bulk delete api ([#10369](https://github.com/googleapis/google-cloud-go/issues/10369)) ([134f567](https://github.com/googleapis/google-cloud-go/commit/134f567c18892d6050f60ae875a3de7738104da0))
+* **firestore/apiv1:** Add Vector Index API ([f8ff971](https://github.com/googleapis/google-cloud-go/commit/f8ff971366999aefb5eb5189c6c9e2bd76a05d9e))
+* **firestore:** Adding vector search ([#10548](https://github.com/googleapis/google-cloud-go/issues/10548)) ([5c0d6df](https://github.com/googleapis/google-cloud-go/commit/5c0d6df5cc28659c5fbd54329f8b6c134cf95730))
+
+
+### Bug Fixes
+
+* **firestore:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+* **firestore:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+* **firestore:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+* **firestore:** Move createIndexes calls ([#9714](https://github.com/googleapis/google-cloud-go/issues/9714)) ([d931626](https://github.com/googleapis/google-cloud-go/commit/d9316263ca4ad0667d4a0f886a4977b36585b572))
+* **firestore:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+
+### Documentation
+
+* **firestore/apiv1:** Allow 14 week backup retention for Firestore daily backups ([#9685](https://github.com/googleapis/google-cloud-go/issues/9685)) ([2cdc40a](https://github.com/googleapis/google-cloud-go/commit/2cdc40a0b4288f5ab5f2b2b8f5c1d6453a9c81ec))
+* **firestore/apiv1:** Correct BackupSchedule recurrence docs that mentioned specific time of day ([fe85be0](https://github.com/googleapis/google-cloud-go/commit/fe85be03d1e6ba69182ff1045a3faed15aa00128))
+* **firestore/apiv1:** Update field api description ([134f567](https://github.com/googleapis/google-cloud-go/commit/134f567c18892d6050f60ae875a3de7738104da0))
+
 ## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.14.0...firestore/v1.15.0) (2024-03-05)
 
 
@@ -192,5 +267,3 @@
 
 This is the first tag to carve out firestore as its own module. See:
 https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository.
-
-

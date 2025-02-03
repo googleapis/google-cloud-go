@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,9 +17,10 @@
 package cloudcontrolspartner
 
 import (
+	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -27,7 +28,6 @@ import (
 
 	cloudcontrolspartnerpb "cloud.google.com/go/cloudcontrolspartner/apiv1beta/cloudcontrolspartnerpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -51,6 +51,9 @@ type CloudControlsPartnerCoreCallOptions struct {
 	GetPartnerPermissions      []gax.CallOption
 	ListAccessApprovalRequests []gax.CallOption
 	GetPartner                 []gax.CallOption
+	CreateCustomer             []gax.CallOption
+	UpdateCustomer             []gax.CallOption
+	DeleteCustomer             []gax.CallOption
 }
 
 func defaultCloudControlsPartnerCoreGRPCClientOptions() []option.ClientOption {
@@ -62,6 +65,7 @@ func defaultCloudControlsPartnerCoreGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://cloudcontrolspartner.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -153,7 +157,10 @@ func defaultCloudControlsPartnerCoreCallOptions() *CloudControlsPartnerCoreCallO
 				})
 			}),
 		},
-		GetPartner: []gax.CallOption{},
+		GetPartner:     []gax.CallOption{},
+		CreateCustomer: []gax.CallOption{},
+		UpdateCustomer: []gax.CallOption{},
+		DeleteCustomer: []gax.CallOption{},
 	}
 }
 
@@ -236,7 +243,10 @@ func defaultCloudControlsPartnerCoreRESTCallOptions() *CloudControlsPartnerCoreC
 					http.StatusServiceUnavailable)
 			}),
 		},
-		GetPartner: []gax.CallOption{},
+		GetPartner:     []gax.CallOption{},
+		CreateCustomer: []gax.CallOption{},
+		UpdateCustomer: []gax.CallOption{},
+		DeleteCustomer: []gax.CallOption{},
 	}
 }
 
@@ -253,6 +263,9 @@ type internalCloudControlsPartnerCoreClient interface {
 	GetPartnerPermissions(context.Context, *cloudcontrolspartnerpb.GetPartnerPermissionsRequest, ...gax.CallOption) (*cloudcontrolspartnerpb.PartnerPermissions, error)
 	ListAccessApprovalRequests(context.Context, *cloudcontrolspartnerpb.ListAccessApprovalRequestsRequest, ...gax.CallOption) *AccessApprovalRequestIterator
 	GetPartner(context.Context, *cloudcontrolspartnerpb.GetPartnerRequest, ...gax.CallOption) (*cloudcontrolspartnerpb.Partner, error)
+	CreateCustomer(context.Context, *cloudcontrolspartnerpb.CreateCustomerRequest, ...gax.CallOption) (*cloudcontrolspartnerpb.Customer, error)
+	UpdateCustomer(context.Context, *cloudcontrolspartnerpb.UpdateCustomerRequest, ...gax.CallOption) (*cloudcontrolspartnerpb.Customer, error)
+	DeleteCustomer(context.Context, *cloudcontrolspartnerpb.DeleteCustomerRequest, ...gax.CallOption) error
 }
 
 // CloudControlsPartnerCoreClient is a client for interacting with Cloud Controls Partner API.
@@ -320,7 +333,10 @@ func (c *CloudControlsPartnerCoreClient) GetPartnerPermissions(ctx context.Conte
 	return c.internalClient.GetPartnerPermissions(ctx, req, opts...)
 }
 
-// ListAccessApprovalRequests lists access requests associated with a workload
+// ListAccessApprovalRequests deprecated: Only returns access approval requests directly associated with
+// an assured workload folder.
+//
+// Deprecated: ListAccessApprovalRequests may be removed in a future version.
 func (c *CloudControlsPartnerCoreClient) ListAccessApprovalRequests(ctx context.Context, req *cloudcontrolspartnerpb.ListAccessApprovalRequestsRequest, opts ...gax.CallOption) *AccessApprovalRequestIterator {
 	return c.internalClient.ListAccessApprovalRequests(ctx, req, opts...)
 }
@@ -328,6 +344,21 @@ func (c *CloudControlsPartnerCoreClient) ListAccessApprovalRequests(ctx context.
 // GetPartner get details of a Partner.
 func (c *CloudControlsPartnerCoreClient) GetPartner(ctx context.Context, req *cloudcontrolspartnerpb.GetPartnerRequest, opts ...gax.CallOption) (*cloudcontrolspartnerpb.Partner, error) {
 	return c.internalClient.GetPartner(ctx, req, opts...)
+}
+
+// CreateCustomer creates a new customer.
+func (c *CloudControlsPartnerCoreClient) CreateCustomer(ctx context.Context, req *cloudcontrolspartnerpb.CreateCustomerRequest, opts ...gax.CallOption) (*cloudcontrolspartnerpb.Customer, error) {
+	return c.internalClient.CreateCustomer(ctx, req, opts...)
+}
+
+// UpdateCustomer update details of a single customer
+func (c *CloudControlsPartnerCoreClient) UpdateCustomer(ctx context.Context, req *cloudcontrolspartnerpb.UpdateCustomerRequest, opts ...gax.CallOption) (*cloudcontrolspartnerpb.Customer, error) {
+	return c.internalClient.UpdateCustomer(ctx, req, opts...)
+}
+
+// DeleteCustomer delete details of a single customer
+func (c *CloudControlsPartnerCoreClient) DeleteCustomer(ctx context.Context, req *cloudcontrolspartnerpb.DeleteCustomerRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteCustomer(ctx, req, opts...)
 }
 
 // cloudControlsPartnerCoreGRPCClient is a client for interacting with Cloud Controls Partner API over gRPC transport.
@@ -345,6 +376,8 @@ type cloudControlsPartnerCoreGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewCloudControlsPartnerCoreClient creates a new cloud controls partner core client based on gRPC.
@@ -371,6 +404,7 @@ func NewCloudControlsPartnerCoreClient(ctx context.Context, opts ...option.Clien
 		connPool:                       connPool,
 		cloudControlsPartnerCoreClient: cloudcontrolspartnerpb.NewCloudControlsPartnerCoreClient(connPool),
 		CallOptions:                    &client.CallOptions,
+		logger:                         internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -393,7 +427,9 @@ func (c *cloudControlsPartnerCoreGRPCClient) Connection() *grpc.ClientConn {
 func (c *cloudControlsPartnerCoreGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -415,6 +451,8 @@ type cloudControlsPartnerCoreRESTClient struct {
 
 	// Points back to the CallOptions field of the containing CloudControlsPartnerCoreClient
 	CallOptions **CloudControlsPartnerCoreCallOptions
+
+	logger *slog.Logger
 }
 
 // NewCloudControlsPartnerCoreRESTClient creates a new cloud controls partner core rest client.
@@ -432,6 +470,7 @@ func NewCloudControlsPartnerCoreRESTClient(ctx context.Context, opts ...option.C
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -446,6 +485,7 @@ func defaultCloudControlsPartnerCoreRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudcontrolspartner.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -455,7 +495,9 @@ func defaultCloudControlsPartnerCoreRESTClientOptions() []option.ClientOption {
 func (c *cloudControlsPartnerCoreRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -481,7 +523,7 @@ func (c *cloudControlsPartnerCoreGRPCClient) GetWorkload(ctx context.Context, re
 	var resp *cloudcontrolspartnerpb.Workload
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudControlsPartnerCoreClient.GetWorkload(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudControlsPartnerCoreClient.GetWorkload, req, settings.GRPC, c.logger, "GetWorkload")
 		return err
 	}, opts...)
 	if err != nil {
@@ -510,7 +552,7 @@ func (c *cloudControlsPartnerCoreGRPCClient) ListWorkloads(ctx context.Context, 
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudControlsPartnerCoreClient.ListWorkloads(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudControlsPartnerCoreClient.ListWorkloads, req, settings.GRPC, c.logger, "ListWorkloads")
 			return err
 		}, opts...)
 		if err != nil {
@@ -545,7 +587,7 @@ func (c *cloudControlsPartnerCoreGRPCClient) GetCustomer(ctx context.Context, re
 	var resp *cloudcontrolspartnerpb.Customer
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudControlsPartnerCoreClient.GetCustomer(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudControlsPartnerCoreClient.GetCustomer, req, settings.GRPC, c.logger, "GetCustomer")
 		return err
 	}, opts...)
 	if err != nil {
@@ -574,7 +616,7 @@ func (c *cloudControlsPartnerCoreGRPCClient) ListCustomers(ctx context.Context, 
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudControlsPartnerCoreClient.ListCustomers(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudControlsPartnerCoreClient.ListCustomers, req, settings.GRPC, c.logger, "ListCustomers")
 			return err
 		}, opts...)
 		if err != nil {
@@ -609,7 +651,7 @@ func (c *cloudControlsPartnerCoreGRPCClient) GetEkmConnections(ctx context.Conte
 	var resp *cloudcontrolspartnerpb.EkmConnections
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudControlsPartnerCoreClient.GetEkmConnections(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudControlsPartnerCoreClient.GetEkmConnections, req, settings.GRPC, c.logger, "GetEkmConnections")
 		return err
 	}, opts...)
 	if err != nil {
@@ -627,7 +669,7 @@ func (c *cloudControlsPartnerCoreGRPCClient) GetPartnerPermissions(ctx context.C
 	var resp *cloudcontrolspartnerpb.PartnerPermissions
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudControlsPartnerCoreClient.GetPartnerPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudControlsPartnerCoreClient.GetPartnerPermissions, req, settings.GRPC, c.logger, "GetPartnerPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -656,7 +698,7 @@ func (c *cloudControlsPartnerCoreGRPCClient) ListAccessApprovalRequests(ctx cont
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudControlsPartnerCoreClient.ListAccessApprovalRequests(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudControlsPartnerCoreClient.ListAccessApprovalRequests, req, settings.GRPC, c.logger, "ListAccessApprovalRequests")
 			return err
 		}, opts...)
 		if err != nil {
@@ -691,13 +733,63 @@ func (c *cloudControlsPartnerCoreGRPCClient) GetPartner(ctx context.Context, req
 	var resp *cloudcontrolspartnerpb.Partner
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudControlsPartnerCoreClient.GetPartner(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudControlsPartnerCoreClient.GetPartner, req, settings.GRPC, c.logger, "GetPartner")
 		return err
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *cloudControlsPartnerCoreGRPCClient) CreateCustomer(ctx context.Context, req *cloudcontrolspartnerpb.CreateCustomerRequest, opts ...gax.CallOption) (*cloudcontrolspartnerpb.Customer, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateCustomer[0:len((*c.CallOptions).CreateCustomer):len((*c.CallOptions).CreateCustomer)], opts...)
+	var resp *cloudcontrolspartnerpb.Customer
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.cloudControlsPartnerCoreClient.CreateCustomer, req, settings.GRPC, c.logger, "CreateCustomer")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *cloudControlsPartnerCoreGRPCClient) UpdateCustomer(ctx context.Context, req *cloudcontrolspartnerpb.UpdateCustomerRequest, opts ...gax.CallOption) (*cloudcontrolspartnerpb.Customer, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "customer.name", url.QueryEscape(req.GetCustomer().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateCustomer[0:len((*c.CallOptions).UpdateCustomer):len((*c.CallOptions).UpdateCustomer)], opts...)
+	var resp *cloudcontrolspartnerpb.Customer
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.cloudControlsPartnerCoreClient.UpdateCustomer, req, settings.GRPC, c.logger, "UpdateCustomer")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *cloudControlsPartnerCoreGRPCClient) DeleteCustomer(ctx context.Context, req *cloudcontrolspartnerpb.DeleteCustomerRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteCustomer[0:len((*c.CallOptions).DeleteCustomer):len((*c.CallOptions).DeleteCustomer)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.cloudControlsPartnerCoreClient.DeleteCustomer, req, settings.GRPC, c.logger, "DeleteCustomer")
+		return err
+	}, opts...)
+	return err
 }
 
 // GetWorkload gets details of a single workload
@@ -733,17 +825,7 @@ func (c *cloudControlsPartnerCoreRESTClient) GetWorkload(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetWorkload")
 		if err != nil {
 			return err
 		}
@@ -811,21 +893,10 @@ func (c *cloudControlsPartnerCoreRESTClient) ListWorkloads(ctx context.Context, 
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListWorkloads")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -888,17 +959,7 @@ func (c *cloudControlsPartnerCoreRESTClient) GetCustomer(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCustomer")
 		if err != nil {
 			return err
 		}
@@ -966,21 +1027,10 @@ func (c *cloudControlsPartnerCoreRESTClient) ListCustomers(ctx context.Context, 
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListCustomers")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1043,17 +1093,7 @@ func (c *cloudControlsPartnerCoreRESTClient) GetEkmConnections(ctx context.Conte
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetEkmConnections")
 		if err != nil {
 			return err
 		}
@@ -1103,17 +1143,7 @@ func (c *cloudControlsPartnerCoreRESTClient) GetPartnerPermissions(ctx context.C
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetPartnerPermissions")
 		if err != nil {
 			return err
 		}
@@ -1130,7 +1160,10 @@ func (c *cloudControlsPartnerCoreRESTClient) GetPartnerPermissions(ctx context.C
 	return resp, nil
 }
 
-// ListAccessApprovalRequests lists access requests associated with a workload
+// ListAccessApprovalRequests deprecated: Only returns access approval requests directly associated with
+// an assured workload folder.
+//
+// Deprecated: ListAccessApprovalRequests may be removed in a future version.
 func (c *cloudControlsPartnerCoreRESTClient) ListAccessApprovalRequests(ctx context.Context, req *cloudcontrolspartnerpb.ListAccessApprovalRequestsRequest, opts ...gax.CallOption) *AccessApprovalRequestIterator {
 	it := &AccessApprovalRequestIterator{}
 	req = proto.Clone(req).(*cloudcontrolspartnerpb.ListAccessApprovalRequestsRequest)
@@ -1181,21 +1214,10 @@ func (c *cloudControlsPartnerCoreRESTClient) ListAccessApprovalRequests(ctx cont
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAccessApprovalRequests")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1258,17 +1280,7 @@ func (c *cloudControlsPartnerCoreRESTClient) GetPartner(ctx context.Context, req
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetPartner")
 		if err != nil {
 			return err
 		}
@@ -1283,4 +1295,161 @@ func (c *cloudControlsPartnerCoreRESTClient) GetPartner(ctx context.Context, req
 		return nil, e
 	}
 	return resp, nil
+}
+
+// CreateCustomer creates a new customer.
+func (c *cloudControlsPartnerCoreRESTClient) CreateCustomer(ctx context.Context, req *cloudcontrolspartnerpb.CreateCustomerRequest, opts ...gax.CallOption) (*cloudcontrolspartnerpb.Customer, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetCustomer()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v/customers", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("customerId", fmt.Sprintf("%v", req.GetCustomerId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateCustomer[0:len((*c.CallOptions).CreateCustomer):len((*c.CallOptions).CreateCustomer)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &cloudcontrolspartnerpb.Customer{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateCustomer")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateCustomer update details of a single customer
+func (c *cloudControlsPartnerCoreRESTClient) UpdateCustomer(ctx context.Context, req *cloudcontrolspartnerpb.UpdateCustomerRequest, opts ...gax.CallOption) (*cloudcontrolspartnerpb.Customer, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetCustomer()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetCustomer().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "customer.name", url.QueryEscape(req.GetCustomer().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateCustomer[0:len((*c.CallOptions).UpdateCustomer):len((*c.CallOptions).UpdateCustomer)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &cloudcontrolspartnerpb.Customer{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateCustomer")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteCustomer delete details of a single customer
+func (c *cloudControlsPartnerCoreRESTClient) DeleteCustomer(ctx context.Context, req *cloudcontrolspartnerpb.DeleteCustomerRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteCustomer")
+		return err
+	}, opts...)
 }

@@ -36,6 +36,7 @@ var fieldTypeMap = map[bigquery.FieldType]storagepb.TableFieldSchema_Type{
 	bigquery.BigNumericFieldType: storagepb.TableFieldSchema_BIGNUMERIC,
 	bigquery.GeographyFieldType:  storagepb.TableFieldSchema_GEOGRAPHY,
 	bigquery.RangeFieldType:      storagepb.TableFieldSchema_RANGE,
+	bigquery.JSONFieldType:       storagepb.TableFieldSchema_JSON,
 }
 
 func bqFieldToProto(in *bigquery.FieldSchema) (*storagepb.TableFieldSchema, error) {

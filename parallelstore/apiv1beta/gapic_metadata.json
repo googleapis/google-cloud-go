@@ -30,6 +30,11 @@
                 "DeleteOperation"
               ]
             },
+            "ExportData": {
+              "methods": [
+                "ExportData"
+              ]
+            },
             "GetInstance": {
               "methods": [
                 "GetInstance"
@@ -43,6 +48,11 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "ImportData": {
+              "methods": [
+                "ImportData"
               ]
             },
             "ListInstances": {
@@ -90,6 +100,11 @@
                 "DeleteOperation"
               ]
             },
+            "ExportData": {
+              "methods": [
+                "ExportData"
+              ]
+            },
             "GetInstance": {
               "methods": [
                 "GetInstance"
@@ -103,6 +118,11 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "ImportData": {
+              "methods": [
+                "ImportData"
               ]
             },
             "ListInstances": {

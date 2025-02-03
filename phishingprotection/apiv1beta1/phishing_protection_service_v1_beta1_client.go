@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	phishingprotectionpb "cloud.google.com/go/phishingprotection/apiv1beta1/phishingprotectionpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -53,6 +52,7 @@ func defaultPhishingProtectionServiceV1Beta1GRPCClientOptions() []option.ClientO
 		internaloption.WithDefaultAudience("https://phishingprotection.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -143,6 +143,8 @@ type phishingProtectionServiceV1Beta1GRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewPhishingProtectionServiceV1Beta1Client creates a new phishing protection service v1 beta1 client based on gRPC.
@@ -169,6 +171,7 @@ func NewPhishingProtectionServiceV1Beta1Client(ctx context.Context, opts ...opti
 		connPool:                               connPool,
 		phishingProtectionServiceV1Beta1Client: phishingprotectionpb.NewPhishingProtectionServiceV1Beta1Client(connPool),
 		CallOptions:                            &client.CallOptions,
+		logger:                                 internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -191,7 +194,9 @@ func (c *phishingProtectionServiceV1Beta1GRPCClient) Connection() *grpc.ClientCo
 func (c *phishingProtectionServiceV1Beta1GRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -213,6 +218,8 @@ type phishingProtectionServiceV1Beta1RESTClient struct {
 
 	// Points back to the CallOptions field of the containing PhishingProtectionServiceV1Beta1Client
 	CallOptions **PhishingProtectionServiceV1Beta1CallOptions
+
+	logger *slog.Logger
 }
 
 // NewPhishingProtectionServiceV1Beta1RESTClient creates a new phishing protection service v1 beta1 rest client.
@@ -230,6 +237,7 @@ func NewPhishingProtectionServiceV1Beta1RESTClient(ctx context.Context, opts ...
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -244,6 +252,7 @@ func defaultPhishingProtectionServiceV1Beta1RESTClientOptions() []option.ClientO
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://phishingprotection.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -253,7 +262,9 @@ func defaultPhishingProtectionServiceV1Beta1RESTClientOptions() []option.ClientO
 func (c *phishingProtectionServiceV1Beta1RESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -279,7 +290,7 @@ func (c *phishingProtectionServiceV1Beta1GRPCClient) ReportPhishing(ctx context.
 	var resp *phishingprotectionpb.ReportPhishingResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.phishingProtectionServiceV1Beta1Client.ReportPhishing(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.phishingProtectionServiceV1Beta1Client.ReportPhishing, req, settings.GRPC, c.logger, "ReportPhishing")
 		return err
 	}, opts...)
 	if err != nil {
@@ -333,17 +344,7 @@ func (c *phishingProtectionServiceV1Beta1RESTClient) ReportPhishing(ctx context.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ReportPhishing")
 		if err != nil {
 			return err
 		}

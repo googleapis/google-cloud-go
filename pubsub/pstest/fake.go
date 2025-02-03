@@ -24,6 +24,7 @@ package pstest
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"math/rand"
@@ -37,8 +38,10 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	"go.einride.tech/aip/filtering"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 	durpb "google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -111,6 +114,13 @@ func NewServer(opts ...ServerReactorOption) *Server {
 
 // NewServerWithPort creates a new fake server running in the current process at the specified port.
 func NewServerWithPort(port int, opts ...ServerReactorOption) *Server {
+	return NewServerWithCallback(port, func(*grpc.Server) { /* empty */ }, opts...)
+}
+
+// NewServerWithCallback creates new fake server running in the current process at the specified port.
+// Before starting the server, the provided callback is called to allow caller to register additional fakes
+// into grpc server.
+func NewServerWithCallback(port int, callback func(*grpc.Server), opts ...ServerReactorOption) *Server {
 	srv, err := testutil.NewServerWithPort(port)
 	if err != nil {
 		panic(fmt.Sprintf("pstest.NewServerWithPort: %v", err))
@@ -136,6 +146,9 @@ func NewServerWithPort(port int, opts ...ServerReactorOption) *Server {
 	pb.RegisterPublisherServer(srv.Gsrv, &s.GServer)
 	pb.RegisterSubscriberServer(srv.Gsrv, &s.GServer)
 	pb.RegisterSchemaServiceServer(srv.Gsrv, &s.GServer)
+
+	callback(srv.Gsrv)
+
 	srv.Start()
 	return s
 }
@@ -234,6 +247,7 @@ type Message struct {
 	Acks        int      // number of acks received from clients
 	Modacks     []Modack // modacks received by server for this message
 	OrderingKey string
+	Topic       string
 
 	// protected by server mutex
 	deliveries int
@@ -538,6 +552,14 @@ func (s *GServer) CreateSubscription(_ context.Context, ps *pb.Subscription) (*p
 	}
 
 	sub := newSubscription(top, &s.mu, s.now, deadLetterTopic, ps)
+	if ps.Filter != "" {
+		filter, err := parseFilter(ps.Filter)
+		if err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "bad filter: %v", err)
+		}
+		sub.filter = &filter
+	}
+
 	top.subs[ps.Name] = sub
 	s.subs[ps.Name] = sub
 	sub.start(&s.wg)
@@ -816,6 +838,7 @@ func (s *GServer) Publish(_ context.Context, req *pb.PublishRequest) (*pb.Publis
 			Attributes:  pm.Attributes,
 			PublishTime: pubTime,
 			OrderingKey: pm.OrderingKey,
+			Topic:       req.Topic,
 		}
 		top.publish(pm, m)
 		ids = append(ids, id)
@@ -890,13 +913,6 @@ func newSubscription(t *topic, mu *sync.Mutex, timeNowFunc func() time.Time, dea
 		msgs:            map[string]*message{},
 		done:            make(chan struct{}),
 		timeNowFunc:     timeNowFunc,
-	}
-	if ps.Filter != "" {
-		filter, err := parseFilter(ps.Filter)
-		if err != nil {
-			panic(fmt.Sprintf("pstest: bad filter: %v", err))
-		}
-		sub.filter = &filter
 	}
 	return sub
 }
@@ -1366,7 +1382,7 @@ func (st *stream) pull(wg *sync.WaitGroup) error {
 	var err error
 	select {
 	case err = <-errc:
-		if err == io.EOF {
+		if errors.Is(err, io.EOF) {
 			err = nil
 		}
 	case <-tchan:
@@ -1617,11 +1633,12 @@ func (s *GServer) RollbackSchema(_ context.Context, req *pb.RollbackSchemaReques
 
 	for _, sc := range s.schemas[req.Name] {
 		if sc.RevisionId == req.RevisionId {
-			newSchema := *sc
+			cloned := proto.Clone(sc)
+			newSchema := cloned.(*pb.Schema)
 			newSchema.RevisionId = genRevID()
 			newSchema.RevisionCreateTime = timestamppb.Now()
-			s.schemas[req.Name] = append(s.schemas[req.Name], &newSchema)
-			return &newSchema, nil
+			s.schemas[req.Name] = append(s.schemas[req.Name], newSchema)
+			return newSchema, nil
 		}
 	}
 	return nil, status.Errorf(codes.NotFound, "schema %q@%q not found", req.Name, req.RevisionId)

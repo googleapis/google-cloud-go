@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1",
-    "version": "1.67.0",
+    "version": "1.70.0",
     "language": "GO",
     "apis": [
       {
@@ -702,7 +702,7 @@
     {
       "regionTag": "aiplatform_v1_generated_DatasetService_ListAnnotations_sync",
       "title": "aiplatform ListAnnotations Sample",
-      "description": "ListAnnotations lists Annotations belongs to a dataitem",
+      "description": "ListAnnotations lists Annotations belongs to a dataitem\nThis RPC is only available in InternalDatasetService. It is only used for\nexporting conversation data to CCAI Insights.",
       "file": "DatasetClient/ListAnnotations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1236,6 +1236,52 @@
         "method": {
           "shortName": "UpdateDataset",
           "fullName": "google.cloud.aiplatform.v1.DatasetService.UpdateDataset",
+          "service": {
+            "shortName": "DatasetService",
+            "fullName": "google.cloud.aiplatform.v1.DatasetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_DatasetService_UpdateDatasetVersion_sync",
+      "title": "aiplatform UpdateDatasetVersion Sample",
+      "description": "UpdateDatasetVersion updates a DatasetVersion.",
+      "file": "DatasetClient/UpdateDatasetVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDatasetVersion",
+        "fullName": "google.cloud.aiplatform.v1.DatasetClient.UpdateDatasetVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.UpdateDatasetVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.DatasetVersion",
+        "client": {
+          "shortName": "DatasetClient",
+          "fullName": "google.cloud.aiplatform.v1.DatasetClient"
+        },
+        "method": {
+          "shortName": "UpdateDatasetVersion",
+          "fullName": "google.cloud.aiplatform.v1.DatasetService.UpdateDatasetVersion",
           "service": {
             "shortName": "DatasetService",
             "fullName": "google.cloud.aiplatform.v1.DatasetService"
@@ -1935,6 +1981,52 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_DeploymentResourcePoolService_UpdateDeploymentResourcePool_sync",
+      "title": "aiplatform UpdateDeploymentResourcePool Sample",
+      "description": "UpdateDeploymentResourcePool update a DeploymentResourcePool.",
+      "file": "DeploymentResourcePoolClient/UpdateDeploymentResourcePool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDeploymentResourcePool",
+        "fullName": "google.cloud.aiplatform.v1.DeploymentResourcePoolClient.UpdateDeploymentResourcePool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.UpdateDeploymentResourcePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateDeploymentResourcePoolOperation",
+        "client": {
+          "shortName": "DeploymentResourcePoolClient",
+          "fullName": "google.cloud.aiplatform.v1.DeploymentResourcePoolClient"
+        },
+        "method": {
+          "shortName": "UpdateDeploymentResourcePool",
+          "fullName": "google.cloud.aiplatform.v1.DeploymentResourcePoolService.UpdateDeploymentResourcePool",
+          "service": {
+            "shortName": "DeploymentResourcePoolService",
+            "fullName": "google.cloud.aiplatform.v1.DeploymentResourcePoolService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -2766,6 +2858,52 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1_generated_EndpointService_UpdateEndpointLongRunning_sync",
+      "title": "aiplatform UpdateEndpointLongRunning Sample",
+      "description": "UpdateEndpointLongRunning updates an Endpoint with a long running operation.",
+      "file": "EndpointClient/UpdateEndpointLongRunning/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateEndpointLongRunning",
+        "fullName": "google.cloud.aiplatform.v1.EndpointClient.UpdateEndpointLongRunning",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.UpdateEndpointLongRunningRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateEndpointLongRunningOperation",
+        "client": {
+          "shortName": "EndpointClient",
+          "fullName": "google.cloud.aiplatform.v1.EndpointClient"
+        },
+        "method": {
+          "shortName": "UpdateEndpointLongRunning",
+          "fullName": "google.cloud.aiplatform.v1.EndpointService.UpdateEndpointLongRunning",
+          "service": {
+            "shortName": "EndpointService",
+            "fullName": "google.cloud.aiplatform.v1.EndpointService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1_generated_EndpointService_WaitOperation_sync",
       "title": "aiplatform WaitOperation Sample",
       "description": "WaitOperation is a utility method from google.longrunning.Operations.",
@@ -2792,6 +2930,510 @@
         "client": {
           "shortName": "EndpointClient",
           "fullName": "google.cloud.aiplatform.v1.EndpointClient"
+        },
+        "method": {
+          "shortName": "WaitOperation",
+          "fullName": "google.longrunning.Operations.WaitOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_EvaluationService_CancelOperation_sync",
+      "title": "aiplatform CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "EvaluationClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.aiplatform.v1.EvaluationClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "EvaluationClient",
+          "fullName": "google.cloud.aiplatform.v1.EvaluationClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_EvaluationService_DeleteOperation_sync",
+      "title": "aiplatform DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "EvaluationClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.aiplatform.v1.EvaluationClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "EvaluationClient",
+          "fullName": "google.cloud.aiplatform.v1.EvaluationClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_EvaluationService_EvaluateInstances_sync",
+      "title": "aiplatform EvaluateInstances Sample",
+      "description": "EvaluateInstances evaluates instances based on a given metric.",
+      "file": "EvaluationClient/EvaluateInstances/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "EvaluateInstances",
+        "fullName": "google.cloud.aiplatform.v1.EvaluationClient.EvaluateInstances",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.EvaluateInstancesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.EvaluateInstancesResponse",
+        "client": {
+          "shortName": "EvaluationClient",
+          "fullName": "google.cloud.aiplatform.v1.EvaluationClient"
+        },
+        "method": {
+          "shortName": "EvaluateInstances",
+          "fullName": "google.cloud.aiplatform.v1.EvaluationService.EvaluateInstances",
+          "service": {
+            "shortName": "EvaluationService",
+            "fullName": "google.cloud.aiplatform.v1.EvaluationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_EvaluationService_GetIamPolicy_sync",
+      "title": "aiplatform GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "EvaluationClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.aiplatform.v1.EvaluationClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "EvaluationClient",
+          "fullName": "google.cloud.aiplatform.v1.EvaluationClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_EvaluationService_GetLocation_sync",
+      "title": "aiplatform GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "EvaluationClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.aiplatform.v1.EvaluationClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "EvaluationClient",
+          "fullName": "google.cloud.aiplatform.v1.EvaluationClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_EvaluationService_GetOperation_sync",
+      "title": "aiplatform GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "EvaluationClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.aiplatform.v1.EvaluationClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "EvaluationClient",
+          "fullName": "google.cloud.aiplatform.v1.EvaluationClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_EvaluationService_ListLocations_sync",
+      "title": "aiplatform ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "EvaluationClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.aiplatform.v1.EvaluationClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "EvaluationClient",
+          "fullName": "google.cloud.aiplatform.v1.EvaluationClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_EvaluationService_ListOperations_sync",
+      "title": "aiplatform ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "EvaluationClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.aiplatform.v1.EvaluationClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "EvaluationClient",
+          "fullName": "google.cloud.aiplatform.v1.EvaluationClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_EvaluationService_SetIamPolicy_sync",
+      "title": "aiplatform SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "EvaluationClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.aiplatform.v1.EvaluationClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "EvaluationClient",
+          "fullName": "google.cloud.aiplatform.v1.EvaluationClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_EvaluationService_TestIamPermissions_sync",
+      "title": "aiplatform TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "EvaluationClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.aiplatform.v1.EvaluationClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "EvaluationClient",
+          "fullName": "google.cloud.aiplatform.v1.EvaluationClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_EvaluationService_WaitOperation_sync",
+      "title": "aiplatform WaitOperation Sample",
+      "description": "WaitOperation is a utility method from google.longrunning.Operations.",
+      "file": "EvaluationClient/WaitOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "WaitOperation",
+        "fullName": "google.cloud.aiplatform.v1.EvaluationClient.WaitOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.WaitOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "EvaluationClient",
+          "fullName": "google.cloud.aiplatform.v1.EvaluationClient"
         },
         "method": {
           "shortName": "WaitOperation",
@@ -4413,6 +5055,52 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_FeatureRegistryService_BatchCreateFeatures_sync",
+      "title": "aiplatform BatchCreateFeatures Sample",
+      "description": "BatchCreateFeatures creates a batch of Features in a given FeatureGroup.",
+      "file": "FeatureRegistryClient/BatchCreateFeatures/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchCreateFeatures",
+        "fullName": "google.cloud.aiplatform.v1.FeatureRegistryClient.BatchCreateFeatures",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.BatchCreateFeaturesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BatchCreateFeaturesOperation",
+        "client": {
+          "shortName": "FeatureRegistryClient",
+          "fullName": "google.cloud.aiplatform.v1.FeatureRegistryClient"
+        },
+        "method": {
+          "shortName": "BatchCreateFeatures",
+          "fullName": "google.cloud.aiplatform.v1.FeatureRegistryService.BatchCreateFeatures",
+          "service": {
+            "shortName": "FeatureRegistryService",
+            "fullName": "google.cloud.aiplatform.v1.FeatureRegistryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -7310,6 +7998,693 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1_generated_GenAiCacheService_CancelOperation_sync",
+      "title": "aiplatform CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "GenAiCacheClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.aiplatform.v1.GenAiCacheClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "GenAiCacheClient",
+          "fullName": "google.cloud.aiplatform.v1.GenAiCacheClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_GenAiCacheService_CreateCachedContent_sync",
+      "title": "aiplatform CreateCachedContent Sample",
+      "description": "CreateCachedContent creates cached content, this call will initialize the cached content in the\ndata storage, and users need to pay for the cache data storage.",
+      "file": "GenAiCacheClient/CreateCachedContent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateCachedContent",
+        "fullName": "google.cloud.aiplatform.v1.GenAiCacheClient.CreateCachedContent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.CreateCachedContentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.CachedContent",
+        "client": {
+          "shortName": "GenAiCacheClient",
+          "fullName": "google.cloud.aiplatform.v1.GenAiCacheClient"
+        },
+        "method": {
+          "shortName": "CreateCachedContent",
+          "fullName": "google.cloud.aiplatform.v1.GenAiCacheService.CreateCachedContent",
+          "service": {
+            "shortName": "GenAiCacheService",
+            "fullName": "google.cloud.aiplatform.v1.GenAiCacheService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_GenAiCacheService_DeleteCachedContent_sync",
+      "title": "aiplatform DeleteCachedContent Sample",
+      "description": "DeleteCachedContent deletes cached content",
+      "file": "GenAiCacheClient/DeleteCachedContent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteCachedContent",
+        "fullName": "google.cloud.aiplatform.v1.GenAiCacheClient.DeleteCachedContent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.DeleteCachedContentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "GenAiCacheClient",
+          "fullName": "google.cloud.aiplatform.v1.GenAiCacheClient"
+        },
+        "method": {
+          "shortName": "DeleteCachedContent",
+          "fullName": "google.cloud.aiplatform.v1.GenAiCacheService.DeleteCachedContent",
+          "service": {
+            "shortName": "GenAiCacheService",
+            "fullName": "google.cloud.aiplatform.v1.GenAiCacheService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_GenAiCacheService_DeleteOperation_sync",
+      "title": "aiplatform DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "GenAiCacheClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.aiplatform.v1.GenAiCacheClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "GenAiCacheClient",
+          "fullName": "google.cloud.aiplatform.v1.GenAiCacheClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_GenAiCacheService_GetCachedContent_sync",
+      "title": "aiplatform GetCachedContent Sample",
+      "description": "GetCachedContent gets cached content configurations",
+      "file": "GenAiCacheClient/GetCachedContent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetCachedContent",
+        "fullName": "google.cloud.aiplatform.v1.GenAiCacheClient.GetCachedContent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.GetCachedContentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.CachedContent",
+        "client": {
+          "shortName": "GenAiCacheClient",
+          "fullName": "google.cloud.aiplatform.v1.GenAiCacheClient"
+        },
+        "method": {
+          "shortName": "GetCachedContent",
+          "fullName": "google.cloud.aiplatform.v1.GenAiCacheService.GetCachedContent",
+          "service": {
+            "shortName": "GenAiCacheService",
+            "fullName": "google.cloud.aiplatform.v1.GenAiCacheService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_GenAiCacheService_GetIamPolicy_sync",
+      "title": "aiplatform GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "GenAiCacheClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.aiplatform.v1.GenAiCacheClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "GenAiCacheClient",
+          "fullName": "google.cloud.aiplatform.v1.GenAiCacheClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_GenAiCacheService_GetLocation_sync",
+      "title": "aiplatform GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "GenAiCacheClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.aiplatform.v1.GenAiCacheClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "GenAiCacheClient",
+          "fullName": "google.cloud.aiplatform.v1.GenAiCacheClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_GenAiCacheService_GetOperation_sync",
+      "title": "aiplatform GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "GenAiCacheClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.aiplatform.v1.GenAiCacheClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "GenAiCacheClient",
+          "fullName": "google.cloud.aiplatform.v1.GenAiCacheClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_GenAiCacheService_ListCachedContents_sync",
+      "title": "aiplatform ListCachedContents Sample",
+      "description": "ListCachedContents lists cached contents in a project",
+      "file": "GenAiCacheClient/ListCachedContents/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListCachedContents",
+        "fullName": "google.cloud.aiplatform.v1.GenAiCacheClient.ListCachedContents",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.ListCachedContentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CachedContentIterator",
+        "client": {
+          "shortName": "GenAiCacheClient",
+          "fullName": "google.cloud.aiplatform.v1.GenAiCacheClient"
+        },
+        "method": {
+          "shortName": "ListCachedContents",
+          "fullName": "google.cloud.aiplatform.v1.GenAiCacheService.ListCachedContents",
+          "service": {
+            "shortName": "GenAiCacheService",
+            "fullName": "google.cloud.aiplatform.v1.GenAiCacheService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_GenAiCacheService_ListLocations_sync",
+      "title": "aiplatform ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "GenAiCacheClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.aiplatform.v1.GenAiCacheClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "GenAiCacheClient",
+          "fullName": "google.cloud.aiplatform.v1.GenAiCacheClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_GenAiCacheService_ListOperations_sync",
+      "title": "aiplatform ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "GenAiCacheClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.aiplatform.v1.GenAiCacheClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "GenAiCacheClient",
+          "fullName": "google.cloud.aiplatform.v1.GenAiCacheClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_GenAiCacheService_SetIamPolicy_sync",
+      "title": "aiplatform SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "GenAiCacheClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.aiplatform.v1.GenAiCacheClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "GenAiCacheClient",
+          "fullName": "google.cloud.aiplatform.v1.GenAiCacheClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_GenAiCacheService_TestIamPermissions_sync",
+      "title": "aiplatform TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "GenAiCacheClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.aiplatform.v1.GenAiCacheClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "GenAiCacheClient",
+          "fullName": "google.cloud.aiplatform.v1.GenAiCacheClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_GenAiCacheService_UpdateCachedContent_sync",
+      "title": "aiplatform UpdateCachedContent Sample",
+      "description": "UpdateCachedContent updates cached content configurations",
+      "file": "GenAiCacheClient/UpdateCachedContent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateCachedContent",
+        "fullName": "google.cloud.aiplatform.v1.GenAiCacheClient.UpdateCachedContent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.UpdateCachedContentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.CachedContent",
+        "client": {
+          "shortName": "GenAiCacheClient",
+          "fullName": "google.cloud.aiplatform.v1.GenAiCacheClient"
+        },
+        "method": {
+          "shortName": "UpdateCachedContent",
+          "fullName": "google.cloud.aiplatform.v1.GenAiCacheService.UpdateCachedContent",
+          "service": {
+            "shortName": "GenAiCacheService",
+            "fullName": "google.cloud.aiplatform.v1.GenAiCacheService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_GenAiCacheService_WaitOperation_sync",
+      "title": "aiplatform WaitOperation Sample",
+      "description": "WaitOperation is a utility method from google.longrunning.Operations.",
+      "file": "GenAiCacheClient/WaitOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "WaitOperation",
+        "fullName": "google.cloud.aiplatform.v1.GenAiCacheClient.WaitOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.WaitOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "GenAiCacheClient",
+          "fullName": "google.cloud.aiplatform.v1.GenAiCacheClient"
+        },
+        "method": {
+          "shortName": "WaitOperation",
+          "fullName": "google.longrunning.Operations.WaitOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1_generated_GenAiTuningService_CancelOperation_sync",
       "title": "aiplatform CancelOperation Sample",
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",
@@ -7808,6 +9183,52 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_GenAiTuningService_RebaseTunedModel_sync",
+      "title": "aiplatform RebaseTunedModel Sample",
+      "description": "RebaseTunedModel rebase a TunedModel.",
+      "file": "GenAiTuningClient/RebaseTunedModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RebaseTunedModel",
+        "fullName": "google.cloud.aiplatform.v1.GenAiTuningClient.RebaseTunedModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.RebaseTunedModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RebaseTunedModelOperation",
+        "client": {
+          "shortName": "GenAiTuningClient",
+          "fullName": "google.cloud.aiplatform.v1.GenAiTuningClient"
+        },
+        "method": {
+          "shortName": "RebaseTunedModel",
+          "fullName": "google.cloud.aiplatform.v1.GenAiTuningService.RebaseTunedModel",
+          "service": {
+            "shortName": "GenAiTuningService",
+            "fullName": "google.cloud.aiplatform.v1.GenAiTuningService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -16528,6 +17949,52 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1_generated_ModelService_ListModelVersionCheckpoints_sync",
+      "title": "aiplatform ListModelVersionCheckpoints Sample",
+      "description": "ListModelVersionCheckpoints lists checkpoints of the specified model version.",
+      "file": "ModelClient/ListModelVersionCheckpoints/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListModelVersionCheckpoints",
+        "fullName": "google.cloud.aiplatform.v1.ModelClient.ListModelVersionCheckpoints",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.ListModelVersionCheckpointsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ModelVersionCheckpointIterator",
+        "client": {
+          "shortName": "ModelClient",
+          "fullName": "google.cloud.aiplatform.v1.ModelClient"
+        },
+        "method": {
+          "shortName": "ListModelVersionCheckpoints",
+          "fullName": "google.cloud.aiplatform.v1.ModelService.ListModelVersionCheckpoints",
+          "service": {
+            "shortName": "ModelService",
+            "fullName": "google.cloud.aiplatform.v1.ModelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1_generated_ModelService_ListModelVersions_sync",
       "title": "aiplatform ListModelVersions Sample",
       "description": "ListModelVersions lists versions of the specified model.",
@@ -17079,6 +18546,52 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1_generated_NotebookService_CreateNotebookExecutionJob_sync",
+      "title": "aiplatform CreateNotebookExecutionJob Sample",
+      "description": "CreateNotebookExecutionJob creates a NotebookExecutionJob.",
+      "file": "NotebookClient/CreateNotebookExecutionJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateNotebookExecutionJob",
+        "fullName": "google.cloud.aiplatform.v1.NotebookClient.CreateNotebookExecutionJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.CreateNotebookExecutionJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateNotebookExecutionJobOperation",
+        "client": {
+          "shortName": "NotebookClient",
+          "fullName": "google.cloud.aiplatform.v1.NotebookClient"
+        },
+        "method": {
+          "shortName": "CreateNotebookExecutionJob",
+          "fullName": "google.cloud.aiplatform.v1.NotebookService.CreateNotebookExecutionJob",
+          "service": {
+            "shortName": "NotebookService",
+            "fullName": "google.cloud.aiplatform.v1.NotebookService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1_generated_NotebookService_CreateNotebookRuntimeTemplate_sync",
       "title": "aiplatform CreateNotebookRuntimeTemplate Sample",
       "description": "CreateNotebookRuntimeTemplate creates a NotebookRuntimeTemplate.",
@@ -17120,6 +18633,52 @@
         {
           "start": 18,
           "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_NotebookService_DeleteNotebookExecutionJob_sync",
+      "title": "aiplatform DeleteNotebookExecutionJob Sample",
+      "description": "DeleteNotebookExecutionJob deletes a NotebookExecutionJob.",
+      "file": "NotebookClient/DeleteNotebookExecutionJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteNotebookExecutionJob",
+        "fullName": "google.cloud.aiplatform.v1.NotebookClient.DeleteNotebookExecutionJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.DeleteNotebookExecutionJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteNotebookExecutionJobOperation",
+        "client": {
+          "shortName": "NotebookClient",
+          "fullName": "google.cloud.aiplatform.v1.NotebookClient"
+        },
+        "method": {
+          "shortName": "DeleteNotebookExecutionJob",
+          "fullName": "google.cloud.aiplatform.v1.NotebookService.DeleteNotebookExecutionJob",
+          "service": {
+            "shortName": "NotebookService",
+            "fullName": "google.cloud.aiplatform.v1.NotebookService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -17354,6 +18913,52 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1_generated_NotebookService_GetNotebookExecutionJob_sync",
+      "title": "aiplatform GetNotebookExecutionJob Sample",
+      "description": "GetNotebookExecutionJob gets a NotebookExecutionJob.",
+      "file": "NotebookClient/GetNotebookExecutionJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetNotebookExecutionJob",
+        "fullName": "google.cloud.aiplatform.v1.NotebookClient.GetNotebookExecutionJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.GetNotebookExecutionJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.NotebookExecutionJob",
+        "client": {
+          "shortName": "NotebookClient",
+          "fullName": "google.cloud.aiplatform.v1.NotebookClient"
+        },
+        "method": {
+          "shortName": "GetNotebookExecutionJob",
+          "fullName": "google.cloud.aiplatform.v1.NotebookService.GetNotebookExecutionJob",
+          "service": {
+            "shortName": "NotebookService",
+            "fullName": "google.cloud.aiplatform.v1.NotebookService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1_generated_NotebookService_GetNotebookRuntime_sync",
       "title": "aiplatform GetNotebookRuntime Sample",
       "description": "GetNotebookRuntime gets a NotebookRuntime.",
@@ -17525,6 +19130,52 @@
           "service": {
             "shortName": "Locations",
             "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_NotebookService_ListNotebookExecutionJobs_sync",
+      "title": "aiplatform ListNotebookExecutionJobs Sample",
+      "description": "ListNotebookExecutionJobs lists NotebookExecutionJobs in a Location.",
+      "file": "NotebookClient/ListNotebookExecutionJobs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListNotebookExecutionJobs",
+        "fullName": "google.cloud.aiplatform.v1.NotebookClient.ListNotebookExecutionJobs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.ListNotebookExecutionJobsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "NotebookExecutionJobIterator",
+        "client": {
+          "shortName": "NotebookClient",
+          "fullName": "google.cloud.aiplatform.v1.NotebookClient"
+        },
+        "method": {
+          "shortName": "ListNotebookExecutionJobs",
+          "fullName": "google.cloud.aiplatform.v1.NotebookService.ListNotebookExecutionJobs",
+          "service": {
+            "shortName": "NotebookService",
+            "fullName": "google.cloud.aiplatform.v1.NotebookService"
           }
         }
       },
@@ -17768,6 +19419,52 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1_generated_NotebookService_StopNotebookRuntime_sync",
+      "title": "aiplatform StopNotebookRuntime Sample",
+      "description": "StopNotebookRuntime stops a NotebookRuntime.",
+      "file": "NotebookClient/StopNotebookRuntime/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StopNotebookRuntime",
+        "fullName": "google.cloud.aiplatform.v1.NotebookClient.StopNotebookRuntime",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.StopNotebookRuntimeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StopNotebookRuntimeOperation",
+        "client": {
+          "shortName": "NotebookClient",
+          "fullName": "google.cloud.aiplatform.v1.NotebookClient"
+        },
+        "method": {
+          "shortName": "StopNotebookRuntime",
+          "fullName": "google.cloud.aiplatform.v1.NotebookService.StopNotebookRuntime",
+          "service": {
+            "shortName": "NotebookService",
+            "fullName": "google.cloud.aiplatform.v1.NotebookService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1_generated_NotebookService_TestIamPermissions_sync",
       "title": "aiplatform TestIamPermissions Sample",
       "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
@@ -17801,6 +19498,52 @@
           "service": {
             "shortName": "IAMPolicy",
             "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_NotebookService_UpdateNotebookRuntimeTemplate_sync",
+      "title": "aiplatform UpdateNotebookRuntimeTemplate Sample",
+      "description": "UpdateNotebookRuntimeTemplate updates a NotebookRuntimeTemplate.",
+      "file": "NotebookClient/UpdateNotebookRuntimeTemplate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateNotebookRuntimeTemplate",
+        "fullName": "google.cloud.aiplatform.v1.NotebookClient.UpdateNotebookRuntimeTemplate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.UpdateNotebookRuntimeTemplateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.NotebookRuntimeTemplate",
+        "client": {
+          "shortName": "NotebookClient",
+          "fullName": "google.cloud.aiplatform.v1.NotebookClient"
+        },
+        "method": {
+          "shortName": "UpdateNotebookRuntimeTemplate",
+          "fullName": "google.cloud.aiplatform.v1.NotebookService.UpdateNotebookRuntimeTemplate",
+          "service": {
+            "shortName": "NotebookService",
+            "fullName": "google.cloud.aiplatform.v1.NotebookService"
           }
         }
       },
@@ -20550,6 +22293,1198 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1_generated_ReasoningEngineExecutionService_CancelOperation_sync",
+      "title": "aiplatform CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "ReasoningEngineExecutionClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.aiplatform.v1.ReasoningEngineExecutionClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ReasoningEngineExecutionClient",
+          "fullName": "google.cloud.aiplatform.v1.ReasoningEngineExecutionClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_ReasoningEngineExecutionService_DeleteOperation_sync",
+      "title": "aiplatform DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "ReasoningEngineExecutionClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.aiplatform.v1.ReasoningEngineExecutionClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ReasoningEngineExecutionClient",
+          "fullName": "google.cloud.aiplatform.v1.ReasoningEngineExecutionClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_ReasoningEngineExecutionService_GetIamPolicy_sync",
+      "title": "aiplatform GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "ReasoningEngineExecutionClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.aiplatform.v1.ReasoningEngineExecutionClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "ReasoningEngineExecutionClient",
+          "fullName": "google.cloud.aiplatform.v1.ReasoningEngineExecutionClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_ReasoningEngineExecutionService_GetLocation_sync",
+      "title": "aiplatform GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "ReasoningEngineExecutionClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.aiplatform.v1.ReasoningEngineExecutionClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "ReasoningEngineExecutionClient",
+          "fullName": "google.cloud.aiplatform.v1.ReasoningEngineExecutionClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_ReasoningEngineExecutionService_GetOperation_sync",
+      "title": "aiplatform GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "ReasoningEngineExecutionClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.aiplatform.v1.ReasoningEngineExecutionClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "ReasoningEngineExecutionClient",
+          "fullName": "google.cloud.aiplatform.v1.ReasoningEngineExecutionClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_ReasoningEngineExecutionService_ListLocations_sync",
+      "title": "aiplatform ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "ReasoningEngineExecutionClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.aiplatform.v1.ReasoningEngineExecutionClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "ReasoningEngineExecutionClient",
+          "fullName": "google.cloud.aiplatform.v1.ReasoningEngineExecutionClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_ReasoningEngineExecutionService_ListOperations_sync",
+      "title": "aiplatform ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "ReasoningEngineExecutionClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.aiplatform.v1.ReasoningEngineExecutionClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "ReasoningEngineExecutionClient",
+          "fullName": "google.cloud.aiplatform.v1.ReasoningEngineExecutionClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_ReasoningEngineExecutionService_QueryReasoningEngine_sync",
+      "title": "aiplatform QueryReasoningEngine Sample",
+      "description": "QueryReasoningEngine queries using a reasoning engine.",
+      "file": "ReasoningEngineExecutionClient/QueryReasoningEngine/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "QueryReasoningEngine",
+        "fullName": "google.cloud.aiplatform.v1.ReasoningEngineExecutionClient.QueryReasoningEngine",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.QueryReasoningEngineRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.QueryReasoningEngineResponse",
+        "client": {
+          "shortName": "ReasoningEngineExecutionClient",
+          "fullName": "google.cloud.aiplatform.v1.ReasoningEngineExecutionClient"
+        },
+        "method": {
+          "shortName": "QueryReasoningEngine",
+          "fullName": "google.cloud.aiplatform.v1.ReasoningEngineExecutionService.QueryReasoningEngine",
+          "service": {
+            "shortName": "ReasoningEngineExecutionService",
+            "fullName": "google.cloud.aiplatform.v1.ReasoningEngineExecutionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_ReasoningEngineExecutionService_SetIamPolicy_sync",
+      "title": "aiplatform SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "ReasoningEngineExecutionClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.aiplatform.v1.ReasoningEngineExecutionClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "ReasoningEngineExecutionClient",
+          "fullName": "google.cloud.aiplatform.v1.ReasoningEngineExecutionClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_ReasoningEngineExecutionService_TestIamPermissions_sync",
+      "title": "aiplatform TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "ReasoningEngineExecutionClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.aiplatform.v1.ReasoningEngineExecutionClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "ReasoningEngineExecutionClient",
+          "fullName": "google.cloud.aiplatform.v1.ReasoningEngineExecutionClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_ReasoningEngineExecutionService_WaitOperation_sync",
+      "title": "aiplatform WaitOperation Sample",
+      "description": "WaitOperation is a utility method from google.longrunning.Operations.",
+      "file": "ReasoningEngineExecutionClient/WaitOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "WaitOperation",
+        "fullName": "google.cloud.aiplatform.v1.ReasoningEngineExecutionClient.WaitOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.WaitOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "ReasoningEngineExecutionClient",
+          "fullName": "google.cloud.aiplatform.v1.ReasoningEngineExecutionClient"
+        },
+        "method": {
+          "shortName": "WaitOperation",
+          "fullName": "google.longrunning.Operations.WaitOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_ReasoningEngineService_CancelOperation_sync",
+      "title": "aiplatform CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "ReasoningEngineClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.aiplatform.v1.ReasoningEngineClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ReasoningEngineClient",
+          "fullName": "google.cloud.aiplatform.v1.ReasoningEngineClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_ReasoningEngineService_CreateReasoningEngine_sync",
+      "title": "aiplatform CreateReasoningEngine Sample",
+      "description": "CreateReasoningEngine creates a reasoning engine.",
+      "file": "ReasoningEngineClient/CreateReasoningEngine/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateReasoningEngine",
+        "fullName": "google.cloud.aiplatform.v1.ReasoningEngineClient.CreateReasoningEngine",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.CreateReasoningEngineRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateReasoningEngineOperation",
+        "client": {
+          "shortName": "ReasoningEngineClient",
+          "fullName": "google.cloud.aiplatform.v1.ReasoningEngineClient"
+        },
+        "method": {
+          "shortName": "CreateReasoningEngine",
+          "fullName": "google.cloud.aiplatform.v1.ReasoningEngineService.CreateReasoningEngine",
+          "service": {
+            "shortName": "ReasoningEngineService",
+            "fullName": "google.cloud.aiplatform.v1.ReasoningEngineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_ReasoningEngineService_DeleteOperation_sync",
+      "title": "aiplatform DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "ReasoningEngineClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.aiplatform.v1.ReasoningEngineClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ReasoningEngineClient",
+          "fullName": "google.cloud.aiplatform.v1.ReasoningEngineClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_ReasoningEngineService_DeleteReasoningEngine_sync",
+      "title": "aiplatform DeleteReasoningEngine Sample",
+      "description": "DeleteReasoningEngine deletes a reasoning engine.",
+      "file": "ReasoningEngineClient/DeleteReasoningEngine/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteReasoningEngine",
+        "fullName": "google.cloud.aiplatform.v1.ReasoningEngineClient.DeleteReasoningEngine",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.DeleteReasoningEngineRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteReasoningEngineOperation",
+        "client": {
+          "shortName": "ReasoningEngineClient",
+          "fullName": "google.cloud.aiplatform.v1.ReasoningEngineClient"
+        },
+        "method": {
+          "shortName": "DeleteReasoningEngine",
+          "fullName": "google.cloud.aiplatform.v1.ReasoningEngineService.DeleteReasoningEngine",
+          "service": {
+            "shortName": "ReasoningEngineService",
+            "fullName": "google.cloud.aiplatform.v1.ReasoningEngineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_ReasoningEngineService_GetIamPolicy_sync",
+      "title": "aiplatform GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "ReasoningEngineClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.aiplatform.v1.ReasoningEngineClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "ReasoningEngineClient",
+          "fullName": "google.cloud.aiplatform.v1.ReasoningEngineClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_ReasoningEngineService_GetLocation_sync",
+      "title": "aiplatform GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "ReasoningEngineClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.aiplatform.v1.ReasoningEngineClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "ReasoningEngineClient",
+          "fullName": "google.cloud.aiplatform.v1.ReasoningEngineClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_ReasoningEngineService_GetOperation_sync",
+      "title": "aiplatform GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "ReasoningEngineClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.aiplatform.v1.ReasoningEngineClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "ReasoningEngineClient",
+          "fullName": "google.cloud.aiplatform.v1.ReasoningEngineClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_ReasoningEngineService_GetReasoningEngine_sync",
+      "title": "aiplatform GetReasoningEngine Sample",
+      "description": "GetReasoningEngine gets a reasoning engine.",
+      "file": "ReasoningEngineClient/GetReasoningEngine/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetReasoningEngine",
+        "fullName": "google.cloud.aiplatform.v1.ReasoningEngineClient.GetReasoningEngine",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.GetReasoningEngineRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.ReasoningEngine",
+        "client": {
+          "shortName": "ReasoningEngineClient",
+          "fullName": "google.cloud.aiplatform.v1.ReasoningEngineClient"
+        },
+        "method": {
+          "shortName": "GetReasoningEngine",
+          "fullName": "google.cloud.aiplatform.v1.ReasoningEngineService.GetReasoningEngine",
+          "service": {
+            "shortName": "ReasoningEngineService",
+            "fullName": "google.cloud.aiplatform.v1.ReasoningEngineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_ReasoningEngineService_ListLocations_sync",
+      "title": "aiplatform ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "ReasoningEngineClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.aiplatform.v1.ReasoningEngineClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "ReasoningEngineClient",
+          "fullName": "google.cloud.aiplatform.v1.ReasoningEngineClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_ReasoningEngineService_ListOperations_sync",
+      "title": "aiplatform ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "ReasoningEngineClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.aiplatform.v1.ReasoningEngineClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "ReasoningEngineClient",
+          "fullName": "google.cloud.aiplatform.v1.ReasoningEngineClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_ReasoningEngineService_ListReasoningEngines_sync",
+      "title": "aiplatform ListReasoningEngines Sample",
+      "description": "ListReasoningEngines lists reasoning engines in a location.",
+      "file": "ReasoningEngineClient/ListReasoningEngines/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListReasoningEngines",
+        "fullName": "google.cloud.aiplatform.v1.ReasoningEngineClient.ListReasoningEngines",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.ListReasoningEnginesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ReasoningEngineIterator",
+        "client": {
+          "shortName": "ReasoningEngineClient",
+          "fullName": "google.cloud.aiplatform.v1.ReasoningEngineClient"
+        },
+        "method": {
+          "shortName": "ListReasoningEngines",
+          "fullName": "google.cloud.aiplatform.v1.ReasoningEngineService.ListReasoningEngines",
+          "service": {
+            "shortName": "ReasoningEngineService",
+            "fullName": "google.cloud.aiplatform.v1.ReasoningEngineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_ReasoningEngineService_SetIamPolicy_sync",
+      "title": "aiplatform SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "ReasoningEngineClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.aiplatform.v1.ReasoningEngineClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "ReasoningEngineClient",
+          "fullName": "google.cloud.aiplatform.v1.ReasoningEngineClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_ReasoningEngineService_TestIamPermissions_sync",
+      "title": "aiplatform TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "ReasoningEngineClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.aiplatform.v1.ReasoningEngineClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "ReasoningEngineClient",
+          "fullName": "google.cloud.aiplatform.v1.ReasoningEngineClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_ReasoningEngineService_UpdateReasoningEngine_sync",
+      "title": "aiplatform UpdateReasoningEngine Sample",
+      "description": "UpdateReasoningEngine updates a reasoning engine.",
+      "file": "ReasoningEngineClient/UpdateReasoningEngine/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateReasoningEngine",
+        "fullName": "google.cloud.aiplatform.v1.ReasoningEngineClient.UpdateReasoningEngine",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.UpdateReasoningEngineRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateReasoningEngineOperation",
+        "client": {
+          "shortName": "ReasoningEngineClient",
+          "fullName": "google.cloud.aiplatform.v1.ReasoningEngineClient"
+        },
+        "method": {
+          "shortName": "UpdateReasoningEngine",
+          "fullName": "google.cloud.aiplatform.v1.ReasoningEngineService.UpdateReasoningEngine",
+          "service": {
+            "shortName": "ReasoningEngineService",
+            "fullName": "google.cloud.aiplatform.v1.ReasoningEngineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_ReasoningEngineService_WaitOperation_sync",
+      "title": "aiplatform WaitOperation Sample",
+      "description": "WaitOperation is a utility method from google.longrunning.Operations.",
+      "file": "ReasoningEngineClient/WaitOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "WaitOperation",
+        "fullName": "google.cloud.aiplatform.v1.ReasoningEngineClient.WaitOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.WaitOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "ReasoningEngineClient",
+          "fullName": "google.cloud.aiplatform.v1.ReasoningEngineClient"
+        },
+        "method": {
+          "shortName": "WaitOperation",
+          "fullName": "google.longrunning.Operations.WaitOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1_generated_ScheduleService_CancelOperation_sync",
       "title": "aiplatform CancelOperation Sample",
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",
@@ -21101,7 +24036,7 @@
     {
       "regionTag": "aiplatform_v1_generated_ScheduleService_ResumeSchedule_sync",
       "title": "aiplatform ResumeSchedule Sample",
-      "description": "ResumeSchedule resumes a paused Schedule to start scheduling new runs. Will mark\n[Schedule.state][google.cloud.aiplatform.v1.Schedule.state] to 'ACTIVE'.\nOnly paused Schedule can be resumed.\n\nWhen the Schedule is resumed, new runs will be scheduled starting from the\nnext execution time after the current time based on the time_specification\nin the Schedule. If [Schedule.catchUp][] is set up true, all\nmissed runs will be scheduled for backfill first.",
+      "description": "ResumeSchedule resumes a paused Schedule to start scheduling new runs. Will mark\n[Schedule.state][google.cloud.aiplatform.v1.Schedule.state] to 'ACTIVE'.\nOnly paused Schedule can be resumed.\n\nWhen the Schedule is resumed, new runs will be scheduled starting from the\nnext execution time after the current time based on the time_specification\nin the Schedule. If\n[Schedule.catch_up][google.cloud.aiplatform.v1.Schedule.catch_up] is set up\ntrue, all missed runs will be scheduled for backfill first.",
       "file": "ScheduleClient/ResumeSchedule/main.go",
       "language": "GO",
       "clientMethod": {
@@ -23795,6 +26730,1520 @@
           "service": {
             "shortName": "TensorboardService",
             "fullName": "google.cloud.aiplatform.v1.TensorboardService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_CancelOperation_sync",
+      "title": "aiplatform CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "VertexRagDataClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_CreateRagCorpus_sync",
+      "title": "aiplatform CreateRagCorpus Sample",
+      "description": "CreateRagCorpus creates a RagCorpus.",
+      "file": "VertexRagDataClient/CreateRagCorpus/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateRagCorpus",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.CreateRagCorpus",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.CreateRagCorpusRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateRagCorpusOperation",
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "CreateRagCorpus",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataService.CreateRagCorpus",
+          "service": {
+            "shortName": "VertexRagDataService",
+            "fullName": "google.cloud.aiplatform.v1.VertexRagDataService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_DeleteOperation_sync",
+      "title": "aiplatform DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "VertexRagDataClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_DeleteRagCorpus_sync",
+      "title": "aiplatform DeleteRagCorpus Sample",
+      "description": "DeleteRagCorpus deletes a RagCorpus.",
+      "file": "VertexRagDataClient/DeleteRagCorpus/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteRagCorpus",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.DeleteRagCorpus",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.DeleteRagCorpusRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteRagCorpusOperation",
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "DeleteRagCorpus",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataService.DeleteRagCorpus",
+          "service": {
+            "shortName": "VertexRagDataService",
+            "fullName": "google.cloud.aiplatform.v1.VertexRagDataService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_DeleteRagFile_sync",
+      "title": "aiplatform DeleteRagFile Sample",
+      "description": "DeleteRagFile deletes a RagFile.",
+      "file": "VertexRagDataClient/DeleteRagFile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteRagFile",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.DeleteRagFile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.DeleteRagFileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteRagFileOperation",
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "DeleteRagFile",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataService.DeleteRagFile",
+          "service": {
+            "shortName": "VertexRagDataService",
+            "fullName": "google.cloud.aiplatform.v1.VertexRagDataService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_GetIamPolicy_sync",
+      "title": "aiplatform GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "VertexRagDataClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_GetLocation_sync",
+      "title": "aiplatform GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "VertexRagDataClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_GetOperation_sync",
+      "title": "aiplatform GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "VertexRagDataClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_GetRagCorpus_sync",
+      "title": "aiplatform GetRagCorpus Sample",
+      "description": "GetRagCorpus gets a RagCorpus.",
+      "file": "VertexRagDataClient/GetRagCorpus/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetRagCorpus",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.GetRagCorpus",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.GetRagCorpusRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.RagCorpus",
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "GetRagCorpus",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataService.GetRagCorpus",
+          "service": {
+            "shortName": "VertexRagDataService",
+            "fullName": "google.cloud.aiplatform.v1.VertexRagDataService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_GetRagFile_sync",
+      "title": "aiplatform GetRagFile Sample",
+      "description": "GetRagFile gets a RagFile.",
+      "file": "VertexRagDataClient/GetRagFile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetRagFile",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.GetRagFile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.GetRagFileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.RagFile",
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "GetRagFile",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataService.GetRagFile",
+          "service": {
+            "shortName": "VertexRagDataService",
+            "fullName": "google.cloud.aiplatform.v1.VertexRagDataService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_ImportRagFiles_sync",
+      "title": "aiplatform ImportRagFiles Sample",
+      "description": "ImportRagFiles import files from Google Cloud Storage or Google Drive into a RagCorpus.",
+      "file": "VertexRagDataClient/ImportRagFiles/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ImportRagFiles",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.ImportRagFiles",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.ImportRagFilesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ImportRagFilesOperation",
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "ImportRagFiles",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataService.ImportRagFiles",
+          "service": {
+            "shortName": "VertexRagDataService",
+            "fullName": "google.cloud.aiplatform.v1.VertexRagDataService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_ListLocations_sync",
+      "title": "aiplatform ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "VertexRagDataClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_ListOperations_sync",
+      "title": "aiplatform ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "VertexRagDataClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_ListRagCorpora_sync",
+      "title": "aiplatform ListRagCorpora Sample",
+      "description": "ListRagCorpora lists RagCorpora in a Location.",
+      "file": "VertexRagDataClient/ListRagCorpora/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRagCorpora",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.ListRagCorpora",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.ListRagCorporaRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RagCorpusIterator",
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "ListRagCorpora",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataService.ListRagCorpora",
+          "service": {
+            "shortName": "VertexRagDataService",
+            "fullName": "google.cloud.aiplatform.v1.VertexRagDataService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_ListRagFiles_sync",
+      "title": "aiplatform ListRagFiles Sample",
+      "description": "ListRagFiles lists RagFiles in a RagCorpus.",
+      "file": "VertexRagDataClient/ListRagFiles/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRagFiles",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.ListRagFiles",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.ListRagFilesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RagFileIterator",
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "ListRagFiles",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataService.ListRagFiles",
+          "service": {
+            "shortName": "VertexRagDataService",
+            "fullName": "google.cloud.aiplatform.v1.VertexRagDataService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_SetIamPolicy_sync",
+      "title": "aiplatform SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "VertexRagDataClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_TestIamPermissions_sync",
+      "title": "aiplatform TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "VertexRagDataClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_UpdateRagCorpus_sync",
+      "title": "aiplatform UpdateRagCorpus Sample",
+      "description": "UpdateRagCorpus updates a RagCorpus.",
+      "file": "VertexRagDataClient/UpdateRagCorpus/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateRagCorpus",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.UpdateRagCorpus",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.UpdateRagCorpusRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateRagCorpusOperation",
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "UpdateRagCorpus",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataService.UpdateRagCorpus",
+          "service": {
+            "shortName": "VertexRagDataService",
+            "fullName": "google.cloud.aiplatform.v1.VertexRagDataService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_UploadRagFile_sync",
+      "title": "aiplatform UploadRagFile Sample",
+      "description": "UploadRagFile upload a file into a RagCorpus.",
+      "file": "VertexRagDataClient/UploadRagFile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UploadRagFile",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.UploadRagFile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.UploadRagFileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.UploadRagFileResponse",
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "UploadRagFile",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataService.UploadRagFile",
+          "service": {
+            "shortName": "VertexRagDataService",
+            "fullName": "google.cloud.aiplatform.v1.VertexRagDataService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagDataService_WaitOperation_sync",
+      "title": "aiplatform WaitOperation Sample",
+      "description": "WaitOperation is a utility method from google.longrunning.Operations.",
+      "file": "VertexRagDataClient/WaitOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "WaitOperation",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient.WaitOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.WaitOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "VertexRagDataClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagDataClient"
+        },
+        "method": {
+          "shortName": "WaitOperation",
+          "fullName": "google.longrunning.Operations.WaitOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagService_AugmentPrompt_sync",
+      "title": "aiplatform AugmentPrompt Sample",
+      "description": "AugmentPrompt given an input prompt, it returns augmented prompt from vertex rag store\nto guide LLM towards generating grounded responses.",
+      "file": "VertexRagClient/AugmentPrompt/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AugmentPrompt",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagClient.AugmentPrompt",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.AugmentPromptRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.AugmentPromptResponse",
+        "client": {
+          "shortName": "VertexRagClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagClient"
+        },
+        "method": {
+          "shortName": "AugmentPrompt",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagService.AugmentPrompt",
+          "service": {
+            "shortName": "VertexRagService",
+            "fullName": "google.cloud.aiplatform.v1.VertexRagService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagService_CancelOperation_sync",
+      "title": "aiplatform CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "VertexRagClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "VertexRagClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagService_CorroborateContent_sync",
+      "title": "aiplatform CorroborateContent Sample",
+      "description": "CorroborateContent given an input text, it returns a score that evaluates the factuality of\nthe text. It also extracts and returns claims from the text and provides\nsupporting facts.",
+      "file": "VertexRagClient/CorroborateContent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CorroborateContent",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagClient.CorroborateContent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.CorroborateContentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.CorroborateContentResponse",
+        "client": {
+          "shortName": "VertexRagClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagClient"
+        },
+        "method": {
+          "shortName": "CorroborateContent",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagService.CorroborateContent",
+          "service": {
+            "shortName": "VertexRagService",
+            "fullName": "google.cloud.aiplatform.v1.VertexRagService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagService_DeleteOperation_sync",
+      "title": "aiplatform DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "VertexRagClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "VertexRagClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagService_GetIamPolicy_sync",
+      "title": "aiplatform GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "VertexRagClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "VertexRagClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagService_GetLocation_sync",
+      "title": "aiplatform GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "VertexRagClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "VertexRagClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagService_GetOperation_sync",
+      "title": "aiplatform GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "VertexRagClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "VertexRagClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagService_ListLocations_sync",
+      "title": "aiplatform ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "VertexRagClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "VertexRagClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagService_ListOperations_sync",
+      "title": "aiplatform ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "VertexRagClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "VertexRagClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagService_RetrieveContexts_sync",
+      "title": "aiplatform RetrieveContexts Sample",
+      "description": "RetrieveContexts retrieves relevant contexts for a query.",
+      "file": "VertexRagClient/RetrieveContexts/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RetrieveContexts",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagClient.RetrieveContexts",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.RetrieveContextsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.RetrieveContextsResponse",
+        "client": {
+          "shortName": "VertexRagClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagClient"
+        },
+        "method": {
+          "shortName": "RetrieveContexts",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagService.RetrieveContexts",
+          "service": {
+            "shortName": "VertexRagService",
+            "fullName": "google.cloud.aiplatform.v1.VertexRagService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagService_SetIamPolicy_sync",
+      "title": "aiplatform SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "VertexRagClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "VertexRagClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagService_TestIamPermissions_sync",
+      "title": "aiplatform TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "VertexRagClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "VertexRagClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_VertexRagService_WaitOperation_sync",
+      "title": "aiplatform WaitOperation Sample",
+      "description": "WaitOperation is a utility method from google.longrunning.Operations.",
+      "file": "VertexRagClient/WaitOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "WaitOperation",
+        "fullName": "google.cloud.aiplatform.v1.VertexRagClient.WaitOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.WaitOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "VertexRagClient",
+          "fullName": "google.cloud.aiplatform.v1.VertexRagClient"
+        },
+        "method": {
+          "shortName": "WaitOperation",
+          "fullName": "google.longrunning.Operations.WaitOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },

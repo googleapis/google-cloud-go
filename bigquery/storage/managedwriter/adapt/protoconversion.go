@@ -63,6 +63,7 @@ var bqTypeToFieldTypeMap = map[storagepb.TableFieldSchema_Type]descriptorpb.Fiel
 	storagepb.TableFieldSchema_TIME:       descriptorpb.FieldDescriptorProto_TYPE_INT64,
 	storagepb.TableFieldSchema_TIMESTAMP:  descriptorpb.FieldDescriptorProto_TYPE_INT64,
 	storagepb.TableFieldSchema_RANGE:      descriptorpb.FieldDescriptorProto_TYPE_MESSAGE,
+	storagepb.TableFieldSchema_JSON:       descriptorpb.FieldDescriptorProto_TYPE_STRING,
 }
 
 var allowedRangeTypes = []storagepb.TableFieldSchema_Type{
@@ -107,6 +108,7 @@ var bqTypeToWrapperMap = map[storagepb.TableFieldSchema_Type]string{
 	storagepb.TableFieldSchema_STRING:     ".google.protobuf.StringValue",
 	storagepb.TableFieldSchema_TIME:       ".google.protobuf.Int64Value",
 	storagepb.TableFieldSchema_TIMESTAMP:  ".google.protobuf.Int64Value",
+	storagepb.TableFieldSchema_JSON:       ".google.protobuf.StringValue",
 }
 
 // filename used by well known types proto
@@ -275,10 +277,7 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 					deps = append(deps, foundDesc.ParentFile())
 				}
 				// Construct field descriptor for the message.
-				fdp, err := tableFieldSchemaToFieldDescriptorProto(f, fNumber, string(foundDesc.FullName()), useProto3)
-				if err != nil {
-					return nil, newConversionError(scope, fmt.Errorf("couldn't convert field to FieldDescriptorProto: %w", err))
-				}
+				fdp := tableFieldSchemaToFieldDescriptorProto(f, fNumber, string(foundDesc.FullName()), useProto3)
 				fields = append(fields, fdp)
 			} else {
 				// Wrap the current struct's fields in a TableSchema outer message, and then build the submessage.
@@ -296,10 +295,7 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 				if err != nil {
 					return nil, newConversionError(currentScope, fmt.Errorf("failed to add descriptor to dependency cache: %w", err))
 				}
-				fdp, err := tableFieldSchemaToFieldDescriptorProto(f, fNumber, currentScope, useProto3)
-				if err != nil {
-					return nil, newConversionError(currentScope, fmt.Errorf("couldn't compute field schema : %w", err))
-				}
+				fdp := tableFieldSchemaToFieldDescriptorProto(f, fNumber, currentScope, useProto3)
 				fields = append(fields, fdp)
 			}
 		} else {
@@ -327,10 +323,7 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 					}
 				}
 			}
-			fd, err := tableFieldSchemaToFieldDescriptorProto(f, fNumber, currentScope, useProto3)
-			if err != nil {
-				return nil, newConversionError(currentScope, err)
-			}
+			fd := tableFieldSchemaToFieldDescriptorProto(f, fNumber, currentScope, useProto3)
 			fields = append(fields, fd)
 		}
 	}
@@ -409,7 +402,7 @@ func messageDependsOnFile(msg protoreflect.MessageDescriptor, file protoreflect.
 // For proto2, we propagate the mode->label annotation as expected.
 //
 // Messages are always nullable, and repeated fields are as well.
-func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, idx int32, scope string, useProto3 bool) (*descriptorpb.FieldDescriptorProto, error) {
+func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, idx int32, scope string, useProto3 bool) *descriptorpb.FieldDescriptorProto {
 	name := field.GetName()
 	var fdp *descriptorpb.FieldDescriptorProto
 
@@ -472,7 +465,7 @@ func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, i
 		}
 		proto.SetExtension(fdp.Options, storagepb.E_ColumnName, name)
 	}
-	return fdp, nil
+	return fdp
 }
 
 // nameRequiresAnnotation determines whether a field name requires unicode-annotation.

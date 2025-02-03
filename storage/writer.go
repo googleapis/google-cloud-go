@@ -77,21 +77,41 @@ type Writer struct {
 	// For uploads of larger files, the Writer will attempt to retry if the
 	// request to upload a particular chunk fails with a transient error.
 	// If a single chunk has been attempting to upload for longer than this
-	// deadline and the request fails, it will no longer be retried, and the error
-	// will be returned to the caller. This is only applicable for files which are
-	// large enough to require a multi-chunk resumable upload. The default value
-	// is 32s. Users may want to pick a longer deadline if they are using larger
-	// values for ChunkSize or if they expect to have a slow or unreliable
-	// internet connection.
+	// deadline and the request fails, it will no longer be retried, and the
+	// error will be returned to the caller. This is only applicable for files
+	// which are large enough to require a multi-chunk resumable upload. The
+	// default value is 32s. Users may want to pick a longer deadline if they
+	// are using larger values for ChunkSize or if they expect to have a slow or
+	// unreliable internet connection.
 	//
 	// To set a deadline on the entire upload, use context timeout or
 	// cancellation.
 	ChunkRetryDeadline time.Duration
 
+	// ChunkTransferTimeout sets a per-chunk request timeout for resumable uploads.
+	//
+	// For resumable uploads, the Writer will terminate the request and attempt
+	// a retry if the request to upload a particular chunk stalls for longer than
+	// this duration. Retries may continue until the ChunkRetryDeadline is reached.
+	//
+	// ChunkTransferTimeout is not applicable to uploads made using a gRPC client.
+	//
+	// The default value is no timeout.
+	ChunkTransferTimeout time.Duration
+
 	// ForceEmptyContentType is an optional parameter that is used to disable
 	// auto-detection of Content-Type. By default, if a blank Content-Type
 	// is provided, then gax.DetermineContentType is called to sniff the type.
 	ForceEmptyContentType bool
+
+	// Append is a parameter to indicate whether the writer should use appendable
+	// object semantics for the new object generation. Appendable objects are
+	// visible on the first Write() call, and can be appended to until they are
+	// finalized. The object is finalized on a call to Close().
+	//
+	// Append is only supported for gRPC. This feature is in preview and is not
+	// yet available for general use.
+	Append bool
 
 	// ProgressFunc can be used to monitor the progress of a large write
 	// operation. If ProgressFunc is not nil and writing requires multiple
@@ -182,17 +202,19 @@ func (w *Writer) openWriter() (err error) {
 		return fmt.Errorf("storage: generation not supported on Writer, got %v", w.o.gen)
 	}
 
-	isIdempotent := w.o.conds != nil && (w.o.conds.GenerationMatch >= 0 || w.o.conds.DoesNotExist == true)
+	isIdempotent := w.o.conds != nil && (w.o.conds.GenerationMatch >= 0 || w.o.conds.DoesNotExist)
 	opts := makeStorageOpts(isIdempotent, w.o.retry, w.o.userProject)
 	params := &openWriterParams{
 		ctx:                   w.ctx,
 		chunkSize:             w.ChunkSize,
 		chunkRetryDeadline:    w.ChunkRetryDeadline,
+		chunkTransferTimeout:  w.ChunkTransferTimeout,
 		bucket:                w.o.bucket,
 		attrs:                 &w.ObjectAttrs,
 		conds:                 w.o.conds,
 		encryptionKey:         w.o.encryptionKey,
 		sendCRC32C:            w.SendCRC32C,
+		append:                w.Append,
 		donec:                 w.donec,
 		setError:              w.error,
 		progress:              w.progress,

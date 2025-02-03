@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	csspb "cloud.google.com/go/shopping/css/apiv1/csspb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -42,6 +41,7 @@ var newCssProductInputsClientHook clientHook
 // CssProductInputsCallOptions contains the retry settings for each method of CssProductInputsClient.
 type CssProductInputsCallOptions struct {
 	InsertCssProductInput []gax.CallOption
+	UpdateCssProductInput []gax.CallOption
 	DeleteCssProductInput []gax.CallOption
 }
 
@@ -54,6 +54,7 @@ func defaultCssProductInputsGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://css.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -62,6 +63,9 @@ func defaultCssProductInputsGRPCClientOptions() []option.ClientOption {
 func defaultCssProductInputsCallOptions() *CssProductInputsCallOptions {
 	return &CssProductInputsCallOptions{
 		InsertCssProductInput: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateCssProductInput: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		DeleteCssProductInput: []gax.CallOption{
@@ -73,6 +77,9 @@ func defaultCssProductInputsCallOptions() *CssProductInputsCallOptions {
 func defaultCssProductInputsRESTCallOptions() *CssProductInputsCallOptions {
 	return &CssProductInputsCallOptions{
 		InsertCssProductInput: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateCssProductInput: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		DeleteCssProductInput: []gax.CallOption{
@@ -87,6 +94,7 @@ type internalCssProductInputsClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	InsertCssProductInput(context.Context, *csspb.InsertCssProductInputRequest, ...gax.CallOption) (*csspb.CssProductInput, error)
+	UpdateCssProductInput(context.Context, *csspb.UpdateCssProductInputRequest, ...gax.CallOption) (*csspb.CssProductInput, error)
 	DeleteCssProductInput(context.Context, *csspb.DeleteCssProductInputRequest, ...gax.CallOption) error
 }
 
@@ -136,6 +144,14 @@ func (c *CssProductInputsClient) InsertCssProductInput(ctx context.Context, req 
 	return c.internalClient.InsertCssProductInput(ctx, req, opts...)
 }
 
+// UpdateCssProductInput updates the existing Css Product input in your CSS Center account.
+//
+// After inserting, updating, or deleting a CSS Product input, it may take
+// several minutes before the processed Css Product can be retrieved.
+func (c *CssProductInputsClient) UpdateCssProductInput(ctx context.Context, req *csspb.UpdateCssProductInputRequest, opts ...gax.CallOption) (*csspb.CssProductInput, error) {
+	return c.internalClient.UpdateCssProductInput(ctx, req, opts...)
+}
+
 // DeleteCssProductInput deletes a CSS Product input from your CSS Center account.
 //
 // After a delete it may take several minutes until the input is no longer
@@ -159,6 +175,8 @@ type cssProductInputsGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewCssProductInputsClient creates a new css product inputs service client based on gRPC.
@@ -186,6 +204,7 @@ func NewCssProductInputsClient(ctx context.Context, opts ...option.ClientOption)
 		connPool:               connPool,
 		cssProductInputsClient: csspb.NewCssProductInputsServiceClient(connPool),
 		CallOptions:            &client.CallOptions,
+		logger:                 internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -208,7 +227,9 @@ func (c *cssProductInputsGRPCClient) Connection() *grpc.ClientConn {
 func (c *cssProductInputsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -230,6 +251,8 @@ type cssProductInputsRESTClient struct {
 
 	// Points back to the CallOptions field of the containing CssProductInputsClient
 	CallOptions **CssProductInputsCallOptions
+
+	logger *slog.Logger
 }
 
 // NewCssProductInputsRESTClient creates a new css product inputs service rest client.
@@ -248,6 +271,7 @@ func NewCssProductInputsRESTClient(ctx context.Context, opts ...option.ClientOpt
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -262,6 +286,7 @@ func defaultCssProductInputsRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://css.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -271,7 +296,9 @@ func defaultCssProductInputsRESTClientOptions() []option.ClientOption {
 func (c *cssProductInputsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -297,7 +324,25 @@ func (c *cssProductInputsGRPCClient) InsertCssProductInput(ctx context.Context, 
 	var resp *csspb.CssProductInput
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cssProductInputsClient.InsertCssProductInput(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cssProductInputsClient.InsertCssProductInput, req, settings.GRPC, c.logger, "InsertCssProductInput")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *cssProductInputsGRPCClient) UpdateCssProductInput(ctx context.Context, req *csspb.UpdateCssProductInputRequest, opts ...gax.CallOption) (*csspb.CssProductInput, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "css_product_input.name", url.QueryEscape(req.GetCssProductInput().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateCssProductInput[0:len((*c.CallOptions).UpdateCssProductInput):len((*c.CallOptions).UpdateCssProductInput)], opts...)
+	var resp *csspb.CssProductInput
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.cssProductInputsClient.UpdateCssProductInput, req, settings.GRPC, c.logger, "UpdateCssProductInput")
 		return err
 	}, opts...)
 	if err != nil {
@@ -314,7 +359,7 @@ func (c *cssProductInputsGRPCClient) DeleteCssProductInput(ctx context.Context, 
 	opts = append((*c.CallOptions).DeleteCssProductInput[0:len((*c.CallOptions).DeleteCssProductInput):len((*c.CallOptions).DeleteCssProductInput)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.cssProductInputsClient.DeleteCssProductInput(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.cssProductInputsClient.DeleteCssProductInput, req, settings.GRPC, c.logger, "DeleteCssProductInput")
 		return err
 	}, opts...)
 	return err
@@ -342,7 +387,9 @@ func (c *cssProductInputsRESTClient) InsertCssProductInput(ctx context.Context, 
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
-	params.Add("feedId", fmt.Sprintf("%v", req.GetFeedId()))
+	if req.GetFeedId() != 0 {
+		params.Add("feedId", fmt.Sprintf("%v", req.GetFeedId()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -366,17 +413,74 @@ func (c *cssProductInputsRESTClient) InsertCssProductInput(ctx context.Context, 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "InsertCssProductInput")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
 
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
+		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
 
-		buf, err := io.ReadAll(httpRsp.Body)
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateCssProductInput updates the existing Css Product input in your CSS Center account.
+//
+// After inserting, updating, or deleting a CSS Product input, it may take
+// several minutes before the processed Css Product can be retrieved.
+func (c *cssProductInputsRESTClient) UpdateCssProductInput(ctx context.Context, req *csspb.UpdateCssProductInputRequest, opts ...gax.CallOption) (*csspb.CssProductInput, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetCssProductInput()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetCssProductInput().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "css_product_input.name", url.QueryEscape(req.GetCssProductInput().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateCssProductInput[0:len((*c.CallOptions).UpdateCssProductInput):len((*c.CallOptions).UpdateCssProductInput)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &csspb.CssProductInput{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateCssProductInput")
 		if err != nil {
 			return err
 		}
@@ -429,14 +533,7 @@ func (c *cssProductInputsRESTClient) DeleteCssProductInput(ctx context.Context, 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteCssProductInput")
+		return err
 	}, opts...)
 }

@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -47,48 +46,83 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	CreateConversation       []gax.CallOption
-	UploadConversation       []gax.CallOption
-	UpdateConversation       []gax.CallOption
-	GetConversation          []gax.CallOption
-	ListConversations        []gax.CallOption
-	DeleteConversation       []gax.CallOption
-	CreateAnalysis           []gax.CallOption
-	GetAnalysis              []gax.CallOption
-	ListAnalyses             []gax.CallOption
-	DeleteAnalysis           []gax.CallOption
-	BulkAnalyzeConversations []gax.CallOption
-	BulkDeleteConversations  []gax.CallOption
-	IngestConversations      []gax.CallOption
-	ExportInsightsData       []gax.CallOption
-	CreateIssueModel         []gax.CallOption
-	UpdateIssueModel         []gax.CallOption
-	GetIssueModel            []gax.CallOption
-	ListIssueModels          []gax.CallOption
-	DeleteIssueModel         []gax.CallOption
-	DeployIssueModel         []gax.CallOption
-	UndeployIssueModel       []gax.CallOption
-	GetIssue                 []gax.CallOption
-	ListIssues               []gax.CallOption
-	UpdateIssue              []gax.CallOption
-	DeleteIssue              []gax.CallOption
-	CalculateIssueModelStats []gax.CallOption
-	CreatePhraseMatcher      []gax.CallOption
-	GetPhraseMatcher         []gax.CallOption
-	ListPhraseMatchers       []gax.CallOption
-	DeletePhraseMatcher      []gax.CallOption
-	UpdatePhraseMatcher      []gax.CallOption
-	CalculateStats           []gax.CallOption
-	GetSettings              []gax.CallOption
-	UpdateSettings           []gax.CallOption
-	CreateView               []gax.CallOption
-	GetView                  []gax.CallOption
-	ListViews                []gax.CallOption
-	UpdateView               []gax.CallOption
-	DeleteView               []gax.CallOption
-	CancelOperation          []gax.CallOption
-	GetOperation             []gax.CallOption
-	ListOperations           []gax.CallOption
+	CreateConversation          []gax.CallOption
+	UploadConversation          []gax.CallOption
+	UpdateConversation          []gax.CallOption
+	GetConversation             []gax.CallOption
+	ListConversations           []gax.CallOption
+	DeleteConversation          []gax.CallOption
+	CreateAnalysis              []gax.CallOption
+	GetAnalysis                 []gax.CallOption
+	ListAnalyses                []gax.CallOption
+	DeleteAnalysis              []gax.CallOption
+	BulkAnalyzeConversations    []gax.CallOption
+	BulkDeleteConversations     []gax.CallOption
+	IngestConversations         []gax.CallOption
+	ExportInsightsData          []gax.CallOption
+	CreateIssueModel            []gax.CallOption
+	UpdateIssueModel            []gax.CallOption
+	GetIssueModel               []gax.CallOption
+	ListIssueModels             []gax.CallOption
+	DeleteIssueModel            []gax.CallOption
+	DeployIssueModel            []gax.CallOption
+	UndeployIssueModel          []gax.CallOption
+	ExportIssueModel            []gax.CallOption
+	ImportIssueModel            []gax.CallOption
+	GetIssue                    []gax.CallOption
+	ListIssues                  []gax.CallOption
+	UpdateIssue                 []gax.CallOption
+	DeleteIssue                 []gax.CallOption
+	CalculateIssueModelStats    []gax.CallOption
+	CreatePhraseMatcher         []gax.CallOption
+	GetPhraseMatcher            []gax.CallOption
+	ListPhraseMatchers          []gax.CallOption
+	DeletePhraseMatcher         []gax.CallOption
+	UpdatePhraseMatcher         []gax.CallOption
+	CalculateStats              []gax.CallOption
+	GetSettings                 []gax.CallOption
+	UpdateSettings              []gax.CallOption
+	CreateAnalysisRule          []gax.CallOption
+	GetAnalysisRule             []gax.CallOption
+	ListAnalysisRules           []gax.CallOption
+	UpdateAnalysisRule          []gax.CallOption
+	DeleteAnalysisRule          []gax.CallOption
+	GetEncryptionSpec           []gax.CallOption
+	InitializeEncryptionSpec    []gax.CallOption
+	CreateView                  []gax.CallOption
+	GetView                     []gax.CallOption
+	ListViews                   []gax.CallOption
+	UpdateView                  []gax.CallOption
+	DeleteView                  []gax.CallOption
+	QueryMetrics                []gax.CallOption
+	CreateQaQuestion            []gax.CallOption
+	GetQaQuestion               []gax.CallOption
+	UpdateQaQuestion            []gax.CallOption
+	DeleteQaQuestion            []gax.CallOption
+	ListQaQuestions             []gax.CallOption
+	CreateQaScorecard           []gax.CallOption
+	GetQaScorecard              []gax.CallOption
+	UpdateQaScorecard           []gax.CallOption
+	DeleteQaScorecard           []gax.CallOption
+	ListQaScorecards            []gax.CallOption
+	CreateQaScorecardRevision   []gax.CallOption
+	GetQaScorecardRevision      []gax.CallOption
+	TuneQaScorecardRevision     []gax.CallOption
+	DeployQaScorecardRevision   []gax.CallOption
+	UndeployQaScorecardRevision []gax.CallOption
+	DeleteQaScorecardRevision   []gax.CallOption
+	ListQaScorecardRevisions    []gax.CallOption
+	CreateFeedbackLabel         []gax.CallOption
+	ListFeedbackLabels          []gax.CallOption
+	GetFeedbackLabel            []gax.CallOption
+	UpdateFeedbackLabel         []gax.CallOption
+	DeleteFeedbackLabel         []gax.CallOption
+	ListAllFeedbackLabels       []gax.CallOption
+	BulkUploadFeedbackLabels    []gax.CallOption
+	BulkDownloadFeedbackLabels  []gax.CallOption
+	CancelOperation             []gax.CallOption
+	GetOperation                []gax.CallOption
+	ListOperations              []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -100,6 +134,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://contactcenterinsights.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -359,6 +394,30 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		ExportIssueModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ImportIssueModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GetIssue: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -515,6 +574,90 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		CreateAnalysisRule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetAnalysisRule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListAnalysisRules: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateAnalysisRule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteAnalysisRule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetEncryptionSpec: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		InitializeEncryptionSpec: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		CreateView: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -564,6 +707,318 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		DeleteView: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		QueryMetrics: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateQaQuestion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetQaQuestion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateQaQuestion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteQaQuestion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListQaQuestions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateQaScorecard: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetQaScorecard: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateQaScorecard: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteQaScorecard: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListQaScorecards: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateQaScorecardRevision: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetQaScorecardRevision: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		TuneQaScorecardRevision: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeployQaScorecardRevision: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UndeployQaScorecardRevision: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteQaScorecardRevision: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListQaScorecardRevisions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateFeedbackLabel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListFeedbackLabels: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetFeedbackLabel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateFeedbackLabel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteFeedbackLabel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListAllFeedbackLabels: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		BulkUploadFeedbackLabels: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		BulkDownloadFeedbackLabels: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -847,6 +1302,28 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		ExportIssueModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ImportIssueModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetIssue: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -990,6 +1467,83 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		CreateAnalysisRule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetAnalysisRule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListAnalysisRules: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		UpdateAnalysisRule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		DeleteAnalysisRule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetEncryptionSpec: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		InitializeEncryptionSpec: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		CreateView: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -1035,6 +1589,292 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		DeleteView: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		QueryMetrics: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		CreateQaQuestion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetQaQuestion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		UpdateQaQuestion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		DeleteQaQuestion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListQaQuestions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		CreateQaScorecard: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetQaScorecard: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		UpdateQaScorecard: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		DeleteQaScorecard: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListQaScorecards: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		CreateQaScorecardRevision: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetQaScorecardRevision: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		TuneQaScorecardRevision: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		DeployQaScorecardRevision: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		UndeployQaScorecardRevision: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		DeleteQaScorecardRevision: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListQaScorecardRevisions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		CreateFeedbackLabel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListFeedbackLabels: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetFeedbackLabel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		UpdateFeedbackLabel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		DeleteFeedbackLabel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListAllFeedbackLabels: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		BulkUploadFeedbackLabels: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		BulkDownloadFeedbackLabels: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -1117,6 +1957,10 @@ type internalClient interface {
 	DeployIssueModelOperation(name string) *DeployIssueModelOperation
 	UndeployIssueModel(context.Context, *contactcenterinsightspb.UndeployIssueModelRequest, ...gax.CallOption) (*UndeployIssueModelOperation, error)
 	UndeployIssueModelOperation(name string) *UndeployIssueModelOperation
+	ExportIssueModel(context.Context, *contactcenterinsightspb.ExportIssueModelRequest, ...gax.CallOption) (*ExportIssueModelOperation, error)
+	ExportIssueModelOperation(name string) *ExportIssueModelOperation
+	ImportIssueModel(context.Context, *contactcenterinsightspb.ImportIssueModelRequest, ...gax.CallOption) (*ImportIssueModelOperation, error)
+	ImportIssueModelOperation(name string) *ImportIssueModelOperation
 	GetIssue(context.Context, *contactcenterinsightspb.GetIssueRequest, ...gax.CallOption) (*contactcenterinsightspb.Issue, error)
 	ListIssues(context.Context, *contactcenterinsightspb.ListIssuesRequest, ...gax.CallOption) (*contactcenterinsightspb.ListIssuesResponse, error)
 	UpdateIssue(context.Context, *contactcenterinsightspb.UpdateIssueRequest, ...gax.CallOption) (*contactcenterinsightspb.Issue, error)
@@ -1130,11 +1974,49 @@ type internalClient interface {
 	CalculateStats(context.Context, *contactcenterinsightspb.CalculateStatsRequest, ...gax.CallOption) (*contactcenterinsightspb.CalculateStatsResponse, error)
 	GetSettings(context.Context, *contactcenterinsightspb.GetSettingsRequest, ...gax.CallOption) (*contactcenterinsightspb.Settings, error)
 	UpdateSettings(context.Context, *contactcenterinsightspb.UpdateSettingsRequest, ...gax.CallOption) (*contactcenterinsightspb.Settings, error)
+	CreateAnalysisRule(context.Context, *contactcenterinsightspb.CreateAnalysisRuleRequest, ...gax.CallOption) (*contactcenterinsightspb.AnalysisRule, error)
+	GetAnalysisRule(context.Context, *contactcenterinsightspb.GetAnalysisRuleRequest, ...gax.CallOption) (*contactcenterinsightspb.AnalysisRule, error)
+	ListAnalysisRules(context.Context, *contactcenterinsightspb.ListAnalysisRulesRequest, ...gax.CallOption) *AnalysisRuleIterator
+	UpdateAnalysisRule(context.Context, *contactcenterinsightspb.UpdateAnalysisRuleRequest, ...gax.CallOption) (*contactcenterinsightspb.AnalysisRule, error)
+	DeleteAnalysisRule(context.Context, *contactcenterinsightspb.DeleteAnalysisRuleRequest, ...gax.CallOption) error
+	GetEncryptionSpec(context.Context, *contactcenterinsightspb.GetEncryptionSpecRequest, ...gax.CallOption) (*contactcenterinsightspb.EncryptionSpec, error)
+	InitializeEncryptionSpec(context.Context, *contactcenterinsightspb.InitializeEncryptionSpecRequest, ...gax.CallOption) (*InitializeEncryptionSpecOperation, error)
+	InitializeEncryptionSpecOperation(name string) *InitializeEncryptionSpecOperation
 	CreateView(context.Context, *contactcenterinsightspb.CreateViewRequest, ...gax.CallOption) (*contactcenterinsightspb.View, error)
 	GetView(context.Context, *contactcenterinsightspb.GetViewRequest, ...gax.CallOption) (*contactcenterinsightspb.View, error)
 	ListViews(context.Context, *contactcenterinsightspb.ListViewsRequest, ...gax.CallOption) *ViewIterator
 	UpdateView(context.Context, *contactcenterinsightspb.UpdateViewRequest, ...gax.CallOption) (*contactcenterinsightspb.View, error)
 	DeleteView(context.Context, *contactcenterinsightspb.DeleteViewRequest, ...gax.CallOption) error
+	QueryMetrics(context.Context, *contactcenterinsightspb.QueryMetricsRequest, ...gax.CallOption) (*QueryMetricsOperation, error)
+	QueryMetricsOperation(name string) *QueryMetricsOperation
+	CreateQaQuestion(context.Context, *contactcenterinsightspb.CreateQaQuestionRequest, ...gax.CallOption) (*contactcenterinsightspb.QaQuestion, error)
+	GetQaQuestion(context.Context, *contactcenterinsightspb.GetQaQuestionRequest, ...gax.CallOption) (*contactcenterinsightspb.QaQuestion, error)
+	UpdateQaQuestion(context.Context, *contactcenterinsightspb.UpdateQaQuestionRequest, ...gax.CallOption) (*contactcenterinsightspb.QaQuestion, error)
+	DeleteQaQuestion(context.Context, *contactcenterinsightspb.DeleteQaQuestionRequest, ...gax.CallOption) error
+	ListQaQuestions(context.Context, *contactcenterinsightspb.ListQaQuestionsRequest, ...gax.CallOption) *QaQuestionIterator
+	CreateQaScorecard(context.Context, *contactcenterinsightspb.CreateQaScorecardRequest, ...gax.CallOption) (*contactcenterinsightspb.QaScorecard, error)
+	GetQaScorecard(context.Context, *contactcenterinsightspb.GetQaScorecardRequest, ...gax.CallOption) (*contactcenterinsightspb.QaScorecard, error)
+	UpdateQaScorecard(context.Context, *contactcenterinsightspb.UpdateQaScorecardRequest, ...gax.CallOption) (*contactcenterinsightspb.QaScorecard, error)
+	DeleteQaScorecard(context.Context, *contactcenterinsightspb.DeleteQaScorecardRequest, ...gax.CallOption) error
+	ListQaScorecards(context.Context, *contactcenterinsightspb.ListQaScorecardsRequest, ...gax.CallOption) *QaScorecardIterator
+	CreateQaScorecardRevision(context.Context, *contactcenterinsightspb.CreateQaScorecardRevisionRequest, ...gax.CallOption) (*contactcenterinsightspb.QaScorecardRevision, error)
+	GetQaScorecardRevision(context.Context, *contactcenterinsightspb.GetQaScorecardRevisionRequest, ...gax.CallOption) (*contactcenterinsightspb.QaScorecardRevision, error)
+	TuneQaScorecardRevision(context.Context, *contactcenterinsightspb.TuneQaScorecardRevisionRequest, ...gax.CallOption) (*TuneQaScorecardRevisionOperation, error)
+	TuneQaScorecardRevisionOperation(name string) *TuneQaScorecardRevisionOperation
+	DeployQaScorecardRevision(context.Context, *contactcenterinsightspb.DeployQaScorecardRevisionRequest, ...gax.CallOption) (*contactcenterinsightspb.QaScorecardRevision, error)
+	UndeployQaScorecardRevision(context.Context, *contactcenterinsightspb.UndeployQaScorecardRevisionRequest, ...gax.CallOption) (*contactcenterinsightspb.QaScorecardRevision, error)
+	DeleteQaScorecardRevision(context.Context, *contactcenterinsightspb.DeleteQaScorecardRevisionRequest, ...gax.CallOption) error
+	ListQaScorecardRevisions(context.Context, *contactcenterinsightspb.ListQaScorecardRevisionsRequest, ...gax.CallOption) *QaScorecardRevisionIterator
+	CreateFeedbackLabel(context.Context, *contactcenterinsightspb.CreateFeedbackLabelRequest, ...gax.CallOption) (*contactcenterinsightspb.FeedbackLabel, error)
+	ListFeedbackLabels(context.Context, *contactcenterinsightspb.ListFeedbackLabelsRequest, ...gax.CallOption) *FeedbackLabelIterator
+	GetFeedbackLabel(context.Context, *contactcenterinsightspb.GetFeedbackLabelRequest, ...gax.CallOption) (*contactcenterinsightspb.FeedbackLabel, error)
+	UpdateFeedbackLabel(context.Context, *contactcenterinsightspb.UpdateFeedbackLabelRequest, ...gax.CallOption) (*contactcenterinsightspb.FeedbackLabel, error)
+	DeleteFeedbackLabel(context.Context, *contactcenterinsightspb.DeleteFeedbackLabelRequest, ...gax.CallOption) error
+	ListAllFeedbackLabels(context.Context, *contactcenterinsightspb.ListAllFeedbackLabelsRequest, ...gax.CallOption) *FeedbackLabelIterator
+	BulkUploadFeedbackLabels(context.Context, *contactcenterinsightspb.BulkUploadFeedbackLabelsRequest, ...gax.CallOption) (*BulkUploadFeedbackLabelsOperation, error)
+	BulkUploadFeedbackLabelsOperation(name string) *BulkUploadFeedbackLabelsOperation
+	BulkDownloadFeedbackLabels(context.Context, *contactcenterinsightspb.BulkDownloadFeedbackLabelsRequest, ...gax.CallOption) (*BulkDownloadFeedbackLabelsOperation, error)
+	BulkDownloadFeedbackLabelsOperation(name string) *BulkDownloadFeedbackLabelsOperation
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
@@ -1181,11 +2063,13 @@ func (c *Client) Connection() *grpc.ClientConn {
 }
 
 // CreateConversation creates a conversation.
+// Note that this method does not support audio transcription or redaction.
+// Use conversations.upload instead.
 func (c *Client) CreateConversation(ctx context.Context, req *contactcenterinsightspb.CreateConversationRequest, opts ...gax.CallOption) (*contactcenterinsightspb.Conversation, error) {
 	return c.internalClient.CreateConversation(ctx, req, opts...)
 }
 
-// UploadConversation create a longrunning conversation upload operation. This method differs
+// UploadConversation create a long-running conversation upload operation. This method differs
 // from CreateConversation by allowing audio transcription and optional DLP
 // redaction.
 func (c *Client) UploadConversation(ctx context.Context, req *contactcenterinsightspb.UploadConversationRequest, opts ...gax.CallOption) (*UploadConversationOperation, error) {
@@ -1351,6 +2235,28 @@ func (c *Client) UndeployIssueModelOperation(name string) *UndeployIssueModelOpe
 	return c.internalClient.UndeployIssueModelOperation(name)
 }
 
+// ExportIssueModel exports an issue model to the provided destination.
+func (c *Client) ExportIssueModel(ctx context.Context, req *contactcenterinsightspb.ExportIssueModelRequest, opts ...gax.CallOption) (*ExportIssueModelOperation, error) {
+	return c.internalClient.ExportIssueModel(ctx, req, opts...)
+}
+
+// ExportIssueModelOperation returns a new ExportIssueModelOperation from a given name.
+// The name must be that of a previously created ExportIssueModelOperation, possibly from a different process.
+func (c *Client) ExportIssueModelOperation(name string) *ExportIssueModelOperation {
+	return c.internalClient.ExportIssueModelOperation(name)
+}
+
+// ImportIssueModel imports an issue model from a Cloud Storage bucket.
+func (c *Client) ImportIssueModel(ctx context.Context, req *contactcenterinsightspb.ImportIssueModelRequest, opts ...gax.CallOption) (*ImportIssueModelOperation, error) {
+	return c.internalClient.ImportIssueModel(ctx, req, opts...)
+}
+
+// ImportIssueModelOperation returns a new ImportIssueModelOperation from a given name.
+// The name must be that of a previously created ImportIssueModelOperation, possibly from a different process.
+func (c *Client) ImportIssueModelOperation(name string) *ImportIssueModelOperation {
+	return c.internalClient.ImportIssueModelOperation(name)
+}
+
 // GetIssue gets an issue.
 func (c *Client) GetIssue(ctx context.Context, req *contactcenterinsightspb.GetIssueRequest, opts ...gax.CallOption) (*contactcenterinsightspb.Issue, error) {
 	return c.internalClient.GetIssue(ctx, req, opts...)
@@ -1416,6 +2322,51 @@ func (c *Client) UpdateSettings(ctx context.Context, req *contactcenterinsightsp
 	return c.internalClient.UpdateSettings(ctx, req, opts...)
 }
 
+// CreateAnalysisRule creates a analysis rule.
+func (c *Client) CreateAnalysisRule(ctx context.Context, req *contactcenterinsightspb.CreateAnalysisRuleRequest, opts ...gax.CallOption) (*contactcenterinsightspb.AnalysisRule, error) {
+	return c.internalClient.CreateAnalysisRule(ctx, req, opts...)
+}
+
+// GetAnalysisRule get a analysis rule.
+func (c *Client) GetAnalysisRule(ctx context.Context, req *contactcenterinsightspb.GetAnalysisRuleRequest, opts ...gax.CallOption) (*contactcenterinsightspb.AnalysisRule, error) {
+	return c.internalClient.GetAnalysisRule(ctx, req, opts...)
+}
+
+// ListAnalysisRules lists analysis rules.
+func (c *Client) ListAnalysisRules(ctx context.Context, req *contactcenterinsightspb.ListAnalysisRulesRequest, opts ...gax.CallOption) *AnalysisRuleIterator {
+	return c.internalClient.ListAnalysisRules(ctx, req, opts...)
+}
+
+// UpdateAnalysisRule updates a analysis rule.
+func (c *Client) UpdateAnalysisRule(ctx context.Context, req *contactcenterinsightspb.UpdateAnalysisRuleRequest, opts ...gax.CallOption) (*contactcenterinsightspb.AnalysisRule, error) {
+	return c.internalClient.UpdateAnalysisRule(ctx, req, opts...)
+}
+
+// DeleteAnalysisRule deletes a analysis rule.
+func (c *Client) DeleteAnalysisRule(ctx context.Context, req *contactcenterinsightspb.DeleteAnalysisRuleRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteAnalysisRule(ctx, req, opts...)
+}
+
+// GetEncryptionSpec gets location-level encryption key specification.
+func (c *Client) GetEncryptionSpec(ctx context.Context, req *contactcenterinsightspb.GetEncryptionSpecRequest, opts ...gax.CallOption) (*contactcenterinsightspb.EncryptionSpec, error) {
+	return c.internalClient.GetEncryptionSpec(ctx, req, opts...)
+}
+
+// InitializeEncryptionSpec initializes a location-level encryption key specification. An error will
+// result if the location has resources already created before the
+// initialization. After the encryption specification is initialized at a
+// location, it is immutable and all newly created resources under the
+// location will be encrypted with the existing specification.
+func (c *Client) InitializeEncryptionSpec(ctx context.Context, req *contactcenterinsightspb.InitializeEncryptionSpecRequest, opts ...gax.CallOption) (*InitializeEncryptionSpecOperation, error) {
+	return c.internalClient.InitializeEncryptionSpec(ctx, req, opts...)
+}
+
+// InitializeEncryptionSpecOperation returns a new InitializeEncryptionSpecOperation from a given name.
+// The name must be that of a previously created InitializeEncryptionSpecOperation, possibly from a different process.
+func (c *Client) InitializeEncryptionSpecOperation(name string) *InitializeEncryptionSpecOperation {
+	return c.internalClient.InitializeEncryptionSpecOperation(name)
+}
+
 // CreateView creates a view.
 func (c *Client) CreateView(ctx context.Context, req *contactcenterinsightspb.CreateViewRequest, opts ...gax.CallOption) (*contactcenterinsightspb.View, error) {
 	return c.internalClient.CreateView(ctx, req, opts...)
@@ -1439,6 +2390,160 @@ func (c *Client) UpdateView(ctx context.Context, req *contactcenterinsightspb.Up
 // DeleteView deletes a view.
 func (c *Client) DeleteView(ctx context.Context, req *contactcenterinsightspb.DeleteViewRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteView(ctx, req, opts...)
+}
+
+// QueryMetrics query metrics.
+func (c *Client) QueryMetrics(ctx context.Context, req *contactcenterinsightspb.QueryMetricsRequest, opts ...gax.CallOption) (*QueryMetricsOperation, error) {
+	return c.internalClient.QueryMetrics(ctx, req, opts...)
+}
+
+// QueryMetricsOperation returns a new QueryMetricsOperation from a given name.
+// The name must be that of a previously created QueryMetricsOperation, possibly from a different process.
+func (c *Client) QueryMetricsOperation(name string) *QueryMetricsOperation {
+	return c.internalClient.QueryMetricsOperation(name)
+}
+
+// CreateQaQuestion create a QaQuestion.
+func (c *Client) CreateQaQuestion(ctx context.Context, req *contactcenterinsightspb.CreateQaQuestionRequest, opts ...gax.CallOption) (*contactcenterinsightspb.QaQuestion, error) {
+	return c.internalClient.CreateQaQuestion(ctx, req, opts...)
+}
+
+// GetQaQuestion gets a QaQuestion.
+func (c *Client) GetQaQuestion(ctx context.Context, req *contactcenterinsightspb.GetQaQuestionRequest, opts ...gax.CallOption) (*contactcenterinsightspb.QaQuestion, error) {
+	return c.internalClient.GetQaQuestion(ctx, req, opts...)
+}
+
+// UpdateQaQuestion updates a QaQuestion.
+func (c *Client) UpdateQaQuestion(ctx context.Context, req *contactcenterinsightspb.UpdateQaQuestionRequest, opts ...gax.CallOption) (*contactcenterinsightspb.QaQuestion, error) {
+	return c.internalClient.UpdateQaQuestion(ctx, req, opts...)
+}
+
+// DeleteQaQuestion deletes a QaQuestion.
+func (c *Client) DeleteQaQuestion(ctx context.Context, req *contactcenterinsightspb.DeleteQaQuestionRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteQaQuestion(ctx, req, opts...)
+}
+
+// ListQaQuestions lists QaQuestions.
+func (c *Client) ListQaQuestions(ctx context.Context, req *contactcenterinsightspb.ListQaQuestionsRequest, opts ...gax.CallOption) *QaQuestionIterator {
+	return c.internalClient.ListQaQuestions(ctx, req, opts...)
+}
+
+// CreateQaScorecard create a QaScorecard.
+func (c *Client) CreateQaScorecard(ctx context.Context, req *contactcenterinsightspb.CreateQaScorecardRequest, opts ...gax.CallOption) (*contactcenterinsightspb.QaScorecard, error) {
+	return c.internalClient.CreateQaScorecard(ctx, req, opts...)
+}
+
+// GetQaScorecard gets a QaScorecard.
+func (c *Client) GetQaScorecard(ctx context.Context, req *contactcenterinsightspb.GetQaScorecardRequest, opts ...gax.CallOption) (*contactcenterinsightspb.QaScorecard, error) {
+	return c.internalClient.GetQaScorecard(ctx, req, opts...)
+}
+
+// UpdateQaScorecard updates a QaScorecard.
+func (c *Client) UpdateQaScorecard(ctx context.Context, req *contactcenterinsightspb.UpdateQaScorecardRequest, opts ...gax.CallOption) (*contactcenterinsightspb.QaScorecard, error) {
+	return c.internalClient.UpdateQaScorecard(ctx, req, opts...)
+}
+
+// DeleteQaScorecard deletes a QaScorecard.
+func (c *Client) DeleteQaScorecard(ctx context.Context, req *contactcenterinsightspb.DeleteQaScorecardRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteQaScorecard(ctx, req, opts...)
+}
+
+// ListQaScorecards lists QaScorecards.
+func (c *Client) ListQaScorecards(ctx context.Context, req *contactcenterinsightspb.ListQaScorecardsRequest, opts ...gax.CallOption) *QaScorecardIterator {
+	return c.internalClient.ListQaScorecards(ctx, req, opts...)
+}
+
+// CreateQaScorecardRevision creates a QaScorecardRevision.
+func (c *Client) CreateQaScorecardRevision(ctx context.Context, req *contactcenterinsightspb.CreateQaScorecardRevisionRequest, opts ...gax.CallOption) (*contactcenterinsightspb.QaScorecardRevision, error) {
+	return c.internalClient.CreateQaScorecardRevision(ctx, req, opts...)
+}
+
+// GetQaScorecardRevision gets a QaScorecardRevision.
+func (c *Client) GetQaScorecardRevision(ctx context.Context, req *contactcenterinsightspb.GetQaScorecardRevisionRequest, opts ...gax.CallOption) (*contactcenterinsightspb.QaScorecardRevision, error) {
+	return c.internalClient.GetQaScorecardRevision(ctx, req, opts...)
+}
+
+// TuneQaScorecardRevision fine tune one or more QaModels.
+func (c *Client) TuneQaScorecardRevision(ctx context.Context, req *contactcenterinsightspb.TuneQaScorecardRevisionRequest, opts ...gax.CallOption) (*TuneQaScorecardRevisionOperation, error) {
+	return c.internalClient.TuneQaScorecardRevision(ctx, req, opts...)
+}
+
+// TuneQaScorecardRevisionOperation returns a new TuneQaScorecardRevisionOperation from a given name.
+// The name must be that of a previously created TuneQaScorecardRevisionOperation, possibly from a different process.
+func (c *Client) TuneQaScorecardRevisionOperation(name string) *TuneQaScorecardRevisionOperation {
+	return c.internalClient.TuneQaScorecardRevisionOperation(name)
+}
+
+// DeployQaScorecardRevision deploy a QaScorecardRevision.
+func (c *Client) DeployQaScorecardRevision(ctx context.Context, req *contactcenterinsightspb.DeployQaScorecardRevisionRequest, opts ...gax.CallOption) (*contactcenterinsightspb.QaScorecardRevision, error) {
+	return c.internalClient.DeployQaScorecardRevision(ctx, req, opts...)
+}
+
+// UndeployQaScorecardRevision undeploy a QaScorecardRevision.
+func (c *Client) UndeployQaScorecardRevision(ctx context.Context, req *contactcenterinsightspb.UndeployQaScorecardRevisionRequest, opts ...gax.CallOption) (*contactcenterinsightspb.QaScorecardRevision, error) {
+	return c.internalClient.UndeployQaScorecardRevision(ctx, req, opts...)
+}
+
+// DeleteQaScorecardRevision deletes a QaScorecardRevision.
+func (c *Client) DeleteQaScorecardRevision(ctx context.Context, req *contactcenterinsightspb.DeleteQaScorecardRevisionRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteQaScorecardRevision(ctx, req, opts...)
+}
+
+// ListQaScorecardRevisions lists all revisions under the parent QaScorecard.
+func (c *Client) ListQaScorecardRevisions(ctx context.Context, req *contactcenterinsightspb.ListQaScorecardRevisionsRequest, opts ...gax.CallOption) *QaScorecardRevisionIterator {
+	return c.internalClient.ListQaScorecardRevisions(ctx, req, opts...)
+}
+
+// CreateFeedbackLabel create feedback label.
+func (c *Client) CreateFeedbackLabel(ctx context.Context, req *contactcenterinsightspb.CreateFeedbackLabelRequest, opts ...gax.CallOption) (*contactcenterinsightspb.FeedbackLabel, error) {
+	return c.internalClient.CreateFeedbackLabel(ctx, req, opts...)
+}
+
+// ListFeedbackLabels list feedback labels.
+func (c *Client) ListFeedbackLabels(ctx context.Context, req *contactcenterinsightspb.ListFeedbackLabelsRequest, opts ...gax.CallOption) *FeedbackLabelIterator {
+	return c.internalClient.ListFeedbackLabels(ctx, req, opts...)
+}
+
+// GetFeedbackLabel get feedback label.
+func (c *Client) GetFeedbackLabel(ctx context.Context, req *contactcenterinsightspb.GetFeedbackLabelRequest, opts ...gax.CallOption) (*contactcenterinsightspb.FeedbackLabel, error) {
+	return c.internalClient.GetFeedbackLabel(ctx, req, opts...)
+}
+
+// UpdateFeedbackLabel update feedback label.
+func (c *Client) UpdateFeedbackLabel(ctx context.Context, req *contactcenterinsightspb.UpdateFeedbackLabelRequest, opts ...gax.CallOption) (*contactcenterinsightspb.FeedbackLabel, error) {
+	return c.internalClient.UpdateFeedbackLabel(ctx, req, opts...)
+}
+
+// DeleteFeedbackLabel delete feedback label.
+func (c *Client) DeleteFeedbackLabel(ctx context.Context, req *contactcenterinsightspb.DeleteFeedbackLabelRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteFeedbackLabel(ctx, req, opts...)
+}
+
+// ListAllFeedbackLabels list all feedback labels by project number.
+func (c *Client) ListAllFeedbackLabels(ctx context.Context, req *contactcenterinsightspb.ListAllFeedbackLabelsRequest, opts ...gax.CallOption) *FeedbackLabelIterator {
+	return c.internalClient.ListAllFeedbackLabels(ctx, req, opts...)
+}
+
+// BulkUploadFeedbackLabels upload feedback labels in bulk.
+func (c *Client) BulkUploadFeedbackLabels(ctx context.Context, req *contactcenterinsightspb.BulkUploadFeedbackLabelsRequest, opts ...gax.CallOption) (*BulkUploadFeedbackLabelsOperation, error) {
+	return c.internalClient.BulkUploadFeedbackLabels(ctx, req, opts...)
+}
+
+// BulkUploadFeedbackLabelsOperation returns a new BulkUploadFeedbackLabelsOperation from a given name.
+// The name must be that of a previously created BulkUploadFeedbackLabelsOperation, possibly from a different process.
+func (c *Client) BulkUploadFeedbackLabelsOperation(name string) *BulkUploadFeedbackLabelsOperation {
+	return c.internalClient.BulkUploadFeedbackLabelsOperation(name)
+}
+
+// BulkDownloadFeedbackLabels download feedback labels in bulk.
+func (c *Client) BulkDownloadFeedbackLabels(ctx context.Context, req *contactcenterinsightspb.BulkDownloadFeedbackLabelsRequest, opts ...gax.CallOption) (*BulkDownloadFeedbackLabelsOperation, error) {
+	return c.internalClient.BulkDownloadFeedbackLabels(ctx, req, opts...)
+}
+
+// BulkDownloadFeedbackLabelsOperation returns a new BulkDownloadFeedbackLabelsOperation from a given name.
+// The name must be that of a previously created BulkDownloadFeedbackLabelsOperation, possibly from a different process.
+func (c *Client) BulkDownloadFeedbackLabelsOperation(name string) *BulkDownloadFeedbackLabelsOperation {
+	return c.internalClient.BulkDownloadFeedbackLabelsOperation(name)
 }
 
 // CancelOperation is a utility method from google.longrunning.Operations.
@@ -1478,6 +2583,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new contact center insights client based on gRPC.
@@ -1504,6 +2611,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:         connPool,
 		client:           contactcenterinsightspb.NewContactCenterInsightsClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -1538,7 +2646,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1565,6 +2675,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new contact center insights rest client.
@@ -1582,6 +2694,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -1606,6 +2719,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://contactcenterinsights.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -1615,7 +2729,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1641,7 +2757,7 @@ func (c *gRPCClient) CreateConversation(ctx context.Context, req *contactcenteri
 	var resp *contactcenterinsightspb.Conversation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateConversation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateConversation, req, settings.GRPC, c.logger, "CreateConversation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1659,7 +2775,7 @@ func (c *gRPCClient) UploadConversation(ctx context.Context, req *contactcenteri
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UploadConversation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UploadConversation, req, settings.GRPC, c.logger, "UploadConversation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1679,7 +2795,7 @@ func (c *gRPCClient) UpdateConversation(ctx context.Context, req *contactcenteri
 	var resp *contactcenterinsightspb.Conversation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateConversation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateConversation, req, settings.GRPC, c.logger, "UpdateConversation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1697,7 +2813,7 @@ func (c *gRPCClient) GetConversation(ctx context.Context, req *contactcenterinsi
 	var resp *contactcenterinsightspb.Conversation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetConversation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetConversation, req, settings.GRPC, c.logger, "GetConversation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1726,7 +2842,7 @@ func (c *gRPCClient) ListConversations(ctx context.Context, req *contactcenterin
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListConversations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListConversations, req, settings.GRPC, c.logger, "ListConversations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1760,7 +2876,7 @@ func (c *gRPCClient) DeleteConversation(ctx context.Context, req *contactcenteri
 	opts = append((*c.CallOptions).DeleteConversation[0:len((*c.CallOptions).DeleteConversation):len((*c.CallOptions).DeleteConversation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteConversation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteConversation, req, settings.GRPC, c.logger, "DeleteConversation")
 		return err
 	}, opts...)
 	return err
@@ -1775,7 +2891,7 @@ func (c *gRPCClient) CreateAnalysis(ctx context.Context, req *contactcenterinsig
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateAnalysis(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateAnalysis, req, settings.GRPC, c.logger, "CreateAnalysis")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1795,7 +2911,7 @@ func (c *gRPCClient) GetAnalysis(ctx context.Context, req *contactcenterinsights
 	var resp *contactcenterinsightspb.Analysis
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetAnalysis(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetAnalysis, req, settings.GRPC, c.logger, "GetAnalysis")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1824,7 +2940,7 @@ func (c *gRPCClient) ListAnalyses(ctx context.Context, req *contactcenterinsight
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListAnalyses(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListAnalyses, req, settings.GRPC, c.logger, "ListAnalyses")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1858,7 +2974,7 @@ func (c *gRPCClient) DeleteAnalysis(ctx context.Context, req *contactcenterinsig
 	opts = append((*c.CallOptions).DeleteAnalysis[0:len((*c.CallOptions).DeleteAnalysis):len((*c.CallOptions).DeleteAnalysis)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteAnalysis(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteAnalysis, req, settings.GRPC, c.logger, "DeleteAnalysis")
 		return err
 	}, opts...)
 	return err
@@ -1873,7 +2989,7 @@ func (c *gRPCClient) BulkAnalyzeConversations(ctx context.Context, req *contactc
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.BulkAnalyzeConversations(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.BulkAnalyzeConversations, req, settings.GRPC, c.logger, "BulkAnalyzeConversations")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1893,7 +3009,7 @@ func (c *gRPCClient) BulkDeleteConversations(ctx context.Context, req *contactce
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.BulkDeleteConversations(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.BulkDeleteConversations, req, settings.GRPC, c.logger, "BulkDeleteConversations")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1913,7 +3029,7 @@ func (c *gRPCClient) IngestConversations(ctx context.Context, req *contactcenter
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.IngestConversations(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.IngestConversations, req, settings.GRPC, c.logger, "IngestConversations")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1933,7 +3049,7 @@ func (c *gRPCClient) ExportInsightsData(ctx context.Context, req *contactcenteri
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ExportInsightsData(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ExportInsightsData, req, settings.GRPC, c.logger, "ExportInsightsData")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1953,7 +3069,7 @@ func (c *gRPCClient) CreateIssueModel(ctx context.Context, req *contactcenterins
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateIssueModel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateIssueModel, req, settings.GRPC, c.logger, "CreateIssueModel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1973,7 +3089,7 @@ func (c *gRPCClient) UpdateIssueModel(ctx context.Context, req *contactcenterins
 	var resp *contactcenterinsightspb.IssueModel
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateIssueModel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateIssueModel, req, settings.GRPC, c.logger, "UpdateIssueModel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1991,7 +3107,7 @@ func (c *gRPCClient) GetIssueModel(ctx context.Context, req *contactcenterinsigh
 	var resp *contactcenterinsightspb.IssueModel
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetIssueModel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetIssueModel, req, settings.GRPC, c.logger, "GetIssueModel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2009,7 +3125,7 @@ func (c *gRPCClient) ListIssueModels(ctx context.Context, req *contactcenterinsi
 	var resp *contactcenterinsightspb.ListIssueModelsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ListIssueModels(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ListIssueModels, req, settings.GRPC, c.logger, "ListIssueModels")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2027,7 +3143,7 @@ func (c *gRPCClient) DeleteIssueModel(ctx context.Context, req *contactcenterins
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteIssueModel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteIssueModel, req, settings.GRPC, c.logger, "DeleteIssueModel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2047,7 +3163,7 @@ func (c *gRPCClient) DeployIssueModel(ctx context.Context, req *contactcenterins
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeployIssueModel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeployIssueModel, req, settings.GRPC, c.logger, "DeployIssueModel")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2067,13 +3183,53 @@ func (c *gRPCClient) UndeployIssueModel(ctx context.Context, req *contactcenteri
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UndeployIssueModel(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UndeployIssueModel, req, settings.GRPC, c.logger, "UndeployIssueModel")
 		return err
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return &UndeployIssueModelOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ExportIssueModel(ctx context.Context, req *contactcenterinsightspb.ExportIssueModelRequest, opts ...gax.CallOption) (*ExportIssueModelOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ExportIssueModel[0:len((*c.CallOptions).ExportIssueModel):len((*c.CallOptions).ExportIssueModel)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.ExportIssueModel, req, settings.GRPC, c.logger, "ExportIssueModel")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ExportIssueModelOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ImportIssueModel(ctx context.Context, req *contactcenterinsightspb.ImportIssueModelRequest, opts ...gax.CallOption) (*ImportIssueModelOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ImportIssueModel[0:len((*c.CallOptions).ImportIssueModel):len((*c.CallOptions).ImportIssueModel)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.ImportIssueModel, req, settings.GRPC, c.logger, "ImportIssueModel")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ImportIssueModelOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -2087,7 +3243,7 @@ func (c *gRPCClient) GetIssue(ctx context.Context, req *contactcenterinsightspb.
 	var resp *contactcenterinsightspb.Issue
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetIssue(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetIssue, req, settings.GRPC, c.logger, "GetIssue")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2105,7 +3261,7 @@ func (c *gRPCClient) ListIssues(ctx context.Context, req *contactcenterinsightsp
 	var resp *contactcenterinsightspb.ListIssuesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ListIssues(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ListIssues, req, settings.GRPC, c.logger, "ListIssues")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2123,7 +3279,7 @@ func (c *gRPCClient) UpdateIssue(ctx context.Context, req *contactcenterinsights
 	var resp *contactcenterinsightspb.Issue
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateIssue(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateIssue, req, settings.GRPC, c.logger, "UpdateIssue")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2140,7 +3296,7 @@ func (c *gRPCClient) DeleteIssue(ctx context.Context, req *contactcenterinsights
 	opts = append((*c.CallOptions).DeleteIssue[0:len((*c.CallOptions).DeleteIssue):len((*c.CallOptions).DeleteIssue)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteIssue(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteIssue, req, settings.GRPC, c.logger, "DeleteIssue")
 		return err
 	}, opts...)
 	return err
@@ -2155,7 +3311,7 @@ func (c *gRPCClient) CalculateIssueModelStats(ctx context.Context, req *contactc
 	var resp *contactcenterinsightspb.CalculateIssueModelStatsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CalculateIssueModelStats(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CalculateIssueModelStats, req, settings.GRPC, c.logger, "CalculateIssueModelStats")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2173,7 +3329,7 @@ func (c *gRPCClient) CreatePhraseMatcher(ctx context.Context, req *contactcenter
 	var resp *contactcenterinsightspb.PhraseMatcher
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreatePhraseMatcher(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreatePhraseMatcher, req, settings.GRPC, c.logger, "CreatePhraseMatcher")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2191,7 +3347,7 @@ func (c *gRPCClient) GetPhraseMatcher(ctx context.Context, req *contactcenterins
 	var resp *contactcenterinsightspb.PhraseMatcher
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetPhraseMatcher(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetPhraseMatcher, req, settings.GRPC, c.logger, "GetPhraseMatcher")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2220,7 +3376,7 @@ func (c *gRPCClient) ListPhraseMatchers(ctx context.Context, req *contactcenteri
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListPhraseMatchers(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListPhraseMatchers, req, settings.GRPC, c.logger, "ListPhraseMatchers")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2254,7 +3410,7 @@ func (c *gRPCClient) DeletePhraseMatcher(ctx context.Context, req *contactcenter
 	opts = append((*c.CallOptions).DeletePhraseMatcher[0:len((*c.CallOptions).DeletePhraseMatcher):len((*c.CallOptions).DeletePhraseMatcher)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeletePhraseMatcher(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeletePhraseMatcher, req, settings.GRPC, c.logger, "DeletePhraseMatcher")
 		return err
 	}, opts...)
 	return err
@@ -2269,7 +3425,7 @@ func (c *gRPCClient) UpdatePhraseMatcher(ctx context.Context, req *contactcenter
 	var resp *contactcenterinsightspb.PhraseMatcher
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdatePhraseMatcher(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdatePhraseMatcher, req, settings.GRPC, c.logger, "UpdatePhraseMatcher")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2287,7 +3443,7 @@ func (c *gRPCClient) CalculateStats(ctx context.Context, req *contactcenterinsig
 	var resp *contactcenterinsightspb.CalculateStatsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CalculateStats(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CalculateStats, req, settings.GRPC, c.logger, "CalculateStats")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2305,7 +3461,7 @@ func (c *gRPCClient) GetSettings(ctx context.Context, req *contactcenterinsights
 	var resp *contactcenterinsightspb.Settings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetSettings, req, settings.GRPC, c.logger, "GetSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2323,13 +3479,165 @@ func (c *gRPCClient) UpdateSettings(ctx context.Context, req *contactcenterinsig
 	var resp *contactcenterinsightspb.Settings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateSettings, req, settings.GRPC, c.logger, "UpdateSettings")
 		return err
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *gRPCClient) CreateAnalysisRule(ctx context.Context, req *contactcenterinsightspb.CreateAnalysisRuleRequest, opts ...gax.CallOption) (*contactcenterinsightspb.AnalysisRule, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateAnalysisRule[0:len((*c.CallOptions).CreateAnalysisRule):len((*c.CallOptions).CreateAnalysisRule)], opts...)
+	var resp *contactcenterinsightspb.AnalysisRule
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateAnalysisRule, req, settings.GRPC, c.logger, "CreateAnalysisRule")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) GetAnalysisRule(ctx context.Context, req *contactcenterinsightspb.GetAnalysisRuleRequest, opts ...gax.CallOption) (*contactcenterinsightspb.AnalysisRule, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetAnalysisRule[0:len((*c.CallOptions).GetAnalysisRule):len((*c.CallOptions).GetAnalysisRule)], opts...)
+	var resp *contactcenterinsightspb.AnalysisRule
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetAnalysisRule, req, settings.GRPC, c.logger, "GetAnalysisRule")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListAnalysisRules(ctx context.Context, req *contactcenterinsightspb.ListAnalysisRulesRequest, opts ...gax.CallOption) *AnalysisRuleIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListAnalysisRules[0:len((*c.CallOptions).ListAnalysisRules):len((*c.CallOptions).ListAnalysisRules)], opts...)
+	it := &AnalysisRuleIterator{}
+	req = proto.Clone(req).(*contactcenterinsightspb.ListAnalysisRulesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.AnalysisRule, string, error) {
+		resp := &contactcenterinsightspb.ListAnalysisRulesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListAnalysisRules, req, settings.GRPC, c.logger, "ListAnalysisRules")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetAnalysisRules(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) UpdateAnalysisRule(ctx context.Context, req *contactcenterinsightspb.UpdateAnalysisRuleRequest, opts ...gax.CallOption) (*contactcenterinsightspb.AnalysisRule, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "analysis_rule.name", url.QueryEscape(req.GetAnalysisRule().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateAnalysisRule[0:len((*c.CallOptions).UpdateAnalysisRule):len((*c.CallOptions).UpdateAnalysisRule)], opts...)
+	var resp *contactcenterinsightspb.AnalysisRule
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateAnalysisRule, req, settings.GRPC, c.logger, "UpdateAnalysisRule")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) DeleteAnalysisRule(ctx context.Context, req *contactcenterinsightspb.DeleteAnalysisRuleRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteAnalysisRule[0:len((*c.CallOptions).DeleteAnalysisRule):len((*c.CallOptions).DeleteAnalysisRule)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.client.DeleteAnalysisRule, req, settings.GRPC, c.logger, "DeleteAnalysisRule")
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) GetEncryptionSpec(ctx context.Context, req *contactcenterinsightspb.GetEncryptionSpecRequest, opts ...gax.CallOption) (*contactcenterinsightspb.EncryptionSpec, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetEncryptionSpec[0:len((*c.CallOptions).GetEncryptionSpec):len((*c.CallOptions).GetEncryptionSpec)], opts...)
+	var resp *contactcenterinsightspb.EncryptionSpec
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetEncryptionSpec, req, settings.GRPC, c.logger, "GetEncryptionSpec")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) InitializeEncryptionSpec(ctx context.Context, req *contactcenterinsightspb.InitializeEncryptionSpecRequest, opts ...gax.CallOption) (*InitializeEncryptionSpecOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "encryption_spec.name", url.QueryEscape(req.GetEncryptionSpec().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).InitializeEncryptionSpec[0:len((*c.CallOptions).InitializeEncryptionSpec):len((*c.CallOptions).InitializeEncryptionSpec)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.InitializeEncryptionSpec, req, settings.GRPC, c.logger, "InitializeEncryptionSpec")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &InitializeEncryptionSpecOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *gRPCClient) CreateView(ctx context.Context, req *contactcenterinsightspb.CreateViewRequest, opts ...gax.CallOption) (*contactcenterinsightspb.View, error) {
@@ -2341,7 +3649,7 @@ func (c *gRPCClient) CreateView(ctx context.Context, req *contactcenterinsightsp
 	var resp *contactcenterinsightspb.View
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateView(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateView, req, settings.GRPC, c.logger, "CreateView")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2359,7 +3667,7 @@ func (c *gRPCClient) GetView(ctx context.Context, req *contactcenterinsightspb.G
 	var resp *contactcenterinsightspb.View
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetView(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetView, req, settings.GRPC, c.logger, "GetView")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2388,7 +3696,7 @@ func (c *gRPCClient) ListViews(ctx context.Context, req *contactcenterinsightspb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListViews(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListViews, req, settings.GRPC, c.logger, "ListViews")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2423,7 +3731,7 @@ func (c *gRPCClient) UpdateView(ctx context.Context, req *contactcenterinsightsp
 	var resp *contactcenterinsightspb.View
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateView(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateView, req, settings.GRPC, c.logger, "UpdateView")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2440,10 +3748,610 @@ func (c *gRPCClient) DeleteView(ctx context.Context, req *contactcenterinsightsp
 	opts = append((*c.CallOptions).DeleteView[0:len((*c.CallOptions).DeleteView):len((*c.CallOptions).DeleteView)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteView(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteView, req, settings.GRPC, c.logger, "DeleteView")
 		return err
 	}, opts...)
 	return err
+}
+
+func (c *gRPCClient) QueryMetrics(ctx context.Context, req *contactcenterinsightspb.QueryMetricsRequest, opts ...gax.CallOption) (*QueryMetricsOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).QueryMetrics[0:len((*c.CallOptions).QueryMetrics):len((*c.CallOptions).QueryMetrics)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.QueryMetrics, req, settings.GRPC, c.logger, "QueryMetrics")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &QueryMetricsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) CreateQaQuestion(ctx context.Context, req *contactcenterinsightspb.CreateQaQuestionRequest, opts ...gax.CallOption) (*contactcenterinsightspb.QaQuestion, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateQaQuestion[0:len((*c.CallOptions).CreateQaQuestion):len((*c.CallOptions).CreateQaQuestion)], opts...)
+	var resp *contactcenterinsightspb.QaQuestion
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateQaQuestion, req, settings.GRPC, c.logger, "CreateQaQuestion")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) GetQaQuestion(ctx context.Context, req *contactcenterinsightspb.GetQaQuestionRequest, opts ...gax.CallOption) (*contactcenterinsightspb.QaQuestion, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetQaQuestion[0:len((*c.CallOptions).GetQaQuestion):len((*c.CallOptions).GetQaQuestion)], opts...)
+	var resp *contactcenterinsightspb.QaQuestion
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetQaQuestion, req, settings.GRPC, c.logger, "GetQaQuestion")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UpdateQaQuestion(ctx context.Context, req *contactcenterinsightspb.UpdateQaQuestionRequest, opts ...gax.CallOption) (*contactcenterinsightspb.QaQuestion, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "qa_question.name", url.QueryEscape(req.GetQaQuestion().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateQaQuestion[0:len((*c.CallOptions).UpdateQaQuestion):len((*c.CallOptions).UpdateQaQuestion)], opts...)
+	var resp *contactcenterinsightspb.QaQuestion
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateQaQuestion, req, settings.GRPC, c.logger, "UpdateQaQuestion")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) DeleteQaQuestion(ctx context.Context, req *contactcenterinsightspb.DeleteQaQuestionRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteQaQuestion[0:len((*c.CallOptions).DeleteQaQuestion):len((*c.CallOptions).DeleteQaQuestion)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.client.DeleteQaQuestion, req, settings.GRPC, c.logger, "DeleteQaQuestion")
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) ListQaQuestions(ctx context.Context, req *contactcenterinsightspb.ListQaQuestionsRequest, opts ...gax.CallOption) *QaQuestionIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListQaQuestions[0:len((*c.CallOptions).ListQaQuestions):len((*c.CallOptions).ListQaQuestions)], opts...)
+	it := &QaQuestionIterator{}
+	req = proto.Clone(req).(*contactcenterinsightspb.ListQaQuestionsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.QaQuestion, string, error) {
+		resp := &contactcenterinsightspb.ListQaQuestionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListQaQuestions, req, settings.GRPC, c.logger, "ListQaQuestions")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetQaQuestions(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) CreateQaScorecard(ctx context.Context, req *contactcenterinsightspb.CreateQaScorecardRequest, opts ...gax.CallOption) (*contactcenterinsightspb.QaScorecard, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateQaScorecard[0:len((*c.CallOptions).CreateQaScorecard):len((*c.CallOptions).CreateQaScorecard)], opts...)
+	var resp *contactcenterinsightspb.QaScorecard
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateQaScorecard, req, settings.GRPC, c.logger, "CreateQaScorecard")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) GetQaScorecard(ctx context.Context, req *contactcenterinsightspb.GetQaScorecardRequest, opts ...gax.CallOption) (*contactcenterinsightspb.QaScorecard, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetQaScorecard[0:len((*c.CallOptions).GetQaScorecard):len((*c.CallOptions).GetQaScorecard)], opts...)
+	var resp *contactcenterinsightspb.QaScorecard
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetQaScorecard, req, settings.GRPC, c.logger, "GetQaScorecard")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UpdateQaScorecard(ctx context.Context, req *contactcenterinsightspb.UpdateQaScorecardRequest, opts ...gax.CallOption) (*contactcenterinsightspb.QaScorecard, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "qa_scorecard.name", url.QueryEscape(req.GetQaScorecard().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateQaScorecard[0:len((*c.CallOptions).UpdateQaScorecard):len((*c.CallOptions).UpdateQaScorecard)], opts...)
+	var resp *contactcenterinsightspb.QaScorecard
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateQaScorecard, req, settings.GRPC, c.logger, "UpdateQaScorecard")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) DeleteQaScorecard(ctx context.Context, req *contactcenterinsightspb.DeleteQaScorecardRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteQaScorecard[0:len((*c.CallOptions).DeleteQaScorecard):len((*c.CallOptions).DeleteQaScorecard)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.client.DeleteQaScorecard, req, settings.GRPC, c.logger, "DeleteQaScorecard")
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) ListQaScorecards(ctx context.Context, req *contactcenterinsightspb.ListQaScorecardsRequest, opts ...gax.CallOption) *QaScorecardIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListQaScorecards[0:len((*c.CallOptions).ListQaScorecards):len((*c.CallOptions).ListQaScorecards)], opts...)
+	it := &QaScorecardIterator{}
+	req = proto.Clone(req).(*contactcenterinsightspb.ListQaScorecardsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.QaScorecard, string, error) {
+		resp := &contactcenterinsightspb.ListQaScorecardsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListQaScorecards, req, settings.GRPC, c.logger, "ListQaScorecards")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetQaScorecards(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) CreateQaScorecardRevision(ctx context.Context, req *contactcenterinsightspb.CreateQaScorecardRevisionRequest, opts ...gax.CallOption) (*contactcenterinsightspb.QaScorecardRevision, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateQaScorecardRevision[0:len((*c.CallOptions).CreateQaScorecardRevision):len((*c.CallOptions).CreateQaScorecardRevision)], opts...)
+	var resp *contactcenterinsightspb.QaScorecardRevision
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateQaScorecardRevision, req, settings.GRPC, c.logger, "CreateQaScorecardRevision")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) GetQaScorecardRevision(ctx context.Context, req *contactcenterinsightspb.GetQaScorecardRevisionRequest, opts ...gax.CallOption) (*contactcenterinsightspb.QaScorecardRevision, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetQaScorecardRevision[0:len((*c.CallOptions).GetQaScorecardRevision):len((*c.CallOptions).GetQaScorecardRevision)], opts...)
+	var resp *contactcenterinsightspb.QaScorecardRevision
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetQaScorecardRevision, req, settings.GRPC, c.logger, "GetQaScorecardRevision")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) TuneQaScorecardRevision(ctx context.Context, req *contactcenterinsightspb.TuneQaScorecardRevisionRequest, opts ...gax.CallOption) (*TuneQaScorecardRevisionOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).TuneQaScorecardRevision[0:len((*c.CallOptions).TuneQaScorecardRevision):len((*c.CallOptions).TuneQaScorecardRevision)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.TuneQaScorecardRevision, req, settings.GRPC, c.logger, "TuneQaScorecardRevision")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &TuneQaScorecardRevisionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeployQaScorecardRevision(ctx context.Context, req *contactcenterinsightspb.DeployQaScorecardRevisionRequest, opts ...gax.CallOption) (*contactcenterinsightspb.QaScorecardRevision, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeployQaScorecardRevision[0:len((*c.CallOptions).DeployQaScorecardRevision):len((*c.CallOptions).DeployQaScorecardRevision)], opts...)
+	var resp *contactcenterinsightspb.QaScorecardRevision
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeployQaScorecardRevision, req, settings.GRPC, c.logger, "DeployQaScorecardRevision")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UndeployQaScorecardRevision(ctx context.Context, req *contactcenterinsightspb.UndeployQaScorecardRevisionRequest, opts ...gax.CallOption) (*contactcenterinsightspb.QaScorecardRevision, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UndeployQaScorecardRevision[0:len((*c.CallOptions).UndeployQaScorecardRevision):len((*c.CallOptions).UndeployQaScorecardRevision)], opts...)
+	var resp *contactcenterinsightspb.QaScorecardRevision
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UndeployQaScorecardRevision, req, settings.GRPC, c.logger, "UndeployQaScorecardRevision")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) DeleteQaScorecardRevision(ctx context.Context, req *contactcenterinsightspb.DeleteQaScorecardRevisionRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteQaScorecardRevision[0:len((*c.CallOptions).DeleteQaScorecardRevision):len((*c.CallOptions).DeleteQaScorecardRevision)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.client.DeleteQaScorecardRevision, req, settings.GRPC, c.logger, "DeleteQaScorecardRevision")
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) ListQaScorecardRevisions(ctx context.Context, req *contactcenterinsightspb.ListQaScorecardRevisionsRequest, opts ...gax.CallOption) *QaScorecardRevisionIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListQaScorecardRevisions[0:len((*c.CallOptions).ListQaScorecardRevisions):len((*c.CallOptions).ListQaScorecardRevisions)], opts...)
+	it := &QaScorecardRevisionIterator{}
+	req = proto.Clone(req).(*contactcenterinsightspb.ListQaScorecardRevisionsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.QaScorecardRevision, string, error) {
+		resp := &contactcenterinsightspb.ListQaScorecardRevisionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListQaScorecardRevisions, req, settings.GRPC, c.logger, "ListQaScorecardRevisions")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetQaScorecardRevisions(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) CreateFeedbackLabel(ctx context.Context, req *contactcenterinsightspb.CreateFeedbackLabelRequest, opts ...gax.CallOption) (*contactcenterinsightspb.FeedbackLabel, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateFeedbackLabel[0:len((*c.CallOptions).CreateFeedbackLabel):len((*c.CallOptions).CreateFeedbackLabel)], opts...)
+	var resp *contactcenterinsightspb.FeedbackLabel
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateFeedbackLabel, req, settings.GRPC, c.logger, "CreateFeedbackLabel")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListFeedbackLabels(ctx context.Context, req *contactcenterinsightspb.ListFeedbackLabelsRequest, opts ...gax.CallOption) *FeedbackLabelIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListFeedbackLabels[0:len((*c.CallOptions).ListFeedbackLabels):len((*c.CallOptions).ListFeedbackLabels)], opts...)
+	it := &FeedbackLabelIterator{}
+	req = proto.Clone(req).(*contactcenterinsightspb.ListFeedbackLabelsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.FeedbackLabel, string, error) {
+		resp := &contactcenterinsightspb.ListFeedbackLabelsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListFeedbackLabels, req, settings.GRPC, c.logger, "ListFeedbackLabels")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetFeedbackLabels(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetFeedbackLabel(ctx context.Context, req *contactcenterinsightspb.GetFeedbackLabelRequest, opts ...gax.CallOption) (*contactcenterinsightspb.FeedbackLabel, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetFeedbackLabel[0:len((*c.CallOptions).GetFeedbackLabel):len((*c.CallOptions).GetFeedbackLabel)], opts...)
+	var resp *contactcenterinsightspb.FeedbackLabel
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetFeedbackLabel, req, settings.GRPC, c.logger, "GetFeedbackLabel")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UpdateFeedbackLabel(ctx context.Context, req *contactcenterinsightspb.UpdateFeedbackLabelRequest, opts ...gax.CallOption) (*contactcenterinsightspb.FeedbackLabel, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "feedback_label.name", url.QueryEscape(req.GetFeedbackLabel().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateFeedbackLabel[0:len((*c.CallOptions).UpdateFeedbackLabel):len((*c.CallOptions).UpdateFeedbackLabel)], opts...)
+	var resp *contactcenterinsightspb.FeedbackLabel
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateFeedbackLabel, req, settings.GRPC, c.logger, "UpdateFeedbackLabel")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) DeleteFeedbackLabel(ctx context.Context, req *contactcenterinsightspb.DeleteFeedbackLabelRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteFeedbackLabel[0:len((*c.CallOptions).DeleteFeedbackLabel):len((*c.CallOptions).DeleteFeedbackLabel)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.client.DeleteFeedbackLabel, req, settings.GRPC, c.logger, "DeleteFeedbackLabel")
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) ListAllFeedbackLabels(ctx context.Context, req *contactcenterinsightspb.ListAllFeedbackLabelsRequest, opts ...gax.CallOption) *FeedbackLabelIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListAllFeedbackLabels[0:len((*c.CallOptions).ListAllFeedbackLabels):len((*c.CallOptions).ListAllFeedbackLabels)], opts...)
+	it := &FeedbackLabelIterator{}
+	req = proto.Clone(req).(*contactcenterinsightspb.ListAllFeedbackLabelsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.FeedbackLabel, string, error) {
+		resp := &contactcenterinsightspb.ListAllFeedbackLabelsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListAllFeedbackLabels, req, settings.GRPC, c.logger, "ListAllFeedbackLabels")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetFeedbackLabels(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) BulkUploadFeedbackLabels(ctx context.Context, req *contactcenterinsightspb.BulkUploadFeedbackLabelsRequest, opts ...gax.CallOption) (*BulkUploadFeedbackLabelsOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).BulkUploadFeedbackLabels[0:len((*c.CallOptions).BulkUploadFeedbackLabels):len((*c.CallOptions).BulkUploadFeedbackLabels)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.BulkUploadFeedbackLabels, req, settings.GRPC, c.logger, "BulkUploadFeedbackLabels")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &BulkUploadFeedbackLabelsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) BulkDownloadFeedbackLabels(ctx context.Context, req *contactcenterinsightspb.BulkDownloadFeedbackLabelsRequest, opts ...gax.CallOption) (*BulkDownloadFeedbackLabelsOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).BulkDownloadFeedbackLabels[0:len((*c.CallOptions).BulkDownloadFeedbackLabels):len((*c.CallOptions).BulkDownloadFeedbackLabels)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.BulkDownloadFeedbackLabels, req, settings.GRPC, c.logger, "BulkDownloadFeedbackLabels")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &BulkDownloadFeedbackLabelsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
@@ -2454,7 +4362,7 @@ func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -2469,7 +4377,7 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2498,7 +4406,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2525,6 +4433,8 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 }
 
 // CreateConversation creates a conversation.
+// Note that this method does not support audio transcription or redaction.
+// Use conversations.upload instead.
 func (c *restClient) CreateConversation(ctx context.Context, req *contactcenterinsightspb.CreateConversationRequest, opts ...gax.CallOption) (*contactcenterinsightspb.Conversation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetConversation()
@@ -2567,17 +4477,7 @@ func (c *restClient) CreateConversation(ctx context.Context, req *contactcenteri
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateConversation")
 		if err != nil {
 			return err
 		}
@@ -2594,7 +4494,7 @@ func (c *restClient) CreateConversation(ctx context.Context, req *contactcenteri
 	return resp, nil
 }
 
-// UploadConversation create a longrunning conversation upload operation. This method differs
+// UploadConversation create a long-running conversation upload operation. This method differs
 // from CreateConversation by allowing audio transcription and optional DLP
 // redaction.
 func (c *restClient) UploadConversation(ctx context.Context, req *contactcenterinsightspb.UploadConversationRequest, opts ...gax.CallOption) (*UploadConversationOperation, error) {
@@ -2634,21 +4534,10 @@ func (c *restClient) UploadConversation(ctx context.Context, req *contactcenteri
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UploadConversation")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2684,11 +4573,11 @@ func (c *restClient) UpdateConversation(ctx context.Context, req *contactcenteri
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2713,17 +4602,7 @@ func (c *restClient) UpdateConversation(ctx context.Context, req *contactcenteri
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateConversation")
 		if err != nil {
 			return err
 		}
@@ -2776,17 +4655,7 @@ func (c *restClient) GetConversation(ctx context.Context, req *contactcenterinsi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetConversation")
 		if err != nil {
 			return err
 		}
@@ -2829,6 +4698,9 @@ func (c *restClient) ListConversations(ctx context.Context, req *contactcenterin
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -2854,21 +4726,10 @@ func (c *restClient) ListConversations(ctx context.Context, req *contactcenterin
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListConversations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2931,15 +4792,8 @@ func (c *restClient) DeleteConversation(ctx context.Context, req *contactcenteri
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteConversation")
+		return err
 	}, opts...)
 }
 
@@ -2983,21 +4837,10 @@ func (c *restClient) CreateAnalysis(ctx context.Context, req *contactcenterinsig
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateAnalysis")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3048,17 +4891,7 @@ func (c *restClient) GetAnalysis(ctx context.Context, req *contactcenterinsights
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAnalysis")
 		if err != nil {
 			return err
 		}
@@ -3123,21 +4956,10 @@ func (c *restClient) ListAnalyses(ctx context.Context, req *contactcenterinsight
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAnalyses")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3197,15 +5019,8 @@ func (c *restClient) DeleteAnalysis(ctx context.Context, req *contactcenterinsig
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteAnalysis")
+		return err
 	}, opts...)
 }
 
@@ -3247,21 +5062,10 @@ func (c *restClient) BulkAnalyzeConversations(ctx context.Context, req *contactc
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BulkAnalyzeConversations")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3317,21 +5121,10 @@ func (c *restClient) BulkDeleteConversations(ctx context.Context, req *contactce
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BulkDeleteConversations")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3388,21 +5181,10 @@ func (c *restClient) IngestConversations(ctx context.Context, req *contactcenter
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "IngestConversations")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3458,21 +5240,10 @@ func (c *restClient) ExportInsightsData(ctx context.Context, req *contactcenteri
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExportInsightsData")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3529,21 +5300,10 @@ func (c *restClient) CreateIssueModel(ctx context.Context, req *contactcenterins
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateIssueModel")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3579,11 +5339,11 @@ func (c *restClient) UpdateIssueModel(ctx context.Context, req *contactcenterins
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3608,17 +5368,7 @@ func (c *restClient) UpdateIssueModel(ctx context.Context, req *contactcenterins
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateIssueModel")
 		if err != nil {
 			return err
 		}
@@ -3668,17 +5418,7 @@ func (c *restClient) GetIssueModel(ctx context.Context, req *contactcenterinsigh
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetIssueModel")
 		if err != nil {
 			return err
 		}
@@ -3728,17 +5468,7 @@ func (c *restClient) ListIssueModels(ctx context.Context, req *contactcenterinsi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListIssueModels")
 		if err != nil {
 			return err
 		}
@@ -3787,21 +5517,10 @@ func (c *restClient) DeleteIssueModel(ctx context.Context, req *contactcenterins
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteIssueModel")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3858,21 +5577,10 @@ func (c *restClient) DeployIssueModel(ctx context.Context, req *contactcenterins
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "DeployIssueModel")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3929,21 +5637,10 @@ func (c *restClient) UndeployIssueModel(ctx context.Context, req *contactcenteri
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UndeployIssueModel")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3956,6 +5653,124 @@ func (c *restClient) UndeployIssueModel(ctx context.Context, req *contactcenteri
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
 	return &UndeployIssueModelOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ExportIssueModel exports an issue model to the provided destination.
+func (c *restClient) ExportIssueModel(ctx context.Context, req *contactcenterinsightspb.ExportIssueModelRequest, opts ...gax.CallOption) (*ExportIssueModelOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:export", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExportIssueModel")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &ExportIssueModelOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ImportIssueModel imports an issue model from a Cloud Storage bucket.
+func (c *restClient) ImportIssueModel(ctx context.Context, req *contactcenterinsightspb.ImportIssueModelRequest, opts ...gax.CallOption) (*ImportIssueModelOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/issueModels:import", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ImportIssueModel")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &ImportIssueModelOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
@@ -3994,17 +5809,7 @@ func (c *restClient) GetIssue(ctx context.Context, req *contactcenterinsightspb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetIssue")
 		if err != nil {
 			return err
 		}
@@ -4054,17 +5859,7 @@ func (c *restClient) ListIssues(ctx context.Context, req *contactcenterinsightsp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListIssues")
 		if err != nil {
 			return err
 		}
@@ -4099,11 +5894,11 @@ func (c *restClient) UpdateIssue(ctx context.Context, req *contactcenterinsights
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4128,17 +5923,7 @@ func (c *restClient) UpdateIssue(ctx context.Context, req *contactcenterinsights
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateIssue")
 		if err != nil {
 			return err
 		}
@@ -4185,15 +5970,8 @@ func (c *restClient) DeleteIssue(ctx context.Context, req *contactcenterinsights
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteIssue")
+		return err
 	}, opts...)
 }
 
@@ -4230,17 +6008,7 @@ func (c *restClient) CalculateIssueModelStats(ctx context.Context, req *contactc
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "CalculateIssueModelStats")
 		if err != nil {
 			return err
 		}
@@ -4297,17 +6065,7 @@ func (c *restClient) CreatePhraseMatcher(ctx context.Context, req *contactcenter
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreatePhraseMatcher")
 		if err != nil {
 			return err
 		}
@@ -4357,17 +6115,7 @@ func (c *restClient) GetPhraseMatcher(ctx context.Context, req *contactcenterins
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetPhraseMatcher")
 		if err != nil {
 			return err
 		}
@@ -4432,21 +6180,10 @@ func (c *restClient) ListPhraseMatchers(ctx context.Context, req *contactcenteri
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListPhraseMatchers")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4506,15 +6243,8 @@ func (c *restClient) DeletePhraseMatcher(ctx context.Context, req *contactcenter
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeletePhraseMatcher")
+		return err
 	}, opts...)
 }
 
@@ -4536,11 +6266,11 @@ func (c *restClient) UpdatePhraseMatcher(ctx context.Context, req *contactcenter
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4565,17 +6295,7 @@ func (c *restClient) UpdatePhraseMatcher(ctx context.Context, req *contactcenter
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdatePhraseMatcher")
 		if err != nil {
 			return err
 		}
@@ -4628,17 +6348,7 @@ func (c *restClient) CalculateStats(ctx context.Context, req *contactcenterinsig
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "CalculateStats")
 		if err != nil {
 			return err
 		}
@@ -4688,17 +6398,7 @@ func (c *restClient) GetSettings(ctx context.Context, req *contactcenterinsights
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSettings")
 		if err != nil {
 			return err
 		}
@@ -4733,11 +6433,11 @@ func (c *restClient) UpdateSettings(ctx context.Context, req *contactcenterinsig
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4762,17 +6462,7 @@ func (c *restClient) UpdateSettings(ctx context.Context, req *contactcenterinsig
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateSettings")
 		if err != nil {
 			return err
 		}
@@ -4787,6 +6477,403 @@ func (c *restClient) UpdateSettings(ctx context.Context, req *contactcenterinsig
 		return nil, e
 	}
 	return resp, nil
+}
+
+// CreateAnalysisRule creates a analysis rule.
+func (c *restClient) CreateAnalysisRule(ctx context.Context, req *contactcenterinsightspb.CreateAnalysisRuleRequest, opts ...gax.CallOption) (*contactcenterinsightspb.AnalysisRule, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetAnalysisRule()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/analysisRules", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateAnalysisRule[0:len((*c.CallOptions).CreateAnalysisRule):len((*c.CallOptions).CreateAnalysisRule)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &contactcenterinsightspb.AnalysisRule{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateAnalysisRule")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetAnalysisRule get a analysis rule.
+func (c *restClient) GetAnalysisRule(ctx context.Context, req *contactcenterinsightspb.GetAnalysisRuleRequest, opts ...gax.CallOption) (*contactcenterinsightspb.AnalysisRule, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetAnalysisRule[0:len((*c.CallOptions).GetAnalysisRule):len((*c.CallOptions).GetAnalysisRule)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &contactcenterinsightspb.AnalysisRule{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAnalysisRule")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListAnalysisRules lists analysis rules.
+func (c *restClient) ListAnalysisRules(ctx context.Context, req *contactcenterinsightspb.ListAnalysisRulesRequest, opts ...gax.CallOption) *AnalysisRuleIterator {
+	it := &AnalysisRuleIterator{}
+	req = proto.Clone(req).(*contactcenterinsightspb.ListAnalysisRulesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.AnalysisRule, string, error) {
+		resp := &contactcenterinsightspb.ListAnalysisRulesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/analysisRules", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAnalysisRules")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetAnalysisRules(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// UpdateAnalysisRule updates a analysis rule.
+func (c *restClient) UpdateAnalysisRule(ctx context.Context, req *contactcenterinsightspb.UpdateAnalysisRuleRequest, opts ...gax.CallOption) (*contactcenterinsightspb.AnalysisRule, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetAnalysisRule()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetAnalysisRule().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "analysis_rule.name", url.QueryEscape(req.GetAnalysisRule().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateAnalysisRule[0:len((*c.CallOptions).UpdateAnalysisRule):len((*c.CallOptions).UpdateAnalysisRule)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &contactcenterinsightspb.AnalysisRule{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateAnalysisRule")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteAnalysisRule deletes a analysis rule.
+func (c *restClient) DeleteAnalysisRule(ctx context.Context, req *contactcenterinsightspb.DeleteAnalysisRuleRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteAnalysisRule")
+		return err
+	}, opts...)
+}
+
+// GetEncryptionSpec gets location-level encryption key specification.
+func (c *restClient) GetEncryptionSpec(ctx context.Context, req *contactcenterinsightspb.GetEncryptionSpecRequest, opts ...gax.CallOption) (*contactcenterinsightspb.EncryptionSpec, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetEncryptionSpec[0:len((*c.CallOptions).GetEncryptionSpec):len((*c.CallOptions).GetEncryptionSpec)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &contactcenterinsightspb.EncryptionSpec{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetEncryptionSpec")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// InitializeEncryptionSpec initializes a location-level encryption key specification. An error will
+// result if the location has resources already created before the
+// initialization. After the encryption specification is initialized at a
+// location, it is immutable and all newly created resources under the
+// location will be encrypted with the existing specification.
+func (c *restClient) InitializeEncryptionSpec(ctx context.Context, req *contactcenterinsightspb.InitializeEncryptionSpecRequest, opts ...gax.CallOption) (*InitializeEncryptionSpecOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:initialize", req.GetEncryptionSpec().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "encryption_spec.name", url.QueryEscape(req.GetEncryptionSpec().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "InitializeEncryptionSpec")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &InitializeEncryptionSpecOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
 }
 
 // CreateView creates a view.
@@ -4829,17 +6916,7 @@ func (c *restClient) CreateView(ctx context.Context, req *contactcenterinsightsp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateView")
 		if err != nil {
 			return err
 		}
@@ -4889,17 +6966,7 @@ func (c *restClient) GetView(ctx context.Context, req *contactcenterinsightspb.G
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetView")
 		if err != nil {
 			return err
 		}
@@ -4961,21 +7028,10 @@ func (c *restClient) ListViews(ctx context.Context, req *contactcenterinsightspb
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListViews")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -5023,11 +7079,11 @@ func (c *restClient) UpdateView(ctx context.Context, req *contactcenterinsightsp
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -5052,17 +7108,7 @@ func (c *restClient) UpdateView(ctx context.Context, req *contactcenterinsightsp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateView")
 		if err != nil {
 			return err
 		}
@@ -5109,16 +7155,1534 @@ func (c *restClient) DeleteView(ctx context.Context, req *contactcenterinsightsp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteView")
+		return err
+	}, opts...)
+}
+
+// QueryMetrics query metrics.
+func (c *restClient) QueryMetrics(ctx context.Context, req *contactcenterinsightspb.QueryMetricsRequest, opts ...gax.CallOption) (*QueryMetricsOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:queryMetrics", req.GetLocation())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
 
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "QueryMetrics")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
 	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &QueryMetricsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// CreateQaQuestion create a QaQuestion.
+func (c *restClient) CreateQaQuestion(ctx context.Context, req *contactcenterinsightspb.CreateQaQuestionRequest, opts ...gax.CallOption) (*contactcenterinsightspb.QaQuestion, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetQaQuestion()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/qaQuestions", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetQaQuestionId() != "" {
+		params.Add("qaQuestionId", fmt.Sprintf("%v", req.GetQaQuestionId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateQaQuestion[0:len((*c.CallOptions).CreateQaQuestion):len((*c.CallOptions).CreateQaQuestion)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &contactcenterinsightspb.QaQuestion{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateQaQuestion")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetQaQuestion gets a QaQuestion.
+func (c *restClient) GetQaQuestion(ctx context.Context, req *contactcenterinsightspb.GetQaQuestionRequest, opts ...gax.CallOption) (*contactcenterinsightspb.QaQuestion, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetQaQuestion[0:len((*c.CallOptions).GetQaQuestion):len((*c.CallOptions).GetQaQuestion)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &contactcenterinsightspb.QaQuestion{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetQaQuestion")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateQaQuestion updates a QaQuestion.
+func (c *restClient) UpdateQaQuestion(ctx context.Context, req *contactcenterinsightspb.UpdateQaQuestionRequest, opts ...gax.CallOption) (*contactcenterinsightspb.QaQuestion, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetQaQuestion()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetQaQuestion().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "qa_question.name", url.QueryEscape(req.GetQaQuestion().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateQaQuestion[0:len((*c.CallOptions).UpdateQaQuestion):len((*c.CallOptions).UpdateQaQuestion)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &contactcenterinsightspb.QaQuestion{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateQaQuestion")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteQaQuestion deletes a QaQuestion.
+func (c *restClient) DeleteQaQuestion(ctx context.Context, req *contactcenterinsightspb.DeleteQaQuestionRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteQaQuestion")
+		return err
+	}, opts...)
+}
+
+// ListQaQuestions lists QaQuestions.
+func (c *restClient) ListQaQuestions(ctx context.Context, req *contactcenterinsightspb.ListQaQuestionsRequest, opts ...gax.CallOption) *QaQuestionIterator {
+	it := &QaQuestionIterator{}
+	req = proto.Clone(req).(*contactcenterinsightspb.ListQaQuestionsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.QaQuestion, string, error) {
+		resp := &contactcenterinsightspb.ListQaQuestionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/qaQuestions", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListQaQuestions")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetQaQuestions(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// CreateQaScorecard create a QaScorecard.
+func (c *restClient) CreateQaScorecard(ctx context.Context, req *contactcenterinsightspb.CreateQaScorecardRequest, opts ...gax.CallOption) (*contactcenterinsightspb.QaScorecard, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetQaScorecard()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/qaScorecards", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetQaScorecardId() != "" {
+		params.Add("qaScorecardId", fmt.Sprintf("%v", req.GetQaScorecardId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateQaScorecard[0:len((*c.CallOptions).CreateQaScorecard):len((*c.CallOptions).CreateQaScorecard)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &contactcenterinsightspb.QaScorecard{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateQaScorecard")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetQaScorecard gets a QaScorecard.
+func (c *restClient) GetQaScorecard(ctx context.Context, req *contactcenterinsightspb.GetQaScorecardRequest, opts ...gax.CallOption) (*contactcenterinsightspb.QaScorecard, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetQaScorecard[0:len((*c.CallOptions).GetQaScorecard):len((*c.CallOptions).GetQaScorecard)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &contactcenterinsightspb.QaScorecard{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetQaScorecard")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateQaScorecard updates a QaScorecard.
+func (c *restClient) UpdateQaScorecard(ctx context.Context, req *contactcenterinsightspb.UpdateQaScorecardRequest, opts ...gax.CallOption) (*contactcenterinsightspb.QaScorecard, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetQaScorecard()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetQaScorecard().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "qa_scorecard.name", url.QueryEscape(req.GetQaScorecard().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateQaScorecard[0:len((*c.CallOptions).UpdateQaScorecard):len((*c.CallOptions).UpdateQaScorecard)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &contactcenterinsightspb.QaScorecard{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateQaScorecard")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteQaScorecard deletes a QaScorecard.
+func (c *restClient) DeleteQaScorecard(ctx context.Context, req *contactcenterinsightspb.DeleteQaScorecardRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetForce() {
+		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteQaScorecard")
+		return err
+	}, opts...)
+}
+
+// ListQaScorecards lists QaScorecards.
+func (c *restClient) ListQaScorecards(ctx context.Context, req *contactcenterinsightspb.ListQaScorecardsRequest, opts ...gax.CallOption) *QaScorecardIterator {
+	it := &QaScorecardIterator{}
+	req = proto.Clone(req).(*contactcenterinsightspb.ListQaScorecardsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.QaScorecard, string, error) {
+		resp := &contactcenterinsightspb.ListQaScorecardsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/qaScorecards", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListQaScorecards")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetQaScorecards(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// CreateQaScorecardRevision creates a QaScorecardRevision.
+func (c *restClient) CreateQaScorecardRevision(ctx context.Context, req *contactcenterinsightspb.CreateQaScorecardRevisionRequest, opts ...gax.CallOption) (*contactcenterinsightspb.QaScorecardRevision, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetQaScorecardRevision()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/revisions", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetQaScorecardRevisionId() != "" {
+		params.Add("qaScorecardRevisionId", fmt.Sprintf("%v", req.GetQaScorecardRevisionId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateQaScorecardRevision[0:len((*c.CallOptions).CreateQaScorecardRevision):len((*c.CallOptions).CreateQaScorecardRevision)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &contactcenterinsightspb.QaScorecardRevision{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateQaScorecardRevision")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetQaScorecardRevision gets a QaScorecardRevision.
+func (c *restClient) GetQaScorecardRevision(ctx context.Context, req *contactcenterinsightspb.GetQaScorecardRevisionRequest, opts ...gax.CallOption) (*contactcenterinsightspb.QaScorecardRevision, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetQaScorecardRevision[0:len((*c.CallOptions).GetQaScorecardRevision):len((*c.CallOptions).GetQaScorecardRevision)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &contactcenterinsightspb.QaScorecardRevision{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetQaScorecardRevision")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// TuneQaScorecardRevision fine tune one or more QaModels.
+func (c *restClient) TuneQaScorecardRevision(ctx context.Context, req *contactcenterinsightspb.TuneQaScorecardRevisionRequest, opts ...gax.CallOption) (*TuneQaScorecardRevisionOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:tuneQaScorecardRevision", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TuneQaScorecardRevision")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &TuneQaScorecardRevisionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeployQaScorecardRevision deploy a QaScorecardRevision.
+func (c *restClient) DeployQaScorecardRevision(ctx context.Context, req *contactcenterinsightspb.DeployQaScorecardRevisionRequest, opts ...gax.CallOption) (*contactcenterinsightspb.QaScorecardRevision, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:deploy", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).DeployQaScorecardRevision[0:len((*c.CallOptions).DeployQaScorecardRevision):len((*c.CallOptions).DeployQaScorecardRevision)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &contactcenterinsightspb.QaScorecardRevision{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "DeployQaScorecardRevision")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UndeployQaScorecardRevision undeploy a QaScorecardRevision.
+func (c *restClient) UndeployQaScorecardRevision(ctx context.Context, req *contactcenterinsightspb.UndeployQaScorecardRevisionRequest, opts ...gax.CallOption) (*contactcenterinsightspb.QaScorecardRevision, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:undeploy", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UndeployQaScorecardRevision[0:len((*c.CallOptions).UndeployQaScorecardRevision):len((*c.CallOptions).UndeployQaScorecardRevision)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &contactcenterinsightspb.QaScorecardRevision{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UndeployQaScorecardRevision")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteQaScorecardRevision deletes a QaScorecardRevision.
+func (c *restClient) DeleteQaScorecardRevision(ctx context.Context, req *contactcenterinsightspb.DeleteQaScorecardRevisionRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetForce() {
+		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteQaScorecardRevision")
+		return err
+	}, opts...)
+}
+
+// ListQaScorecardRevisions lists all revisions under the parent QaScorecard.
+func (c *restClient) ListQaScorecardRevisions(ctx context.Context, req *contactcenterinsightspb.ListQaScorecardRevisionsRequest, opts ...gax.CallOption) *QaScorecardRevisionIterator {
+	it := &QaScorecardRevisionIterator{}
+	req = proto.Clone(req).(*contactcenterinsightspb.ListQaScorecardRevisionsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.QaScorecardRevision, string, error) {
+		resp := &contactcenterinsightspb.ListQaScorecardRevisionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/revisions", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListQaScorecardRevisions")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetQaScorecardRevisions(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// CreateFeedbackLabel create feedback label.
+func (c *restClient) CreateFeedbackLabel(ctx context.Context, req *contactcenterinsightspb.CreateFeedbackLabelRequest, opts ...gax.CallOption) (*contactcenterinsightspb.FeedbackLabel, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetFeedbackLabel()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/feedbackLabels", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetFeedbackLabelId() != "" {
+		params.Add("feedbackLabelId", fmt.Sprintf("%v", req.GetFeedbackLabelId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateFeedbackLabel[0:len((*c.CallOptions).CreateFeedbackLabel):len((*c.CallOptions).CreateFeedbackLabel)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &contactcenterinsightspb.FeedbackLabel{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateFeedbackLabel")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListFeedbackLabels list feedback labels.
+func (c *restClient) ListFeedbackLabels(ctx context.Context, req *contactcenterinsightspb.ListFeedbackLabelsRequest, opts ...gax.CallOption) *FeedbackLabelIterator {
+	it := &FeedbackLabelIterator{}
+	req = proto.Clone(req).(*contactcenterinsightspb.ListFeedbackLabelsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.FeedbackLabel, string, error) {
+		resp := &contactcenterinsightspb.ListFeedbackLabelsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/feedbackLabels", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListFeedbackLabels")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetFeedbackLabels(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetFeedbackLabel get feedback label.
+func (c *restClient) GetFeedbackLabel(ctx context.Context, req *contactcenterinsightspb.GetFeedbackLabelRequest, opts ...gax.CallOption) (*contactcenterinsightspb.FeedbackLabel, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetFeedbackLabel[0:len((*c.CallOptions).GetFeedbackLabel):len((*c.CallOptions).GetFeedbackLabel)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &contactcenterinsightspb.FeedbackLabel{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetFeedbackLabel")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateFeedbackLabel update feedback label.
+func (c *restClient) UpdateFeedbackLabel(ctx context.Context, req *contactcenterinsightspb.UpdateFeedbackLabelRequest, opts ...gax.CallOption) (*contactcenterinsightspb.FeedbackLabel, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetFeedbackLabel()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetFeedbackLabel().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "feedback_label.name", url.QueryEscape(req.GetFeedbackLabel().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateFeedbackLabel[0:len((*c.CallOptions).UpdateFeedbackLabel):len((*c.CallOptions).UpdateFeedbackLabel)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &contactcenterinsightspb.FeedbackLabel{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateFeedbackLabel")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteFeedbackLabel delete feedback label.
+func (c *restClient) DeleteFeedbackLabel(ctx context.Context, req *contactcenterinsightspb.DeleteFeedbackLabelRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteFeedbackLabel")
+		return err
+	}, opts...)
+}
+
+// ListAllFeedbackLabels list all feedback labels by project number.
+func (c *restClient) ListAllFeedbackLabels(ctx context.Context, req *contactcenterinsightspb.ListAllFeedbackLabelsRequest, opts ...gax.CallOption) *FeedbackLabelIterator {
+	it := &FeedbackLabelIterator{}
+	req = proto.Clone(req).(*contactcenterinsightspb.ListAllFeedbackLabelsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.FeedbackLabel, string, error) {
+		resp := &contactcenterinsightspb.ListAllFeedbackLabelsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v:listAllFeedbackLabels", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAllFeedbackLabels")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetFeedbackLabels(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// BulkUploadFeedbackLabels upload feedback labels in bulk.
+func (c *restClient) BulkUploadFeedbackLabels(ctx context.Context, req *contactcenterinsightspb.BulkUploadFeedbackLabelsRequest, opts ...gax.CallOption) (*BulkUploadFeedbackLabelsOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:bulkUploadFeedbackLabels", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BulkUploadFeedbackLabels")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &BulkUploadFeedbackLabelsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// BulkDownloadFeedbackLabels download feedback labels in bulk.
+func (c *restClient) BulkDownloadFeedbackLabels(ctx context.Context, req *contactcenterinsightspb.BulkDownloadFeedbackLabelsRequest, opts ...gax.CallOption) (*BulkDownloadFeedbackLabelsOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:bulkDownloadFeedbackLabels", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BulkDownloadFeedbackLabels")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &BulkDownloadFeedbackLabelsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
 }
 
 // CancelOperation is a utility method from google.longrunning.Operations.
@@ -5151,15 +8715,8 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -5196,17 +8753,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -5271,21 +8818,10 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -5346,6 +8882,42 @@ func (c *gRPCClient) BulkDeleteConversationsOperation(name string) *BulkDeleteCo
 func (c *restClient) BulkDeleteConversationsOperation(name string) *BulkDeleteConversationsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &BulkDeleteConversationsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// BulkDownloadFeedbackLabelsOperation returns a new BulkDownloadFeedbackLabelsOperation from a given name.
+// The name must be that of a previously created BulkDownloadFeedbackLabelsOperation, possibly from a different process.
+func (c *gRPCClient) BulkDownloadFeedbackLabelsOperation(name string) *BulkDownloadFeedbackLabelsOperation {
+	return &BulkDownloadFeedbackLabelsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// BulkDownloadFeedbackLabelsOperation returns a new BulkDownloadFeedbackLabelsOperation from a given name.
+// The name must be that of a previously created BulkDownloadFeedbackLabelsOperation, possibly from a different process.
+func (c *restClient) BulkDownloadFeedbackLabelsOperation(name string) *BulkDownloadFeedbackLabelsOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &BulkDownloadFeedbackLabelsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// BulkUploadFeedbackLabelsOperation returns a new BulkUploadFeedbackLabelsOperation from a given name.
+// The name must be that of a previously created BulkUploadFeedbackLabelsOperation, possibly from a different process.
+func (c *gRPCClient) BulkUploadFeedbackLabelsOperation(name string) *BulkUploadFeedbackLabelsOperation {
+	return &BulkUploadFeedbackLabelsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// BulkUploadFeedbackLabelsOperation returns a new BulkUploadFeedbackLabelsOperation from a given name.
+// The name must be that of a previously created BulkUploadFeedbackLabelsOperation, possibly from a different process.
+func (c *restClient) BulkUploadFeedbackLabelsOperation(name string) *BulkUploadFeedbackLabelsOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &BulkUploadFeedbackLabelsOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
@@ -5441,6 +9013,42 @@ func (c *restClient) ExportInsightsDataOperation(name string) *ExportInsightsDat
 	}
 }
 
+// ExportIssueModelOperation returns a new ExportIssueModelOperation from a given name.
+// The name must be that of a previously created ExportIssueModelOperation, possibly from a different process.
+func (c *gRPCClient) ExportIssueModelOperation(name string) *ExportIssueModelOperation {
+	return &ExportIssueModelOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// ExportIssueModelOperation returns a new ExportIssueModelOperation from a given name.
+// The name must be that of a previously created ExportIssueModelOperation, possibly from a different process.
+func (c *restClient) ExportIssueModelOperation(name string) *ExportIssueModelOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &ExportIssueModelOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// ImportIssueModelOperation returns a new ImportIssueModelOperation from a given name.
+// The name must be that of a previously created ImportIssueModelOperation, possibly from a different process.
+func (c *gRPCClient) ImportIssueModelOperation(name string) *ImportIssueModelOperation {
+	return &ImportIssueModelOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// ImportIssueModelOperation returns a new ImportIssueModelOperation from a given name.
+// The name must be that of a previously created ImportIssueModelOperation, possibly from a different process.
+func (c *restClient) ImportIssueModelOperation(name string) *ImportIssueModelOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &ImportIssueModelOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // IngestConversationsOperation returns a new IngestConversationsOperation from a given name.
 // The name must be that of a previously created IngestConversationsOperation, possibly from a different process.
 func (c *gRPCClient) IngestConversationsOperation(name string) *IngestConversationsOperation {
@@ -5454,6 +9062,60 @@ func (c *gRPCClient) IngestConversationsOperation(name string) *IngestConversati
 func (c *restClient) IngestConversationsOperation(name string) *IngestConversationsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &IngestConversationsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// InitializeEncryptionSpecOperation returns a new InitializeEncryptionSpecOperation from a given name.
+// The name must be that of a previously created InitializeEncryptionSpecOperation, possibly from a different process.
+func (c *gRPCClient) InitializeEncryptionSpecOperation(name string) *InitializeEncryptionSpecOperation {
+	return &InitializeEncryptionSpecOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// InitializeEncryptionSpecOperation returns a new InitializeEncryptionSpecOperation from a given name.
+// The name must be that of a previously created InitializeEncryptionSpecOperation, possibly from a different process.
+func (c *restClient) InitializeEncryptionSpecOperation(name string) *InitializeEncryptionSpecOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &InitializeEncryptionSpecOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// QueryMetricsOperation returns a new QueryMetricsOperation from a given name.
+// The name must be that of a previously created QueryMetricsOperation, possibly from a different process.
+func (c *gRPCClient) QueryMetricsOperation(name string) *QueryMetricsOperation {
+	return &QueryMetricsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// QueryMetricsOperation returns a new QueryMetricsOperation from a given name.
+// The name must be that of a previously created QueryMetricsOperation, possibly from a different process.
+func (c *restClient) QueryMetricsOperation(name string) *QueryMetricsOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &QueryMetricsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// TuneQaScorecardRevisionOperation returns a new TuneQaScorecardRevisionOperation from a given name.
+// The name must be that of a previously created TuneQaScorecardRevisionOperation, possibly from a different process.
+func (c *gRPCClient) TuneQaScorecardRevisionOperation(name string) *TuneQaScorecardRevisionOperation {
+	return &TuneQaScorecardRevisionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// TuneQaScorecardRevisionOperation returns a new TuneQaScorecardRevisionOperation from a given name.
+// The name must be that of a previously created TuneQaScorecardRevisionOperation, possibly from a different process.
+func (c *restClient) TuneQaScorecardRevisionOperation(name string) *TuneQaScorecardRevisionOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &TuneQaScorecardRevisionOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

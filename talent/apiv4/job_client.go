@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	talentpb "cloud.google.com/go/talent/apiv4/talentpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -69,6 +68,7 @@ func defaultJobGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://jobs.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -382,6 +382,8 @@ type jobGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewJobClient creates a new job service client based on gRPC.
@@ -408,6 +410,7 @@ func NewJobClient(ctx context.Context, opts ...option.ClientOption) (*JobClient,
 		connPool:         connPool,
 		jobClient:        talentpb.NewJobServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -442,7 +445,9 @@ func (c *jobGRPCClient) Connection() *grpc.ClientConn {
 func (c *jobGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -469,6 +474,8 @@ type jobRESTClient struct {
 
 	// Points back to the CallOptions field of the containing JobClient
 	CallOptions **JobCallOptions
+
+	logger *slog.Logger
 }
 
 // NewJobRESTClient creates a new job service rest client.
@@ -486,6 +493,7 @@ func NewJobRESTClient(ctx context.Context, opts ...option.ClientOption) (*JobCli
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -510,6 +518,7 @@ func defaultJobRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://jobs.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -519,7 +528,9 @@ func defaultJobRESTClientOptions() []option.ClientOption {
 func (c *jobRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -545,7 +556,7 @@ func (c *jobGRPCClient) CreateJob(ctx context.Context, req *talentpb.CreateJobRe
 	var resp *talentpb.Job
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.CreateJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.CreateJob, req, settings.GRPC, c.logger, "CreateJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -563,7 +574,7 @@ func (c *jobGRPCClient) BatchCreateJobs(ctx context.Context, req *talentpb.Batch
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.BatchCreateJobs(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.BatchCreateJobs, req, settings.GRPC, c.logger, "BatchCreateJobs")
 		return err
 	}, opts...)
 	if err != nil {
@@ -583,7 +594,7 @@ func (c *jobGRPCClient) GetJob(ctx context.Context, req *talentpb.GetJobRequest,
 	var resp *talentpb.Job
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.GetJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.GetJob, req, settings.GRPC, c.logger, "GetJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -601,7 +612,7 @@ func (c *jobGRPCClient) UpdateJob(ctx context.Context, req *talentpb.UpdateJobRe
 	var resp *talentpb.Job
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.UpdateJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.UpdateJob, req, settings.GRPC, c.logger, "UpdateJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -619,7 +630,7 @@ func (c *jobGRPCClient) BatchUpdateJobs(ctx context.Context, req *talentpb.Batch
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.BatchUpdateJobs(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.BatchUpdateJobs, req, settings.GRPC, c.logger, "BatchUpdateJobs")
 		return err
 	}, opts...)
 	if err != nil {
@@ -638,7 +649,7 @@ func (c *jobGRPCClient) DeleteJob(ctx context.Context, req *talentpb.DeleteJobRe
 	opts = append((*c.CallOptions).DeleteJob[0:len((*c.CallOptions).DeleteJob):len((*c.CallOptions).DeleteJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.jobClient.DeleteJob(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.jobClient.DeleteJob, req, settings.GRPC, c.logger, "DeleteJob")
 		return err
 	}, opts...)
 	return err
@@ -653,7 +664,7 @@ func (c *jobGRPCClient) BatchDeleteJobs(ctx context.Context, req *talentpb.Batch
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.BatchDeleteJobs(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.BatchDeleteJobs, req, settings.GRPC, c.logger, "BatchDeleteJobs")
 		return err
 	}, opts...)
 	if err != nil {
@@ -684,7 +695,7 @@ func (c *jobGRPCClient) ListJobs(ctx context.Context, req *talentpb.ListJobsRequ
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.jobClient.ListJobs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.jobClient.ListJobs, req, settings.GRPC, c.logger, "ListJobs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -719,7 +730,7 @@ func (c *jobGRPCClient) SearchJobs(ctx context.Context, req *talentpb.SearchJobs
 	var resp *talentpb.SearchJobsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.SearchJobs(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.SearchJobs, req, settings.GRPC, c.logger, "SearchJobs")
 		return err
 	}, opts...)
 	if err != nil {
@@ -737,7 +748,7 @@ func (c *jobGRPCClient) SearchJobsForAlert(ctx context.Context, req *talentpb.Se
 	var resp *talentpb.SearchJobsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.jobClient.SearchJobsForAlert(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.jobClient.SearchJobsForAlert, req, settings.GRPC, c.logger, "SearchJobsForAlert")
 		return err
 	}, opts...)
 	if err != nil {
@@ -755,7 +766,7 @@ func (c *jobGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.Get
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -807,17 +818,7 @@ func (c *jobRESTClient) CreateJob(ctx context.Context, req *talentpb.CreateJobRe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateJob")
 		if err != nil {
 			return err
 		}
@@ -872,21 +873,10 @@ func (c *jobRESTClient) BatchCreateJobs(ctx context.Context, req *talentpb.Batch
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchCreateJobs")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -938,17 +928,7 @@ func (c *jobRESTClient) GetJob(ctx context.Context, req *talentpb.GetJobRequest,
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetJob")
 		if err != nil {
 			return err
 		}
@@ -986,11 +966,11 @@ func (c *jobRESTClient) UpdateJob(ctx context.Context, req *talentpb.UpdateJobRe
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1015,17 +995,7 @@ func (c *jobRESTClient) UpdateJob(ctx context.Context, req *talentpb.UpdateJobRe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateJob")
 		if err != nil {
 			return err
 		}
@@ -1080,21 +1050,10 @@ func (c *jobRESTClient) BatchUpdateJobs(ctx context.Context, req *talentpb.Batch
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchUpdateJobs")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1145,15 +1104,8 @@ func (c *jobRESTClient) DeleteJob(ctx context.Context, req *talentpb.DeleteJobRe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteJob")
+		return err
 	}, opts...)
 }
 
@@ -1195,21 +1147,10 @@ func (c *jobRESTClient) BatchDeleteJobs(ctx context.Context, req *talentpb.Batch
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchDeleteJobs")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1276,21 +1217,10 @@ func (c *jobRESTClient) ListJobs(ctx context.Context, req *talentpb.ListJobsRequ
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListJobs")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1365,17 +1295,7 @@ func (c *jobRESTClient) SearchJobs(ctx context.Context, req *talentpb.SearchJobs
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SearchJobs")
 		if err != nil {
 			return err
 		}
@@ -1442,17 +1362,7 @@ func (c *jobRESTClient) SearchJobsForAlert(ctx context.Context, req *talentpb.Se
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SearchJobsForAlert")
 		if err != nil {
 			return err
 		}
@@ -1502,17 +1412,7 @@ func (c *jobRESTClient) GetOperation(ctx context.Context, req *longrunningpb.Get
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}

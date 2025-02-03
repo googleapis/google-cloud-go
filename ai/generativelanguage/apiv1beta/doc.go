@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
 // The Gemini API allows developers to build generative AI applications using
 // Gemini models. Gemini is our most capable model, built from the ground up
 // to be multimodal. It can generalize and seamlessly understand, operate
-// across, and combine different types of information. including language,
+// across, and combine different types of information including language,
 // images, audio, video, and code. You can use the Gemini API for use cases
 // like reasoning across text and images, content generation, dialogue
 // agents, summarization and classification systems, and more.
@@ -43,13 +43,14 @@
 //
 // To get started with this package, create a client.
 //
+//	// go get cloud.google.com/go/ai/generativelanguage/apiv1beta@latest
 //	ctx := context.Background()
 //	// This snippet has been automatically generated and should be regarded as a code template only.
 //	// It will require modifications to work:
 //	// - It may require correct/in-range values for request initialization.
 //	// - It may require specifying regional endpoints when creating the service client as shown in:
 //	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//	c, err := generativelanguage.NewDiscussClient(ctx)
+//	c, err := generativelanguage.NewCacheClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
@@ -61,25 +62,13 @@
 //
 // # Using the Client
 //
-// The following is an example of making an API call with the newly created client.
+// The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	ctx := context.Background()
-//	// This snippet has been automatically generated and should be regarded as a code template only.
-//	// It will require modifications to work:
-//	// - It may require correct/in-range values for request initialization.
-//	// - It may require specifying regional endpoints when creating the service client as shown in:
-//	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//	c, err := generativelanguage.NewDiscussClient(ctx)
-//	if err != nil {
-//		// TODO: Handle error.
-//	}
-//	defer c.Close()
-//
-//	req := &generativelanguagepb.CountMessageTokensRequest{
+//	req := &generativelanguagepb.CreateCachedContentRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/ai/generativelanguage/apiv1beta/generativelanguagepb#CountMessageTokensRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/ai/generativelanguage/apiv1beta/generativelanguagepb#CreateCachedContentRequest.
 //	}
-//	resp, err := c.CountMessageTokens(ctx, req)
+//	resp, err := c.CreateCachedContent(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
@@ -88,7 +77,7 @@
 //
 // # Use of Context
 //
-// The ctx passed to NewDiscussClient is used for authentication requests and
+// The ctx passed to NewCacheClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.
 // Individual methods on the client use the ctx given to them.
 //
@@ -100,30 +89,3 @@
 // [Debugging Client Libraries]: https://pkg.go.dev/cloud.google.com/go#hdr-Debugging
 // [Inspecting errors]: https://pkg.go.dev/cloud.google.com/go#hdr-Inspecting_errors
 package generativelanguage // import "cloud.google.com/go/ai/generativelanguage/apiv1beta"
-
-import (
-	"context"
-
-	"google.golang.org/api/option"
-)
-
-// For more information on implementing a client constructor hook, see
-// https://github.com/googleapis/google-cloud-go/wiki/Customizing-constructors.
-type clientHookParams struct{}
-type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
-
-var versionClient string
-
-func getVersionClient() string {
-	if versionClient == "" {
-		return "UNKNOWN"
-	}
-	return versionClient
-}
-
-// DefaultAuthScopes reports the default set of authentication scopes to use with this package.
-func DefaultAuthScopes() []string {
-	return []string{
-		"",
-	}
-}

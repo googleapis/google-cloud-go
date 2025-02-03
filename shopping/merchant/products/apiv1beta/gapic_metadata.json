@@ -1,0 +1,77 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.shopping.merchant.products.v1beta",
+  "libraryPackage": "cloud.google.com/go/shopping/merchant/products/apiv1beta",
+  "services": {
+    "ProductInputsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ProductInputsClient",
+          "rpcs": {
+            "DeleteProductInput": {
+              "methods": [
+                "DeleteProductInput"
+              ]
+            },
+            "InsertProductInput": {
+              "methods": [
+                "InsertProductInput"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ProductInputsClient",
+          "rpcs": {
+            "DeleteProductInput": {
+              "methods": [
+                "DeleteProductInput"
+              ]
+            },
+            "InsertProductInput": {
+              "methods": [
+                "InsertProductInput"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "ProductsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "GetProduct": {
+              "methods": [
+                "GetProduct"
+              ]
+            },
+            "ListProducts": {
+              "methods": [
+                "ListProducts"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "GetProduct": {
+              "methods": [
+                "GetProduct"
+              ]
+            },
+            "ListProducts": {
+              "methods": [
+                "ListProducts"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

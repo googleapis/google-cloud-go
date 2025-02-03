@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -92,6 +91,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://datalabeling.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -1039,6 +1039,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new data labeling service client based on gRPC.
@@ -1065,6 +1067,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      datalabelingpb.NewDataLabelingServiceClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -1098,7 +1101,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1125,6 +1130,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new data labeling service rest client.
@@ -1142,6 +1149,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -1166,6 +1174,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://datalabeling.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -1175,7 +1184,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1201,7 +1212,7 @@ func (c *gRPCClient) CreateDataset(ctx context.Context, req *datalabelingpb.Crea
 	var resp *datalabelingpb.Dataset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateDataset(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateDataset, req, settings.GRPC, c.logger, "CreateDataset")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1219,7 +1230,7 @@ func (c *gRPCClient) GetDataset(ctx context.Context, req *datalabelingpb.GetData
 	var resp *datalabelingpb.Dataset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetDataset(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetDataset, req, settings.GRPC, c.logger, "GetDataset")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1248,7 +1259,7 @@ func (c *gRPCClient) ListDatasets(ctx context.Context, req *datalabelingpb.ListD
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListDatasets(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListDatasets, req, settings.GRPC, c.logger, "ListDatasets")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1282,7 +1293,7 @@ func (c *gRPCClient) DeleteDataset(ctx context.Context, req *datalabelingpb.Dele
 	opts = append((*c.CallOptions).DeleteDataset[0:len((*c.CallOptions).DeleteDataset):len((*c.CallOptions).DeleteDataset)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteDataset(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteDataset, req, settings.GRPC, c.logger, "DeleteDataset")
 		return err
 	}, opts...)
 	return err
@@ -1297,7 +1308,7 @@ func (c *gRPCClient) ImportData(ctx context.Context, req *datalabelingpb.ImportD
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ImportData(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ImportData, req, settings.GRPC, c.logger, "ImportData")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1317,7 +1328,7 @@ func (c *gRPCClient) ExportData(ctx context.Context, req *datalabelingpb.ExportD
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ExportData(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ExportData, req, settings.GRPC, c.logger, "ExportData")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1337,7 +1348,7 @@ func (c *gRPCClient) GetDataItem(ctx context.Context, req *datalabelingpb.GetDat
 	var resp *datalabelingpb.DataItem
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetDataItem(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetDataItem, req, settings.GRPC, c.logger, "GetDataItem")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1366,7 +1377,7 @@ func (c *gRPCClient) ListDataItems(ctx context.Context, req *datalabelingpb.List
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListDataItems(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListDataItems, req, settings.GRPC, c.logger, "ListDataItems")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1401,7 +1412,7 @@ func (c *gRPCClient) GetAnnotatedDataset(ctx context.Context, req *datalabelingp
 	var resp *datalabelingpb.AnnotatedDataset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetAnnotatedDataset(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetAnnotatedDataset, req, settings.GRPC, c.logger, "GetAnnotatedDataset")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1430,7 +1441,7 @@ func (c *gRPCClient) ListAnnotatedDatasets(ctx context.Context, req *datalabelin
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListAnnotatedDatasets(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListAnnotatedDatasets, req, settings.GRPC, c.logger, "ListAnnotatedDatasets")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1464,7 +1475,7 @@ func (c *gRPCClient) DeleteAnnotatedDataset(ctx context.Context, req *datalabeli
 	opts = append((*c.CallOptions).DeleteAnnotatedDataset[0:len((*c.CallOptions).DeleteAnnotatedDataset):len((*c.CallOptions).DeleteAnnotatedDataset)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteAnnotatedDataset(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteAnnotatedDataset, req, settings.GRPC, c.logger, "DeleteAnnotatedDataset")
 		return err
 	}, opts...)
 	return err
@@ -1479,7 +1490,7 @@ func (c *gRPCClient) LabelImage(ctx context.Context, req *datalabelingpb.LabelIm
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.LabelImage(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.LabelImage, req, settings.GRPC, c.logger, "LabelImage")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1499,7 +1510,7 @@ func (c *gRPCClient) LabelVideo(ctx context.Context, req *datalabelingpb.LabelVi
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.LabelVideo(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.LabelVideo, req, settings.GRPC, c.logger, "LabelVideo")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1519,7 +1530,7 @@ func (c *gRPCClient) LabelText(ctx context.Context, req *datalabelingpb.LabelTex
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.LabelText(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.LabelText, req, settings.GRPC, c.logger, "LabelText")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1539,7 +1550,7 @@ func (c *gRPCClient) GetExample(ctx context.Context, req *datalabelingpb.GetExam
 	var resp *datalabelingpb.Example
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetExample(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetExample, req, settings.GRPC, c.logger, "GetExample")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1568,7 +1579,7 @@ func (c *gRPCClient) ListExamples(ctx context.Context, req *datalabelingpb.ListE
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListExamples(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListExamples, req, settings.GRPC, c.logger, "ListExamples")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1603,7 +1614,7 @@ func (c *gRPCClient) CreateAnnotationSpecSet(ctx context.Context, req *datalabel
 	var resp *datalabelingpb.AnnotationSpecSet
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateAnnotationSpecSet(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateAnnotationSpecSet, req, settings.GRPC, c.logger, "CreateAnnotationSpecSet")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1621,7 +1632,7 @@ func (c *gRPCClient) GetAnnotationSpecSet(ctx context.Context, req *datalabeling
 	var resp *datalabelingpb.AnnotationSpecSet
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetAnnotationSpecSet(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetAnnotationSpecSet, req, settings.GRPC, c.logger, "GetAnnotationSpecSet")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1650,7 +1661,7 @@ func (c *gRPCClient) ListAnnotationSpecSets(ctx context.Context, req *datalabeli
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListAnnotationSpecSets(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListAnnotationSpecSets, req, settings.GRPC, c.logger, "ListAnnotationSpecSets")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1684,7 +1695,7 @@ func (c *gRPCClient) DeleteAnnotationSpecSet(ctx context.Context, req *datalabel
 	opts = append((*c.CallOptions).DeleteAnnotationSpecSet[0:len((*c.CallOptions).DeleteAnnotationSpecSet):len((*c.CallOptions).DeleteAnnotationSpecSet)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteAnnotationSpecSet(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteAnnotationSpecSet, req, settings.GRPC, c.logger, "DeleteAnnotationSpecSet")
 		return err
 	}, opts...)
 	return err
@@ -1699,7 +1710,7 @@ func (c *gRPCClient) CreateInstruction(ctx context.Context, req *datalabelingpb.
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateInstruction(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateInstruction, req, settings.GRPC, c.logger, "CreateInstruction")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1719,7 +1730,7 @@ func (c *gRPCClient) GetInstruction(ctx context.Context, req *datalabelingpb.Get
 	var resp *datalabelingpb.Instruction
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetInstruction(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetInstruction, req, settings.GRPC, c.logger, "GetInstruction")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1748,7 +1759,7 @@ func (c *gRPCClient) ListInstructions(ctx context.Context, req *datalabelingpb.L
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListInstructions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListInstructions, req, settings.GRPC, c.logger, "ListInstructions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1782,7 +1793,7 @@ func (c *gRPCClient) DeleteInstruction(ctx context.Context, req *datalabelingpb.
 	opts = append((*c.CallOptions).DeleteInstruction[0:len((*c.CallOptions).DeleteInstruction):len((*c.CallOptions).DeleteInstruction)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteInstruction(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteInstruction, req, settings.GRPC, c.logger, "DeleteInstruction")
 		return err
 	}, opts...)
 	return err
@@ -1797,7 +1808,7 @@ func (c *gRPCClient) GetEvaluation(ctx context.Context, req *datalabelingpb.GetE
 	var resp *datalabelingpb.Evaluation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetEvaluation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetEvaluation, req, settings.GRPC, c.logger, "GetEvaluation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1826,7 +1837,7 @@ func (c *gRPCClient) SearchEvaluations(ctx context.Context, req *datalabelingpb.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.SearchEvaluations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.SearchEvaluations, req, settings.GRPC, c.logger, "SearchEvaluations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1872,7 +1883,7 @@ func (c *gRPCClient) SearchExampleComparisons(ctx context.Context, req *datalabe
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.SearchExampleComparisons(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.SearchExampleComparisons, req, settings.GRPC, c.logger, "SearchExampleComparisons")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1907,7 +1918,7 @@ func (c *gRPCClient) CreateEvaluationJob(ctx context.Context, req *datalabelingp
 	var resp *datalabelingpb.EvaluationJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateEvaluationJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateEvaluationJob, req, settings.GRPC, c.logger, "CreateEvaluationJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1925,7 +1936,7 @@ func (c *gRPCClient) UpdateEvaluationJob(ctx context.Context, req *datalabelingp
 	var resp *datalabelingpb.EvaluationJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateEvaluationJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateEvaluationJob, req, settings.GRPC, c.logger, "UpdateEvaluationJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1943,7 +1954,7 @@ func (c *gRPCClient) GetEvaluationJob(ctx context.Context, req *datalabelingpb.G
 	var resp *datalabelingpb.EvaluationJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetEvaluationJob(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetEvaluationJob, req, settings.GRPC, c.logger, "GetEvaluationJob")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1960,7 +1971,7 @@ func (c *gRPCClient) PauseEvaluationJob(ctx context.Context, req *datalabelingpb
 	opts = append((*c.CallOptions).PauseEvaluationJob[0:len((*c.CallOptions).PauseEvaluationJob):len((*c.CallOptions).PauseEvaluationJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.PauseEvaluationJob(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.PauseEvaluationJob, req, settings.GRPC, c.logger, "PauseEvaluationJob")
 		return err
 	}, opts...)
 	return err
@@ -1974,7 +1985,7 @@ func (c *gRPCClient) ResumeEvaluationJob(ctx context.Context, req *datalabelingp
 	opts = append((*c.CallOptions).ResumeEvaluationJob[0:len((*c.CallOptions).ResumeEvaluationJob):len((*c.CallOptions).ResumeEvaluationJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.ResumeEvaluationJob(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.ResumeEvaluationJob, req, settings.GRPC, c.logger, "ResumeEvaluationJob")
 		return err
 	}, opts...)
 	return err
@@ -1988,7 +1999,7 @@ func (c *gRPCClient) DeleteEvaluationJob(ctx context.Context, req *datalabelingp
 	opts = append((*c.CallOptions).DeleteEvaluationJob[0:len((*c.CallOptions).DeleteEvaluationJob):len((*c.CallOptions).DeleteEvaluationJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteEvaluationJob(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteEvaluationJob, req, settings.GRPC, c.logger, "DeleteEvaluationJob")
 		return err
 	}, opts...)
 	return err
@@ -2014,7 +2025,7 @@ func (c *gRPCClient) ListEvaluationJobs(ctx context.Context, req *datalabelingpb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListEvaluationJobs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListEvaluationJobs, req, settings.GRPC, c.logger, "ListEvaluationJobs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2079,17 +2090,7 @@ func (c *restClient) CreateDataset(ctx context.Context, req *datalabelingpb.Crea
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDataset")
 		if err != nil {
 			return err
 		}
@@ -2139,17 +2140,7 @@ func (c *restClient) GetDataset(ctx context.Context, req *datalabelingpb.GetData
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDataset")
 		if err != nil {
 			return err
 		}
@@ -2214,21 +2205,10 @@ func (c *restClient) ListDatasets(ctx context.Context, req *datalabelingpb.ListD
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDatasets")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2288,15 +2268,8 @@ func (c *restClient) DeleteDataset(ctx context.Context, req *datalabelingpb.Dele
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDataset")
+		return err
 	}, opts...)
 }
 
@@ -2342,21 +2315,10 @@ func (c *restClient) ImportData(ctx context.Context, req *datalabelingpb.ImportD
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ImportData")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2412,21 +2374,10 @@ func (c *restClient) ExportData(ctx context.Context, req *datalabelingpb.ExportD
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExportData")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2478,17 +2429,7 @@ func (c *restClient) GetDataItem(ctx context.Context, req *datalabelingpb.GetDat
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDataItem")
 		if err != nil {
 			return err
 		}
@@ -2554,21 +2495,10 @@ func (c *restClient) ListDataItems(ctx context.Context, req *datalabelingpb.List
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDataItems")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2631,17 +2561,7 @@ func (c *restClient) GetAnnotatedDataset(ctx context.Context, req *datalabelingp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAnnotatedDataset")
 		if err != nil {
 			return err
 		}
@@ -2706,21 +2626,10 @@ func (c *restClient) ListAnnotatedDatasets(ctx context.Context, req *datalabelin
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAnnotatedDatasets")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2780,15 +2689,8 @@ func (c *restClient) DeleteAnnotatedDataset(ctx context.Context, req *datalabeli
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteAnnotatedDataset")
+		return err
 	}, opts...)
 }
 
@@ -2831,21 +2733,10 @@ func (c *restClient) LabelImage(ctx context.Context, req *datalabelingpb.LabelIm
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "LabelImage")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2902,21 +2793,10 @@ func (c *restClient) LabelVideo(ctx context.Context, req *datalabelingpb.LabelVi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "LabelVideo")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2973,21 +2853,10 @@ func (c *restClient) LabelText(ctx context.Context, req *datalabelingpb.LabelTex
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "LabelText")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3041,17 +2910,7 @@ func (c *restClient) GetExample(ctx context.Context, req *datalabelingpb.GetExam
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetExample")
 		if err != nil {
 			return err
 		}
@@ -3116,21 +2975,10 @@ func (c *restClient) ListExamples(ctx context.Context, req *datalabelingpb.ListE
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListExamples")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3199,17 +3047,7 @@ func (c *restClient) CreateAnnotationSpecSet(ctx context.Context, req *datalabel
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateAnnotationSpecSet")
 		if err != nil {
 			return err
 		}
@@ -3259,17 +3097,7 @@ func (c *restClient) GetAnnotationSpecSet(ctx context.Context, req *datalabeling
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAnnotationSpecSet")
 		if err != nil {
 			return err
 		}
@@ -3334,21 +3162,10 @@ func (c *restClient) ListAnnotationSpecSets(ctx context.Context, req *datalabeli
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAnnotationSpecSets")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3408,15 +3225,8 @@ func (c *restClient) DeleteAnnotationSpecSet(ctx context.Context, req *datalabel
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteAnnotationSpecSet")
+		return err
 	}, opts...)
 }
 
@@ -3458,21 +3268,10 @@ func (c *restClient) CreateInstruction(ctx context.Context, req *datalabelingpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateInstruction")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3523,17 +3322,7 @@ func (c *restClient) GetInstruction(ctx context.Context, req *datalabelingpb.Get
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetInstruction")
 		if err != nil {
 			return err
 		}
@@ -3598,21 +3387,10 @@ func (c *restClient) ListInstructions(ctx context.Context, req *datalabelingpb.L
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListInstructions")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3672,15 +3450,8 @@ func (c *restClient) DeleteInstruction(ctx context.Context, req *datalabelingpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteInstruction")
+		return err
 	}, opts...)
 }
 
@@ -3718,17 +3489,7 @@ func (c *restClient) GetEvaluation(ctx context.Context, req *datalabelingpb.GetE
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetEvaluation")
 		if err != nil {
 			return err
 		}
@@ -3793,21 +3554,10 @@ func (c *restClient) SearchEvaluations(ctx context.Context, req *datalabelingpb.
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "SearchEvaluations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3884,21 +3634,10 @@ func (c *restClient) SearchExampleComparisons(ctx context.Context, req *datalabe
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SearchExampleComparisons")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3967,17 +3706,7 @@ func (c *restClient) CreateEvaluationJob(ctx context.Context, req *datalabelingp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateEvaluationJob")
 		if err != nil {
 			return err
 		}
@@ -4017,11 +3746,11 @@ func (c *restClient) UpdateEvaluationJob(ctx context.Context, req *datalabelingp
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4046,17 +3775,7 @@ func (c *restClient) UpdateEvaluationJob(ctx context.Context, req *datalabelingp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateEvaluationJob")
 		if err != nil {
 			return err
 		}
@@ -4106,17 +3825,7 @@ func (c *restClient) GetEvaluationJob(ctx context.Context, req *datalabelingpb.G
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetEvaluationJob")
 		if err != nil {
 			return err
 		}
@@ -4170,15 +3879,8 @@ func (c *restClient) PauseEvaluationJob(ctx context.Context, req *datalabelingpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PauseEvaluationJob")
+		return err
 	}, opts...)
 }
 
@@ -4219,15 +3921,8 @@ func (c *restClient) ResumeEvaluationJob(ctx context.Context, req *datalabelingp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ResumeEvaluationJob")
+		return err
 	}, opts...)
 }
 
@@ -4261,15 +3956,8 @@ func (c *restClient) DeleteEvaluationJob(ctx context.Context, req *datalabelingp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteEvaluationJob")
+		return err
 	}, opts...)
 }
 
@@ -4322,21 +4010,10 @@ func (c *restClient) ListEvaluationJobs(ctx context.Context, req *datalabelingpb
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListEvaluationJobs")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

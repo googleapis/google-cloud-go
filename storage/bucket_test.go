@@ -17,9 +17,11 @@ package storage
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"testing"
 	"time"
 
+	"cloud.google.com/go/compute/metadata"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/go-cmp/cmp"
@@ -62,11 +64,12 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 				ResponseHeaders: []string{"FOO"},
 			},
 		},
-		Encryption:       &BucketEncryption{DefaultKMSKeyName: "key"},
-		Logging:          &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
-		Website:          &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
-		Autoclass:        &Autoclass{Enabled: true, TerminalStorageClass: "NEARLINE"},
-		SoftDeletePolicy: &SoftDeletePolicy{RetentionDuration: time.Hour},
+		Encryption:            &BucketEncryption{DefaultKMSKeyName: "key"},
+		Logging:               &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
+		Website:               &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
+		Autoclass:             &Autoclass{Enabled: true, TerminalStorageClass: "NEARLINE"},
+		SoftDeletePolicy:      &SoftDeletePolicy{RetentionDuration: time.Hour},
+		HierarchicalNamespace: &HierarchicalNamespace{Enabled: true},
 		Lifecycle: Lifecycle{
 			Rules: []LifecycleRule{{
 				Action: LifecycleAction{
@@ -167,11 +170,12 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 				ResponseHeader: []string{"FOO"},
 			},
 		},
-		Encryption:       &raw.BucketEncryption{DefaultKmsKeyName: "key"},
-		Logging:          &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
-		Website:          &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
-		Autoclass:        &raw.BucketAutoclass{Enabled: true, TerminalStorageClass: "NEARLINE"},
-		SoftDeletePolicy: &raw.BucketSoftDeletePolicy{RetentionDurationSeconds: 60 * 60},
+		Encryption:            &raw.BucketEncryption{DefaultKmsKeyName: "key"},
+		Logging:               &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
+		Website:               &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
+		Autoclass:             &raw.BucketAutoclass{Enabled: true, TerminalStorageClass: "NEARLINE"},
+		SoftDeletePolicy:      &raw.BucketSoftDeletePolicy{RetentionDurationSeconds: 60 * 60, ForceSendFields: []string{"RetentionDurationSeconds"}},
+		HierarchicalNamespace: &raw.BucketHierarchicalNamespace{Enabled: true},
 		Lifecycle: &raw.BucketLifecycle{
 			Rule: []*raw.BucketLifecycleRule{{
 				Action: &raw.BucketLifecycleRuleAction{
@@ -275,7 +279,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		PublicAccessPrevention: "enforced",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Set BucketPolicyOnly.Enabled = true --> UBLA should be set to enabled in
@@ -290,7 +294,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		PublicAccessPrevention: "enforced",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Set both BucketPolicyOnly.Enabled = true and
@@ -306,7 +310,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		PublicAccessPrevention: "enforced",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Set UBLA.Enabled=false and BucketPolicyOnly.Enabled=false --> UBLA
@@ -318,7 +322,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		PublicAccessPrevention: "enforced",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Test that setting PublicAccessPrevention to "unspecified" leads to the
@@ -329,7 +333,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		PublicAccessPrevention: "inherited",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Test that setting PublicAccessPrevention to "inherited" leads to the
@@ -340,7 +344,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		PublicAccessPrevention: "inherited",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Test that setting RPO to default is propagated in the proto.
@@ -348,7 +352,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 	got = attrs.toRawBucket()
 	want.Rpo = rpoDefault
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Re-enable UBLA and confirm that it does not affect the PAP setting.
@@ -361,7 +365,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		PublicAccessPrevention: "inherited",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Disable UBLA and reset PAP to default. Confirm that the IAM config is set
@@ -371,7 +375,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 	got = attrs.toRawBucket()
 	want.IamConfiguration = nil
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 }
 
@@ -446,7 +450,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		Website:          &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
 		StorageClass:     "NEARLINE",
 		Autoclass:        &raw.BucketAutoclass{Enabled: true, TerminalStorageClass: "ARCHIVE", ForceSendFields: []string{"Enabled"}},
-		SoftDeletePolicy: &raw.BucketSoftDeletePolicy{RetentionDurationSeconds: 3600},
+		SoftDeletePolicy: &raw.BucketSoftDeletePolicy{RetentionDurationSeconds: 3600, ForceSendFields: []string{"RetentionDurationSeconds"}},
 		ForceSendFields:  []string{"DefaultEventBasedHold", "Lifecycle", "Autoclass"},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
@@ -475,7 +479,10 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 	}
 	got = au3.toRawBucket()
 	want = &raw.Bucket{
-		NullFields: []string{"RetentionPolicy", "Encryption", "Logging", "Website", "SoftDeletePolicy"},
+		NullFields: []string{"RetentionPolicy", "Encryption", "Logging", "Website"},
+		SoftDeletePolicy: &raw.BucketSoftDeletePolicy{
+			ForceSendFields: []string{"RetentionDurationSeconds"},
+		},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
 		t.Error(msg)
@@ -497,7 +504,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Set BucketPolicyOnly.Enabled = true --> UBLA should be set to enabled in
@@ -515,7 +522,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Set both BucketPolicyOnly.Enabled = true and
@@ -535,7 +542,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Set UBLA.Enabled=false and BucketPolicyOnly.Enabled=false --> UBLA
@@ -554,7 +561,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// UBLA.Enabled will have precedence above BucketPolicyOnly.Enabled if both
@@ -573,7 +580,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Set an empty Lifecycle and verify that it will be sent.
@@ -588,7 +595,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		ForceSendFields: []string{"Lifecycle"},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 }
 
@@ -603,6 +610,7 @@ func TestNewBucket(t *testing.T) {
 		Metageneration:        3,
 		StorageClass:          "sc",
 		TimeCreated:           "2017-10-23T04:05:06Z",
+		Updated:               "2024-08-21T17:24:53Z",
 		Versioning:            &raw.BucketVersioning{Enabled: true},
 		Labels:                labels,
 		Billing:               &raw.BucketBilling{RequesterPays: true},
@@ -665,6 +673,7 @@ func TestNewBucket(t *testing.T) {
 			EffectiveTime:            "2017-10-23T04:05:06Z",
 			RetentionDurationSeconds: 3600,
 		},
+		HierarchicalNamespace: &raw.BucketHierarchicalNamespace{Enabled: true},
 	}
 	want := &BucketAttrs{
 		Name:                  "name",
@@ -673,6 +682,7 @@ func TestNewBucket(t *testing.T) {
 		MetaGeneration:        3,
 		StorageClass:          "sc",
 		Created:               time.Date(2017, 10, 23, 4, 5, 6, 0, time.UTC),
+		Updated:               time.Date(2024, 8, 21, 17, 24, 53, 0, time.UTC),
 		VersioningEnabled:     true,
 		Labels:                labels,
 		Etag:                  "Zkyw9ACJZUvcYmlFaKGChzhmtnE/dt1zHSfweiWpwzdGsqXwuJZqiD0",
@@ -726,6 +736,7 @@ func TestNewBucket(t *testing.T) {
 			EffectiveTime:     time.Date(2017, 10, 23, 4, 5, 6, 0, time.UTC),
 			RetentionDuration: time.Hour,
 		},
+		HierarchicalNamespace: &HierarchicalNamespace{Enabled: true},
 	}
 	got, err := newBucket(rb)
 	if err != nil {
@@ -763,6 +774,7 @@ func TestNewBucketFromProto(t *testing.T) {
 		Rpo:            rpoAsyncTurbo,
 		Metageneration: int64(39),
 		CreateTime:     toProtoTimestamp(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
+		UpdateTime:     toProtoTimestamp(time.Date(2024, 1, 2, 3, 4, 5, 6, time.UTC)),
 		Labels:         map[string]string{"label": "value"},
 		Cors: []*storagepb.Bucket_Cors{
 			{
@@ -784,6 +796,9 @@ func TestNewBucketFromProto(t *testing.T) {
 		SoftDeletePolicy: &storagepb.Bucket_SoftDeletePolicy{
 			RetentionDuration: durationpb.New(3 * time.Hour),
 			EffectiveTime:     toProtoTimestamp(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
+		},
+		HierarchicalNamespace: &storagepb.Bucket_HierarchicalNamespace{
+			Enabled: true,
 		},
 		Lifecycle: &storagepb.Bucket_Lifecycle{
 			Rule: []*storagepb.Bucket_Lifecycle_Rule{
@@ -813,6 +828,7 @@ func TestNewBucketFromProto(t *testing.T) {
 		RPO:                      RPOAsyncTurbo,
 		MetaGeneration:           39,
 		Created:                  time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+		Updated:                  time.Date(2024, 1, 2, 3, 4, 5, 6, time.UTC),
 		Labels:                   map[string]string{"label": "value"},
 		CORS: []CORS{
 			{
@@ -829,6 +845,9 @@ func TestNewBucketFromProto(t *testing.T) {
 		SoftDeletePolicy: &SoftDeletePolicy{
 			EffectiveTime:     time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 			RetentionDuration: time.Hour * 3,
+		},
+		HierarchicalNamespace: &HierarchicalNamespace{
+			Enabled: true,
 		},
 		Lifecycle: Lifecycle{
 			Rules: []LifecycleRule{{
@@ -874,11 +893,12 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 				ResponseHeaders: []string{"FOO"},
 			},
 		},
-		Encryption:       &BucketEncryption{DefaultKMSKeyName: "key"},
-		Logging:          &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
-		Website:          &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
-		Autoclass:        &Autoclass{Enabled: true, TerminalStorageClass: "ARCHIVE"},
-		SoftDeletePolicy: &SoftDeletePolicy{RetentionDuration: time.Hour * 2},
+		Encryption:            &BucketEncryption{DefaultKMSKeyName: "key"},
+		Logging:               &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
+		Website:               &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
+		Autoclass:             &Autoclass{Enabled: true, TerminalStorageClass: "ARCHIVE"},
+		SoftDeletePolicy:      &SoftDeletePolicy{RetentionDuration: time.Hour * 2},
+		HierarchicalNamespace: &HierarchicalNamespace{Enabled: true},
 		Lifecycle: Lifecycle{
 			Rules: []LifecycleRule{{
 				Action: LifecycleAction{
@@ -925,11 +945,12 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 				ResponseHeader: []string{"FOO"},
 			},
 		},
-		Encryption:       &storagepb.Bucket_Encryption{DefaultKmsKey: "key"},
-		Logging:          &storagepb.Bucket_Logging{LogBucket: "projects/_/buckets/lb", LogObjectPrefix: "p"},
-		Website:          &storagepb.Bucket_Website{MainPageSuffix: "mps", NotFoundPage: "404"},
-		Autoclass:        &storagepb.Bucket_Autoclass{Enabled: true, TerminalStorageClass: &autoclassTSC},
-		SoftDeletePolicy: &storagepb.Bucket_SoftDeletePolicy{RetentionDuration: durationpb.New(2 * time.Hour)},
+		Encryption:            &storagepb.Bucket_Encryption{DefaultKmsKey: "key"},
+		Logging:               &storagepb.Bucket_Logging{LogBucket: "projects/_/buckets/lb", LogObjectPrefix: "p"},
+		Website:               &storagepb.Bucket_Website{MainPageSuffix: "mps", NotFoundPage: "404"},
+		Autoclass:             &storagepb.Bucket_Autoclass{Enabled: true, TerminalStorageClass: &autoclassTSC},
+		SoftDeletePolicy:      &storagepb.Bucket_SoftDeletePolicy{RetentionDuration: durationpb.New(2 * time.Hour)},
+		HierarchicalNamespace: &storagepb.Bucket_HierarchicalNamespace{Enabled: true},
 		Lifecycle: &storagepb.Bucket_Lifecycle{
 			Rule: []*storagepb.Bucket_Lifecycle_Rule{
 				{
@@ -971,7 +992,7 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 		PublicAccessPrevention: "enforced",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Set BucketPolicyOnly.Enabled = true --> UBLA should be set to enabled in
@@ -986,7 +1007,7 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 		PublicAccessPrevention: "enforced",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Set both BucketPolicyOnly.Enabled = true and
@@ -1002,7 +1023,7 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 		PublicAccessPrevention: "enforced",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Set UBLA.Enabled=false and BucketPolicyOnly.Enabled=false --> UBLA
@@ -1014,7 +1035,7 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 		PublicAccessPrevention: "enforced",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Test that setting PublicAccessPrevention to "unspecified" leads to the
@@ -1025,7 +1046,7 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 		PublicAccessPrevention: "inherited",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Test that setting PublicAccessPrevention to "inherited" leads to the
@@ -1036,7 +1057,7 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 		PublicAccessPrevention: "inherited",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Test that setting RPO to default is propagated in the proto.
@@ -1044,7 +1065,7 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 	got = attrs.toProtoBucket()
 	want.Rpo = rpoDefault
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Re-enable UBLA and confirm that it does not affect the PAP setting.
@@ -1057,7 +1078,7 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 		PublicAccessPrevention: "inherited",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 
 	// Disable UBLA and reset PAP to default. Confirm that the IAM config is set
@@ -1067,7 +1088,7 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 	got = attrs.toProtoBucket()
 	want.IamConfig = nil
 	if msg := testutil.Diff(got, want); msg != "" {
-		t.Errorf(msg)
+		t.Errorf("%v", msg)
 	}
 }
 
@@ -1104,7 +1125,7 @@ func TestBucketRetryer(t *testing.T) {
 					Multiplier: 3,
 				},
 				policy:      RetryAlways,
-				maxAttempts: expectedAttempts(5),
+				maxAttempts: intPointer(5),
 				shouldRetry: func(err error) bool { return false },
 			},
 		},
@@ -1136,7 +1157,7 @@ func TestBucketRetryer(t *testing.T) {
 				return b.Retryer(WithMaxAttempts(5))
 			},
 			want: &retryConfig{
-				maxAttempts: expectedAttempts(5),
+				maxAttempts: intPointer(5),
 			},
 		},
 		{
@@ -1289,6 +1310,16 @@ func TestDetectDefaultGoogleAccessID(t *testing.T) {
 				}
 				if id != tc.serviceAccount {
 					t.Errorf("service account not found correctly; got: %s, want: %s", id, tc.serviceAccount)
+				}
+			} else if metadata.OnGCE() {
+				// On GCE, we fall back to the default service account. Check that's
+				// what happened.
+				defaultServiceAccount, err := metadata.Email("default")
+				if err != nil {
+					t.Errorf("could not load metadata service account for fallback: %v", err)
+				}
+				if id != defaultServiceAccount {
+					t.Errorf("service account not found correctly on fallback; got: %s, want: %s", id, defaultServiceAccount)
 				}
 			} else if err == nil {
 				t.Error("expected error but detectDefaultGoogleAccessID did not return one")
@@ -1611,5 +1642,32 @@ func TestBucketSignedURL_Endpoint_Emulator_Host(t *testing.T) {
 				s.Fatalf("bucket.SidnedURL:\n\tgot:\t%v\n\twant:\t%v", got, test.want)
 			}
 		})
+	}
+}
+
+// Test retry logic for default SignBlob function used by BucketHandle.SignedURL.
+// This cannot be tested via the emulator so we use a mock.
+func TestDefaultSignBlobRetry(t *testing.T) {
+	ctx := context.Background()
+
+	// Use mock transport. Return 2 503 responses before succeeding.
+	mt := mockTransport{}
+	mt.addResult(&http.Response{StatusCode: 503, Body: bodyReader("")}, nil)
+	mt.addResult(&http.Response{StatusCode: 503, Body: bodyReader("")}, nil)
+	mt.addResult(&http.Response{StatusCode: 200, Body: bodyReader("{}")}, nil)
+
+	client, err := NewClient(ctx, option.WithHTTPClient(&http.Client{Transport: &mt}))
+	if err != nil {
+		t.Fatalf("NewClient: %v", err)
+	}
+
+	b := client.Bucket("fakebucket")
+
+	if _, err := b.SignedURL("fakeobj", &SignedURLOptions{
+		Method:    "GET",
+		Expires:   time.Now().Add(time.Hour),
+		SignBytes: b.defaultSignBytesFunc("example@example.com"),
+	}); err != nil {
+		t.Fatalf("BucketHandle.SignedURL: %v", err)
 	}
 }

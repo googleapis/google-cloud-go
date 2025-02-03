@@ -37,6 +37,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"os"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -48,17 +49,27 @@ import (
 	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
+	control "cloud.google.com/go/storage/control/apiv2"
+	"cloud.google.com/go/storage/control/apiv2/controlpb"
+	"cloud.google.com/go/storage/experimental"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/googleapis/gax-go/v2/apierror"
+	"go.opentelemetry.io/contrib/detectors/gcp"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/sdk/metric"
+	"go.opentelemetry.io/otel/sdk/metric/metricdata"
+	"go.opentelemetry.io/otel/sdk/resource"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	"go.opentelemetry.io/otel/sdk/trace/tracetest"
 	"golang.org/x/oauth2/google"
+	"golang.org/x/sync/errgroup"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	itesting "google.golang.org/api/iterator/testing"
 	"google.golang.org/api/option"
-	raw "google.golang.org/api/storage/v1"
+	"google.golang.org/api/option/internaloption"
 	"google.golang.org/api/transport"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -88,10 +99,10 @@ var (
 	newTestClient func(ctx context.Context, opts ...option.ClientOption) (*Client, error)
 	replaying     bool
 	testTime      time.Time
+	controlClient *control.StorageControlClient
 )
 
 func TestMain(m *testing.M) {
-	grpc.EnableTracing = true
 	cleanup := initIntegrationTest()
 	cleanupEmulatorClients := initEmulatorClients()
 	exit := m.Run()
@@ -195,6 +206,12 @@ func initIntegrationTest() func() error {
 			return func() error { return nil }
 		}
 		defer client.Close()
+		// Create storage control client; in some cases this is needed for test
+		// setup and cleanup.
+		controlClient, err = control.NewStorageControlClient(ctx)
+		if err != nil {
+			log.Fatalf("NewStorageControlClient: %v", err)
+		}
 		if err := client.Bucket(bucketName).Create(ctx, testutil.ProjID(), nil); err != nil {
 			log.Fatalf("creating bucket %q: %v", bucketName, err)
 		}
@@ -206,7 +223,7 @@ func initIntegrationTest() func() error {
 }
 
 func initUIDsAndRand(t time.Time) {
-	uidSpace = uid.NewSpace("", &uid.Options{Time: t, Short: true})
+	uidSpace = uid.NewSpace("", &uid.Options{Time: t})
 	bucketName = testPrefix + uidSpace.New()
 	uidSpaceObjects = uid.NewSpace("obj", &uid.Options{Time: t})
 	grpcBucketName = grpcTestPrefix + uidSpace.New()
@@ -251,12 +268,14 @@ func testConfigGRPC(ctx context.Context, t *testing.T, opts ...option.ClientOpti
 
 // initTransportClients initializes Storage clients for each supported transport.
 func initTransportClients(ctx context.Context, t *testing.T, opts ...option.ClientOption) map[string]*Client {
-	withJSON := append(opts, WithJSONReads())
+	withJSON := append(slices.Clone(opts), WithJSONReads())
+	withBidi := append(slices.Clone(opts), experimental.WithGRPCBidiReads())
 	return map[string]*Client{
 		"http": testConfig(ctx, t, opts...),
 		"grpc": testConfigGRPC(ctx, t, opts...),
 		// TODO: remove jsonReads when support for XML reads is dropped
 		"jsonReads": testConfig(ctx, t, withJSON...),
+		"bidiReads": testConfigGRPC(ctx, t, withBidi...),
 	}
 }
 
@@ -280,10 +299,17 @@ func multiTransportTest(ctx context.Context, t *testing.T,
 
 			bucket := bucketName
 			prefix := testPrefix
-			if transport == "grpc" {
+			if transport == "grpc" || transport == "bidiReads" {
 				bucket = grpcBucketName
 				prefix = grpcTestPrefix
 			}
+
+			// Don't let any individual test run more than 5 minutes. This eases debugging if
+			// test runs get stalled out.
+			ctx, cancel := context.WithTimeout(ctx, 5*time.Minute)
+			t.Cleanup(func() {
+				cancel()
+			})
 
 			test(t, ctx, bucket, prefix, client)
 		})
@@ -311,11 +337,432 @@ var readCases = []readCase{
 	},
 }
 
+func TestIntegration_MultiRangeDownloader(t *testing.T) {
+	multiTransportTest(skipHTTP("gRPC implementation specific test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		content := make([]byte, 5<<20)
+		rand.New(rand.NewSource(0)).Read(content)
+		objName := "MultiRangeDownloader"
+
+		// Upload test data.
+		obj := client.Bucket(bucket).Object(objName)
+		if err := writeObject(ctx, obj, "text/plain", content); err != nil {
+			t.Fatal(err)
+		}
+		defer func() {
+			if err := obj.Delete(ctx); err != nil {
+				log.Printf("failed to delete test object: %v", err)
+			}
+		}()
+		reader, err := obj.NewMultiRangeDownloader(ctx)
+		if err != nil {
+			t.Fatalf("NewMultiRangeDownloader: %v", err)
+		}
+		res := make([]multiRangeDownloaderOutput, 3)
+		callback := func(x, y int64, err error) {
+			res[0].offset = x
+			res[0].limit = y
+			res[0].err = err
+		}
+		callback1 := func(x, y int64, err error) {
+			res[1].offset = x
+			res[1].limit = y
+			res[1].err = err
+		}
+		callback2 := func(x, y int64, err error) {
+			res[2].offset = x
+			res[2].limit = y
+			res[2].err = err
+		}
+		// Read All At Once.
+		reader.Add(&res[0].buf, 0, int64(len(content)), callback)
+		// Read from end. We will read the last 10 bytes.
+		reader.Add(&res[1].buf, -10, 0, callback1)
+		// Read from Front. This will read the starting 10 bytes.
+		reader.Add(&res[2].buf, 0, 10, callback2)
+		reader.Wait()
+		for _, k := range res {
+			if k.offset < 0 {
+				k.offset += int64(len(content))
+			}
+			want := content[k.offset:]
+			if k.limit != 0 {
+				want = content[k.offset : k.offset+k.limit]
+			}
+			if !bytes.Equal(k.buf.Bytes(), want) {
+				t.Errorf("Error in read range offset %v, limit %v, got: %v; want: %v",
+					k.offset, k.limit, k.buf.Bytes(), want)
+			}
+			if k.err != nil {
+				t.Errorf("read range %v to %v : %v", k.offset, k.limit, k.err)
+			}
+		}
+		if err = reader.Close(); err != nil {
+			t.Fatalf("Error while closing reader %v", err)
+		}
+	})
+}
+
+// TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader tests for potential deadlocks
+// or race conditions when multiple goroutines call Add() concurrently on the same MRD multiple times.
+func TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader(t *testing.T) {
+	multiTransportTest(skipHTTP("gRPC implementation specific test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		content := make([]byte, 5<<20)
+		rand.New(rand.NewSource(0)).Read(content)
+		objName := "MultiRangeDownloader"
+
+		// Upload test data.
+		obj := client.Bucket(bucket).Object(objName)
+		if err := writeObject(ctx, obj, "text/plain", content); err != nil {
+			t.Fatal(err)
+		}
+		defer func() {
+			if err := obj.Delete(ctx); err != nil {
+				log.Printf("failed to delete test object: %v", err)
+			}
+		}()
+		reader, err := obj.NewMultiRangeDownloader(ctx)
+		if err != nil {
+			t.Fatalf("NewMultiRangeDownloader: %v", err)
+		}
+
+		// Create a top-level errgroup for each goroutine
+		eG, ctx := errgroup.WithContext(ctx)
+		goRoutineCount := 10
+		perGoRoutineAddCount := 10
+		res := make([]multiRangeDownloaderOutput, goRoutineCount*perGoRoutineAddCount)
+
+		// Create multiple go routines to read concurrently.
+		for i := 0; i < goRoutineCount; i++ {
+			groupID := i
+			eG.Go(func() error {
+
+				// Subgroup for tasks within this goroutine
+				subGroup, _ := errgroup.WithContext(ctx)
+
+				for j := 0; j < perGoRoutineAddCount; j++ {
+					taskID := perGoRoutineAddCount*groupID + j
+					subGroup.Go(func() error {
+						// Use a channel to receive the callback results
+						done := make(chan error, 1)
+
+						reader.Add(&res[taskID].buf, 0, int64(len(content)), func(x, y int64, err error) {
+							res[taskID].offset = x
+							res[taskID].limit = y
+							res[taskID].err = err
+							// Send each callback result to subGroup.
+							done <- err
+						})
+						return <-done
+					})
+				}
+				// Wait for all tasks in current sub-group to complete to send result to main error group.
+				return subGroup.Wait()
+			})
+		}
+
+		// Wait for all top-level goroutines to complete
+		if err := eG.Wait(); err != nil {
+			t.Errorf("Possible deadlock or race condition detected during concurrent Add calls: %v\n", err)
+		}
+
+		reader.Wait()
+		for _, k := range res {
+			if k.offset < 0 {
+				k.offset += int64(len(content))
+			}
+			want := content[k.offset:]
+			if k.limit != 0 {
+				want = content[k.offset : k.offset+k.limit]
+			}
+			if k.err != nil {
+				t.Errorf("read range %v to %v : %v", k.offset, k.limit, k.err)
+			}
+			if !bytes.Equal(k.buf.Bytes(), want) {
+				t.Errorf("Error in read range offset %v, limit %v, got: %v; want: %v",
+					k.offset, k.limit, len(k.buf.Bytes()), len(want))
+			}
+		}
+		if err = reader.Close(); err != nil {
+			t.Fatalf("Error while closing reader %v", err)
+		}
+	})
+}
+
+func TestIntegration_MRDWithNonRetriableError(t *testing.T) {
+	multiTransportTest(skipHTTP("gRPC implementation specific test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		content := make([]byte, 5<<20)
+		rand.New(rand.NewSource(0)).Read(content)
+		objName := "mrdnonretry"
+		// Upload test data.
+		obj := client.Bucket(bucket).Object(objName)
+		if err := writeObject(ctx, obj, "text/plain", content); err != nil {
+			t.Fatal(err)
+		}
+		defer func() {
+			if err := obj.Delete(ctx); err != nil {
+				log.Printf("failed to delete test object: %v", err)
+			}
+		}()
+		reader, err := obj.NewMultiRangeDownloader(ctx)
+		if err != nil {
+			t.Fatalf("NewMultiRangeDownloader: %v", err)
+		}
+		res := make([]multiRangeDownloaderOutput, 3)
+		callback := func(x, y int64, err error) {
+			res[0].offset = x
+			res[0].limit = y
+			res[0].err = err
+		}
+		callback1 := func(x, y int64, err error) {
+			res[1].offset = x
+			res[1].limit = y
+			res[1].err = err
+		}
+		callback2 := func(x, y int64, err error) {
+			res[2].offset = x
+			res[2].limit = y
+			res[2].err = err
+		}
+		// Read All At Once.
+		// Just note specifically that the first range can succeed or fail depending on whether
+		// it completes before or after the other ranges return an error.
+		reader.Add(&res[0].buf, 0, 0, callback)
+		// This should throw an error complaining the error offset greater than size of object.
+		reader.Add(&res[1].buf, int64(2*len(content)), 0, callback1)
+		// A negative read_limit will cause an error.
+		reader.Add(&res[2].buf, 0, -10, callback2)
+		reader.Wait()
+		for i, k := range res {
+			// if we get nil error for any callback other than first, that should be an error.
+			if i == 0 && k.err == nil && !bytes.Equal(content, k.buf.Bytes()) {
+				t.Errorf("Error in read range offset %v, limit %v, got: %v; want: %v",
+					k.offset, k.limit, len(k.buf.Bytes()), len(content))
+			}
+			if k.err == nil && i != 0 {
+				t.Errorf("read range %v to %v want err: nil, got: %v", k.offset, k.limit, k.err)
+			}
+		}
+		if err = reader.Close(); err != nil {
+			t.Fatalf("Error while closing reader %v", err)
+		}
+	})
+}
+
+// Test in a GCE environment expected to be located in one of:
+// - us-west1-a, us-west1-b, us-west-c
+//
+// The test skips when ran outside of a GCE instance and us-west-*.
+//
+// Test cases for direct connectivity (DC) check:
+// 1. DC detected with co-located GCS bucket in us-west1
+// 2. DC not detected with multi region bucket in EU
+// 3. DC not detected with dual region bucket in EUR4
+// 4. DC not detected with regional bucket in EUROPE-WEST1
+func TestIntegration_DetectDirectConnectivityInGCE(t *testing.T) {
+	t.Skip("Does not work in kokoro yet")
+	ctx := skipHTTP("grpc only test")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
+		h := testHelper{t}
+		// Using Resoource Detector to detect if test is being ran inside GCE
+		// if so, the test expects Direct Connectivity to be detected.
+		// Otherwise, it will only validate that Direct Connectivity was not
+		// detected.
+		// https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/resourcedetectionprocessor/README.md
+		detectedAttrs, err := resource.New(ctx, resource.WithDetectors(gcp.NewDetector()))
+		if err != nil {
+			t.Fatalf("resource.New: %v", err)
+		}
+		attrs := detectedAttrs.Set()
+		if v, exists := attrs.Value("cloud.platform"); !exists || v.AsString() != "gcp_compute_engine" {
+			t.Skip("only testable in a GCE instance")
+		}
+		if v, exists := attrs.Value("cloud.region"); !exists || !strings.Contains(strings.ToLower(v.AsString()), "us-west1") {
+			t.Skip("inside a GCE instance but region is not us-west1")
+		}
+		for _, test := range []struct {
+			name                     string
+			attrs                    *BucketAttrs
+			expectDirectConnectivity bool
+		}{
+			{
+				name:                     "co-located-bucket",
+				attrs:                    &BucketAttrs{Location: "us-west1"},
+				expectDirectConnectivity: true,
+			},
+			{
+				name:  "not-colocated-multi-region-bucket",
+				attrs: &BucketAttrs{Location: "EU"},
+			},
+			{
+				name:  "not-colocated-dual-region-bucket",
+				attrs: &BucketAttrs{Location: "EUR4"},
+			},
+			{
+				name:  "not-colocated-region-bucket",
+				attrs: &BucketAttrs{Location: "EUROPE-WEST1"},
+			},
+			// TODO: Add a test for DC dual-region with us-west1 when supported
+		} {
+			t.Run(test.name, func(t *testing.T) {
+				newBucketName := prefix + uidSpace.New()
+				newBucket := client.Bucket(newBucketName)
+				h.mustCreate(newBucket, testutil.ProjID(), test.attrs)
+				defer h.mustDeleteBucket(newBucket)
+				err := CheckDirectConnectivitySupported(ctx, newBucketName)
+				if err != nil && test.expectDirectConnectivity {
+					t.Fatalf("CheckDirectConnectivitySupported: expected direct connectivity but failed: %v", err)
+				}
+				if err == nil && !test.expectDirectConnectivity {
+					t.Fatalf("CheckDirectConnectivitySupported: detected direct connectivity when not expected")
+				}
+			})
+		}
+	})
+}
+
+// Test handles the case when Direct Connectivity is disabled which causes
+// "grpc.lb.locality" to return ""
+func TestIntegration_DoNotDetectDirectConnectivityWhenDisabled(t *testing.T) {
+	ctx := skipHTTP("grpc only test")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
+		err := CheckDirectConnectivitySupported(ctx, bucket)
+		if err == nil {
+			t.Fatal("CheckDirectConnectivitySupported: expected error but none returned")
+		}
+		if err != nil && !strings.Contains(err.Error(), "direct connectivity not detected") {
+			t.Fatalf("CheckDirectConnectivitySupported: failed on a different error %v", err)
+		}
+	}, internaloption.EnableDirectPath(false))
+}
+
+// TestIntegration_MetricsEnablement does not use multiTransportTest because it
+// only has to run once, and creating the manual reader multiple times can
+// cause it to be registered multiple times to packages that enable by default.
+func TestIntegration_MetricsEnablement(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+
+	var (
+		ctx           = context.Background()
+		prefix        = grpcTestPrefix
+		newBucketName = prefix + uidSpace.New()
+	)
+
+	mr := metric.NewManualReader()
+	client := testConfigGRPC(ctx, t, withTestMetricReader(mr))
+
+	b := client.Bucket(newBucketName)
+
+	if err := b.Create(ctx, testutil.ProjID(), nil); err != nil {
+		t.Fatalf("BucketHandle.Create(%q): %v", newBucketName, err)
+	}
+
+	it := b.Objects(ctx, nil)
+	_, err := it.Next()
+	if err != iterator.Done {
+		t.Errorf("Objects.Next: expected iterator.Done got %v", err)
+	}
+	rm := metricdata.ResourceMetrics{}
+	if err := mr.Collect(ctx, &rm); err != nil {
+		t.Fatalf("ManualReader.Collect: %v", err)
+	}
+	metricCheck := map[string]bool{
+		"grpc.client.attempt.started":                            false,
+		"grpc.client.attempt.duration":                           false,
+		"grpc.client.attempt.sent_total_compressed_message_size": false,
+		"grpc.client.attempt.rcvd_total_compressed_message_size": false,
+		"grpc.client.call.duration":                              false,
+	}
+	for _, sm := range rm.ScopeMetrics {
+		for _, m := range sm.Metrics {
+			metricCheck[m.Name] = true
+		}
+	}
+	for k, v := range metricCheck {
+		if !v {
+			t.Errorf("metric %v not found", k)
+		}
+	}
+
+	if err := mr.Shutdown(ctx); err != nil {
+		t.Fatalf("manual reader shutdown: %v", err)
+	}
+}
+
+func TestIntegration_MetricsEnablementInGCE(t *testing.T) {
+	t.Skip("flaky test for rls metrics; other metrics are tested TestIntegration_MetricsEnablement")
+	ctx := skipHTTP("grpc only test")
+	mr := metric.NewManualReader()
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
+		detectedAttrs, err := resource.New(ctx, resource.WithDetectors(gcp.NewDetector()))
+		if err != nil {
+			t.Fatalf("resource.New: %v", err)
+		}
+		attrs := detectedAttrs.Set()
+		if v, exists := attrs.Value("cloud.platform"); !exists || v.AsString() != "gcp_compute_engine" {
+			t.Skip("only testable in a GCE instance")
+		}
+		instance, exists := attrs.Value("host.id")
+		if !exists {
+			t.Skip("GCE instance id not detected")
+		}
+		if v, exists := attrs.Value("cloud.region"); !exists || !strings.Contains(strings.ToLower(v.AsString()), "us-west1") {
+			t.Skip("inside a GCE instance but region is not us-west1")
+		}
+		it := client.Buckets(ctx, testutil.ProjID())
+		_, _ = it.Next()
+		rm := metricdata.ResourceMetrics{}
+		if err := mr.Collect(ctx, &rm); err != nil {
+			t.Errorf("ManualReader.Collect: %v", err)
+		}
+
+		monitoredResourceWant := map[string]string{
+			"gcp.resource_type": "storage.googleapis.com/Client",
+			"api":               "grpc",
+			"cloud_platform":    "gcp_compute_engine",
+			"host_id":           instance.AsString(),
+			"location":          "us-west1",
+			"project_id":        testutil.ProjID(),
+			"instance_id":       "ignore", // generated UUID
+		}
+		for _, attr := range rm.Resource.Attributes() {
+			want := monitoredResourceWant[string(attr.Key)]
+			if want == "ignore" {
+				continue
+			}
+			got := attr.Value.AsString()
+			if want != got {
+				t.Errorf("got: %v want: %v", got, want)
+			}
+		}
+		metricCheck := map[string]bool{
+			"grpc.client.attempt.started":                            false,
+			"grpc.client.attempt.duration":                           false,
+			"grpc.client.attempt.sent_total_compressed_message_size": false,
+			"grpc.client.attempt.rcvd_total_compressed_message_size": false,
+			"grpc.client.call.duration":                              false,
+			"grpc.lb.rls.cache_entries":                              false,
+			"grpc.lb.rls.cache_size":                                 false,
+			"grpc.lb.rls.default_target_picks":                       false,
+		}
+		for _, sm := range rm.ScopeMetrics {
+			for _, m := range sm.Metrics {
+				metricCheck[m.Name] = true
+			}
+		}
+		for k, v := range metricCheck {
+			if !v {
+				t.Errorf("metric %v not found", k)
+			}
+		}
+	}, withTestMetricReader(mr))
+}
+
 func TestIntegration_BucketCreateDelete(t *testing.T) {
-	ctx := skipJSONReads(context.Background(), "no reads in test")
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		projectID := testutil.ProjID()
-
 		labels := map[string]string{
 			"l1":    "v1",
 			"empty": "",
@@ -443,12 +890,12 @@ func TestIntegration_BucketCreateDelete(t *testing.T) {
 				b := client.Bucket(newBucketName)
 
 				if err := b.Create(ctx, projectID, test.attrs); err != nil {
-					t.Fatalf("bucket create: %v", err)
+					t.Fatalf("BucketHandle.Create(%q): %v", newBucketName, err)
 				}
 
 				gotAttrs, err := b.Attrs(ctx)
 				if err != nil {
-					t.Fatalf("bucket attrs: %v", err)
+					t.Fatalf("BucketHandle.Attrs(%q): %v", newBucketName, err)
 				}
 
 				// All newly created buckets should conform to the following:
@@ -484,10 +931,10 @@ func TestIntegration_BucketCreateDelete(t *testing.T) {
 
 				// Delete the bucket and check that the deletion was succesful
 				if err := b.Delete(ctx); err != nil {
-					t.Fatalf("bucket delete: %v", err)
+					t.Fatalf("BucketHandle.Delete(%q): %v", newBucketName, err)
 				}
 				_, err = b.Attrs(ctx)
-				if err != ErrBucketNotExist {
+				if !errors.Is(err, ErrBucketNotExist) {
 					t.Fatalf("expected ErrBucketNotExist, got %v", err)
 				}
 			})
@@ -496,7 +943,7 @@ func TestIntegration_BucketCreateDelete(t *testing.T) {
 }
 
 func TestIntegration_BucketLifecycle(t *testing.T) {
-	ctx := skipJSONReads(context.Background(), "no reads in test")
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
@@ -543,7 +990,7 @@ func TestIntegration_BucketLifecycle(t *testing.T) {
 }
 
 func TestIntegration_BucketUpdate(t *testing.T) {
-	ctx := skipJSONReads(context.Background(), "no reads in test")
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
@@ -574,6 +1021,9 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 		if !testutil.Equal(attrs.Labels, wantLabels) {
 			t.Fatalf("add labels: got %v, want %v", attrs.Labels, wantLabels)
 		}
+		if !attrs.Created.Before(attrs.Updated) {
+			t.Errorf("got attrs.Updated %v before attrs.Created %v, want Attrs.Updated to be after", attrs.Updated, attrs.Created)
+		}
 
 		// Turn off versioning again; add and remove some more labels.
 		ua = BucketAttrsToUpdate{VersioningEnabled: false}
@@ -591,6 +1041,9 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 		}
 		if !testutil.Equal(attrs.Labels, wantLabels) {
 			t.Fatalf("got %v, want %v", attrs.Labels, wantLabels)
+		}
+		if !attrs.Created.Before(attrs.Updated) {
+			t.Errorf("got attrs.Updated %v before attrs.Created %v, want Attrs.Updated to be after", attrs.Updated, attrs.Created)
 		}
 
 		// Configure a lifecycle
@@ -611,6 +1064,9 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 		if !testutil.Equal(attrs.Lifecycle, wantLifecycle) {
 			t.Fatalf("got %v, want %v", attrs.Lifecycle, wantLifecycle)
 		}
+		if !attrs.Created.Before(attrs.Updated) {
+			t.Errorf("got attrs.Updated %v before attrs.Created %v, want Attrs.Updated to be after", attrs.Updated, attrs.Created)
+		}
 		// Check that StorageClass has "STANDARD" value for unset field by default
 		// before passing new value.
 		wantStorageClass := "STANDARD"
@@ -623,6 +1079,9 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 		if !testutil.Equal(attrs.StorageClass, wantStorageClass) {
 			t.Fatalf("got %v, want %v", attrs.StorageClass, wantStorageClass)
 		}
+		if !attrs.Created.Before(attrs.Updated) {
+			t.Errorf("got attrs.Updated %v before attrs.Created %v, want Attrs.Updated to be after", attrs.Updated, attrs.Created)
+		}
 
 		// Empty update should succeed without changing the bucket.
 		gotAttrs, err := b.Update(ctx, BucketAttrsToUpdate{})
@@ -632,11 +1091,14 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 		if !testutil.Equal(attrs, gotAttrs) {
 			t.Fatalf("empty update: got %v, want %v", gotAttrs, attrs)
 		}
+		if !attrs.Created.Before(attrs.Updated) {
+			t.Errorf("got attrs.Updated %v before attrs.Created %v, want Attrs.Updated to be after", attrs.Updated, attrs.Created)
+		}
 	})
 }
 
 func TestIntegration_BucketPolicyOnly(t *testing.T) {
-	ctx := skipJSONReads(context.Background(), "no reads in test")
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
@@ -726,7 +1188,7 @@ func TestIntegration_BucketPolicyOnly(t *testing.T) {
 }
 
 func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
-	ctx := skipJSONReads(context.Background(), "no reads in test")
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 		bkt := client.Bucket(prefix + uidSpace.New())
@@ -809,7 +1271,7 @@ func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
 }
 
 func TestIntegration_PublicAccessPrevention(t *testing.T) {
-	ctx := skipJSONReads(context.Background(), "no reads in test")
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
@@ -903,7 +1365,7 @@ func TestIntegration_PublicAccessPrevention(t *testing.T) {
 }
 
 func TestIntegration_Autoclass(t *testing.T) {
-	ctx := skipJSONReads(context.Background(), "no reads in test")
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
@@ -969,7 +1431,7 @@ func TestIntegration_Autoclass(t *testing.T) {
 }
 
 func TestIntegration_ConditionalDelete(t *testing.T) {
-	ctx := skipJSONReads(context.Background(), "no reads in test")
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		h := testHelper{t}
 
@@ -993,6 +1455,50 @@ func TestIntegration_ConditionalDelete(t *testing.T) {
 		}
 		if err := o.Generation(gen).Delete(ctx); err != nil {
 			t.Fatalf("final delete failed: %v", err)
+		}
+	})
+}
+
+func TestIntegration_HierarchicalNamespace(t *testing.T) {
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
+		h := testHelper{t}
+
+		// Create a bucket with HNS enabled.
+		hnsBucketName := prefix + uidSpace.New()
+		bkt := client.Bucket(hnsBucketName)
+		h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{
+			UniformBucketLevelAccess: UniformBucketLevelAccess{Enabled: true},
+			HierarchicalNamespace:    &HierarchicalNamespace{Enabled: true},
+		})
+		defer h.mustDeleteBucket(bkt)
+
+		attrs, err := bkt.Attrs(ctx)
+		if err != nil {
+			t.Fatalf("bkt(%q).Attrs: %v", hnsBucketName, err)
+		}
+
+		if got, want := (attrs.HierarchicalNamespace), (&HierarchicalNamespace{Enabled: true}); cmp.Diff(got, want) != "" {
+			t.Errorf("HierarchicalNamespace: got %+v, want %+v", got, want)
+		}
+
+		// Folder creation should work on HNS bucket, but not on standard bucket.
+		req := &controlpb.CreateFolderRequest{
+			Parent:   fmt.Sprintf("projects/_/buckets/%v", hnsBucketName),
+			FolderId: "foo/",
+			Folder:   &controlpb.Folder{},
+		}
+		if _, err := controlClient.CreateFolder(ctx, req); err != nil {
+			t.Errorf("creating folder in bucket %q: %v", hnsBucketName, err)
+		}
+
+		req2 := &controlpb.CreateFolderRequest{
+			Parent:   fmt.Sprintf("projects/_/buckets/%v", bucket),
+			FolderId: "foo/",
+			Folder:   &controlpb.Folder{},
+		}
+		if _, err := controlClient.CreateFolder(ctx, req2); status.Code(err) != codes.FailedPrecondition {
+			t.Errorf("creating folder in non-HNS bucket %q: got error %v, want FailedPrecondition", bucket, err)
 		}
 	})
 }
@@ -1241,7 +1747,7 @@ func TestIntegration_ConditionalDownload(t *testing.T) {
 }
 
 func TestIntegration_ObjectIteration(t *testing.T) {
-	ctx := skipJSONReads(context.Background(), "no reads in test")
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		// Reset testTime, 'cause object last modification time should be within 5 min
 		// from test (test iteration if -count passed) start time.
@@ -1359,7 +1865,7 @@ func TestIntegration_ObjectIteration(t *testing.T) {
 }
 
 func TestIntegration_ObjectIterationMatchGlob(t *testing.T) {
-	multiTransportTest(skipJSONReads(context.Background(), "no reads in test"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+	multiTransportTest(skipExtraReadAPIs(context.Background(), "no reads in test"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		// Reset testTime, 'cause object last modification time should be within 5 min
 		// from test (test iteration if -count passed) start time.
 		testTime = time.Now().UTC()
@@ -1418,8 +1924,7 @@ func TestIntegration_ObjectIterationMatchGlob(t *testing.T) {
 }
 
 func TestIntegration_ObjectIterationManagedFolder(t *testing.T) {
-	ctx := skipGRPC("not yet implemented in gRPC")
-	multiTransportTest(skipJSONReads(ctx, "no reads in test"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+	multiTransportTest(skipExtraReadAPIs(context.Background(), "no reads in test"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		newBucketName := prefix + uidSpace.New()
 		h := testHelper{t}
 		bkt := client.Bucket(newBucketName).Retryer(WithPolicy(RetryAlways))
@@ -1457,19 +1962,21 @@ func TestIntegration_ObjectIterationManagedFolder(t *testing.T) {
 			contents[obj] = c
 		}
 
-		// Create a managed folder. This requires using the Apiary client as this is not available
-		// in the veneer layer.
-		// TODO: change to use storage control client once available.
-		call := client.raw.ManagedFolders.Insert(newBucketName, &raw.ManagedFolder{Name: "mf"})
-		mf, err := call.Context(ctx).Do()
+		req := &controlpb.CreateManagedFolderRequest{
+			Parent:          fmt.Sprintf("projects/_/buckets/%s", newBucketName),
+			ManagedFolder:   &controlpb.ManagedFolder{},
+			ManagedFolderId: "mf",
+		}
+		mf, err := controlClient.CreateManagedFolder(ctx, req)
 		if err != nil {
 			t.Fatalf("creating managed folder: %v", err)
 		}
 
 		t.Cleanup(func() {
-			// TODO: add this cleanup logic to killBucket as well once gRPC support is available.
-			call := client.raw.ManagedFolders.Delete(newBucketName, mf.Name)
-			call.Context(ctx).Do()
+			req := &controlpb.DeleteManagedFolderRequest{
+				Name: mf.Name,
+			}
+			controlClient.DeleteManagedFolder(ctx, req)
 		})
 
 		// Test that managed folders are only included when IncludeFoldersAsPrefixes is set.
@@ -1525,7 +2032,7 @@ func TestIntegration_ObjectIterationManagedFolder(t *testing.T) {
 }
 
 func TestIntegration_ObjectUpdate(t *testing.T) {
-	ctx := skipJSONReads(context.Background(), "no reads in test")
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		b := client.Bucket(bucket)
 
@@ -1757,7 +2264,7 @@ func TestIntegration_ObjectCompose(t *testing.T) {
 }
 
 func TestIntegration_Copy(t *testing.T) {
-	ctx := skipJSONReads(context.Background(), "no reads in test")
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
 		h := testHelper{t}
 
@@ -1935,7 +2442,7 @@ func TestIntegration_Encoding(t *testing.T) {
 
 		// Test NotFound.
 		_, err = bkt.Object("obj-not-exists").NewReader(ctx)
-		if err != ErrObjectNotExist {
+		if !errors.Is(err, ErrObjectNotExist) {
 			t.Errorf("Object should not exist, err found to be %v", err)
 		}
 	})
@@ -2101,7 +2608,7 @@ func testObjectsIterateWithProjection(t *testing.T, bkt *BucketHandle) {
 }
 
 func TestIntegration_SignedURL(t *testing.T) {
-	multiTransportTest(skipJSONReads(context.Background(), "no reads in test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(skipExtraReadAPIs(context.Background(), "no reads in test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		// To test SignedURL, we need a real user email and private key. Extract them
 		// from the JSON key file.
 		jwtConf, err := testutil.JWTConfig()
@@ -2221,7 +2728,7 @@ func TestIntegration_SignedURL(t *testing.T) {
 }
 
 func TestIntegration_SignedURL_WithEncryptionKeys(t *testing.T) {
-	multiTransportTest(skipJSONReads(context.Background(), "no reads in test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(skipExtraReadAPIs(context.Background(), "no reads in test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 
 		// To test SignedURL, we need a real user email and private key. Extract
 		// them from the JSON key file.
@@ -2308,7 +2815,7 @@ func TestIntegration_SignedURL_WithEncryptionKeys(t *testing.T) {
 }
 
 func TestIntegration_SignedURL_EmptyStringObjectName(t *testing.T) {
-	multiTransportTest(skipJSONReads(context.Background(), "no reads in test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(skipExtraReadAPIs(context.Background(), "no reads in test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 
 		// To test SignedURL, we need a real user email and private key. Extract them
 		// from the JSON key file.
@@ -2340,11 +2847,10 @@ func TestIntegration_SignedURL_EmptyStringObjectName(t *testing.T) {
 			t.Fatal(err)
 		}
 	})
-
 }
 
 func TestIntegration_BucketACL(t *testing.T) {
-	ctx := skipJSONReads(context.Background(), "no reads in test")
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
@@ -2427,7 +2933,7 @@ func TestIntegration_BucketACL(t *testing.T) {
 }
 
 func TestIntegration_ValidObjectNames(t *testing.T) {
-	ctx := skipJSONReads(context.Background(), "no reads in test")
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		bkt := client.Bucket(bucket)
 
@@ -2463,7 +2969,7 @@ func TestIntegration_ValidObjectNames(t *testing.T) {
 }
 
 func TestIntegration_WriterContentType(t *testing.T) {
-	ctx := skipJSONReads(context.Background(), "no reads in test")
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		obj := client.Bucket(bucket).Object("content")
 		testCases := []struct {
@@ -2517,7 +3023,7 @@ func TestIntegration_WriterContentType(t *testing.T) {
 }
 
 func TestIntegration_WriterChunksize(t *testing.T) {
-	ctx := skipJSONReads(context.Background(), "no reads in test")
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		obj := client.Bucket(bucket).Object("writer-chunksize-test" + uidSpaceObjects.New())
 		objSize := 1<<10<<10 + 1 // 1 Mib + 1 byte
@@ -2650,7 +3156,7 @@ func TestIntegration_Encryption(t *testing.T) {
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		h := testHelper{t}
 
-		obj := client.Bucket(bucket).Object("customer-encryption")
+		obj := client.Bucket(bucket).Object("customer-encryption").Retryer(WithPolicy(RetryAlways))
 		key := []byte("my-secret-AES-256-encryption-key")
 		keyHash := sha256.Sum256(key)
 		keyHashB64 := base64.StdEncoding.EncodeToString(keyHash[:])
@@ -2730,8 +3236,8 @@ func TestIntegration_Encryption(t *testing.T) {
 
 		// We create 2 objects here and we can interleave operations to get around
 		// the rate limit for object mutation operations (create, update, and delete).
-		obj2 := client.Bucket(bucket).Object("customer-encryption-2")
-		obj4 := client.Bucket(bucket).Object("customer-encryption-4")
+		obj2 := client.Bucket(bucket).Object("customer-encryption-2").Retryer(WithPolicy(RetryAlways))
+		obj4 := client.Bucket(bucket).Object("customer-encryption-4").Retryer(WithPolicy(RetryAlways))
 
 		// Copying an object without the key should fail.
 		if _, err := obj4.CopierFrom(obj).Run(ctx); err == nil {
@@ -2764,7 +3270,7 @@ func TestIntegration_Encryption(t *testing.T) {
 		if _, err := obj2.Key(key).CopierFrom(obj2.Key(key2)).Run(ctx); err != nil {
 			t.Fatal(err)
 		}
-		obj3 := client.Bucket(bucket).Object("customer-encryption-3")
+		obj3 := client.Bucket(bucket).Object("customer-encryption-3").Retryer(WithPolicy(RetryAlways))
 		// Composing without keys should fail.
 		if _, err := obj3.ComposerFrom(obj, obj2).Run(ctx); err == nil {
 			t.Fatal("want error, got nil")
@@ -2785,7 +3291,7 @@ func TestIntegration_Encryption(t *testing.T) {
 		// encrypted destination object.
 		_, err := obj4.CopierFrom(obj2.Key(key)).Run(ctx) // unencrypt obj2
 		if err != nil {
-			t.Fatal(err)
+			t.Fatalf("Copier.Run: %v", err)
 		}
 		if _, err := obj3.Key(key).ComposerFrom(obj4).Run(ctx); err == nil {
 			t.Fatal("got nil, want error")
@@ -2793,26 +3299,37 @@ func TestIntegration_Encryption(t *testing.T) {
 	})
 }
 
-func TestIntegration_NonexistentObjectRead(t *testing.T) {
+func TestIntegration_NonexistentObject(t *testing.T) {
 	t.Parallel()
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
-		_, err := client.Bucket(bucket).Object("object-does-not-exist").NewReader(ctx)
+		nonExistentObj := client.Bucket(bucket).Object("object-does-not-exist")
+		_, err := nonExistentObj.NewReader(ctx)
 		if !errors.Is(err, ErrObjectNotExist) {
-			t.Errorf("Objects: got %v, want ErrObjectNotExist", err)
+			t.Errorf("Read: got %q, want ErrObjectNotExist", err)
+		}
+
+		_, err = client.Bucket(bucket).Object("dst").CopierFrom(nonExistentObj).Run(ctx)
+		if !errors.Is(err, ErrObjectNotExist) {
+			t.Errorf("Copy: got %q, want ErrObjectNotExist", err)
+		}
+
+		_, err = client.Bucket(bucket).Object("dst").ComposerFrom(nonExistentObj).Run(ctx)
+		if !errors.Is(err, ErrObjectNotExist) {
+			t.Errorf("Compose: got %q, want ErrObjectNotExist", err)
 		}
 	})
 }
 
 func TestIntegration_NonexistentBucket(t *testing.T) {
 	t.Parallel()
-	ctx := skipJSONReads(context.Background(), "no reads in test")
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
 		bkt := client.Bucket(prefix + uidSpace.New())
-		if _, err := bkt.Attrs(ctx); err != ErrBucketNotExist {
+		if _, err := bkt.Attrs(ctx); !errors.Is(err, ErrBucketNotExist) {
 			t.Errorf("Attrs: got %v, want ErrBucketNotExist", err)
 		}
 		it := bkt.Objects(ctx, nil)
-		if _, err := it.Next(); err != ErrBucketNotExist {
+		if _, err := it.Next(); !errors.Is(err, ErrBucketNotExist) {
 			t.Errorf("Objects: got %v, want ErrBucketNotExist", err)
 		}
 	})
@@ -2823,7 +3340,7 @@ func TestIntegration_PerObjectStorageClass(t *testing.T) {
 		defaultStorageClass = "STANDARD"
 		newStorageClass     = "NEARLINE"
 	)
-	ctx := skipJSONReads(context.Background(), "no reads in test")
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		h := testHelper{t}
@@ -2898,7 +3415,7 @@ func TestIntegration_NoUnicodeNormalization(t *testing.T) {
 
 func TestIntegration_HashesOnUpload(t *testing.T) {
 	// Check that the user can provide hashes on upload, and that these are checked.
-	ctx := skipJSONReads(context.Background(), "no reads in test")
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		obj := client.Bucket(bucket).Object("hashesOnUpload-1")
 		data := []byte("I can't wait to be verified")
@@ -2955,7 +3472,7 @@ func TestIntegration_HashesOnUpload(t *testing.T) {
 }
 
 func TestIntegration_BucketIAM(t *testing.T) {
-	ctx := skipJSONReads(context.Background(), "no reads in test")
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
 		h := testHelper{t}
 		bkt := client.Bucket(prefix + uidSpace.New())
@@ -3066,7 +3583,7 @@ func TestIntegration_RequesterPaysOwner(t *testing.T) {
 		} {
 			t.Run(test.desc, func(t *testing.T) {
 				h := testHelper{t}
-				ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
+				ctx, cancel := context.WithTimeout(ctx, time.Minute)
 				defer cancel()
 
 				printTestCase := func() string {
@@ -3536,7 +4053,7 @@ func TestIntegration_PublicObject(t *testing.T) {
 func TestIntegration_ReadCRC(t *testing.T) {
 	// Test that the checksum is handled correctly when reading files.
 	// For gzipped files, see https://github.com/GoogleCloudPlatform/google-cloud-dotnet/issues/1641.
-	ctx := skipJSONReads(skipGRPC("transcoding not supported"), "https://github.com/googleapis/google-cloud-go/issues/7786")
+	ctx := skipExtraReadAPIs(skipGRPC("transcoding not supported"), "https://github.com/googleapis/google-cloud-go/issues/7786")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		const (
 			// This is an uncompressed file.
@@ -3570,78 +4087,87 @@ func TestIntegration_ReadCRC(t *testing.T) {
 			offset, length int64
 			readCompressed bool // don't decompress a gzipped file
 
-			wantErr   bool
-			wantCheck bool // Should Reader try to check the CRC?
+			wantErr          bool
+			wantCheck        bool // Should Reader try to check the CRC?
+			wantDecompressed bool
 		}{
 			{
-				desc:           "uncompressed, entire file",
-				obj:            client.Bucket(uncompressedBucket).Object(uncompressedObject),
-				offset:         0,
-				length:         -1,
-				readCompressed: false,
-				wantCheck:      true,
+				desc:             "uncompressed, entire file",
+				obj:              client.Bucket(uncompressedBucket).Object(uncompressedObject),
+				offset:           0,
+				length:           -1,
+				readCompressed:   false,
+				wantCheck:        true,
+				wantDecompressed: false,
 			},
 			{
-				desc:           "uncompressed, entire file, don't decompress",
-				obj:            client.Bucket(uncompressedBucket).Object(uncompressedObject),
-				offset:         0,
-				length:         -1,
-				readCompressed: true,
-				wantCheck:      true,
+				desc:             "uncompressed, entire file, don't decompress",
+				obj:              client.Bucket(uncompressedBucket).Object(uncompressedObject),
+				offset:           0,
+				length:           -1,
+				readCompressed:   true,
+				wantCheck:        true,
+				wantDecompressed: false,
 			},
 			{
-				desc:           "uncompressed, suffix",
-				obj:            client.Bucket(uncompressedBucket).Object(uncompressedObject),
-				offset:         1,
-				length:         -1,
-				readCompressed: false,
-				wantCheck:      false,
+				desc:             "uncompressed, suffix",
+				obj:              client.Bucket(uncompressedBucket).Object(uncompressedObject),
+				offset:           1,
+				length:           -1,
+				readCompressed:   false,
+				wantCheck:        false,
+				wantDecompressed: false,
 			},
 			{
-				desc:           "uncompressed, prefix",
-				obj:            client.Bucket(uncompressedBucket).Object(uncompressedObject),
-				offset:         0,
-				length:         18,
-				readCompressed: false,
-				wantCheck:      false,
+				desc:             "uncompressed, prefix",
+				obj:              client.Bucket(uncompressedBucket).Object(uncompressedObject),
+				offset:           0,
+				length:           18,
+				readCompressed:   false,
+				wantCheck:        false,
+				wantDecompressed: false,
 			},
 			{
 				// When a gzipped file is unzipped on read, we can't verify the checksum
 				// because it was computed against the zipped contents. We can detect
 				// this case using http.Response.Uncompressed.
-				desc:           "compressed, entire file, unzipped",
-				obj:            client.Bucket(bucket).Object(gzippedObject),
-				offset:         0,
-				length:         -1,
-				readCompressed: false,
-				wantCheck:      false,
+				desc:             "compressed, entire file, unzipped",
+				obj:              client.Bucket(bucket).Object(gzippedObject),
+				offset:           0,
+				length:           -1,
+				readCompressed:   false,
+				wantCheck:        false,
+				wantDecompressed: true,
 			},
 			{
 				// When we read a gzipped file uncompressed, it's like reading a regular file:
 				// the served content and the CRC match.
-				desc:           "compressed, entire file, read compressed",
-				obj:            client.Bucket(bucket).Object(gzippedObject),
-				offset:         0,
-				length:         -1,
-				readCompressed: true,
-				wantCheck:      true,
+				desc:             "compressed, entire file, read compressed",
+				obj:              client.Bucket(bucket).Object(gzippedObject),
+				offset:           0,
+				length:           -1,
+				readCompressed:   true,
+				wantCheck:        true,
+				wantDecompressed: false,
 			},
 			{
-				desc:           "compressed, partial, server unzips",
-				obj:            client.Bucket(bucket).Object(gzippedObject),
-				offset:         1,
-				length:         8,
-				readCompressed: false,
-				wantErr:        true, // GCS can't serve part of a gzipped object
-				wantCheck:      false,
+				desc:             "compressed, partial, server unzips",
+				obj:              client.Bucket(bucket).Object(gzippedObject),
+				offset:           1,
+				length:           8,
+				readCompressed:   false,
+				wantErr:          true, // GCS can't serve part of a gzipped object
+				wantCheck:        false,
+				wantDecompressed: true,
 			},
 			{
-				desc:           "compressed, partial, read compressed",
-				obj:            client.Bucket(bucket).Object(gzippedObject),
-				offset:         1,
-				length:         8,
-				readCompressed: true,
-				wantCheck:      false,
+				desc:             "compressed, partial, read compressed",
+				obj:              client.Bucket(bucket).Object(gzippedObject),
+				offset:           1,
+				length:           8,
+				readCompressed:   true,
+				wantCheck:        false,
+				wantDecompressed: false,
 			},
 		} {
 			t.Run(test.desc, func(t *testing.T) {
@@ -3659,13 +4185,17 @@ func TestIntegration_ReadCRC(t *testing.T) {
 						if got, want := r.checkCRC, test.wantCheck; got != want {
 							t.Errorf("%s, checkCRC: got %t, want %t", test.desc, got, want)
 						}
+
+						if got, want := r.Attrs.Decompressed, test.wantDecompressed; got != want {
+							t.Errorf("Attrs.Decompressed: got %t, want %t", got, want)
+						}
+
 						_, err = c.readFunc(r)
 						_ = r.Close()
 						if err != nil {
 							t.Fatalf("%s: %v", test.desc, err)
 						}
 					})
-
 				}
 			})
 		}
@@ -3674,7 +4204,7 @@ func TestIntegration_ReadCRC(t *testing.T) {
 
 func TestIntegration_CancelWrite(t *testing.T) {
 	// Verify that canceling the writer's context immediately stops uploading an object
-	ctx := skipJSONReads(context.Background(), "no reads in test")
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		bkt := client.Bucket(bucket)
 
@@ -3707,7 +4237,7 @@ func TestIntegration_CancelWrite(t *testing.T) {
 }
 
 func TestIntegration_UpdateCORS(t *testing.T) {
-	ctx := skipJSONReads(context.Background(), "no reads in test")
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		initialSettings := []CORS{
 			{
@@ -3777,7 +4307,7 @@ func TestIntegration_UpdateCORS(t *testing.T) {
 }
 
 func TestIntegration_UpdateDefaultEventBasedHold(t *testing.T) {
-	ctx := skipJSONReads(context.Background(), "no reads in test")
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
@@ -3805,7 +4335,7 @@ func TestIntegration_UpdateDefaultEventBasedHold(t *testing.T) {
 }
 
 func TestIntegration_UpdateEventBasedHold(t *testing.T) {
-	ctx := skipJSONReads(context.Background(), "no reads in test")
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		h := testHelper{t}
 
@@ -3838,7 +4368,7 @@ func TestIntegration_UpdateEventBasedHold(t *testing.T) {
 }
 
 func TestIntegration_UpdateTemporaryHold(t *testing.T) {
-	ctx := skipJSONReads(context.Background(), "no reads in test")
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		h := testHelper{t}
 
@@ -3871,7 +4401,7 @@ func TestIntegration_UpdateTemporaryHold(t *testing.T) {
 }
 
 func TestIntegration_UpdateRetentionExpirationTime(t *testing.T) {
-	ctx := skipJSONReads(context.Background(), "no reads in test")
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
@@ -3903,7 +4433,7 @@ func TestIntegration_UpdateRetentionExpirationTime(t *testing.T) {
 }
 
 func TestIntegration_CustomTime(t *testing.T) {
-	ctx := skipJSONReads(context.Background(), "no reads in test")
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		h := testHelper{t}
 
@@ -3955,7 +4485,7 @@ func TestIntegration_CustomTime(t *testing.T) {
 }
 
 func TestIntegration_UpdateRetentionPolicy(t *testing.T) {
-	ctx := skipJSONReads(context.Background(), "no reads in test")
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		initial := &RetentionPolicy{RetentionPeriod: time.Minute}
 
@@ -4011,7 +4541,7 @@ func TestIntegration_UpdateRetentionPolicy(t *testing.T) {
 }
 
 func TestIntegration_DeleteObjectInBucketWithRetentionPolicy(t *testing.T) {
-	ctx := skipJSONReads(context.Background(), "no reads in test")
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
@@ -4045,7 +4575,7 @@ func TestIntegration_DeleteObjectInBucketWithRetentionPolicy(t *testing.T) {
 }
 
 func TestIntegration_LockBucket(t *testing.T) {
-	ctx := skipJSONReads(context.Background(), "no reads in test")
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
@@ -4073,7 +4603,7 @@ func TestIntegration_LockBucket(t *testing.T) {
 }
 
 func TestIntegration_LockBucket_MetagenerationRequired(t *testing.T) {
-	ctx := skipJSONReads(context.Background(), "no reads in test")
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
@@ -4089,7 +4619,7 @@ func TestIntegration_LockBucket_MetagenerationRequired(t *testing.T) {
 }
 
 func TestIntegration_BucketObjectRetention(t *testing.T) {
-	ctx := skipJSONReads(skipGRPC("not yet available in gRPC - b/308194853"), "no reads in test")
+	ctx := skipExtraReadAPIs(skipGRPC("not yet available in gRPC - b/308194853"), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		setTrue, setFalse := true, false
 
@@ -4138,7 +4668,7 @@ func TestIntegration_BucketObjectRetention(t *testing.T) {
 }
 
 func TestIntegration_ObjectRetention(t *testing.T) {
-	ctx := skipJSONReads(skipGRPC("not yet available in gRPC - b/308194853"), "no reads in test")
+	ctx := skipExtraReadAPIs(skipGRPC("not yet available in gRPC - b/308194853"), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
@@ -4283,7 +4813,7 @@ func TestIntegration_ObjectRetention(t *testing.T) {
 }
 
 func TestIntegration_SoftDelete(t *testing.T) {
-	multiTransportTest(skipJSONReads(context.Background(), "does not test reads"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+	multiTransportTest(skipExtraReadAPIs(context.Background(), "does not test reads"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 		testStart := time.Now()
 
@@ -4316,19 +4846,41 @@ func TestIntegration_SoftDelete(t *testing.T) {
 			t.Fatalf("effective time of soft delete policy should not be in the past, got: %v, test start: %v", got.EffectiveTime, testStart.UTC())
 		}
 
-		// Update the soft delete policy.
+		// Update the soft delete policy of the bucket.
 		policy.RetentionDuration = time.Hour * 24 * 9
-
-		attrs, err = b.Update(ctx, BucketAttrsToUpdate{SoftDeletePolicy: policy})
-		if err != nil {
-			t.Fatalf("b.Update: %v", err)
+		// Retry to account for metadata propagation delay.
+		if err := retry(ctx, func() error {
+			attrs, err = b.Update(ctx, BucketAttrsToUpdate{SoftDeletePolicy: policy})
+			if err != nil {
+				return fmt.Errorf("b.Update: %v", err)
+			}
+			return nil
+		}, func() error {
+			if got, expect := attrs.SoftDeletePolicy.RetentionDuration, policy.RetentionDuration; got != expect {
+				return fmt.Errorf("mismatching retention duration; got: %+v, expected: %+v", got, expect)
+			}
+			return nil
+		}); err != nil {
+			t.Error(err)
 		}
 
-		if got, expect := attrs.SoftDeletePolicy.RetentionDuration, policy.RetentionDuration; got != expect {
+		// Create a second bucket with an empty soft delete policy to verify
+		// that this leads to no retention.
+		b2 := client.Bucket(prefix + uidSpace.New())
+		if err := b2.Create(ctx, testutil.ProjID(), &BucketAttrs{SoftDeletePolicy: &SoftDeletePolicy{}}); err != nil {
+			t.Fatalf("error creating bucket with soft delete disabled: %v", err)
+		}
+		t.Cleanup(func() { h.mustDeleteBucket(b2) })
+
+		attrs2, err := b2.Attrs(ctx)
+		if err != nil {
+			t.Fatalf("Attrs(%q): %v", b2.name, err)
+		}
+		if got, expect := attrs2.SoftDeletePolicy.RetentionDuration, time.Duration(0); got != expect {
 			t.Fatalf("mismatching retention duration; got: %+v, expected: %+v", got, expect)
 		}
 
-		// Create 2 objects and delete one of them.
+		// Create 2 objects in the original bucket and delete one of them.
 		deletedObject := b.Object("soft-delete" + uidSpaceObjects.New())
 		liveObject := b.Object("not-soft-delete" + uidSpaceObjects.New())
 
@@ -4387,8 +4939,14 @@ func TestIntegration_SoftDelete(t *testing.T) {
 		if oAttrs.SoftDeleteTime.Before(testStart) {
 			t.Fatalf("SoftDeleteTime of soft deleted object should not be in the past, got: %v, test start: %v", oAttrs.SoftDeleteTime, testStart.UTC())
 		}
-		if got, expected := oAttrs.HardDeleteTime, oAttrs.SoftDeleteTime.Add(policy.RetentionDuration); !expected.Equal(got) {
-			t.Fatalf("HardDeleteTime of soft deleted object should be equal to SoftDeleteTime+RetentionDuration, got: %v, expected: %v", got, expected)
+
+		if err := retry(ctx, func() error {
+			if got, expected := oAttrs.HardDeleteTime, oAttrs.SoftDeleteTime.Add(policy.RetentionDuration); !expected.Equal(got) {
+				return fmt.Errorf("HardDeleteTime of soft deleted object should be equal to SoftDeleteTime+RetentionDuration, got: %v, expected: %v", got, expected)
+			}
+			return nil
+		}, func() error { return nil }); err != nil {
+			t.Fatal(err)
 		}
 
 		// Restore a soft deleted object.
@@ -4405,6 +4963,78 @@ func TestIntegration_SoftDelete(t *testing.T) {
 
 		if got, expect := attrs.SoftDeletePolicy.RetentionDuration, time.Duration(0); got != expect {
 			t.Fatalf("mismatching retention duration; got: %+v, expected: %+v", got, expect)
+		}
+	})
+}
+
+func TestIntegration_ObjectMove(t *testing.T) {
+	multiTransportTest(skipExtraReadAPIs(context.Background(), "no reads in test"), t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
+		h := testHelper{t}
+		srcObj := "move-src-obj"
+		dstObj := "move-dst-obj"
+
+		// Create bucket with HNS enabled
+		bkt := client.Bucket(prefix + uidSpace.New())
+		attrs := &BucketAttrs{
+			HierarchicalNamespace:    &HierarchicalNamespace{Enabled: true},
+			UniformBucketLevelAccess: UniformBucketLevelAccess{Enabled: true},
+			SoftDeletePolicy:         &SoftDeletePolicy{RetentionDuration: 0},
+		}
+		if err := bkt.Create(ctx, testutil.ProjID(), attrs); err != nil {
+			t.Fatalf("error creating bucket with soft delete policy set: %v", err)
+		}
+		t.Cleanup(func() { h.mustDeleteBucket(bkt) })
+
+		// Create source object
+		obj := bkt.Object(srcObj)
+		w := obj.NewWriter(ctx)
+		h.mustWrite(w, randomContents())
+		t.Cleanup(func() { h.mustDeleteObject(bkt.Object(dstObj)) })
+
+		// Move object
+		objAttrs, err := obj.Move(ctx, MoveObjectDestination{Object: dstObj})
+		if err != nil {
+			t.Fatalf("ObjectHandle.Move: %v", err)
+		}
+		// Check attrs are populated.
+		if objAttrs == nil || objAttrs.Name == "" {
+			t.Errorf("wanted object attrs to be populated; got %+v", objAttrs)
+		}
+		// Check source object is no longer present.
+		if _, err := obj.Attrs(ctx); !errors.Is(err, ErrObjectNotExist) {
+			t.Errorf("source object: got err %v, want ErrObjectNotExist", err)
+		}
+
+		// Test that source and destination preconditions are applied appropriately.
+		srcObj2 := "move-src-obj2"
+		dstObj2 := "move-dst-obj2"
+
+		obj2 := bkt.Object(srcObj2)
+		w2 := obj2.NewWriter(ctx)
+		h.mustWrite(w2, randomContents())
+		t.Cleanup(func() { h.mustDeleteObject(bkt.Object(dstObj2)) })
+
+		// Bad source generation should cause 412.
+		_, err = obj2.If(Conditions{
+			GenerationMatch: 123,
+		}).Move(ctx, MoveObjectDestination{Object: dstObj2})
+		if err == nil || !(status.Code(err) == codes.FailedPrecondition || extractErrCode(err) == http.StatusPreconditionFailed) {
+			t.Errorf("ObjectHandle.Move: got err %v, want failed precondition (412)", err)
+		}
+
+		// Bad dest generation should also cause 412.
+		_, err = obj2.Move(ctx, MoveObjectDestination{Object: dstObj2, Conditions: &Conditions{GenerationMatch: 123}})
+		if err == nil || !(status.Code(err) == codes.FailedPrecondition || extractErrCode(err) == http.StatusPreconditionFailed) {
+			t.Errorf("ObjectHandle.Move: got err %v, want failed precondition (412)", err)
+		}
+
+		// Correctly applied preconditions should work.
+		_, err = obj2.If(Conditions{
+			GenerationMatch:     w2.Attrs().Generation,
+			MetagenerationMatch: w2.Attrs().Metageneration,
+		}).Move(ctx, MoveObjectDestination{Object: dstObj2, Conditions: &Conditions{DoesNotExist: true}})
+		if err != nil {
+			t.Fatalf("ObjectHandle.Move: %v", err)
 		}
 	})
 }
@@ -4503,7 +5133,7 @@ func TestIntegration_PredefinedACLs(t *testing.T) {
 	userOwner := prefixRoleACL{prefix: "user", role: RoleOwner}
 	authenticatedRead := entityRoleACL{entity: AllAuthenticatedUsers, role: RoleReader}
 
-	ctx := skipJSONReads(context.Background(), "no reads in test")
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
@@ -4624,7 +5254,7 @@ func TestIntegration_PredefinedACLs(t *testing.T) {
 }
 
 func TestIntegration_ServiceAccount(t *testing.T) {
-	ctx := skipJSONReads(context.Background(), "no reads in test")
+	ctx := skipExtraReadAPIs(skipGRPC("serviceaccount is not implemented"), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _, _ string, client *Client) {
 		s, err := client.ServiceAccount(ctx, testutil.ProjID())
 		if err != nil {
@@ -4690,6 +5320,10 @@ func TestIntegration_Reader(t *testing.T) {
 						if got, want := rc.ContentType(), "text/plain"; got != want {
 							t.Errorf("ContentType (%q) = %q; want %q", obj, got, want)
 						}
+
+						if got, want := rc.Attrs.CRC32C, crc32c(contents[obj]); got != want {
+							t.Errorf("CRC32C (%q) = %d; want %d", obj, got, want)
+						}
 						rc.Close()
 
 						// Check early close.
@@ -4753,6 +5387,15 @@ func TestIntegration_Reader(t *testing.T) {
 						}
 						if len(slurp) != int(r.want) {
 							t.Fatalf("%+v: RangeReader (%d, %d): Read %d bytes, wanted %d bytes", r.desc, r.offset, r.length, len(slurp), r.want)
+						}
+						// JSON does not return the crc32c on partial reads, so
+						// allow got == 0.
+						if got, want := rc.Attrs.CRC32C, crc32c(contents[obj]); got != 0 && got != want {
+							t.Errorf("RangeReader CRC32C (%q) = %d; want %d", obj, got, want)
+						}
+
+						if rc.Attrs.Decompressed {
+							t.Errorf("RangeReader Decompressed (%q) = want false, got %v", obj, rc.Attrs.Decompressed)
 						}
 
 						switch {
@@ -4835,15 +5478,56 @@ func TestIntegration_ReaderAttrs(t *testing.T) {
 			LastModified:    got.LastModified, // ignored, tested separately
 			Generation:      attrs.Generation,
 			Metageneration:  attrs.Metageneration,
+			CRC32C:          crc32c(c),
 		}
-		if got != want {
-			t.Fatalf("got\t%v,\nwanted\t%v", got, want)
+		if diff := cmp.Diff(got, want); diff != "" {
+			t.Fatalf("diff got vs want: %v", diff)
+		}
+	})
+}
+
+func TestIntegration_ReaderAttrs_Metadata(t *testing.T) {
+	multiTransportTest(skipJSONReads(context.Background(), "metadata on read not supported in JSON"), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
+		bkt := client.Bucket(bucket)
+
+		const defaultType = "text/plain"
+		o := bkt.Object("reader-attrs-metadata-obj")
+		c := randomContents()
+		if err := writeObject(ctx, o, defaultType, c); err != nil {
+			t.Errorf("Write for %v failed with %v", o.ObjectName(), err)
+		}
+		t.Cleanup(func() {
+			if err := o.Delete(ctx); err != nil {
+				log.Printf("failed to delete test object: %v", err)
+			}
+		})
+
+		oa, err := o.Update(ctx, ObjectAttrsToUpdate{Metadata: map[string]string{"Custom-Key": "custom-value", "Other-Key": "other-value"}})
+		if err != nil {
+			t.Fatal(err)
+		}
+		_ = oa
+
+		o = o.Generation(oa.Generation)
+		rc, err := o.NewReader(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		got := rc.Metadata()
+		want := map[string]string{
+			"Custom-Key": "custom-value",
+			"Other-Key":  "other-value",
+		}
+
+		if diff := cmp.Diff(got, want); diff != "" {
+			t.Fatalf("diff got vs want: %v", diff)
 		}
 	})
 }
 
 func TestIntegration_ReaderLastModified(t *testing.T) {
-	ctx := skipJSONReads(context.Background(), "LastModified not populated by json response")
+	ctx := skipExtraReadAPIs(context.Background(), "LastModified not populated by json response")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		testStart := time.Now()
 		b := client.Bucket(bucket)
@@ -4880,7 +5564,7 @@ func TestIntegration_ReaderLastModified(t *testing.T) {
 }
 
 func TestIntegration_ReaderCacheControl(t *testing.T) {
-	ctx := skipJSONReads(context.Background(), "Cache control header is populated differently by the json api")
+	ctx := skipExtraReadAPIs(context.Background(), "Cache control header is populated differently by the json api")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		b := client.Bucket(bucket)
 		o := b.Object("reader-cc" + uidSpaceObjects.New())
@@ -5134,13 +5818,17 @@ func TestIntegration_NewReaderWithContentEncodingGzip(t *testing.T) {
 				if g, w := blob2kBTo3kB, original; !bytes.Equal(g, w) {
 					t.Fatalf("Body mismatch\nGot:\n%s\n\nWant:\n%s", g, w)
 				}
+
+				if !r2kBTo3kB.Attrs.Decompressed {
+					t.Errorf("Attrs.Decompressed: want true, got %v", r2kBTo3kB.Attrs.Decompressed)
+				}
 			})
 		}
 	})
 }
 
 func TestIntegration_HMACKey(t *testing.T) {
-	ctx := skipJSONReads(context.Background(), "no reads in test")
+	ctx := skipExtraReadAPIs(skipGRPC("hmac not implemented"), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _, _ string, client *Client) {
 		client.SetRetry(WithPolicy(RetryAlways))
 
@@ -5246,7 +5934,7 @@ func TestIntegration_HMACKey(t *testing.T) {
 		}
 
 		_, err = hkh.Get(ctx)
-		if err != nil && !strings.Contains(err.Error(), "404") {
+		if err != nil && !errorIsStatusCode(err, http.StatusNotFound, codes.NotFound) {
 			// If the deleted key has already been garbage collected, a 404 is expected.
 			// Other errors should cause a failure and are not expected.
 			t.Fatalf("Unexpected error: %v", err)
@@ -5309,7 +5997,7 @@ func TestIntegration_PostPolicyV4(t *testing.T) {
 
 // Verify that custom scopes passed in by the user are applied correctly.
 func TestIntegration_Scopes(t *testing.T) {
-	ctx := skipJSONReads(context.Background(), "no reads in test")
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		bkt := client.Bucket(bucket)
@@ -5479,7 +6167,7 @@ func TestIntegration_PostPolicyV4_WithCreds(t *testing.T) {
 		t.Fatalf("unable to find test credentials: %v", err)
 	}
 
-	ctx := skipJSONReads(skipGRPC("creds capture logic must be implemented for gRPC constructor"), "test is not testing the read behaviour")
+	ctx := skipExtraReadAPIs(skipGRPC("creds capture logic must be implemented for gRPC constructor"), "test is not testing the read behaviour")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, clientWithCredentials *Client) {
 		h := testHelper{t}
 
@@ -5524,7 +6212,7 @@ func TestIntegration_PostPolicyV4_WithCreds(t *testing.T) {
 }
 
 func TestIntegration_PostPolicyV4_BucketDefault(t *testing.T) {
-	ctx := skipJSONReads(context.Background(), "test is not testing the read behaviour")
+	ctx := skipExtraReadAPIs(context.Background(), "test is not testing the read behaviour")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, clientWithoutPrivateKey *Client) {
 		h := testHelper{t}
 
@@ -5576,7 +6264,7 @@ func TestIntegration_PostPolicyV4_BucketDefault(t *testing.T) {
 // Tests that the same SignBytes function works for both
 // SignRawBytes on GeneratePostPolicyV4 and SignBytes on SignedURL
 func TestIntegration_PostPolicyV4_SignedURL_WithSignBytes(t *testing.T) {
-	ctx := skipJSONReads(context.Background(), "test is not testing the read behaviour")
+	ctx := skipExtraReadAPIs(context.Background(), "test is not testing the read behaviour")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
 
 		h := testHelper{t}
@@ -5650,18 +6338,50 @@ func TestIntegration_PostPolicyV4_SignedURL_WithSignBytes(t *testing.T) {
 	})
 }
 
-func TestIntegration_OCTracing(t *testing.T) {
+func TestIntegration_OTelTracing(t *testing.T) {
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
-		te := testutil.NewTestExporter()
-		defer te.Unregister()
+		te := newOpenTelemetryTestExporter()
+		defer te.Unregister(ctx)
 
 		bkt := client.Bucket(bucket)
 		bkt.Attrs(ctx)
 
-		if len(te.Spans) == 0 {
+		if len(te.Spans()) == 0 {
 			t.Fatalf("Expected some spans to be created, but got %d", 0)
 		}
 	})
+}
+
+// openTelemetryTestExporter is a test utility exporter. It should be created
+// with NewopenTelemetryTestExporter.
+type openTelemetryTestExporter struct {
+	exporter *tracetest.InMemoryExporter
+	tp       *sdktrace.TracerProvider
+}
+
+// newOpenTelemetryTestExporter creates a openTelemetryTestExporter with
+// underlying InMemoryExporter and TracerProvider from OpenTelemetry.
+func newOpenTelemetryTestExporter() *openTelemetryTestExporter {
+	exporter := tracetest.NewInMemoryExporter()
+	tp := sdktrace.NewTracerProvider(
+		sdktrace.WithSyncer(exporter),
+		sdktrace.WithSampler(sdktrace.AlwaysSample()),
+	)
+	otel.SetTracerProvider(tp)
+	return &openTelemetryTestExporter{
+		exporter: exporter,
+		tp:       tp,
+	}
+}
+
+// Spans returns the current in-memory stored spans.
+func (te *openTelemetryTestExporter) Spans() tracetest.SpanStubs {
+	return te.exporter.GetSpans()
+}
+
+// Unregister shuts down the underlying OpenTelemetry TracerProvider.
+func (te *openTelemetryTestExporter) Unregister(ctx context.Context) {
+	te.tp.Shutdown(ctx)
 }
 
 // verifySignedURL gets the bytes at the provided url and verifies them against the
@@ -5779,14 +6499,16 @@ type testHelper struct {
 func (h testHelper) mustCreate(b *BucketHandle, projID string, attrs *BucketAttrs) {
 	h.t.Helper()
 	if err := b.Create(context.Background(), projID, attrs); err != nil {
-		h.t.Fatalf("bucket create: %v", err)
+		h.t.Fatalf("BucketHandle(%q).Create: %v", b.BucketName(), err)
 	}
 }
 
 func (h testHelper) mustDeleteBucket(b *BucketHandle) {
 	h.t.Helper()
 	if err := b.Delete(context.Background()); err != nil {
-		h.t.Fatalf("bucket delete: %v", err)
+		if !errors.Is(err, ErrBucketNotExist) {
+			h.t.Fatalf("BucketHandle(%q).Delete: %v", b.BucketName(), err)
+		}
 	}
 }
 
@@ -5794,7 +6516,7 @@ func (h testHelper) mustBucketAttrs(b *BucketHandle) *BucketAttrs {
 	h.t.Helper()
 	attrs, err := b.Attrs(context.Background())
 	if err != nil {
-		h.t.Fatalf("bucket attrs: %v", err)
+		h.t.Fatalf("BucketHandle(%q).Attrs: %v", b.BucketName(), err)
 	}
 	return attrs
 }
@@ -5804,7 +6526,15 @@ func (h testHelper) mustUpdateBucket(b *BucketHandle, ua BucketAttrsToUpdate, me
 	h.t.Helper()
 	attrs, err := b.If(BucketConditions{MetagenerationMatch: metageneration}).Update(context.Background(), ua)
 	if err != nil {
-		h.t.Fatalf("update: %v", err)
+		var apiErr *apierror.APIError
+		if ok := errors.As(err, &apiErr); ok {
+			// Update may already have succeeded with retry; if so, log and grab attrs.
+			if apiErr.HTTPCode() == http.StatusPreconditionFailed || apiErr.GRPCStatus().Code() == codes.FailedPrecondition {
+				log.Println("bucket update failed due to precondition; likely succeeded but retried - grabbing attrs instead")
+				return h.mustBucketAttrs(b)
+			}
+		}
+		h.t.Fatalf("BucketHandle(%q).Update: %v", b.BucketName(), err)
 	}
 	return attrs
 }
@@ -5813,7 +6543,7 @@ func (h testHelper) mustObjectAttrs(o *ObjectHandle) *ObjectAttrs {
 	h.t.Helper()
 	attrs, err := o.Attrs(context.Background())
 	if err != nil {
-		h.t.Fatalf("object attrs: %v", err)
+		h.t.Fatalf("get object %q from bucket %q: %v", o.ObjectName(), o.BucketName(), err)
 	}
 	return attrs
 }
@@ -5828,16 +6558,20 @@ func (h testHelper) mustDeleteObject(o *ObjectHandle) {
 				return
 			}
 		}
-		h.t.Fatalf("delete object %s from bucket %s: %v", o.ObjectName(), o.BucketName(), err)
+		h.t.Fatalf("delete object %q from bucket %q: %v", o.ObjectName(), o.BucketName(), err)
 	}
 }
 
 // updating an object is conditionally idempotent on metageneration, so we pass that in to enable retries
+// mustUpdateObject will assume success if it receives a failed precondition response.
 func (h testHelper) mustUpdateObject(o *ObjectHandle, ua ObjectAttrsToUpdate, metageneration int64) *ObjectAttrs {
 	h.t.Helper()
 	attrs, err := o.If(Conditions{MetagenerationMatch: metageneration}).Update(context.Background(), ua)
 	if err != nil {
-		h.t.Fatalf("update: %v", err)
+		if errorIsStatusCode(err, http.StatusPreconditionFailed, codes.FailedPrecondition) {
+			h.t.Logf("update object %q from bucket %q failed due to precondition, assuming success", o.ObjectName(), o.BucketName())
+		}
+		h.t.Fatalf("update object %q from bucket %q: %v", o.ObjectName(), o.BucketName(), err)
 	}
 	return attrs
 }
@@ -5846,10 +6580,10 @@ func (h testHelper) mustWrite(w *Writer, data []byte) {
 	h.t.Helper()
 	if _, err := w.Write(data); err != nil {
 		w.Close()
-		h.t.Fatalf("write: %v", err)
+		h.t.Fatalf("write object %q to bucket %q: %v", w.o.ObjectName(), w.o.BucketName(), err)
 	}
 	if err := w.Close(); err != nil {
-		h.t.Fatalf("close write: %v", err)
+		h.t.Fatalf("close write object %q to bucket %q: %v", w.o.ObjectName(), w.o.BucketName(), err)
 	}
 }
 
@@ -5878,7 +6612,7 @@ func deleteObjectIfExists(o *ObjectHandle, retryOpts ...RetryOption) error {
 				return nil
 			}
 		}
-		return fmt.Errorf("delete object %s from bucket %s: %v", o.ObjectName(), o.BucketName(), err)
+		return fmt.Errorf("delete object %q from bucket %q: %v", o.ObjectName(), o.BucketName(), err)
 	}
 	return nil
 }
@@ -5994,6 +6728,59 @@ func killBucket(ctx context.Context, client *Client, bucketName string) error {
 			return fmt.Errorf("deleting %q: %v", bucketName+"/"+objAttrs.Name, err)
 		}
 	}
+	// Delete any managed folders.
+	req := &controlpb.ListManagedFoldersRequest{
+		Parent: fmt.Sprintf("projects/_/buckets/%s", bucketName),
+	}
+	mfIt := controlClient.ListManagedFolders(ctx, req)
+	for {
+		resp, err := mfIt.Next()
+		if err == iterator.Done {
+			break
+		}
+		// Buckets without UBLA will return this error for MF ops; skip.
+		if status.Code(err) == codes.FailedPrecondition {
+			break
+		}
+		if err != nil {
+			return err
+		}
+		deleteReq := &controlpb.DeleteManagedFolderRequest{
+			Name:          resp.Name,
+			AllowNonEmpty: true,
+		}
+		err = controlClient.DeleteManagedFolder(ctx, deleteReq)
+		if err != nil {
+			return err
+		}
+	}
+
+	// Delete any folders.
+	listFoldersReq := &controlpb.ListFoldersRequest{
+		Parent: fmt.Sprintf("projects/_/buckets/%s", bucketName),
+	}
+	folderIt := controlClient.ListFolders(ctx, listFoldersReq)
+	for {
+		resp, err := folderIt.Next()
+		if err == iterator.Done {
+			break
+		}
+		// Buckets without UBLA will return this error for Folder ops; skip.
+		if status.Code(err) == codes.FailedPrecondition {
+			break
+		}
+		if err != nil {
+			return err
+		}
+		deleteFolderReq := &controlpb.DeleteFolderRequest{
+			Name: resp.Name,
+		}
+		err = controlClient.DeleteFolder(ctx, deleteFolderReq)
+		if err != nil {
+			return err
+		}
+	}
+
 	// GCS is eventually consistent, so this delete may fail because the
 	// replica still sees an object in the bucket. We log the error and expect
 	// a later test run to delete the bucket.
@@ -6145,7 +6932,8 @@ func retryOnTransient400and403(err error) bool {
 }
 
 func skipGRPC(reason string) context.Context {
-	return context.WithValue(context.Background(), skipTransportTestKey("grpc"), reason)
+	ctx := context.WithValue(context.Background(), skipTransportTestKey("bidiReads"), reason)
+	return context.WithValue(ctx, skipTransportTestKey("grpc"), reason)
 }
 
 func skipHTTP(reason string) context.Context {
@@ -6153,12 +6941,19 @@ func skipHTTP(reason string) context.Context {
 	return context.WithValue(ctx, skipTransportTestKey("jsonReads"), reason)
 }
 
-func skipJSONReads(ctx context.Context, reason string) context.Context {
+// Skips JSON and gRPC Bidi reads. Use to reduce test matrix in tests which don't do
+// downloads.
+func skipExtraReadAPIs(ctx context.Context, reason string) context.Context {
+	ctx = context.WithValue(ctx, skipTransportTestKey("bidiReads"), reason)
 	return context.WithValue(ctx, skipTransportTestKey("jsonReads"), reason)
 }
 
 func skipXMLReads(ctx context.Context, reason string) context.Context {
 	return context.WithValue(ctx, skipTransportTestKey("http"), reason)
+}
+
+func skipJSONReads(ctx context.Context, reason string) context.Context {
+	return context.WithValue(ctx, skipTransportTestKey("jsonReads"), reason)
 }
 
 // Extract the error code if it's a googleapi.Error
@@ -6174,6 +6969,19 @@ func extractErrCode(err error) int {
 	return -1
 }
 
+// errorIsStatusCode returns true if err is a:
+//   - googleapi.Error with httpStatusCode, or
+//   - apierror.APIError with grpcStatusCode, or
+//   - grpc/status.Status error with grpcStatusCode.
+func errorIsStatusCode(err error, httpStatusCode int, grpcStatusCode codes.Code) bool {
+	var httpErr *googleapi.Error
+	var grpcErr *apierror.APIError
+
+	return (errors.As(err, &httpErr) && httpErr.Code == httpStatusCode) ||
+		(errors.As(err, &grpcErr) && grpcErr.GRPCStatus().Code() == grpcStatusCode) ||
+		status.Code(err) == grpcStatusCode
+}
+
 func setUpRequesterPaysBucket(ctx context.Context, t *testing.T, bucket, object string, addOwnerEmail string) {
 	t.Helper()
 	client := testConfig(ctx, t)
@@ -6181,14 +6989,10 @@ func setUpRequesterPaysBucket(ctx context.Context, t *testing.T, bucket, object 
 
 	requesterPaysBucket := client.Bucket(bucket)
 
-	// Create a requester-pays bucket.
-	h.mustCreate(requesterPaysBucket, testutil.ProjID(), &BucketAttrs{RequesterPays: true})
+	// Create a requester-pays bucket with ownership.
+	addACL := []ACLRule{{Entity: ACLEntity(fmt.Sprintf("user-%s", addOwnerEmail)), Role: RoleOwner}}
+	h.mustCreate(requesterPaysBucket, testutil.ProjID(), &BucketAttrs{RequesterPays: true, ACL: addACL})
 	t.Cleanup(func() { h.mustDeleteBucket(requesterPaysBucket) })
-
-	// Grant ownership
-	if err := requesterPaysBucket.ACL().Set(ctx, ACLEntity("user-"+addOwnerEmail), RoleOwner); err != nil {
-		t.Fatalf("set ACL: %v", err)
-	}
 
 	h.mustWrite(requesterPaysBucket.Object(object).NewWriter(ctx), []byte("hello"))
 	t.Cleanup(func() {
@@ -6198,4 +7002,8 @@ func setUpRequesterPaysBucket(ctx context.Context, t *testing.T, bucket, object 
 			t.Logf("could not delete object: %v", err)
 		}
 	})
+}
+
+func crc32c(b []byte) uint32 {
+	return crc32.Checksum(b, crc32.MakeTable(crc32.Castagnoli))
 }

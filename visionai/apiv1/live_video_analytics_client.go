@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	visionaipb "cloud.google.com/go/visionai/apiv1/visionaipb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -80,6 +79,7 @@ func defaultLiveVideoAnalyticsGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://visionai.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -620,6 +620,8 @@ type liveVideoAnalyticsGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewLiveVideoAnalyticsClient creates a new live video analytics client based on gRPC.
@@ -647,6 +649,7 @@ func NewLiveVideoAnalyticsClient(ctx context.Context, opts ...option.ClientOptio
 		connPool:                 connPool,
 		liveVideoAnalyticsClient: visionaipb.NewLiveVideoAnalyticsClient(connPool),
 		CallOptions:              &client.CallOptions,
+		logger:                   internaloption.GetLogger(opts),
 		operationsClient:         longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -681,7 +684,9 @@ func (c *liveVideoAnalyticsGRPCClient) Connection() *grpc.ClientConn {
 func (c *liveVideoAnalyticsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -708,6 +713,8 @@ type liveVideoAnalyticsRESTClient struct {
 
 	// Points back to the CallOptions field of the containing LiveVideoAnalyticsClient
 	CallOptions **LiveVideoAnalyticsCallOptions
+
+	logger *slog.Logger
 }
 
 // NewLiveVideoAnalyticsRESTClient creates a new live video analytics rest client.
@@ -726,6 +733,7 @@ func NewLiveVideoAnalyticsRESTClient(ctx context.Context, opts ...option.ClientO
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -750,6 +758,7 @@ func defaultLiveVideoAnalyticsRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://visionai.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -759,7 +768,9 @@ func defaultLiveVideoAnalyticsRESTClientOptions() []option.ClientOption {
 func (c *liveVideoAnalyticsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -796,7 +807,7 @@ func (c *liveVideoAnalyticsGRPCClient) ListPublicOperators(ctx context.Context, 
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.liveVideoAnalyticsClient.ListPublicOperators(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.liveVideoAnalyticsClient.ListPublicOperators, req, settings.GRPC, c.logger, "ListPublicOperators")
 			return err
 		}, opts...)
 		if err != nil {
@@ -831,7 +842,7 @@ func (c *liveVideoAnalyticsGRPCClient) ResolveOperatorInfo(ctx context.Context, 
 	var resp *visionaipb.ResolveOperatorInfoResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.liveVideoAnalyticsClient.ResolveOperatorInfo(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.liveVideoAnalyticsClient.ResolveOperatorInfo, req, settings.GRPC, c.logger, "ResolveOperatorInfo")
 		return err
 	}, opts...)
 	if err != nil {
@@ -860,7 +871,7 @@ func (c *liveVideoAnalyticsGRPCClient) ListOperators(ctx context.Context, req *v
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.liveVideoAnalyticsClient.ListOperators(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.liveVideoAnalyticsClient.ListOperators, req, settings.GRPC, c.logger, "ListOperators")
 			return err
 		}, opts...)
 		if err != nil {
@@ -895,7 +906,7 @@ func (c *liveVideoAnalyticsGRPCClient) GetOperator(ctx context.Context, req *vis
 	var resp *visionaipb.Operator
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.liveVideoAnalyticsClient.GetOperator(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.liveVideoAnalyticsClient.GetOperator, req, settings.GRPC, c.logger, "GetOperator")
 		return err
 	}, opts...)
 	if err != nil {
@@ -913,7 +924,7 @@ func (c *liveVideoAnalyticsGRPCClient) CreateOperator(ctx context.Context, req *
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.liveVideoAnalyticsClient.CreateOperator(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.liveVideoAnalyticsClient.CreateOperator, req, settings.GRPC, c.logger, "CreateOperator")
 		return err
 	}, opts...)
 	if err != nil {
@@ -933,7 +944,7 @@ func (c *liveVideoAnalyticsGRPCClient) UpdateOperator(ctx context.Context, req *
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.liveVideoAnalyticsClient.UpdateOperator(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.liveVideoAnalyticsClient.UpdateOperator, req, settings.GRPC, c.logger, "UpdateOperator")
 		return err
 	}, opts...)
 	if err != nil {
@@ -953,7 +964,7 @@ func (c *liveVideoAnalyticsGRPCClient) DeleteOperator(ctx context.Context, req *
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.liveVideoAnalyticsClient.DeleteOperator(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.liveVideoAnalyticsClient.DeleteOperator, req, settings.GRPC, c.logger, "DeleteOperator")
 		return err
 	}, opts...)
 	if err != nil {
@@ -984,7 +995,7 @@ func (c *liveVideoAnalyticsGRPCClient) ListAnalyses(ctx context.Context, req *vi
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.liveVideoAnalyticsClient.ListAnalyses(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.liveVideoAnalyticsClient.ListAnalyses, req, settings.GRPC, c.logger, "ListAnalyses")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1019,7 +1030,7 @@ func (c *liveVideoAnalyticsGRPCClient) GetAnalysis(ctx context.Context, req *vis
 	var resp *visionaipb.Analysis
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.liveVideoAnalyticsClient.GetAnalysis(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.liveVideoAnalyticsClient.GetAnalysis, req, settings.GRPC, c.logger, "GetAnalysis")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1037,7 +1048,7 @@ func (c *liveVideoAnalyticsGRPCClient) CreateAnalysis(ctx context.Context, req *
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.liveVideoAnalyticsClient.CreateAnalysis(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.liveVideoAnalyticsClient.CreateAnalysis, req, settings.GRPC, c.logger, "CreateAnalysis")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1057,7 +1068,7 @@ func (c *liveVideoAnalyticsGRPCClient) UpdateAnalysis(ctx context.Context, req *
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.liveVideoAnalyticsClient.UpdateAnalysis(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.liveVideoAnalyticsClient.UpdateAnalysis, req, settings.GRPC, c.logger, "UpdateAnalysis")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1077,7 +1088,7 @@ func (c *liveVideoAnalyticsGRPCClient) DeleteAnalysis(ctx context.Context, req *
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.liveVideoAnalyticsClient.DeleteAnalysis(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.liveVideoAnalyticsClient.DeleteAnalysis, req, settings.GRPC, c.logger, "DeleteAnalysis")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1108,7 +1119,7 @@ func (c *liveVideoAnalyticsGRPCClient) ListProcesses(ctx context.Context, req *v
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.liveVideoAnalyticsClient.ListProcesses(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.liveVideoAnalyticsClient.ListProcesses, req, settings.GRPC, c.logger, "ListProcesses")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1143,7 +1154,7 @@ func (c *liveVideoAnalyticsGRPCClient) GetProcess(ctx context.Context, req *visi
 	var resp *visionaipb.Process
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.liveVideoAnalyticsClient.GetProcess(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.liveVideoAnalyticsClient.GetProcess, req, settings.GRPC, c.logger, "GetProcess")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1161,7 +1172,7 @@ func (c *liveVideoAnalyticsGRPCClient) CreateProcess(ctx context.Context, req *v
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.liveVideoAnalyticsClient.CreateProcess(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.liveVideoAnalyticsClient.CreateProcess, req, settings.GRPC, c.logger, "CreateProcess")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1181,7 +1192,7 @@ func (c *liveVideoAnalyticsGRPCClient) UpdateProcess(ctx context.Context, req *v
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.liveVideoAnalyticsClient.UpdateProcess(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.liveVideoAnalyticsClient.UpdateProcess, req, settings.GRPC, c.logger, "UpdateProcess")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1201,7 +1212,7 @@ func (c *liveVideoAnalyticsGRPCClient) DeleteProcess(ctx context.Context, req *v
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.liveVideoAnalyticsClient.DeleteProcess(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.liveVideoAnalyticsClient.DeleteProcess, req, settings.GRPC, c.logger, "DeleteProcess")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1221,7 +1232,7 @@ func (c *liveVideoAnalyticsGRPCClient) BatchRunProcess(ctx context.Context, req 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.liveVideoAnalyticsClient.BatchRunProcess(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.liveVideoAnalyticsClient.BatchRunProcess, req, settings.GRPC, c.logger, "BatchRunProcess")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1240,7 +1251,7 @@ func (c *liveVideoAnalyticsGRPCClient) CancelOperation(ctx context.Context, req 
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -1254,7 +1265,7 @@ func (c *liveVideoAnalyticsGRPCClient) DeleteOperation(ctx context.Context, req 
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -1269,7 +1280,7 @@ func (c *liveVideoAnalyticsGRPCClient) GetOperation(ctx context.Context, req *lo
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1298,7 +1309,7 @@ func (c *liveVideoAnalyticsGRPCClient) ListOperations(ctx context.Context, req *
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1375,21 +1386,10 @@ func (c *liveVideoAnalyticsRESTClient) ListPublicOperators(ctx context.Context, 
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListPublicOperators")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1458,17 +1458,7 @@ func (c *liveVideoAnalyticsRESTClient) ResolveOperatorInfo(ctx context.Context, 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ResolveOperatorInfo")
 		if err != nil {
 			return err
 		}
@@ -1536,21 +1526,10 @@ func (c *liveVideoAnalyticsRESTClient) ListOperators(ctx context.Context, req *v
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperators")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1613,17 +1592,7 @@ func (c *liveVideoAnalyticsRESTClient) GetOperator(ctx context.Context, req *vis
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperator")
 		if err != nil {
 			return err
 		}
@@ -1683,21 +1652,10 @@ func (c *liveVideoAnalyticsRESTClient) CreateOperator(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateOperator")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1736,11 +1694,11 @@ func (c *liveVideoAnalyticsRESTClient) UpdateOperator(ctx context.Context, req *
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1764,21 +1722,10 @@ func (c *liveVideoAnalyticsRESTClient) UpdateOperator(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateOperator")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1831,21 +1778,10 @@ func (c *liveVideoAnalyticsRESTClient) DeleteOperator(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOperator")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1914,21 +1850,10 @@ func (c *liveVideoAnalyticsRESTClient) ListAnalyses(ctx context.Context, req *vi
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAnalyses")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1991,17 +1916,7 @@ func (c *liveVideoAnalyticsRESTClient) GetAnalysis(ctx context.Context, req *vis
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAnalysis")
 		if err != nil {
 			return err
 		}
@@ -2061,21 +1976,10 @@ func (c *liveVideoAnalyticsRESTClient) CreateAnalysis(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateAnalysis")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2114,11 +2018,11 @@ func (c *liveVideoAnalyticsRESTClient) UpdateAnalysis(ctx context.Context, req *
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2142,21 +2046,10 @@ func (c *liveVideoAnalyticsRESTClient) UpdateAnalysis(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateAnalysis")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2209,21 +2102,10 @@ func (c *liveVideoAnalyticsRESTClient) DeleteAnalysis(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteAnalysis")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2292,21 +2174,10 @@ func (c *liveVideoAnalyticsRESTClient) ListProcesses(ctx context.Context, req *v
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListProcesses")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2369,17 +2240,7 @@ func (c *liveVideoAnalyticsRESTClient) GetProcess(ctx context.Context, req *visi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetProcess")
 		if err != nil {
 			return err
 		}
@@ -2439,21 +2300,10 @@ func (c *liveVideoAnalyticsRESTClient) CreateProcess(ctx context.Context, req *v
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateProcess")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2492,11 +2342,11 @@ func (c *liveVideoAnalyticsRESTClient) UpdateProcess(ctx context.Context, req *v
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2520,21 +2370,10 @@ func (c *liveVideoAnalyticsRESTClient) UpdateProcess(ctx context.Context, req *v
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateProcess")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2587,21 +2426,10 @@ func (c *liveVideoAnalyticsRESTClient) DeleteProcess(ctx context.Context, req *v
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteProcess")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2658,21 +2486,10 @@ func (c *liveVideoAnalyticsRESTClient) BatchRunProcess(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchRunProcess")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2726,15 +2543,8 @@ func (c *liveVideoAnalyticsRESTClient) CancelOperation(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -2768,15 +2578,8 @@ func (c *liveVideoAnalyticsRESTClient) DeleteOperation(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOperation")
+		return err
 	}, opts...)
 }
 
@@ -2813,17 +2616,7 @@ func (c *liveVideoAnalyticsRESTClient) GetOperation(ctx context.Context, req *lo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -2888,21 +2681,10 @@ func (c *liveVideoAnalyticsRESTClient) ListOperations(ctx context.Context, req *
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

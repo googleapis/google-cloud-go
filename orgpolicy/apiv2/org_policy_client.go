@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	orgpolicypb "cloud.google.com/go/orgpolicy/apiv2/orgpolicypb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -67,6 +66,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://orgpolicy.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -573,6 +573,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new org policy client based on gRPC.
@@ -618,6 +620,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      orgpolicypb.NewOrgPolicyClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -640,7 +643,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -662,6 +667,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new org policy rest client.
@@ -698,6 +705,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -712,6 +720,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://orgpolicy.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -721,7 +730,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -758,7 +769,7 @@ func (c *gRPCClient) ListConstraints(ctx context.Context, req *orgpolicypb.ListC
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListConstraints(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListConstraints, req, settings.GRPC, c.logger, "ListConstraints")
 			return err
 		}, opts...)
 		if err != nil {
@@ -804,7 +815,7 @@ func (c *gRPCClient) ListPolicies(ctx context.Context, req *orgpolicypb.ListPoli
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListPolicies(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListPolicies, req, settings.GRPC, c.logger, "ListPolicies")
 			return err
 		}, opts...)
 		if err != nil {
@@ -839,7 +850,7 @@ func (c *gRPCClient) GetPolicy(ctx context.Context, req *orgpolicypb.GetPolicyRe
 	var resp *orgpolicypb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetPolicy, req, settings.GRPC, c.logger, "GetPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -857,7 +868,7 @@ func (c *gRPCClient) GetEffectivePolicy(ctx context.Context, req *orgpolicypb.Ge
 	var resp *orgpolicypb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetEffectivePolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetEffectivePolicy, req, settings.GRPC, c.logger, "GetEffectivePolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -875,7 +886,7 @@ func (c *gRPCClient) CreatePolicy(ctx context.Context, req *orgpolicypb.CreatePo
 	var resp *orgpolicypb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreatePolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreatePolicy, req, settings.GRPC, c.logger, "CreatePolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -893,7 +904,7 @@ func (c *gRPCClient) UpdatePolicy(ctx context.Context, req *orgpolicypb.UpdatePo
 	var resp *orgpolicypb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdatePolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdatePolicy, req, settings.GRPC, c.logger, "UpdatePolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -910,7 +921,7 @@ func (c *gRPCClient) DeletePolicy(ctx context.Context, req *orgpolicypb.DeletePo
 	opts = append((*c.CallOptions).DeletePolicy[0:len((*c.CallOptions).DeletePolicy):len((*c.CallOptions).DeletePolicy)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeletePolicy(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeletePolicy, req, settings.GRPC, c.logger, "DeletePolicy")
 		return err
 	}, opts...)
 	return err
@@ -925,7 +936,7 @@ func (c *gRPCClient) CreateCustomConstraint(ctx context.Context, req *orgpolicyp
 	var resp *orgpolicypb.CustomConstraint
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateCustomConstraint(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateCustomConstraint, req, settings.GRPC, c.logger, "CreateCustomConstraint")
 		return err
 	}, opts...)
 	if err != nil {
@@ -943,7 +954,7 @@ func (c *gRPCClient) UpdateCustomConstraint(ctx context.Context, req *orgpolicyp
 	var resp *orgpolicypb.CustomConstraint
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateCustomConstraint(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateCustomConstraint, req, settings.GRPC, c.logger, "UpdateCustomConstraint")
 		return err
 	}, opts...)
 	if err != nil {
@@ -961,7 +972,7 @@ func (c *gRPCClient) GetCustomConstraint(ctx context.Context, req *orgpolicypb.G
 	var resp *orgpolicypb.CustomConstraint
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetCustomConstraint(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetCustomConstraint, req, settings.GRPC, c.logger, "GetCustomConstraint")
 		return err
 	}, opts...)
 	if err != nil {
@@ -990,7 +1001,7 @@ func (c *gRPCClient) ListCustomConstraints(ctx context.Context, req *orgpolicypb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListCustomConstraints(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListCustomConstraints, req, settings.GRPC, c.logger, "ListCustomConstraints")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1024,7 +1035,7 @@ func (c *gRPCClient) DeleteCustomConstraint(ctx context.Context, req *orgpolicyp
 	opts = append((*c.CallOptions).DeleteCustomConstraint[0:len((*c.CallOptions).DeleteCustomConstraint):len((*c.CallOptions).DeleteCustomConstraint)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteCustomConstraint(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteCustomConstraint, req, settings.GRPC, c.logger, "DeleteCustomConstraint")
 		return err
 	}, opts...)
 	return err
@@ -1075,21 +1086,10 @@ func (c *restClient) ListConstraints(ctx context.Context, req *orgpolicypb.ListC
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListConstraints")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1164,21 +1164,10 @@ func (c *restClient) ListPolicies(ctx context.Context, req *orgpolicypb.ListPoli
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListPolicies")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1245,17 +1234,7 @@ func (c *restClient) GetPolicy(ctx context.Context, req *orgpolicypb.GetPolicyRe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetPolicy")
 		if err != nil {
 			return err
 		}
@@ -1310,17 +1289,7 @@ func (c *restClient) GetEffectivePolicy(ctx context.Context, req *orgpolicypb.Ge
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetEffectivePolicy")
 		if err != nil {
 			return err
 		}
@@ -1382,17 +1351,7 @@ func (c *restClient) CreatePolicy(ctx context.Context, req *orgpolicypb.CreatePo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreatePolicy")
 		if err != nil {
 			return err
 		}
@@ -1435,11 +1394,11 @@ func (c *restClient) UpdatePolicy(ctx context.Context, req *orgpolicypb.UpdatePo
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1464,17 +1423,7 @@ func (c *restClient) UpdatePolicy(ctx context.Context, req *orgpolicypb.UpdatePo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdatePolicy")
 		if err != nil {
 			return err
 		}
@@ -1527,15 +1476,8 @@ func (c *restClient) DeletePolicy(ctx context.Context, req *orgpolicypb.DeletePo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeletePolicy")
+		return err
 	}, opts...)
 }
 
@@ -1584,17 +1526,7 @@ func (c *restClient) CreateCustomConstraint(ctx context.Context, req *orgpolicyp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateCustomConstraint")
 		if err != nil {
 			return err
 		}
@@ -1657,17 +1589,7 @@ func (c *restClient) UpdateCustomConstraint(ctx context.Context, req *orgpolicyp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateCustomConstraint")
 		if err != nil {
 			return err
 		}
@@ -1720,17 +1642,7 @@ func (c *restClient) GetCustomConstraint(ctx context.Context, req *orgpolicypb.G
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCustomConstraint")
 		if err != nil {
 			return err
 		}
@@ -1793,21 +1705,10 @@ func (c *restClient) ListCustomConstraints(ctx context.Context, req *orgpolicypb
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListCustomConstraints")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1870,14 +1771,7 @@ func (c *restClient) DeleteCustomConstraint(ctx context.Context, req *orgpolicyp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteCustomConstraint")
+		return err
 	}, opts...)
 }

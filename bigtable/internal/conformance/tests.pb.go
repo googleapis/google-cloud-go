@@ -24,7 +24,7 @@ import (
 	reflect "reflect"
 	sync "sync"
 
-	v2 "google.golang.org/genproto/googleapis/bigtable/v2"
+	v2 "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )

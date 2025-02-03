@@ -117,7 +117,7 @@ func newWatchStreamForQuery(ctx context.Context, q Query) (*watchStream, error) 
 		TargetType: &pb.Target_Query{
 			Query: &pb.Target_QueryTarget{
 				Parent:    q.parentPath,
-				QueryType: &pb.Target_QueryTarget_StructuredQuery{qp},
+				QueryType: &pb.Target_QueryTarget_StructuredQuery{StructuredQuery: qp},
 			},
 		},
 		TargetId: watchTargetID,
@@ -248,7 +248,7 @@ func (s *watchStream) handleTargetChange(tc *pb.TargetChange) bool {
 				return true
 			}
 			s.readTime = tc.ReadTime.AsTime()
-			s.target.ResumeType = &pb.Target_ResumeToken{tc.ResumeToken}
+			s.target.ResumeType = &pb.Target_ResumeToken{ResumeToken: tc.ResumeToken}
 			return true
 		}
 

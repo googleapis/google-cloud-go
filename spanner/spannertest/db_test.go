@@ -461,10 +461,16 @@ func slurp(t *testing.T, ri rowIter) (all [][]interface{}) {
 }
 
 func listV(vs ...*structpb.Value) *structpb.ListValue { return &structpb.ListValue{Values: vs} }
-func stringV(s string) *structpb.Value                { return &structpb.Value{Kind: &structpb.Value_StringValue{s}} }
-func floatV(f float64) *structpb.Value                { return &structpb.Value{Kind: &structpb.Value_NumberValue{f}} }
-func boolV(b bool) *structpb.Value                    { return &structpb.Value{Kind: &structpb.Value_BoolValue{b}} }
-func nullV() *structpb.Value                          { return &structpb.Value{Kind: &structpb.Value_NullValue{}} }
+func stringV(s string) *structpb.Value {
+	return &structpb.Value{Kind: &structpb.Value_StringValue{StringValue: s}}
+}
+func floatV(f float64) *structpb.Value {
+	return &structpb.Value{Kind: &structpb.Value_NumberValue{NumberValue: f}}
+}
+func boolV(b bool) *structpb.Value {
+	return &structpb.Value{Kind: &structpb.Value_BoolValue{BoolValue: b}}
+}
+func nullV() *structpb.Value { return &structpb.Value{Kind: &structpb.Value_NullValue{}} }
 
 func boolParam(b bool) queryParam     { return queryParam{Value: b, Type: boolType} }
 func stringParam(s string) queryParam { return queryParam{Value: s, Type: stringType} }

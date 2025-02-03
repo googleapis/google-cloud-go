@@ -3,7 +3,9 @@ package golden
 import (
 	"net"
 
-	"example.com/old/foo"
+	"example.com/old/foo/v1"
+	"example.com/old/bar/v1/bar"
 )
 
 func Bar1(foo foo.Baz, addr net.Addr) {}
+func Bar2(foo bar.Baz, addr net.Addr) {}

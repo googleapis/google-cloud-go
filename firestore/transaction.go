@@ -17,6 +17,7 @@ package firestore
 import (
 	"context"
 	"errors"
+	"time"
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/trace"
@@ -35,11 +36,13 @@ type Transaction struct {
 	readOnly       bool
 	readAfterWrite bool
 	readSettings   *readSettings
+	explainOptions *ExplainOptions
 }
 
 // A TransactionOption is an option passed to Client.Transaction.
 type TransactionOption interface {
 	config(t *Transaction)
+	handleCommitResponse(r *pb.CommitResponse)
 }
 
 // MaxAttempts is a TransactionOption that configures the maximum number of times to
@@ -48,7 +51,8 @@ func MaxAttempts(n int) maxAttempts { return maxAttempts(n) }
 
 type maxAttempts int
 
-func (m maxAttempts) config(t *Transaction) { t.maxAttempts = int(m) }
+func (m maxAttempts) config(t *Transaction)                     { t.maxAttempts = int(m) }
+func (m maxAttempts) handleCommitResponse(r *pb.CommitResponse) {}
 
 // DefaultTransactionMaxAttempts is the default number of times to attempt a transaction.
 const DefaultTransactionMaxAttempts = 5
@@ -59,7 +63,35 @@ var ReadOnly = ro{}
 
 type ro struct{}
 
-func (ro) config(t *Transaction) { t.readOnly = true }
+func (ro) config(t *Transaction)                     { t.readOnly = true }
+func (ro) handleCommitResponse(r *pb.CommitResponse) {}
+
+// CommitResponse exposes information about a committed transaction.
+type CommitResponse struct {
+	response *pb.CommitResponse
+}
+
+// CommitTime returns the commit time from the commit response.
+func (r *CommitResponse) CommitTime() time.Time {
+	return r.response.CommitTime.AsTime()
+}
+
+// commitResponse is the TransactionOption to record a commit response.
+type commitResponse struct {
+	responseTo *CommitResponse
+}
+
+func (c commitResponse) config(t *Transaction) {}
+func (c commitResponse) handleCommitResponse(r *pb.CommitResponse) {
+	c.responseTo.response = r
+}
+
+// WithCommitResponseTo returns a TransactionOption that specifies where the
+// CommitResponse should be written on successful commit. Nothing is written
+// on a failed commit.
+func WithCommitResponseTo(r *CommitResponse) commitResponse {
+	return commitResponse{responseTo: r}
+}
 
 var (
 	// Defined here for testing.
@@ -110,10 +142,11 @@ func (c *Client) RunTransaction(ctx context.Context, f func(context.Context, *Tr
 	var txOpts *pb.TransactionOptions
 	if t.readOnly {
 		txOpts = &pb.TransactionOptions{
-			Mode: &pb.TransactionOptions_ReadOnly_{&pb.TransactionOptions_ReadOnly{}},
+			Mode: &pb.TransactionOptions_ReadOnly_{ReadOnly: &pb.TransactionOptions_ReadOnly{}},
 		}
 	}
 	var backoff gax.Backoff
+	var commitResponse *pb.CommitResponse
 	// TODO(jba): use other than the standard backoff parameters?
 	// TODO(jba): get backoff time from gRPC trailer metadata? See
 	// extractRetryDelay in https://code.googlesource.com/gocloud/+/master/spanner/retry.go.
@@ -141,12 +174,19 @@ func (c *Client) RunTransaction(ctx context.Context, f func(context.Context, *Tr
 			return err
 		}
 		t.ctx = trace.StartSpan(t.ctx, "cloud.google.com/go/firestore.Client.Commit")
-		_, err = t.c.c.Commit(t.ctx, &pb.CommitRequest{
+		commitResponse, err = t.c.c.Commit(t.ctx, &pb.CommitRequest{
 			Database:    t.c.path(),
 			Writes:      t.writes,
 			Transaction: t.id,
 		})
 		trace.EndSpan(t.ctx, err)
+
+		// on success, handle the commit response
+		if err == nil {
+			for _, opt := range opts {
+				opt.handleCommitResponse(commitResponse)
+			}
+		}
 
 		// If a read-write transaction returns Aborted, retry.
 		// On success or other failures, return here.
@@ -164,7 +204,7 @@ func (c *Client) RunTransaction(ctx context.Context, f func(context.Context, *Tr
 			// knows it is a retry.
 			txOpts = &pb.TransactionOptions{
 				Mode: &pb.TransactionOptions_ReadWrite_{
-					&pb.TransactionOptions_ReadWrite{RetryTransaction: t.id},
+					ReadWrite: &pb.TransactionOptions_ReadWrite{RetryTransaction: t.id},
 				},
 			}
 		}

@@ -18,7 +18,6 @@ import (
 	"bytes"
 	"context"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -68,11 +67,8 @@ func TestOverrideUserAgent(t *testing.T) {
 func TestGetFailsOnBadURL(t *testing.T) {
 	ctx := context.Background()
 	c := NewClient(http.DefaultClient)
-	old := os.Getenv(metadataHostEnv)
-	defer os.Setenv(metadataHostEnv, old)
-	os.Setenv(metadataHostEnv, "host:-1")
+	t.Setenv(metadataHostEnv, "host:-1")
 	_, err := c.GetWithContext(ctx, "suffix")
-	log.Printf("%v", err)
 	if err == nil {
 		t.Errorf("got %v, want non-nil error", err)
 	}
@@ -98,7 +94,7 @@ func TestGet_LeadingSlash(t *testing.T) {
 			ctx := context.Background()
 			ct := &captureTransport{}
 			c := NewClient(&http.Client{Transport: ct})
-			c.GetWithContext(ctx, tc.suffix)
+			_, _ = c.GetWithContext(ctx, tc.suffix)
 			if ct.url != want {
 				t.Fatalf("got %v, want %v", ct.url, want)
 			}

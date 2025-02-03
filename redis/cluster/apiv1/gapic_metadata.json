@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "CloudRedisClusterClient",
           "rpcs": {
+            "BackupCluster": {
+              "methods": [
+                "BackupCluster"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -18,6 +23,11 @@
             "CreateCluster": {
               "methods": [
                 "CreateCluster"
+              ]
+            },
+            "DeleteBackup": {
+              "methods": [
+                "DeleteBackup"
               ]
             },
             "DeleteCluster": {
@@ -30,9 +40,29 @@
                 "DeleteOperation"
               ]
             },
+            "ExportBackup": {
+              "methods": [
+                "ExportBackup"
+              ]
+            },
+            "GetBackup": {
+              "methods": [
+                "GetBackup"
+              ]
+            },
+            "GetBackupCollection": {
+              "methods": [
+                "GetBackupCollection"
+              ]
+            },
             "GetCluster": {
               "methods": [
                 "GetCluster"
+              ]
+            },
+            "GetClusterCertificateAuthority": {
+              "methods": [
+                "GetClusterCertificateAuthority"
               ]
             },
             "GetLocation": {
@@ -43,6 +73,16 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "ListBackupCollections": {
+              "methods": [
+                "ListBackupCollections"
+              ]
+            },
+            "ListBackups": {
+              "methods": [
+                "ListBackups"
               ]
             },
             "ListClusters": {
@@ -58,6 +98,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "RescheduleClusterMaintenance": {
+              "methods": [
+                "RescheduleClusterMaintenance"
               ]
             },
             "UpdateCluster": {
@@ -70,6 +115,11 @@
         "rest": {
           "libraryClient": "CloudRedisClusterClient",
           "rpcs": {
+            "BackupCluster": {
+              "methods": [
+                "BackupCluster"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -78,6 +128,11 @@
             "CreateCluster": {
               "methods": [
                 "CreateCluster"
+              ]
+            },
+            "DeleteBackup": {
+              "methods": [
+                "DeleteBackup"
               ]
             },
             "DeleteCluster": {
@@ -90,9 +145,29 @@
                 "DeleteOperation"
               ]
             },
+            "ExportBackup": {
+              "methods": [
+                "ExportBackup"
+              ]
+            },
+            "GetBackup": {
+              "methods": [
+                "GetBackup"
+              ]
+            },
+            "GetBackupCollection": {
+              "methods": [
+                "GetBackupCollection"
+              ]
+            },
             "GetCluster": {
               "methods": [
                 "GetCluster"
+              ]
+            },
+            "GetClusterCertificateAuthority": {
+              "methods": [
+                "GetClusterCertificateAuthority"
               ]
             },
             "GetLocation": {
@@ -103,6 +178,16 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "ListBackupCollections": {
+              "methods": [
+                "ListBackupCollections"
+              ]
+            },
+            "ListBackups": {
+              "methods": [
+                "ListBackups"
               ]
             },
             "ListClusters": {
@@ -118,6 +203,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "RescheduleClusterMaintenance": {
+              "methods": [
+                "RescheduleClusterMaintenance"
               ]
             },
             "UpdateCluster": {

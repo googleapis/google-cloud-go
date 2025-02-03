@@ -42,14 +42,16 @@ type uploadOpts struct {
 	useDefaultChunkSize bool
 	objectPath          string
 	timeout             time.Duration
+
+	appendWrites bool
 }
 
 func uploadBenchmark(ctx context.Context, uopts uploadOpts) (elapsedTime time.Duration, rerr error) {
 	var span trace.Span
 	ctx, span = otel.GetTracerProvider().Tracer(tracerName).Start(ctx, "upload")
 	span.SetAttributes(
-		attribute.KeyValue{"bucket", attribute.StringValue(uopts.bucket)},
-		attribute.KeyValue{"chunk_size", attribute.Int64Value(uopts.params.chunkSize)},
+		attribute.KeyValue{Key: "bucket", Value: attribute.StringValue(uopts.bucket)},
+		attribute.KeyValue{Key: "chunk_size", Value: attribute.Int64Value(uopts.params.chunkSize)},
 	)
 	defer span.End()
 
@@ -77,6 +79,9 @@ func uploadBenchmark(ctx context.Context, uopts uploadOpts) (elapsedTime time.Du
 	objectWriter := o.If(storage.Conditions{DoesNotExist: true}).NewWriter(ctx)
 	if !uopts.useDefaultChunkSize {
 		objectWriter.ChunkSize = int(uopts.params.chunkSize)
+	}
+	if uopts.appendWrites {
+		objectWriter.Append = true
 	}
 
 	mw, md5Hash, crc32cHash := generateUploadWriter(objectWriter, uopts.params.md5Enabled, uopts.params.crc32cEnabled)

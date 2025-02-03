@@ -101,6 +101,65 @@ func TestSchemaToProtoConversion(t *testing.T) {
 			},
 		},
 		{
+			description: "json type",
+			bq: &storagepb.TableSchema{
+				Fields: []*storagepb.TableFieldSchema{
+					{Name: "json_required", Type: storagepb.TableFieldSchema_JSON, Mode: storagepb.TableFieldSchema_REQUIRED},
+					{Name: "json_optional", Type: storagepb.TableFieldSchema_JSON, Mode: storagepb.TableFieldSchema_NULLABLE},
+				}},
+			wantProto2: &descriptorpb.DescriptorProto{
+				Name: proto.String("root"),
+				Field: []*descriptorpb.FieldDescriptorProto{
+					{
+						Name:   proto.String("json_required"),
+						Number: proto.Int32(1),
+						Type:   descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
+						Label:  descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum()},
+					{
+						Name:   proto.String("json_optional"),
+						Number: proto.Int32(2),
+						Type:   descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
+						Label:  descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+				},
+			},
+			wantProto2Normalized: &descriptorpb.DescriptorProto{
+				Name: proto.String("root"),
+				Field: []*descriptorpb.FieldDescriptorProto{
+					{
+						Name:   proto.String("json_required"),
+						Number: proto.Int32(1),
+						Type:   descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
+						Label:  descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
+					},
+					{
+						Name:   proto.String("json_optional"),
+						Number: proto.Int32(2),
+						Type:   descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
+						Label:  descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+				},
+			},
+			wantProto3: &descriptorpb.DescriptorProto{
+				Name: proto.String("root"),
+				Field: []*descriptorpb.FieldDescriptorProto{
+					{
+						Name:   proto.String("json_required"),
+						Number: proto.Int32(1),
+						Type:   descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
+						Label:  descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("json_optional"),
+						Number:   proto.Int32(2),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String(".google.protobuf.StringValue"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+				},
+			},
+		},
+		{
 			// exercise construct of a submessage
 			description: "nested",
 			bq: &storagepb.TableSchema{
@@ -1234,6 +1293,13 @@ func TestNormalizeDescriptor(t *testing.T) {
 						Number:   proto.Int32(3),
 						TypeName: proto.String("testdata_RangeTypeTimestamp"),
 						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("json_type"),
+						JsonName: proto.String("jsonType"),
+						Number:   proto.Int32(4),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
 						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
 					},
 				},

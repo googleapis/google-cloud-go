@@ -15,7 +15,6 @@
 package utility
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"math/big"
@@ -41,6 +40,14 @@ func BuildQuery(queryAction *executorpb.QueryAction) (spanner.Statement, error) 
 		stmt.Params[param.GetName()] = value
 	}
 	return stmt, nil
+}
+
+// encodedJSON is a pre-encoded JSON value, so when marshaled the underlying
+// bytes are returned as-is.
+type encodedJSON []byte
+
+func (v encodedJSON) MarshalJSON() ([]byte, error) {
+	return []byte(v), nil
 }
 
 // ExecutorValueToSpannerValue converts executorpb.Value with given spannerpb.Type into a cloud spanner interface.
@@ -97,12 +104,7 @@ func ExecutorValueToSpannerValue(t *spannerpb.Type, v *executorpb.Value, null bo
 			return spanner.NullJSON{}, nil
 		}
 		x := v.GetStringValue()
-		var y interface{}
-		err := json.Unmarshal([]byte(x), &y)
-		if err != nil {
-			return nil, err
-		}
-		return spanner.NullJSON{Value: y, Valid: true}, nil
+		return spanner.NullJSON{Value: encodedJSON(x), Valid: true}, nil
 	case spannerpb.TypeCode_STRUCT:
 		return executorStructValueToSpannerValue(t, v.GetStructValue(), null)
 	case spannerpb.TypeCode_ARRAY:
@@ -193,7 +195,7 @@ func executorArrayValueToSpannerValue(t *spannerpb.Type, v *executorpb.Value, nu
 		}
 		out := make([]spanner.NullInt64, 0)
 		for _, value := range v.GetArrayValue().GetValue() {
-			out = append(out, spanner.NullInt64{value.GetIntValue(), !value.GetIsNull()})
+			out = append(out, spanner.NullInt64{Int64: value.GetIntValue(), Valid: !value.GetIsNull()})
 		}
 		return out, nil
 	case spannerpb.TypeCode_FLOAT64:
@@ -202,7 +204,7 @@ func executorArrayValueToSpannerValue(t *spannerpb.Type, v *executorpb.Value, nu
 		}
 		out := make([]spanner.NullFloat64, 0)
 		for _, value := range v.GetArrayValue().GetValue() {
-			out = append(out, spanner.NullFloat64{value.GetDoubleValue(), !value.GetIsNull()})
+			out = append(out, spanner.NullFloat64{Float64: value.GetDoubleValue(), Valid: !value.GetIsNull()})
 		}
 		return out, nil
 	case spannerpb.TypeCode_STRING:
@@ -211,7 +213,7 @@ func executorArrayValueToSpannerValue(t *spannerpb.Type, v *executorpb.Value, nu
 		}
 		out := make([]spanner.NullString, 0)
 		for _, value := range v.GetArrayValue().GetValue() {
-			out = append(out, spanner.NullString{value.GetStringValue(), !value.GetIsNull()})
+			out = append(out, spanner.NullString{StringVal: value.GetStringValue(), Valid: !value.GetIsNull()})
 		}
 		return out, nil
 	case spannerpb.TypeCode_BYTES:
@@ -277,7 +279,7 @@ func executorArrayValueToSpannerValue(t *spannerpb.Type, v *executorpb.Value, nu
 				if !ok {
 					return nil, spanner.ToSpannerError(status.Errorf(codes.InvalidArgument, "unexpected string value %q for numeric number", value.GetStringValue()))
 				}
-				out = append(out, spanner.NullNumeric{*y, true})
+				out = append(out, spanner.NullNumeric{Numeric: *y, Valid: true})
 			}
 		}
 		return out, nil

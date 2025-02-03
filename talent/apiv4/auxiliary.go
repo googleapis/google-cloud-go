@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -238,7 +238,7 @@ type CompanyIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*talentpb.Company, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *CompanyIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -285,7 +285,7 @@ type JobIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*talentpb.Job, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *JobIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -332,7 +332,7 @@ type TenantIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*talentpb.Tenant, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TenantIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

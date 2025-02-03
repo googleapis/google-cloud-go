@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -29,7 +29,6 @@ import (
 	discoveryenginepb "cloud.google.com/go/discoveryengine/apiv1alpha/discoveryenginepb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -47,6 +46,7 @@ var newAclConfigClientHook clientHook
 type AclConfigCallOptions struct {
 	UpdateAclConfig []gax.CallOption
 	GetAclConfig    []gax.CallOption
+	CancelOperation []gax.CallOption
 	GetOperation    []gax.CallOption
 	ListOperations  []gax.CallOption
 }
@@ -60,6 +60,7 @@ func defaultAclConfigGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://discoveryengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -69,6 +70,18 @@ func defaultAclConfigCallOptions() *AclConfigCallOptions {
 	return &AclConfigCallOptions{
 		UpdateAclConfig: []gax.CallOption{},
 		GetAclConfig:    []gax.CallOption{},
+		CancelOperation: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GetOperation: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -100,6 +113,17 @@ func defaultAclConfigRESTCallOptions() *AclConfigCallOptions {
 	return &AclConfigCallOptions{
 		UpdateAclConfig: []gax.CallOption{},
 		GetAclConfig:    []gax.CallOption{},
+		CancelOperation: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetOperation: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -132,6 +156,7 @@ type internalAclConfigClient interface {
 	Connection() *grpc.ClientConn
 	UpdateAclConfig(context.Context, *discoveryenginepb.UpdateAclConfigRequest, ...gax.CallOption) (*discoveryenginepb.AclConfig, error)
 	GetAclConfig(context.Context, *discoveryenginepb.GetAclConfigRequest, ...gax.CallOption) (*discoveryenginepb.AclConfig, error)
+	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
@@ -171,7 +196,7 @@ func (c *AclConfigClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// UpdateAclConfig default Acl Configuration for use in a location of a customer’s project.
+// UpdateAclConfig default ACL configuration for use in a location of a customer’s project.
 // Updates will only reflect to new data stores. Existing data stores will
 // still use the old value.
 func (c *AclConfigClient) UpdateAclConfig(ctx context.Context, req *discoveryenginepb.UpdateAclConfigRequest, opts ...gax.CallOption) (*discoveryenginepb.AclConfig, error) {
@@ -181,6 +206,11 @@ func (c *AclConfigClient) UpdateAclConfig(ctx context.Context, req *discoveryeng
 // GetAclConfig gets the AclConfig.
 func (c *AclConfigClient) GetAclConfig(ctx context.Context, req *discoveryenginepb.GetAclConfigRequest, opts ...gax.CallOption) (*discoveryenginepb.AclConfig, error) {
 	return c.internalClient.GetAclConfig(ctx, req, opts...)
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *AclConfigClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.CancelOperation(ctx, req, opts...)
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.
@@ -210,6 +240,8 @@ type aclConfigGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewAclConfigClient creates a new acl config service client based on gRPC.
@@ -236,6 +268,7 @@ func NewAclConfigClient(ctx context.Context, opts ...option.ClientOption) (*AclC
 		connPool:         connPool,
 		aclConfigClient:  discoveryenginepb.NewAclConfigServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -259,7 +292,9 @@ func (c *aclConfigGRPCClient) Connection() *grpc.ClientConn {
 func (c *aclConfigGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -281,6 +316,8 @@ type aclConfigRESTClient struct {
 
 	// Points back to the CallOptions field of the containing AclConfigClient
 	CallOptions **AclConfigCallOptions
+
+	logger *slog.Logger
 }
 
 // NewAclConfigRESTClient creates a new acl config service rest client.
@@ -298,6 +335,7 @@ func NewAclConfigRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -312,6 +350,7 @@ func defaultAclConfigRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://discoveryengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -321,7 +360,9 @@ func defaultAclConfigRESTClientOptions() []option.ClientOption {
 func (c *aclConfigRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -347,7 +388,7 @@ func (c *aclConfigGRPCClient) UpdateAclConfig(ctx context.Context, req *discover
 	var resp *discoveryenginepb.AclConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.aclConfigClient.UpdateAclConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.aclConfigClient.UpdateAclConfig, req, settings.GRPC, c.logger, "UpdateAclConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -365,13 +406,27 @@ func (c *aclConfigGRPCClient) GetAclConfig(ctx context.Context, req *discoveryen
 	var resp *discoveryenginepb.AclConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.aclConfigClient.GetAclConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.aclConfigClient.GetAclConfig, req, settings.GRPC, c.logger, "GetAclConfig")
 		return err
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *aclConfigGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
+		return err
+	}, opts...)
+	return err
 }
 
 func (c *aclConfigGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
@@ -383,7 +438,7 @@ func (c *aclConfigGRPCClient) GetOperation(ctx context.Context, req *longrunning
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -412,7 +467,7 @@ func (c *aclConfigGRPCClient) ListOperations(ctx context.Context, req *longrunni
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -438,7 +493,7 @@ func (c *aclConfigGRPCClient) ListOperations(ctx context.Context, req *longrunni
 	return it
 }
 
-// UpdateAclConfig default Acl Configuration for use in a location of a customer’s project.
+// UpdateAclConfig default ACL configuration for use in a location of a customer’s project.
 // Updates will only reflect to new data stores. Existing data stores will
 // still use the old value.
 func (c *aclConfigRESTClient) UpdateAclConfig(ctx context.Context, req *discoveryenginepb.UpdateAclConfigRequest, opts ...gax.CallOption) (*discoveryenginepb.AclConfig, error) {
@@ -480,17 +535,7 @@ func (c *aclConfigRESTClient) UpdateAclConfig(ctx context.Context, req *discover
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateAclConfig")
 		if err != nil {
 			return err
 		}
@@ -540,17 +585,7 @@ func (c *aclConfigRESTClient) GetAclConfig(ctx context.Context, req *discoveryen
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAclConfig")
 		if err != nil {
 			return err
 		}
@@ -565,6 +600,47 @@ func (c *aclConfigRESTClient) GetAclConfig(ctx context.Context, req *discoveryen
 		return nil, e
 	}
 	return resp, nil
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *aclConfigRESTClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:cancel", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelOperation")
+		return err
+	}, opts...)
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.
@@ -600,17 +676,7 @@ func (c *aclConfigRESTClient) GetOperation(ctx context.Context, req *longrunning
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -675,21 +741,10 @@ func (c *aclConfigRESTClient) ListOperations(ctx context.Context, req *longrunni
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

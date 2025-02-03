@@ -24,12 +24,14 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"slices"
 	"strings"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/internal/uid"
 	storage_v1_tests "cloud.google.com/go/storage/internal/test/conformance"
+	"github.com/google/go-cmp/cmp"
 	"github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
@@ -212,6 +214,7 @@ var methods = map[string][]retryFunc{
 			if err != nil {
 				return err
 			}
+			defer r.Close()
 			wr, err := r.WriteTo(io.Discard)
 			if got, want := wr, len(randomBytesToWrite); got != int64(want) {
 				return fmt.Errorf("body length mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
@@ -224,6 +227,7 @@ var methods = map[string][]retryFunc{
 			if err != nil {
 				return err
 			}
+			defer r.Close()
 			// Use ReadAll because it calls Read implicitly, not WriteTo.
 			b, err := io.ReadAll(r)
 			if got, want := len(b), len(randomBytesToWrite); got != want {
@@ -247,11 +251,68 @@ var methods = map[string][]retryFunc{
 			if err != nil {
 				return err
 			}
+			defer r.Close()
 			wr, err := io.Copy(io.Discard, r)
 			if got, want := wr, len(randomBytesToWrite); got != int64(want) {
 				return fmt.Errorf("body length mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
 			}
 			return err
+		},
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			// Test gRPC bidi reads.
+			client, ok := c.tc.(*grpcStorageClient)
+			if ok {
+				client.config.grpcBidiReads = true
+				defer func() {
+					client.config.grpcBidiReads = false
+
+				}()
+			}
+
+			r, err := c.Bucket(fs.bucket.Name).Object(fs.object.Name).NewReader(ctx)
+			if err != nil {
+				return err
+			}
+			defer r.Close()
+			wr, err := io.Copy(io.Discard, r)
+			if got, want := wr, len(randomBytesToWrite); got != int64(want) {
+				return fmt.Errorf("body length mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
+			}
+			return err
+		},
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			_, ok := c.tc.(*grpcStorageClient)
+			if !ok {
+				// Do a regular get to consume instructions
+				_, err := c.Bucket(fs.bucket.Name).Object(fs.object.Name).Attrs(ctx)
+				return err
+			}
+
+			// Download the test object using the MultiRangeDownloader.
+			mrr, err := c.Bucket(fs.bucket.Name).Object(fs.object.Name).NewMultiRangeDownloader(ctx)
+			if err != nil {
+				return err
+			}
+			buf := new(bytes.Buffer)
+			var err1 error
+			callback := func(x, y int64, err error) {
+				err1 = err
+			}
+			mrr.Add(buf, 0, 6, callback)
+			mrr.Wait()
+			if err1 != nil {
+				return err1
+			}
+			if got, want := len(buf.Bytes()), len(randomBytesToWrite); got != want {
+				return fmt.Errorf("body length mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
+			}
+			if got, want := buf.Bytes(), randomBytesToWrite; !bytes.Equal(got, want) {
+				return fmt.Errorf("body mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
+			}
+			if err = mrr.Close(); err != nil {
+				return err
+			}
+			return nil
 		},
 	},
 	"storage.objects.download": {
@@ -306,20 +367,19 @@ var methods = map[string][]retryFunc{
 			return nil
 		},
 		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
-			// Test JSON reads.
+			// Test gRPC bidi reads.
 			// Before running the test method, populate a large test object.
 			objName := objectIDs.New()
 			if err := uploadTestObject(fs.bucket.Name, objName, randomBytes3MiB); err != nil {
 				return fmt.Errorf("failed to create large object pre test, err: %v", err)
 			}
 
-			client, ok := c.tc.(*httpStorageClient)
+			client, ok := c.tc.(*grpcStorageClient)
 			if ok {
-				client.config.readAPIWasSet = true
-				client.config.useJSONforReads = true
+				client.config.grpcBidiReads = true
 				defer func() {
-					client.config.readAPIWasSet = false
-					client.config.useJSONforReads = false
+					client.config.grpcBidiReads = false
+
 				}()
 			}
 
@@ -338,6 +398,69 @@ var methods = map[string][]retryFunc{
 			}
 			if got, want := data, randomBytes3MiB; !bytes.Equal(got, want) {
 				return fmt.Errorf("body mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
+			}
+			return nil
+		},
+		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
+			// Test NewMultiRangeDownloader for gRPC, JSON reads for HTTP.
+
+			// Before running the test method, populate a large test object.
+			objName := objectIDs.New()
+			if err := uploadTestObject(fs.bucket.Name, objName, randomBytes3MiB); err != nil {
+				return fmt.Errorf("failed to create large object pre test, err: %v", err)
+			}
+
+			client, ok := c.tc.(*httpStorageClient)
+			if ok {
+				client.config.readAPIWasSet = true
+				client.config.useJSONforReads = true
+				defer func() {
+					client.config.readAPIWasSet = false
+					client.config.useJSONforReads = false
+				}()
+
+				// Download the large test object for the S8 download method group.
+				r, err := c.Bucket(fs.bucket.Name).Object(objName).NewReader(ctx)
+				if err != nil {
+					return err
+				}
+				defer r.Close()
+				data, err := io.ReadAll(r)
+				if err != nil {
+					return fmt.Errorf("failed to ReadAll, err: %v", err)
+				}
+				if got, want := len(data), 3*MiB; got != want {
+					return fmt.Errorf("body length mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
+				}
+				if got, want := data, randomBytes3MiB; !bytes.Equal(got, want) {
+					return fmt.Errorf("body mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
+				}
+				return nil
+			}
+
+			// Download the test object using the MultiRangeDownloader.
+			mrr, err := c.Bucket(fs.bucket.Name).Object(objName).NewMultiRangeDownloader(ctx)
+			if err != nil {
+				return err
+			}
+			buf := new(bytes.Buffer)
+			var err1 error
+			callback := func(x, y int64, err error) {
+				err1 = err
+			}
+			mrr.Add(buf, 0, 3*MiB, callback)
+			mrr.Wait()
+			if err1 != nil {
+				return err1
+			}
+			if got, want := len(buf.Bytes()), 3*MiB; got != want {
+				return fmt.Errorf("body length mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
+			}
+			if got, want := buf.Bytes(), randomBytes3MiB; !bytes.Equal(got, want) {
+				return fmt.Errorf("body mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
+			}
+			if err = mrr.Close(); err != nil {
+				return err
 			}
 			return nil
 		},
@@ -502,6 +625,48 @@ var methods = map[string][]retryFunc{
 			return nil
 		},
 	},
+	"storage.appendable.upload": {
+		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
+			bucketName := fmt.Sprintf("%s-appendable", bucketIDs.New())
+			b := c.Bucket(bucketName)
+			if err := b.Create(ctx, projectID, nil); err != nil {
+				return err
+			}
+			defer b.Delete(ctx)
+
+			obj := b.Object(objectIDs.New())
+			if preconditions {
+				obj = obj.If(Conditions{DoesNotExist: true})
+			}
+
+			objW := obj.NewWriter(ctx)
+			objW.ChunkSize = MiB
+			objW.Append = true
+
+			if _, err := objW.Write(randomBytes3MiB); err != nil {
+				return fmt.Errorf("Writer.Write: %v", err)
+			}
+			if err := objW.Close(); err != nil {
+				return fmt.Errorf("Writer.Close: %v", err)
+			}
+
+			// Don't reuse obj, in case preconditions were set on the write request.
+			r, err := b.Object(obj.ObjectName()).NewReader(ctx)
+			defer r.Close()
+			if err != nil {
+				return fmt.Errorf("obj.NewReader: %v", err)
+			}
+			content, err := io.ReadAll(r)
+			if err != nil {
+				return fmt.Errorf("Reader.Read: %v", err)
+			}
+
+			if d := cmp.Diff(content, randomBytes3MiB); d != "" {
+				return fmt.Errorf("content got(-),want(+):\n%v", d)
+			}
+			return nil
+		},
+	},
 	"storage.objects.patch": {
 		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
 			uattrs := ObjectAttrsToUpdate{Metadata: map[string]string{"foo": "bar"}}
@@ -598,6 +763,13 @@ func TestRetryConformance(t *testing.T) {
 		t.Fatalf("storage.NewClient: %v", err)
 	}
 
+	// TODO: Remove once storage testbench emits 501 Not Implemented for these
+	// operations in gRPC.
+	skippedGRPCMethods := []string{"storage.hmacKey.delete", "storage.hmacKey.create", "storage.hmacKey.list", "storage.hmacKey.get", "storage.hmacKey.update", "storage.serviceaccount.get"}
+
+	// Appends are not supported over HTTP.
+	skippedHTTPMethods := []string{"storage.appendable.upload"}
+
 	_, _, testFiles := parseFiles(t)
 
 	for _, testFile := range testFiles {
@@ -616,6 +788,13 @@ func TestRetryConformance(t *testing.T) {
 						for _, transport := range transports {
 							testName := fmt.Sprintf("%v-%v-%v-%v-%v", transport, retryTest.Id, instructions.Instructions, methodName, i)
 							t.Run(testName, func(t *testing.T) {
+								if transport == "http" && slices.Contains(skippedHTTPMethods, methodName) {
+									t.Skip("not supported")
+								}
+								if transport == "grpc" && slices.Contains(skippedGRPCMethods, methodName) {
+									t.Skip("not supported")
+								}
+
 								// Create the retry subtest
 								subtest := &emulatorTest{T: t, name: testName, host: endpoint}
 								subtest.create(map[string][]string{
@@ -768,7 +947,11 @@ func (et *emulatorTest) create(instructions map[string][]string, transport strin
 		et.T.Skip("This retry test case is not yet supported in the testbench.")
 	}
 	if err != nil || resp.StatusCode != 200 {
-		et.Fatalf("creating retry test: err: %v, resp: %+v", err, resp)
+		var respBody string
+		if body, err := io.ReadAll(resp.Body); err != nil {
+			respBody = string(body)
+		}
+		et.Fatalf("creating retry test: err: %v, resp: %+v, resp body: %v", err, resp, respBody)
 	}
 	defer func() {
 		closeErr := resp.Body.Close()

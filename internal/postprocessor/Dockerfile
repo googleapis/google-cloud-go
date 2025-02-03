@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM golang:1.21 as builder
+FROM golang:1.22 as builder
 
 # Copy local code to the container image.
 COPY . /postprocessor/
@@ -22,9 +22,10 @@ WORKDIR /postprocessor
 RUN CGO_ENABLED=0 GOOS=linux go build -v -o post_processor
 
 # Install tools used in build
-RUN go install honnef.co/go/tools/cmd/staticcheck@latest && \
+RUN (export GOTOOLCHAIN='auto' && \
+    go install honnef.co/go/tools/cmd/staticcheck@latest && \
     go install github.com/jstemmer/go-junit-report@latest && \
     go install golang.org/x/lint/golint@latest && \
-    go install golang.org/x/tools/cmd/goimports@latest
+    go install golang.org/x/tools/cmd/goimports@latest)
 
 CMD [ "/postprocessor/post_processor"]

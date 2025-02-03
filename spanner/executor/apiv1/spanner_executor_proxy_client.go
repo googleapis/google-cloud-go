@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package executor
 
 import (
 	"context"
+	"log/slog"
 	"math"
 
 	executorpb "cloud.google.com/go/spanner/executor/apiv1/executorpb"
@@ -44,6 +45,7 @@ func defaultSpannerExecutorProxyGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://spanner-cloud-executor.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -126,6 +128,8 @@ type spannerExecutorProxyGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewSpannerExecutorProxyClient creates a new spanner executor proxy client based on gRPC.
@@ -152,6 +156,7 @@ func NewSpannerExecutorProxyClient(ctx context.Context, opts ...option.ClientOpt
 		connPool:                   connPool,
 		spannerExecutorProxyClient: executorpb.NewSpannerExecutorProxyClient(connPool),
 		CallOptions:                &client.CallOptions,
+		logger:                     internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -174,7 +179,9 @@ func (c *spannerExecutorProxyGRPCClient) Connection() *grpc.ClientConn {
 func (c *spannerExecutorProxyGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -189,7 +196,9 @@ func (c *spannerExecutorProxyGRPCClient) ExecuteActionAsync(ctx context.Context,
 	opts = append((*c.CallOptions).ExecuteActionAsync[0:len((*c.CallOptions).ExecuteActionAsync):len((*c.CallOptions).ExecuteActionAsync)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "ExecuteActionAsync")
 		resp, err = c.spannerExecutorProxyClient.ExecuteActionAsync(ctx, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "ExecuteActionAsync")
 		return err
 	}, opts...)
 	if err != nil {

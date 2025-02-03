@@ -152,6 +152,11 @@ type FieldSchema struct {
 	// Information about the range.
 	// If the type is RANGE, this field is required.
 	RangeElementType *RangeElementType
+
+	// RoundingMode specifies the rounding mode to be used when storing
+	// values of NUMERIC and BIGNUMERIC type.
+	// If unspecified, default value is RoundHalfAwayFromZero.
+	RoundingMode RoundingMode
 }
 
 func (fs *FieldSchema) toBQ() *bq.TableFieldSchema {
@@ -166,6 +171,7 @@ func (fs *FieldSchema) toBQ() *bq.TableFieldSchema {
 		DefaultValueExpression: fs.DefaultValueExpression,
 		Collation:              string(fs.Collation),
 		RangeElementType:       fs.RangeElementType.toBQ(),
+		RoundingMode:           string(fs.RoundingMode),
 	}
 
 	if fs.Repeated {
@@ -253,6 +259,7 @@ func bqToFieldSchema(tfs *bq.TableFieldSchema) *FieldSchema {
 		DefaultValueExpression: tfs.DefaultValueExpression,
 		Collation:              tfs.Collation,
 		RangeElementType:       bqToRangeElementType(tfs.RangeElementType),
+		RoundingMode:           RoundingMode(tfs.RoundingMode),
 	}
 
 	for _, f := range tfs.Fields {
@@ -430,6 +437,21 @@ var typeOfByteSlice = reflect.TypeOf([]byte{})
 func InferSchema(st interface{}) (Schema, error) {
 	return inferSchemaReflectCached(reflect.TypeOf(st))
 }
+
+// RoundingMode  represents the rounding mode to be used when storing
+// values of NUMERIC and BIGNUMERIC type.
+type RoundingMode string
+
+const (
+	// RoundHalfAwayFromZero rounds half values away from zero when applying
+	// precision and scale upon writing of NUMERIC and BIGNUMERIC values.
+	// For Scale: 0 1.1, 1.2, 1.3, 1.4 => 1 1.5, 1.6, 1.7, 1.8, 1.9 => 2
+	RoundHalfAwayFromZero RoundingMode = "ROUND_HALF_AWAY_FROM_ZERO"
+	// RoundHalfEven rounds half values to the nearest even value when applying
+	// precision and scale upon writing of NUMERIC and BIGNUMERIC values.
+	// For Scale: 0 1.1, 1.2, 1.3, 1.4 => 1 1.5 => 2 1.6, 1.7, 1.8, 1.9 => 2 2.5 => 2
+	RoundHalfEven RoundingMode = "ROUND_HALF_EVEN"
+)
 
 var schemaCache sync.Map
 

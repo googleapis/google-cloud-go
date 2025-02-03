@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -29,7 +29,6 @@ import (
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	servicedirectorypb "cloud.google.com/go/servicedirectory/apiv1beta1/servicedirectorypb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -77,6 +76,7 @@ func defaultRegistrationGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://servicedirectory.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -742,6 +742,8 @@ type registrationGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewRegistrationClient creates a new registration service client based on gRPC.
@@ -782,6 +784,7 @@ func NewRegistrationClient(ctx context.Context, opts ...option.ClientOption) (*R
 		connPool:           connPool,
 		registrationClient: servicedirectorypb.NewRegistrationServiceClient(connPool),
 		CallOptions:        &client.CallOptions,
+		logger:             internaloption.GetLogger(opts),
 		locationsClient:    locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -805,7 +808,9 @@ func (c *registrationGRPCClient) Connection() *grpc.ClientConn {
 func (c *registrationGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -827,6 +832,8 @@ type registrationRESTClient struct {
 
 	// Points back to the CallOptions field of the containing RegistrationClient
 	CallOptions **RegistrationCallOptions
+
+	logger *slog.Logger
 }
 
 // NewRegistrationRESTClient creates a new registration service rest client.
@@ -858,6 +865,7 @@ func NewRegistrationRESTClient(ctx context.Context, opts ...option.ClientOption)
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -872,6 +880,7 @@ func defaultRegistrationRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://servicedirectory.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -881,7 +890,9 @@ func defaultRegistrationRESTClientOptions() []option.ClientOption {
 func (c *registrationRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -907,7 +918,7 @@ func (c *registrationGRPCClient) CreateNamespace(ctx context.Context, req *servi
 	var resp *servicedirectorypb.Namespace
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.registrationClient.CreateNamespace(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.registrationClient.CreateNamespace, req, settings.GRPC, c.logger, "CreateNamespace")
 		return err
 	}, opts...)
 	if err != nil {
@@ -936,7 +947,7 @@ func (c *registrationGRPCClient) ListNamespaces(ctx context.Context, req *servic
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.registrationClient.ListNamespaces(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.registrationClient.ListNamespaces, req, settings.GRPC, c.logger, "ListNamespaces")
 			return err
 		}, opts...)
 		if err != nil {
@@ -971,7 +982,7 @@ func (c *registrationGRPCClient) GetNamespace(ctx context.Context, req *serviced
 	var resp *servicedirectorypb.Namespace
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.registrationClient.GetNamespace(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.registrationClient.GetNamespace, req, settings.GRPC, c.logger, "GetNamespace")
 		return err
 	}, opts...)
 	if err != nil {
@@ -989,7 +1000,7 @@ func (c *registrationGRPCClient) UpdateNamespace(ctx context.Context, req *servi
 	var resp *servicedirectorypb.Namespace
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.registrationClient.UpdateNamespace(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.registrationClient.UpdateNamespace, req, settings.GRPC, c.logger, "UpdateNamespace")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1006,7 +1017,7 @@ func (c *registrationGRPCClient) DeleteNamespace(ctx context.Context, req *servi
 	opts = append((*c.CallOptions).DeleteNamespace[0:len((*c.CallOptions).DeleteNamespace):len((*c.CallOptions).DeleteNamespace)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.registrationClient.DeleteNamespace(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.registrationClient.DeleteNamespace, req, settings.GRPC, c.logger, "DeleteNamespace")
 		return err
 	}, opts...)
 	return err
@@ -1021,7 +1032,7 @@ func (c *registrationGRPCClient) CreateService(ctx context.Context, req *service
 	var resp *servicedirectorypb.Service
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.registrationClient.CreateService(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.registrationClient.CreateService, req, settings.GRPC, c.logger, "CreateService")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1050,7 +1061,7 @@ func (c *registrationGRPCClient) ListServices(ctx context.Context, req *serviced
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.registrationClient.ListServices(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.registrationClient.ListServices, req, settings.GRPC, c.logger, "ListServices")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1085,7 +1096,7 @@ func (c *registrationGRPCClient) GetService(ctx context.Context, req *servicedir
 	var resp *servicedirectorypb.Service
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.registrationClient.GetService(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.registrationClient.GetService, req, settings.GRPC, c.logger, "GetService")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1103,7 +1114,7 @@ func (c *registrationGRPCClient) UpdateService(ctx context.Context, req *service
 	var resp *servicedirectorypb.Service
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.registrationClient.UpdateService(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.registrationClient.UpdateService, req, settings.GRPC, c.logger, "UpdateService")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1120,7 +1131,7 @@ func (c *registrationGRPCClient) DeleteService(ctx context.Context, req *service
 	opts = append((*c.CallOptions).DeleteService[0:len((*c.CallOptions).DeleteService):len((*c.CallOptions).DeleteService)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.registrationClient.DeleteService(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.registrationClient.DeleteService, req, settings.GRPC, c.logger, "DeleteService")
 		return err
 	}, opts...)
 	return err
@@ -1135,7 +1146,7 @@ func (c *registrationGRPCClient) CreateEndpoint(ctx context.Context, req *servic
 	var resp *servicedirectorypb.Endpoint
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.registrationClient.CreateEndpoint(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.registrationClient.CreateEndpoint, req, settings.GRPC, c.logger, "CreateEndpoint")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1164,7 +1175,7 @@ func (c *registrationGRPCClient) ListEndpoints(ctx context.Context, req *service
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.registrationClient.ListEndpoints(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.registrationClient.ListEndpoints, req, settings.GRPC, c.logger, "ListEndpoints")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1199,7 +1210,7 @@ func (c *registrationGRPCClient) GetEndpoint(ctx context.Context, req *servicedi
 	var resp *servicedirectorypb.Endpoint
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.registrationClient.GetEndpoint(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.registrationClient.GetEndpoint, req, settings.GRPC, c.logger, "GetEndpoint")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1217,7 +1228,7 @@ func (c *registrationGRPCClient) UpdateEndpoint(ctx context.Context, req *servic
 	var resp *servicedirectorypb.Endpoint
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.registrationClient.UpdateEndpoint(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.registrationClient.UpdateEndpoint, req, settings.GRPC, c.logger, "UpdateEndpoint")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1234,7 +1245,7 @@ func (c *registrationGRPCClient) DeleteEndpoint(ctx context.Context, req *servic
 	opts = append((*c.CallOptions).DeleteEndpoint[0:len((*c.CallOptions).DeleteEndpoint):len((*c.CallOptions).DeleteEndpoint)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.registrationClient.DeleteEndpoint(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.registrationClient.DeleteEndpoint, req, settings.GRPC, c.logger, "DeleteEndpoint")
 		return err
 	}, opts...)
 	return err
@@ -1249,7 +1260,7 @@ func (c *registrationGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.registrationClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.registrationClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1267,7 +1278,7 @@ func (c *registrationGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.registrationClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.registrationClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1285,7 +1296,7 @@ func (c *registrationGRPCClient) TestIamPermissions(ctx context.Context, req *ia
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.registrationClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.registrationClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1303,7 +1314,7 @@ func (c *registrationGRPCClient) GetLocation(ctx context.Context, req *locationp
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1332,7 +1343,7 @@ func (c *registrationGRPCClient) ListLocations(ctx context.Context, req *locatio
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1399,17 +1410,7 @@ func (c *registrationRESTClient) CreateNamespace(ctx context.Context, req *servi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateNamespace")
 		if err != nil {
 			return err
 		}
@@ -1477,21 +1478,10 @@ func (c *registrationRESTClient) ListNamespaces(ctx context.Context, req *servic
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListNamespaces")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1554,17 +1544,7 @@ func (c *registrationRESTClient) GetNamespace(ctx context.Context, req *serviced
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetNamespace")
 		if err != nil {
 			return err
 		}
@@ -1599,11 +1579,11 @@ func (c *registrationRESTClient) UpdateNamespace(ctx context.Context, req *servi
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1628,17 +1608,7 @@ func (c *registrationRESTClient) UpdateNamespace(ctx context.Context, req *servi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateNamespace")
 		if err != nil {
 			return err
 		}
@@ -1686,15 +1656,8 @@ func (c *registrationRESTClient) DeleteNamespace(ctx context.Context, req *servi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteNamespace")
+		return err
 	}, opts...)
 }
 
@@ -1739,17 +1702,7 @@ func (c *registrationRESTClient) CreateService(ctx context.Context, req *service
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateService")
 		if err != nil {
 			return err
 		}
@@ -1817,21 +1770,10 @@ func (c *registrationRESTClient) ListServices(ctx context.Context, req *serviced
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListServices")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1894,17 +1836,7 @@ func (c *registrationRESTClient) GetService(ctx context.Context, req *servicedir
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetService")
 		if err != nil {
 			return err
 		}
@@ -1939,11 +1871,11 @@ func (c *registrationRESTClient) UpdateService(ctx context.Context, req *service
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1968,17 +1900,7 @@ func (c *registrationRESTClient) UpdateService(ctx context.Context, req *service
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateService")
 		if err != nil {
 			return err
 		}
@@ -2026,15 +1948,8 @@ func (c *registrationRESTClient) DeleteService(ctx context.Context, req *service
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteService")
+		return err
 	}, opts...)
 }
 
@@ -2079,17 +1994,7 @@ func (c *registrationRESTClient) CreateEndpoint(ctx context.Context, req *servic
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateEndpoint")
 		if err != nil {
 			return err
 		}
@@ -2157,21 +2062,10 @@ func (c *registrationRESTClient) ListEndpoints(ctx context.Context, req *service
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListEndpoints")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2234,17 +2128,7 @@ func (c *registrationRESTClient) GetEndpoint(ctx context.Context, req *servicedi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetEndpoint")
 		if err != nil {
 			return err
 		}
@@ -2279,11 +2163,11 @@ func (c *registrationRESTClient) UpdateEndpoint(ctx context.Context, req *servic
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2308,17 +2192,7 @@ func (c *registrationRESTClient) UpdateEndpoint(ctx context.Context, req *servic
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateEndpoint")
 		if err != nil {
 			return err
 		}
@@ -2365,15 +2239,8 @@ func (c *registrationRESTClient) DeleteEndpoint(ctx context.Context, req *servic
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteEndpoint")
+		return err
 	}, opts...)
 }
 
@@ -2416,17 +2283,7 @@ func (c *registrationRESTClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -2482,17 +2339,7 @@ func (c *registrationRESTClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -2549,17 +2396,7 @@ func (c *registrationRESTClient) TestIamPermissions(ctx context.Context, req *ia
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
 		if err != nil {
 			return err
 		}
@@ -2609,17 +2446,7 @@ func (c *registrationRESTClient) GetLocation(ctx context.Context, req *locationp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -2684,21 +2511,10 @@ func (c *registrationRESTClient) ListLocations(ctx context.Context, req *locatio
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

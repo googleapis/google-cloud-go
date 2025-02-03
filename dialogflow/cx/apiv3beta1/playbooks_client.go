@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -29,7 +29,6 @@ import (
 	cxpb "cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -71,6 +70,7 @@ func defaultPlaybooksGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -449,6 +449,8 @@ type playbooksGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewPlaybooksClient creates a new playbooks client based on gRPC.
@@ -476,6 +478,7 @@ func NewPlaybooksClient(ctx context.Context, opts ...option.ClientOption) (*Play
 		connPool:         connPool,
 		playbooksClient:  cxpb.NewPlaybooksClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
@@ -500,7 +503,9 @@ func (c *playbooksGRPCClient) Connection() *grpc.ClientConn {
 func (c *playbooksGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -522,6 +527,8 @@ type playbooksRESTClient struct {
 
 	// Points back to the CallOptions field of the containing PlaybooksClient
 	CallOptions **PlaybooksCallOptions
+
+	logger *slog.Logger
 }
 
 // NewPlaybooksRESTClient creates a new playbooks rest client.
@@ -540,6 +547,7 @@ func NewPlaybooksRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -554,6 +562,7 @@ func defaultPlaybooksRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -563,7 +572,9 @@ func defaultPlaybooksRESTClientOptions() []option.ClientOption {
 func (c *playbooksRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -589,7 +600,7 @@ func (c *playbooksGRPCClient) CreatePlaybook(ctx context.Context, req *cxpb.Crea
 	var resp *cxpb.Playbook
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.playbooksClient.CreatePlaybook(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.playbooksClient.CreatePlaybook, req, settings.GRPC, c.logger, "CreatePlaybook")
 		return err
 	}, opts...)
 	if err != nil {
@@ -606,7 +617,7 @@ func (c *playbooksGRPCClient) DeletePlaybook(ctx context.Context, req *cxpb.Dele
 	opts = append((*c.CallOptions).DeletePlaybook[0:len((*c.CallOptions).DeletePlaybook):len((*c.CallOptions).DeletePlaybook)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.playbooksClient.DeletePlaybook(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.playbooksClient.DeletePlaybook, req, settings.GRPC, c.logger, "DeletePlaybook")
 		return err
 	}, opts...)
 	return err
@@ -632,7 +643,7 @@ func (c *playbooksGRPCClient) ListPlaybooks(ctx context.Context, req *cxpb.ListP
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.playbooksClient.ListPlaybooks(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.playbooksClient.ListPlaybooks, req, settings.GRPC, c.logger, "ListPlaybooks")
 			return err
 		}, opts...)
 		if err != nil {
@@ -667,7 +678,7 @@ func (c *playbooksGRPCClient) GetPlaybook(ctx context.Context, req *cxpb.GetPlay
 	var resp *cxpb.Playbook
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.playbooksClient.GetPlaybook(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.playbooksClient.GetPlaybook, req, settings.GRPC, c.logger, "GetPlaybook")
 		return err
 	}, opts...)
 	if err != nil {
@@ -685,7 +696,7 @@ func (c *playbooksGRPCClient) UpdatePlaybook(ctx context.Context, req *cxpb.Upda
 	var resp *cxpb.Playbook
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.playbooksClient.UpdatePlaybook(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.playbooksClient.UpdatePlaybook, req, settings.GRPC, c.logger, "UpdatePlaybook")
 		return err
 	}, opts...)
 	if err != nil {
@@ -703,7 +714,7 @@ func (c *playbooksGRPCClient) CreatePlaybookVersion(ctx context.Context, req *cx
 	var resp *cxpb.PlaybookVersion
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.playbooksClient.CreatePlaybookVersion(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.playbooksClient.CreatePlaybookVersion, req, settings.GRPC, c.logger, "CreatePlaybookVersion")
 		return err
 	}, opts...)
 	if err != nil {
@@ -721,7 +732,7 @@ func (c *playbooksGRPCClient) GetPlaybookVersion(ctx context.Context, req *cxpb.
 	var resp *cxpb.PlaybookVersion
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.playbooksClient.GetPlaybookVersion(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.playbooksClient.GetPlaybookVersion, req, settings.GRPC, c.logger, "GetPlaybookVersion")
 		return err
 	}, opts...)
 	if err != nil {
@@ -750,7 +761,7 @@ func (c *playbooksGRPCClient) ListPlaybookVersions(ctx context.Context, req *cxp
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.playbooksClient.ListPlaybookVersions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.playbooksClient.ListPlaybookVersions, req, settings.GRPC, c.logger, "ListPlaybookVersions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -784,7 +795,7 @@ func (c *playbooksGRPCClient) DeletePlaybookVersion(ctx context.Context, req *cx
 	opts = append((*c.CallOptions).DeletePlaybookVersion[0:len((*c.CallOptions).DeletePlaybookVersion):len((*c.CallOptions).DeletePlaybookVersion)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.playbooksClient.DeletePlaybookVersion(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.playbooksClient.DeletePlaybookVersion, req, settings.GRPC, c.logger, "DeletePlaybookVersion")
 		return err
 	}, opts...)
 	return err
@@ -799,7 +810,7 @@ func (c *playbooksGRPCClient) GetLocation(ctx context.Context, req *locationpb.G
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -828,7 +839,7 @@ func (c *playbooksGRPCClient) ListLocations(ctx context.Context, req *locationpb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -862,7 +873,7 @@ func (c *playbooksGRPCClient) CancelOperation(ctx context.Context, req *longrunn
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -877,7 +888,7 @@ func (c *playbooksGRPCClient) GetOperation(ctx context.Context, req *longrunning
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -906,7 +917,7 @@ func (c *playbooksGRPCClient) ListOperations(ctx context.Context, req *longrunni
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -972,17 +983,7 @@ func (c *playbooksRESTClient) CreatePlaybook(ctx context.Context, req *cxpb.Crea
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreatePlaybook")
 		if err != nil {
 			return err
 		}
@@ -1029,15 +1030,8 @@ func (c *playbooksRESTClient) DeletePlaybook(ctx context.Context, req *cxpb.Dele
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeletePlaybook")
+		return err
 	}, opts...)
 }
 
@@ -1086,21 +1080,10 @@ func (c *playbooksRESTClient) ListPlaybooks(ctx context.Context, req *cxpb.ListP
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListPlaybooks")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1163,17 +1146,7 @@ func (c *playbooksRESTClient) GetPlaybook(ctx context.Context, req *cxpb.GetPlay
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetPlaybook")
 		if err != nil {
 			return err
 		}
@@ -1208,11 +1181,11 @@ func (c *playbooksRESTClient) UpdatePlaybook(ctx context.Context, req *cxpb.Upda
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1237,17 +1210,7 @@ func (c *playbooksRESTClient) UpdatePlaybook(ctx context.Context, req *cxpb.Upda
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdatePlaybook")
 		if err != nil {
 			return err
 		}
@@ -1304,17 +1267,7 @@ func (c *playbooksRESTClient) CreatePlaybookVersion(ctx context.Context, req *cx
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreatePlaybookVersion")
 		if err != nil {
 			return err
 		}
@@ -1364,17 +1317,7 @@ func (c *playbooksRESTClient) GetPlaybookVersion(ctx context.Context, req *cxpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetPlaybookVersion")
 		if err != nil {
 			return err
 		}
@@ -1436,21 +1379,10 @@ func (c *playbooksRESTClient) ListPlaybookVersions(ctx context.Context, req *cxp
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListPlaybookVersions")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1510,15 +1442,8 @@ func (c *playbooksRESTClient) DeletePlaybookVersion(ctx context.Context, req *cx
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeletePlaybookVersion")
+		return err
 	}, opts...)
 }
 
@@ -1555,17 +1480,7 @@ func (c *playbooksRESTClient) GetLocation(ctx context.Context, req *locationpb.G
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -1630,21 +1545,10 @@ func (c *playbooksRESTClient) ListLocations(ctx context.Context, req *locationpb
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1704,15 +1608,8 @@ func (c *playbooksRESTClient) CancelOperation(ctx context.Context, req *longrunn
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -1749,17 +1646,7 @@ func (c *playbooksRESTClient) GetOperation(ctx context.Context, req *longrunning
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -1824,21 +1711,10 @@ func (c *playbooksRESTClient) ListOperations(ctx context.Context, req *longrunni
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

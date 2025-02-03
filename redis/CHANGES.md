@@ -1,5 +1,133 @@
 # Changes
 
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/redis/v1.17.3...redis/v1.18.0) (2025-01-30)
+
+
+### Features
+
+* **redis/cluster:** [Memorystore for Redis Cluster] Added support for Backups and Backup Collections ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **redis/cluster:** [Memorystore for Redis Cluster] Added support for CMEK ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **redis/cluster:** [Memorystore for Redis Cluster] Added support for Cross Cluster Replication ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **redis/cluster:** [Memorystore for Redis Cluster] Added support for maintenance window and rescheduling maintenance ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **redis/cluster:** [Memorystore for Redis Cluster] Added support for Multiple VPCs ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **redis/cluster:** New REQUIRED field `service_attachment` in message `.google.cloud.redis.cluster.v1beta1.PscConnection` ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+
+
+### Bug Fixes
+
+* **redis/cluster:** Changed field behavior for an existing field `address` in message `.google.cloud.redis.cluster.v1beta1.PscConnection` ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **redis/cluster:** Changed field behavior for an existing field `forwarding_rule` in message `.google.cloud.redis.cluster.v1beta1.PscConnection` ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **redis/cluster:** Changed field behavior for an existing field `network` in message `.google.cloud.redis.cluster.v1beta1.PscConnection` ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **redis/cluster:** Changed field behavior for an existing field `psc_connection_id` in message `.google.cloud.redis.cluster.v1beta1.PscConnection` ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+
+
+### Documentation
+
+* **redis/cluster:** A comment for enum value `ALWAYS` in enum `AppendFsync` is changed ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **redis/cluster:** A comment for enum value `NODE_TYPE_UNSPECIFIED` in enum `NodeType` is changed ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **redis/cluster:** A comment for field `address` in message `.google.cloud.redis.cluster.v1beta1.PscConnection` is changed ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **redis/cluster:** A comment for field `forwarding_rule` in message `.google.cloud.redis.cluster.v1beta1.PscConnection` is changed ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **redis/cluster:** A comment for field `name` in message `.google.cloud.redis.cluster.v1beta1.Cluster` is changed ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **redis/cluster:** A comment for field `network` in message `.google.cloud.redis.cluster.v1beta1.PscConnection` is changed ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **redis/cluster:** A comment for field `project_id` in message `.google.cloud.redis.cluster.v1beta1.PscConnection` is changed ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **redis/cluster:** A comment for field `psc_configs` in message `.google.cloud.redis.cluster.v1beta1.Cluster` is changed ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **redis/cluster:** A comment for field `psc_connection_id` in message `.google.cloud.redis.cluster.v1beta1.PscConnection` is changed ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **redis/cluster:** A comment for field `psc_connections` in message `.google.cloud.redis.cluster.v1beta1.Cluster` is changed ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **redis/cluster:** A comment for field `shard_count` in message `.google.cloud.redis.cluster.v1beta1.Cluster` is changed ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+
+## [1.17.3](https://github.com/googleapis/google-cloud-go/compare/redis/v1.17.2...redis/v1.17.3) (2025-01-02)
+
+
+### Bug Fixes
+
+* **redis:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+## [1.17.2](https://github.com/googleapis/google-cloud-go/compare/redis/v1.17.1...redis/v1.17.2) (2024-10-23)
+
+
+### Bug Fixes
+
+* **redis:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **redis:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This chan… ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **redis:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([2b8ca4b](https://github.com/googleapis/google-cloud-go/commit/2b8ca4b4127ce3025c7a21cc7247510e07cc5625))
+
+## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/redis/v1.17.0...redis/v1.17.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **redis:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/redis/v1.16.5...redis/v1.17.0) (2024-08-20)
+
+
+### Features
+
+* **redis:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.16.5](https://github.com/googleapis/google-cloud-go/compare/redis/v1.16.4...redis/v1.16.5) (2024-08-08)
+
+
+### Bug Fixes
+
+* **redis:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+## [1.16.4](https://github.com/googleapis/google-cloud-go/compare/redis/v1.16.3...redis/v1.16.4) (2024-07-24)
+
+
+### Bug Fixes
+
+* **redis:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+## [1.16.3](https://github.com/googleapis/google-cloud-go/compare/redis/v1.16.2...redis/v1.16.3) (2024-07-10)
+
+
+### Bug Fixes
+
+* **redis:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.16.2](https://github.com/googleapis/google-cloud-go/compare/redis/v1.16.1...redis/v1.16.2) (2024-07-01)
+
+
+### Bug Fixes
+
+* **redis:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.16.1](https://github.com/googleapis/google-cloud-go/compare/redis/v1.16.0...redis/v1.16.1) (2024-06-26)
+
+
+### Bug Fixes
+
+* **redis:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/redis/v1.15.0...redis/v1.16.0) (2024-06-05)
+
+
+### Features
+
+* **redis/cluster:** [Memorystore for Redis Cluster] Add persistence support ([d5150d3](https://github.com/googleapis/google-cloud-go/commit/d5150d34eabac0218cbd16a9bbdaaaf019cf237d))
+* **redis/cluster:** [Memorystore for Redis Cluster] Add support for different node types ([d5150d3](https://github.com/googleapis/google-cloud-go/commit/d5150d34eabac0218cbd16a9bbdaaaf019cf237d))
+* **redis/cluster:** [Memorystore for Redis Cluster] Get details of certificate authority from redis cluster ([d5150d3](https://github.com/googleapis/google-cloud-go/commit/d5150d34eabac0218cbd16a9bbdaaaf019cf237d))
+
+
+### Documentation
+
+* **redis/cluster:** [Memorystore for Redis Cluster] size_gb field shows the size of the cluster rounded up to the next integer, precise_size_gb field will show the exact size of the cluster ([d5150d3](https://github.com/googleapis/google-cloud-go/commit/d5150d34eabac0218cbd16a9bbdaaaf019cf237d))
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/redis/v1.14.4...redis/v1.15.0) (2024-05-16)
+
+
+### Features
+
+* **redis/cluster:** Promote client to GA ([652ba8f](https://github.com/googleapis/google-cloud-go/commit/652ba8fa79d4d23b4267fd201acf5ca692228959))
+
+## [1.14.4](https://github.com/googleapis/google-cloud-go/compare/redis/v1.14.3...redis/v1.14.4) (2024-05-01)
+
+
+### Bug Fixes
+
+* **redis:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [1.14.3](https://github.com/googleapis/google-cloud-go/compare/redis/v1.14.2...redis/v1.14.3) (2024-03-14)
 
 
@@ -165,4 +293,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out redis as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

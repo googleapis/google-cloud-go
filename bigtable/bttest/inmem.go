@@ -22,7 +22,9 @@ To use a Server, create it, and then connect to it with no security:
 
 	srv, err := bttest.NewServer("localhost:0")
 	...
-	conn, err := grpc.Dial(srv.Addr, grpc.WithInsecure())
+	conn, err := grpc.Dial(
+		srv.Addr,
+		grpc.WithTransportCredentials(insecure.NewCredentials()))
 	...
 	client, err := bigtable.NewClient(ctx, proj, instance,
 	        option.WithGRPCConn(conn))
@@ -40,6 +42,7 @@ import (
 	"math"
 	"math/rand"
 	"net"
+	"os"
 	"regexp"
 	"sort"
 	"strings"
@@ -49,10 +52,10 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 
+	btapb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
+	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	longrunning "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"github.com/google/btree"
-	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
-	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
 	statpb "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -106,7 +109,15 @@ type server struct {
 // The Server will be listening for gRPC connections, without TLS,
 // on the provided address. The resolved address is named by the Addr field.
 func NewServer(laddr string, opt ...grpc.ServerOption) (*Server, error) {
-	l, err := net.Listen("tcp", laddr)
+	var l net.Listener
+	var err error
+
+	// If the address contains slashes, listen on a unix domain socket instead.
+	if strings.Contains(laddr, "/") {
+		l, err = net.Listen("unix", laddr)
+	} else {
+		l, err = net.Listen("tcp", laddr)
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -139,6 +150,11 @@ func (s *Server) Close() {
 
 	s.srv.Stop()
 	s.l.Close()
+
+	// clean up unix socket
+	if strings.Contains(s.Addr, "/") {
+		_ = os.Remove(s.Addr)
+	}
 }
 
 func (s *server) CreateTable(ctx context.Context, req *btapb.CreateTableRequest) (*btapb.Table, error) {
@@ -317,13 +333,44 @@ func (s *server) ModifyColumnFamilies(ctx context.Context, req *btapb.ModifyColu
 				return true
 			})
 		} else if modify := mod.GetUpdate(); modify != nil {
-			if _, ok := tbl.families[mod.Id]; !ok {
+			newcf := newColumnFamily(req.Name+"/columnFamilies/"+mod.Id, 0, modify)
+			updateMask := mod.GetUpdateMask()
+			paths := updateMask.GetPaths()
+
+			cf, ok := tbl.families[mod.Id]
+			if !ok {
 				return nil, fmt.Errorf("no such family %q", mod.Id)
 			}
-			newcf := newColumnFamily(req.Name+"/columnFamilies/"+mod.Id, 0, modify)
-			// assume that we ALWAYS want to replace by the new setting
-			// we may need partial update through
-			tbl.families[mod.Id] = newcf
+
+			var utr *btapb.ColumnFamily
+			if len(paths) > 0 &&
+				!updateMask.IsValid(utr) {
+				return nil, status.Errorf(codes.InvalidArgument,
+					"incorrect path in UpdateMask; got: %v",
+					updateMask)
+			}
+
+			if len(paths) == 0 {
+				// Assume that the update is only modifying the GC policy.
+				cf.gcRule = newcf.gcRule
+			}
+
+			for _, path := range paths {
+				switch path {
+				case "value_type":
+					if cf.valueType != nil &&
+						cf.valueType.GetAggregateType() != nil {
+						// The existing column family is an aggregate type, and the update
+						// is attempting to modify its immutable type.
+						return nil, status.Errorf(codes.InvalidArgument,
+							"Immutable fields 'value_type.aggregate_type' cannot be updated")
+					}
+
+					cf.valueType = newcf.valueType
+				case "gc_rule":
+					cf.gcRule = newcf.gcRule
+				}
+			}
 		}
 	}
 
@@ -564,6 +611,15 @@ func (s *server) ReadRows(req *btpb.ReadRowsRequest, stream btpb.Bigtable_ReadRo
 		return stream.Send(rrr)
 	}
 	return nil
+}
+
+func (s *server) GetPartitionsByTableName(name string) []*btpb.RowRange {
+	table, ok := s.tables[name]
+	if !ok {
+		return nil
+	}
+	return table.rowRanges()
+
 }
 
 // streamRow filters the given row and sends it via the given stream.
@@ -1072,6 +1128,13 @@ func (s *server) PingAndWarm(ctx context.Context, req *btpb.PingAndWarmRequest) 
 // fam should be a snapshot of the keys of tbl.families.
 // It assumes r.mu is locked.
 func applyMutations(tbl *table, r *row, muts []*btpb.Mutation, fs map[string]*columnFamily) error {
+	if len(r.key) == 0 {
+		return status.Errorf(
+			codes.InvalidArgument,
+			"Row keys must be non-empty",
+		)
+	}
+
 	for _, mut := range muts {
 		switch mut := mut.Mutation.(type) {
 		default:
@@ -1118,6 +1181,35 @@ func applyMutations(tbl *table, r *row, muts []*btpb.Mutation, fs map[string]*co
 				value = binary.BigEndian.AppendUint64(value, uint64(v.IntValue))
 			default:
 				return fmt.Errorf("only int64 values are supported")
+			}
+
+			newCell := cell{ts: ts, value: value}
+			f := r.getOrCreateFamily(fam, fs[fam].order)
+			f.cells[col] = appendOrReplaceCell(f.cellsByColumn(col), newCell, cf)
+
+		case *btpb.Mutation_MergeToCell_:
+			add := mut.MergeToCell
+			var cf, ok = fs[add.FamilyName]
+			if !ok {
+				return fmt.Errorf("unknown family %q", add.FamilyName)
+			}
+			if cf.valueType == nil || cf.valueType.GetAggregateType() == nil {
+				return fmt.Errorf("illegal attempt to use MergeToCell on non-aggregate cell")
+			}
+			ts := add.Timestamp.GetRawTimestampMicros()
+			if ts < 0 {
+				return fmt.Errorf("MergeToCell must set timestamp >= 0")
+			}
+
+			fam := add.FamilyName
+			col := string(add.GetColumnQualifier().GetRawValue())
+
+			var value []byte
+			switch v := add.Input.Kind.(type) {
+			case *btpb.Value_RawValue:
+				value = v.RawValue
+			default:
+				return fmt.Errorf("only []bytes values are supported")
 			}
 
 			newCell := cell{ts: ts, value: value}
@@ -1348,6 +1440,13 @@ func (s *server) SampleRowKeys(req *btpb.SampleRowKeysRequest, stream btpb.Bigta
 		i++
 		return true
 	})
+	if err == nil {
+		// The last response should be an empty string, indicating the end of the table
+		stream.Send(&btpb.SampleRowKeysResponse{
+			RowKey:      []byte{},
+			OffsetBytes: offset,
+		})
+	}
 	return err
 }
 
@@ -1394,6 +1493,7 @@ type table struct {
 	counter     uint64                   // increment by 1 when a new family is created
 	families    map[string]*columnFamily // keyed by plain family name
 	rows        *btree.BTree             // indexed by row key
+	partitions  []*btpb.RowRange         // partitions used in change stream
 	isProtected bool                     // whether this table has deletion protection
 }
 
@@ -1408,10 +1508,56 @@ func newTable(ctr *btapb.CreateTableRequest) *table {
 			c++
 		}
 	}
+
+	// Hard code the partitions for testing purpose.
+	rowRanges := []*btpb.RowRange{
+		{
+			StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("a")},
+			EndKey:   &btpb.RowRange_EndKeyClosed{EndKeyClosed: []byte("b")},
+		},
+		{
+			StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("c")},
+			EndKey:   &btpb.RowRange_EndKeyClosed{EndKeyClosed: []byte("d")},
+		},
+		{
+			StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("e")},
+			EndKey:   &btpb.RowRange_EndKeyClosed{EndKeyClosed: []byte("f")},
+		},
+		{
+			StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("g")},
+			EndKey:   &btpb.RowRange_EndKeyClosed{EndKeyClosed: []byte("h")},
+		},
+		{
+			StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("i")},
+			EndKey:   &btpb.RowRange_EndKeyClosed{EndKeyClosed: []byte("j")},
+		},
+		{
+			StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("k")},
+			EndKey:   &btpb.RowRange_EndKeyClosed{EndKeyClosed: []byte("l")},
+		},
+		{
+			StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("m")},
+			EndKey:   &btpb.RowRange_EndKeyClosed{EndKeyClosed: []byte("n")},
+		},
+		{
+			StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("o")},
+			EndKey:   &btpb.RowRange_EndKeyClosed{EndKeyClosed: []byte("p")},
+		},
+		{
+			StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("q")},
+			EndKey:   &btpb.RowRange_EndKeyClosed{EndKeyClosed: []byte("r")},
+		},
+		{
+			StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("s")},
+			EndKey:   &btpb.RowRange_EndKeyClosed{EndKeyClosed: []byte("z")},
+		},
+	}
+
 	return &table{
 		families:    fams,
 		counter:     c,
 		rows:        btree.New(btreeDegree),
+		partitions:  rowRanges,
 		isProtected: ctr.GetTable().GetDeletionProtection(),
 	}
 }
@@ -1508,6 +1654,10 @@ func (t *table) gcReadOnly() (toDelete []btree.Item) {
 	})
 
 	return toDelete
+}
+
+func (t *table) rowRanges() []*btpb.RowRange {
+	return t.partitions
 }
 
 type byRowKey []*row
@@ -1755,4 +1905,24 @@ func toColumnFamilies(families map[string]*columnFamily) map[string]*btapb.Colum
 		fs[k] = v.proto()
 	}
 	return fs
+}
+
+func (s *server) CreateAuthorizedView(context.Context, *btapb.CreateAuthorizedViewRequest) (*longrunning.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "the emulator does not currently support authorized views")
+}
+
+func (s *server) GetAuthorizedView(context.Context, *btapb.GetAuthorizedViewRequest) (*btapb.AuthorizedView, error) {
+	return nil, status.Errorf(codes.Unimplemented, "the emulator does not currently support authorized views")
+}
+
+func (s *server) ListAuthorizedViews(context.Context, *btapb.ListAuthorizedViewsRequest) (*btapb.ListAuthorizedViewsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "the emulator does not currently support authorized views")
+}
+
+func (s *server) DeleteAuthorizedView(context.Context, *btapb.DeleteAuthorizedViewRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "the emulator does not currently support authorized views")
+}
+
+func (s *server) UpdateAuthorizedView(context.Context, *btapb.UpdateAuthorizedViewRequest) (*longrunning.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "the emulator does not currently support authorized views")
 }

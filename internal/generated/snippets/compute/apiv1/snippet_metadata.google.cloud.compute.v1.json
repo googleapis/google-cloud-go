@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/compute/apiv1",
-    "version": "1.25.1",
+    "version": "1.31.1",
     "language": "GO",
     "apis": [
       {
@@ -1762,7 +1762,7 @@
     {
       "regionTag": "compute_v1_generated_BackendServices_ListUsable_sync",
       "title": "compute ListUsable Sample",
-      "description": "ListUsable retrieves an aggregated list of all usable backend services in the specified project.",
+      "description": "ListUsable retrieves a list of all usable backend services in the specified project.",
       "file": "BackendServicesClient/ListUsable/main.go",
       "language": "GO",
       "clientMethod": {
@@ -7188,6 +7188,236 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_InstanceGroupManagerResizeRequests_Cancel_sync",
+      "title": "compute Cancel Sample",
+      "description": "Cancel cancels the specified resize request and removes it from the queue. Cancelled resize request does no longer wait for the resources to be provisioned. Cancel is only possible for requests that are accepted in the queue.",
+      "file": "InstanceGroupManagerResizeRequestsClient/Cancel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Cancel",
+        "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequestsClient.Cancel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.CancelInstanceGroupManagerResizeRequestRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "InstanceGroupManagerResizeRequestsClient",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequestsClient"
+        },
+        "method": {
+          "shortName": "Cancel",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequests.Cancel",
+          "service": {
+            "shortName": "InstanceGroupManagerResizeRequests",
+            "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequests"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InstanceGroupManagerResizeRequests_Delete_sync",
+      "title": "compute Delete Sample",
+      "description": "Delete deletes the specified, inactive resize request. Requests that are still active cannot be deleted. Deleting request does not delete instances that were provisioned previously.",
+      "file": "InstanceGroupManagerResizeRequestsClient/Delete/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Delete",
+        "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequestsClient.Delete",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.DeleteInstanceGroupManagerResizeRequestRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "InstanceGroupManagerResizeRequestsClient",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequestsClient"
+        },
+        "method": {
+          "shortName": "Delete",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequests.Delete",
+          "service": {
+            "shortName": "InstanceGroupManagerResizeRequests",
+            "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequests"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InstanceGroupManagerResizeRequests_Get_sync",
+      "title": "compute Get Sample",
+      "description": "Get returns all of the details about the specified resize request.",
+      "file": "InstanceGroupManagerResizeRequestsClient/Get/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Get",
+        "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequestsClient.Get",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetInstanceGroupManagerResizeRequestRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.InstanceGroupManagerResizeRequest",
+        "client": {
+          "shortName": "InstanceGroupManagerResizeRequestsClient",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequestsClient"
+        },
+        "method": {
+          "shortName": "Get",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequests.Get",
+          "service": {
+            "shortName": "InstanceGroupManagerResizeRequests",
+            "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequests"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InstanceGroupManagerResizeRequests_Insert_sync",
+      "title": "compute Insert Sample",
+      "description": "Insert creates a new resize request that starts provisioning VMs immediately or queues VM creation.",
+      "file": "InstanceGroupManagerResizeRequestsClient/Insert/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Insert",
+        "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequestsClient.Insert",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.InsertInstanceGroupManagerResizeRequestRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "InstanceGroupManagerResizeRequestsClient",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequestsClient"
+        },
+        "method": {
+          "shortName": "Insert",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequests.Insert",
+          "service": {
+            "shortName": "InstanceGroupManagerResizeRequests",
+            "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequests"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InstanceGroupManagerResizeRequests_List_sync",
+      "title": "compute List Sample",
+      "description": "List retrieves a list of resize requests that are contained in the managed instance group.",
+      "file": "InstanceGroupManagerResizeRequestsClient/List/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "List",
+        "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequestsClient.List",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListInstanceGroupManagerResizeRequestsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "InstanceGroupManagerResizeRequestIterator",
+        "client": {
+          "shortName": "InstanceGroupManagerResizeRequestsClient",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequestsClient"
+        },
+        "method": {
+          "shortName": "List",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequests.List",
+          "service": {
+            "shortName": "InstanceGroupManagerResizeRequests",
+            "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequests"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_InstanceGroupManagers_AbandonInstances_sync",
       "title": "compute AbandonInstances Sample",
       "description": "AbandonInstances flags the specified instances to be removed from the managed instance group. Abandoning an instance does not delete the instance, but it does remove the instance from any target pools that are applied by the managed instance group. This method reduces the targetSize of the managed instance group by the number of instances that you abandon. This operation is marked as DONE when the action is scheduled even if the instances have not yet been removed from the group. You must separately verify the status of the abandoning action with the listmanagedinstances method. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted. You can specify a maximum of 1000 instances with this method per request.",
@@ -7970,6 +8200,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_InstanceGroupManagers_ResumeInstances_sync",
+      "title": "compute ResumeInstances Sample",
+      "description": "ResumeInstances flags the specified instances in the managed instance group to be resumed. This method increases the targetSize and decreases the targetSuspendedSize of the managed instance group by the number of instances that you resume. The resumeInstances operation is marked DONE if the resumeInstances request is successful. The underlying actions take additional time. You must separately verify the status of the RESUMING action with the listmanagedinstances method. In this request, you can only specify instances that are suspended. For example, if an instance was previously suspended using the suspendInstances method, it can be resumed using the resumeInstances method. If a health check is attached to the managed instance group, the specified instances will be verified as healthy after they are resumed. You can specify a maximum of 1000 instances with this method per request.",
+      "file": "InstanceGroupManagersClient/ResumeInstances/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ResumeInstances",
+        "fullName": "google.cloud.compute.v1.InstanceGroupManagersClient.ResumeInstances",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ResumeInstancesInstanceGroupManagerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "InstanceGroupManagersClient",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagersClient"
+        },
+        "method": {
+          "shortName": "ResumeInstances",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagers.ResumeInstances",
+          "service": {
+            "shortName": "InstanceGroupManagers",
+            "fullName": "google.cloud.compute.v1.InstanceGroupManagers"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_InstanceGroupManagers_SetInstanceTemplate_sync",
       "title": "compute SetInstanceTemplate Sample",
       "description": "SetInstanceTemplate specifies the instance template to use when creating new instances in this group. The templates for existing instances in the group do not change unless you run recreateInstances, run applyUpdatesToInstances, or set the group's updatePolicy.type to PROACTIVE.",
@@ -8046,6 +8322,144 @@
         "method": {
           "shortName": "SetTargetPools",
           "fullName": "google.cloud.compute.v1.InstanceGroupManagers.SetTargetPools",
+          "service": {
+            "shortName": "InstanceGroupManagers",
+            "fullName": "google.cloud.compute.v1.InstanceGroupManagers"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InstanceGroupManagers_StartInstances_sync",
+      "title": "compute StartInstances Sample",
+      "description": "StartInstances flags the specified instances in the managed instance group to be started. This method increases the targetSize and decreases the targetStoppedSize of the managed instance group by the number of instances that you start. The startInstances operation is marked DONE if the startInstances request is successful. The underlying actions take additional time. You must separately verify the status of the STARTING action with the listmanagedinstances method. In this request, you can only specify instances that are stopped. For example, if an instance was previously stopped using the stopInstances method, it can be started using the startInstances method. If a health check is attached to the managed instance group, the specified instances will be verified as healthy after they are started. You can specify a maximum of 1000 instances with this method per request.",
+      "file": "InstanceGroupManagersClient/StartInstances/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StartInstances",
+        "fullName": "google.cloud.compute.v1.InstanceGroupManagersClient.StartInstances",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.StartInstancesInstanceGroupManagerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "InstanceGroupManagersClient",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagersClient"
+        },
+        "method": {
+          "shortName": "StartInstances",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagers.StartInstances",
+          "service": {
+            "shortName": "InstanceGroupManagers",
+            "fullName": "google.cloud.compute.v1.InstanceGroupManagers"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InstanceGroupManagers_StopInstances_sync",
+      "title": "compute StopInstances Sample",
+      "description": "StopInstances flags the specified instances in the managed instance group to be immediately stopped. You can only specify instances that are running in this request. This method reduces the targetSize and increases the targetStoppedSize of the managed instance group by the number of instances that you stop. The stopInstances operation is marked DONE if the stopInstances request is successful. The underlying actions take additional time. You must separately verify the status of the STOPPING action with the listmanagedinstances method. If the standbyPolicy.initialDelaySec field is set, the group delays stopping the instances until initialDelaySec have passed from instance.creationTimestamp (that is, when the instance was created). This delay gives your application time to set itself up and initialize on the instance. If more than initialDelaySec seconds have passed since instance.creationTimestamp when this method is called, there will be zero delay. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is stopped. Stopped instances can be started using the startInstances method. You can specify a maximum of 1000 instances with this method per request.",
+      "file": "InstanceGroupManagersClient/StopInstances/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StopInstances",
+        "fullName": "google.cloud.compute.v1.InstanceGroupManagersClient.StopInstances",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.StopInstancesInstanceGroupManagerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "InstanceGroupManagersClient",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagersClient"
+        },
+        "method": {
+          "shortName": "StopInstances",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagers.StopInstances",
+          "service": {
+            "shortName": "InstanceGroupManagers",
+            "fullName": "google.cloud.compute.v1.InstanceGroupManagers"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InstanceGroupManagers_SuspendInstances_sync",
+      "title": "compute SuspendInstances Sample",
+      "description": "SuspendInstances flags the specified instances in the managed instance group to be immediately suspended. You can only specify instances that are running in this request. This method reduces the targetSize and increases the targetSuspendedSize of the managed instance group by the number of instances that you suspend. The suspendInstances operation is marked DONE if the suspendInstances request is successful. The underlying actions take additional time. You must separately verify the status of the SUSPENDING action with the listmanagedinstances method. If the standbyPolicy.initialDelaySec field is set, the group delays suspension of the instances until initialDelaySec have passed from instance.creationTimestamp (that is, when the instance was created). This delay gives your application time to set itself up and initialize on the instance. If more than initialDelaySec seconds have passed since instance.creationTimestamp when this method is called, there will be zero delay. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is suspended. Suspended instances can be resumed using the resumeInstances method. You can specify a maximum of 1000 instances with this method per request.",
+      "file": "InstanceGroupManagersClient/SuspendInstances/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SuspendInstances",
+        "fullName": "google.cloud.compute.v1.InstanceGroupManagersClient.SuspendInstances",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.SuspendInstancesInstanceGroupManagerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "InstanceGroupManagersClient",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagersClient"
+        },
+        "method": {
+          "shortName": "SuspendInstances",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagers.SuspendInstances",
           "service": {
             "shortName": "InstanceGroupManagers",
             "fullName": "google.cloud.compute.v1.InstanceGroupManagers"
@@ -8509,6 +8923,98 @@
           "service": {
             "shortName": "InstanceGroups",
             "fullName": "google.cloud.compute.v1.InstanceGroups"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InstanceSettingsService_Get_sync",
+      "title": "compute Get Sample",
+      "description": "Get get Instance settings.",
+      "file": "InstanceSettingsClient/Get/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Get",
+        "fullName": "google.cloud.compute.v1.InstanceSettingsClient.Get",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetInstanceSettingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.InstanceSettings",
+        "client": {
+          "shortName": "InstanceSettingsClient",
+          "fullName": "google.cloud.compute.v1.InstanceSettingsClient"
+        },
+        "method": {
+          "shortName": "Get",
+          "fullName": "google.cloud.compute.v1.InstanceSettingsService.Get",
+          "service": {
+            "shortName": "InstanceSettingsService",
+            "fullName": "google.cloud.compute.v1.InstanceSettingsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InstanceSettingsService_Patch_sync",
+      "title": "compute Patch Sample",
+      "description": "Patch patch Instance settings",
+      "file": "InstanceSettingsClient/Patch/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Patch",
+        "fullName": "google.cloud.compute.v1.InstanceSettingsClient.Patch",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.PatchInstanceSettingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "InstanceSettingsClient",
+          "fullName": "google.cloud.compute.v1.InstanceSettingsClient"
+        },
+        "method": {
+          "shortName": "Patch",
+          "fullName": "google.cloud.compute.v1.InstanceSettingsService.Patch",
+          "service": {
+            "shortName": "InstanceSettingsService",
+            "fullName": "google.cloud.compute.v1.InstanceSettingsService"
           }
         }
       },
@@ -14410,6 +14916,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_NetworkFirewallPolicies_AggregatedList_sync",
+      "title": "compute AggregatedList Sample",
+      "description": "AggregatedList retrieves an aggregated list of network firewall policies, listing network firewall policies from all applicable scopes (global and regional) and grouping the results per scope. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
+      "file": "NetworkFirewallPoliciesClient/AggregatedList/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AggregatedList",
+        "fullName": "google.cloud.compute.v1.NetworkFirewallPoliciesClient.AggregatedList",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.AggregatedListNetworkFirewallPoliciesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "FirewallPoliciesScopedListPairIterator",
+        "client": {
+          "shortName": "NetworkFirewallPoliciesClient",
+          "fullName": "google.cloud.compute.v1.NetworkFirewallPoliciesClient"
+        },
+        "method": {
+          "shortName": "AggregatedList",
+          "fullName": "google.cloud.compute.v1.NetworkFirewallPolicies.AggregatedList",
+          "service": {
+            "shortName": "NetworkFirewallPolicies",
+            "fullName": "google.cloud.compute.v1.NetworkFirewallPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_NetworkFirewallPolicies_CloneRules_sync",
       "title": "compute CloneRules Sample",
       "description": "CloneRules copies rules to the specified firewall policy.",
@@ -15054,6 +15606,98 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_NetworkProfiles_Get_sync",
+      "title": "compute Get Sample",
+      "description": "Get returns the specified network profile.",
+      "file": "NetworkProfilesClient/Get/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Get",
+        "fullName": "google.cloud.compute.v1.NetworkProfilesClient.Get",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetNetworkProfileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.NetworkProfile",
+        "client": {
+          "shortName": "NetworkProfilesClient",
+          "fullName": "google.cloud.compute.v1.NetworkProfilesClient"
+        },
+        "method": {
+          "shortName": "Get",
+          "fullName": "google.cloud.compute.v1.NetworkProfiles.Get",
+          "service": {
+            "shortName": "NetworkProfiles",
+            "fullName": "google.cloud.compute.v1.NetworkProfiles"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_NetworkProfiles_List_sync",
+      "title": "compute List Sample",
+      "description": "List retrieves a list of network profiles available to the specified project.",
+      "file": "NetworkProfilesClient/List/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "List",
+        "fullName": "google.cloud.compute.v1.NetworkProfilesClient.List",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListNetworkProfilesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "NetworkProfileIterator",
+        "client": {
+          "shortName": "NetworkProfilesClient",
+          "fullName": "google.cloud.compute.v1.NetworkProfilesClient"
+        },
+        "method": {
+          "shortName": "List",
+          "fullName": "google.cloud.compute.v1.NetworkProfiles.List",
+          "service": {
+            "shortName": "NetworkProfiles",
+            "fullName": "google.cloud.compute.v1.NetworkProfiles"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_Networks_AddPeering_sync",
       "title": "compute AddPeering Sample",
       "description": "AddPeering adds a peering to the specified network.",
@@ -15378,7 +16022,7 @@
     {
       "regionTag": "compute_v1_generated_Networks_Patch_sync",
       "title": "compute Patch Sample",
-      "description": "Patch patches the specified network with the data included in the request. Only the following fields can be modified: routingConfig.routingMode.",
+      "description": "Patch patches the specified network with the data included in the request. Only routingConfig can be modified.",
       "file": "NetworksClient/Patch/main.go",
       "language": "GO",
       "clientMethod": {
@@ -16004,6 +16648,52 @@
         "method": {
           "shortName": "Patch",
           "fullName": "google.cloud.compute.v1.NodeGroups.Patch",
+          "service": {
+            "shortName": "NodeGroups",
+            "fullName": "google.cloud.compute.v1.NodeGroups"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_NodeGroups_PerformMaintenance_sync",
+      "title": "compute PerformMaintenance Sample",
+      "description": "PerformMaintenance perform maintenance on a subset of nodes in the node group.",
+      "file": "NodeGroupsClient/PerformMaintenance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PerformMaintenance",
+        "fullName": "google.cloud.compute.v1.NodeGroupsClient.PerformMaintenance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.PerformMaintenanceNodeGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "NodeGroupsClient",
+          "fullName": "google.cloud.compute.v1.NodeGroupsClient"
+        },
+        "method": {
+          "shortName": "PerformMaintenance",
+          "fullName": "google.cloud.compute.v1.NodeGroups.PerformMaintenance",
           "service": {
             "shortName": "NodeGroups",
             "fullName": "google.cloud.compute.v1.NodeGroups"
@@ -18920,7 +19610,7 @@
     {
       "regionTag": "compute_v1_generated_RegionBackendServices_ListUsable_sync",
       "title": "compute ListUsable Sample",
-      "description": "ListUsable retrieves an aggregated list of all usable backend services in the specified project in the given region.",
+      "description": "ListUsable retrieves a list of all usable backend services in the specified project in the given region.",
       "file": "RegionBackendServicesClient/ListUsable/main.go",
       "language": "GO",
       "clientMethod": {
@@ -21540,6 +22230,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_RegionInstanceGroupManagers_ResumeInstances_sync",
+      "title": "compute ResumeInstances Sample",
+      "description": "ResumeInstances flags the specified instances in the managed instance group to be resumed. This method increases the targetSize and decreases the targetSuspendedSize of the managed instance group by the number of instances that you resume. The resumeInstances operation is marked DONE if the resumeInstances request is successful. The underlying actions take additional time. You must separately verify the status of the RESUMING action with the listmanagedinstances method. In this request, you can only specify instances that are suspended. For example, if an instance was previously suspended using the suspendInstances method, it can be resumed using the resumeInstances method. If a health check is attached to the managed instance group, the specified instances will be verified as healthy after they are resumed. You can specify a maximum of 1000 instances with this method per request.",
+      "file": "RegionInstanceGroupManagersClient/ResumeInstances/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ResumeInstances",
+        "fullName": "google.cloud.compute.v1.RegionInstanceGroupManagersClient.ResumeInstances",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ResumeInstancesRegionInstanceGroupManagerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionInstanceGroupManagersClient",
+          "fullName": "google.cloud.compute.v1.RegionInstanceGroupManagersClient"
+        },
+        "method": {
+          "shortName": "ResumeInstances",
+          "fullName": "google.cloud.compute.v1.RegionInstanceGroupManagers.ResumeInstances",
+          "service": {
+            "shortName": "RegionInstanceGroupManagers",
+            "fullName": "google.cloud.compute.v1.RegionInstanceGroupManagers"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_RegionInstanceGroupManagers_SetInstanceTemplate_sync",
       "title": "compute SetInstanceTemplate Sample",
       "description": "SetInstanceTemplate sets the instance template to use when creating new instances or recreating instances in this group. Existing instances are not affected.",
@@ -21616,6 +22352,144 @@
         "method": {
           "shortName": "SetTargetPools",
           "fullName": "google.cloud.compute.v1.RegionInstanceGroupManagers.SetTargetPools",
+          "service": {
+            "shortName": "RegionInstanceGroupManagers",
+            "fullName": "google.cloud.compute.v1.RegionInstanceGroupManagers"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionInstanceGroupManagers_StartInstances_sync",
+      "title": "compute StartInstances Sample",
+      "description": "StartInstances flags the specified instances in the managed instance group to be started. This method increases the targetSize and decreases the targetStoppedSize of the managed instance group by the number of instances that you start. The startInstances operation is marked DONE if the startInstances request is successful. The underlying actions take additional time. You must separately verify the status of the STARTING action with the listmanagedinstances method. In this request, you can only specify instances that are stopped. For example, if an instance was previously stopped using the stopInstances method, it can be started using the startInstances method. If a health check is attached to the managed instance group, the specified instances will be verified as healthy after they are started. You can specify a maximum of 1000 instances with this method per request.",
+      "file": "RegionInstanceGroupManagersClient/StartInstances/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StartInstances",
+        "fullName": "google.cloud.compute.v1.RegionInstanceGroupManagersClient.StartInstances",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.StartInstancesRegionInstanceGroupManagerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionInstanceGroupManagersClient",
+          "fullName": "google.cloud.compute.v1.RegionInstanceGroupManagersClient"
+        },
+        "method": {
+          "shortName": "StartInstances",
+          "fullName": "google.cloud.compute.v1.RegionInstanceGroupManagers.StartInstances",
+          "service": {
+            "shortName": "RegionInstanceGroupManagers",
+            "fullName": "google.cloud.compute.v1.RegionInstanceGroupManagers"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionInstanceGroupManagers_StopInstances_sync",
+      "title": "compute StopInstances Sample",
+      "description": "StopInstances flags the specified instances in the managed instance group to be immediately stopped. You can only specify instances that are running in this request. This method reduces the targetSize and increases the targetStoppedSize of the managed instance group by the number of instances that you stop. The stopInstances operation is marked DONE if the stopInstances request is successful. The underlying actions take additional time. You must separately verify the status of the STOPPING action with the listmanagedinstances method. If the standbyPolicy.initialDelaySec field is set, the group delays stopping the instances until initialDelaySec have passed from instance.creationTimestamp (that is, when the instance was created). This delay gives your application time to set itself up and initialize on the instance. If more than initialDelaySec seconds have passed since instance.creationTimestamp when this method is called, there will be zero delay. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is stopped. Stopped instances can be started using the startInstances method. You can specify a maximum of 1000 instances with this method per request.",
+      "file": "RegionInstanceGroupManagersClient/StopInstances/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StopInstances",
+        "fullName": "google.cloud.compute.v1.RegionInstanceGroupManagersClient.StopInstances",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.StopInstancesRegionInstanceGroupManagerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionInstanceGroupManagersClient",
+          "fullName": "google.cloud.compute.v1.RegionInstanceGroupManagersClient"
+        },
+        "method": {
+          "shortName": "StopInstances",
+          "fullName": "google.cloud.compute.v1.RegionInstanceGroupManagers.StopInstances",
+          "service": {
+            "shortName": "RegionInstanceGroupManagers",
+            "fullName": "google.cloud.compute.v1.RegionInstanceGroupManagers"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionInstanceGroupManagers_SuspendInstances_sync",
+      "title": "compute SuspendInstances Sample",
+      "description": "SuspendInstances flags the specified instances in the managed instance group to be immediately suspended. You can only specify instances that are running in this request. This method reduces the targetSize and increases the targetSuspendedSize of the managed instance group by the number of instances that you suspend. The suspendInstances operation is marked DONE if the suspendInstances request is successful. The underlying actions take additional time. You must separately verify the status of the SUSPENDING action with the listmanagedinstances method. If the standbyPolicy.initialDelaySec field is set, the group delays suspension of the instances until initialDelaySec have passed from instance.creationTimestamp (that is, when the instance was created). This delay gives your application time to set itself up and initialize on the instance. If more than initialDelaySec seconds have passed since instance.creationTimestamp when this method is called, there will be zero delay. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is suspended. Suspended instances can be resumed using the resumeInstances method. You can specify a maximum of 1000 instances with this method per request.",
+      "file": "RegionInstanceGroupManagersClient/SuspendInstances/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SuspendInstances",
+        "fullName": "google.cloud.compute.v1.RegionInstanceGroupManagersClient.SuspendInstances",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.SuspendInstancesRegionInstanceGroupManagerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionInstanceGroupManagersClient",
+          "fullName": "google.cloud.compute.v1.RegionInstanceGroupManagersClient"
+        },
+        "method": {
+          "shortName": "SuspendInstances",
+          "fullName": "google.cloud.compute.v1.RegionInstanceGroupManagers.SuspendInstances",
           "service": {
             "shortName": "RegionInstanceGroupManagers",
             "fullName": "google.cloud.compute.v1.RegionInstanceGroupManagers"
@@ -24346,6 +25220,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_RegionSecurityPolicies_SetLabels_sync",
+      "title": "compute SetLabels Sample",
+      "description": "SetLabels sets the labels on a security policy. To learn more about labels, read the Labeling Resources documentation.",
+      "file": "RegionSecurityPoliciesClient/SetLabels/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetLabels",
+        "fullName": "google.cloud.compute.v1.RegionSecurityPoliciesClient.SetLabels",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.SetLabelsRegionSecurityPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionSecurityPoliciesClient",
+          "fullName": "google.cloud.compute.v1.RegionSecurityPoliciesClient"
+        },
+        "method": {
+          "shortName": "SetLabels",
+          "fullName": "google.cloud.compute.v1.RegionSecurityPolicies.SetLabels",
+          "service": {
+            "shortName": "RegionSecurityPolicies",
+            "fullName": "google.cloud.compute.v1.RegionSecurityPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_RegionSslCertificates_Delete_sync",
       "title": "compute Delete Sample",
       "description": "Delete deletes the specified SslCertificate resource in the region.",
@@ -25912,7 +26832,7 @@
     {
       "regionTag": "compute_v1_generated_Regions_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified Region resource. To decrease latency for this method, you can optionally omit any unneeded information from the response by using a field mask. This practice is especially recommended for unused quota information (the `quotas` field). To exclude one or more fields, set your request's `fields` query parameter to only include the fields you need. For example, to only include the `id` and `selfLink` fields, add the query parameter `?fields=id,selfLink` to your request.",
+      "description": "Get returns the specified Region resource. To decrease latency for this method, you can optionally omit any unneeded information from the response by using a field mask. This practice is especially recommended for unused quota information (the `quotas` field). To exclude one or more fields, set your request's `fields` query parameter to only include the fields you need. For example, to only include the `id` and `selfLink` fields, add the query parameter `?fields=id,selfLink` to your request. This method fails if the quota information is unavailable for the region and if the organization policy constraint compute.requireBasicQuotaInResponse is enforced. This constraint, when enforced, disables the fail-open behaviour when quota information (the `items.quotas` field) is unavailable for the region. It is recommended to use the default setting for the constraint unless your application requires the fail-closed behaviour for this method.",
       "file": "RegionsClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -25958,7 +26878,7 @@
     {
       "regionTag": "compute_v1_generated_Regions_List_sync",
       "title": "compute List Sample",
-      "description": "List retrieves the list of region resources available to the specified project. To decrease latency for this method, you can optionally omit any unneeded information from the response by using a field mask. This practice is especially recommended for unused quota information (the `items.quotas` field). To exclude one or more fields, set your request's `fields` query parameter to only include the fields you need. For example, to only include the `id` and `selfLink` fields, add the query parameter `?fields=id,selfLink` to your request.",
+      "description": "List retrieves the list of region resources available to the specified project. To decrease latency for this method, you can optionally omit any unneeded information from the response by using a field mask. This practice is especially recommended for unused quota information (the `items.quotas` field). To exclude one or more fields, set your request's `fields` query parameter to only include the fields you need. For example, to only include the `id` and `selfLink` fields, add the query parameter `?fields=id,selfLink` to your request. This method fails if the quota information is unavailable for the region and if the organization policy constraint compute.requireBasicQuotaInResponse is enforced. This constraint, when enforced, disables the fail-open behaviour when quota information (the `items.quotas` field) is unavailable for the region. It is recommended to use the default setting for the constraint unless your application requires the fail-closed behaviour for this method.",
       "file": "RegionsClient/List/main.go",
       "language": "GO",
       "clientMethod": {
@@ -29531,6 +30451,604 @@
           "service": {
             "shortName": "SslPolicies",
             "fullName": "google.cloud.compute.v1.SslPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_StoragePoolTypes_AggregatedList_sync",
+      "title": "compute AggregatedList Sample",
+      "description": "AggregatedList retrieves an aggregated list of storage pool types. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
+      "file": "StoragePoolTypesClient/AggregatedList/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AggregatedList",
+        "fullName": "google.cloud.compute.v1.StoragePoolTypesClient.AggregatedList",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.AggregatedListStoragePoolTypesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StoragePoolTypesScopedListPairIterator",
+        "client": {
+          "shortName": "StoragePoolTypesClient",
+          "fullName": "google.cloud.compute.v1.StoragePoolTypesClient"
+        },
+        "method": {
+          "shortName": "AggregatedList",
+          "fullName": "google.cloud.compute.v1.StoragePoolTypes.AggregatedList",
+          "service": {
+            "shortName": "StoragePoolTypes",
+            "fullName": "google.cloud.compute.v1.StoragePoolTypes"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_StoragePoolTypes_Get_sync",
+      "title": "compute Get Sample",
+      "description": "Get returns the specified storage pool type.",
+      "file": "StoragePoolTypesClient/Get/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Get",
+        "fullName": "google.cloud.compute.v1.StoragePoolTypesClient.Get",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetStoragePoolTypeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.StoragePoolType",
+        "client": {
+          "shortName": "StoragePoolTypesClient",
+          "fullName": "google.cloud.compute.v1.StoragePoolTypesClient"
+        },
+        "method": {
+          "shortName": "Get",
+          "fullName": "google.cloud.compute.v1.StoragePoolTypes.Get",
+          "service": {
+            "shortName": "StoragePoolTypes",
+            "fullName": "google.cloud.compute.v1.StoragePoolTypes"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_StoragePoolTypes_List_sync",
+      "title": "compute List Sample",
+      "description": "List retrieves a list of storage pool types available to the specified project.",
+      "file": "StoragePoolTypesClient/List/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "List",
+        "fullName": "google.cloud.compute.v1.StoragePoolTypesClient.List",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListStoragePoolTypesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StoragePoolTypeIterator",
+        "client": {
+          "shortName": "StoragePoolTypesClient",
+          "fullName": "google.cloud.compute.v1.StoragePoolTypesClient"
+        },
+        "method": {
+          "shortName": "List",
+          "fullName": "google.cloud.compute.v1.StoragePoolTypes.List",
+          "service": {
+            "shortName": "StoragePoolTypes",
+            "fullName": "google.cloud.compute.v1.StoragePoolTypes"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_StoragePools_AggregatedList_sync",
+      "title": "compute AggregatedList Sample",
+      "description": "AggregatedList retrieves an aggregated list of storage pools. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
+      "file": "StoragePoolsClient/AggregatedList/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AggregatedList",
+        "fullName": "google.cloud.compute.v1.StoragePoolsClient.AggregatedList",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.AggregatedListStoragePoolsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StoragePoolsScopedListPairIterator",
+        "client": {
+          "shortName": "StoragePoolsClient",
+          "fullName": "google.cloud.compute.v1.StoragePoolsClient"
+        },
+        "method": {
+          "shortName": "AggregatedList",
+          "fullName": "google.cloud.compute.v1.StoragePools.AggregatedList",
+          "service": {
+            "shortName": "StoragePools",
+            "fullName": "google.cloud.compute.v1.StoragePools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_StoragePools_Delete_sync",
+      "title": "compute Delete Sample",
+      "description": "Delete deletes the specified storage pool. Deleting a storagePool removes its data permanently and is irreversible. However, deleting a storagePool does not delete any snapshots previously made from the storagePool. You must separately delete snapshots.",
+      "file": "StoragePoolsClient/Delete/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Delete",
+        "fullName": "google.cloud.compute.v1.StoragePoolsClient.Delete",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.DeleteStoragePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "StoragePoolsClient",
+          "fullName": "google.cloud.compute.v1.StoragePoolsClient"
+        },
+        "method": {
+          "shortName": "Delete",
+          "fullName": "google.cloud.compute.v1.StoragePools.Delete",
+          "service": {
+            "shortName": "StoragePools",
+            "fullName": "google.cloud.compute.v1.StoragePools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_StoragePools_Get_sync",
+      "title": "compute Get Sample",
+      "description": "Get returns a specified storage pool. Gets a list of available storage pools by making a list() request.",
+      "file": "StoragePoolsClient/Get/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Get",
+        "fullName": "google.cloud.compute.v1.StoragePoolsClient.Get",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetStoragePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.StoragePool",
+        "client": {
+          "shortName": "StoragePoolsClient",
+          "fullName": "google.cloud.compute.v1.StoragePoolsClient"
+        },
+        "method": {
+          "shortName": "Get",
+          "fullName": "google.cloud.compute.v1.StoragePools.Get",
+          "service": {
+            "shortName": "StoragePools",
+            "fullName": "google.cloud.compute.v1.StoragePools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_StoragePools_GetIamPolicy_sync",
+      "title": "compute GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.",
+      "file": "StoragePoolsClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.compute.v1.StoragePoolsClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetIamPolicyStoragePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.Policy",
+        "client": {
+          "shortName": "StoragePoolsClient",
+          "fullName": "google.cloud.compute.v1.StoragePoolsClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.cloud.compute.v1.StoragePools.GetIamPolicy",
+          "service": {
+            "shortName": "StoragePools",
+            "fullName": "google.cloud.compute.v1.StoragePools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_StoragePools_Insert_sync",
+      "title": "compute Insert Sample",
+      "description": "Insert creates a storage pool in the specified project using the data in the request.",
+      "file": "StoragePoolsClient/Insert/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Insert",
+        "fullName": "google.cloud.compute.v1.StoragePoolsClient.Insert",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.InsertStoragePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "StoragePoolsClient",
+          "fullName": "google.cloud.compute.v1.StoragePoolsClient"
+        },
+        "method": {
+          "shortName": "Insert",
+          "fullName": "google.cloud.compute.v1.StoragePools.Insert",
+          "service": {
+            "shortName": "StoragePools",
+            "fullName": "google.cloud.compute.v1.StoragePools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_StoragePools_List_sync",
+      "title": "compute List Sample",
+      "description": "List retrieves a list of storage pools contained within the specified zone.",
+      "file": "StoragePoolsClient/List/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "List",
+        "fullName": "google.cloud.compute.v1.StoragePoolsClient.List",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListStoragePoolsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StoragePoolIterator",
+        "client": {
+          "shortName": "StoragePoolsClient",
+          "fullName": "google.cloud.compute.v1.StoragePoolsClient"
+        },
+        "method": {
+          "shortName": "List",
+          "fullName": "google.cloud.compute.v1.StoragePools.List",
+          "service": {
+            "shortName": "StoragePools",
+            "fullName": "google.cloud.compute.v1.StoragePools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_StoragePools_ListDisks_sync",
+      "title": "compute ListDisks Sample",
+      "description": "ListDisks lists the disks in a specified storage pool.",
+      "file": "StoragePoolsClient/ListDisks/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDisks",
+        "fullName": "google.cloud.compute.v1.StoragePoolsClient.ListDisks",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListDisksStoragePoolsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StoragePoolDiskIterator",
+        "client": {
+          "shortName": "StoragePoolsClient",
+          "fullName": "google.cloud.compute.v1.StoragePoolsClient"
+        },
+        "method": {
+          "shortName": "ListDisks",
+          "fullName": "google.cloud.compute.v1.StoragePools.ListDisks",
+          "service": {
+            "shortName": "StoragePools",
+            "fullName": "google.cloud.compute.v1.StoragePools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_StoragePools_SetIamPolicy_sync",
+      "title": "compute SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.",
+      "file": "StoragePoolsClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.compute.v1.StoragePoolsClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.SetIamPolicyStoragePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.Policy",
+        "client": {
+          "shortName": "StoragePoolsClient",
+          "fullName": "google.cloud.compute.v1.StoragePoolsClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.cloud.compute.v1.StoragePools.SetIamPolicy",
+          "service": {
+            "shortName": "StoragePools",
+            "fullName": "google.cloud.compute.v1.StoragePools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_StoragePools_TestIamPermissions_sync",
+      "title": "compute TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource.",
+      "file": "StoragePoolsClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.compute.v1.StoragePoolsClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.TestIamPermissionsStoragePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.TestPermissionsResponse",
+        "client": {
+          "shortName": "StoragePoolsClient",
+          "fullName": "google.cloud.compute.v1.StoragePoolsClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.compute.v1.StoragePools.TestIamPermissions",
+          "service": {
+            "shortName": "StoragePools",
+            "fullName": "google.cloud.compute.v1.StoragePools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_StoragePools_Update_sync",
+      "title": "compute Update Sample",
+      "description": "Update updates the specified storagePool with the data included in the request. The update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: pool_provisioned_capacity_gb, pool_provisioned_iops and pool_provisioned_throughput.",
+      "file": "StoragePoolsClient/Update/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Update",
+        "fullName": "google.cloud.compute.v1.StoragePoolsClient.Update",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.UpdateStoragePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "StoragePoolsClient",
+          "fullName": "google.cloud.compute.v1.StoragePoolsClient"
+        },
+        "method": {
+          "shortName": "Update",
+          "fullName": "google.cloud.compute.v1.StoragePools.Update",
+          "service": {
+            "shortName": "StoragePools",
+            "fullName": "google.cloud.compute.v1.StoragePools"
           }
         }
       },

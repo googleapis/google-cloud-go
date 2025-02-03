@@ -13,10 +13,6 @@
     "commitMessageAction": "update",
     "groupName": "deps",
     "ignoreDeps": [
-        "go.opentelemetry.io/otel",
-        "go.opentelemetry.io/otel/metric",
-        "go.opentelemetry.io/otel/sdk",
-        "go.opentelemetry.io/otel/trace",
         "google.golang.org/genproto"
     ],
     "ignorePaths": [
@@ -24,7 +20,7 @@
     ],
     "packageRules": [
         {
-            "matchPackageNames": [
+            "matchPackagePatterns": [
                 "^github.com/google/go-github/v",
                 "^github.com/apache/arrow/go/v",
                 "^github.com/cloudprober/cloudprober"
@@ -34,7 +30,7 @@
     ],
     "force": {
         "constraints": {
-            "go": "1.20"
+            "go": "1.22"
         }
     }
 }

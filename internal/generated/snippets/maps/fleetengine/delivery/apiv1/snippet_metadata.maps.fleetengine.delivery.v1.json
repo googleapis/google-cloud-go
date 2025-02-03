@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/maps/fleetengine/delivery/apiv1",
-    "version": "1.7.1",
+    "version": "1.17.1",
     "language": "GO",
     "apis": [
       {
@@ -380,55 +380,9 @@
       ]
     },
     {
-      "regionTag": "fleetengine_v1_generated_DeliveryService_SearchTasks_sync",
-      "title": "fleetengine SearchTasks Sample",
-      "description": "SearchTasks deprecated: Use `GetTaskTrackingInfo` instead.\n\n\nDeprecated: SearchTasks may be removed in a future version.",
-      "file": "Client/SearchTasks/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "SearchTasks",
-        "fullName": "maps.fleetengine.delivery.v1.Client.SearchTasks",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "deliverypb.SearchTasksRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "TaskIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "maps.fleetengine.delivery.v1.Client"
-        },
-        "method": {
-          "shortName": "SearchTasks",
-          "fullName": "maps.fleetengine.delivery.v1.DeliveryService.SearchTasks",
-          "service": {
-            "shortName": "DeliveryService",
-            "fullName": "maps.fleetengine.delivery.v1.DeliveryService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 66,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
       "regionTag": "fleetengine_v1_generated_DeliveryService_UpdateDeliveryVehicle_sync",
       "title": "fleetengine UpdateDeliveryVehicle Sample",
-      "description": "UpdateDeliveryVehicle writes updated `DeliveryVehicle` data to Fleet Engine, and assigns\n`Tasks` to the `DeliveryVehicle`. You cannot update the name of the\n`DeliveryVehicle`. You *can* update `remaining_vehicle_journey_segments`\nthough, but it must contain all of the `VehicleJourneySegment`s currently\non the `DeliveryVehicle`. The `task_id`s are retrieved from\n`remaining_vehicle_journey_segments`, and their corresponding `Tasks` are\nassigned to the `DeliveryVehicle` if they have not yet been assigned.",
+      "description": "UpdateDeliveryVehicle writes updated `DeliveryVehicle` data to Fleet Engine, and assigns\n`Tasks` to the `DeliveryVehicle`. You cannot update the name of the\n`DeliveryVehicle`. You *can* update `remaining_vehicle_journey_segments`,\nbut it must contain all of the `VehicleJourneySegment`s to be persisted on\nthe `DeliveryVehicle`. The `task_id`s are retrieved from\n`remaining_vehicle_journey_segments`, and their corresponding `Tasks` are\nassigned to the `DeliveryVehicle` if they have not yet been assigned.",
       "file": "Client/UpdateDeliveryVehicle/main.go",
       "language": "GO",
       "clientMethod": {

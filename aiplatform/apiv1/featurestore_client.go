@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package aiplatform
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 
@@ -83,6 +84,7 @@ func defaultFeaturestoreGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -515,6 +517,8 @@ type featurestoreGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewFeaturestoreClient creates a new featurestore service client based on gRPC.
@@ -541,6 +545,7 @@ func NewFeaturestoreClient(ctx context.Context, opts ...option.ClientOption) (*F
 		connPool:           connPool,
 		featurestoreClient: aiplatformpb.NewFeaturestoreServiceClient(connPool),
 		CallOptions:        &client.CallOptions,
+		logger:             internaloption.GetLogger(opts),
 		operationsClient:   longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:    iampb.NewIAMPolicyClient(connPool),
 		locationsClient:    locationpb.NewLocationsClient(connPool),
@@ -577,7 +582,9 @@ func (c *featurestoreGRPCClient) Connection() *grpc.ClientConn {
 func (c *featurestoreGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -595,7 +602,7 @@ func (c *featurestoreGRPCClient) CreateFeaturestore(ctx context.Context, req *ai
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.CreateFeaturestore(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.CreateFeaturestore, req, settings.GRPC, c.logger, "CreateFeaturestore")
 		return err
 	}, opts...)
 	if err != nil {
@@ -615,7 +622,7 @@ func (c *featurestoreGRPCClient) GetFeaturestore(ctx context.Context, req *aipla
 	var resp *aiplatformpb.Featurestore
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.GetFeaturestore(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.GetFeaturestore, req, settings.GRPC, c.logger, "GetFeaturestore")
 		return err
 	}, opts...)
 	if err != nil {
@@ -644,7 +651,7 @@ func (c *featurestoreGRPCClient) ListFeaturestores(ctx context.Context, req *aip
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.featurestoreClient.ListFeaturestores(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.featurestoreClient.ListFeaturestores, req, settings.GRPC, c.logger, "ListFeaturestores")
 			return err
 		}, opts...)
 		if err != nil {
@@ -679,7 +686,7 @@ func (c *featurestoreGRPCClient) UpdateFeaturestore(ctx context.Context, req *ai
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.UpdateFeaturestore(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.UpdateFeaturestore, req, settings.GRPC, c.logger, "UpdateFeaturestore")
 		return err
 	}, opts...)
 	if err != nil {
@@ -699,7 +706,7 @@ func (c *featurestoreGRPCClient) DeleteFeaturestore(ctx context.Context, req *ai
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.DeleteFeaturestore(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.DeleteFeaturestore, req, settings.GRPC, c.logger, "DeleteFeaturestore")
 		return err
 	}, opts...)
 	if err != nil {
@@ -719,7 +726,7 @@ func (c *featurestoreGRPCClient) CreateEntityType(ctx context.Context, req *aipl
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.CreateEntityType(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.CreateEntityType, req, settings.GRPC, c.logger, "CreateEntityType")
 		return err
 	}, opts...)
 	if err != nil {
@@ -739,7 +746,7 @@ func (c *featurestoreGRPCClient) GetEntityType(ctx context.Context, req *aiplatf
 	var resp *aiplatformpb.EntityType
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.GetEntityType(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.GetEntityType, req, settings.GRPC, c.logger, "GetEntityType")
 		return err
 	}, opts...)
 	if err != nil {
@@ -768,7 +775,7 @@ func (c *featurestoreGRPCClient) ListEntityTypes(ctx context.Context, req *aipla
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.featurestoreClient.ListEntityTypes(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.featurestoreClient.ListEntityTypes, req, settings.GRPC, c.logger, "ListEntityTypes")
 			return err
 		}, opts...)
 		if err != nil {
@@ -803,7 +810,7 @@ func (c *featurestoreGRPCClient) UpdateEntityType(ctx context.Context, req *aipl
 	var resp *aiplatformpb.EntityType
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.UpdateEntityType(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.UpdateEntityType, req, settings.GRPC, c.logger, "UpdateEntityType")
 		return err
 	}, opts...)
 	if err != nil {
@@ -821,7 +828,7 @@ func (c *featurestoreGRPCClient) DeleteEntityType(ctx context.Context, req *aipl
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.DeleteEntityType(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.DeleteEntityType, req, settings.GRPC, c.logger, "DeleteEntityType")
 		return err
 	}, opts...)
 	if err != nil {
@@ -841,7 +848,7 @@ func (c *featurestoreGRPCClient) CreateFeature(ctx context.Context, req *aiplatf
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.CreateFeature(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.CreateFeature, req, settings.GRPC, c.logger, "CreateFeature")
 		return err
 	}, opts...)
 	if err != nil {
@@ -861,7 +868,7 @@ func (c *featurestoreGRPCClient) BatchCreateFeatures(ctx context.Context, req *a
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.BatchCreateFeatures(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.BatchCreateFeatures, req, settings.GRPC, c.logger, "BatchCreateFeatures")
 		return err
 	}, opts...)
 	if err != nil {
@@ -881,7 +888,7 @@ func (c *featurestoreGRPCClient) GetFeature(ctx context.Context, req *aiplatform
 	var resp *aiplatformpb.Feature
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.GetFeature(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.GetFeature, req, settings.GRPC, c.logger, "GetFeature")
 		return err
 	}, opts...)
 	if err != nil {
@@ -910,7 +917,7 @@ func (c *featurestoreGRPCClient) ListFeatures(ctx context.Context, req *aiplatfo
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.featurestoreClient.ListFeatures(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.featurestoreClient.ListFeatures, req, settings.GRPC, c.logger, "ListFeatures")
 			return err
 		}, opts...)
 		if err != nil {
@@ -945,7 +952,7 @@ func (c *featurestoreGRPCClient) UpdateFeature(ctx context.Context, req *aiplatf
 	var resp *aiplatformpb.Feature
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.UpdateFeature(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.UpdateFeature, req, settings.GRPC, c.logger, "UpdateFeature")
 		return err
 	}, opts...)
 	if err != nil {
@@ -963,7 +970,7 @@ func (c *featurestoreGRPCClient) DeleteFeature(ctx context.Context, req *aiplatf
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.DeleteFeature(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.DeleteFeature, req, settings.GRPC, c.logger, "DeleteFeature")
 		return err
 	}, opts...)
 	if err != nil {
@@ -983,7 +990,7 @@ func (c *featurestoreGRPCClient) ImportFeatureValues(ctx context.Context, req *a
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.ImportFeatureValues(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.ImportFeatureValues, req, settings.GRPC, c.logger, "ImportFeatureValues")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1003,7 +1010,7 @@ func (c *featurestoreGRPCClient) BatchReadFeatureValues(ctx context.Context, req
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.BatchReadFeatureValues(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.BatchReadFeatureValues, req, settings.GRPC, c.logger, "BatchReadFeatureValues")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1023,7 +1030,7 @@ func (c *featurestoreGRPCClient) ExportFeatureValues(ctx context.Context, req *a
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.ExportFeatureValues(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.ExportFeatureValues, req, settings.GRPC, c.logger, "ExportFeatureValues")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1043,7 +1050,7 @@ func (c *featurestoreGRPCClient) DeleteFeatureValues(ctx context.Context, req *a
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.featurestoreClient.DeleteFeatureValues(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.featurestoreClient.DeleteFeatureValues, req, settings.GRPC, c.logger, "DeleteFeatureValues")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1074,7 +1081,7 @@ func (c *featurestoreGRPCClient) SearchFeatures(ctx context.Context, req *aiplat
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.featurestoreClient.SearchFeatures(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.featurestoreClient.SearchFeatures, req, settings.GRPC, c.logger, "SearchFeatures")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1109,7 +1116,7 @@ func (c *featurestoreGRPCClient) GetLocation(ctx context.Context, req *locationp
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1138,7 +1145,7 @@ func (c *featurestoreGRPCClient) ListLocations(ctx context.Context, req *locatio
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1173,7 +1180,7 @@ func (c *featurestoreGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1191,7 +1198,7 @@ func (c *featurestoreGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1209,7 +1216,7 @@ func (c *featurestoreGRPCClient) TestIamPermissions(ctx context.Context, req *ia
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1226,7 +1233,7 @@ func (c *featurestoreGRPCClient) CancelOperation(ctx context.Context, req *longr
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -1240,7 +1247,7 @@ func (c *featurestoreGRPCClient) DeleteOperation(ctx context.Context, req *longr
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -1255,7 +1262,7 @@ func (c *featurestoreGRPCClient) GetOperation(ctx context.Context, req *longrunn
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1284,7 +1291,7 @@ func (c *featurestoreGRPCClient) ListOperations(ctx context.Context, req *longru
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1319,7 +1326,7 @@ func (c *featurestoreGRPCClient) WaitOperation(ctx context.Context, req *longrun
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.WaitOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.WaitOperation, req, settings.GRPC, c.logger, "WaitOperation")
 		return err
 	}, opts...)
 	if err != nil {

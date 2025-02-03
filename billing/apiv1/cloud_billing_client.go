@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -29,7 +29,6 @@ import (
 	billingpb "cloud.google.com/go/billing/apiv1/billingpb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -67,6 +66,7 @@ func defaultCloudBillingGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://cloudbilling.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -508,6 +508,8 @@ type cloudBillingGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewCloudBillingClient creates a new cloud billing client based on gRPC.
@@ -535,6 +537,7 @@ func NewCloudBillingClient(ctx context.Context, opts ...option.ClientOption) (*C
 		connPool:           connPool,
 		cloudBillingClient: billingpb.NewCloudBillingClient(connPool),
 		CallOptions:        &client.CallOptions,
+		logger:             internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -557,7 +560,9 @@ func (c *cloudBillingGRPCClient) Connection() *grpc.ClientConn {
 func (c *cloudBillingGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -579,6 +584,8 @@ type cloudBillingRESTClient struct {
 
 	// Points back to the CallOptions field of the containing CloudBillingClient
 	CallOptions **CloudBillingCallOptions
+
+	logger *slog.Logger
 }
 
 // NewCloudBillingRESTClient creates a new cloud billing rest client.
@@ -597,6 +604,7 @@ func NewCloudBillingRESTClient(ctx context.Context, opts ...option.ClientOption)
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -611,6 +619,7 @@ func defaultCloudBillingRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudbilling.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -620,7 +629,9 @@ func defaultCloudBillingRESTClientOptions() []option.ClientOption {
 func (c *cloudBillingRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -646,7 +657,7 @@ func (c *cloudBillingGRPCClient) GetBillingAccount(ctx context.Context, req *bil
 	var resp *billingpb.BillingAccount
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudBillingClient.GetBillingAccount(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudBillingClient.GetBillingAccount, req, settings.GRPC, c.logger, "GetBillingAccount")
 		return err
 	}, opts...)
 	if err != nil {
@@ -675,7 +686,7 @@ func (c *cloudBillingGRPCClient) ListBillingAccounts(ctx context.Context, req *b
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudBillingClient.ListBillingAccounts(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudBillingClient.ListBillingAccounts, req, settings.GRPC, c.logger, "ListBillingAccounts")
 			return err
 		}, opts...)
 		if err != nil {
@@ -710,7 +721,7 @@ func (c *cloudBillingGRPCClient) UpdateBillingAccount(ctx context.Context, req *
 	var resp *billingpb.BillingAccount
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudBillingClient.UpdateBillingAccount(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudBillingClient.UpdateBillingAccount, req, settings.GRPC, c.logger, "UpdateBillingAccount")
 		return err
 	}, opts...)
 	if err != nil {
@@ -728,7 +739,7 @@ func (c *cloudBillingGRPCClient) CreateBillingAccount(ctx context.Context, req *
 	var resp *billingpb.BillingAccount
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudBillingClient.CreateBillingAccount(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudBillingClient.CreateBillingAccount, req, settings.GRPC, c.logger, "CreateBillingAccount")
 		return err
 	}, opts...)
 	if err != nil {
@@ -757,7 +768,7 @@ func (c *cloudBillingGRPCClient) ListProjectBillingInfo(ctx context.Context, req
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cloudBillingClient.ListProjectBillingInfo(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cloudBillingClient.ListProjectBillingInfo, req, settings.GRPC, c.logger, "ListProjectBillingInfo")
 			return err
 		}, opts...)
 		if err != nil {
@@ -792,7 +803,7 @@ func (c *cloudBillingGRPCClient) GetProjectBillingInfo(ctx context.Context, req 
 	var resp *billingpb.ProjectBillingInfo
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudBillingClient.GetProjectBillingInfo(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudBillingClient.GetProjectBillingInfo, req, settings.GRPC, c.logger, "GetProjectBillingInfo")
 		return err
 	}, opts...)
 	if err != nil {
@@ -810,7 +821,7 @@ func (c *cloudBillingGRPCClient) UpdateProjectBillingInfo(ctx context.Context, r
 	var resp *billingpb.ProjectBillingInfo
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudBillingClient.UpdateProjectBillingInfo(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudBillingClient.UpdateProjectBillingInfo, req, settings.GRPC, c.logger, "UpdateProjectBillingInfo")
 		return err
 	}, opts...)
 	if err != nil {
@@ -828,7 +839,7 @@ func (c *cloudBillingGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudBillingClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudBillingClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -846,7 +857,7 @@ func (c *cloudBillingGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudBillingClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudBillingClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -864,7 +875,7 @@ func (c *cloudBillingGRPCClient) TestIamPermissions(ctx context.Context, req *ia
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudBillingClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudBillingClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -882,7 +893,7 @@ func (c *cloudBillingGRPCClient) MoveBillingAccount(ctx context.Context, req *bi
 	var resp *billingpb.BillingAccount
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cloudBillingClient.MoveBillingAccount(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cloudBillingClient.MoveBillingAccount, req, settings.GRPC, c.logger, "MoveBillingAccount")
 		return err
 	}, opts...)
 	if err != nil {
@@ -926,17 +937,7 @@ func (c *cloudBillingRESTClient) GetBillingAccount(ctx context.Context, req *bil
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetBillingAccount")
 		if err != nil {
 			return err
 		}
@@ -1006,21 +1007,10 @@ func (c *cloudBillingRESTClient) ListBillingAccounts(ctx context.Context, req *b
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListBillingAccounts")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1073,11 +1063,11 @@ func (c *cloudBillingRESTClient) UpdateBillingAccount(ctx context.Context, req *
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1102,17 +1092,7 @@ func (c *cloudBillingRESTClient) UpdateBillingAccount(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateBillingAccount")
 		if err != nil {
 			return err
 		}
@@ -1186,17 +1166,7 @@ func (c *cloudBillingRESTClient) CreateBillingAccount(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateBillingAccount")
 		if err != nil {
 			return err
 		}
@@ -1261,21 +1231,10 @@ func (c *cloudBillingRESTClient) ListProjectBillingInfo(ctx context.Context, req
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListProjectBillingInfo")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1342,17 +1301,7 @@ func (c *cloudBillingRESTClient) GetProjectBillingInfo(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetProjectBillingInfo")
 		if err != nil {
 			return err
 		}
@@ -1439,17 +1388,7 @@ func (c *cloudBillingRESTClient) UpdateProjectBillingInfo(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateProjectBillingInfo")
 		if err != nil {
 			return err
 		}
@@ -1505,17 +1444,7 @@ func (c *cloudBillingRESTClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -1575,17 +1504,7 @@ func (c *cloudBillingRESTClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -1643,17 +1562,7 @@ func (c *cloudBillingRESTClient) TestIamPermissions(ctx context.Context, req *ia
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
 		if err != nil {
 			return err
 		}
@@ -1709,17 +1618,7 @@ func (c *cloudBillingRESTClient) MoveBillingAccount(ctx context.Context, req *bi
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "MoveBillingAccount")
 		if err != nil {
 			return err
 		}

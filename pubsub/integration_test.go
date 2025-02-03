@@ -184,7 +184,7 @@ func TestIntegration_Admin(t *testing.T) {
 			if err == nil && s.name == snap.name {
 				return true, nil
 			}
-			if err == iterator.Done {
+			if errors.Is(err, iterator.Done) {
 				return false, fmt.Errorf("cannot find snapshot: %q", snap.name)
 			}
 			if err != nil {
@@ -1200,10 +1200,8 @@ func TestIntegration_OrderedKeys_Basic(t *testing.T) {
 		}
 
 		received <- string(msg.Data)
-	}); err != nil {
-		if c := status.Code(err); c != codes.Canceled {
-			t.Error(err)
-		}
+	}); err != nil && !errors.Is(err, context.Canceled) {
+		t.Error(err)
 	}
 }
 

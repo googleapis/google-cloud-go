@@ -16,6 +16,7 @@ package firestore
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -51,7 +52,7 @@ func TestCreateFromProtoValue(t *testing.T) {
 			want: []byte{1, 2},
 		},
 		{
-			in:   &pb.Value{ValueType: &pb.Value_GeoPointValue{ll}},
+			in:   &pb.Value{ValueType: &pb.Value_GeoPointValue{GeoPointValue: ll}},
 			want: ll,
 		},
 		{
@@ -207,7 +208,7 @@ func TestSetFromProtoValueNoJSON(t *testing.T) {
 	}{
 		{&bs, bytesval(bytes), bytes},
 		{&tmi, tsval(tm), tm},
-		{&tmp, &pb.Value{ValueType: &pb.Value_TimestampValue{ptm}}, ptm},
+		{&tmp, &pb.Value{ValueType: &pb.Value_TimestampValue{TimestampValue: ptm}}, ptm},
 		{&lli, geoval(ll), ll},
 	} {
 		if err := setFromProtoValue(test.in, test.val, &Client{}); err != nil {
@@ -254,7 +255,7 @@ func TestSetFromProtoValueErrors(t *testing.T) {
 		{new(int16), floatval(math.MaxFloat32)},  // doesn't fit
 		{new(uint16), floatval(math.MaxFloat32)}, // doesn't fit
 		{new(float32),
-			&pb.Value{ValueType: &pb.Value_IntegerValue{math.MaxInt64}}}, // overflow
+			&pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: math.MaxInt64}}}, // overflow
 	} {
 		err := setFromProtoValue(test.in, test.val, c)
 		if err == nil {
@@ -577,5 +578,125 @@ func TestTypeString(t *testing.T) {
 		if got != test.want {
 			t.Errorf("%+v: got %q, want %q", test.in, got, test.want)
 		}
+	}
+}
+
+func TestPopulateMap(t *testing.T) {
+	c := &Client{} // Client is not used in populateMap, but required as a parameter
+
+	type myString string
+
+	// Test cases
+	cases := []struct {
+		name        string
+		dest        interface{}
+		src         map[string]*pb.Value
+		want        interface{}
+		wantErr     bool
+		expectedErr error
+	}{
+		{
+			name: "Valid string map",
+			dest: map[string]string{},
+			src: map[string]*pb.Value{
+				"key1": {ValueType: &pb.Value_StringValue{StringValue: "value1"}},
+				"key2": {ValueType: &pb.Value_StringValue{StringValue: "value2"}},
+			},
+			want: map[string]string{
+				"key1": "value1",
+				"key2": "value2",
+			},
+		},
+		{
+			name: "Aliased string key map",
+			dest: map[myString]string{},
+			src: map[string]*pb.Value{
+				"key1": {ValueType: &pb.Value_StringValue{StringValue: "value1"}},
+				"key2": {ValueType: &pb.Value_StringValue{StringValue: "value2"}},
+			},
+			want: map[myString]string{
+				"key1": "value1",
+				"key2": "value2",
+			},
+		},
+		{
+			name: "Valid int map",
+			dest: map[string]int{},
+			src: map[string]*pb.Value{
+				"key1": {ValueType: &pb.Value_IntegerValue{IntegerValue: 1}},
+				"key2": {ValueType: &pb.Value_IntegerValue{IntegerValue: 2}},
+			},
+			want: map[string]int{
+				"key1": 1,
+				"key2": 2,
+			},
+		},
+		{
+			name: "Valid interface map",
+			dest: map[string]interface{}{},
+			src: map[string]*pb.Value{
+				"key1": {ValueType: &pb.Value_StringValue{StringValue: "value1"}},
+				"key2": {ValueType: &pb.Value_IntegerValue{IntegerValue: 2}},
+			},
+			want: map[string]interface{}{
+				"key1": "value1",
+				"key2": int64(2),
+			},
+		},
+		{
+			name:        "Non-string key",
+			dest:        map[int]string{},
+			src:         map[string]*pb.Value{},
+			wantErr:     true,
+			expectedErr: errors.New("firestore: map key type is not string"),
+		},
+		{
+			name: "Invalid value type",
+			dest: map[string]int{},
+			src: map[string]*pb.Value{
+				"key1": {ValueType: &pb.Value_StringValue{StringValue: "value1"}},
+			},
+			wantErr: true,
+		},
+		{
+			name: "Map with Special Vector Type",
+			dest: map[string]interface{}{},
+			src: map[string]*pb.Value{
+				"type":  {ValueType: &pb.Value_StringValue{StringValue: "vector"}},
+				"value": {ValueType: &pb.Value_StringValue{StringValue: "some vector value"}},
+			},
+			want: map[string]interface{}{
+				"type":  "vector",
+				"value": "some vector value",
+			},
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			vDest := reflect.ValueOf(tc.dest)
+			err := populateMap(vDest, tc.src, c)
+
+			if tc.wantErr {
+				if err == nil {
+					t.Errorf("Expected error, got nil")
+				}
+				if tc.expectedErr != nil && tc.expectedErr.Error() != err.Error() {
+					t.Errorf("Mismatched Error: Expected '%v', got '%v'", tc.expectedErr, err)
+
+				}
+
+			} else {
+				if err != nil {
+					t.Errorf("Unexpected error: %v", err)
+				}
+
+				got := vDest.Interface()
+				if !reflect.DeepEqual(got, tc.want) {
+					t.Errorf("populateMap() = %v, want %v", got, tc.want)
+				}
+			}
+
+		})
 	}
 }

@@ -26,6 +26,7 @@ import (
 	echo "cloud.google.com/go/auth/grpctransport/testdata"
 	"cloud.google.com/go/auth/internal"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
@@ -258,7 +259,7 @@ func TestOptions_ResolveDetectOptions(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := tt.in.resolveDetectOptions()
-			if diff := cmp.Diff(tt.want, got); diff != "" {
+			if diff := cmp.Diff(tt.want, got, cmpopts.IgnoreFields(credentials.DetectOptions{}, "Logger")); diff != "" {
 				t.Errorf("mismatch (-want +got):\n%s", diff)
 			}
 		})
@@ -267,25 +268,42 @@ func TestOptions_ResolveDetectOptions(t *testing.T) {
 
 func TestGrpcCredentialsProvider_GetClientUniverseDomain(t *testing.T) {
 	nonDefault := "example.com"
+	nonDefault2 := "other-example.com"
 	tests := []struct {
-		name           string
-		universeDomain string
-		want           string
+		name                 string
+		clientUniverseDomain string
+		envUniverseDomain    string
+		want                 string
 	}{
 		{
-			name:           "default",
-			universeDomain: "",
-			want:           internal.DefaultUniverseDomain,
+			name:                 "default",
+			clientUniverseDomain: "",
+			want:                 internal.DefaultUniverseDomain,
 		},
 		{
-			name:           "non-default",
-			universeDomain: nonDefault,
-			want:           nonDefault,
+			name:                 "client option",
+			clientUniverseDomain: nonDefault,
+			want:                 nonDefault,
+		},
+		{
+			name:                 "env var",
+			clientUniverseDomain: "",
+			envUniverseDomain:    nonDefault2,
+			want:                 nonDefault2,
+		},
+		{
+			name:                 "client option and env var",
+			clientUniverseDomain: nonDefault,
+			envUniverseDomain:    nonDefault2,
+			want:                 nonDefault,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			at := &grpcCredentialsProvider{clientUniverseDomain: tt.universeDomain}
+			if tt.envUniverseDomain != "" {
+				t.Setenv(internal.UniverseDomainEnvVar, tt.envUniverseDomain)
+			}
+			at := &grpcCredentialsProvider{clientUniverseDomain: tt.clientUniverseDomain}
 			got := at.getClientUniverseDomain()
 			if got != tt.want {
 				t.Errorf("got %q, want %q", got, tt.want)
@@ -369,6 +387,78 @@ func TestNewClient_DetectedServiceAccount(t *testing.T) {
 
 	pool, err := Dial(context.Background(), false, &Options{
 		Metadata: map[string]string{"Foo": wantHeader},
+		InternalOptions: &InternalOptions{
+			DefaultEndpointTemplate: l.Addr().String(),
+		},
+		DetectOpts: &credentials.DetectOptions{
+			Audience:         l.Addr().String(),
+			CredentialsFile:  "../internal/testdata/sa_universe_domain.json",
+			UseSelfSignedJWT: true,
+		},
+		GRPCDialOpts:   []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())},
+		UniverseDomain: "example.com", // Also configured in sa_universe_domain.json
+	})
+	if err != nil {
+		t.Fatalf("NewClient() = %v", err)
+	}
+	client := echo.NewEchoerClient(pool)
+	if _, err := client.Echo(context.Background(), &echo.EchoRequest{}); err != nil {
+		t.Fatalf("client.Echo() = %v", err)
+	}
+}
+
+func TestGRPCKeyProvider_GetRequestMetadata(t *testing.T) {
+	apiKey := "MY_API_KEY"
+	reason := "MY_REQUEST_REASON"
+	ts := grpcKeyProvider{
+		apiKey: apiKey,
+		metadata: map[string]string{
+			"X-goog-request-reason": reason,
+		},
+	}
+	got, err := ts.GetRequestMetadata(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := map[string]string{
+		"X-goog-api-key":        ts.apiKey,
+		"X-goog-request-reason": reason,
+	}
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("mismatch (-want +got):\n%s", diff)
+	}
+}
+
+func TestNewClient_QuotaPrecedence(t *testing.T) {
+	testQuota := "testquotaWins"
+	t.Setenv(internal.QuotaProjectEnvVar, "testquotaLoses")
+	l, err := net.Listen("tcp", "localhost:0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	gsrv := grpc.NewServer()
+	defer gsrv.Stop()
+	echo.RegisterEchoerServer(gsrv, &fakeEchoService{
+		Fn: func(ctx context.Context, _ *echo.EchoRequest) (*echo.EchoReply, error) {
+			md, ok := metadata.FromIncomingContext(ctx)
+			if !ok {
+				t.Error("unable to extract metadata")
+				return nil, errors.New("oops")
+			}
+			if got := md.Get(quotaProjectHeaderKey); len(got) != 1 || got[0] != testQuota {
+				t.Errorf("got %q, want %q", got, testQuota)
+			}
+			return &echo.EchoReply{}, nil
+		},
+	})
+	go func() {
+		if err := gsrv.Serve(l); err != nil {
+			panic(err)
+		}
+	}()
+
+	pool, err := Dial(context.Background(), false, &Options{
+		Metadata: map[string]string{quotaProjectHeaderKey: "testquotaWins"},
 		InternalOptions: &InternalOptions{
 			DefaultEndpointTemplate: l.Addr().String(),
 		},

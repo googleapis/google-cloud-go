@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -29,7 +29,6 @@ import (
 	dataexchangepb "cloud.google.com/go/bigquery/dataexchange/apiv1beta1/dataexchangepb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -74,6 +73,7 @@ func defaultAnalyticsHubGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://analyticshub.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -640,6 +640,8 @@ type analyticsHubGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewAnalyticsHubClient creates a new analytics hub service client based on gRPC.
@@ -671,6 +673,7 @@ func NewAnalyticsHubClient(ctx context.Context, opts ...option.ClientOption) (*A
 		connPool:           connPool,
 		analyticsHubClient: dataexchangepb.NewAnalyticsHubServiceClient(connPool),
 		CallOptions:        &client.CallOptions,
+		logger:             internaloption.GetLogger(opts),
 		locationsClient:    locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -694,7 +697,9 @@ func (c *analyticsHubGRPCClient) Connection() *grpc.ClientConn {
 func (c *analyticsHubGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -716,6 +721,8 @@ type analyticsHubRESTClient struct {
 
 	// Points back to the CallOptions field of the containing AnalyticsHubClient
 	CallOptions **AnalyticsHubCallOptions
+
+	logger *slog.Logger
 }
 
 // NewAnalyticsHubRESTClient creates a new analytics hub service rest client.
@@ -738,6 +745,7 @@ func NewAnalyticsHubRESTClient(ctx context.Context, opts ...option.ClientOption)
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -752,6 +760,7 @@ func defaultAnalyticsHubRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://analyticshub.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -761,7 +770,9 @@ func defaultAnalyticsHubRESTClientOptions() []option.ClientOption {
 func (c *analyticsHubRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -798,7 +809,7 @@ func (c *analyticsHubGRPCClient) ListDataExchanges(ctx context.Context, req *dat
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.analyticsHubClient.ListDataExchanges(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.analyticsHubClient.ListDataExchanges, req, settings.GRPC, c.logger, "ListDataExchanges")
 			return err
 		}, opts...)
 		if err != nil {
@@ -844,7 +855,7 @@ func (c *analyticsHubGRPCClient) ListOrgDataExchanges(ctx context.Context, req *
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.analyticsHubClient.ListOrgDataExchanges(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.analyticsHubClient.ListOrgDataExchanges, req, settings.GRPC, c.logger, "ListOrgDataExchanges")
 			return err
 		}, opts...)
 		if err != nil {
@@ -879,7 +890,7 @@ func (c *analyticsHubGRPCClient) GetDataExchange(ctx context.Context, req *datae
 	var resp *dataexchangepb.DataExchange
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsHubClient.GetDataExchange(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsHubClient.GetDataExchange, req, settings.GRPC, c.logger, "GetDataExchange")
 		return err
 	}, opts...)
 	if err != nil {
@@ -897,7 +908,7 @@ func (c *analyticsHubGRPCClient) CreateDataExchange(ctx context.Context, req *da
 	var resp *dataexchangepb.DataExchange
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsHubClient.CreateDataExchange(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsHubClient.CreateDataExchange, req, settings.GRPC, c.logger, "CreateDataExchange")
 		return err
 	}, opts...)
 	if err != nil {
@@ -915,7 +926,7 @@ func (c *analyticsHubGRPCClient) UpdateDataExchange(ctx context.Context, req *da
 	var resp *dataexchangepb.DataExchange
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsHubClient.UpdateDataExchange(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsHubClient.UpdateDataExchange, req, settings.GRPC, c.logger, "UpdateDataExchange")
 		return err
 	}, opts...)
 	if err != nil {
@@ -932,7 +943,7 @@ func (c *analyticsHubGRPCClient) DeleteDataExchange(ctx context.Context, req *da
 	opts = append((*c.CallOptions).DeleteDataExchange[0:len((*c.CallOptions).DeleteDataExchange):len((*c.CallOptions).DeleteDataExchange)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.analyticsHubClient.DeleteDataExchange(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.analyticsHubClient.DeleteDataExchange, req, settings.GRPC, c.logger, "DeleteDataExchange")
 		return err
 	}, opts...)
 	return err
@@ -958,7 +969,7 @@ func (c *analyticsHubGRPCClient) ListListings(ctx context.Context, req *dataexch
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.analyticsHubClient.ListListings(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.analyticsHubClient.ListListings, req, settings.GRPC, c.logger, "ListListings")
 			return err
 		}, opts...)
 		if err != nil {
@@ -993,7 +1004,7 @@ func (c *analyticsHubGRPCClient) GetListing(ctx context.Context, req *dataexchan
 	var resp *dataexchangepb.Listing
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsHubClient.GetListing(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsHubClient.GetListing, req, settings.GRPC, c.logger, "GetListing")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1011,7 +1022,7 @@ func (c *analyticsHubGRPCClient) CreateListing(ctx context.Context, req *dataexc
 	var resp *dataexchangepb.Listing
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsHubClient.CreateListing(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsHubClient.CreateListing, req, settings.GRPC, c.logger, "CreateListing")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1029,7 +1040,7 @@ func (c *analyticsHubGRPCClient) UpdateListing(ctx context.Context, req *dataexc
 	var resp *dataexchangepb.Listing
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsHubClient.UpdateListing(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsHubClient.UpdateListing, req, settings.GRPC, c.logger, "UpdateListing")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1046,7 +1057,7 @@ func (c *analyticsHubGRPCClient) DeleteListing(ctx context.Context, req *dataexc
 	opts = append((*c.CallOptions).DeleteListing[0:len((*c.CallOptions).DeleteListing):len((*c.CallOptions).DeleteListing)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.analyticsHubClient.DeleteListing(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.analyticsHubClient.DeleteListing, req, settings.GRPC, c.logger, "DeleteListing")
 		return err
 	}, opts...)
 	return err
@@ -1061,7 +1072,7 @@ func (c *analyticsHubGRPCClient) SubscribeListing(ctx context.Context, req *data
 	var resp *dataexchangepb.SubscribeListingResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsHubClient.SubscribeListing(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsHubClient.SubscribeListing, req, settings.GRPC, c.logger, "SubscribeListing")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1079,7 +1090,7 @@ func (c *analyticsHubGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsHubClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsHubClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1097,7 +1108,7 @@ func (c *analyticsHubGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsHubClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsHubClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1115,7 +1126,7 @@ func (c *analyticsHubGRPCClient) TestIamPermissions(ctx context.Context, req *ia
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsHubClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.analyticsHubClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1133,7 +1144,7 @@ func (c *analyticsHubGRPCClient) GetLocation(ctx context.Context, req *locationp
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1162,7 +1173,7 @@ func (c *analyticsHubGRPCClient) ListLocations(ctx context.Context, req *locatio
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1232,21 +1243,10 @@ func (c *analyticsHubRESTClient) ListDataExchanges(ctx context.Context, req *dat
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDataExchanges")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1321,21 +1321,10 @@ func (c *analyticsHubRESTClient) ListOrgDataExchanges(ctx context.Context, req *
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOrgDataExchanges")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1393,17 +1382,7 @@ func (c *analyticsHubRESTClient) GetDataExchange(ctx context.Context, req *datae
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDataExchange")
 		if err != nil {
 			return err
 		}
@@ -1460,17 +1439,7 @@ func (c *analyticsHubRESTClient) CreateDataExchange(ctx context.Context, req *da
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDataExchange")
 		if err != nil {
 			return err
 		}
@@ -1504,11 +1473,11 @@ func (c *analyticsHubRESTClient) UpdateDataExchange(ctx context.Context, req *da
 
 	params := url.Values{}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1533,17 +1502,7 @@ func (c *analyticsHubRESTClient) UpdateDataExchange(ctx context.Context, req *da
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateDataExchange")
 		if err != nil {
 			return err
 		}
@@ -1585,15 +1544,8 @@ func (c *analyticsHubRESTClient) DeleteDataExchange(ctx context.Context, req *da
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDataExchange")
+		return err
 	}, opts...)
 }
 
@@ -1641,21 +1593,10 @@ func (c *analyticsHubRESTClient) ListListings(ctx context.Context, req *dataexch
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListListings")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1713,17 +1654,7 @@ func (c *analyticsHubRESTClient) GetListing(ctx context.Context, req *dataexchan
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetListing")
 		if err != nil {
 			return err
 		}
@@ -1780,17 +1711,7 @@ func (c *analyticsHubRESTClient) CreateListing(ctx context.Context, req *dataexc
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateListing")
 		if err != nil {
 			return err
 		}
@@ -1824,11 +1745,11 @@ func (c *analyticsHubRESTClient) UpdateListing(ctx context.Context, req *dataexc
 
 	params := url.Values{}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1853,17 +1774,7 @@ func (c *analyticsHubRESTClient) UpdateListing(ctx context.Context, req *dataexc
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateListing")
 		if err != nil {
 			return err
 		}
@@ -1905,15 +1816,8 @@ func (c *analyticsHubRESTClient) DeleteListing(ctx context.Context, req *dataexc
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteListing")
+		return err
 	}, opts...)
 }
 
@@ -1956,17 +1860,7 @@ func (c *analyticsHubRESTClient) SubscribeListing(ctx context.Context, req *data
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SubscribeListing")
 		if err != nil {
 			return err
 		}
@@ -2017,17 +1911,7 @@ func (c *analyticsHubRESTClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -2078,17 +1962,7 @@ func (c *analyticsHubRESTClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -2139,17 +2013,7 @@ func (c *analyticsHubRESTClient) TestIamPermissions(ctx context.Context, req *ia
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
 		if err != nil {
 			return err
 		}
@@ -2194,17 +2058,7 @@ func (c *analyticsHubRESTClient) GetLocation(ctx context.Context, req *locationp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -2268,21 +2122,10 @@ func (c *analyticsHubRESTClient) ListLocations(ctx context.Context, req *locatio
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

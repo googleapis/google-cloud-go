@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -32,7 +32,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -101,6 +100,7 @@ func defaultMetadataGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -708,6 +708,8 @@ type metadataGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewMetadataClient creates a new metadata service client based on gRPC.
@@ -734,6 +736,7 @@ func NewMetadataClient(ctx context.Context, opts ...option.ClientOption) (*Metad
 		connPool:         connPool,
 		metadataClient:   aiplatformpb.NewMetadataServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:  iampb.NewIAMPolicyClient(connPool),
 		locationsClient:  locationpb.NewLocationsClient(connPool),
@@ -770,7 +773,9 @@ func (c *metadataGRPCClient) Connection() *grpc.ClientConn {
 func (c *metadataGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -797,6 +802,8 @@ type metadataRESTClient struct {
 
 	// Points back to the CallOptions field of the containing MetadataClient
 	CallOptions **MetadataCallOptions
+
+	logger *slog.Logger
 }
 
 // NewMetadataRESTClient creates a new metadata service rest client.
@@ -814,6 +821,7 @@ func NewMetadataRESTClient(ctx context.Context, opts ...option.ClientOption) (*M
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -838,6 +846,7 @@ func defaultMetadataRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -847,7 +856,9 @@ func defaultMetadataRESTClientOptions() []option.ClientOption {
 func (c *metadataRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -873,7 +884,7 @@ func (c *metadataGRPCClient) CreateMetadataStore(ctx context.Context, req *aipla
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.CreateMetadataStore(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.CreateMetadataStore, req, settings.GRPC, c.logger, "CreateMetadataStore")
 		return err
 	}, opts...)
 	if err != nil {
@@ -893,7 +904,7 @@ func (c *metadataGRPCClient) GetMetadataStore(ctx context.Context, req *aiplatfo
 	var resp *aiplatformpb.MetadataStore
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.GetMetadataStore(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.GetMetadataStore, req, settings.GRPC, c.logger, "GetMetadataStore")
 		return err
 	}, opts...)
 	if err != nil {
@@ -922,7 +933,7 @@ func (c *metadataGRPCClient) ListMetadataStores(ctx context.Context, req *aiplat
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.metadataClient.ListMetadataStores(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.metadataClient.ListMetadataStores, req, settings.GRPC, c.logger, "ListMetadataStores")
 			return err
 		}, opts...)
 		if err != nil {
@@ -957,7 +968,7 @@ func (c *metadataGRPCClient) DeleteMetadataStore(ctx context.Context, req *aipla
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.DeleteMetadataStore(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.DeleteMetadataStore, req, settings.GRPC, c.logger, "DeleteMetadataStore")
 		return err
 	}, opts...)
 	if err != nil {
@@ -977,7 +988,7 @@ func (c *metadataGRPCClient) CreateArtifact(ctx context.Context, req *aiplatform
 	var resp *aiplatformpb.Artifact
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.CreateArtifact(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.CreateArtifact, req, settings.GRPC, c.logger, "CreateArtifact")
 		return err
 	}, opts...)
 	if err != nil {
@@ -995,7 +1006,7 @@ func (c *metadataGRPCClient) GetArtifact(ctx context.Context, req *aiplatformpb.
 	var resp *aiplatformpb.Artifact
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.GetArtifact(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.GetArtifact, req, settings.GRPC, c.logger, "GetArtifact")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1024,7 +1035,7 @@ func (c *metadataGRPCClient) ListArtifacts(ctx context.Context, req *aiplatformp
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.metadataClient.ListArtifacts(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.metadataClient.ListArtifacts, req, settings.GRPC, c.logger, "ListArtifacts")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1059,7 +1070,7 @@ func (c *metadataGRPCClient) UpdateArtifact(ctx context.Context, req *aiplatform
 	var resp *aiplatformpb.Artifact
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.UpdateArtifact(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.UpdateArtifact, req, settings.GRPC, c.logger, "UpdateArtifact")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1077,7 +1088,7 @@ func (c *metadataGRPCClient) DeleteArtifact(ctx context.Context, req *aiplatform
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.DeleteArtifact(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.DeleteArtifact, req, settings.GRPC, c.logger, "DeleteArtifact")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1097,7 +1108,7 @@ func (c *metadataGRPCClient) PurgeArtifacts(ctx context.Context, req *aiplatform
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.PurgeArtifacts(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.PurgeArtifacts, req, settings.GRPC, c.logger, "PurgeArtifacts")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1117,7 +1128,7 @@ func (c *metadataGRPCClient) CreateContext(ctx context.Context, req *aiplatformp
 	var resp *aiplatformpb.Context
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.CreateContext(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.CreateContext, req, settings.GRPC, c.logger, "CreateContext")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1135,7 +1146,7 @@ func (c *metadataGRPCClient) GetContext(ctx context.Context, req *aiplatformpb.G
 	var resp *aiplatformpb.Context
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.GetContext(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.GetContext, req, settings.GRPC, c.logger, "GetContext")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1164,7 +1175,7 @@ func (c *metadataGRPCClient) ListContexts(ctx context.Context, req *aiplatformpb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.metadataClient.ListContexts(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.metadataClient.ListContexts, req, settings.GRPC, c.logger, "ListContexts")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1199,7 +1210,7 @@ func (c *metadataGRPCClient) UpdateContext(ctx context.Context, req *aiplatformp
 	var resp *aiplatformpb.Context
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.UpdateContext(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.UpdateContext, req, settings.GRPC, c.logger, "UpdateContext")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1217,7 +1228,7 @@ func (c *metadataGRPCClient) DeleteContext(ctx context.Context, req *aiplatformp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.DeleteContext(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.DeleteContext, req, settings.GRPC, c.logger, "DeleteContext")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1237,7 +1248,7 @@ func (c *metadataGRPCClient) PurgeContexts(ctx context.Context, req *aiplatformp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.PurgeContexts(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.PurgeContexts, req, settings.GRPC, c.logger, "PurgeContexts")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1257,7 +1268,7 @@ func (c *metadataGRPCClient) AddContextArtifactsAndExecutions(ctx context.Contex
 	var resp *aiplatformpb.AddContextArtifactsAndExecutionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.AddContextArtifactsAndExecutions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.AddContextArtifactsAndExecutions, req, settings.GRPC, c.logger, "AddContextArtifactsAndExecutions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1275,7 +1286,7 @@ func (c *metadataGRPCClient) AddContextChildren(ctx context.Context, req *aiplat
 	var resp *aiplatformpb.AddContextChildrenResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.AddContextChildren(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.AddContextChildren, req, settings.GRPC, c.logger, "AddContextChildren")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1293,7 +1304,7 @@ func (c *metadataGRPCClient) RemoveContextChildren(ctx context.Context, req *aip
 	var resp *aiplatformpb.RemoveContextChildrenResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.RemoveContextChildren(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.RemoveContextChildren, req, settings.GRPC, c.logger, "RemoveContextChildren")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1311,7 +1322,7 @@ func (c *metadataGRPCClient) QueryContextLineageSubgraph(ctx context.Context, re
 	var resp *aiplatformpb.LineageSubgraph
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.QueryContextLineageSubgraph(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.QueryContextLineageSubgraph, req, settings.GRPC, c.logger, "QueryContextLineageSubgraph")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1329,7 +1340,7 @@ func (c *metadataGRPCClient) CreateExecution(ctx context.Context, req *aiplatfor
 	var resp *aiplatformpb.Execution
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.CreateExecution(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.CreateExecution, req, settings.GRPC, c.logger, "CreateExecution")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1347,7 +1358,7 @@ func (c *metadataGRPCClient) GetExecution(ctx context.Context, req *aiplatformpb
 	var resp *aiplatformpb.Execution
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.GetExecution(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.GetExecution, req, settings.GRPC, c.logger, "GetExecution")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1376,7 +1387,7 @@ func (c *metadataGRPCClient) ListExecutions(ctx context.Context, req *aiplatform
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.metadataClient.ListExecutions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.metadataClient.ListExecutions, req, settings.GRPC, c.logger, "ListExecutions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1411,7 +1422,7 @@ func (c *metadataGRPCClient) UpdateExecution(ctx context.Context, req *aiplatfor
 	var resp *aiplatformpb.Execution
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.UpdateExecution(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.UpdateExecution, req, settings.GRPC, c.logger, "UpdateExecution")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1429,7 +1440,7 @@ func (c *metadataGRPCClient) DeleteExecution(ctx context.Context, req *aiplatfor
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.DeleteExecution(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.DeleteExecution, req, settings.GRPC, c.logger, "DeleteExecution")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1449,7 +1460,7 @@ func (c *metadataGRPCClient) PurgeExecutions(ctx context.Context, req *aiplatfor
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.PurgeExecutions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.PurgeExecutions, req, settings.GRPC, c.logger, "PurgeExecutions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1469,7 +1480,7 @@ func (c *metadataGRPCClient) AddExecutionEvents(ctx context.Context, req *aiplat
 	var resp *aiplatformpb.AddExecutionEventsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.AddExecutionEvents(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.AddExecutionEvents, req, settings.GRPC, c.logger, "AddExecutionEvents")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1487,7 +1498,7 @@ func (c *metadataGRPCClient) QueryExecutionInputsAndOutputs(ctx context.Context,
 	var resp *aiplatformpb.LineageSubgraph
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.QueryExecutionInputsAndOutputs(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.QueryExecutionInputsAndOutputs, req, settings.GRPC, c.logger, "QueryExecutionInputsAndOutputs")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1505,7 +1516,7 @@ func (c *metadataGRPCClient) CreateMetadataSchema(ctx context.Context, req *aipl
 	var resp *aiplatformpb.MetadataSchema
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.CreateMetadataSchema(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.CreateMetadataSchema, req, settings.GRPC, c.logger, "CreateMetadataSchema")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1523,7 +1534,7 @@ func (c *metadataGRPCClient) GetMetadataSchema(ctx context.Context, req *aiplatf
 	var resp *aiplatformpb.MetadataSchema
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.GetMetadataSchema(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.GetMetadataSchema, req, settings.GRPC, c.logger, "GetMetadataSchema")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1552,7 +1563,7 @@ func (c *metadataGRPCClient) ListMetadataSchemas(ctx context.Context, req *aipla
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.metadataClient.ListMetadataSchemas(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.metadataClient.ListMetadataSchemas, req, settings.GRPC, c.logger, "ListMetadataSchemas")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1587,7 +1598,7 @@ func (c *metadataGRPCClient) QueryArtifactLineageSubgraph(ctx context.Context, r
 	var resp *aiplatformpb.LineageSubgraph
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metadataClient.QueryArtifactLineageSubgraph(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metadataClient.QueryArtifactLineageSubgraph, req, settings.GRPC, c.logger, "QueryArtifactLineageSubgraph")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1605,7 +1616,7 @@ func (c *metadataGRPCClient) GetLocation(ctx context.Context, req *locationpb.Ge
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1634,7 +1645,7 @@ func (c *metadataGRPCClient) ListLocations(ctx context.Context, req *locationpb.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1669,7 +1680,7 @@ func (c *metadataGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIam
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1687,7 +1698,7 @@ func (c *metadataGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIam
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1705,7 +1716,7 @@ func (c *metadataGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1722,7 +1733,7 @@ func (c *metadataGRPCClient) CancelOperation(ctx context.Context, req *longrunni
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -1736,7 +1747,7 @@ func (c *metadataGRPCClient) DeleteOperation(ctx context.Context, req *longrunni
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -1751,7 +1762,7 @@ func (c *metadataGRPCClient) GetOperation(ctx context.Context, req *longrunningp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1780,7 +1791,7 @@ func (c *metadataGRPCClient) ListOperations(ctx context.Context, req *longrunnin
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1815,7 +1826,7 @@ func (c *metadataGRPCClient) WaitOperation(ctx context.Context, req *longrunning
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.WaitOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.WaitOperation, req, settings.GRPC, c.logger, "WaitOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1840,6 +1851,7 @@ func (c *metadataRESTClient) CreateMetadataStore(ctx context.Context, req *aipla
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/metadataStores", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetMetadataStoreId() != "" {
 		params.Add("metadataStoreId", fmt.Sprintf("%v", req.GetMetadataStoreId()))
 	}
@@ -1865,21 +1877,10 @@ func (c *metadataRESTClient) CreateMetadataStore(ctx context.Context, req *aipla
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateMetadataStore")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1905,6 +1906,11 @@ func (c *metadataRESTClient) GetMetadataStore(ctx context.Context, req *aiplatfo
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1925,17 +1931,7 @@ func (c *metadataRESTClient) GetMetadataStore(ctx context.Context, req *aiplatfo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetMetadataStore")
 		if err != nil {
 			return err
 		}
@@ -1974,6 +1970,7 @@ func (c *metadataRESTClient) ListMetadataStores(ctx context.Context, req *aiplat
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/metadataStores", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -1996,21 +1993,10 @@ func (c *metadataRESTClient) ListMetadataStores(ctx context.Context, req *aiplat
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListMetadataStores")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2050,6 +2036,7 @@ func (c *metadataRESTClient) DeleteMetadataStore(ctx context.Context, req *aipla
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetForce() {
 		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
 	}
@@ -2075,21 +2062,10 @@ func (c *metadataRESTClient) DeleteMetadataStore(ctx context.Context, req *aipla
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteMetadataStore")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2123,6 +2099,7 @@ func (c *metadataRESTClient) CreateArtifact(ctx context.Context, req *aiplatform
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/artifacts", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetArtifactId() != "" {
 		params.Add("artifactId", fmt.Sprintf("%v", req.GetArtifactId()))
 	}
@@ -2149,17 +2126,7 @@ func (c *metadataRESTClient) CreateArtifact(ctx context.Context, req *aiplatform
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateArtifact")
 		if err != nil {
 			return err
 		}
@@ -2184,6 +2151,11 @@ func (c *metadataRESTClient) GetArtifact(ctx context.Context, req *aiplatformpb.
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -2204,17 +2176,7 @@ func (c *metadataRESTClient) GetArtifact(ctx context.Context, req *aiplatformpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetArtifact")
 		if err != nil {
 			return err
 		}
@@ -2253,6 +2215,7 @@ func (c *metadataRESTClient) ListArtifacts(ctx context.Context, req *aiplatformp
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/artifacts", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -2281,21 +2244,10 @@ func (c *metadataRESTClient) ListArtifacts(ctx context.Context, req *aiplatformp
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListArtifacts")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2341,15 +2293,16 @@ func (c *metadataRESTClient) UpdateArtifact(ctx context.Context, req *aiplatform
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetArtifact().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetAllowMissing() {
 		params.Add("allowMissing", fmt.Sprintf("%v", req.GetAllowMissing()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2374,17 +2327,7 @@ func (c *metadataRESTClient) UpdateArtifact(ctx context.Context, req *aiplatform
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateArtifact")
 		if err != nil {
 			return err
 		}
@@ -2410,6 +2353,7 @@ func (c *metadataRESTClient) DeleteArtifact(ctx context.Context, req *aiplatform
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetEtag() != "" {
 		params.Add("etag", fmt.Sprintf("%v", req.GetEtag()))
 	}
@@ -2435,21 +2379,10 @@ func (c *metadataRESTClient) DeleteArtifact(ctx context.Context, req *aiplatform
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteArtifact")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2481,6 +2414,11 @@ func (c *metadataRESTClient) PurgeArtifacts(ctx context.Context, req *aiplatform
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/artifacts:purge", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
@@ -2500,21 +2438,10 @@ func (c *metadataRESTClient) PurgeArtifacts(ctx context.Context, req *aiplatform
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PurgeArtifacts")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2548,6 +2475,7 @@ func (c *metadataRESTClient) CreateContext(ctx context.Context, req *aiplatformp
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/contexts", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetContextId() != "" {
 		params.Add("contextId", fmt.Sprintf("%v", req.GetContextId()))
 	}
@@ -2574,17 +2502,7 @@ func (c *metadataRESTClient) CreateContext(ctx context.Context, req *aiplatformp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateContext")
 		if err != nil {
 			return err
 		}
@@ -2609,6 +2527,11 @@ func (c *metadataRESTClient) GetContext(ctx context.Context, req *aiplatformpb.G
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -2629,17 +2552,7 @@ func (c *metadataRESTClient) GetContext(ctx context.Context, req *aiplatformpb.G
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetContext")
 		if err != nil {
 			return err
 		}
@@ -2678,6 +2591,7 @@ func (c *metadataRESTClient) ListContexts(ctx context.Context, req *aiplatformpb
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/contexts", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -2706,21 +2620,10 @@ func (c *metadataRESTClient) ListContexts(ctx context.Context, req *aiplatformpb
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListContexts")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2766,15 +2669,16 @@ func (c *metadataRESTClient) UpdateContext(ctx context.Context, req *aiplatformp
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetContext().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetAllowMissing() {
 		params.Add("allowMissing", fmt.Sprintf("%v", req.GetAllowMissing()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2799,17 +2703,7 @@ func (c *metadataRESTClient) UpdateContext(ctx context.Context, req *aiplatformp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateContext")
 		if err != nil {
 			return err
 		}
@@ -2835,6 +2729,7 @@ func (c *metadataRESTClient) DeleteContext(ctx context.Context, req *aiplatformp
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetEtag() != "" {
 		params.Add("etag", fmt.Sprintf("%v", req.GetEtag()))
 	}
@@ -2863,21 +2758,10 @@ func (c *metadataRESTClient) DeleteContext(ctx context.Context, req *aiplatformp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteContext")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2909,6 +2793,11 @@ func (c *metadataRESTClient) PurgeContexts(ctx context.Context, req *aiplatformp
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/contexts:purge", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
@@ -2928,21 +2817,10 @@ func (c *metadataRESTClient) PurgeContexts(ctx context.Context, req *aiplatformp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PurgeContexts")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2976,6 +2854,11 @@ func (c *metadataRESTClient) AddContextArtifactsAndExecutions(ctx context.Contex
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:addContextArtifactsAndExecutions", req.GetContext())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "context", url.QueryEscape(req.GetContext()))}
 
@@ -2996,17 +2879,7 @@ func (c *metadataRESTClient) AddContextArtifactsAndExecutions(ctx context.Contex
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AddContextArtifactsAndExecutions")
 		if err != nil {
 			return err
 		}
@@ -3041,6 +2914,11 @@ func (c *metadataRESTClient) AddContextChildren(ctx context.Context, req *aiplat
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:addContextChildren", req.GetContext())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "context", url.QueryEscape(req.GetContext()))}
 
@@ -3061,17 +2939,7 @@ func (c *metadataRESTClient) AddContextChildren(ctx context.Context, req *aiplat
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AddContextChildren")
 		if err != nil {
 			return err
 		}
@@ -3104,6 +2972,11 @@ func (c *metadataRESTClient) RemoveContextChildren(ctx context.Context, req *aip
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:removeContextChildren", req.GetContext())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "context", url.QueryEscape(req.GetContext()))}
 
@@ -3124,17 +2997,7 @@ func (c *metadataRESTClient) RemoveContextChildren(ctx context.Context, req *aip
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RemoveContextChildren")
 		if err != nil {
 			return err
 		}
@@ -3160,6 +3023,11 @@ func (c *metadataRESTClient) QueryContextLineageSubgraph(ctx context.Context, re
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:queryContextLineageSubgraph", req.GetContext())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "context", url.QueryEscape(req.GetContext()))}
 
@@ -3180,17 +3048,7 @@ func (c *metadataRESTClient) QueryContextLineageSubgraph(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "QueryContextLineageSubgraph")
 		if err != nil {
 			return err
 		}
@@ -3223,6 +3081,7 @@ func (c *metadataRESTClient) CreateExecution(ctx context.Context, req *aiplatfor
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/executions", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetExecutionId() != "" {
 		params.Add("executionId", fmt.Sprintf("%v", req.GetExecutionId()))
 	}
@@ -3249,17 +3108,7 @@ func (c *metadataRESTClient) CreateExecution(ctx context.Context, req *aiplatfor
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateExecution")
 		if err != nil {
 			return err
 		}
@@ -3284,6 +3133,11 @@ func (c *metadataRESTClient) GetExecution(ctx context.Context, req *aiplatformpb
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -3304,17 +3158,7 @@ func (c *metadataRESTClient) GetExecution(ctx context.Context, req *aiplatformpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetExecution")
 		if err != nil {
 			return err
 		}
@@ -3353,6 +3197,7 @@ func (c *metadataRESTClient) ListExecutions(ctx context.Context, req *aiplatform
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/executions", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -3381,21 +3226,10 @@ func (c *metadataRESTClient) ListExecutions(ctx context.Context, req *aiplatform
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListExecutions")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3441,15 +3275,16 @@ func (c *metadataRESTClient) UpdateExecution(ctx context.Context, req *aiplatfor
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetExecution().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetAllowMissing() {
 		params.Add("allowMissing", fmt.Sprintf("%v", req.GetAllowMissing()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3474,17 +3309,7 @@ func (c *metadataRESTClient) UpdateExecution(ctx context.Context, req *aiplatfor
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateExecution")
 		if err != nil {
 			return err
 		}
@@ -3510,6 +3335,7 @@ func (c *metadataRESTClient) DeleteExecution(ctx context.Context, req *aiplatfor
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetEtag() != "" {
 		params.Add("etag", fmt.Sprintf("%v", req.GetEtag()))
 	}
@@ -3535,21 +3361,10 @@ func (c *metadataRESTClient) DeleteExecution(ctx context.Context, req *aiplatfor
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteExecution")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3581,6 +3396,11 @@ func (c *metadataRESTClient) PurgeExecutions(ctx context.Context, req *aiplatfor
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/executions:purge", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
@@ -3600,21 +3420,10 @@ func (c *metadataRESTClient) PurgeExecutions(ctx context.Context, req *aiplatfor
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PurgeExecutions")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3649,6 +3458,11 @@ func (c *metadataRESTClient) AddExecutionEvents(ctx context.Context, req *aiplat
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:addExecutionEvents", req.GetExecution())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "execution", url.QueryEscape(req.GetExecution()))}
 
@@ -3669,17 +3483,7 @@ func (c *metadataRESTClient) AddExecutionEvents(ctx context.Context, req *aiplat
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AddExecutionEvents")
 		if err != nil {
 			return err
 		}
@@ -3706,6 +3510,11 @@ func (c *metadataRESTClient) QueryExecutionInputsAndOutputs(ctx context.Context,
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:queryExecutionInputsAndOutputs", req.GetExecution())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "execution", url.QueryEscape(req.GetExecution()))}
 
@@ -3726,17 +3535,7 @@ func (c *metadataRESTClient) QueryExecutionInputsAndOutputs(ctx context.Context,
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "QueryExecutionInputsAndOutputs")
 		if err != nil {
 			return err
 		}
@@ -3769,6 +3568,7 @@ func (c *metadataRESTClient) CreateMetadataSchema(ctx context.Context, req *aipl
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/metadataSchemas", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetMetadataSchemaId() != "" {
 		params.Add("metadataSchemaId", fmt.Sprintf("%v", req.GetMetadataSchemaId()))
 	}
@@ -3795,17 +3595,7 @@ func (c *metadataRESTClient) CreateMetadataSchema(ctx context.Context, req *aipl
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateMetadataSchema")
 		if err != nil {
 			return err
 		}
@@ -3830,6 +3620,11 @@ func (c *metadataRESTClient) GetMetadataSchema(ctx context.Context, req *aiplatf
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -3850,17 +3645,7 @@ func (c *metadataRESTClient) GetMetadataSchema(ctx context.Context, req *aiplatf
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetMetadataSchema")
 		if err != nil {
 			return err
 		}
@@ -3899,6 +3684,7 @@ func (c *metadataRESTClient) ListMetadataSchemas(ctx context.Context, req *aipla
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/metadataSchemas", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -3924,21 +3710,10 @@ func (c *metadataRESTClient) ListMetadataSchemas(ctx context.Context, req *aipla
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListMetadataSchemas")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3978,6 +3753,7 @@ func (c *metadataRESTClient) QueryArtifactLineageSubgraph(ctx context.Context, r
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:queryArtifactLineageSubgraph", req.GetArtifact())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetFilter() != "" {
 		params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 	}
@@ -4007,17 +3783,7 @@ func (c *metadataRESTClient) QueryArtifactLineageSubgraph(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "QueryArtifactLineageSubgraph")
 		if err != nil {
 			return err
 		}
@@ -4042,6 +3808,11 @@ func (c *metadataRESTClient) GetLocation(ctx context.Context, req *locationpb.Ge
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -4062,17 +3833,7 @@ func (c *metadataRESTClient) GetLocation(ctx context.Context, req *locationpb.Ge
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -4111,6 +3872,7 @@ func (c *metadataRESTClient) ListLocations(ctx context.Context, req *locationpb.
 		baseUrl.Path += fmt.Sprintf("/ui/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -4136,21 +3898,10 @@ func (c *metadataRESTClient) ListLocations(ctx context.Context, req *locationpb.
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4195,6 +3946,11 @@ func (c *metadataRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIam
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:getIamPolicy", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -4215,17 +3971,7 @@ func (c *metadataRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIam
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -4260,6 +4006,11 @@ func (c *metadataRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIam
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:setIamPolicy", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -4280,17 +4031,7 @@ func (c *metadataRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIam
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -4327,6 +4068,11 @@ func (c *metadataRESTClient) TestIamPermissions(ctx context.Context, req *iampb.
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:testIamPermissions", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -4347,17 +4093,7 @@ func (c *metadataRESTClient) TestIamPermissions(ctx context.Context, req *iampb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
 		if err != nil {
 			return err
 		}
@@ -4382,6 +4118,11 @@ func (c *metadataRESTClient) CancelOperation(ctx context.Context, req *longrunni
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v:cancel", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -4399,15 +4140,8 @@ func (c *metadataRESTClient) CancelOperation(ctx context.Context, req *longrunni
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -4418,6 +4152,11 @@ func (c *metadataRESTClient) DeleteOperation(ctx context.Context, req *longrunni
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -4436,15 +4175,8 @@ func (c *metadataRESTClient) DeleteOperation(ctx context.Context, req *longrunni
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOperation")
+		return err
 	}, opts...)
 }
 
@@ -4455,6 +4187,11 @@ func (c *metadataRESTClient) GetOperation(ctx context.Context, req *longrunningp
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -4476,17 +4213,7 @@ func (c *metadataRESTClient) GetOperation(ctx context.Context, req *longrunningp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -4525,6 +4252,7 @@ func (c *metadataRESTClient) ListOperations(ctx context.Context, req *longrunnin
 		baseUrl.Path += fmt.Sprintf("/ui/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -4550,21 +4278,10 @@ func (c *metadataRESTClient) ListOperations(ctx context.Context, req *longrunnin
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4603,12 +4320,13 @@ func (c *metadataRESTClient) WaitOperation(ctx context.Context, req *longrunning
 	baseUrl.Path += fmt.Sprintf("/ui/%v:wait", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetTimeout() != nil {
-		timeout, err := protojson.Marshal(req.GetTimeout())
+		field, err := protojson.Marshal(req.GetTimeout())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("timeout", string(timeout[1:len(timeout)-1]))
+		params.Add("timeout", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4633,17 +4351,7 @@ func (c *metadataRESTClient) WaitOperation(ctx context.Context, req *longrunning
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "WaitOperation")
 		if err != nil {
 			return err
 		}

@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,6 +26,70 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 )
+
+// CheckUpgradeOperation manages a long-running operation from CheckUpgrade.
+type CheckUpgradeOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *CheckUpgradeOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*servicepb.CheckUpgradeResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp servicepb.CheckUpgradeResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *CheckUpgradeOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*servicepb.CheckUpgradeResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp servicepb.CheckUpgradeResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *CheckUpgradeOperation) Metadata() (*servicepb.OperationMetadata, error) {
+	var meta servicepb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *CheckUpgradeOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *CheckUpgradeOperation) Name() string {
+	return op.lro.Name()
+}
 
 // CreateEnvironmentOperation manages a long-running operation from CreateEnvironment.
 type CreateEnvironmentOperation struct {
@@ -420,7 +484,7 @@ type EnvironmentIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*servicepb.Environment, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *EnvironmentIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -467,7 +531,7 @@ type ImageVersionIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*servicepb.ImageVersion, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ImageVersionIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -514,7 +578,7 @@ type ListWorkloadsResponse_ComposerWorkloadIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*servicepb.ListWorkloadsResponse_ComposerWorkload, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ListWorkloadsResponse_ComposerWorkloadIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -561,7 +625,7 @@ type OperationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *OperationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -608,7 +672,7 @@ type UserWorkloadsConfigMapIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*servicepb.UserWorkloadsConfigMap, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *UserWorkloadsConfigMapIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -655,7 +719,7 @@ type UserWorkloadsSecretIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*servicepb.UserWorkloadsSecret, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *UserWorkloadsSecretIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

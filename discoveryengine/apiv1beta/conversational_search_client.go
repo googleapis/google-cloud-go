@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -29,7 +29,6 @@ import (
 	discoveryenginepb "cloud.google.com/go/discoveryengine/apiv1beta/discoveryenginepb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -58,6 +57,7 @@ type ConversationalSearchCallOptions struct {
 	UpdateSession        []gax.CallOption
 	GetSession           []gax.CallOption
 	ListSessions         []gax.CallOption
+	CancelOperation      []gax.CallOption
 	GetOperation         []gax.CallOption
 	ListOperations       []gax.CallOption
 }
@@ -71,6 +71,7 @@ func defaultConversationalSearchGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://discoveryengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -223,6 +224,18 @@ func defaultConversationalSearchCallOptions() *ConversationalSearchCallOptions {
 			}),
 		},
 		ListSessions: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CancelOperation: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -406,6 +419,17 @@ func defaultConversationalSearchRESTCallOptions() *ConversationalSearchCallOptio
 					http.StatusServiceUnavailable)
 			}),
 		},
+		CancelOperation: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetOperation: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -449,6 +473,7 @@ type internalConversationalSearchClient interface {
 	UpdateSession(context.Context, *discoveryenginepb.UpdateSessionRequest, ...gax.CallOption) (*discoveryenginepb.Session, error)
 	GetSession(context.Context, *discoveryenginepb.GetSessionRequest, ...gax.CallOption) (*discoveryenginepb.Session, error)
 	ListSessions(context.Context, *discoveryenginepb.ListSessionsRequest, ...gax.CallOption) *SessionIterator
+	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
@@ -576,6 +601,11 @@ func (c *ConversationalSearchClient) ListSessions(ctx context.Context, req *disc
 	return c.internalClient.ListSessions(ctx, req, opts...)
 }
 
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *ConversationalSearchClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.CancelOperation(ctx, req, opts...)
+}
+
 // GetOperation is a utility method from google.longrunning.Operations.
 func (c *ConversationalSearchClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	return c.internalClient.GetOperation(ctx, req, opts...)
@@ -603,6 +633,8 @@ type conversationalSearchGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewConversationalSearchClient creates a new conversational search service client based on gRPC.
@@ -629,6 +661,7 @@ func NewConversationalSearchClient(ctx context.Context, opts ...option.ClientOpt
 		connPool:                   connPool,
 		conversationalSearchClient: discoveryenginepb.NewConversationalSearchServiceClient(connPool),
 		CallOptions:                &client.CallOptions,
+		logger:                     internaloption.GetLogger(opts),
 		operationsClient:           longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -652,7 +685,9 @@ func (c *conversationalSearchGRPCClient) Connection() *grpc.ClientConn {
 func (c *conversationalSearchGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -674,6 +709,8 @@ type conversationalSearchRESTClient struct {
 
 	// Points back to the CallOptions field of the containing ConversationalSearchClient
 	CallOptions **ConversationalSearchCallOptions
+
+	logger *slog.Logger
 }
 
 // NewConversationalSearchRESTClient creates a new conversational search service rest client.
@@ -691,6 +728,7 @@ func NewConversationalSearchRESTClient(ctx context.Context, opts ...option.Clien
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -705,6 +743,7 @@ func defaultConversationalSearchRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://discoveryengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -714,7 +753,9 @@ func defaultConversationalSearchRESTClientOptions() []option.ClientOption {
 func (c *conversationalSearchRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -740,7 +781,7 @@ func (c *conversationalSearchGRPCClient) ConverseConversation(ctx context.Contex
 	var resp *discoveryenginepb.ConverseConversationResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.conversationalSearchClient.ConverseConversation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.conversationalSearchClient.ConverseConversation, req, settings.GRPC, c.logger, "ConverseConversation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -758,7 +799,7 @@ func (c *conversationalSearchGRPCClient) CreateConversation(ctx context.Context,
 	var resp *discoveryenginepb.Conversation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.conversationalSearchClient.CreateConversation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.conversationalSearchClient.CreateConversation, req, settings.GRPC, c.logger, "CreateConversation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -775,7 +816,7 @@ func (c *conversationalSearchGRPCClient) DeleteConversation(ctx context.Context,
 	opts = append((*c.CallOptions).DeleteConversation[0:len((*c.CallOptions).DeleteConversation):len((*c.CallOptions).DeleteConversation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.conversationalSearchClient.DeleteConversation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.conversationalSearchClient.DeleteConversation, req, settings.GRPC, c.logger, "DeleteConversation")
 		return err
 	}, opts...)
 	return err
@@ -790,7 +831,7 @@ func (c *conversationalSearchGRPCClient) UpdateConversation(ctx context.Context,
 	var resp *discoveryenginepb.Conversation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.conversationalSearchClient.UpdateConversation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.conversationalSearchClient.UpdateConversation, req, settings.GRPC, c.logger, "UpdateConversation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -808,7 +849,7 @@ func (c *conversationalSearchGRPCClient) GetConversation(ctx context.Context, re
 	var resp *discoveryenginepb.Conversation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.conversationalSearchClient.GetConversation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.conversationalSearchClient.GetConversation, req, settings.GRPC, c.logger, "GetConversation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -837,7 +878,7 @@ func (c *conversationalSearchGRPCClient) ListConversations(ctx context.Context, 
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.conversationalSearchClient.ListConversations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.conversationalSearchClient.ListConversations, req, settings.GRPC, c.logger, "ListConversations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -872,7 +913,7 @@ func (c *conversationalSearchGRPCClient) AnswerQuery(ctx context.Context, req *d
 	var resp *discoveryenginepb.AnswerQueryResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.conversationalSearchClient.AnswerQuery(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.conversationalSearchClient.AnswerQuery, req, settings.GRPC, c.logger, "AnswerQuery")
 		return err
 	}, opts...)
 	if err != nil {
@@ -890,7 +931,7 @@ func (c *conversationalSearchGRPCClient) GetAnswer(ctx context.Context, req *dis
 	var resp *discoveryenginepb.Answer
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.conversationalSearchClient.GetAnswer(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.conversationalSearchClient.GetAnswer, req, settings.GRPC, c.logger, "GetAnswer")
 		return err
 	}, opts...)
 	if err != nil {
@@ -908,7 +949,7 @@ func (c *conversationalSearchGRPCClient) CreateSession(ctx context.Context, req 
 	var resp *discoveryenginepb.Session
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.conversationalSearchClient.CreateSession(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.conversationalSearchClient.CreateSession, req, settings.GRPC, c.logger, "CreateSession")
 		return err
 	}, opts...)
 	if err != nil {
@@ -925,7 +966,7 @@ func (c *conversationalSearchGRPCClient) DeleteSession(ctx context.Context, req 
 	opts = append((*c.CallOptions).DeleteSession[0:len((*c.CallOptions).DeleteSession):len((*c.CallOptions).DeleteSession)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.conversationalSearchClient.DeleteSession(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.conversationalSearchClient.DeleteSession, req, settings.GRPC, c.logger, "DeleteSession")
 		return err
 	}, opts...)
 	return err
@@ -940,7 +981,7 @@ func (c *conversationalSearchGRPCClient) UpdateSession(ctx context.Context, req 
 	var resp *discoveryenginepb.Session
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.conversationalSearchClient.UpdateSession(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.conversationalSearchClient.UpdateSession, req, settings.GRPC, c.logger, "UpdateSession")
 		return err
 	}, opts...)
 	if err != nil {
@@ -958,7 +999,7 @@ func (c *conversationalSearchGRPCClient) GetSession(ctx context.Context, req *di
 	var resp *discoveryenginepb.Session
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.conversationalSearchClient.GetSession(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.conversationalSearchClient.GetSession, req, settings.GRPC, c.logger, "GetSession")
 		return err
 	}, opts...)
 	if err != nil {
@@ -987,7 +1028,7 @@ func (c *conversationalSearchGRPCClient) ListSessions(ctx context.Context, req *
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.conversationalSearchClient.ListSessions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.conversationalSearchClient.ListSessions, req, settings.GRPC, c.logger, "ListSessions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1013,6 +1054,20 @@ func (c *conversationalSearchGRPCClient) ListSessions(ctx context.Context, req *
 	return it
 }
 
+func (c *conversationalSearchGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
+		return err
+	}, opts...)
+	return err
+}
+
 func (c *conversationalSearchGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1022,7 +1077,7 @@ func (c *conversationalSearchGRPCClient) GetOperation(ctx context.Context, req *
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1051,7 +1106,7 @@ func (c *conversationalSearchGRPCClient) ListOperations(ctx context.Context, req
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1116,17 +1171,7 @@ func (c *conversationalSearchRESTClient) ConverseConversation(ctx context.Contex
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ConverseConversation")
 		if err != nil {
 			return err
 		}
@@ -1186,17 +1231,7 @@ func (c *conversationalSearchRESTClient) CreateConversation(ctx context.Context,
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateConversation")
 		if err != nil {
 			return err
 		}
@@ -1246,15 +1281,8 @@ func (c *conversationalSearchRESTClient) DeleteConversation(ctx context.Context,
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteConversation")
+		return err
 	}, opts...)
 }
 
@@ -1281,11 +1309,11 @@ func (c *conversationalSearchRESTClient) UpdateConversation(ctx context.Context,
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1310,17 +1338,7 @@ func (c *conversationalSearchRESTClient) UpdateConversation(ctx context.Context,
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateConversation")
 		if err != nil {
 			return err
 		}
@@ -1370,17 +1388,7 @@ func (c *conversationalSearchRESTClient) GetConversation(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetConversation")
 		if err != nil {
 			return err
 		}
@@ -1449,21 +1457,10 @@ func (c *conversationalSearchRESTClient) ListConversations(ctx context.Context, 
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListConversations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1532,17 +1529,7 @@ func (c *conversationalSearchRESTClient) AnswerQuery(ctx context.Context, req *d
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AnswerQuery")
 		if err != nil {
 			return err
 		}
@@ -1592,17 +1579,7 @@ func (c *conversationalSearchRESTClient) GetAnswer(ctx context.Context, req *dis
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAnswer")
 		if err != nil {
 			return err
 		}
@@ -1662,17 +1639,7 @@ func (c *conversationalSearchRESTClient) CreateSession(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateSession")
 		if err != nil {
 			return err
 		}
@@ -1722,15 +1689,8 @@ func (c *conversationalSearchRESTClient) DeleteSession(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteSession")
+		return err
 	}, opts...)
 }
 
@@ -1756,11 +1716,11 @@ func (c *conversationalSearchRESTClient) UpdateSession(ctx context.Context, req 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1785,17 +1745,7 @@ func (c *conversationalSearchRESTClient) UpdateSession(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateSession")
 		if err != nil {
 			return err
 		}
@@ -1845,17 +1795,7 @@ func (c *conversationalSearchRESTClient) GetSession(ctx context.Context, req *di
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSession")
 		if err != nil {
 			return err
 		}
@@ -1924,21 +1864,10 @@ func (c *conversationalSearchRESTClient) ListSessions(ctx context.Context, req *
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSessions")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1966,6 +1895,47 @@ func (c *conversationalSearchRESTClient) ListSessions(ctx context.Context, req *
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *conversationalSearchRESTClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v:cancel", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelOperation")
+		return err
+	}, opts...)
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.
@@ -2001,17 +1971,7 @@ func (c *conversationalSearchRESTClient) GetOperation(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -2076,21 +2036,10 @@ func (c *conversationalSearchRESTClient) ListOperations(ctx context.Context, req
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

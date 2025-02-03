@@ -18,7 +18,9 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"strings"
@@ -26,20 +28,30 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
+	"github.com/googleapis/gax-go/v2/internallog"
+)
+
+var (
+	iamCredentialsEndpoint = "https://iamcredentials.googleapis.com"
 )
 
 // user provides an auth flow for domain-wide delegation, setting
 // CredentialsConfig.Subject to be the impersonated user.
-func user(opts *CredentialsOptions, client *http.Client, lifetime time.Duration, isStaticToken bool) (auth.TokenProvider, error) {
+func user(opts *CredentialsOptions, client *http.Client, lifetime time.Duration, isStaticToken bool, universeDomainProvider auth.CredentialsPropertyProvider) (auth.TokenProvider, error) {
+	if opts.Subject == "" {
+		return nil, errors.New("CredentialsConfig.Subject must not be empty")
+	}
 	u := userTokenProvider{
-		client:          client,
-		targetPrincipal: opts.TargetPrincipal,
-		subject:         opts.Subject,
-		lifetime:        lifetime,
+		client:                 client,
+		targetPrincipal:        opts.TargetPrincipal,
+		subject:                opts.Subject,
+		lifetime:               lifetime,
+		universeDomainProvider: universeDomainProvider,
+		logger:                 internallog.New(opts.Logger),
 	}
 	u.delegates = make([]string, len(opts.Delegates))
 	for i, v := range opts.Delegates {
-		u.delegates[i] = formatIAMServiceAccountName(v)
+		u.delegates[i] = internal.FormatIAMServiceAccountResource(v)
 	}
 	u.scopes = make([]string, len(opts.Scopes))
 	copy(u.scopes, opts.Scopes)
@@ -83,23 +95,35 @@ type exchangeTokenResponse struct {
 
 type userTokenProvider struct {
 	client *http.Client
+	logger *slog.Logger
 
-	targetPrincipal string
-	subject         string
-	scopes          []string
-	lifetime        time.Duration
-	delegates       []string
+	targetPrincipal        string
+	subject                string
+	scopes                 []string
+	lifetime               time.Duration
+	delegates              []string
+	universeDomainProvider auth.CredentialsPropertyProvider
 }
 
 func (u userTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
-	signedJWT, err := u.signJWT()
+	// Because a subject is specified a domain-wide delegation auth-flow is initiated
+	// to impersonate as the provided subject (user).
+	// Return error if users try to use domain-wide delegation in a non-GDU universe.
+	ud, err := u.universeDomainProvider.GetProperty(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if ud != internal.DefaultUniverseDomain {
+		return nil, errUniverseNotSupportedDomainWideDelegation
+	}
+	signedJWT, err := u.signJWT(ctx)
 	if err != nil {
 		return nil, err
 	}
 	return u.exchangeToken(ctx, signedJWT)
 }
 
-func (u userTokenProvider) signJWT() (string, error) {
+func (u userTokenProvider) signJWT(ctx context.Context) (string, error) {
 	now := time.Now()
 	exp := now.Add(u.lifetime)
 	claims := claimSet{
@@ -123,21 +147,19 @@ func (u userTokenProvider) signJWT() (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("impersonate: unable to marshal request: %w", err)
 	}
-	reqURL := fmt.Sprintf("%s/v1/%s:signJwt", iamCredentialsEndpoint, formatIAMServiceAccountName(u.targetPrincipal))
-	req, err := http.NewRequest("POST", reqURL, bytes.NewReader(bodyBytes))
+	reqURL := fmt.Sprintf("%s/v1/%s:signJwt", iamCredentialsEndpoint, internal.FormatIAMServiceAccountResource(u.targetPrincipal))
+	req, err := http.NewRequestWithContext(ctx, "POST", reqURL, bytes.NewReader(bodyBytes))
 	if err != nil {
 		return "", fmt.Errorf("impersonate: unable to create request: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
-	rawResp, err := u.client.Do(req)
+	u.logger.DebugContext(ctx, "impersonated user sign JWT request", "request", internallog.HTTPRequest(req, bodyBytes))
+	resp, body, err := internal.DoRequest(u.client, req)
 	if err != nil {
 		return "", fmt.Errorf("impersonate: unable to sign JWT: %w", err)
 	}
-	body, err := internal.ReadAll(rawResp.Body)
-	if err != nil {
-		return "", fmt.Errorf("impersonate: unable to read body: %w", err)
-	}
-	if c := rawResp.StatusCode; c < 200 || c > 299 {
+	u.logger.DebugContext(ctx, "impersonated user sign JWT response", "response", internallog.HTTPResponse(resp, body))
+	if c := resp.StatusCode; c < 200 || c > 299 {
 		return "", fmt.Errorf("impersonate: status code %d: %s", c, body)
 	}
 
@@ -157,15 +179,13 @@ func (u userTokenProvider) exchangeToken(ctx context.Context, signedJWT string) 
 	if err != nil {
 		return nil, err
 	}
-	rawResp, err := u.client.Do(req)
+	u.logger.DebugContext(ctx, "impersonated user token exchange request", "request", internallog.HTTPRequest(req, []byte(v.Encode())))
+	resp, body, err := internal.DoRequest(u.client, req)
 	if err != nil {
 		return nil, fmt.Errorf("impersonate: unable to exchange token: %w", err)
 	}
-	body, err := internal.ReadAll(rawResp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("impersonate: unable to read body: %w", err)
-	}
-	if c := rawResp.StatusCode; c < 200 || c > 299 {
+	u.logger.DebugContext(ctx, "impersonated user token exchange response", "response", internallog.HTTPResponse(resp, body))
+	if c := resp.StatusCode; c < 200 || c > 299 {
 		return nil, fmt.Errorf("impersonate: status code %d: %s", c, body)
 	}
 

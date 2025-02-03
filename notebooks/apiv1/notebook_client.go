@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package notebooks
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 	"time"
@@ -97,6 +98,7 @@ func defaultNotebookGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://notebooks.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -758,6 +760,8 @@ type notebookGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewNotebookClient creates a new notebook service client based on gRPC.
@@ -784,6 +788,7 @@ func NewNotebookClient(ctx context.Context, opts ...option.ClientOption) (*Noteb
 		connPool:         connPool,
 		notebookClient:   notebookspb.NewNotebookServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:  iampb.NewIAMPolicyClient(connPool),
 		locationsClient:  locationpb.NewLocationsClient(connPool),
@@ -820,7 +825,9 @@ func (c *notebookGRPCClient) Connection() *grpc.ClientConn {
 func (c *notebookGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -849,7 +856,7 @@ func (c *notebookGRPCClient) ListInstances(ctx context.Context, req *notebookspb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.notebookClient.ListInstances(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.notebookClient.ListInstances, req, settings.GRPC, c.logger, "ListInstances")
 			return err
 		}, opts...)
 		if err != nil {
@@ -884,7 +891,7 @@ func (c *notebookGRPCClient) GetInstance(ctx context.Context, req *notebookspb.G
 	var resp *notebookspb.Instance
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.notebookClient.GetInstance(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.notebookClient.GetInstance, req, settings.GRPC, c.logger, "GetInstance")
 		return err
 	}, opts...)
 	if err != nil {
@@ -902,7 +909,7 @@ func (c *notebookGRPCClient) CreateInstance(ctx context.Context, req *notebooksp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.notebookClient.CreateInstance(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.notebookClient.CreateInstance, req, settings.GRPC, c.logger, "CreateInstance")
 		return err
 	}, opts...)
 	if err != nil {
@@ -922,7 +929,7 @@ func (c *notebookGRPCClient) RegisterInstance(ctx context.Context, req *notebook
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.notebookClient.RegisterInstance(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.notebookClient.RegisterInstance, req, settings.GRPC, c.logger, "RegisterInstance")
 		return err
 	}, opts...)
 	if err != nil {
@@ -942,7 +949,7 @@ func (c *notebookGRPCClient) SetInstanceAccelerator(ctx context.Context, req *no
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.notebookClient.SetInstanceAccelerator(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.notebookClient.SetInstanceAccelerator, req, settings.GRPC, c.logger, "SetInstanceAccelerator")
 		return err
 	}, opts...)
 	if err != nil {
@@ -962,7 +969,7 @@ func (c *notebookGRPCClient) SetInstanceMachineType(ctx context.Context, req *no
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.notebookClient.SetInstanceMachineType(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.notebookClient.SetInstanceMachineType, req, settings.GRPC, c.logger, "SetInstanceMachineType")
 		return err
 	}, opts...)
 	if err != nil {
@@ -982,7 +989,7 @@ func (c *notebookGRPCClient) UpdateInstanceConfig(ctx context.Context, req *note
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.notebookClient.UpdateInstanceConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.notebookClient.UpdateInstanceConfig, req, settings.GRPC, c.logger, "UpdateInstanceConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1002,7 +1009,7 @@ func (c *notebookGRPCClient) UpdateShieldedInstanceConfig(ctx context.Context, r
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.notebookClient.UpdateShieldedInstanceConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.notebookClient.UpdateShieldedInstanceConfig, req, settings.GRPC, c.logger, "UpdateShieldedInstanceConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1022,7 +1029,7 @@ func (c *notebookGRPCClient) SetInstanceLabels(ctx context.Context, req *noteboo
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.notebookClient.SetInstanceLabels(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.notebookClient.SetInstanceLabels, req, settings.GRPC, c.logger, "SetInstanceLabels")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1042,7 +1049,7 @@ func (c *notebookGRPCClient) UpdateInstanceMetadataItems(ctx context.Context, re
 	var resp *notebookspb.UpdateInstanceMetadataItemsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.notebookClient.UpdateInstanceMetadataItems(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.notebookClient.UpdateInstanceMetadataItems, req, settings.GRPC, c.logger, "UpdateInstanceMetadataItems")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1060,7 +1067,7 @@ func (c *notebookGRPCClient) DeleteInstance(ctx context.Context, req *notebooksp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.notebookClient.DeleteInstance(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.notebookClient.DeleteInstance, req, settings.GRPC, c.logger, "DeleteInstance")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1080,7 +1087,7 @@ func (c *notebookGRPCClient) StartInstance(ctx context.Context, req *notebookspb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.notebookClient.StartInstance(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.notebookClient.StartInstance, req, settings.GRPC, c.logger, "StartInstance")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1100,7 +1107,7 @@ func (c *notebookGRPCClient) StopInstance(ctx context.Context, req *notebookspb.
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.notebookClient.StopInstance(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.notebookClient.StopInstance, req, settings.GRPC, c.logger, "StopInstance")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1120,7 +1127,7 @@ func (c *notebookGRPCClient) ResetInstance(ctx context.Context, req *notebookspb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.notebookClient.ResetInstance(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.notebookClient.ResetInstance, req, settings.GRPC, c.logger, "ResetInstance")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1140,7 +1147,7 @@ func (c *notebookGRPCClient) ReportInstanceInfo(ctx context.Context, req *notebo
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.notebookClient.ReportInstanceInfo(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.notebookClient.ReportInstanceInfo, req, settings.GRPC, c.logger, "ReportInstanceInfo")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1160,7 +1167,7 @@ func (c *notebookGRPCClient) IsInstanceUpgradeable(ctx context.Context, req *not
 	var resp *notebookspb.IsInstanceUpgradeableResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.notebookClient.IsInstanceUpgradeable(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.notebookClient.IsInstanceUpgradeable, req, settings.GRPC, c.logger, "IsInstanceUpgradeable")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1178,7 +1185,7 @@ func (c *notebookGRPCClient) GetInstanceHealth(ctx context.Context, req *noteboo
 	var resp *notebookspb.GetInstanceHealthResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.notebookClient.GetInstanceHealth(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.notebookClient.GetInstanceHealth, req, settings.GRPC, c.logger, "GetInstanceHealth")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1196,7 +1203,7 @@ func (c *notebookGRPCClient) UpgradeInstance(ctx context.Context, req *notebooks
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.notebookClient.UpgradeInstance(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.notebookClient.UpgradeInstance, req, settings.GRPC, c.logger, "UpgradeInstance")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1216,7 +1223,7 @@ func (c *notebookGRPCClient) RollbackInstance(ctx context.Context, req *notebook
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.notebookClient.RollbackInstance(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.notebookClient.RollbackInstance, req, settings.GRPC, c.logger, "RollbackInstance")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1236,7 +1243,7 @@ func (c *notebookGRPCClient) DiagnoseInstance(ctx context.Context, req *notebook
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.notebookClient.DiagnoseInstance(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.notebookClient.DiagnoseInstance, req, settings.GRPC, c.logger, "DiagnoseInstance")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1256,7 +1263,7 @@ func (c *notebookGRPCClient) UpgradeInstanceInternal(ctx context.Context, req *n
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.notebookClient.UpgradeInstanceInternal(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.notebookClient.UpgradeInstanceInternal, req, settings.GRPC, c.logger, "UpgradeInstanceInternal")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1287,7 +1294,7 @@ func (c *notebookGRPCClient) ListEnvironments(ctx context.Context, req *notebook
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.notebookClient.ListEnvironments(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.notebookClient.ListEnvironments, req, settings.GRPC, c.logger, "ListEnvironments")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1322,7 +1329,7 @@ func (c *notebookGRPCClient) GetEnvironment(ctx context.Context, req *notebooksp
 	var resp *notebookspb.Environment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.notebookClient.GetEnvironment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.notebookClient.GetEnvironment, req, settings.GRPC, c.logger, "GetEnvironment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1340,7 +1347,7 @@ func (c *notebookGRPCClient) CreateEnvironment(ctx context.Context, req *noteboo
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.notebookClient.CreateEnvironment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.notebookClient.CreateEnvironment, req, settings.GRPC, c.logger, "CreateEnvironment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1360,7 +1367,7 @@ func (c *notebookGRPCClient) DeleteEnvironment(ctx context.Context, req *noteboo
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.notebookClient.DeleteEnvironment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.notebookClient.DeleteEnvironment, req, settings.GRPC, c.logger, "DeleteEnvironment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1391,7 +1398,7 @@ func (c *notebookGRPCClient) ListSchedules(ctx context.Context, req *notebookspb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.notebookClient.ListSchedules(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.notebookClient.ListSchedules, req, settings.GRPC, c.logger, "ListSchedules")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1426,7 +1433,7 @@ func (c *notebookGRPCClient) GetSchedule(ctx context.Context, req *notebookspb.G
 	var resp *notebookspb.Schedule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.notebookClient.GetSchedule(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.notebookClient.GetSchedule, req, settings.GRPC, c.logger, "GetSchedule")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1444,7 +1451,7 @@ func (c *notebookGRPCClient) DeleteSchedule(ctx context.Context, req *notebooksp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.notebookClient.DeleteSchedule(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.notebookClient.DeleteSchedule, req, settings.GRPC, c.logger, "DeleteSchedule")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1464,7 +1471,7 @@ func (c *notebookGRPCClient) CreateSchedule(ctx context.Context, req *notebooksp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.notebookClient.CreateSchedule(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.notebookClient.CreateSchedule, req, settings.GRPC, c.logger, "CreateSchedule")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1484,7 +1491,7 @@ func (c *notebookGRPCClient) TriggerSchedule(ctx context.Context, req *notebooks
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.notebookClient.TriggerSchedule(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.notebookClient.TriggerSchedule, req, settings.GRPC, c.logger, "TriggerSchedule")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1515,7 +1522,7 @@ func (c *notebookGRPCClient) ListExecutions(ctx context.Context, req *notebooksp
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.notebookClient.ListExecutions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.notebookClient.ListExecutions, req, settings.GRPC, c.logger, "ListExecutions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1550,7 +1557,7 @@ func (c *notebookGRPCClient) GetExecution(ctx context.Context, req *notebookspb.
 	var resp *notebookspb.Execution
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.notebookClient.GetExecution(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.notebookClient.GetExecution, req, settings.GRPC, c.logger, "GetExecution")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1568,7 +1575,7 @@ func (c *notebookGRPCClient) DeleteExecution(ctx context.Context, req *notebooks
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.notebookClient.DeleteExecution(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.notebookClient.DeleteExecution, req, settings.GRPC, c.logger, "DeleteExecution")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1588,7 +1595,7 @@ func (c *notebookGRPCClient) CreateExecution(ctx context.Context, req *notebooks
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.notebookClient.CreateExecution(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.notebookClient.CreateExecution, req, settings.GRPC, c.logger, "CreateExecution")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1608,7 +1615,7 @@ func (c *notebookGRPCClient) GetLocation(ctx context.Context, req *locationpb.Ge
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1637,7 +1644,7 @@ func (c *notebookGRPCClient) ListLocations(ctx context.Context, req *locationpb.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1672,7 +1679,7 @@ func (c *notebookGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIam
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1690,7 +1697,7 @@ func (c *notebookGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIam
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1708,7 +1715,7 @@ func (c *notebookGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1725,7 +1732,7 @@ func (c *notebookGRPCClient) CancelOperation(ctx context.Context, req *longrunni
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -1739,7 +1746,7 @@ func (c *notebookGRPCClient) DeleteOperation(ctx context.Context, req *longrunni
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -1754,7 +1761,7 @@ func (c *notebookGRPCClient) GetOperation(ctx context.Context, req *longrunningp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1783,7 +1790,7 @@ func (c *notebookGRPCClient) ListOperations(ctx context.Context, req *longrunnin
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dialogflow/cx/apiv3beta1",
-    "version": "1.52.0",
+    "version": "1.64.1",
     "language": "GO",
     "apis": [
       {
@@ -1047,6 +1047,372 @@
         "client": {
           "shortName": "ChangelogsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.ChangelogsClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v3beta1_generated_ConversationHistory_CancelOperation_sync",
+      "title": "dialogflow CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "ConversationHistoryClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.dialogflow.cx.v3beta1.ConversationHistoryClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ConversationHistoryClient",
+          "fullName": "google.cloud.dialogflow.cx.v3beta1.ConversationHistoryClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v3beta1_generated_ConversationHistory_DeleteConversation_sync",
+      "title": "dialogflow DeleteConversation Sample",
+      "description": "DeleteConversation deletes the specified conversation.",
+      "file": "ConversationHistoryClient/DeleteConversation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteConversation",
+        "fullName": "google.cloud.dialogflow.cx.v3beta1.ConversationHistoryClient.DeleteConversation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cxpb.DeleteConversationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ConversationHistoryClient",
+          "fullName": "google.cloud.dialogflow.cx.v3beta1.ConversationHistoryClient"
+        },
+        "method": {
+          "shortName": "DeleteConversation",
+          "fullName": "google.cloud.dialogflow.cx.v3beta1.ConversationHistory.DeleteConversation",
+          "service": {
+            "shortName": "ConversationHistory",
+            "fullName": "google.cloud.dialogflow.cx.v3beta1.ConversationHistory"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v3beta1_generated_ConversationHistory_GetConversation_sync",
+      "title": "dialogflow GetConversation Sample",
+      "description": "GetConversation retrieves the specified conversation.",
+      "file": "ConversationHistoryClient/GetConversation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetConversation",
+        "fullName": "google.cloud.dialogflow.cx.v3beta1.ConversationHistoryClient.GetConversation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cxpb.GetConversationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cxpb.Conversation",
+        "client": {
+          "shortName": "ConversationHistoryClient",
+          "fullName": "google.cloud.dialogflow.cx.v3beta1.ConversationHistoryClient"
+        },
+        "method": {
+          "shortName": "GetConversation",
+          "fullName": "google.cloud.dialogflow.cx.v3beta1.ConversationHistory.GetConversation",
+          "service": {
+            "shortName": "ConversationHistory",
+            "fullName": "google.cloud.dialogflow.cx.v3beta1.ConversationHistory"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v3beta1_generated_ConversationHistory_GetLocation_sync",
+      "title": "dialogflow GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "ConversationHistoryClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.dialogflow.cx.v3beta1.ConversationHistoryClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "ConversationHistoryClient",
+          "fullName": "google.cloud.dialogflow.cx.v3beta1.ConversationHistoryClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v3beta1_generated_ConversationHistory_GetOperation_sync",
+      "title": "dialogflow GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "ConversationHistoryClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.dialogflow.cx.v3beta1.ConversationHistoryClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "ConversationHistoryClient",
+          "fullName": "google.cloud.dialogflow.cx.v3beta1.ConversationHistoryClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v3beta1_generated_ConversationHistory_ListConversations_sync",
+      "title": "dialogflow ListConversations Sample",
+      "description": "ListConversations returns the list of all conversations.",
+      "file": "ConversationHistoryClient/ListConversations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListConversations",
+        "fullName": "google.cloud.dialogflow.cx.v3beta1.ConversationHistoryClient.ListConversations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cxpb.ListConversationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ConversationIterator",
+        "client": {
+          "shortName": "ConversationHistoryClient",
+          "fullName": "google.cloud.dialogflow.cx.v3beta1.ConversationHistoryClient"
+        },
+        "method": {
+          "shortName": "ListConversations",
+          "fullName": "google.cloud.dialogflow.cx.v3beta1.ConversationHistory.ListConversations",
+          "service": {
+            "shortName": "ConversationHistory",
+            "fullName": "google.cloud.dialogflow.cx.v3beta1.ConversationHistory"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v3beta1_generated_ConversationHistory_ListLocations_sync",
+      "title": "dialogflow ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "ConversationHistoryClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.dialogflow.cx.v3beta1.ConversationHistoryClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "ConversationHistoryClient",
+          "fullName": "google.cloud.dialogflow.cx.v3beta1.ConversationHistoryClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v3beta1_generated_ConversationHistory_ListOperations_sync",
+      "title": "dialogflow ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "ConversationHistoryClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.dialogflow.cx.v3beta1.ConversationHistoryClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "ConversationHistoryClient",
+          "fullName": "google.cloud.dialogflow.cx.v3beta1.ConversationHistoryClient"
         },
         "method": {
           "shortName": "ListOperations",

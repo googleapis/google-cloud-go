@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package videointelligence
 
 import (
 	"context"
+	"log/slog"
 	"math"
 	"time"
 
@@ -46,6 +47,7 @@ func defaultStreamingVideoIntelligenceGRPCClientOptions() []option.ClientOption 
 		internaloption.WithDefaultAudience("https://videointelligence.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -133,6 +135,8 @@ type streamingVideoIntelligenceGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewStreamingVideoIntelligenceClient creates a new streaming video intelligence service client based on gRPC.
@@ -159,6 +163,7 @@ func NewStreamingVideoIntelligenceClient(ctx context.Context, opts ...option.Cli
 		connPool:                         connPool,
 		streamingVideoIntelligenceClient: videointelligencepb.NewStreamingVideoIntelligenceServiceClient(connPool),
 		CallOptions:                      &client.CallOptions,
+		logger:                           internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -181,7 +186,9 @@ func (c *streamingVideoIntelligenceGRPCClient) Connection() *grpc.ClientConn {
 func (c *streamingVideoIntelligenceGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -196,7 +203,9 @@ func (c *streamingVideoIntelligenceGRPCClient) StreamingAnnotateVideo(ctx contex
 	opts = append((*c.CallOptions).StreamingAnnotateVideo[0:len((*c.CallOptions).StreamingAnnotateVideo):len((*c.CallOptions).StreamingAnnotateVideo)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "StreamingAnnotateVideo")
 		resp, err = c.streamingVideoIntelligenceClient.StreamingAnnotateVideo(ctx, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "StreamingAnnotateVideo")
 		return err
 	}, opts...)
 	if err != nil {

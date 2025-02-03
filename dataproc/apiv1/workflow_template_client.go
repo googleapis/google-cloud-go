@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -32,7 +32,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -73,6 +72,7 @@ func defaultWorkflowTemplateGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://dataproc.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -499,6 +499,8 @@ type workflowTemplateGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewWorkflowTemplateClient creates a new workflow template service client based on gRPC.
@@ -526,6 +528,7 @@ func NewWorkflowTemplateClient(ctx context.Context, opts ...option.ClientOption)
 		connPool:               connPool,
 		workflowTemplateClient: dataprocpb.NewWorkflowTemplateServiceClient(connPool),
 		CallOptions:            &client.CallOptions,
+		logger:                 internaloption.GetLogger(opts),
 		operationsClient:       longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:        iampb.NewIAMPolicyClient(connPool),
 	}
@@ -561,7 +564,9 @@ func (c *workflowTemplateGRPCClient) Connection() *grpc.ClientConn {
 func (c *workflowTemplateGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -588,6 +593,8 @@ type workflowTemplateRESTClient struct {
 
 	// Points back to the CallOptions field of the containing WorkflowTemplateClient
 	CallOptions **WorkflowTemplateCallOptions
+
+	logger *slog.Logger
 }
 
 // NewWorkflowTemplateRESTClient creates a new workflow template service rest client.
@@ -606,6 +613,7 @@ func NewWorkflowTemplateRESTClient(ctx context.Context, opts ...option.ClientOpt
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -630,6 +638,7 @@ func defaultWorkflowTemplateRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://dataproc.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -639,7 +648,9 @@ func defaultWorkflowTemplateRESTClientOptions() []option.ClientOption {
 func (c *workflowTemplateRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -665,7 +676,7 @@ func (c *workflowTemplateGRPCClient) CreateWorkflowTemplate(ctx context.Context,
 	var resp *dataprocpb.WorkflowTemplate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.workflowTemplateClient.CreateWorkflowTemplate(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.workflowTemplateClient.CreateWorkflowTemplate, req, settings.GRPC, c.logger, "CreateWorkflowTemplate")
 		return err
 	}, opts...)
 	if err != nil {
@@ -683,7 +694,7 @@ func (c *workflowTemplateGRPCClient) GetWorkflowTemplate(ctx context.Context, re
 	var resp *dataprocpb.WorkflowTemplate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.workflowTemplateClient.GetWorkflowTemplate(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.workflowTemplateClient.GetWorkflowTemplate, req, settings.GRPC, c.logger, "GetWorkflowTemplate")
 		return err
 	}, opts...)
 	if err != nil {
@@ -701,7 +712,7 @@ func (c *workflowTemplateGRPCClient) InstantiateWorkflowTemplate(ctx context.Con
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.workflowTemplateClient.InstantiateWorkflowTemplate(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.workflowTemplateClient.InstantiateWorkflowTemplate, req, settings.GRPC, c.logger, "InstantiateWorkflowTemplate")
 		return err
 	}, opts...)
 	if err != nil {
@@ -721,7 +732,7 @@ func (c *workflowTemplateGRPCClient) InstantiateInlineWorkflowTemplate(ctx conte
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.workflowTemplateClient.InstantiateInlineWorkflowTemplate(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.workflowTemplateClient.InstantiateInlineWorkflowTemplate, req, settings.GRPC, c.logger, "InstantiateInlineWorkflowTemplate")
 		return err
 	}, opts...)
 	if err != nil {
@@ -741,7 +752,7 @@ func (c *workflowTemplateGRPCClient) UpdateWorkflowTemplate(ctx context.Context,
 	var resp *dataprocpb.WorkflowTemplate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.workflowTemplateClient.UpdateWorkflowTemplate(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.workflowTemplateClient.UpdateWorkflowTemplate, req, settings.GRPC, c.logger, "UpdateWorkflowTemplate")
 		return err
 	}, opts...)
 	if err != nil {
@@ -770,7 +781,7 @@ func (c *workflowTemplateGRPCClient) ListWorkflowTemplates(ctx context.Context, 
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.workflowTemplateClient.ListWorkflowTemplates(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.workflowTemplateClient.ListWorkflowTemplates, req, settings.GRPC, c.logger, "ListWorkflowTemplates")
 			return err
 		}, opts...)
 		if err != nil {
@@ -804,7 +815,7 @@ func (c *workflowTemplateGRPCClient) DeleteWorkflowTemplate(ctx context.Context,
 	opts = append((*c.CallOptions).DeleteWorkflowTemplate[0:len((*c.CallOptions).DeleteWorkflowTemplate):len((*c.CallOptions).DeleteWorkflowTemplate)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.workflowTemplateClient.DeleteWorkflowTemplate(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.workflowTemplateClient.DeleteWorkflowTemplate, req, settings.GRPC, c.logger, "DeleteWorkflowTemplate")
 		return err
 	}, opts...)
 	return err
@@ -819,7 +830,7 @@ func (c *workflowTemplateGRPCClient) GetIamPolicy(ctx context.Context, req *iamp
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -837,7 +848,7 @@ func (c *workflowTemplateGRPCClient) SetIamPolicy(ctx context.Context, req *iamp
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -855,7 +866,7 @@ func (c *workflowTemplateGRPCClient) TestIamPermissions(ctx context.Context, req
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -872,7 +883,7 @@ func (c *workflowTemplateGRPCClient) CancelOperation(ctx context.Context, req *l
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -886,7 +897,7 @@ func (c *workflowTemplateGRPCClient) DeleteOperation(ctx context.Context, req *l
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -901,7 +912,7 @@ func (c *workflowTemplateGRPCClient) GetOperation(ctx context.Context, req *long
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -930,7 +941,7 @@ func (c *workflowTemplateGRPCClient) ListOperations(ctx context.Context, req *lo
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -996,17 +1007,7 @@ func (c *workflowTemplateRESTClient) CreateWorkflowTemplate(ctx context.Context,
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateWorkflowTemplate")
 		if err != nil {
 			return err
 		}
@@ -1062,17 +1063,7 @@ func (c *workflowTemplateRESTClient) GetWorkflowTemplate(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetWorkflowTemplate")
 		if err != nil {
 			return err
 		}
@@ -1146,21 +1137,10 @@ func (c *workflowTemplateRESTClient) InstantiateWorkflowTemplate(ctx context.Con
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "InstantiateWorkflowTemplate")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1244,21 +1224,10 @@ func (c *workflowTemplateRESTClient) InstantiateInlineWorkflowTemplate(ctx conte
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "InstantiateInlineWorkflowTemplate")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1317,17 +1286,7 @@ func (c *workflowTemplateRESTClient) UpdateWorkflowTemplate(ctx context.Context,
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateWorkflowTemplate")
 		if err != nil {
 			return err
 		}
@@ -1389,21 +1348,10 @@ func (c *workflowTemplateRESTClient) ListWorkflowTemplates(ctx context.Context, 
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListWorkflowTemplates")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1466,15 +1414,8 @@ func (c *workflowTemplateRESTClient) DeleteWorkflowTemplate(ctx context.Context,
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteWorkflowTemplate")
+		return err
 	}, opts...)
 }
 
@@ -1518,17 +1459,7 @@ func (c *workflowTemplateRESTClient) GetIamPolicy(ctx context.Context, req *iamp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -1588,17 +1519,7 @@ func (c *workflowTemplateRESTClient) SetIamPolicy(ctx context.Context, req *iamp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -1660,17 +1581,7 @@ func (c *workflowTemplateRESTClient) TestIamPermissions(ctx context.Context, req
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
 		if err != nil {
 			return err
 		}
@@ -1717,15 +1628,8 @@ func (c *workflowTemplateRESTClient) CancelOperation(ctx context.Context, req *l
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -1759,15 +1663,8 @@ func (c *workflowTemplateRESTClient) DeleteOperation(ctx context.Context, req *l
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOperation")
+		return err
 	}, opts...)
 }
 
@@ -1804,17 +1701,7 @@ func (c *workflowTemplateRESTClient) GetOperation(ctx context.Context, req *long
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -1879,21 +1766,10 @@ func (c *workflowTemplateRESTClient) ListOperations(ctx context.Context, req *lo
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

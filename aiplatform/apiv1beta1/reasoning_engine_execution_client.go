@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,8 +19,9 @@ package aiplatform
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -29,14 +30,15 @@ import (
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
+	httpbodypb "google.golang.org/genproto/googleapis/api/httpbody"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -45,17 +47,18 @@ var newReasoningEngineExecutionClientHook clientHook
 
 // ReasoningEngineExecutionCallOptions contains the retry settings for each method of ReasoningEngineExecutionClient.
 type ReasoningEngineExecutionCallOptions struct {
-	QueryReasoningEngine []gax.CallOption
-	GetLocation          []gax.CallOption
-	ListLocations        []gax.CallOption
-	GetIamPolicy         []gax.CallOption
-	SetIamPolicy         []gax.CallOption
-	TestIamPermissions   []gax.CallOption
-	CancelOperation      []gax.CallOption
-	DeleteOperation      []gax.CallOption
-	GetOperation         []gax.CallOption
-	ListOperations       []gax.CallOption
-	WaitOperation        []gax.CallOption
+	QueryReasoningEngine       []gax.CallOption
+	StreamQueryReasoningEngine []gax.CallOption
+	GetLocation                []gax.CallOption
+	ListLocations              []gax.CallOption
+	GetIamPolicy               []gax.CallOption
+	SetIamPolicy               []gax.CallOption
+	TestIamPermissions         []gax.CallOption
+	CancelOperation            []gax.CallOption
+	DeleteOperation            []gax.CallOption
+	GetOperation               []gax.CallOption
+	ListOperations             []gax.CallOption
+	WaitOperation              []gax.CallOption
 }
 
 func defaultReasoningEngineExecutionGRPCClientOptions() []option.ClientOption {
@@ -67,6 +70,7 @@ func defaultReasoningEngineExecutionGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -74,33 +78,35 @@ func defaultReasoningEngineExecutionGRPCClientOptions() []option.ClientOption {
 
 func defaultReasoningEngineExecutionCallOptions() *ReasoningEngineExecutionCallOptions {
 	return &ReasoningEngineExecutionCallOptions{
-		QueryReasoningEngine: []gax.CallOption{},
-		GetLocation:          []gax.CallOption{},
-		ListLocations:        []gax.CallOption{},
-		GetIamPolicy:         []gax.CallOption{},
-		SetIamPolicy:         []gax.CallOption{},
-		TestIamPermissions:   []gax.CallOption{},
-		CancelOperation:      []gax.CallOption{},
-		DeleteOperation:      []gax.CallOption{},
-		GetOperation:         []gax.CallOption{},
-		ListOperations:       []gax.CallOption{},
-		WaitOperation:        []gax.CallOption{},
+		QueryReasoningEngine:       []gax.CallOption{},
+		StreamQueryReasoningEngine: []gax.CallOption{},
+		GetLocation:                []gax.CallOption{},
+		ListLocations:              []gax.CallOption{},
+		GetIamPolicy:               []gax.CallOption{},
+		SetIamPolicy:               []gax.CallOption{},
+		TestIamPermissions:         []gax.CallOption{},
+		CancelOperation:            []gax.CallOption{},
+		DeleteOperation:            []gax.CallOption{},
+		GetOperation:               []gax.CallOption{},
+		ListOperations:             []gax.CallOption{},
+		WaitOperation:              []gax.CallOption{},
 	}
 }
 
 func defaultReasoningEngineExecutionRESTCallOptions() *ReasoningEngineExecutionCallOptions {
 	return &ReasoningEngineExecutionCallOptions{
-		QueryReasoningEngine: []gax.CallOption{},
-		GetLocation:          []gax.CallOption{},
-		ListLocations:        []gax.CallOption{},
-		GetIamPolicy:         []gax.CallOption{},
-		SetIamPolicy:         []gax.CallOption{},
-		TestIamPermissions:   []gax.CallOption{},
-		CancelOperation:      []gax.CallOption{},
-		DeleteOperation:      []gax.CallOption{},
-		GetOperation:         []gax.CallOption{},
-		ListOperations:       []gax.CallOption{},
-		WaitOperation:        []gax.CallOption{},
+		QueryReasoningEngine:       []gax.CallOption{},
+		StreamQueryReasoningEngine: []gax.CallOption{},
+		GetLocation:                []gax.CallOption{},
+		ListLocations:              []gax.CallOption{},
+		GetIamPolicy:               []gax.CallOption{},
+		SetIamPolicy:               []gax.CallOption{},
+		TestIamPermissions:         []gax.CallOption{},
+		CancelOperation:            []gax.CallOption{},
+		DeleteOperation:            []gax.CallOption{},
+		GetOperation:               []gax.CallOption{},
+		ListOperations:             []gax.CallOption{},
+		WaitOperation:              []gax.CallOption{},
 	}
 }
 
@@ -110,6 +116,7 @@ type internalReasoningEngineExecutionClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	QueryReasoningEngine(context.Context, *aiplatformpb.QueryReasoningEngineRequest, ...gax.CallOption) (*aiplatformpb.QueryReasoningEngineResponse, error)
+	StreamQueryReasoningEngine(context.Context, *aiplatformpb.StreamQueryReasoningEngineRequest, ...gax.CallOption) (aiplatformpb.ReasoningEngineExecutionService_StreamQueryReasoningEngineClient, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -160,6 +167,11 @@ func (c *ReasoningEngineExecutionClient) Connection() *grpc.ClientConn {
 // QueryReasoningEngine queries using a reasoning engine.
 func (c *ReasoningEngineExecutionClient) QueryReasoningEngine(ctx context.Context, req *aiplatformpb.QueryReasoningEngineRequest, opts ...gax.CallOption) (*aiplatformpb.QueryReasoningEngineResponse, error) {
 	return c.internalClient.QueryReasoningEngine(ctx, req, opts...)
+}
+
+// StreamQueryReasoningEngine streams queries using a reasoning engine.
+func (c *ReasoningEngineExecutionClient) StreamQueryReasoningEngine(ctx context.Context, req *aiplatformpb.StreamQueryReasoningEngineRequest, opts ...gax.CallOption) (aiplatformpb.ReasoningEngineExecutionService_StreamQueryReasoningEngineClient, error) {
+	return c.internalClient.StreamQueryReasoningEngine(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -244,6 +256,8 @@ type reasoningEngineExecutionGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewReasoningEngineExecutionClient creates a new reasoning engine execution service client based on gRPC.
@@ -270,6 +284,7 @@ func NewReasoningEngineExecutionClient(ctx context.Context, opts ...option.Clien
 		connPool:                       connPool,
 		reasoningEngineExecutionClient: aiplatformpb.NewReasoningEngineExecutionServiceClient(connPool),
 		CallOptions:                    &client.CallOptions,
+		logger:                         internaloption.GetLogger(opts),
 		operationsClient:               longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:                iampb.NewIAMPolicyClient(connPool),
 		locationsClient:                locationpb.NewLocationsClient(connPool),
@@ -295,7 +310,9 @@ func (c *reasoningEngineExecutionGRPCClient) Connection() *grpc.ClientConn {
 func (c *reasoningEngineExecutionGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -317,6 +334,8 @@ type reasoningEngineExecutionRESTClient struct {
 
 	// Points back to the CallOptions field of the containing ReasoningEngineExecutionClient
 	CallOptions **ReasoningEngineExecutionCallOptions
+
+	logger *slog.Logger
 }
 
 // NewReasoningEngineExecutionRESTClient creates a new reasoning engine execution service rest client.
@@ -334,6 +353,7 @@ func NewReasoningEngineExecutionRESTClient(ctx context.Context, opts ...option.C
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -348,6 +368,7 @@ func defaultReasoningEngineExecutionRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -357,7 +378,9 @@ func defaultReasoningEngineExecutionRESTClientOptions() []option.ClientOption {
 func (c *reasoningEngineExecutionRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -383,7 +406,27 @@ func (c *reasoningEngineExecutionGRPCClient) QueryReasoningEngine(ctx context.Co
 	var resp *aiplatformpb.QueryReasoningEngineResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.reasoningEngineExecutionClient.QueryReasoningEngine(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.reasoningEngineExecutionClient.QueryReasoningEngine, req, settings.GRPC, c.logger, "QueryReasoningEngine")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *reasoningEngineExecutionGRPCClient) StreamQueryReasoningEngine(ctx context.Context, req *aiplatformpb.StreamQueryReasoningEngineRequest, opts ...gax.CallOption) (aiplatformpb.ReasoningEngineExecutionService_StreamQueryReasoningEngineClient, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).StreamQueryReasoningEngine[0:len((*c.CallOptions).StreamQueryReasoningEngine):len((*c.CallOptions).StreamQueryReasoningEngine)], opts...)
+	var resp aiplatformpb.ReasoningEngineExecutionService_StreamQueryReasoningEngineClient
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "StreamQueryReasoningEngine")
+		resp, err = c.reasoningEngineExecutionClient.StreamQueryReasoningEngine(ctx, req, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "StreamQueryReasoningEngine")
 		return err
 	}, opts...)
 	if err != nil {
@@ -401,7 +444,7 @@ func (c *reasoningEngineExecutionGRPCClient) GetLocation(ctx context.Context, re
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -430,7 +473,7 @@ func (c *reasoningEngineExecutionGRPCClient) ListLocations(ctx context.Context, 
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -465,7 +508,7 @@ func (c *reasoningEngineExecutionGRPCClient) GetIamPolicy(ctx context.Context, r
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -483,7 +526,7 @@ func (c *reasoningEngineExecutionGRPCClient) SetIamPolicy(ctx context.Context, r
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -501,7 +544,7 @@ func (c *reasoningEngineExecutionGRPCClient) TestIamPermissions(ctx context.Cont
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -518,7 +561,7 @@ func (c *reasoningEngineExecutionGRPCClient) CancelOperation(ctx context.Context
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -532,7 +575,7 @@ func (c *reasoningEngineExecutionGRPCClient) DeleteOperation(ctx context.Context
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -547,7 +590,7 @@ func (c *reasoningEngineExecutionGRPCClient) GetOperation(ctx context.Context, r
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -576,7 +619,7 @@ func (c *reasoningEngineExecutionGRPCClient) ListOperations(ctx context.Context,
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -611,7 +654,7 @@ func (c *reasoningEngineExecutionGRPCClient) WaitOperation(ctx context.Context, 
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.WaitOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.WaitOperation, req, settings.GRPC, c.logger, "WaitOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -634,6 +677,11 @@ func (c *reasoningEngineExecutionRESTClient) QueryReasoningEngine(ctx context.Co
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:query", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -654,17 +702,7 @@ func (c *reasoningEngineExecutionRESTClient) QueryReasoningEngine(ctx context.Co
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "QueryReasoningEngine")
 		if err != nil {
 			return err
 		}
@@ -681,6 +719,108 @@ func (c *reasoningEngineExecutionRESTClient) QueryReasoningEngine(ctx context.Co
 	return resp, nil
 }
 
+// StreamQueryReasoningEngine streams queries using a reasoning engine.
+func (c *reasoningEngineExecutionRESTClient) StreamQueryReasoningEngine(ctx context.Context, req *aiplatformpb.StreamQueryReasoningEngineRequest, opts ...gax.CallOption) (aiplatformpb.ReasoningEngineExecutionService_StreamQueryReasoningEngineClient, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:streamQuery", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	var streamClient *streamQueryReasoningEngineRESTClient
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := executeStreamingHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "StreamQueryReasoningEngine")
+		if err != nil {
+			return err
+		}
+
+		streamClient = &streamQueryReasoningEngineRESTClient{
+			ctx:    ctx,
+			md:     metadata.MD(httpRsp.Header),
+			stream: gax.NewProtoJSONStreamReader(httpRsp.Body, (&httpbodypb.HttpBody{}).ProtoReflect().Type()),
+		}
+		return nil
+	}, opts...)
+
+	return streamClient, e
+}
+
+// streamQueryReasoningEngineRESTClient is the stream client used to consume the server stream created by
+// the REST implementation of StreamQueryReasoningEngine.
+type streamQueryReasoningEngineRESTClient struct {
+	ctx    context.Context
+	md     metadata.MD
+	stream *gax.ProtoJSONStream
+}
+
+func (c *streamQueryReasoningEngineRESTClient) Recv() (*httpbodypb.HttpBody, error) {
+	if err := c.ctx.Err(); err != nil {
+		defer c.stream.Close()
+		return nil, err
+	}
+	msg, err := c.stream.Recv()
+	if err != nil {
+		defer c.stream.Close()
+		return nil, err
+	}
+	res := msg.(*httpbodypb.HttpBody)
+	return res, nil
+}
+
+func (c *streamQueryReasoningEngineRESTClient) Header() (metadata.MD, error) {
+	return c.md, nil
+}
+
+func (c *streamQueryReasoningEngineRESTClient) Trailer() metadata.MD {
+	return c.md
+}
+
+func (c *streamQueryReasoningEngineRESTClient) CloseSend() error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented for a server-stream")
+}
+
+func (c *streamQueryReasoningEngineRESTClient) Context() context.Context {
+	return c.ctx
+}
+
+func (c *streamQueryReasoningEngineRESTClient) SendMsg(m interface{}) error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented for a server-stream")
+}
+
+func (c *streamQueryReasoningEngineRESTClient) RecvMsg(m interface{}) error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented, use Recv")
+}
+
 // GetLocation gets information about a location.
 func (c *reasoningEngineExecutionRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -688,6 +828,11 @@ func (c *reasoningEngineExecutionRESTClient) GetLocation(ctx context.Context, re
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -709,17 +854,7 @@ func (c *reasoningEngineExecutionRESTClient) GetLocation(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -758,6 +893,7 @@ func (c *reasoningEngineExecutionRESTClient) ListLocations(ctx context.Context, 
 		baseUrl.Path += fmt.Sprintf("/ui/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -783,21 +919,10 @@ func (c *reasoningEngineExecutionRESTClient) ListLocations(ctx context.Context, 
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -842,6 +967,11 @@ func (c *reasoningEngineExecutionRESTClient) GetIamPolicy(ctx context.Context, r
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:getIamPolicy", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -862,17 +992,7 @@ func (c *reasoningEngineExecutionRESTClient) GetIamPolicy(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -907,6 +1027,11 @@ func (c *reasoningEngineExecutionRESTClient) SetIamPolicy(ctx context.Context, r
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:setIamPolicy", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -927,17 +1052,7 @@ func (c *reasoningEngineExecutionRESTClient) SetIamPolicy(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -974,6 +1089,11 @@ func (c *reasoningEngineExecutionRESTClient) TestIamPermissions(ctx context.Cont
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:testIamPermissions", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -994,17 +1114,7 @@ func (c *reasoningEngineExecutionRESTClient) TestIamPermissions(ctx context.Cont
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
 		if err != nil {
 			return err
 		}
@@ -1029,6 +1139,11 @@ func (c *reasoningEngineExecutionRESTClient) CancelOperation(ctx context.Context
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v:cancel", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1046,15 +1161,8 @@ func (c *reasoningEngineExecutionRESTClient) CancelOperation(ctx context.Context
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -1065,6 +1173,11 @@ func (c *reasoningEngineExecutionRESTClient) DeleteOperation(ctx context.Context
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -1083,15 +1196,8 @@ func (c *reasoningEngineExecutionRESTClient) DeleteOperation(ctx context.Context
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOperation")
+		return err
 	}, opts...)
 }
 
@@ -1102,6 +1208,11 @@ func (c *reasoningEngineExecutionRESTClient) GetOperation(ctx context.Context, r
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -1123,17 +1234,7 @@ func (c *reasoningEngineExecutionRESTClient) GetOperation(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -1172,6 +1273,7 @@ func (c *reasoningEngineExecutionRESTClient) ListOperations(ctx context.Context,
 		baseUrl.Path += fmt.Sprintf("/ui/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1197,21 +1299,10 @@ func (c *reasoningEngineExecutionRESTClient) ListOperations(ctx context.Context,
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1250,12 +1341,13 @@ func (c *reasoningEngineExecutionRESTClient) WaitOperation(ctx context.Context, 
 	baseUrl.Path += fmt.Sprintf("/ui/%v:wait", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetTimeout() != nil {
-		timeout, err := protojson.Marshal(req.GetTimeout())
+		field, err := protojson.Marshal(req.GetTimeout())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("timeout", string(timeout[1:len(timeout)-1]))
+		params.Add("timeout", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1280,17 +1372,7 @@ func (c *reasoningEngineExecutionRESTClient) WaitOperation(ctx context.Context, 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "WaitOperation")
 		if err != nil {
 			return err
 		}

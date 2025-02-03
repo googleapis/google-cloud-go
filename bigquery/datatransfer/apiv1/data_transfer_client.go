@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	datatransferpb "cloud.google.com/go/bigquery/datatransfer/apiv1/datatransferpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -74,6 +73,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://bigquerydatatransfer.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -558,6 +558,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new data transfer service client based on gRPC.
@@ -584,6 +586,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:        connPool,
 		client:          datatransferpb.NewDataTransferServiceClient(connPool),
 		CallOptions:     &client.CallOptions,
+		logger:          internaloption.GetLogger(opts),
 		locationsClient: locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -607,7 +610,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -629,6 +634,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new data transfer service rest client.
@@ -646,6 +653,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -660,6 +668,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://bigquerydatatransfer.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -669,7 +678,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -695,7 +706,7 @@ func (c *gRPCClient) GetDataSource(ctx context.Context, req *datatransferpb.GetD
 	var resp *datatransferpb.DataSource
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetDataSource(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetDataSource, req, settings.GRPC, c.logger, "GetDataSource")
 		return err
 	}, opts...)
 	if err != nil {
@@ -724,7 +735,7 @@ func (c *gRPCClient) ListDataSources(ctx context.Context, req *datatransferpb.Li
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListDataSources(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListDataSources, req, settings.GRPC, c.logger, "ListDataSources")
 			return err
 		}, opts...)
 		if err != nil {
@@ -759,7 +770,7 @@ func (c *gRPCClient) CreateTransferConfig(ctx context.Context, req *datatransfer
 	var resp *datatransferpb.TransferConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateTransferConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateTransferConfig, req, settings.GRPC, c.logger, "CreateTransferConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -777,7 +788,7 @@ func (c *gRPCClient) UpdateTransferConfig(ctx context.Context, req *datatransfer
 	var resp *datatransferpb.TransferConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateTransferConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateTransferConfig, req, settings.GRPC, c.logger, "UpdateTransferConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -794,7 +805,7 @@ func (c *gRPCClient) DeleteTransferConfig(ctx context.Context, req *datatransfer
 	opts = append((*c.CallOptions).DeleteTransferConfig[0:len((*c.CallOptions).DeleteTransferConfig):len((*c.CallOptions).DeleteTransferConfig)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteTransferConfig(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteTransferConfig, req, settings.GRPC, c.logger, "DeleteTransferConfig")
 		return err
 	}, opts...)
 	return err
@@ -809,7 +820,7 @@ func (c *gRPCClient) GetTransferConfig(ctx context.Context, req *datatransferpb.
 	var resp *datatransferpb.TransferConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetTransferConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetTransferConfig, req, settings.GRPC, c.logger, "GetTransferConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -838,7 +849,7 @@ func (c *gRPCClient) ListTransferConfigs(ctx context.Context, req *datatransferp
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListTransferConfigs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListTransferConfigs, req, settings.GRPC, c.logger, "ListTransferConfigs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -873,7 +884,7 @@ func (c *gRPCClient) ScheduleTransferRuns(ctx context.Context, req *datatransfer
 	var resp *datatransferpb.ScheduleTransferRunsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ScheduleTransferRuns(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ScheduleTransferRuns, req, settings.GRPC, c.logger, "ScheduleTransferRuns")
 		return err
 	}, opts...)
 	if err != nil {
@@ -891,7 +902,7 @@ func (c *gRPCClient) StartManualTransferRuns(ctx context.Context, req *datatrans
 	var resp *datatransferpb.StartManualTransferRunsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.StartManualTransferRuns(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.StartManualTransferRuns, req, settings.GRPC, c.logger, "StartManualTransferRuns")
 		return err
 	}, opts...)
 	if err != nil {
@@ -909,7 +920,7 @@ func (c *gRPCClient) GetTransferRun(ctx context.Context, req *datatransferpb.Get
 	var resp *datatransferpb.TransferRun
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetTransferRun(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetTransferRun, req, settings.GRPC, c.logger, "GetTransferRun")
 		return err
 	}, opts...)
 	if err != nil {
@@ -926,7 +937,7 @@ func (c *gRPCClient) DeleteTransferRun(ctx context.Context, req *datatransferpb.
 	opts = append((*c.CallOptions).DeleteTransferRun[0:len((*c.CallOptions).DeleteTransferRun):len((*c.CallOptions).DeleteTransferRun)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteTransferRun(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteTransferRun, req, settings.GRPC, c.logger, "DeleteTransferRun")
 		return err
 	}, opts...)
 	return err
@@ -952,7 +963,7 @@ func (c *gRPCClient) ListTransferRuns(ctx context.Context, req *datatransferpb.L
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListTransferRuns(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListTransferRuns, req, settings.GRPC, c.logger, "ListTransferRuns")
 			return err
 		}, opts...)
 		if err != nil {
@@ -998,7 +1009,7 @@ func (c *gRPCClient) ListTransferLogs(ctx context.Context, req *datatransferpb.L
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListTransferLogs(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListTransferLogs, req, settings.GRPC, c.logger, "ListTransferLogs")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1033,7 +1044,7 @@ func (c *gRPCClient) CheckValidCreds(ctx context.Context, req *datatransferpb.Ch
 	var resp *datatransferpb.CheckValidCredsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CheckValidCreds(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CheckValidCreds, req, settings.GRPC, c.logger, "CheckValidCreds")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1050,7 +1061,7 @@ func (c *gRPCClient) EnrollDataSources(ctx context.Context, req *datatransferpb.
 	opts = append((*c.CallOptions).EnrollDataSources[0:len((*c.CallOptions).EnrollDataSources):len((*c.CallOptions).EnrollDataSources)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.EnrollDataSources(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.EnrollDataSources, req, settings.GRPC, c.logger, "EnrollDataSources")
 		return err
 	}, opts...)
 	return err
@@ -1064,7 +1075,7 @@ func (c *gRPCClient) UnenrollDataSources(ctx context.Context, req *datatransferp
 	opts = append((*c.CallOptions).UnenrollDataSources[0:len((*c.CallOptions).UnenrollDataSources):len((*c.CallOptions).UnenrollDataSources)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.UnenrollDataSources(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.UnenrollDataSources, req, settings.GRPC, c.logger, "UnenrollDataSources")
 		return err
 	}, opts...)
 	return err
@@ -1079,7 +1090,7 @@ func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1108,7 +1119,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1167,17 +1178,7 @@ func (c *restClient) GetDataSource(ctx context.Context, req *datatransferpb.GetD
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDataSource")
 		if err != nil {
 			return err
 		}
@@ -1239,21 +1240,10 @@ func (c *restClient) ListDataSources(ctx context.Context, req *datatransferpb.Li
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDataSources")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1332,17 +1322,7 @@ func (c *restClient) CreateTransferConfig(ctx context.Context, req *datatransfer
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateTransferConfig")
 		if err != nil {
 			return err
 		}
@@ -1384,11 +1364,11 @@ func (c *restClient) UpdateTransferConfig(ctx context.Context, req *datatransfer
 		params.Add("serviceAccountName", fmt.Sprintf("%v", req.GetServiceAccountName()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 	if req.GetVersionInfo() != "" {
 		params.Add("versionInfo", fmt.Sprintf("%v", req.GetVersionInfo()))
@@ -1416,17 +1396,7 @@ func (c *restClient) UpdateTransferConfig(ctx context.Context, req *datatransfer
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateTransferConfig")
 		if err != nil {
 			return err
 		}
@@ -1474,15 +1444,8 @@ func (c *restClient) DeleteTransferConfig(ctx context.Context, req *datatransfer
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteTransferConfig")
+		return err
 	}, opts...)
 }
 
@@ -1519,17 +1482,7 @@ func (c *restClient) GetTransferConfig(ctx context.Context, req *datatransferpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetTransferConfig")
 		if err != nil {
 			return err
 		}
@@ -1597,21 +1550,10 @@ func (c *restClient) ListTransferConfigs(ctx context.Context, req *datatransferp
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListTransferConfigs")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1686,17 +1628,7 @@ func (c *restClient) ScheduleTransferRuns(ctx context.Context, req *datatransfer
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ScheduleTransferRuns")
 		if err != nil {
 			return err
 		}
@@ -1755,17 +1687,7 @@ func (c *restClient) StartManualTransferRuns(ctx context.Context, req *datatrans
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "StartManualTransferRuns")
 		if err != nil {
 			return err
 		}
@@ -1815,17 +1737,7 @@ func (c *restClient) GetTransferRun(ctx context.Context, req *datatransferpb.Get
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetTransferRun")
 		if err != nil {
 			return err
 		}
@@ -1872,15 +1784,8 @@ func (c *restClient) DeleteTransferRun(ctx context.Context, req *datatransferpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteTransferRun")
+		return err
 	}, opts...)
 }
 
@@ -1937,21 +1842,10 @@ func (c *restClient) ListTransferRuns(ctx context.Context, req *datatransferpb.L
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListTransferRuns")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2031,21 +1925,10 @@ func (c *restClient) ListTransferLogs(ctx context.Context, req *datatransferpb.L
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListTransferLogs")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2115,17 +1998,7 @@ func (c *restClient) CheckValidCreds(ctx context.Context, req *datatransferpb.Ch
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CheckValidCreds")
 		if err != nil {
 			return err
 		}
@@ -2185,15 +2058,8 @@ func (c *restClient) EnrollDataSources(ctx context.Context, req *datatransferpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "EnrollDataSources")
+		return err
 	}, opts...)
 }
 
@@ -2237,15 +2103,8 @@ func (c *restClient) UnenrollDataSources(ctx context.Context, req *datatransferp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UnenrollDataSources")
+		return err
 	}, opts...)
 }
 
@@ -2282,17 +2141,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -2357,21 +2206,10 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package executions
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 
@@ -51,6 +52,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://workflowexecutions.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -150,6 +152,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new executions client based on gRPC.
@@ -177,6 +181,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      executionspb.NewExecutionsClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -199,7 +204,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -228,7 +235,7 @@ func (c *gRPCClient) ListExecutions(ctx context.Context, req *executionspb.ListE
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListExecutions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListExecutions, req, settings.GRPC, c.logger, "ListExecutions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -263,7 +270,7 @@ func (c *gRPCClient) CreateExecution(ctx context.Context, req *executionspb.Crea
 	var resp *executionspb.Execution
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateExecution(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateExecution, req, settings.GRPC, c.logger, "CreateExecution")
 		return err
 	}, opts...)
 	if err != nil {
@@ -281,7 +288,7 @@ func (c *gRPCClient) GetExecution(ctx context.Context, req *executionspb.GetExec
 	var resp *executionspb.Execution
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetExecution(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetExecution, req, settings.GRPC, c.logger, "GetExecution")
 		return err
 	}, opts...)
 	if err != nil {
@@ -299,7 +306,7 @@ func (c *gRPCClient) CancelExecution(ctx context.Context, req *executionspb.Canc
 	var resp *executionspb.Execution
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CancelExecution(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CancelExecution, req, settings.GRPC, c.logger, "CancelExecution")
 		return err
 	}, opts...)
 	if err != nil {

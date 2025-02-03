@@ -1,0 +1,381 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/shopping/merchant/reviews/apiv1beta",
+    "version": "0.16.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.shopping.merchant.reviews.v1beta",
+        "version": "v1beta"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "merchantapi_v1beta_generated_MerchantReviewsService_DeleteMerchantReview_sync",
+      "title": "merchantapi DeleteMerchantReview Sample",
+      "description": "DeleteMerchantReview deletes merchant review.",
+      "file": "MerchantReviewsClient/DeleteMerchantReview/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteMerchantReview",
+        "fullName": "google.shopping.merchant.reviews.v1beta.MerchantReviewsClient.DeleteMerchantReview",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "reviewspb.DeleteMerchantReviewRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "MerchantReviewsClient",
+          "fullName": "google.shopping.merchant.reviews.v1beta.MerchantReviewsClient"
+        },
+        "method": {
+          "shortName": "DeleteMerchantReview",
+          "fullName": "google.shopping.merchant.reviews.v1beta.MerchantReviewsService.DeleteMerchantReview",
+          "service": {
+            "shortName": "MerchantReviewsService",
+            "fullName": "google.shopping.merchant.reviews.v1beta.MerchantReviewsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_MerchantReviewsService_GetMerchantReview_sync",
+      "title": "merchantapi GetMerchantReview Sample",
+      "description": "GetMerchantReview gets a merchant review.",
+      "file": "MerchantReviewsClient/GetMerchantReview/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetMerchantReview",
+        "fullName": "google.shopping.merchant.reviews.v1beta.MerchantReviewsClient.GetMerchantReview",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "reviewspb.GetMerchantReviewRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*reviewspb.MerchantReview",
+        "client": {
+          "shortName": "MerchantReviewsClient",
+          "fullName": "google.shopping.merchant.reviews.v1beta.MerchantReviewsClient"
+        },
+        "method": {
+          "shortName": "GetMerchantReview",
+          "fullName": "google.shopping.merchant.reviews.v1beta.MerchantReviewsService.GetMerchantReview",
+          "service": {
+            "shortName": "MerchantReviewsService",
+            "fullName": "google.shopping.merchant.reviews.v1beta.MerchantReviewsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_MerchantReviewsService_InsertMerchantReview_sync",
+      "title": "merchantapi InsertMerchantReview Sample",
+      "description": "InsertMerchantReview inserts a review for your Merchant Center account. If the review\nalready exists, then the review is replaced with the new instance.",
+      "file": "MerchantReviewsClient/InsertMerchantReview/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "InsertMerchantReview",
+        "fullName": "google.shopping.merchant.reviews.v1beta.MerchantReviewsClient.InsertMerchantReview",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "reviewspb.InsertMerchantReviewRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*reviewspb.MerchantReview",
+        "client": {
+          "shortName": "MerchantReviewsClient",
+          "fullName": "google.shopping.merchant.reviews.v1beta.MerchantReviewsClient"
+        },
+        "method": {
+          "shortName": "InsertMerchantReview",
+          "fullName": "google.shopping.merchant.reviews.v1beta.MerchantReviewsService.InsertMerchantReview",
+          "service": {
+            "shortName": "MerchantReviewsService",
+            "fullName": "google.shopping.merchant.reviews.v1beta.MerchantReviewsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_MerchantReviewsService_ListMerchantReviews_sync",
+      "title": "merchantapi ListMerchantReviews Sample",
+      "description": "ListMerchantReviews lists merchant reviews.",
+      "file": "MerchantReviewsClient/ListMerchantReviews/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListMerchantReviews",
+        "fullName": "google.shopping.merchant.reviews.v1beta.MerchantReviewsClient.ListMerchantReviews",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "reviewspb.ListMerchantReviewsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "MerchantReviewIterator",
+        "client": {
+          "shortName": "MerchantReviewsClient",
+          "fullName": "google.shopping.merchant.reviews.v1beta.MerchantReviewsClient"
+        },
+        "method": {
+          "shortName": "ListMerchantReviews",
+          "fullName": "google.shopping.merchant.reviews.v1beta.MerchantReviewsService.ListMerchantReviews",
+          "service": {
+            "shortName": "MerchantReviewsService",
+            "fullName": "google.shopping.merchant.reviews.v1beta.MerchantReviewsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_ProductReviewsService_DeleteProductReview_sync",
+      "title": "merchantapi DeleteProductReview Sample",
+      "description": "DeleteProductReview deletes a product review.",
+      "file": "ProductReviewsClient/DeleteProductReview/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteProductReview",
+        "fullName": "google.shopping.merchant.reviews.v1beta.ProductReviewsClient.DeleteProductReview",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "reviewspb.DeleteProductReviewRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ProductReviewsClient",
+          "fullName": "google.shopping.merchant.reviews.v1beta.ProductReviewsClient"
+        },
+        "method": {
+          "shortName": "DeleteProductReview",
+          "fullName": "google.shopping.merchant.reviews.v1beta.ProductReviewsService.DeleteProductReview",
+          "service": {
+            "shortName": "ProductReviewsService",
+            "fullName": "google.shopping.merchant.reviews.v1beta.ProductReviewsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_ProductReviewsService_GetProductReview_sync",
+      "title": "merchantapi GetProductReview Sample",
+      "description": "GetProductReview gets a product review.",
+      "file": "ProductReviewsClient/GetProductReview/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetProductReview",
+        "fullName": "google.shopping.merchant.reviews.v1beta.ProductReviewsClient.GetProductReview",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "reviewspb.GetProductReviewRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*reviewspb.ProductReview",
+        "client": {
+          "shortName": "ProductReviewsClient",
+          "fullName": "google.shopping.merchant.reviews.v1beta.ProductReviewsClient"
+        },
+        "method": {
+          "shortName": "GetProductReview",
+          "fullName": "google.shopping.merchant.reviews.v1beta.ProductReviewsService.GetProductReview",
+          "service": {
+            "shortName": "ProductReviewsService",
+            "fullName": "google.shopping.merchant.reviews.v1beta.ProductReviewsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_ProductReviewsService_InsertProductReview_sync",
+      "title": "merchantapi InsertProductReview Sample",
+      "description": "InsertProductReview inserts a product review.",
+      "file": "ProductReviewsClient/InsertProductReview/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "InsertProductReview",
+        "fullName": "google.shopping.merchant.reviews.v1beta.ProductReviewsClient.InsertProductReview",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "reviewspb.InsertProductReviewRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*reviewspb.ProductReview",
+        "client": {
+          "shortName": "ProductReviewsClient",
+          "fullName": "google.shopping.merchant.reviews.v1beta.ProductReviewsClient"
+        },
+        "method": {
+          "shortName": "InsertProductReview",
+          "fullName": "google.shopping.merchant.reviews.v1beta.ProductReviewsService.InsertProductReview",
+          "service": {
+            "shortName": "ProductReviewsService",
+            "fullName": "google.shopping.merchant.reviews.v1beta.ProductReviewsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_ProductReviewsService_ListProductReviews_sync",
+      "title": "merchantapi ListProductReviews Sample",
+      "description": "ListProductReviews lists product reviews.",
+      "file": "ProductReviewsClient/ListProductReviews/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListProductReviews",
+        "fullName": "google.shopping.merchant.reviews.v1beta.ProductReviewsClient.ListProductReviews",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "reviewspb.ListProductReviewsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ProductReviewIterator",
+        "client": {
+          "shortName": "ProductReviewsClient",
+          "fullName": "google.shopping.merchant.reviews.v1beta.ProductReviewsClient"
+        },
+        "method": {
+          "shortName": "ListProductReviews",
+          "fullName": "google.shopping.merchant.reviews.v1beta.ProductReviewsService.ListProductReviews",
+          "service": {
+            "shortName": "ProductReviewsService",
+            "fullName": "google.shopping.merchant.reviews.v1beta.ProductReviewsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

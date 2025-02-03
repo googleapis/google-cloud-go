@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	cloudprofilerpb "cloud.google.com/go/cloudprofiler/apiv2/cloudprofilerpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -55,6 +54,7 @@ func defaultProfilerGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://cloudprofiler.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -199,6 +199,8 @@ type profilerGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewProfilerClient creates a new profiler service client based on gRPC.
@@ -229,6 +231,7 @@ func NewProfilerClient(ctx context.Context, opts ...option.ClientOption) (*Profi
 		connPool:       connPool,
 		profilerClient: cloudprofilerpb.NewProfilerServiceClient(connPool),
 		CallOptions:    &client.CallOptions,
+		logger:         internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -251,7 +254,9 @@ func (c *profilerGRPCClient) Connection() *grpc.ClientConn {
 func (c *profilerGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -273,6 +278,8 @@ type profilerRESTClient struct {
 
 	// Points back to the CallOptions field of the containing ProfilerClient
 	CallOptions **ProfilerCallOptions
+
+	logger *slog.Logger
 }
 
 // NewProfilerRESTClient creates a new profiler service rest client.
@@ -294,6 +301,7 @@ func NewProfilerRESTClient(ctx context.Context, opts ...option.ClientOption) (*P
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -308,6 +316,7 @@ func defaultProfilerRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudprofiler.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -317,7 +326,9 @@ func defaultProfilerRESTClientOptions() []option.ClientOption {
 func (c *profilerRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -343,7 +354,7 @@ func (c *profilerGRPCClient) CreateProfile(ctx context.Context, req *cloudprofil
 	var resp *cloudprofilerpb.Profile
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.profilerClient.CreateProfile(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.profilerClient.CreateProfile, req, settings.GRPC, c.logger, "CreateProfile")
 		return err
 	}, opts...)
 	if err != nil {
@@ -361,7 +372,7 @@ func (c *profilerGRPCClient) CreateOfflineProfile(ctx context.Context, req *clou
 	var resp *cloudprofilerpb.Profile
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.profilerClient.CreateOfflineProfile(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.profilerClient.CreateOfflineProfile, req, settings.GRPC, c.logger, "CreateOfflineProfile")
 		return err
 	}, opts...)
 	if err != nil {
@@ -379,7 +390,7 @@ func (c *profilerGRPCClient) UpdateProfile(ctx context.Context, req *cloudprofil
 	var resp *cloudprofilerpb.Profile
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.profilerClient.UpdateProfile(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.profilerClient.UpdateProfile, req, settings.GRPC, c.logger, "UpdateProfile")
 		return err
 	}, opts...)
 	if err != nil {
@@ -444,17 +455,7 @@ func (c *profilerRESTClient) CreateProfile(ctx context.Context, req *cloudprofil
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateProfile")
 		if err != nil {
 			return err
 		}
@@ -518,17 +519,7 @@ func (c *profilerRESTClient) CreateOfflineProfile(ctx context.Context, req *clou
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateOfflineProfile")
 		if err != nil {
 			return err
 		}
@@ -571,11 +562,11 @@ func (c *profilerRESTClient) UpdateProfile(ctx context.Context, req *cloudprofil
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -600,17 +591,7 @@ func (c *profilerRESTClient) UpdateProfile(ctx context.Context, req *cloudprofil
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateProfile")
 		if err != nil {
 			return err
 		}

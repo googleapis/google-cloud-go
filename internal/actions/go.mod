@@ -1,5 +1,5 @@
 module cloud.google.com/go/internal/actions
 
-go 1.19
+go 1.22.0
 
-require golang.org/x/mod v0.17.0
+require golang.org/x/mod v0.22.0

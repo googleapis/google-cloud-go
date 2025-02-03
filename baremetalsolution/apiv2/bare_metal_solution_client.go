@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -104,6 +103,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://baremetalsolution.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -867,6 +867,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new bare metal solution client based on gRPC.
@@ -900,6 +902,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:        connPool,
 		client:          baremetalsolutionpb.NewBareMetalSolutionClient(connPool),
 		CallOptions:     &client.CallOptions,
+		logger:          internaloption.GetLogger(opts),
 		locationsClient: locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -934,7 +937,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -961,6 +966,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new bare metal solution rest client.
@@ -985,6 +992,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -1009,6 +1017,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://baremetalsolution.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -1018,7 +1027,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1055,7 +1066,7 @@ func (c *gRPCClient) ListInstances(ctx context.Context, req *baremetalsolutionpb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListInstances(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListInstances, req, settings.GRPC, c.logger, "ListInstances")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1090,7 +1101,7 @@ func (c *gRPCClient) GetInstance(ctx context.Context, req *baremetalsolutionpb.G
 	var resp *baremetalsolutionpb.Instance
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetInstance(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetInstance, req, settings.GRPC, c.logger, "GetInstance")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1108,7 +1119,7 @@ func (c *gRPCClient) UpdateInstance(ctx context.Context, req *baremetalsolutionp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateInstance(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateInstance, req, settings.GRPC, c.logger, "UpdateInstance")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1128,7 +1139,7 @@ func (c *gRPCClient) RenameInstance(ctx context.Context, req *baremetalsolutionp
 	var resp *baremetalsolutionpb.Instance
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.RenameInstance(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.RenameInstance, req, settings.GRPC, c.logger, "RenameInstance")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1146,7 +1157,7 @@ func (c *gRPCClient) ResetInstance(ctx context.Context, req *baremetalsolutionpb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ResetInstance(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ResetInstance, req, settings.GRPC, c.logger, "ResetInstance")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1166,7 +1177,7 @@ func (c *gRPCClient) StartInstance(ctx context.Context, req *baremetalsolutionpb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.StartInstance(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.StartInstance, req, settings.GRPC, c.logger, "StartInstance")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1186,7 +1197,7 @@ func (c *gRPCClient) StopInstance(ctx context.Context, req *baremetalsolutionpb.
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.StopInstance(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.StopInstance, req, settings.GRPC, c.logger, "StopInstance")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1206,7 +1217,7 @@ func (c *gRPCClient) EnableInteractiveSerialConsole(ctx context.Context, req *ba
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.EnableInteractiveSerialConsole(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.EnableInteractiveSerialConsole, req, settings.GRPC, c.logger, "EnableInteractiveSerialConsole")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1226,7 +1237,7 @@ func (c *gRPCClient) DisableInteractiveSerialConsole(ctx context.Context, req *b
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DisableInteractiveSerialConsole(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DisableInteractiveSerialConsole, req, settings.GRPC, c.logger, "DisableInteractiveSerialConsole")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1246,7 +1257,7 @@ func (c *gRPCClient) DetachLun(ctx context.Context, req *baremetalsolutionpb.Det
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DetachLun(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DetachLun, req, settings.GRPC, c.logger, "DetachLun")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1277,7 +1288,7 @@ func (c *gRPCClient) ListSSHKeys(ctx context.Context, req *baremetalsolutionpb.L
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListSSHKeys(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListSSHKeys, req, settings.GRPC, c.logger, "ListSSHKeys")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1312,7 +1323,7 @@ func (c *gRPCClient) CreateSSHKey(ctx context.Context, req *baremetalsolutionpb.
 	var resp *baremetalsolutionpb.SSHKey
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateSSHKey(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateSSHKey, req, settings.GRPC, c.logger, "CreateSSHKey")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1329,7 +1340,7 @@ func (c *gRPCClient) DeleteSSHKey(ctx context.Context, req *baremetalsolutionpb.
 	opts = append((*c.CallOptions).DeleteSSHKey[0:len((*c.CallOptions).DeleteSSHKey):len((*c.CallOptions).DeleteSSHKey)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteSSHKey(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteSSHKey, req, settings.GRPC, c.logger, "DeleteSSHKey")
 		return err
 	}, opts...)
 	return err
@@ -1355,7 +1366,7 @@ func (c *gRPCClient) ListVolumes(ctx context.Context, req *baremetalsolutionpb.L
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListVolumes(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListVolumes, req, settings.GRPC, c.logger, "ListVolumes")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1390,7 +1401,7 @@ func (c *gRPCClient) GetVolume(ctx context.Context, req *baremetalsolutionpb.Get
 	var resp *baremetalsolutionpb.Volume
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetVolume(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetVolume, req, settings.GRPC, c.logger, "GetVolume")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1408,7 +1419,7 @@ func (c *gRPCClient) UpdateVolume(ctx context.Context, req *baremetalsolutionpb.
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateVolume(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateVolume, req, settings.GRPC, c.logger, "UpdateVolume")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1428,7 +1439,7 @@ func (c *gRPCClient) RenameVolume(ctx context.Context, req *baremetalsolutionpb.
 	var resp *baremetalsolutionpb.Volume
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.RenameVolume(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.RenameVolume, req, settings.GRPC, c.logger, "RenameVolume")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1446,7 +1457,7 @@ func (c *gRPCClient) EvictVolume(ctx context.Context, req *baremetalsolutionpb.E
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.EvictVolume(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.EvictVolume, req, settings.GRPC, c.logger, "EvictVolume")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1466,7 +1477,7 @@ func (c *gRPCClient) ResizeVolume(ctx context.Context, req *baremetalsolutionpb.
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ResizeVolume(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ResizeVolume, req, settings.GRPC, c.logger, "ResizeVolume")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1497,7 +1508,7 @@ func (c *gRPCClient) ListNetworks(ctx context.Context, req *baremetalsolutionpb.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListNetworks(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListNetworks, req, settings.GRPC, c.logger, "ListNetworks")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1532,7 +1543,7 @@ func (c *gRPCClient) ListNetworkUsage(ctx context.Context, req *baremetalsolutio
 	var resp *baremetalsolutionpb.ListNetworkUsageResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ListNetworkUsage(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ListNetworkUsage, req, settings.GRPC, c.logger, "ListNetworkUsage")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1550,7 +1561,7 @@ func (c *gRPCClient) GetNetwork(ctx context.Context, req *baremetalsolutionpb.Ge
 	var resp *baremetalsolutionpb.Network
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetNetwork(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetNetwork, req, settings.GRPC, c.logger, "GetNetwork")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1568,7 +1579,7 @@ func (c *gRPCClient) UpdateNetwork(ctx context.Context, req *baremetalsolutionpb
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateNetwork(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateNetwork, req, settings.GRPC, c.logger, "UpdateNetwork")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1588,7 +1599,7 @@ func (c *gRPCClient) CreateVolumeSnapshot(ctx context.Context, req *baremetalsol
 	var resp *baremetalsolutionpb.VolumeSnapshot
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateVolumeSnapshot(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateVolumeSnapshot, req, settings.GRPC, c.logger, "CreateVolumeSnapshot")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1606,7 +1617,7 @@ func (c *gRPCClient) RestoreVolumeSnapshot(ctx context.Context, req *baremetalso
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.RestoreVolumeSnapshot(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.RestoreVolumeSnapshot, req, settings.GRPC, c.logger, "RestoreVolumeSnapshot")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1625,7 +1636,7 @@ func (c *gRPCClient) DeleteVolumeSnapshot(ctx context.Context, req *baremetalsol
 	opts = append((*c.CallOptions).DeleteVolumeSnapshot[0:len((*c.CallOptions).DeleteVolumeSnapshot):len((*c.CallOptions).DeleteVolumeSnapshot)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteVolumeSnapshot(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteVolumeSnapshot, req, settings.GRPC, c.logger, "DeleteVolumeSnapshot")
 		return err
 	}, opts...)
 	return err
@@ -1640,7 +1651,7 @@ func (c *gRPCClient) GetVolumeSnapshot(ctx context.Context, req *baremetalsoluti
 	var resp *baremetalsolutionpb.VolumeSnapshot
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetVolumeSnapshot(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetVolumeSnapshot, req, settings.GRPC, c.logger, "GetVolumeSnapshot")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1669,7 +1680,7 @@ func (c *gRPCClient) ListVolumeSnapshots(ctx context.Context, req *baremetalsolu
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListVolumeSnapshots(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListVolumeSnapshots, req, settings.GRPC, c.logger, "ListVolumeSnapshots")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1704,7 +1715,7 @@ func (c *gRPCClient) GetLun(ctx context.Context, req *baremetalsolutionpb.GetLun
 	var resp *baremetalsolutionpb.Lun
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetLun(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetLun, req, settings.GRPC, c.logger, "GetLun")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1733,7 +1744,7 @@ func (c *gRPCClient) ListLuns(ctx context.Context, req *baremetalsolutionpb.List
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListLuns(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListLuns, req, settings.GRPC, c.logger, "ListLuns")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1768,7 +1779,7 @@ func (c *gRPCClient) EvictLun(ctx context.Context, req *baremetalsolutionpb.Evic
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.EvictLun(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.EvictLun, req, settings.GRPC, c.logger, "EvictLun")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1788,7 +1799,7 @@ func (c *gRPCClient) GetNfsShare(ctx context.Context, req *baremetalsolutionpb.G
 	var resp *baremetalsolutionpb.NfsShare
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetNfsShare(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetNfsShare, req, settings.GRPC, c.logger, "GetNfsShare")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1817,7 +1828,7 @@ func (c *gRPCClient) ListNfsShares(ctx context.Context, req *baremetalsolutionpb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListNfsShares(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListNfsShares, req, settings.GRPC, c.logger, "ListNfsShares")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1852,7 +1863,7 @@ func (c *gRPCClient) UpdateNfsShare(ctx context.Context, req *baremetalsolutionp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateNfsShare(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateNfsShare, req, settings.GRPC, c.logger, "UpdateNfsShare")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1872,7 +1883,7 @@ func (c *gRPCClient) CreateNfsShare(ctx context.Context, req *baremetalsolutionp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateNfsShare(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateNfsShare, req, settings.GRPC, c.logger, "CreateNfsShare")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1892,7 +1903,7 @@ func (c *gRPCClient) RenameNfsShare(ctx context.Context, req *baremetalsolutionp
 	var resp *baremetalsolutionpb.NfsShare
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.RenameNfsShare(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.RenameNfsShare, req, settings.GRPC, c.logger, "RenameNfsShare")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1910,7 +1921,7 @@ func (c *gRPCClient) DeleteNfsShare(ctx context.Context, req *baremetalsolutionp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteNfsShare(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteNfsShare, req, settings.GRPC, c.logger, "DeleteNfsShare")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1941,7 +1952,7 @@ func (c *gRPCClient) ListProvisioningQuotas(ctx context.Context, req *baremetals
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListProvisioningQuotas(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListProvisioningQuotas, req, settings.GRPC, c.logger, "ListProvisioningQuotas")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1976,7 +1987,7 @@ func (c *gRPCClient) SubmitProvisioningConfig(ctx context.Context, req *baremeta
 	var resp *baremetalsolutionpb.SubmitProvisioningConfigResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.SubmitProvisioningConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.SubmitProvisioningConfig, req, settings.GRPC, c.logger, "SubmitProvisioningConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1994,7 +2005,7 @@ func (c *gRPCClient) GetProvisioningConfig(ctx context.Context, req *baremetalso
 	var resp *baremetalsolutionpb.ProvisioningConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetProvisioningConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetProvisioningConfig, req, settings.GRPC, c.logger, "GetProvisioningConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2012,7 +2023,7 @@ func (c *gRPCClient) CreateProvisioningConfig(ctx context.Context, req *baremeta
 	var resp *baremetalsolutionpb.ProvisioningConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateProvisioningConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateProvisioningConfig, req, settings.GRPC, c.logger, "CreateProvisioningConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2030,7 +2041,7 @@ func (c *gRPCClient) UpdateProvisioningConfig(ctx context.Context, req *baremeta
 	var resp *baremetalsolutionpb.ProvisioningConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateProvisioningConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateProvisioningConfig, req, settings.GRPC, c.logger, "UpdateProvisioningConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2048,7 +2059,7 @@ func (c *gRPCClient) RenameNetwork(ctx context.Context, req *baremetalsolutionpb
 	var resp *baremetalsolutionpb.Network
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.RenameNetwork(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.RenameNetwork, req, settings.GRPC, c.logger, "RenameNetwork")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2077,7 +2088,7 @@ func (c *gRPCClient) ListOSImages(ctx context.Context, req *baremetalsolutionpb.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListOSImages(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListOSImages, req, settings.GRPC, c.logger, "ListOSImages")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2112,7 +2123,7 @@ func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2141,7 +2152,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -2215,21 +2226,10 @@ func (c *restClient) ListInstances(ctx context.Context, req *baremetalsolutionpb
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListInstances")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2292,17 +2292,7 @@ func (c *restClient) GetInstance(ctx context.Context, req *baremetalsolutionpb.G
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetInstance")
 		if err != nil {
 			return err
 		}
@@ -2337,11 +2327,11 @@ func (c *restClient) UpdateInstance(ctx context.Context, req *baremetalsolutionp
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2365,21 +2355,10 @@ func (c *restClient) UpdateInstance(ctx context.Context, req *baremetalsolutionp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateInstance")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2437,17 +2416,7 @@ func (c *restClient) RenameInstance(ctx context.Context, req *baremetalsolutionp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RenameInstance")
 		if err != nil {
 			return err
 		}
@@ -2503,21 +2472,10 @@ func (c *restClient) ResetInstance(ctx context.Context, req *baremetalsolutionpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ResetInstance")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2573,21 +2531,10 @@ func (c *restClient) StartInstance(ctx context.Context, req *baremetalsolutionpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "StartInstance")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2643,21 +2590,10 @@ func (c *restClient) StopInstance(ctx context.Context, req *baremetalsolutionpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "StopInstance")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2713,21 +2649,10 @@ func (c *restClient) EnableInteractiveSerialConsole(ctx context.Context, req *ba
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "EnableInteractiveSerialConsole")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2783,21 +2708,10 @@ func (c *restClient) DisableInteractiveSerialConsole(ctx context.Context, req *b
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "DisableInteractiveSerialConsole")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2853,21 +2767,10 @@ func (c *restClient) DetachLun(ctx context.Context, req *baremetalsolutionpb.Det
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "DetachLun")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2931,21 +2834,10 @@ func (c *restClient) ListSSHKeys(ctx context.Context, req *baremetalsolutionpb.L
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSSHKeys")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3017,17 +2909,7 @@ func (c *restClient) CreateSSHKey(ctx context.Context, req *baremetalsolutionpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateSSHKey")
 		if err != nil {
 			return err
 		}
@@ -3074,15 +2956,8 @@ func (c *restClient) DeleteSSHKey(ctx context.Context, req *baremetalsolutionpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteSSHKey")
+		return err
 	}, opts...)
 }
 
@@ -3134,21 +3009,10 @@ func (c *restClient) ListVolumes(ctx context.Context, req *baremetalsolutionpb.L
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListVolumes")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3211,17 +3075,7 @@ func (c *restClient) GetVolume(ctx context.Context, req *baremetalsolutionpb.Get
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetVolume")
 		if err != nil {
 			return err
 		}
@@ -3256,11 +3110,11 @@ func (c *restClient) UpdateVolume(ctx context.Context, req *baremetalsolutionpb.
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3284,21 +3138,10 @@ func (c *restClient) UpdateVolume(ctx context.Context, req *baremetalsolutionpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateVolume")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3356,17 +3199,7 @@ func (c *restClient) RenameVolume(ctx context.Context, req *baremetalsolutionpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RenameVolume")
 		if err != nil {
 			return err
 		}
@@ -3422,21 +3255,10 @@ func (c *restClient) EvictVolume(ctx context.Context, req *baremetalsolutionpb.E
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "EvictVolume")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3492,21 +3314,10 @@ func (c *restClient) ResizeVolume(ctx context.Context, req *baremetalsolutionpb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ResizeVolume")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3572,21 +3383,10 @@ func (c *restClient) ListNetworks(ctx context.Context, req *baremetalsolutionpb.
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListNetworks")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3650,17 +3450,7 @@ func (c *restClient) ListNetworkUsage(ctx context.Context, req *baremetalsolutio
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListNetworkUsage")
 		if err != nil {
 			return err
 		}
@@ -3710,17 +3500,7 @@ func (c *restClient) GetNetwork(ctx context.Context, req *baremetalsolutionpb.Ge
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetNetwork")
 		if err != nil {
 			return err
 		}
@@ -3755,11 +3535,11 @@ func (c *restClient) UpdateNetwork(ctx context.Context, req *baremetalsolutionpb
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3783,21 +3563,10 @@ func (c *restClient) UpdateNetwork(ctx context.Context, req *baremetalsolutionpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateNetwork")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3856,17 +3625,7 @@ func (c *restClient) CreateVolumeSnapshot(ctx context.Context, req *baremetalsol
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateVolumeSnapshot")
 		if err != nil {
 			return err
 		}
@@ -3922,21 +3681,10 @@ func (c *restClient) RestoreVolumeSnapshot(ctx context.Context, req *baremetalso
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RestoreVolumeSnapshot")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3985,15 +3733,8 @@ func (c *restClient) DeleteVolumeSnapshot(ctx context.Context, req *baremetalsol
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteVolumeSnapshot")
+		return err
 	}, opts...)
 }
 
@@ -4031,17 +3772,7 @@ func (c *restClient) GetVolumeSnapshot(ctx context.Context, req *baremetalsoluti
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetVolumeSnapshot")
 		if err != nil {
 			return err
 		}
@@ -4105,21 +3836,10 @@ func (c *restClient) ListVolumeSnapshots(ctx context.Context, req *baremetalsolu
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListVolumeSnapshots")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4182,17 +3902,7 @@ func (c *restClient) GetLun(ctx context.Context, req *baremetalsolutionpb.GetLun
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLun")
 		if err != nil {
 			return err
 		}
@@ -4254,21 +3964,10 @@ func (c *restClient) ListLuns(ctx context.Context, req *baremetalsolutionpb.List
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLuns")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4337,21 +4036,10 @@ func (c *restClient) EvictLun(ctx context.Context, req *baremetalsolutionpb.Evic
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "EvictLun")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4402,17 +4090,7 @@ func (c *restClient) GetNfsShare(ctx context.Context, req *baremetalsolutionpb.G
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetNfsShare")
 		if err != nil {
 			return err
 		}
@@ -4477,21 +4155,10 @@ func (c *restClient) ListNfsShares(ctx context.Context, req *baremetalsolutionpb
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListNfsShares")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4539,11 +4206,11 @@ func (c *restClient) UpdateNfsShare(ctx context.Context, req *baremetalsolutionp
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4567,21 +4234,10 @@ func (c *restClient) UpdateNfsShare(ctx context.Context, req *baremetalsolutionp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateNfsShare")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4638,21 +4294,10 @@ func (c *restClient) CreateNfsShare(ctx context.Context, req *baremetalsolutionp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateNfsShare")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4710,17 +4355,7 @@ func (c *restClient) RenameNfsShare(ctx context.Context, req *baremetalsolutionp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RenameNfsShare")
 		if err != nil {
 			return err
 		}
@@ -4769,21 +4404,10 @@ func (c *restClient) DeleteNfsShare(ctx context.Context, req *baremetalsolutionp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteNfsShare")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -4846,21 +4470,10 @@ func (c *restClient) ListProvisioningQuotas(ctx context.Context, req *baremetals
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListProvisioningQuotas")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4929,17 +4542,7 @@ func (c *restClient) SubmitProvisioningConfig(ctx context.Context, req *baremeta
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SubmitProvisioningConfig")
 		if err != nil {
 			return err
 		}
@@ -4989,17 +4592,7 @@ func (c *restClient) GetProvisioningConfig(ctx context.Context, req *baremetalso
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetProvisioningConfig")
 		if err != nil {
 			return err
 		}
@@ -5059,17 +4652,7 @@ func (c *restClient) CreateProvisioningConfig(ctx context.Context, req *baremeta
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateProvisioningConfig")
 		if err != nil {
 			return err
 		}
@@ -5107,11 +4690,11 @@ func (c *restClient) UpdateProvisioningConfig(ctx context.Context, req *baremeta
 		params.Add("email", fmt.Sprintf("%v", req.GetEmail()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -5136,17 +4719,7 @@ func (c *restClient) UpdateProvisioningConfig(ctx context.Context, req *baremeta
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateProvisioningConfig")
 		if err != nil {
 			return err
 		}
@@ -5203,17 +4776,7 @@ func (c *restClient) RenameNetwork(ctx context.Context, req *baremetalsolutionpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RenameNetwork")
 		if err != nil {
 			return err
 		}
@@ -5275,21 +4838,10 @@ func (c *restClient) ListOSImages(ctx context.Context, req *baremetalsolutionpb.
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOSImages")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -5352,17 +4904,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -5427,21 +4969,10 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

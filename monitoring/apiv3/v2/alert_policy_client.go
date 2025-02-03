@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package monitoring
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 	"time"
@@ -54,6 +55,7 @@ func defaultAlertPolicyGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://monitoring.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -216,6 +218,8 @@ type alertPolicyGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewAlertPolicyClient creates a new alert policy service client based on gRPC.
@@ -250,6 +254,7 @@ func NewAlertPolicyClient(ctx context.Context, opts ...option.ClientOption) (*Al
 		connPool:          connPool,
 		alertPolicyClient: monitoringpb.NewAlertPolicyServiceClient(connPool),
 		CallOptions:       &client.CallOptions,
+		logger:            internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -272,7 +277,9 @@ func (c *alertPolicyGRPCClient) Connection() *grpc.ClientConn {
 func (c *alertPolicyGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -301,7 +308,7 @@ func (c *alertPolicyGRPCClient) ListAlertPolicies(ctx context.Context, req *moni
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.alertPolicyClient.ListAlertPolicies(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.alertPolicyClient.ListAlertPolicies, req, settings.GRPC, c.logger, "ListAlertPolicies")
 			return err
 		}, opts...)
 		if err != nil {
@@ -336,7 +343,7 @@ func (c *alertPolicyGRPCClient) GetAlertPolicy(ctx context.Context, req *monitor
 	var resp *monitoringpb.AlertPolicy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.alertPolicyClient.GetAlertPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.alertPolicyClient.GetAlertPolicy, req, settings.GRPC, c.logger, "GetAlertPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -354,7 +361,7 @@ func (c *alertPolicyGRPCClient) CreateAlertPolicy(ctx context.Context, req *moni
 	var resp *monitoringpb.AlertPolicy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.alertPolicyClient.CreateAlertPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.alertPolicyClient.CreateAlertPolicy, req, settings.GRPC, c.logger, "CreateAlertPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -371,7 +378,7 @@ func (c *alertPolicyGRPCClient) DeleteAlertPolicy(ctx context.Context, req *moni
 	opts = append((*c.CallOptions).DeleteAlertPolicy[0:len((*c.CallOptions).DeleteAlertPolicy):len((*c.CallOptions).DeleteAlertPolicy)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.alertPolicyClient.DeleteAlertPolicy(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.alertPolicyClient.DeleteAlertPolicy, req, settings.GRPC, c.logger, "DeleteAlertPolicy")
 		return err
 	}, opts...)
 	return err
@@ -386,7 +393,7 @@ func (c *alertPolicyGRPCClient) UpdateAlertPolicy(ctx context.Context, req *moni
 	var resp *monitoringpb.AlertPolicy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.alertPolicyClient.UpdateAlertPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.alertPolicyClient.UpdateAlertPolicy, req, settings.GRPC, c.logger, "UpdateAlertPolicy")
 		return err
 	}, opts...)
 	if err != nil {

@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,8 +19,9 @@ package aiplatform
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +32,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -99,6 +99,7 @@ func defaultTensorboardGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -574,6 +575,8 @@ type tensorboardGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewTensorboardClient creates a new tensorboard service client based on gRPC.
@@ -600,6 +603,7 @@ func NewTensorboardClient(ctx context.Context, opts ...option.ClientOption) (*Te
 		connPool:          connPool,
 		tensorboardClient: aiplatformpb.NewTensorboardServiceClient(connPool),
 		CallOptions:       &client.CallOptions,
+		logger:            internaloption.GetLogger(opts),
 		operationsClient:  longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:   iampb.NewIAMPolicyClient(connPool),
 		locationsClient:   locationpb.NewLocationsClient(connPool),
@@ -636,7 +640,9 @@ func (c *tensorboardGRPCClient) Connection() *grpc.ClientConn {
 func (c *tensorboardGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -663,6 +669,8 @@ type tensorboardRESTClient struct {
 
 	// Points back to the CallOptions field of the containing TensorboardClient
 	CallOptions **TensorboardCallOptions
+
+	logger *slog.Logger
 }
 
 // NewTensorboardRESTClient creates a new tensorboard service rest client.
@@ -680,6 +688,7 @@ func NewTensorboardRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -704,6 +713,7 @@ func defaultTensorboardRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -713,7 +723,9 @@ func defaultTensorboardRESTClientOptions() []option.ClientOption {
 func (c *tensorboardRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -739,7 +751,7 @@ func (c *tensorboardGRPCClient) CreateTensorboard(ctx context.Context, req *aipl
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.CreateTensorboard(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.CreateTensorboard, req, settings.GRPC, c.logger, "CreateTensorboard")
 		return err
 	}, opts...)
 	if err != nil {
@@ -759,7 +771,7 @@ func (c *tensorboardGRPCClient) GetTensorboard(ctx context.Context, req *aiplatf
 	var resp *aiplatformpb.Tensorboard
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.GetTensorboard(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.GetTensorboard, req, settings.GRPC, c.logger, "GetTensorboard")
 		return err
 	}, opts...)
 	if err != nil {
@@ -777,7 +789,7 @@ func (c *tensorboardGRPCClient) UpdateTensorboard(ctx context.Context, req *aipl
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.UpdateTensorboard(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.UpdateTensorboard, req, settings.GRPC, c.logger, "UpdateTensorboard")
 		return err
 	}, opts...)
 	if err != nil {
@@ -808,7 +820,7 @@ func (c *tensorboardGRPCClient) ListTensorboards(ctx context.Context, req *aipla
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.tensorboardClient.ListTensorboards(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.tensorboardClient.ListTensorboards, req, settings.GRPC, c.logger, "ListTensorboards")
 			return err
 		}, opts...)
 		if err != nil {
@@ -843,7 +855,7 @@ func (c *tensorboardGRPCClient) DeleteTensorboard(ctx context.Context, req *aipl
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.DeleteTensorboard(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.DeleteTensorboard, req, settings.GRPC, c.logger, "DeleteTensorboard")
 		return err
 	}, opts...)
 	if err != nil {
@@ -863,7 +875,7 @@ func (c *tensorboardGRPCClient) ReadTensorboardUsage(ctx context.Context, req *a
 	var resp *aiplatformpb.ReadTensorboardUsageResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.ReadTensorboardUsage(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.ReadTensorboardUsage, req, settings.GRPC, c.logger, "ReadTensorboardUsage")
 		return err
 	}, opts...)
 	if err != nil {
@@ -881,7 +893,7 @@ func (c *tensorboardGRPCClient) ReadTensorboardSize(ctx context.Context, req *ai
 	var resp *aiplatformpb.ReadTensorboardSizeResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.ReadTensorboardSize(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.ReadTensorboardSize, req, settings.GRPC, c.logger, "ReadTensorboardSize")
 		return err
 	}, opts...)
 	if err != nil {
@@ -899,7 +911,7 @@ func (c *tensorboardGRPCClient) CreateTensorboardExperiment(ctx context.Context,
 	var resp *aiplatformpb.TensorboardExperiment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.CreateTensorboardExperiment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.CreateTensorboardExperiment, req, settings.GRPC, c.logger, "CreateTensorboardExperiment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -917,7 +929,7 @@ func (c *tensorboardGRPCClient) GetTensorboardExperiment(ctx context.Context, re
 	var resp *aiplatformpb.TensorboardExperiment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.GetTensorboardExperiment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.GetTensorboardExperiment, req, settings.GRPC, c.logger, "GetTensorboardExperiment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -935,7 +947,7 @@ func (c *tensorboardGRPCClient) UpdateTensorboardExperiment(ctx context.Context,
 	var resp *aiplatformpb.TensorboardExperiment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.UpdateTensorboardExperiment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.UpdateTensorboardExperiment, req, settings.GRPC, c.logger, "UpdateTensorboardExperiment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -964,7 +976,7 @@ func (c *tensorboardGRPCClient) ListTensorboardExperiments(ctx context.Context, 
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.tensorboardClient.ListTensorboardExperiments(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.tensorboardClient.ListTensorboardExperiments, req, settings.GRPC, c.logger, "ListTensorboardExperiments")
 			return err
 		}, opts...)
 		if err != nil {
@@ -999,7 +1011,7 @@ func (c *tensorboardGRPCClient) DeleteTensorboardExperiment(ctx context.Context,
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.DeleteTensorboardExperiment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.DeleteTensorboardExperiment, req, settings.GRPC, c.logger, "DeleteTensorboardExperiment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1019,7 +1031,7 @@ func (c *tensorboardGRPCClient) CreateTensorboardRun(ctx context.Context, req *a
 	var resp *aiplatformpb.TensorboardRun
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.CreateTensorboardRun(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.CreateTensorboardRun, req, settings.GRPC, c.logger, "CreateTensorboardRun")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1037,7 +1049,7 @@ func (c *tensorboardGRPCClient) BatchCreateTensorboardRuns(ctx context.Context, 
 	var resp *aiplatformpb.BatchCreateTensorboardRunsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.BatchCreateTensorboardRuns(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.BatchCreateTensorboardRuns, req, settings.GRPC, c.logger, "BatchCreateTensorboardRuns")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1055,7 +1067,7 @@ func (c *tensorboardGRPCClient) GetTensorboardRun(ctx context.Context, req *aipl
 	var resp *aiplatformpb.TensorboardRun
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.GetTensorboardRun(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.GetTensorboardRun, req, settings.GRPC, c.logger, "GetTensorboardRun")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1073,7 +1085,7 @@ func (c *tensorboardGRPCClient) UpdateTensorboardRun(ctx context.Context, req *a
 	var resp *aiplatformpb.TensorboardRun
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.UpdateTensorboardRun(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.UpdateTensorboardRun, req, settings.GRPC, c.logger, "UpdateTensorboardRun")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1102,7 +1114,7 @@ func (c *tensorboardGRPCClient) ListTensorboardRuns(ctx context.Context, req *ai
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.tensorboardClient.ListTensorboardRuns(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.tensorboardClient.ListTensorboardRuns, req, settings.GRPC, c.logger, "ListTensorboardRuns")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1137,7 +1149,7 @@ func (c *tensorboardGRPCClient) DeleteTensorboardRun(ctx context.Context, req *a
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.DeleteTensorboardRun(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.DeleteTensorboardRun, req, settings.GRPC, c.logger, "DeleteTensorboardRun")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1157,7 +1169,7 @@ func (c *tensorboardGRPCClient) BatchCreateTensorboardTimeSeries(ctx context.Con
 	var resp *aiplatformpb.BatchCreateTensorboardTimeSeriesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.BatchCreateTensorboardTimeSeries(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.BatchCreateTensorboardTimeSeries, req, settings.GRPC, c.logger, "BatchCreateTensorboardTimeSeries")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1175,7 +1187,7 @@ func (c *tensorboardGRPCClient) CreateTensorboardTimeSeries(ctx context.Context,
 	var resp *aiplatformpb.TensorboardTimeSeries
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.CreateTensorboardTimeSeries(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.CreateTensorboardTimeSeries, req, settings.GRPC, c.logger, "CreateTensorboardTimeSeries")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1193,7 +1205,7 @@ func (c *tensorboardGRPCClient) GetTensorboardTimeSeries(ctx context.Context, re
 	var resp *aiplatformpb.TensorboardTimeSeries
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.GetTensorboardTimeSeries(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.GetTensorboardTimeSeries, req, settings.GRPC, c.logger, "GetTensorboardTimeSeries")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1211,7 +1223,7 @@ func (c *tensorboardGRPCClient) UpdateTensorboardTimeSeries(ctx context.Context,
 	var resp *aiplatformpb.TensorboardTimeSeries
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.UpdateTensorboardTimeSeries(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.UpdateTensorboardTimeSeries, req, settings.GRPC, c.logger, "UpdateTensorboardTimeSeries")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1240,7 +1252,7 @@ func (c *tensorboardGRPCClient) ListTensorboardTimeSeries(ctx context.Context, r
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.tensorboardClient.ListTensorboardTimeSeries(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.tensorboardClient.ListTensorboardTimeSeries, req, settings.GRPC, c.logger, "ListTensorboardTimeSeries")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1275,7 +1287,7 @@ func (c *tensorboardGRPCClient) DeleteTensorboardTimeSeries(ctx context.Context,
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.DeleteTensorboardTimeSeries(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.DeleteTensorboardTimeSeries, req, settings.GRPC, c.logger, "DeleteTensorboardTimeSeries")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1295,7 +1307,7 @@ func (c *tensorboardGRPCClient) BatchReadTensorboardTimeSeriesData(ctx context.C
 	var resp *aiplatformpb.BatchReadTensorboardTimeSeriesDataResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.BatchReadTensorboardTimeSeriesData(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.BatchReadTensorboardTimeSeriesData, req, settings.GRPC, c.logger, "BatchReadTensorboardTimeSeriesData")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1313,7 +1325,7 @@ func (c *tensorboardGRPCClient) ReadTensorboardTimeSeriesData(ctx context.Contex
 	var resp *aiplatformpb.ReadTensorboardTimeSeriesDataResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.ReadTensorboardTimeSeriesData(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.ReadTensorboardTimeSeriesData, req, settings.GRPC, c.logger, "ReadTensorboardTimeSeriesData")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1331,7 +1343,9 @@ func (c *tensorboardGRPCClient) ReadTensorboardBlobData(ctx context.Context, req
 	var resp aiplatformpb.TensorboardService_ReadTensorboardBlobDataClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "ReadTensorboardBlobData")
 		resp, err = c.tensorboardClient.ReadTensorboardBlobData(ctx, req, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "ReadTensorboardBlobData")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1349,7 +1363,7 @@ func (c *tensorboardGRPCClient) WriteTensorboardExperimentData(ctx context.Conte
 	var resp *aiplatformpb.WriteTensorboardExperimentDataResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.WriteTensorboardExperimentData(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.WriteTensorboardExperimentData, req, settings.GRPC, c.logger, "WriteTensorboardExperimentData")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1367,7 +1381,7 @@ func (c *tensorboardGRPCClient) WriteTensorboardRunData(ctx context.Context, req
 	var resp *aiplatformpb.WriteTensorboardRunDataResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.tensorboardClient.WriteTensorboardRunData(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.tensorboardClient.WriteTensorboardRunData, req, settings.GRPC, c.logger, "WriteTensorboardRunData")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1396,7 +1410,7 @@ func (c *tensorboardGRPCClient) ExportTensorboardTimeSeriesData(ctx context.Cont
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.tensorboardClient.ExportTensorboardTimeSeriesData(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.tensorboardClient.ExportTensorboardTimeSeriesData, req, settings.GRPC, c.logger, "ExportTensorboardTimeSeriesData")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1431,7 +1445,7 @@ func (c *tensorboardGRPCClient) GetLocation(ctx context.Context, req *locationpb
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1460,7 +1474,7 @@ func (c *tensorboardGRPCClient) ListLocations(ctx context.Context, req *location
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1495,7 +1509,7 @@ func (c *tensorboardGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.Get
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1513,7 +1527,7 @@ func (c *tensorboardGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.Set
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1531,7 +1545,7 @@ func (c *tensorboardGRPCClient) TestIamPermissions(ctx context.Context, req *iam
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1548,7 +1562,7 @@ func (c *tensorboardGRPCClient) CancelOperation(ctx context.Context, req *longru
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -1562,7 +1576,7 @@ func (c *tensorboardGRPCClient) DeleteOperation(ctx context.Context, req *longru
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -1577,7 +1591,7 @@ func (c *tensorboardGRPCClient) GetOperation(ctx context.Context, req *longrunni
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1606,7 +1620,7 @@ func (c *tensorboardGRPCClient) ListOperations(ctx context.Context, req *longrun
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1641,7 +1655,7 @@ func (c *tensorboardGRPCClient) WaitOperation(ctx context.Context, req *longrunn
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.WaitOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.WaitOperation, req, settings.GRPC, c.logger, "WaitOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1665,6 +1679,11 @@ func (c *tensorboardRESTClient) CreateTensorboard(ctx context.Context, req *aipl
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/tensorboards", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
@@ -1684,21 +1703,10 @@ func (c *tensorboardRESTClient) CreateTensorboard(ctx context.Context, req *aipl
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateTensorboard")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1724,6 +1732,11 @@ func (c *tensorboardRESTClient) GetTensorboard(ctx context.Context, req *aiplatf
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1744,17 +1757,7 @@ func (c *tensorboardRESTClient) GetTensorboard(ctx context.Context, req *aiplatf
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetTensorboard")
 		if err != nil {
 			return err
 		}
@@ -1787,12 +1790,13 @@ func (c *tensorboardRESTClient) UpdateTensorboard(ctx context.Context, req *aipl
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetTensorboard().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1816,21 +1820,10 @@ func (c *tensorboardRESTClient) UpdateTensorboard(ctx context.Context, req *aipl
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateTensorboard")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1870,6 +1863,7 @@ func (c *tensorboardRESTClient) ListTensorboards(ctx context.Context, req *aipla
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/tensorboards", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1883,11 +1877,11 @@ func (c *tensorboardRESTClient) ListTensorboards(ctx context.Context, req *aipla
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
 		if req.GetReadMask() != nil {
-			readMask, err := protojson.Marshal(req.GetReadMask())
+			field, err := protojson.Marshal(req.GetReadMask())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask[1:len(readMask)-1]))
+			params.Add("readMask", string(field[1:len(field)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -1905,21 +1899,10 @@ func (c *tensorboardRESTClient) ListTensorboards(ctx context.Context, req *aipla
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListTensorboards")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1957,6 +1940,11 @@ func (c *tensorboardRESTClient) DeleteTensorboard(ctx context.Context, req *aipl
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1976,21 +1964,10 @@ func (c *tensorboardRESTClient) DeleteTensorboard(ctx context.Context, req *aipl
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteTensorboard")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2016,6 +1993,11 @@ func (c *tensorboardRESTClient) ReadTensorboardUsage(ctx context.Context, req *a
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:readUsage", req.GetTensorboard())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "tensorboard", url.QueryEscape(req.GetTensorboard()))}
 
@@ -2036,17 +2018,7 @@ func (c *tensorboardRESTClient) ReadTensorboardUsage(ctx context.Context, req *a
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ReadTensorboardUsage")
 		if err != nil {
 			return err
 		}
@@ -2071,6 +2043,11 @@ func (c *tensorboardRESTClient) ReadTensorboardSize(ctx context.Context, req *ai
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:readSize", req.GetTensorboard())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "tensorboard", url.QueryEscape(req.GetTensorboard()))}
 
@@ -2091,17 +2068,7 @@ func (c *tensorboardRESTClient) ReadTensorboardSize(ctx context.Context, req *ai
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ReadTensorboardSize")
 		if err != nil {
 			return err
 		}
@@ -2134,6 +2101,7 @@ func (c *tensorboardRESTClient) CreateTensorboardExperiment(ctx context.Context,
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/experiments", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("tensorboardExperimentId", fmt.Sprintf("%v", req.GetTensorboardExperimentId()))
 
 	baseUrl.RawQuery = params.Encode()
@@ -2158,17 +2126,7 @@ func (c *tensorboardRESTClient) CreateTensorboardExperiment(ctx context.Context,
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateTensorboardExperiment")
 		if err != nil {
 			return err
 		}
@@ -2193,6 +2151,11 @@ func (c *tensorboardRESTClient) GetTensorboardExperiment(ctx context.Context, re
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -2213,17 +2176,7 @@ func (c *tensorboardRESTClient) GetTensorboardExperiment(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetTensorboardExperiment")
 		if err != nil {
 			return err
 		}
@@ -2256,12 +2209,13 @@ func (c *tensorboardRESTClient) UpdateTensorboardExperiment(ctx context.Context,
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetTensorboardExperiment().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2286,17 +2240,7 @@ func (c *tensorboardRESTClient) UpdateTensorboardExperiment(ctx context.Context,
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateTensorboardExperiment")
 		if err != nil {
 			return err
 		}
@@ -2335,6 +2279,7 @@ func (c *tensorboardRESTClient) ListTensorboardExperiments(ctx context.Context, 
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/experiments", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -2348,11 +2293,11 @@ func (c *tensorboardRESTClient) ListTensorboardExperiments(ctx context.Context, 
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
 		if req.GetReadMask() != nil {
-			readMask, err := protojson.Marshal(req.GetReadMask())
+			field, err := protojson.Marshal(req.GetReadMask())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask[1:len(readMask)-1]))
+			params.Add("readMask", string(field[1:len(field)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -2370,21 +2315,10 @@ func (c *tensorboardRESTClient) ListTensorboardExperiments(ctx context.Context, 
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListTensorboardExperiments")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2422,6 +2356,11 @@ func (c *tensorboardRESTClient) DeleteTensorboardExperiment(ctx context.Context,
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -2441,21 +2380,10 @@ func (c *tensorboardRESTClient) DeleteTensorboardExperiment(ctx context.Context,
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteTensorboardExperiment")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2489,6 +2417,7 @@ func (c *tensorboardRESTClient) CreateTensorboardRun(ctx context.Context, req *a
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/runs", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("tensorboardRunId", fmt.Sprintf("%v", req.GetTensorboardRunId()))
 
 	baseUrl.RawQuery = params.Encode()
@@ -2513,17 +2442,7 @@ func (c *tensorboardRESTClient) CreateTensorboardRun(ctx context.Context, req *a
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateTensorboardRun")
 		if err != nil {
 			return err
 		}
@@ -2554,6 +2473,11 @@ func (c *tensorboardRESTClient) BatchCreateTensorboardRuns(ctx context.Context, 
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/runs:batchCreate", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
@@ -2574,17 +2498,7 @@ func (c *tensorboardRESTClient) BatchCreateTensorboardRuns(ctx context.Context, 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchCreateTensorboardRuns")
 		if err != nil {
 			return err
 		}
@@ -2609,6 +2523,11 @@ func (c *tensorboardRESTClient) GetTensorboardRun(ctx context.Context, req *aipl
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -2629,17 +2548,7 @@ func (c *tensorboardRESTClient) GetTensorboardRun(ctx context.Context, req *aipl
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetTensorboardRun")
 		if err != nil {
 			return err
 		}
@@ -2672,12 +2581,13 @@ func (c *tensorboardRESTClient) UpdateTensorboardRun(ctx context.Context, req *a
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetTensorboardRun().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2702,17 +2612,7 @@ func (c *tensorboardRESTClient) UpdateTensorboardRun(ctx context.Context, req *a
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateTensorboardRun")
 		if err != nil {
 			return err
 		}
@@ -2751,6 +2651,7 @@ func (c *tensorboardRESTClient) ListTensorboardRuns(ctx context.Context, req *ai
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/runs", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -2764,11 +2665,11 @@ func (c *tensorboardRESTClient) ListTensorboardRuns(ctx context.Context, req *ai
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
 		if req.GetReadMask() != nil {
-			readMask, err := protojson.Marshal(req.GetReadMask())
+			field, err := protojson.Marshal(req.GetReadMask())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask[1:len(readMask)-1]))
+			params.Add("readMask", string(field[1:len(field)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -2786,21 +2687,10 @@ func (c *tensorboardRESTClient) ListTensorboardRuns(ctx context.Context, req *ai
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListTensorboardRuns")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2838,6 +2728,11 @@ func (c *tensorboardRESTClient) DeleteTensorboardRun(ctx context.Context, req *a
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -2857,21 +2752,10 @@ func (c *tensorboardRESTClient) DeleteTensorboardRun(ctx context.Context, req *a
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteTensorboardRun")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2903,6 +2787,11 @@ func (c *tensorboardRESTClient) BatchCreateTensorboardTimeSeries(ctx context.Con
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:batchCreate", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
@@ -2923,17 +2812,7 @@ func (c *tensorboardRESTClient) BatchCreateTensorboardTimeSeries(ctx context.Con
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchCreateTensorboardTimeSeries")
 		if err != nil {
 			return err
 		}
@@ -2966,6 +2845,7 @@ func (c *tensorboardRESTClient) CreateTensorboardTimeSeries(ctx context.Context,
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/timeSeries", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetTensorboardTimeSeriesId() != "" {
 		params.Add("tensorboardTimeSeriesId", fmt.Sprintf("%v", req.GetTensorboardTimeSeriesId()))
 	}
@@ -2992,17 +2872,7 @@ func (c *tensorboardRESTClient) CreateTensorboardTimeSeries(ctx context.Context,
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateTensorboardTimeSeries")
 		if err != nil {
 			return err
 		}
@@ -3027,6 +2897,11 @@ func (c *tensorboardRESTClient) GetTensorboardTimeSeries(ctx context.Context, re
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -3047,17 +2922,7 @@ func (c *tensorboardRESTClient) GetTensorboardTimeSeries(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetTensorboardTimeSeries")
 		if err != nil {
 			return err
 		}
@@ -3090,12 +2955,13 @@ func (c *tensorboardRESTClient) UpdateTensorboardTimeSeries(ctx context.Context,
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetTensorboardTimeSeries().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3120,17 +2986,7 @@ func (c *tensorboardRESTClient) UpdateTensorboardTimeSeries(ctx context.Context,
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateTensorboardTimeSeries")
 		if err != nil {
 			return err
 		}
@@ -3169,6 +3025,7 @@ func (c *tensorboardRESTClient) ListTensorboardTimeSeries(ctx context.Context, r
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/timeSeries", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -3182,11 +3039,11 @@ func (c *tensorboardRESTClient) ListTensorboardTimeSeries(ctx context.Context, r
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
 		if req.GetReadMask() != nil {
-			readMask, err := protojson.Marshal(req.GetReadMask())
+			field, err := protojson.Marshal(req.GetReadMask())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask[1:len(readMask)-1]))
+			params.Add("readMask", string(field[1:len(field)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -3204,21 +3061,10 @@ func (c *tensorboardRESTClient) ListTensorboardTimeSeries(ctx context.Context, r
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListTensorboardTimeSeries")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3256,6 +3102,11 @@ func (c *tensorboardRESTClient) DeleteTensorboardTimeSeries(ctx context.Context,
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -3275,21 +3126,10 @@ func (c *tensorboardRESTClient) DeleteTensorboardTimeSeries(ctx context.Context,
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteTensorboardTimeSeries")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3320,6 +3160,7 @@ func (c *tensorboardRESTClient) BatchReadTensorboardTimeSeriesData(ctx context.C
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:batchRead", req.GetTensorboard())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if items := req.GetTimeSeries(); len(items) > 0 {
 		for _, item := range items {
 			params.Add("timeSeries", fmt.Sprintf("%v", item))
@@ -3348,17 +3189,7 @@ func (c *tensorboardRESTClient) BatchReadTensorboardTimeSeriesData(ctx context.C
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "BatchReadTensorboardTimeSeriesData")
 		if err != nil {
 			return err
 		}
@@ -3388,6 +3219,7 @@ func (c *tensorboardRESTClient) ReadTensorboardTimeSeriesData(ctx context.Contex
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:read", req.GetTensorboardTimeSeries())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetFilter() != "" {
 		params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 	}
@@ -3417,17 +3249,7 @@ func (c *tensorboardRESTClient) ReadTensorboardTimeSeriesData(ctx context.Contex
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ReadTensorboardTimeSeriesData")
 		if err != nil {
 			return err
 		}
@@ -3456,6 +3278,7 @@ func (c *tensorboardRESTClient) ReadTensorboardBlobData(ctx context.Context, req
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:readBlobData", req.GetTimeSeries())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if items := req.GetBlobIds(); len(items) > 0 {
 		for _, item := range items {
 			params.Add("blobIds", fmt.Sprintf("%v", item))
@@ -3482,12 +3305,8 @@ func (c *tensorboardRESTClient) ReadTensorboardBlobData(ctx context.Context, req
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		httpRsp, err := executeStreamingHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ReadTensorboardBlobData")
 		if err != nil {
-			return err
-		}
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
 			return err
 		}
 
@@ -3534,7 +3353,7 @@ func (c *readTensorboardBlobDataRESTClient) Trailer() metadata.MD {
 
 func (c *readTensorboardBlobDataRESTClient) CloseSend() error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *readTensorboardBlobDataRESTClient) Context() context.Context {
@@ -3543,12 +3362,12 @@ func (c *readTensorboardBlobDataRESTClient) Context() context.Context {
 
 func (c *readTensorboardBlobDataRESTClient) SendMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *readTensorboardBlobDataRESTClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented, use Recv")
+	return errors.New("this method is not implemented, use Recv")
 }
 
 // WriteTensorboardExperimentData write time series data points of multiple TensorboardTimeSeries in multiple
@@ -3565,6 +3384,11 @@ func (c *tensorboardRESTClient) WriteTensorboardExperimentData(ctx context.Conte
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:write", req.GetTensorboardExperiment())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "tensorboard_experiment", url.QueryEscape(req.GetTensorboardExperiment()))}
@@ -3586,17 +3410,7 @@ func (c *tensorboardRESTClient) WriteTensorboardExperimentData(ctx context.Conte
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "WriteTensorboardExperimentData")
 		if err != nil {
 			return err
 		}
@@ -3628,6 +3442,11 @@ func (c *tensorboardRESTClient) WriteTensorboardRunData(ctx context.Context, req
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:write", req.GetTensorboardRun())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "tensorboard_run", url.QueryEscape(req.GetTensorboardRun()))}
 
@@ -3648,17 +3467,7 @@ func (c *tensorboardRESTClient) WriteTensorboardRunData(ctx context.Context, req
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "WriteTensorboardRunData")
 		if err != nil {
 			return err
 		}
@@ -3703,6 +3512,11 @@ func (c *tensorboardRESTClient) ExportTensorboardTimeSeriesData(ctx context.Cont
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v:exportTensorboardTimeSeries", req.GetTensorboardTimeSeries())
 
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+
+		baseUrl.RawQuery = params.Encode()
+
 		// Build HTTP headers from client and context metadata.
 		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 		headers := gax.BuildHeaders(ctx, hds...)
@@ -3716,21 +3530,10 @@ func (c *tensorboardRESTClient) ExportTensorboardTimeSeriesData(ctx context.Cont
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExportTensorboardTimeSeriesData")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3768,6 +3571,11 @@ func (c *tensorboardRESTClient) GetLocation(ctx context.Context, req *locationpb
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -3788,17 +3596,7 @@ func (c *tensorboardRESTClient) GetLocation(ctx context.Context, req *locationpb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -3837,6 +3635,7 @@ func (c *tensorboardRESTClient) ListLocations(ctx context.Context, req *location
 		baseUrl.Path += fmt.Sprintf("/ui/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -3862,21 +3661,10 @@ func (c *tensorboardRESTClient) ListLocations(ctx context.Context, req *location
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3921,6 +3709,11 @@ func (c *tensorboardRESTClient) GetIamPolicy(ctx context.Context, req *iampb.Get
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:getIamPolicy", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -3941,17 +3734,7 @@ func (c *tensorboardRESTClient) GetIamPolicy(ctx context.Context, req *iampb.Get
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -3986,6 +3769,11 @@ func (c *tensorboardRESTClient) SetIamPolicy(ctx context.Context, req *iampb.Set
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:setIamPolicy", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -4006,17 +3794,7 @@ func (c *tensorboardRESTClient) SetIamPolicy(ctx context.Context, req *iampb.Set
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -4053,6 +3831,11 @@ func (c *tensorboardRESTClient) TestIamPermissions(ctx context.Context, req *iam
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:testIamPermissions", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -4073,17 +3856,7 @@ func (c *tensorboardRESTClient) TestIamPermissions(ctx context.Context, req *iam
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
 		if err != nil {
 			return err
 		}
@@ -4108,6 +3881,11 @@ func (c *tensorboardRESTClient) CancelOperation(ctx context.Context, req *longru
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v:cancel", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -4125,15 +3903,8 @@ func (c *tensorboardRESTClient) CancelOperation(ctx context.Context, req *longru
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -4144,6 +3915,11 @@ func (c *tensorboardRESTClient) DeleteOperation(ctx context.Context, req *longru
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -4162,15 +3938,8 @@ func (c *tensorboardRESTClient) DeleteOperation(ctx context.Context, req *longru
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOperation")
+		return err
 	}, opts...)
 }
 
@@ -4181,6 +3950,11 @@ func (c *tensorboardRESTClient) GetOperation(ctx context.Context, req *longrunni
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -4202,17 +3976,7 @@ func (c *tensorboardRESTClient) GetOperation(ctx context.Context, req *longrunni
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -4251,6 +4015,7 @@ func (c *tensorboardRESTClient) ListOperations(ctx context.Context, req *longrun
 		baseUrl.Path += fmt.Sprintf("/ui/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -4276,21 +4041,10 @@ func (c *tensorboardRESTClient) ListOperations(ctx context.Context, req *longrun
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4329,12 +4083,13 @@ func (c *tensorboardRESTClient) WaitOperation(ctx context.Context, req *longrunn
 	baseUrl.Path += fmt.Sprintf("/ui/%v:wait", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetTimeout() != nil {
-		timeout, err := protojson.Marshal(req.GetTimeout())
+		field, err := protojson.Marshal(req.GetTimeout())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("timeout", string(timeout[1:len(timeout)-1]))
+		params.Add("timeout", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4359,17 +4114,7 @@ func (c *tensorboardRESTClient) WaitOperation(ctx context.Context, req *longrunn
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "WaitOperation")
 		if err != nil {
 			return err
 		}

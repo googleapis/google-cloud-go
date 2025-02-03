@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	reportspb "cloud.google.com/go/shopping/merchant/reports/apiv1beta/reportspb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -56,6 +55,7 @@ func defaultReportGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://merchantapi.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -160,6 +160,8 @@ type reportGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewReportClient creates a new report service client based on gRPC.
@@ -187,6 +189,7 @@ func NewReportClient(ctx context.Context, opts ...option.ClientOption) (*ReportC
 		connPool:     connPool,
 		reportClient: reportspb.NewReportServiceClient(connPool),
 		CallOptions:  &client.CallOptions,
+		logger:       internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -209,7 +212,9 @@ func (c *reportGRPCClient) Connection() *grpc.ClientConn {
 func (c *reportGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -231,6 +236,8 @@ type reportRESTClient struct {
 
 	// Points back to the CallOptions field of the containing ReportClient
 	CallOptions **ReportCallOptions
+
+	logger *slog.Logger
 }
 
 // NewReportRESTClient creates a new report service rest client.
@@ -249,6 +256,7 @@ func NewReportRESTClient(ctx context.Context, opts ...option.ClientOption) (*Rep
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -263,6 +271,7 @@ func defaultReportRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://merchantapi.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -272,7 +281,9 @@ func defaultReportRESTClientOptions() []option.ClientOption {
 func (c *reportRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -309,7 +320,7 @@ func (c *reportGRPCClient) Search(ctx context.Context, req *reportspb.SearchRequ
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.reportClient.Search(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.reportClient.Search, req, settings.GRPC, c.logger, "Search")
 			return err
 		}, opts...)
 		if err != nil {
@@ -382,21 +393,10 @@ func (c *reportRESTClient) Search(ctx context.Context, req *reportspb.SearchRequ
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "Search")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

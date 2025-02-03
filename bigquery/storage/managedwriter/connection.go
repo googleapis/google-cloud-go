@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"io"
 	"sync"
+	"time"
 
 	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"github.com/googleapis/gax-go/v2"
@@ -36,6 +37,8 @@ const (
 
 var (
 	errNoRouterForPool = errors.New("no router for connection pool")
+	// TODO(https://github.com/googleapis/google-cloud-go/issues/11460): revisit if this should be user configurable
+	gracefulReconnectDuration = 20 * time.Second
 )
 
 // connectionPool represents a pooled set of connections.
@@ -357,7 +360,7 @@ func (co *connection) lockingAppend(pw *pendingWrite) error {
 
 	// critical section:  Things that need to happen inside the critical section:
 	//
-	// * get/open conenction
+	// * get/open connection
 	// * issue the append
 	// * add the pending write to the channel for the connection (ordering for the response)
 	co.mu.Lock()
@@ -368,6 +371,11 @@ func (co *connection) lockingAppend(pw *pendingWrite) error {
 			statsOnExit(sCtx)
 		}
 	}()
+
+	// If connection context is expired, error.
+	if err := co.ctx.Err(); err != nil {
+		return err
+	}
 
 	var arc *storagepb.BigQueryWrite_AppendRowsClient
 	var ch chan *pendingWrite
@@ -457,7 +465,7 @@ func (co *connection) lockingAppend(pw *pendingWrite) error {
 
 // getStream returns either a valid ARC client stream or permanent error.
 //
-// Any calls to getStream should do so in possesion of the critical section lock.
+// Any calls to getStream should do so in possession of the critical section lock.
 func (co *connection) getStream(arc *storagepb.BigQueryWrite_AppendRowsClient, forceReconnect bool) (*storagepb.BigQueryWrite_AppendRowsClient, chan *pendingWrite, error) {
 	if co.err != nil {
 		return nil, nil, co.err
@@ -484,7 +492,12 @@ func (co *connection) getStream(arc *storagepb.BigQueryWrite_AppendRowsClient, f
 		close(co.pending)
 	}
 	if co.cancel != nil {
-		co.cancel()
+		// Delay cancellation to give queued writes a chance to drain normally.
+		oldCancel := co.cancel
+		go func() {
+			time.Sleep(gracefulReconnectDuration)
+			oldCancel()
+		}()
 		co.ctx, co.cancel = context.WithCancel(co.pool.ctx)
 	}
 
@@ -532,7 +545,7 @@ func connRecvProcessor(ctx context.Context, co *connection, arc storagepb.BigQue
 				// TODO:  Determine if/how we should report this case, as we have no viable context for propagating.
 
 				// Because we can't tell locally if this write is done, we pass it back to the retrier for possible re-enqueue.
-				pw.writer.processRetry(pw, co, nil, doneErr)
+				pw.writer.processRetry(pw, nil, doneErr)
 			}
 		case nextWrite, ok := <-ch:
 			if !ok {
@@ -552,7 +565,7 @@ func connRecvProcessor(ctx context.Context, co *connection, arc storagepb.BigQue
 				}
 				recordStat(metricCtx, AppendResponseErrors, 1)
 
-				nextWrite.writer.processRetry(nextWrite, co, nil, err)
+				nextWrite.writer.processRetry(nextWrite, nil, err)
 				continue
 			}
 			// Record that we did in fact get a response from the backend.
@@ -568,7 +581,7 @@ func connRecvProcessor(ctx context.Context, co *connection, arc storagepb.BigQue
 				recordStat(metricCtx, AppendResponseErrors, 1)
 				respErr := grpcstatus.ErrorProto(status)
 
-				nextWrite.writer.processRetry(nextWrite, co, resp, respErr)
+				nextWrite.writer.processRetry(nextWrite, resp, respErr)
 
 				continue
 			}

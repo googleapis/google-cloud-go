@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/apps/meet/apiv2beta",
-    "version": "0.4.1",
+    "version": "0.5.3",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "meet_v2beta_generated_ConferenceRecordsService_GetConferenceRecord_sync",
       "title": "meet GetConferenceRecord Sample",
-      "description": "GetConferenceRecord [Developer Preview](https: //developers.google.com/workspace/preview).\nGets a conference record by conference ID.",
+      "description": "GetConferenceRecord gets a conference record by conference ID.",
       "file": "ConferenceRecordsClient/GetConferenceRecord/main.go",
       "language": "GO",
       "clientMethod": {
@@ -60,7 +60,7 @@
     {
       "regionTag": "meet_v2beta_generated_ConferenceRecordsService_GetParticipant_sync",
       "title": "meet GetParticipant Sample",
-      "description": "GetParticipant [Developer Preview](https: //developers.google.com/workspace/preview).\nGets a participant by participant ID.",
+      "description": "GetParticipant gets a participant by participant ID.",
       "file": "ConferenceRecordsClient/GetParticipant/main.go",
       "language": "GO",
       "clientMethod": {
@@ -106,7 +106,7 @@
     {
       "regionTag": "meet_v2beta_generated_ConferenceRecordsService_GetParticipantSession_sync",
       "title": "meet GetParticipantSession Sample",
-      "description": "GetParticipantSession [Developer Preview](https: //developers.google.com/workspace/preview).\nGets a participant session by participant session ID.",
+      "description": "GetParticipantSession gets a participant session by participant session ID.",
       "file": "ConferenceRecordsClient/GetParticipantSession/main.go",
       "language": "GO",
       "clientMethod": {
@@ -152,7 +152,7 @@
     {
       "regionTag": "meet_v2beta_generated_ConferenceRecordsService_GetRecording_sync",
       "title": "meet GetRecording Sample",
-      "description": "GetRecording [Developer Preview](https: //developers.google.com/workspace/preview).\nGets a recording by recording ID.",
+      "description": "GetRecording gets a recording by recording ID.",
       "file": "ConferenceRecordsClient/GetRecording/main.go",
       "language": "GO",
       "clientMethod": {
@@ -198,7 +198,7 @@
     {
       "regionTag": "meet_v2beta_generated_ConferenceRecordsService_GetTranscript_sync",
       "title": "meet GetTranscript Sample",
-      "description": "GetTranscript [Developer Preview](https: //developers.google.com/workspace/preview).\nGets a transcript by transcript ID.",
+      "description": "GetTranscript gets a transcript by transcript ID.",
       "file": "ConferenceRecordsClient/GetTranscript/main.go",
       "language": "GO",
       "clientMethod": {
@@ -244,7 +244,7 @@
     {
       "regionTag": "meet_v2beta_generated_ConferenceRecordsService_GetTranscriptEntry_sync",
       "title": "meet GetTranscriptEntry Sample",
-      "description": "GetTranscriptEntry [Developer Preview](https: //developers.google.com/workspace/preview).\nGets a `TranscriptEntry` resource by entry ID.\n\nNote: The transcript entries returned by the Google Meet API might not\nmatch the transcription found in the Google Docs transcript file. This can\noccur when the Google Docs transcript file is modified after generation.",
+      "description": "GetTranscriptEntry gets a `TranscriptEntry` resource by entry ID.\n\nNote: The transcript entries returned by the Google Meet API might not\nmatch the transcription found in the Google Docs transcript file. This can\noccur when the Google Docs transcript file is modified after generation.",
       "file": "ConferenceRecordsClient/GetTranscriptEntry/main.go",
       "language": "GO",
       "clientMethod": {
@@ -290,7 +290,7 @@
     {
       "regionTag": "meet_v2beta_generated_ConferenceRecordsService_ListConferenceRecords_sync",
       "title": "meet ListConferenceRecords Sample",
-      "description": "ListConferenceRecords [Developer Preview](https: //developers.google.com/workspace/preview).\nLists the conference records by start time and in descending order.",
+      "description": "ListConferenceRecords lists the conference records. By default, ordered by start time and in\ndescending order.",
       "file": "ConferenceRecordsClient/ListConferenceRecords/main.go",
       "language": "GO",
       "clientMethod": {
@@ -336,7 +336,7 @@
     {
       "regionTag": "meet_v2beta_generated_ConferenceRecordsService_ListParticipantSessions_sync",
       "title": "meet ListParticipantSessions Sample",
-      "description": "ListParticipantSessions [Developer Preview](https: //developers.google.com/workspace/preview).\nLists the participant sessions of a participant in a conference record, by\ndefault ordered by join time and in descending order. This API supports\n`fields` as standard parameters like every other API. However, when the\n`fields` request parameter is omitted this API defaults to\n`'participantsessions/*, next_page_token'`.",
+      "description": "ListParticipantSessions lists the participant sessions of a participant in a conference record. By\ndefault, ordered by join time and in descending order. This API supports\n`fields` as standard parameters like every other API. However, when the\n`fields` request parameter is omitted this API defaults to\n`'participantsessions/*, next_page_token'`.",
       "file": "ConferenceRecordsClient/ListParticipantSessions/main.go",
       "language": "GO",
       "clientMethod": {
@@ -382,7 +382,7 @@
     {
       "regionTag": "meet_v2beta_generated_ConferenceRecordsService_ListParticipants_sync",
       "title": "meet ListParticipants Sample",
-      "description": "ListParticipants [Developer Preview](https: //developers.google.com/workspace/preview).\nLists the participants in a conference record, by default ordered by join\ntime and in descending order. This API supports `fields` as standard\nparameters like every other API. However, when the `fields` request\nparameter is omitted, this API defaults to `'participants/*,\nnext_page_token'`.",
+      "description": "ListParticipants lists the participants in a conference record. By default, ordered by join\ntime and in descending order. This API supports `fields` as standard\nparameters like every other API. However, when the `fields` request\nparameter is omitted, this API defaults to `'participants/*,\nnext_page_token'`.",
       "file": "ConferenceRecordsClient/ListParticipants/main.go",
       "language": "GO",
       "clientMethod": {
@@ -428,7 +428,7 @@
     {
       "regionTag": "meet_v2beta_generated_ConferenceRecordsService_ListRecordings_sync",
       "title": "meet ListRecordings Sample",
-      "description": "ListRecordings [Developer Preview](https: //developers.google.com/workspace/preview).\nLists the recording resources from the conference record.",
+      "description": "ListRecordings lists the recording resources from the conference record. By default,\nordered by start time and in ascending order.",
       "file": "ConferenceRecordsClient/ListRecordings/main.go",
       "language": "GO",
       "clientMethod": {
@@ -474,7 +474,7 @@
     {
       "regionTag": "meet_v2beta_generated_ConferenceRecordsService_ListTranscriptEntries_sync",
       "title": "meet ListTranscriptEntries Sample",
-      "description": "ListTranscriptEntries [Developer Preview](https: //developers.google.com/workspace/preview).\nLists the structured transcript entries per transcript. By default, ordered\nby start time and in ascending order.\n\nNote: The transcript entries returned by the Google Meet API might not\nmatch the transcription found in the Google Docs transcript file. This can\noccur when the Google Docs transcript file is modified after generation.",
+      "description": "ListTranscriptEntries lists the structured transcript entries per transcript. By default, ordered\nby start time and in ascending order.\n\nNote: The transcript entries returned by the Google Meet API might not\nmatch the transcription found in the Google Docs transcript file. This can\noccur when the Google Docs transcript file is modified after generation.",
       "file": "ConferenceRecordsClient/ListTranscriptEntries/main.go",
       "language": "GO",
       "clientMethod": {
@@ -520,7 +520,7 @@
     {
       "regionTag": "meet_v2beta_generated_ConferenceRecordsService_ListTranscripts_sync",
       "title": "meet ListTranscripts Sample",
-      "description": "ListTranscripts [Developer Preview](https: //developers.google.com/workspace/preview).\nLists the set of transcripts from the conference record.",
+      "description": "ListTranscripts lists the set of transcripts from the conference record. By default,\nordered by start time and in ascending order.",
       "file": "ConferenceRecordsClient/ListTranscripts/main.go",
       "language": "GO",
       "clientMethod": {
@@ -564,9 +564,55 @@
       ]
     },
     {
+      "regionTag": "meet_v2beta_generated_SpacesService_CreateMember_sync",
+      "title": "meet CreateMember Sample",
+      "description": "CreateMember [Developer Preview](https: //developers.google.com/workspace/preview): \nCreate a member.\n\nThis API supports the `fields` parameter in\n[SystemParameterContext](https: //cloud.google.com/apis/docs/system-parameters).\nWhen the `fields` parameter is omitted, this API response will default to\n\"name,email,role,user\".",
+      "file": "SpacesClient/CreateMember/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateMember",
+        "fullName": "google.apps.meet.v2beta.SpacesClient.CreateMember",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "meetpb.CreateMemberRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*meetpb.Member",
+        "client": {
+          "shortName": "SpacesClient",
+          "fullName": "google.apps.meet.v2beta.SpacesClient"
+        },
+        "method": {
+          "shortName": "CreateMember",
+          "fullName": "google.apps.meet.v2beta.SpacesService.CreateMember",
+          "service": {
+            "shortName": "SpacesService",
+            "fullName": "google.apps.meet.v2beta.SpacesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "meet_v2beta_generated_SpacesService_CreateSpace_sync",
       "title": "meet CreateSpace Sample",
-      "description": "CreateSpace [Developer Preview](https: //developers.google.com/workspace/preview).\nCreates a space.",
+      "description": "CreateSpace creates a space.",
       "file": "SpacesClient/CreateSpace/main.go",
       "language": "GO",
       "clientMethod": {
@@ -610,9 +656,54 @@
       ]
     },
     {
+      "regionTag": "meet_v2beta_generated_SpacesService_DeleteMember_sync",
+      "title": "meet DeleteMember Sample",
+      "description": "DeleteMember [Developer Preview](https: //developers.google.com/workspace/preview): \nDelete the member who was previously assigned roles in the space.",
+      "file": "SpacesClient/DeleteMember/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteMember",
+        "fullName": "google.apps.meet.v2beta.SpacesClient.DeleteMember",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "meetpb.DeleteMemberRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "SpacesClient",
+          "fullName": "google.apps.meet.v2beta.SpacesClient"
+        },
+        "method": {
+          "shortName": "DeleteMember",
+          "fullName": "google.apps.meet.v2beta.SpacesService.DeleteMember",
+          "service": {
+            "shortName": "SpacesService",
+            "fullName": "google.apps.meet.v2beta.SpacesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "meet_v2beta_generated_SpacesService_EndActiveConference_sync",
       "title": "meet EndActiveConference Sample",
-      "description": "EndActiveConference [Developer Preview](https: //developers.google.com/workspace/preview).\nEnds an active conference (if there is one).",
+      "description": "EndActiveConference ends an active conference (if there's one).\n\nFor an example, see [End active\nconference](https: //developers.google.com/meet/api/guides/meeting-spaces#end-active-conference).",
       "file": "SpacesClient/EndActiveConference/main.go",
       "language": "GO",
       "clientMethod": {
@@ -655,9 +746,55 @@
       ]
     },
     {
+      "regionTag": "meet_v2beta_generated_SpacesService_GetMember_sync",
+      "title": "meet GetMember Sample",
+      "description": "GetMember [Developer Preview](https: //developers.google.com/workspace/preview): \nGet a member.\n\nThis API supports the `fields` parameter in\n[SystemParameterContext](https: //cloud.google.com/apis/docs/system-parameters).\nWhen the `fields` parameter is omitted, this API response will default to\n\"name,email,role,user\".",
+      "file": "SpacesClient/GetMember/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetMember",
+        "fullName": "google.apps.meet.v2beta.SpacesClient.GetMember",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "meetpb.GetMemberRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*meetpb.Member",
+        "client": {
+          "shortName": "SpacesClient",
+          "fullName": "google.apps.meet.v2beta.SpacesClient"
+        },
+        "method": {
+          "shortName": "GetMember",
+          "fullName": "google.apps.meet.v2beta.SpacesService.GetMember",
+          "service": {
+            "shortName": "SpacesService",
+            "fullName": "google.apps.meet.v2beta.SpacesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "meet_v2beta_generated_SpacesService_GetSpace_sync",
       "title": "meet GetSpace Sample",
-      "description": "GetSpace [Developer Preview](https: //developers.google.com/workspace/preview).\nGets a space by `space_id` or `meeting_code`.",
+      "description": "GetSpace gets details about a meeting space.\n\nFor an example, see [Get a meeting\nspace](https: //developers.google.com/meet/api/guides/meeting-spaces#get-meeting-space).",
       "file": "SpacesClient/GetSpace/main.go",
       "language": "GO",
       "clientMethod": {
@@ -701,9 +838,55 @@
       ]
     },
     {
+      "regionTag": "meet_v2beta_generated_SpacesService_ListMembers_sync",
+      "title": "meet ListMembers Sample",
+      "description": "ListMembers [Developer Preview](https: //developers.google.com/workspace/preview): \nList members.\n\nThis API supports the `fields` parameter in\n[SystemParameterContext](https: //cloud.google.com/apis/docs/system-parameters).\nWhen the `fields` parameter is omitted this API response will default to\n\"name,email,role,user\".",
+      "file": "SpacesClient/ListMembers/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListMembers",
+        "fullName": "google.apps.meet.v2beta.SpacesClient.ListMembers",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "meetpb.ListMembersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "MemberIterator",
+        "client": {
+          "shortName": "SpacesClient",
+          "fullName": "google.apps.meet.v2beta.SpacesClient"
+        },
+        "method": {
+          "shortName": "ListMembers",
+          "fullName": "google.apps.meet.v2beta.SpacesService.ListMembers",
+          "service": {
+            "shortName": "SpacesService",
+            "fullName": "google.apps.meet.v2beta.SpacesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "meet_v2beta_generated_SpacesService_UpdateSpace_sync",
       "title": "meet UpdateSpace Sample",
-      "description": "UpdateSpace [Developer Preview](https: //developers.google.com/workspace/preview).\nUpdates a space.",
+      "description": "UpdateSpace updates details about a meeting space.\n\nFor an example, see [Update a meeting\nspace](https: //developers.google.com/meet/api/guides/meeting-spaces#update-meeting-space).",
       "file": "SpacesClient/UpdateSpace/main.go",
       "language": "GO",
       "clientMethod": {

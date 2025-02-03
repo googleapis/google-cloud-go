@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -32,7 +32,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -70,13 +69,21 @@ type CallOptions struct {
 	GetVersion            []gax.CallOption
 	DeleteVersion         []gax.CallOption
 	BatchDeleteVersions   []gax.CallOption
+	UpdateVersion         []gax.CallOption
 	ListFiles             []gax.CallOption
 	GetFile               []gax.CallOption
+	DeleteFile            []gax.CallOption
+	UpdateFile            []gax.CallOption
 	ListTags              []gax.CallOption
 	GetTag                []gax.CallOption
 	CreateTag             []gax.CallOption
 	UpdateTag             []gax.CallOption
 	DeleteTag             []gax.CallOption
+	CreateRule            []gax.CallOption
+	ListRules             []gax.CallOption
+	GetRule               []gax.CallOption
+	UpdateRule            []gax.CallOption
+	DeleteRule            []gax.CallOption
 	SetIamPolicy          []gax.CallOption
 	GetIamPolicy          []gax.CallOption
 	TestIamPermissions    []gax.CallOption
@@ -84,6 +91,11 @@ type CallOptions struct {
 	UpdateProjectSettings []gax.CallOption
 	GetVPCSCConfig        []gax.CallOption
 	UpdateVPCSCConfig     []gax.CallOption
+	UpdatePackage         []gax.CallOption
+	ListAttachments       []gax.CallOption
+	GetAttachment         []gax.CallOption
+	CreateAttachment      []gax.CallOption
+	DeleteAttachment      []gax.CallOption
 	GetLocation           []gax.CallOption
 	ListLocations         []gax.CallOption
 	GetOperation          []gax.CallOption
@@ -98,6 +110,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://artifactregistry.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -171,10 +184,19 @@ func defaultCallOptions() *CallOptions {
 		BatchDeleteVersions: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		UpdateVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ListFiles: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		GetFile: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteFile: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateFile: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		ListTags: []gax.CallOption{
@@ -190,6 +212,21 @@ func defaultCallOptions() *CallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		DeleteTag: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateRule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListRules: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetRule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateRule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteRule: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		SetIamPolicy: []gax.CallOption{
@@ -211,6 +248,21 @@ func defaultCallOptions() *CallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		UpdateVPCSCConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdatePackage: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListAttachments: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetAttachment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateAttachment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteAttachment: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		GetLocation:   []gax.CallOption{},
@@ -287,10 +339,19 @@ func defaultRESTCallOptions() *CallOptions {
 		BatchDeleteVersions: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		UpdateVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ListFiles: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		GetFile: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteFile: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateFile: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		ListTags: []gax.CallOption{
@@ -306,6 +367,21 @@ func defaultRESTCallOptions() *CallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		DeleteTag: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateRule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListRules: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetRule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateRule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteRule: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		SetIamPolicy: []gax.CallOption{
@@ -327,6 +403,21 @@ func defaultRESTCallOptions() *CallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		UpdateVPCSCConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdatePackage: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListAttachments: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetAttachment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateAttachment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteAttachment: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		GetLocation:   []gax.CallOption{},
@@ -369,13 +460,22 @@ type internalClient interface {
 	DeleteVersionOperation(name string) *DeleteVersionOperation
 	BatchDeleteVersions(context.Context, *artifactregistrypb.BatchDeleteVersionsRequest, ...gax.CallOption) (*BatchDeleteVersionsOperation, error)
 	BatchDeleteVersionsOperation(name string) *BatchDeleteVersionsOperation
+	UpdateVersion(context.Context, *artifactregistrypb.UpdateVersionRequest, ...gax.CallOption) (*artifactregistrypb.Version, error)
 	ListFiles(context.Context, *artifactregistrypb.ListFilesRequest, ...gax.CallOption) *FileIterator
 	GetFile(context.Context, *artifactregistrypb.GetFileRequest, ...gax.CallOption) (*artifactregistrypb.File, error)
+	DeleteFile(context.Context, *artifactregistrypb.DeleteFileRequest, ...gax.CallOption) (*DeleteFileOperation, error)
+	DeleteFileOperation(name string) *DeleteFileOperation
+	UpdateFile(context.Context, *artifactregistrypb.UpdateFileRequest, ...gax.CallOption) (*artifactregistrypb.File, error)
 	ListTags(context.Context, *artifactregistrypb.ListTagsRequest, ...gax.CallOption) *TagIterator
 	GetTag(context.Context, *artifactregistrypb.GetTagRequest, ...gax.CallOption) (*artifactregistrypb.Tag, error)
 	CreateTag(context.Context, *artifactregistrypb.CreateTagRequest, ...gax.CallOption) (*artifactregistrypb.Tag, error)
 	UpdateTag(context.Context, *artifactregistrypb.UpdateTagRequest, ...gax.CallOption) (*artifactregistrypb.Tag, error)
 	DeleteTag(context.Context, *artifactregistrypb.DeleteTagRequest, ...gax.CallOption) error
+	CreateRule(context.Context, *artifactregistrypb.CreateRuleRequest, ...gax.CallOption) (*artifactregistrypb.Rule, error)
+	ListRules(context.Context, *artifactregistrypb.ListRulesRequest, ...gax.CallOption) *RuleIterator
+	GetRule(context.Context, *artifactregistrypb.GetRuleRequest, ...gax.CallOption) (*artifactregistrypb.Rule, error)
+	UpdateRule(context.Context, *artifactregistrypb.UpdateRuleRequest, ...gax.CallOption) (*artifactregistrypb.Rule, error)
+	DeleteRule(context.Context, *artifactregistrypb.DeleteRuleRequest, ...gax.CallOption) error
 	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
@@ -383,6 +483,13 @@ type internalClient interface {
 	UpdateProjectSettings(context.Context, *artifactregistrypb.UpdateProjectSettingsRequest, ...gax.CallOption) (*artifactregistrypb.ProjectSettings, error)
 	GetVPCSCConfig(context.Context, *artifactregistrypb.GetVPCSCConfigRequest, ...gax.CallOption) (*artifactregistrypb.VPCSCConfig, error)
 	UpdateVPCSCConfig(context.Context, *artifactregistrypb.UpdateVPCSCConfigRequest, ...gax.CallOption) (*artifactregistrypb.VPCSCConfig, error)
+	UpdatePackage(context.Context, *artifactregistrypb.UpdatePackageRequest, ...gax.CallOption) (*artifactregistrypb.Package, error)
+	ListAttachments(context.Context, *artifactregistrypb.ListAttachmentsRequest, ...gax.CallOption) *AttachmentIterator
+	GetAttachment(context.Context, *artifactregistrypb.GetAttachmentRequest, ...gax.CallOption) (*artifactregistrypb.Attachment, error)
+	CreateAttachment(context.Context, *artifactregistrypb.CreateAttachmentRequest, ...gax.CallOption) (*CreateAttachmentOperation, error)
+	CreateAttachmentOperation(name string) *CreateAttachmentOperation
+	DeleteAttachment(context.Context, *artifactregistrypb.DeleteAttachmentRequest, ...gax.CallOption) (*DeleteAttachmentOperation, error)
+	DeleteAttachmentOperation(name string) *DeleteAttachmentOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
@@ -608,6 +715,11 @@ func (c *Client) BatchDeleteVersionsOperation(name string) *BatchDeleteVersionsO
 	return c.internalClient.BatchDeleteVersionsOperation(name)
 }
 
+// UpdateVersion updates a version.
+func (c *Client) UpdateVersion(ctx context.Context, req *artifactregistrypb.UpdateVersionRequest, opts ...gax.CallOption) (*artifactregistrypb.Version, error) {
+	return c.internalClient.UpdateVersion(ctx, req, opts...)
+}
+
 // ListFiles lists files.
 func (c *Client) ListFiles(ctx context.Context, req *artifactregistrypb.ListFilesRequest, opts ...gax.CallOption) *FileIterator {
 	return c.internalClient.ListFiles(ctx, req, opts...)
@@ -616,6 +728,24 @@ func (c *Client) ListFiles(ctx context.Context, req *artifactregistrypb.ListFile
 // GetFile gets a file.
 func (c *Client) GetFile(ctx context.Context, req *artifactregistrypb.GetFileRequest, opts ...gax.CallOption) (*artifactregistrypb.File, error) {
 	return c.internalClient.GetFile(ctx, req, opts...)
+}
+
+// DeleteFile deletes a file and all of its content. It is only allowed on generic
+// repositories. The returned operation will complete once the file has been
+// deleted.
+func (c *Client) DeleteFile(ctx context.Context, req *artifactregistrypb.DeleteFileRequest, opts ...gax.CallOption) (*DeleteFileOperation, error) {
+	return c.internalClient.DeleteFile(ctx, req, opts...)
+}
+
+// DeleteFileOperation returns a new DeleteFileOperation from a given name.
+// The name must be that of a previously created DeleteFileOperation, possibly from a different process.
+func (c *Client) DeleteFileOperation(name string) *DeleteFileOperation {
+	return c.internalClient.DeleteFileOperation(name)
+}
+
+// UpdateFile updates a file.
+func (c *Client) UpdateFile(ctx context.Context, req *artifactregistrypb.UpdateFileRequest, opts ...gax.CallOption) (*artifactregistrypb.File, error) {
+	return c.internalClient.UpdateFile(ctx, req, opts...)
 }
 
 // ListTags lists tags.
@@ -641,6 +771,31 @@ func (c *Client) UpdateTag(ctx context.Context, req *artifactregistrypb.UpdateTa
 // DeleteTag deletes a tag.
 func (c *Client) DeleteTag(ctx context.Context, req *artifactregistrypb.DeleteTagRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteTag(ctx, req, opts...)
+}
+
+// CreateRule creates a rule.
+func (c *Client) CreateRule(ctx context.Context, req *artifactregistrypb.CreateRuleRequest, opts ...gax.CallOption) (*artifactregistrypb.Rule, error) {
+	return c.internalClient.CreateRule(ctx, req, opts...)
+}
+
+// ListRules lists rules.
+func (c *Client) ListRules(ctx context.Context, req *artifactregistrypb.ListRulesRequest, opts ...gax.CallOption) *RuleIterator {
+	return c.internalClient.ListRules(ctx, req, opts...)
+}
+
+// GetRule gets a rule.
+func (c *Client) GetRule(ctx context.Context, req *artifactregistrypb.GetRuleRequest, opts ...gax.CallOption) (*artifactregistrypb.Rule, error) {
+	return c.internalClient.GetRule(ctx, req, opts...)
+}
+
+// UpdateRule updates a rule.
+func (c *Client) UpdateRule(ctx context.Context, req *artifactregistrypb.UpdateRuleRequest, opts ...gax.CallOption) (*artifactregistrypb.Rule, error) {
+	return c.internalClient.UpdateRule(ctx, req, opts...)
+}
+
+// DeleteRule deletes a rule.
+func (c *Client) DeleteRule(ctx context.Context, req *artifactregistrypb.DeleteRuleRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteRule(ctx, req, opts...)
 }
 
 // SetIamPolicy updates the IAM policy for a given resource.
@@ -676,6 +831,46 @@ func (c *Client) GetVPCSCConfig(ctx context.Context, req *artifactregistrypb.Get
 // UpdateVPCSCConfig updates the VPCSC Config for the Project.
 func (c *Client) UpdateVPCSCConfig(ctx context.Context, req *artifactregistrypb.UpdateVPCSCConfigRequest, opts ...gax.CallOption) (*artifactregistrypb.VPCSCConfig, error) {
 	return c.internalClient.UpdateVPCSCConfig(ctx, req, opts...)
+}
+
+// UpdatePackage updates a package.
+func (c *Client) UpdatePackage(ctx context.Context, req *artifactregistrypb.UpdatePackageRequest, opts ...gax.CallOption) (*artifactregistrypb.Package, error) {
+	return c.internalClient.UpdatePackage(ctx, req, opts...)
+}
+
+// ListAttachments lists attachments.
+func (c *Client) ListAttachments(ctx context.Context, req *artifactregistrypb.ListAttachmentsRequest, opts ...gax.CallOption) *AttachmentIterator {
+	return c.internalClient.ListAttachments(ctx, req, opts...)
+}
+
+// GetAttachment gets an attachment.
+func (c *Client) GetAttachment(ctx context.Context, req *artifactregistrypb.GetAttachmentRequest, opts ...gax.CallOption) (*artifactregistrypb.Attachment, error) {
+	return c.internalClient.GetAttachment(ctx, req, opts...)
+}
+
+// CreateAttachment creates an attachment. The returned Operation will finish once the
+// attachment has been created. Its response will be the created attachment.
+func (c *Client) CreateAttachment(ctx context.Context, req *artifactregistrypb.CreateAttachmentRequest, opts ...gax.CallOption) (*CreateAttachmentOperation, error) {
+	return c.internalClient.CreateAttachment(ctx, req, opts...)
+}
+
+// CreateAttachmentOperation returns a new CreateAttachmentOperation from a given name.
+// The name must be that of a previously created CreateAttachmentOperation, possibly from a different process.
+func (c *Client) CreateAttachmentOperation(name string) *CreateAttachmentOperation {
+	return c.internalClient.CreateAttachmentOperation(name)
+}
+
+// DeleteAttachment deletes an attachment. The returned Operation will
+// finish once the attachments has been deleted. It will not have any
+// Operation metadata and will return a google.protobuf.Empty response.
+func (c *Client) DeleteAttachment(ctx context.Context, req *artifactregistrypb.DeleteAttachmentRequest, opts ...gax.CallOption) (*DeleteAttachmentOperation, error) {
+	return c.internalClient.DeleteAttachment(ctx, req, opts...)
+}
+
+// DeleteAttachmentOperation returns a new DeleteAttachmentOperation from a given name.
+// The name must be that of a previously created DeleteAttachmentOperation, possibly from a different process.
+func (c *Client) DeleteAttachmentOperation(name string) *DeleteAttachmentOperation {
+	return c.internalClient.DeleteAttachmentOperation(name)
 }
 
 // GetLocation gets information about a location.
@@ -717,6 +912,8 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new artifact registry client based on gRPC.
@@ -759,6 +956,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:         connPool,
 		client:           artifactregistrypb.NewArtifactRegistryClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
@@ -794,7 +992,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -821,6 +1021,8 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new artifact registry rest client.
@@ -854,6 +1056,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -878,6 +1081,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://artifactregistry.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -887,7 +1091,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -924,7 +1130,7 @@ func (c *gRPCClient) ListDockerImages(ctx context.Context, req *artifactregistry
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListDockerImages(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListDockerImages, req, settings.GRPC, c.logger, "ListDockerImages")
 			return err
 		}, opts...)
 		if err != nil {
@@ -959,7 +1165,7 @@ func (c *gRPCClient) GetDockerImage(ctx context.Context, req *artifactregistrypb
 	var resp *artifactregistrypb.DockerImage
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetDockerImage(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetDockerImage, req, settings.GRPC, c.logger, "GetDockerImage")
 		return err
 	}, opts...)
 	if err != nil {
@@ -988,7 +1194,7 @@ func (c *gRPCClient) ListMavenArtifacts(ctx context.Context, req *artifactregist
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListMavenArtifacts(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListMavenArtifacts, req, settings.GRPC, c.logger, "ListMavenArtifacts")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1023,7 +1229,7 @@ func (c *gRPCClient) GetMavenArtifact(ctx context.Context, req *artifactregistry
 	var resp *artifactregistrypb.MavenArtifact
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetMavenArtifact(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetMavenArtifact, req, settings.GRPC, c.logger, "GetMavenArtifact")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1052,7 +1258,7 @@ func (c *gRPCClient) ListNpmPackages(ctx context.Context, req *artifactregistryp
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListNpmPackages(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListNpmPackages, req, settings.GRPC, c.logger, "ListNpmPackages")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1087,7 +1293,7 @@ func (c *gRPCClient) GetNpmPackage(ctx context.Context, req *artifactregistrypb.
 	var resp *artifactregistrypb.NpmPackage
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetNpmPackage(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetNpmPackage, req, settings.GRPC, c.logger, "GetNpmPackage")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1116,7 +1322,7 @@ func (c *gRPCClient) ListPythonPackages(ctx context.Context, req *artifactregist
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListPythonPackages(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListPythonPackages, req, settings.GRPC, c.logger, "ListPythonPackages")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1151,7 +1357,7 @@ func (c *gRPCClient) GetPythonPackage(ctx context.Context, req *artifactregistry
 	var resp *artifactregistrypb.PythonPackage
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetPythonPackage(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetPythonPackage, req, settings.GRPC, c.logger, "GetPythonPackage")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1169,7 +1375,7 @@ func (c *gRPCClient) ImportAptArtifacts(ctx context.Context, req *artifactregist
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ImportAptArtifacts(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ImportAptArtifacts, req, settings.GRPC, c.logger, "ImportAptArtifacts")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1189,7 +1395,7 @@ func (c *gRPCClient) ImportYumArtifacts(ctx context.Context, req *artifactregist
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ImportYumArtifacts(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ImportYumArtifacts, req, settings.GRPC, c.logger, "ImportYumArtifacts")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1220,7 +1426,7 @@ func (c *gRPCClient) ListRepositories(ctx context.Context, req *artifactregistry
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListRepositories(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListRepositories, req, settings.GRPC, c.logger, "ListRepositories")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1255,7 +1461,7 @@ func (c *gRPCClient) GetRepository(ctx context.Context, req *artifactregistrypb.
 	var resp *artifactregistrypb.Repository
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetRepository(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetRepository, req, settings.GRPC, c.logger, "GetRepository")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1273,7 +1479,7 @@ func (c *gRPCClient) CreateRepository(ctx context.Context, req *artifactregistry
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateRepository(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateRepository, req, settings.GRPC, c.logger, "CreateRepository")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1293,7 +1499,7 @@ func (c *gRPCClient) UpdateRepository(ctx context.Context, req *artifactregistry
 	var resp *artifactregistrypb.Repository
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateRepository(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateRepository, req, settings.GRPC, c.logger, "UpdateRepository")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1311,7 +1517,7 @@ func (c *gRPCClient) DeleteRepository(ctx context.Context, req *artifactregistry
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteRepository(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteRepository, req, settings.GRPC, c.logger, "DeleteRepository")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1342,7 +1548,7 @@ func (c *gRPCClient) ListPackages(ctx context.Context, req *artifactregistrypb.L
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListPackages(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListPackages, req, settings.GRPC, c.logger, "ListPackages")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1377,7 +1583,7 @@ func (c *gRPCClient) GetPackage(ctx context.Context, req *artifactregistrypb.Get
 	var resp *artifactregistrypb.Package
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetPackage(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetPackage, req, settings.GRPC, c.logger, "GetPackage")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1395,7 +1601,7 @@ func (c *gRPCClient) DeletePackage(ctx context.Context, req *artifactregistrypb.
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeletePackage(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeletePackage, req, settings.GRPC, c.logger, "DeletePackage")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1426,7 +1632,7 @@ func (c *gRPCClient) ListVersions(ctx context.Context, req *artifactregistrypb.L
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListVersions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListVersions, req, settings.GRPC, c.logger, "ListVersions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1461,7 +1667,7 @@ func (c *gRPCClient) GetVersion(ctx context.Context, req *artifactregistrypb.Get
 	var resp *artifactregistrypb.Version
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetVersion(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetVersion, req, settings.GRPC, c.logger, "GetVersion")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1479,7 +1685,7 @@ func (c *gRPCClient) DeleteVersion(ctx context.Context, req *artifactregistrypb.
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.DeleteVersion(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.DeleteVersion, req, settings.GRPC, c.logger, "DeleteVersion")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1499,7 +1705,7 @@ func (c *gRPCClient) BatchDeleteVersions(ctx context.Context, req *artifactregis
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.BatchDeleteVersions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.BatchDeleteVersions, req, settings.GRPC, c.logger, "BatchDeleteVersions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1508,6 +1714,24 @@ func (c *gRPCClient) BatchDeleteVersions(ctx context.Context, req *artifactregis
 	return &BatchDeleteVersionsOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *gRPCClient) UpdateVersion(ctx context.Context, req *artifactregistrypb.UpdateVersionRequest, opts ...gax.CallOption) (*artifactregistrypb.Version, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "version.name", url.QueryEscape(req.GetVersion().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateVersion[0:len((*c.CallOptions).UpdateVersion):len((*c.CallOptions).UpdateVersion)], opts...)
+	var resp *artifactregistrypb.Version
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateVersion, req, settings.GRPC, c.logger, "UpdateVersion")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *gRPCClient) ListFiles(ctx context.Context, req *artifactregistrypb.ListFilesRequest, opts ...gax.CallOption) *FileIterator {
@@ -1530,7 +1754,7 @@ func (c *gRPCClient) ListFiles(ctx context.Context, req *artifactregistrypb.List
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListFiles(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListFiles, req, settings.GRPC, c.logger, "ListFiles")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1565,7 +1789,45 @@ func (c *gRPCClient) GetFile(ctx context.Context, req *artifactregistrypb.GetFil
 	var resp *artifactregistrypb.File
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetFile(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetFile, req, settings.GRPC, c.logger, "GetFile")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) DeleteFile(ctx context.Context, req *artifactregistrypb.DeleteFileRequest, opts ...gax.CallOption) (*DeleteFileOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteFile[0:len((*c.CallOptions).DeleteFile):len((*c.CallOptions).DeleteFile)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteFile, req, settings.GRPC, c.logger, "DeleteFile")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteFileOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) UpdateFile(ctx context.Context, req *artifactregistrypb.UpdateFileRequest, opts ...gax.CallOption) (*artifactregistrypb.File, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "file.name", url.QueryEscape(req.GetFile().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateFile[0:len((*c.CallOptions).UpdateFile):len((*c.CallOptions).UpdateFile)], opts...)
+	var resp *artifactregistrypb.File
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateFile, req, settings.GRPC, c.logger, "UpdateFile")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1594,7 +1856,7 @@ func (c *gRPCClient) ListTags(ctx context.Context, req *artifactregistrypb.ListT
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListTags(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListTags, req, settings.GRPC, c.logger, "ListTags")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1629,7 +1891,7 @@ func (c *gRPCClient) GetTag(ctx context.Context, req *artifactregistrypb.GetTagR
 	var resp *artifactregistrypb.Tag
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetTag(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetTag, req, settings.GRPC, c.logger, "GetTag")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1647,7 +1909,7 @@ func (c *gRPCClient) CreateTag(ctx context.Context, req *artifactregistrypb.Crea
 	var resp *artifactregistrypb.Tag
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateTag(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateTag, req, settings.GRPC, c.logger, "CreateTag")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1665,7 +1927,7 @@ func (c *gRPCClient) UpdateTag(ctx context.Context, req *artifactregistrypb.Upda
 	var resp *artifactregistrypb.Tag
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateTag(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateTag, req, settings.GRPC, c.logger, "UpdateTag")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1682,7 +1944,121 @@ func (c *gRPCClient) DeleteTag(ctx context.Context, req *artifactregistrypb.Dele
 	opts = append((*c.CallOptions).DeleteTag[0:len((*c.CallOptions).DeleteTag):len((*c.CallOptions).DeleteTag)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteTag(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteTag, req, settings.GRPC, c.logger, "DeleteTag")
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) CreateRule(ctx context.Context, req *artifactregistrypb.CreateRuleRequest, opts ...gax.CallOption) (*artifactregistrypb.Rule, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateRule[0:len((*c.CallOptions).CreateRule):len((*c.CallOptions).CreateRule)], opts...)
+	var resp *artifactregistrypb.Rule
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateRule, req, settings.GRPC, c.logger, "CreateRule")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListRules(ctx context.Context, req *artifactregistrypb.ListRulesRequest, opts ...gax.CallOption) *RuleIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListRules[0:len((*c.CallOptions).ListRules):len((*c.CallOptions).ListRules)], opts...)
+	it := &RuleIterator{}
+	req = proto.Clone(req).(*artifactregistrypb.ListRulesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.Rule, string, error) {
+		resp := &artifactregistrypb.ListRulesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListRules, req, settings.GRPC, c.logger, "ListRules")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetRules(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetRule(ctx context.Context, req *artifactregistrypb.GetRuleRequest, opts ...gax.CallOption) (*artifactregistrypb.Rule, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetRule[0:len((*c.CallOptions).GetRule):len((*c.CallOptions).GetRule)], opts...)
+	var resp *artifactregistrypb.Rule
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetRule, req, settings.GRPC, c.logger, "GetRule")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UpdateRule(ctx context.Context, req *artifactregistrypb.UpdateRuleRequest, opts ...gax.CallOption) (*artifactregistrypb.Rule, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "rule.name", url.QueryEscape(req.GetRule().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateRule[0:len((*c.CallOptions).UpdateRule):len((*c.CallOptions).UpdateRule)], opts...)
+	var resp *artifactregistrypb.Rule
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateRule, req, settings.GRPC, c.logger, "UpdateRule")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) DeleteRule(ctx context.Context, req *artifactregistrypb.DeleteRuleRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteRule[0:len((*c.CallOptions).DeleteRule):len((*c.CallOptions).DeleteRule)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.client.DeleteRule, req, settings.GRPC, c.logger, "DeleteRule")
 		return err
 	}, opts...)
 	return err
@@ -1697,7 +2073,7 @@ func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1715,7 +2091,7 @@ func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1733,7 +2109,7 @@ func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1751,7 +2127,7 @@ func (c *gRPCClient) GetProjectSettings(ctx context.Context, req *artifactregist
 	var resp *artifactregistrypb.ProjectSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetProjectSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetProjectSettings, req, settings.GRPC, c.logger, "GetProjectSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1769,7 +2145,7 @@ func (c *gRPCClient) UpdateProjectSettings(ctx context.Context, req *artifactreg
 	var resp *artifactregistrypb.ProjectSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateProjectSettings(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateProjectSettings, req, settings.GRPC, c.logger, "UpdateProjectSettings")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1787,7 +2163,7 @@ func (c *gRPCClient) GetVPCSCConfig(ctx context.Context, req *artifactregistrypb
 	var resp *artifactregistrypb.VPCSCConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetVPCSCConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetVPCSCConfig, req, settings.GRPC, c.logger, "GetVPCSCConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1805,13 +2181,135 @@ func (c *gRPCClient) UpdateVPCSCConfig(ctx context.Context, req *artifactregistr
 	var resp *artifactregistrypb.VPCSCConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.UpdateVPCSCConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.UpdateVPCSCConfig, req, settings.GRPC, c.logger, "UpdateVPCSCConfig")
 		return err
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *gRPCClient) UpdatePackage(ctx context.Context, req *artifactregistrypb.UpdatePackageRequest, opts ...gax.CallOption) (*artifactregistrypb.Package, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "package.name", url.QueryEscape(req.GetPackage().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdatePackage[0:len((*c.CallOptions).UpdatePackage):len((*c.CallOptions).UpdatePackage)], opts...)
+	var resp *artifactregistrypb.Package
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdatePackage, req, settings.GRPC, c.logger, "UpdatePackage")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListAttachments(ctx context.Context, req *artifactregistrypb.ListAttachmentsRequest, opts ...gax.CallOption) *AttachmentIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListAttachments[0:len((*c.CallOptions).ListAttachments):len((*c.CallOptions).ListAttachments)], opts...)
+	it := &AttachmentIterator{}
+	req = proto.Clone(req).(*artifactregistrypb.ListAttachmentsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.Attachment, string, error) {
+		resp := &artifactregistrypb.ListAttachmentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListAttachments, req, settings.GRPC, c.logger, "ListAttachments")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetAttachments(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetAttachment(ctx context.Context, req *artifactregistrypb.GetAttachmentRequest, opts ...gax.CallOption) (*artifactregistrypb.Attachment, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetAttachment[0:len((*c.CallOptions).GetAttachment):len((*c.CallOptions).GetAttachment)], opts...)
+	var resp *artifactregistrypb.Attachment
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetAttachment, req, settings.GRPC, c.logger, "GetAttachment")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CreateAttachment(ctx context.Context, req *artifactregistrypb.CreateAttachmentRequest, opts ...gax.CallOption) (*CreateAttachmentOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateAttachment[0:len((*c.CallOptions).CreateAttachment):len((*c.CallOptions).CreateAttachment)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateAttachment, req, settings.GRPC, c.logger, "CreateAttachment")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateAttachmentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeleteAttachment(ctx context.Context, req *artifactregistrypb.DeleteAttachmentRequest, opts ...gax.CallOption) (*DeleteAttachmentOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteAttachment[0:len((*c.CallOptions).DeleteAttachment):len((*c.CallOptions).DeleteAttachment)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteAttachment, req, settings.GRPC, c.logger, "DeleteAttachment")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteAttachmentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -1823,7 +2321,7 @@ func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1852,7 +2350,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1887,7 +2385,7 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1944,21 +2442,10 @@ func (c *restClient) ListDockerImages(ctx context.Context, req *artifactregistry
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDockerImages")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2021,17 +2508,7 @@ func (c *restClient) GetDockerImage(ctx context.Context, req *artifactregistrypb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDockerImage")
 		if err != nil {
 			return err
 		}
@@ -2093,21 +2570,10 @@ func (c *restClient) ListMavenArtifacts(ctx context.Context, req *artifactregist
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListMavenArtifacts")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2170,17 +2636,7 @@ func (c *restClient) GetMavenArtifact(ctx context.Context, req *artifactregistry
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetMavenArtifact")
 		if err != nil {
 			return err
 		}
@@ -2242,21 +2698,10 @@ func (c *restClient) ListNpmPackages(ctx context.Context, req *artifactregistryp
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListNpmPackages")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2319,17 +2764,7 @@ func (c *restClient) GetNpmPackage(ctx context.Context, req *artifactregistrypb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetNpmPackage")
 		if err != nil {
 			return err
 		}
@@ -2391,21 +2826,10 @@ func (c *restClient) ListPythonPackages(ctx context.Context, req *artifactregist
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListPythonPackages")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2468,17 +2892,7 @@ func (c *restClient) GetPythonPackage(ctx context.Context, req *artifactregistry
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetPythonPackage")
 		if err != nil {
 			return err
 		}
@@ -2536,21 +2950,10 @@ func (c *restClient) ImportAptArtifacts(ctx context.Context, req *artifactregist
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ImportAptArtifacts")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2609,21 +3012,10 @@ func (c *restClient) ImportYumArtifacts(ctx context.Context, req *artifactregist
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ImportYumArtifacts")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2664,6 +3056,12 @@ func (c *restClient) ListRepositories(ctx context.Context, req *artifactregistry
 
 		params := url.Values{}
 		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -2686,21 +3084,10 @@ func (c *restClient) ListRepositories(ctx context.Context, req *artifactregistry
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListRepositories")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -2763,17 +3150,7 @@ func (c *restClient) GetRepository(ctx context.Context, req *artifactregistrypb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetRepository")
 		if err != nil {
 			return err
 		}
@@ -2831,21 +3208,10 @@ func (c *restClient) CreateRepository(ctx context.Context, req *artifactregistry
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateRepository")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -2881,11 +3247,11 @@ func (c *restClient) UpdateRepository(ctx context.Context, req *artifactregistry
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2910,17 +3276,7 @@ func (c *restClient) UpdateRepository(ctx context.Context, req *artifactregistry
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateRepository")
 		if err != nil {
 			return err
 		}
@@ -2971,21 +3327,10 @@ func (c *restClient) DeleteRepository(ctx context.Context, req *artifactregistry
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteRepository")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3026,6 +3371,12 @@ func (c *restClient) ListPackages(ctx context.Context, req *artifactregistrypb.L
 
 		params := url.Values{}
 		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -3048,21 +3399,10 @@ func (c *restClient) ListPackages(ctx context.Context, req *artifactregistrypb.L
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListPackages")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3125,17 +3465,7 @@ func (c *restClient) GetPackage(ctx context.Context, req *artifactregistrypb.Get
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetPackage")
 		if err != nil {
 			return err
 		}
@@ -3185,21 +3515,10 @@ func (c *restClient) DeletePackage(ctx context.Context, req *artifactregistrypb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeletePackage")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3240,6 +3559,9 @@ func (c *restClient) ListVersions(ctx context.Context, req *artifactregistrypb.L
 
 		params := url.Values{}
 		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
 		if req.GetOrderBy() != "" {
 			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
 		}
@@ -3268,21 +3590,10 @@ func (c *restClient) ListVersions(ctx context.Context, req *artifactregistrypb.L
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListVersions")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3348,17 +3659,7 @@ func (c *restClient) GetVersion(ctx context.Context, req *artifactregistrypb.Get
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetVersion")
 		if err != nil {
 			return err
 		}
@@ -3411,21 +3712,10 @@ func (c *restClient) DeleteVersion(ctx context.Context, req *artifactregistrypb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteVersion")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3482,21 +3772,10 @@ func (c *restClient) BatchDeleteVersions(ctx context.Context, req *artifactregis
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchDeleteVersions")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -3512,6 +3791,70 @@ func (c *restClient) BatchDeleteVersions(ctx context.Context, req *artifactregis
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
+}
+
+// UpdateVersion updates a version.
+func (c *restClient) UpdateVersion(ctx context.Context, req *artifactregistrypb.UpdateVersionRequest, opts ...gax.CallOption) (*artifactregistrypb.Version, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetVersion()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetVersion().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "version.name", url.QueryEscape(req.GetVersion().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateVersion[0:len((*c.CallOptions).UpdateVersion):len((*c.CallOptions).UpdateVersion)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &artifactregistrypb.Version{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateVersion")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // ListFiles lists files.
@@ -3565,21 +3908,10 @@ func (c *restClient) ListFiles(ctx context.Context, req *artifactregistrypb.List
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListFiles")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3642,17 +3974,126 @@ func (c *restClient) GetFile(ctx context.Context, req *artifactregistrypb.GetFil
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetFile")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
 
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
+		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
 
-		buf, err := io.ReadAll(httpRsp.Body)
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteFile deletes a file and all of its content. It is only allowed on generic
+// repositories. The returned operation will complete once the file has been
+// deleted.
+func (c *restClient) DeleteFile(ctx context.Context, req *artifactregistrypb.DeleteFileRequest, opts ...gax.CallOption) (*DeleteFileOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteFile")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteFileOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateFile updates a file.
+func (c *restClient) UpdateFile(ctx context.Context, req *artifactregistrypb.UpdateFileRequest, opts ...gax.CallOption) (*artifactregistrypb.File, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetFile()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetFile().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "file.name", url.QueryEscape(req.GetFile().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateFile[0:len((*c.CallOptions).UpdateFile):len((*c.CallOptions).UpdateFile)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &artifactregistrypb.File{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateFile")
 		if err != nil {
 			return err
 		}
@@ -3717,21 +4158,10 @@ func (c *restClient) ListTags(ctx context.Context, req *artifactregistrypb.ListT
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListTags")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -3794,17 +4224,7 @@ func (c *restClient) GetTag(ctx context.Context, req *artifactregistrypb.GetTagR
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetTag")
 		if err != nil {
 			return err
 		}
@@ -3864,17 +4284,7 @@ func (c *restClient) CreateTag(ctx context.Context, req *artifactregistrypb.Crea
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateTag")
 		if err != nil {
 			return err
 		}
@@ -3909,11 +4319,11 @@ func (c *restClient) UpdateTag(ctx context.Context, req *artifactregistrypb.Upda
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3938,17 +4348,7 @@ func (c *restClient) UpdateTag(ctx context.Context, req *artifactregistrypb.Upda
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateTag")
 		if err != nil {
 			return err
 		}
@@ -3995,15 +4395,295 @@ func (c *restClient) DeleteTag(ctx context.Context, req *artifactregistrypb.Dele
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteTag")
+		return err
+	}, opts...)
+}
+
+// CreateRule creates a rule.
+func (c *restClient) CreateRule(ctx context.Context, req *artifactregistrypb.CreateRuleRequest, opts ...gax.CallOption) (*artifactregistrypb.Rule, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetRule()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/rules", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRuleId() != "" {
+		params.Add("ruleId", fmt.Sprintf("%v", req.GetRuleId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateRule[0:len((*c.CallOptions).CreateRule):len((*c.CallOptions).CreateRule)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &artifactregistrypb.Rule{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
 
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateRule")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListRules lists rules.
+func (c *restClient) ListRules(ctx context.Context, req *artifactregistrypb.ListRulesRequest, opts ...gax.CallOption) *RuleIterator {
+	it := &RuleIterator{}
+	req = proto.Clone(req).(*artifactregistrypb.ListRulesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.Rule, string, error) {
+		resp := &artifactregistrypb.ListRulesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/rules", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListRules")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetRules(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetRule gets a rule.
+func (c *restClient) GetRule(ctx context.Context, req *artifactregistrypb.GetRuleRequest, opts ...gax.CallOption) (*artifactregistrypb.Rule, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetRule[0:len((*c.CallOptions).GetRule):len((*c.CallOptions).GetRule)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &artifactregistrypb.Rule{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetRule")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateRule updates a rule.
+func (c *restClient) UpdateRule(ctx context.Context, req *artifactregistrypb.UpdateRuleRequest, opts ...gax.CallOption) (*artifactregistrypb.Rule, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetRule()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetRule().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "rule.name", url.QueryEscape(req.GetRule().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateRule[0:len((*c.CallOptions).UpdateRule):len((*c.CallOptions).UpdateRule)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &artifactregistrypb.Rule{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateRule")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteRule deletes a rule.
+func (c *restClient) DeleteRule(ctx context.Context, req *artifactregistrypb.DeleteRuleRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteRule")
+		return err
 	}, opts...)
 }
 
@@ -4046,17 +4726,7 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -4109,17 +4779,7 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -4175,17 +4835,7 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
 		if err != nil {
 			return err
 		}
@@ -4235,17 +4885,7 @@ func (c *restClient) GetProjectSettings(ctx context.Context, req *artifactregist
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetProjectSettings")
 		if err != nil {
 			return err
 		}
@@ -4280,11 +4920,11 @@ func (c *restClient) UpdateProjectSettings(ctx context.Context, req *artifactreg
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4309,17 +4949,7 @@ func (c *restClient) UpdateProjectSettings(ctx context.Context, req *artifactreg
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateProjectSettings")
 		if err != nil {
 			return err
 		}
@@ -4369,17 +4999,7 @@ func (c *restClient) GetVPCSCConfig(ctx context.Context, req *artifactregistrypb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetVPCSCConfig")
 		if err != nil {
 			return err
 		}
@@ -4414,11 +5034,11 @@ func (c *restClient) UpdateVPCSCConfig(ctx context.Context, req *artifactregistr
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4443,17 +5063,7 @@ func (c *restClient) UpdateVPCSCConfig(ctx context.Context, req *artifactregistr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateVPCSCConfig")
 		if err != nil {
 			return err
 		}
@@ -4468,6 +5078,318 @@ func (c *restClient) UpdateVPCSCConfig(ctx context.Context, req *artifactregistr
 		return nil, e
 	}
 	return resp, nil
+}
+
+// UpdatePackage updates a package.
+func (c *restClient) UpdatePackage(ctx context.Context, req *artifactregistrypb.UpdatePackageRequest, opts ...gax.CallOption) (*artifactregistrypb.Package, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetPackage()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetPackage().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "package.name", url.QueryEscape(req.GetPackage().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdatePackage[0:len((*c.CallOptions).UpdatePackage):len((*c.CallOptions).UpdatePackage)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &artifactregistrypb.Package{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdatePackage")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListAttachments lists attachments.
+func (c *restClient) ListAttachments(ctx context.Context, req *artifactregistrypb.ListAttachmentsRequest, opts ...gax.CallOption) *AttachmentIterator {
+	it := &AttachmentIterator{}
+	req = proto.Clone(req).(*artifactregistrypb.ListAttachmentsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.Attachment, string, error) {
+		resp := &artifactregistrypb.ListAttachmentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/attachments", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAttachments")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetAttachments(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetAttachment gets an attachment.
+func (c *restClient) GetAttachment(ctx context.Context, req *artifactregistrypb.GetAttachmentRequest, opts ...gax.CallOption) (*artifactregistrypb.Attachment, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetAttachment[0:len((*c.CallOptions).GetAttachment):len((*c.CallOptions).GetAttachment)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &artifactregistrypb.Attachment{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAttachment")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateAttachment creates an attachment. The returned Operation will finish once the
+// attachment has been created. Its response will be the created attachment.
+func (c *restClient) CreateAttachment(ctx context.Context, req *artifactregistrypb.CreateAttachmentRequest, opts ...gax.CallOption) (*CreateAttachmentOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetAttachment()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/attachments", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("attachmentId", fmt.Sprintf("%v", req.GetAttachmentId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateAttachment")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateAttachmentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteAttachment deletes an attachment. The returned Operation will
+// finish once the attachments has been deleted. It will not have any
+// Operation metadata and will return a google.protobuf.Empty response.
+func (c *restClient) DeleteAttachment(ctx context.Context, req *artifactregistrypb.DeleteAttachmentRequest, opts ...gax.CallOption) (*DeleteAttachmentOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteAttachment")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteAttachmentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
 }
 
 // GetLocation gets information about a location.
@@ -4503,17 +5425,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -4578,21 +5490,10 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -4655,17 +5556,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -4700,6 +5591,24 @@ func (c *restClient) BatchDeleteVersionsOperation(name string) *BatchDeleteVersi
 	}
 }
 
+// CreateAttachmentOperation returns a new CreateAttachmentOperation from a given name.
+// The name must be that of a previously created CreateAttachmentOperation, possibly from a different process.
+func (c *gRPCClient) CreateAttachmentOperation(name string) *CreateAttachmentOperation {
+	return &CreateAttachmentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateAttachmentOperation returns a new CreateAttachmentOperation from a given name.
+// The name must be that of a previously created CreateAttachmentOperation, possibly from a different process.
+func (c *restClient) CreateAttachmentOperation(name string) *CreateAttachmentOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateAttachmentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // CreateRepositoryOperation returns a new CreateRepositoryOperation from a given name.
 // The name must be that of a previously created CreateRepositoryOperation, possibly from a different process.
 func (c *gRPCClient) CreateRepositoryOperation(name string) *CreateRepositoryOperation {
@@ -4713,6 +5622,42 @@ func (c *gRPCClient) CreateRepositoryOperation(name string) *CreateRepositoryOpe
 func (c *restClient) CreateRepositoryOperation(name string) *CreateRepositoryOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateRepositoryOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// DeleteAttachmentOperation returns a new DeleteAttachmentOperation from a given name.
+// The name must be that of a previously created DeleteAttachmentOperation, possibly from a different process.
+func (c *gRPCClient) DeleteAttachmentOperation(name string) *DeleteAttachmentOperation {
+	return &DeleteAttachmentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteAttachmentOperation returns a new DeleteAttachmentOperation from a given name.
+// The name must be that of a previously created DeleteAttachmentOperation, possibly from a different process.
+func (c *restClient) DeleteAttachmentOperation(name string) *DeleteAttachmentOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteAttachmentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// DeleteFileOperation returns a new DeleteFileOperation from a given name.
+// The name must be that of a previously created DeleteFileOperation, possibly from a different process.
+func (c *gRPCClient) DeleteFileOperation(name string) *DeleteFileOperation {
+	return &DeleteFileOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteFileOperation returns a new DeleteFileOperation from a given name.
+// The name must be that of a previously created DeleteFileOperation, possibly from a different process.
+func (c *restClient) DeleteFileOperation(name string) *DeleteFileOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteFileOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

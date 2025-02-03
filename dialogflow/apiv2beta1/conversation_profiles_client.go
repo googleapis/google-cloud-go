@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -71,6 +70,7 @@ func defaultConversationProfilesGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -454,6 +454,8 @@ type conversationProfilesGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewConversationProfilesClient creates a new conversation profiles client based on gRPC.
@@ -481,6 +483,7 @@ func NewConversationProfilesClient(ctx context.Context, opts ...option.ClientOpt
 		connPool:                   connPool,
 		conversationProfilesClient: dialogflowpb.NewConversationProfilesClient(connPool),
 		CallOptions:                &client.CallOptions,
+		logger:                     internaloption.GetLogger(opts),
 		operationsClient:           longrunningpb.NewOperationsClient(connPool),
 		locationsClient:            locationpb.NewLocationsClient(connPool),
 	}
@@ -516,7 +519,9 @@ func (c *conversationProfilesGRPCClient) Connection() *grpc.ClientConn {
 func (c *conversationProfilesGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -543,6 +548,8 @@ type conversationProfilesRESTClient struct {
 
 	// Points back to the CallOptions field of the containing ConversationProfilesClient
 	CallOptions **ConversationProfilesCallOptions
+
+	logger *slog.Logger
 }
 
 // NewConversationProfilesRESTClient creates a new conversation profiles rest client.
@@ -561,6 +568,7 @@ func NewConversationProfilesRESTClient(ctx context.Context, opts ...option.Clien
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -585,6 +593,7 @@ func defaultConversationProfilesRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -594,7 +603,9 @@ func defaultConversationProfilesRESTClientOptions() []option.ClientOption {
 func (c *conversationProfilesRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -631,7 +642,7 @@ func (c *conversationProfilesGRPCClient) ListConversationProfiles(ctx context.Co
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.conversationProfilesClient.ListConversationProfiles(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.conversationProfilesClient.ListConversationProfiles, req, settings.GRPC, c.logger, "ListConversationProfiles")
 			return err
 		}, opts...)
 		if err != nil {
@@ -666,7 +677,7 @@ func (c *conversationProfilesGRPCClient) GetConversationProfile(ctx context.Cont
 	var resp *dialogflowpb.ConversationProfile
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.conversationProfilesClient.GetConversationProfile(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.conversationProfilesClient.GetConversationProfile, req, settings.GRPC, c.logger, "GetConversationProfile")
 		return err
 	}, opts...)
 	if err != nil {
@@ -684,7 +695,7 @@ func (c *conversationProfilesGRPCClient) CreateConversationProfile(ctx context.C
 	var resp *dialogflowpb.ConversationProfile
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.conversationProfilesClient.CreateConversationProfile(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.conversationProfilesClient.CreateConversationProfile, req, settings.GRPC, c.logger, "CreateConversationProfile")
 		return err
 	}, opts...)
 	if err != nil {
@@ -702,7 +713,7 @@ func (c *conversationProfilesGRPCClient) UpdateConversationProfile(ctx context.C
 	var resp *dialogflowpb.ConversationProfile
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.conversationProfilesClient.UpdateConversationProfile(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.conversationProfilesClient.UpdateConversationProfile, req, settings.GRPC, c.logger, "UpdateConversationProfile")
 		return err
 	}, opts...)
 	if err != nil {
@@ -719,7 +730,7 @@ func (c *conversationProfilesGRPCClient) DeleteConversationProfile(ctx context.C
 	opts = append((*c.CallOptions).DeleteConversationProfile[0:len((*c.CallOptions).DeleteConversationProfile):len((*c.CallOptions).DeleteConversationProfile)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.conversationProfilesClient.DeleteConversationProfile(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.conversationProfilesClient.DeleteConversationProfile, req, settings.GRPC, c.logger, "DeleteConversationProfile")
 		return err
 	}, opts...)
 	return err
@@ -734,7 +745,7 @@ func (c *conversationProfilesGRPCClient) SetSuggestionFeatureConfig(ctx context.
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.conversationProfilesClient.SetSuggestionFeatureConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.conversationProfilesClient.SetSuggestionFeatureConfig, req, settings.GRPC, c.logger, "SetSuggestionFeatureConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -754,7 +765,7 @@ func (c *conversationProfilesGRPCClient) ClearSuggestionFeatureConfig(ctx contex
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.conversationProfilesClient.ClearSuggestionFeatureConfig(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.conversationProfilesClient.ClearSuggestionFeatureConfig, req, settings.GRPC, c.logger, "ClearSuggestionFeatureConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -774,7 +785,7 @@ func (c *conversationProfilesGRPCClient) GetLocation(ctx context.Context, req *l
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -803,7 +814,7 @@ func (c *conversationProfilesGRPCClient) ListLocations(ctx context.Context, req 
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -837,7 +848,7 @@ func (c *conversationProfilesGRPCClient) CancelOperation(ctx context.Context, re
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -852,7 +863,7 @@ func (c *conversationProfilesGRPCClient) GetOperation(ctx context.Context, req *
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -881,7 +892,7 @@ func (c *conversationProfilesGRPCClient) ListOperations(ctx context.Context, req
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -952,21 +963,10 @@ func (c *conversationProfilesRESTClient) ListConversationProfiles(ctx context.Co
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListConversationProfiles")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1029,17 +1029,7 @@ func (c *conversationProfilesRESTClient) GetConversationProfile(ctx context.Cont
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetConversationProfile")
 		if err != nil {
 			return err
 		}
@@ -1101,17 +1091,7 @@ func (c *conversationProfilesRESTClient) CreateConversationProfile(ctx context.C
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateConversationProfile")
 		if err != nil {
 			return err
 		}
@@ -1151,11 +1131,11 @@ func (c *conversationProfilesRESTClient) UpdateConversationProfile(ctx context.C
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1180,17 +1160,7 @@ func (c *conversationProfilesRESTClient) UpdateConversationProfile(ctx context.C
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateConversationProfile")
 		if err != nil {
 			return err
 		}
@@ -1237,15 +1207,8 @@ func (c *conversationProfilesRESTClient) DeleteConversationProfile(ctx context.C
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteConversationProfile")
+		return err
 	}, opts...)
 }
 
@@ -1305,21 +1268,10 @@ func (c *conversationProfilesRESTClient) SetSuggestionFeatureConfig(ctx context.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetSuggestionFeatureConfig")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1386,21 +1338,10 @@ func (c *conversationProfilesRESTClient) ClearSuggestionFeatureConfig(ctx contex
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ClearSuggestionFeatureConfig")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1451,17 +1392,7 @@ func (c *conversationProfilesRESTClient) GetLocation(ctx context.Context, req *l
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -1526,21 +1457,10 @@ func (c *conversationProfilesRESTClient) ListLocations(ctx context.Context, req 
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1600,15 +1520,8 @@ func (c *conversationProfilesRESTClient) CancelOperation(ctx context.Context, re
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -1645,17 +1558,7 @@ func (c *conversationProfilesRESTClient) GetOperation(ctx context.Context, req *
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -1720,21 +1623,10 @@ func (c *conversationProfilesRESTClient) ListOperations(ctx context.Context, req
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

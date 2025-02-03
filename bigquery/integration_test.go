@@ -24,6 +24,7 @@ import (
 	"math/big"
 	"net/http"
 	"os"
+	"reflect"
 	"sort"
 	"strings"
 	"testing"
@@ -1174,6 +1175,7 @@ type TestStruct struct {
 	RangeDate      *RangeValue `bigquery:"rangedate"` //TODO: remove tags when field normalization works
 	RangeDateTime  *RangeValue `bigquery:"rangedatetime"`
 	RangeTimestamp *RangeValue `bigquery:"rangetimestamp"`
+	RangeArray     []*RangeValue
 	StringArray    []string
 	IntegerArray   []int64
 	FloatArray     []float64
@@ -1207,6 +1209,7 @@ func TestIntegration_InsertAndReadStructs(t *testing.T) {
 		11: DateFieldType,
 		12: DateTimeFieldType,
 		13: TimestampFieldType,
+		14: DateFieldType,
 	} {
 		if schema[idx].Type != RangeFieldType {
 			t.Fatalf("mismatch in expected RANGE element in schema field %d", idx)
@@ -1257,6 +1260,7 @@ func TestIntegration_InsertAndReadStructs(t *testing.T) {
 			rangedate,
 			rangedatetime,
 			rangetimestamp,
+			[]*RangeValue{rangedate},
 			[]string{"a", "b"},
 			[]int64{1, 2},
 			[]float64{1, 1.41},
@@ -1295,6 +1299,7 @@ func TestIntegration_InsertAndReadStructs(t *testing.T) {
 			RangeDate:      rangedate,
 			RangeDateTime:  rangedatetime,
 			RangeTimestamp: rangetimestamp,
+			RangeArray:     []*RangeValue{rangedate},
 		},
 	}
 	var savers []*StructSaver
@@ -2162,6 +2167,7 @@ func initQueryParameterTestCases() {
 	dtm := civil.DateTime{Date: d, Time: tm}
 	ts := time.Date(2016, 3, 20, 15, 04, 05, 0, time.UTC)
 	rat := big.NewRat(13, 10)
+	nrat := big.NewRat(-13, 10)
 	bigRat := big.NewRat(12345, 10e10)
 	rangeTimestamp1 := &RangeValue{
 		Start: time.Date(2016, 3, 20, 15, 04, 05, 0, time.UTC),
@@ -2202,6 +2208,13 @@ func initQueryParameterTestCases() {
 			[]QueryParameter{{Name: "val", Value: rat}},
 			[]Value{rat},
 			rat,
+		},
+		{
+			"NegativeBigRatParam",
+			"SELECT @val",
+			[]QueryParameter{{Name: "val", Value: nrat}},
+			[]Value{nrat},
+			nrat,
 		},
 		{
 			"BoolParam",
@@ -2315,6 +2328,31 @@ func initQueryParameterTestCases() {
 			},
 			[]Value{rangeTimestamp2},
 			rangeTimestamp2,
+		},
+		{
+			"RangeArray",
+			"SELECT @val",
+			[]QueryParameter{
+				{
+					Name: "val",
+					Value: &QueryParameterValue{
+						Type: StandardSQLDataType{
+							ArrayElementType: &StandardSQLDataType{
+								TypeKind: "RANGE",
+								RangeElementType: &StandardSQLDataType{
+									TypeKind: "TIMESTAMP",
+								},
+							},
+						},
+						ArrayValue: []QueryParameterValue{
+							{Value: rangeTimestamp1},
+							{Value: rangeTimestamp2},
+						},
+					},
+				},
+			},
+			[]Value{[]Value{rangeTimestamp1, rangeTimestamp2}},
+			[]interface{}{rangeTimestamp1, rangeTimestamp2},
 		},
 		{
 			"NestedStructParam",
@@ -2524,6 +2562,37 @@ func TestIntegration_QueryParameters(t *testing.T) {
 					tc.parameters[0].Value, got, tc.wantConfig)
 			}
 		})
+	}
+}
+
+func TestIntegration_QueryEmptyArrays(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	q := client.Query("SELECT ARRAY<string>[] as a, ARRAY<STRUCT<name string>>[] as b")
+	it, err := q.Read(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for {
+		vals := map[string]Value{}
+		if err := it.Next(&vals); err != nil {
+			if errors.Is(err, iterator.Done) {
+				break
+			}
+		}
+
+		valueOfA := reflect.ValueOf(vals["a"])
+		if testutil.Equal(vals["a"], nil) || valueOfA.IsNil() {
+			t.Fatalf("expected empty string array to not return nil, but found %v %v %T", valueOfA, vals["a"], vals["a"])
+		}
+
+		valueOfB := reflect.ValueOf(vals["b"])
+		if testutil.Equal(vals["b"], nil) || valueOfB.IsNil() {
+			t.Fatalf("expected empty struct array to not return nil, but found %v %v %T", valueOfB, vals["b"], vals["b"])
+		}
 	}
 }
 
@@ -3383,7 +3452,7 @@ func TestIntegration_ModelLifecycle(t *testing.T) {
 		CREATE MODEL %s
 		OPTIONS (
 			model_type='linear_reg',
-			max_iteration=1,
+			max_iterations=1,
 			learn_rate=0.4,
 			learn_rate_strategy='constant'
 		) AS (
@@ -3530,6 +3599,9 @@ func compareRead(it *RowIterator, want [][]Value, compareTotalRows bool) (msg st
 	}
 	if err != nil {
 		return err.Error(), false
+	}
+	if want != nil && len(it.Schema) == 0 {
+		return "missing schema", false
 	}
 	if len(got) != len(want) {
 		return fmt.Sprintf("%s got %d rows, want %d", jobStr, len(got), len(want)), false

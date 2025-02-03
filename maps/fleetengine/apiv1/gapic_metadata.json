@@ -59,11 +59,6 @@
                 "ListVehicles"
               ]
             },
-            "SearchFuzzedVehicles": {
-              "methods": [
-                "SearchFuzzedVehicles"
-              ]
-            },
             "SearchVehicles": {
               "methods": [
                 "SearchVehicles"
@@ -77,11 +72,6 @@
             "UpdateVehicleAttributes": {
               "methods": [
                 "UpdateVehicleAttributes"
-              ]
-            },
-            "UpdateVehicleLocation": {
-              "methods": [
-                "UpdateVehicleLocation"
               ]
             }
           }

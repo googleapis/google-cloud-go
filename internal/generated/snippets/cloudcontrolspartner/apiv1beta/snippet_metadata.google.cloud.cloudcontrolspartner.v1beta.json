@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/cloudcontrolspartner/apiv1beta",
-    "version": "0.2.0",
+    "version": "1.2.2",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,97 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "cloudcontrolspartner_v1beta_generated_CloudControlsPartnerCore_CreateCustomer_sync",
+      "title": "cloudcontrolspartner CreateCustomer Sample",
+      "description": "CreateCustomer creates a new customer.",
+      "file": "CloudControlsPartnerCoreClient/CreateCustomer/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateCustomer",
+        "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCoreClient.CreateCustomer",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudcontrolspartnerpb.CreateCustomerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cloudcontrolspartnerpb.Customer",
+        "client": {
+          "shortName": "CloudControlsPartnerCoreClient",
+          "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCoreClient"
+        },
+        "method": {
+          "shortName": "CreateCustomer",
+          "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCore.CreateCustomer",
+          "service": {
+            "shortName": "CloudControlsPartnerCore",
+            "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudcontrolspartner_v1beta_generated_CloudControlsPartnerCore_DeleteCustomer_sync",
+      "title": "cloudcontrolspartner DeleteCustomer Sample",
+      "description": "DeleteCustomer delete details of a single customer",
+      "file": "CloudControlsPartnerCoreClient/DeleteCustomer/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteCustomer",
+        "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCoreClient.DeleteCustomer",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudcontrolspartnerpb.DeleteCustomerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "CloudControlsPartnerCoreClient",
+          "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCoreClient"
+        },
+        "method": {
+          "shortName": "DeleteCustomer",
+          "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCore.DeleteCustomer",
+          "service": {
+            "shortName": "CloudControlsPartnerCore",
+            "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "cloudcontrolspartner_v1beta_generated_CloudControlsPartnerCore_GetCustomer_sync",
       "title": "cloudcontrolspartner GetCustomer Sample",
@@ -244,7 +335,7 @@
     {
       "regionTag": "cloudcontrolspartner_v1beta_generated_CloudControlsPartnerCore_ListAccessApprovalRequests_sync",
       "title": "cloudcontrolspartner ListAccessApprovalRequests Sample",
-      "description": "ListAccessApprovalRequests lists access requests associated with a workload",
+      "description": "ListAccessApprovalRequests deprecated: Only returns access approval requests directly associated with\nan assured workload folder.\n\n\nDeprecated: ListAccessApprovalRequests may be removed in a future version.",
       "file": "CloudControlsPartnerCoreClient/ListAccessApprovalRequests/main.go",
       "language": "GO",
       "clientMethod": {
@@ -375,6 +466,52 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudcontrolspartner_v1beta_generated_CloudControlsPartnerCore_UpdateCustomer_sync",
+      "title": "cloudcontrolspartner UpdateCustomer Sample",
+      "description": "UpdateCustomer update details of a single customer",
+      "file": "CloudControlsPartnerCoreClient/UpdateCustomer/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateCustomer",
+        "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCoreClient.UpdateCustomer",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudcontrolspartnerpb.UpdateCustomerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cloudcontrolspartnerpb.Customer",
+        "client": {
+          "shortName": "CloudControlsPartnerCoreClient",
+          "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCoreClient"
+        },
+        "method": {
+          "shortName": "UpdateCustomer",
+          "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCore.UpdateCustomer",
+          "service": {
+            "shortName": "CloudControlsPartnerCore",
+            "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]

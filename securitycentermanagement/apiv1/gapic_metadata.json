@@ -50,6 +50,11 @@
                 "GetLocation"
               ]
             },
+            "GetSecurityCenterService": {
+              "methods": [
+                "GetSecurityCenterService"
+              ]
+            },
             "GetSecurityHealthAnalyticsCustomModule": {
               "methods": [
                 "GetSecurityHealthAnalyticsCustomModule"
@@ -85,6 +90,11 @@
                 "ListLocations"
               ]
             },
+            "ListSecurityCenterServices": {
+              "methods": [
+                "ListSecurityCenterServices"
+              ]
+            },
             "ListSecurityHealthAnalyticsCustomModules": {
               "methods": [
                 "ListSecurityHealthAnalyticsCustomModules"
@@ -98,6 +108,11 @@
             "UpdateEventThreatDetectionCustomModule": {
               "methods": [
                 "UpdateEventThreatDetectionCustomModule"
+              ]
+            },
+            "UpdateSecurityCenterService": {
+              "methods": [
+                "UpdateSecurityCenterService"
               ]
             },
             "UpdateSecurityHealthAnalyticsCustomModule": {
@@ -155,6 +170,11 @@
                 "GetLocation"
               ]
             },
+            "GetSecurityCenterService": {
+              "methods": [
+                "GetSecurityCenterService"
+              ]
+            },
             "GetSecurityHealthAnalyticsCustomModule": {
               "methods": [
                 "GetSecurityHealthAnalyticsCustomModule"
@@ -190,6 +210,11 @@
                 "ListLocations"
               ]
             },
+            "ListSecurityCenterServices": {
+              "methods": [
+                "ListSecurityCenterServices"
+              ]
+            },
             "ListSecurityHealthAnalyticsCustomModules": {
               "methods": [
                 "ListSecurityHealthAnalyticsCustomModules"
@@ -203,6 +228,11 @@
             "UpdateEventThreatDetectionCustomModule": {
               "methods": [
                 "UpdateEventThreatDetectionCustomModule"
+              ]
+            },
+            "UpdateSecurityCenterService": {
+              "methods": [
+                "UpdateSecurityCenterService"
               ]
             },
             "UpdateSecurityHealthAnalyticsCustomModule": {

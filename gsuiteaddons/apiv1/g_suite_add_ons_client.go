@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,7 +28,6 @@ import (
 
 	gsuiteaddonspb "cloud.google.com/go/gsuiteaddons/apiv1/gsuiteaddonspb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -64,6 +63,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://gsuiteaddons.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -247,7 +247,7 @@ func defaultRESTCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods available from Google Workspace Add-ons API.
+// internalClient is an interface that defines the methods available from Google Workspace add-ons API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -263,33 +263,33 @@ type internalClient interface {
 	GetInstallStatus(context.Context, *gsuiteaddonspb.GetInstallStatusRequest, ...gax.CallOption) (*gsuiteaddonspb.InstallStatus, error)
 }
 
-// Client is a client for interacting with Google Workspace Add-ons API.
+// Client is a client for interacting with Google Workspace add-ons API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// A service for managing Google Workspace Add-ons deployments.
+// A service for managing Google Workspace add-ons deployments.
 //
-// A Google Workspace Add-on is a third-party embedded component that can be
+// A Google Workspace add-on is a third-party embedded component that can be
 // installed in Google Workspace Applications like Gmail, Calendar, Drive, and
-// the Google Docs, Sheets, and Slides editors. Google Workspace Add-ons can
+// the Google Docs, Sheets, and Slides editors. Google Workspace add-ons can
 // display UI cards, receive contextual information from the host application,
 // and perform actions in the host application (See:
 // https://developers.google.com/gsuite/add-ons/overview (at https://developers.google.com/gsuite/add-ons/overview) for more information).
 //
-// A Google Workspace Add-on deployment resource specifies metadata about the
+// A Google Workspace add-on deployment resource specifies metadata about the
 // add-on, including a specification of the entry points in the host application
 // that trigger add-on executions (see:
 // https://developers.google.com/gsuite/add-ons/concepts/gsuite-manifests (at https://developers.google.com/gsuite/add-ons/concepts/gsuite-manifests)).
-// Add-on deployments defined via the Google Workspace Add-ons API define their
+// Add-on deployments defined via the Google Workspace add-ons API define their
 // entrypoints using HTTPS URLs (See:
 // https://developers.google.com/gsuite/add-ons/guides/alternate-runtimes (at https://developers.google.com/gsuite/add-ons/guides/alternate-runtimes)),
 //
-// A Google Workspace Add-on deployment can be installed in developer mode,
+// A Google Workspace add-on deployment can be installed in developer mode,
 // which allows an add-on developer to test the experience an end-user would see
 // when installing and running the add-on in their G Suite applications.  When
 // running in developer mode, more detailed error messages are exposed in the
 // add-on UI to aid in debugging.
 //
-// A Google Workspace Add-on deployment can be published to Google Workspace
+// A Google Workspace add-on deployment can be published to Google Workspace
 // Marketplace, which allows other Google Workspace users to discover and
 // install the add-on.  See:
 // https://developers.google.com/gsuite/add-ons/how-tos/publish-add-on-overview (at https://developers.google.com/gsuite/add-ons/how-tos/publish-add-on-overview)
@@ -374,7 +374,7 @@ func (c *Client) GetInstallStatus(ctx context.Context, req *gsuiteaddonspb.GetIn
 	return c.internalClient.GetInstallStatus(ctx, req, opts...)
 }
 
-// gRPCClient is a client for interacting with Google Workspace Add-ons API over gRPC transport.
+// gRPCClient is a client for interacting with Google Workspace add-ons API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type gRPCClient struct {
@@ -389,35 +389,37 @@ type gRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewClient creates a new g suite add ons client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// A service for managing Google Workspace Add-ons deployments.
+// A service for managing Google Workspace add-ons deployments.
 //
-// A Google Workspace Add-on is a third-party embedded component that can be
+// A Google Workspace add-on is a third-party embedded component that can be
 // installed in Google Workspace Applications like Gmail, Calendar, Drive, and
-// the Google Docs, Sheets, and Slides editors. Google Workspace Add-ons can
+// the Google Docs, Sheets, and Slides editors. Google Workspace add-ons can
 // display UI cards, receive contextual information from the host application,
 // and perform actions in the host application (See:
 // https://developers.google.com/gsuite/add-ons/overview (at https://developers.google.com/gsuite/add-ons/overview) for more information).
 //
-// A Google Workspace Add-on deployment resource specifies metadata about the
+// A Google Workspace add-on deployment resource specifies metadata about the
 // add-on, including a specification of the entry points in the host application
 // that trigger add-on executions (see:
 // https://developers.google.com/gsuite/add-ons/concepts/gsuite-manifests (at https://developers.google.com/gsuite/add-ons/concepts/gsuite-manifests)).
-// Add-on deployments defined via the Google Workspace Add-ons API define their
+// Add-on deployments defined via the Google Workspace add-ons API define their
 // entrypoints using HTTPS URLs (See:
 // https://developers.google.com/gsuite/add-ons/guides/alternate-runtimes (at https://developers.google.com/gsuite/add-ons/guides/alternate-runtimes)),
 //
-// A Google Workspace Add-on deployment can be installed in developer mode,
+// A Google Workspace add-on deployment can be installed in developer mode,
 // which allows an add-on developer to test the experience an end-user would see
 // when installing and running the add-on in their G Suite applications.  When
 // running in developer mode, more detailed error messages are exposed in the
 // add-on UI to aid in debugging.
 //
-// A Google Workspace Add-on deployment can be published to Google Workspace
+// A Google Workspace add-on deployment can be published to Google Workspace
 // Marketplace, which allows other Google Workspace users to discover and
 // install the add-on.  See:
 // https://developers.google.com/gsuite/add-ons/how-tos/publish-add-on-overview (at https://developers.google.com/gsuite/add-ons/how-tos/publish-add-on-overview)
@@ -442,6 +444,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		connPool:    connPool,
 		client:      gsuiteaddonspb.NewGSuiteAddOnsClient(connPool),
 		CallOptions: &client.CallOptions,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -464,7 +467,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -486,34 +491,36 @@ type restClient struct {
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
+
+	logger *slog.Logger
 }
 
 // NewRESTClient creates a new g suite add ons rest client.
 //
-// A service for managing Google Workspace Add-ons deployments.
+// A service for managing Google Workspace add-ons deployments.
 //
-// A Google Workspace Add-on is a third-party embedded component that can be
+// A Google Workspace add-on is a third-party embedded component that can be
 // installed in Google Workspace Applications like Gmail, Calendar, Drive, and
-// the Google Docs, Sheets, and Slides editors. Google Workspace Add-ons can
+// the Google Docs, Sheets, and Slides editors. Google Workspace add-ons can
 // display UI cards, receive contextual information from the host application,
 // and perform actions in the host application (See:
 // https://developers.google.com/gsuite/add-ons/overview (at https://developers.google.com/gsuite/add-ons/overview) for more information).
 //
-// A Google Workspace Add-on deployment resource specifies metadata about the
+// A Google Workspace add-on deployment resource specifies metadata about the
 // add-on, including a specification of the entry points in the host application
 // that trigger add-on executions (see:
 // https://developers.google.com/gsuite/add-ons/concepts/gsuite-manifests (at https://developers.google.com/gsuite/add-ons/concepts/gsuite-manifests)).
-// Add-on deployments defined via the Google Workspace Add-ons API define their
+// Add-on deployments defined via the Google Workspace add-ons API define their
 // entrypoints using HTTPS URLs (See:
 // https://developers.google.com/gsuite/add-ons/guides/alternate-runtimes (at https://developers.google.com/gsuite/add-ons/guides/alternate-runtimes)),
 //
-// A Google Workspace Add-on deployment can be installed in developer mode,
+// A Google Workspace add-on deployment can be installed in developer mode,
 // which allows an add-on developer to test the experience an end-user would see
 // when installing and running the add-on in their G Suite applications.  When
 // running in developer mode, more detailed error messages are exposed in the
 // add-on UI to aid in debugging.
 //
-// A Google Workspace Add-on deployment can be published to Google Workspace
+// A Google Workspace add-on deployment can be published to Google Workspace
 // Marketplace, which allows other Google Workspace users to discover and
 // install the add-on.  See:
 // https://developers.google.com/gsuite/add-ons/how-tos/publish-add-on-overview (at https://developers.google.com/gsuite/add-ons/how-tos/publish-add-on-overview)
@@ -530,6 +537,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -544,6 +552,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://gsuiteaddons.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -553,7 +562,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -579,7 +590,7 @@ func (c *gRPCClient) GetAuthorization(ctx context.Context, req *gsuiteaddonspb.G
 	var resp *gsuiteaddonspb.Authorization
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetAuthorization(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetAuthorization, req, settings.GRPC, c.logger, "GetAuthorization")
 		return err
 	}, opts...)
 	if err != nil {
@@ -597,7 +608,7 @@ func (c *gRPCClient) CreateDeployment(ctx context.Context, req *gsuiteaddonspb.C
 	var resp *gsuiteaddonspb.Deployment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.CreateDeployment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.CreateDeployment, req, settings.GRPC, c.logger, "CreateDeployment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -615,7 +626,7 @@ func (c *gRPCClient) ReplaceDeployment(ctx context.Context, req *gsuiteaddonspb.
 	var resp *gsuiteaddonspb.Deployment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.ReplaceDeployment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.ReplaceDeployment, req, settings.GRPC, c.logger, "ReplaceDeployment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -633,7 +644,7 @@ func (c *gRPCClient) GetDeployment(ctx context.Context, req *gsuiteaddonspb.GetD
 	var resp *gsuiteaddonspb.Deployment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetDeployment(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetDeployment, req, settings.GRPC, c.logger, "GetDeployment")
 		return err
 	}, opts...)
 	if err != nil {
@@ -662,7 +673,7 @@ func (c *gRPCClient) ListDeployments(ctx context.Context, req *gsuiteaddonspb.Li
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.client.ListDeployments(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.client.ListDeployments, req, settings.GRPC, c.logger, "ListDeployments")
 			return err
 		}, opts...)
 		if err != nil {
@@ -696,7 +707,7 @@ func (c *gRPCClient) DeleteDeployment(ctx context.Context, req *gsuiteaddonspb.D
 	opts = append((*c.CallOptions).DeleteDeployment[0:len((*c.CallOptions).DeleteDeployment):len((*c.CallOptions).DeleteDeployment)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteDeployment(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.DeleteDeployment, req, settings.GRPC, c.logger, "DeleteDeployment")
 		return err
 	}, opts...)
 	return err
@@ -710,7 +721,7 @@ func (c *gRPCClient) InstallDeployment(ctx context.Context, req *gsuiteaddonspb.
 	opts = append((*c.CallOptions).InstallDeployment[0:len((*c.CallOptions).InstallDeployment):len((*c.CallOptions).InstallDeployment)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.InstallDeployment(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.InstallDeployment, req, settings.GRPC, c.logger, "InstallDeployment")
 		return err
 	}, opts...)
 	return err
@@ -724,7 +735,7 @@ func (c *gRPCClient) UninstallDeployment(ctx context.Context, req *gsuiteaddonsp
 	opts = append((*c.CallOptions).UninstallDeployment[0:len((*c.CallOptions).UninstallDeployment):len((*c.CallOptions).UninstallDeployment)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.UninstallDeployment(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.client.UninstallDeployment, req, settings.GRPC, c.logger, "UninstallDeployment")
 		return err
 	}, opts...)
 	return err
@@ -739,7 +750,7 @@ func (c *gRPCClient) GetInstallStatus(ctx context.Context, req *gsuiteaddonspb.G
 	var resp *gsuiteaddonspb.InstallStatus
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetInstallStatus(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.client.GetInstallStatus, req, settings.GRPC, c.logger, "GetInstallStatus")
 		return err
 	}, opts...)
 	if err != nil {
@@ -781,17 +792,7 @@ func (c *restClient) GetAuthorization(ctx context.Context, req *gsuiteaddonspb.G
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAuthorization")
 		if err != nil {
 			return err
 		}
@@ -849,17 +850,7 @@ func (c *restClient) CreateDeployment(ctx context.Context, req *gsuiteaddonspb.C
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDeployment")
 		if err != nil {
 			return err
 		}
@@ -916,17 +907,7 @@ func (c *restClient) ReplaceDeployment(ctx context.Context, req *gsuiteaddonspb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ReplaceDeployment")
 		if err != nil {
 			return err
 		}
@@ -976,17 +957,7 @@ func (c *restClient) GetDeployment(ctx context.Context, req *gsuiteaddonspb.GetD
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDeployment")
 		if err != nil {
 			return err
 		}
@@ -1048,21 +1019,10 @@ func (c *restClient) ListDeployments(ctx context.Context, req *gsuiteaddonspb.Li
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDeployments")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1125,15 +1085,8 @@ func (c *restClient) DeleteDeployment(ctx context.Context, req *gsuiteaddonspb.D
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDeployment")
+		return err
 	}, opts...)
 }
 
@@ -1175,15 +1128,8 @@ func (c *restClient) InstallDeployment(ctx context.Context, req *gsuiteaddonspb.
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "InstallDeployment")
+		return err
 	}, opts...)
 }
 
@@ -1225,15 +1171,8 @@ func (c *restClient) UninstallDeployment(ctx context.Context, req *gsuiteaddonsp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UninstallDeployment")
+		return err
 	}, opts...)
 }
 
@@ -1270,17 +1209,7 @@ func (c *restClient) GetInstallStatus(ctx context.Context, req *gsuiteaddonspb.G
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetInstallStatus")
 		if err != nil {
 			return err
 		}

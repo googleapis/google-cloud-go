@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -50,6 +49,7 @@ type ReasoningEngineCallOptions struct {
 	CreateReasoningEngine []gax.CallOption
 	GetReasoningEngine    []gax.CallOption
 	ListReasoningEngines  []gax.CallOption
+	UpdateReasoningEngine []gax.CallOption
 	DeleteReasoningEngine []gax.CallOption
 	GetLocation           []gax.CallOption
 	ListLocations         []gax.CallOption
@@ -72,6 +72,7 @@ func defaultReasoningEngineGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -82,6 +83,7 @@ func defaultReasoningEngineCallOptions() *ReasoningEngineCallOptions {
 		CreateReasoningEngine: []gax.CallOption{},
 		GetReasoningEngine:    []gax.CallOption{},
 		ListReasoningEngines:  []gax.CallOption{},
+		UpdateReasoningEngine: []gax.CallOption{},
 		DeleteReasoningEngine: []gax.CallOption{},
 		GetLocation:           []gax.CallOption{},
 		ListLocations:         []gax.CallOption{},
@@ -101,6 +103,7 @@ func defaultReasoningEngineRESTCallOptions() *ReasoningEngineCallOptions {
 		CreateReasoningEngine: []gax.CallOption{},
 		GetReasoningEngine:    []gax.CallOption{},
 		ListReasoningEngines:  []gax.CallOption{},
+		UpdateReasoningEngine: []gax.CallOption{},
 		DeleteReasoningEngine: []gax.CallOption{},
 		GetLocation:           []gax.CallOption{},
 		ListLocations:         []gax.CallOption{},
@@ -124,6 +127,8 @@ type internalReasoningEngineClient interface {
 	CreateReasoningEngineOperation(name string) *CreateReasoningEngineOperation
 	GetReasoningEngine(context.Context, *aiplatformpb.GetReasoningEngineRequest, ...gax.CallOption) (*aiplatformpb.ReasoningEngine, error)
 	ListReasoningEngines(context.Context, *aiplatformpb.ListReasoningEnginesRequest, ...gax.CallOption) *ReasoningEngineIterator
+	UpdateReasoningEngine(context.Context, *aiplatformpb.UpdateReasoningEngineRequest, ...gax.CallOption) (*UpdateReasoningEngineOperation, error)
+	UpdateReasoningEngineOperation(name string) *UpdateReasoningEngineOperation
 	DeleteReasoningEngine(context.Context, *aiplatformpb.DeleteReasoningEngineRequest, ...gax.CallOption) (*DeleteReasoningEngineOperation, error)
 	DeleteReasoningEngineOperation(name string) *DeleteReasoningEngineOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
@@ -197,6 +202,17 @@ func (c *ReasoningEngineClient) GetReasoningEngine(ctx context.Context, req *aip
 // ListReasoningEngines lists reasoning engines in a location.
 func (c *ReasoningEngineClient) ListReasoningEngines(ctx context.Context, req *aiplatformpb.ListReasoningEnginesRequest, opts ...gax.CallOption) *ReasoningEngineIterator {
 	return c.internalClient.ListReasoningEngines(ctx, req, opts...)
+}
+
+// UpdateReasoningEngine updates a reasoning engine.
+func (c *ReasoningEngineClient) UpdateReasoningEngine(ctx context.Context, req *aiplatformpb.UpdateReasoningEngineRequest, opts ...gax.CallOption) (*UpdateReasoningEngineOperation, error) {
+	return c.internalClient.UpdateReasoningEngine(ctx, req, opts...)
+}
+
+// UpdateReasoningEngineOperation returns a new UpdateReasoningEngineOperation from a given name.
+// The name must be that of a previously created UpdateReasoningEngineOperation, possibly from a different process.
+func (c *ReasoningEngineClient) UpdateReasoningEngineOperation(name string) *UpdateReasoningEngineOperation {
+	return c.internalClient.UpdateReasoningEngineOperation(name)
 }
 
 // DeleteReasoningEngine deletes a reasoning engine.
@@ -297,6 +313,8 @@ type reasoningEngineGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewReasoningEngineClient creates a new reasoning engine service client based on gRPC.
@@ -323,6 +341,7 @@ func NewReasoningEngineClient(ctx context.Context, opts ...option.ClientOption) 
 		connPool:              connPool,
 		reasoningEngineClient: aiplatformpb.NewReasoningEngineServiceClient(connPool),
 		CallOptions:           &client.CallOptions,
+		logger:                internaloption.GetLogger(opts),
 		operationsClient:      longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:       iampb.NewIAMPolicyClient(connPool),
 		locationsClient:       locationpb.NewLocationsClient(connPool),
@@ -359,7 +378,9 @@ func (c *reasoningEngineGRPCClient) Connection() *grpc.ClientConn {
 func (c *reasoningEngineGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -386,6 +407,8 @@ type reasoningEngineRESTClient struct {
 
 	// Points back to the CallOptions field of the containing ReasoningEngineClient
 	CallOptions **ReasoningEngineCallOptions
+
+	logger *slog.Logger
 }
 
 // NewReasoningEngineRESTClient creates a new reasoning engine service rest client.
@@ -403,6 +426,7 @@ func NewReasoningEngineRESTClient(ctx context.Context, opts ...option.ClientOpti
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -427,6 +451,7 @@ func defaultReasoningEngineRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -436,7 +461,9 @@ func defaultReasoningEngineRESTClientOptions() []option.ClientOption {
 func (c *reasoningEngineRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -462,7 +489,7 @@ func (c *reasoningEngineGRPCClient) CreateReasoningEngine(ctx context.Context, r
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.reasoningEngineClient.CreateReasoningEngine(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.reasoningEngineClient.CreateReasoningEngine, req, settings.GRPC, c.logger, "CreateReasoningEngine")
 		return err
 	}, opts...)
 	if err != nil {
@@ -482,7 +509,7 @@ func (c *reasoningEngineGRPCClient) GetReasoningEngine(ctx context.Context, req 
 	var resp *aiplatformpb.ReasoningEngine
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.reasoningEngineClient.GetReasoningEngine(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.reasoningEngineClient.GetReasoningEngine, req, settings.GRPC, c.logger, "GetReasoningEngine")
 		return err
 	}, opts...)
 	if err != nil {
@@ -511,7 +538,7 @@ func (c *reasoningEngineGRPCClient) ListReasoningEngines(ctx context.Context, re
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.reasoningEngineClient.ListReasoningEngines(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.reasoningEngineClient.ListReasoningEngines, req, settings.GRPC, c.logger, "ListReasoningEngines")
 			return err
 		}, opts...)
 		if err != nil {
@@ -537,6 +564,26 @@ func (c *reasoningEngineGRPCClient) ListReasoningEngines(ctx context.Context, re
 	return it
 }
 
+func (c *reasoningEngineGRPCClient) UpdateReasoningEngine(ctx context.Context, req *aiplatformpb.UpdateReasoningEngineRequest, opts ...gax.CallOption) (*UpdateReasoningEngineOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "reasoning_engine.name", url.QueryEscape(req.GetReasoningEngine().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateReasoningEngine[0:len((*c.CallOptions).UpdateReasoningEngine):len((*c.CallOptions).UpdateReasoningEngine)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.reasoningEngineClient.UpdateReasoningEngine, req, settings.GRPC, c.logger, "UpdateReasoningEngine")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateReasoningEngineOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *reasoningEngineGRPCClient) DeleteReasoningEngine(ctx context.Context, req *aiplatformpb.DeleteReasoningEngineRequest, opts ...gax.CallOption) (*DeleteReasoningEngineOperation, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -546,7 +593,7 @@ func (c *reasoningEngineGRPCClient) DeleteReasoningEngine(ctx context.Context, r
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.reasoningEngineClient.DeleteReasoningEngine(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.reasoningEngineClient.DeleteReasoningEngine, req, settings.GRPC, c.logger, "DeleteReasoningEngine")
 		return err
 	}, opts...)
 	if err != nil {
@@ -566,7 +613,7 @@ func (c *reasoningEngineGRPCClient) GetLocation(ctx context.Context, req *locati
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -595,7 +642,7 @@ func (c *reasoningEngineGRPCClient) ListLocations(ctx context.Context, req *loca
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -630,7 +677,7 @@ func (c *reasoningEngineGRPCClient) GetIamPolicy(ctx context.Context, req *iampb
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -648,7 +695,7 @@ func (c *reasoningEngineGRPCClient) SetIamPolicy(ctx context.Context, req *iampb
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -666,7 +713,7 @@ func (c *reasoningEngineGRPCClient) TestIamPermissions(ctx context.Context, req 
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -683,7 +730,7 @@ func (c *reasoningEngineGRPCClient) CancelOperation(ctx context.Context, req *lo
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -697,7 +744,7 @@ func (c *reasoningEngineGRPCClient) DeleteOperation(ctx context.Context, req *lo
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -712,7 +759,7 @@ func (c *reasoningEngineGRPCClient) GetOperation(ctx context.Context, req *longr
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -741,7 +788,7 @@ func (c *reasoningEngineGRPCClient) ListOperations(ctx context.Context, req *lon
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -776,7 +823,7 @@ func (c *reasoningEngineGRPCClient) WaitOperation(ctx context.Context, req *long
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.WaitOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.WaitOperation, req, settings.GRPC, c.logger, "WaitOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -800,6 +847,11 @@ func (c *reasoningEngineRESTClient) CreateReasoningEngine(ctx context.Context, r
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/reasoningEngines", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
@@ -819,21 +871,10 @@ func (c *reasoningEngineRESTClient) CreateReasoningEngine(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateReasoningEngine")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -859,6 +900,11 @@ func (c *reasoningEngineRESTClient) GetReasoningEngine(ctx context.Context, req 
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -879,17 +925,7 @@ func (c *reasoningEngineRESTClient) GetReasoningEngine(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetReasoningEngine")
 		if err != nil {
 			return err
 		}
@@ -928,6 +964,7 @@ func (c *reasoningEngineRESTClient) ListReasoningEngines(ctx context.Context, re
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/reasoningEngines", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -953,21 +990,10 @@ func (c *reasoningEngineRESTClient) ListReasoningEngines(ctx context.Context, re
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListReasoningEngines")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -997,6 +1023,73 @@ func (c *reasoningEngineRESTClient) ListReasoningEngines(ctx context.Context, re
 	return it
 }
 
+// UpdateReasoningEngine updates a reasoning engine.
+func (c *reasoningEngineRESTClient) UpdateReasoningEngine(ctx context.Context, req *aiplatformpb.UpdateReasoningEngineRequest, opts ...gax.CallOption) (*UpdateReasoningEngineOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetReasoningEngine()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetReasoningEngine().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "reasoning_engine.name", url.QueryEscape(req.GetReasoningEngine().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateReasoningEngine")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/ui/%s", resp.GetName())
+	return &UpdateReasoningEngineOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // DeleteReasoningEngine deletes a reasoning engine.
 func (c *reasoningEngineRESTClient) DeleteReasoningEngine(ctx context.Context, req *aiplatformpb.DeleteReasoningEngineRequest, opts ...gax.CallOption) (*DeleteReasoningEngineOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -1004,6 +1097,11 @@ func (c *reasoningEngineRESTClient) DeleteReasoningEngine(ctx context.Context, r
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -1024,21 +1122,10 @@ func (c *reasoningEngineRESTClient) DeleteReasoningEngine(ctx context.Context, r
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteReasoningEngine")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1064,6 +1151,11 @@ func (c *reasoningEngineRESTClient) GetLocation(ctx context.Context, req *locati
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1084,17 +1176,7 @@ func (c *reasoningEngineRESTClient) GetLocation(ctx context.Context, req *locati
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
 		if err != nil {
 			return err
 		}
@@ -1133,6 +1215,7 @@ func (c *reasoningEngineRESTClient) ListLocations(ctx context.Context, req *loca
 		baseUrl.Path += fmt.Sprintf("/ui/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1158,21 +1241,10 @@ func (c *reasoningEngineRESTClient) ListLocations(ctx context.Context, req *loca
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1217,6 +1289,11 @@ func (c *reasoningEngineRESTClient) GetIamPolicy(ctx context.Context, req *iampb
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:getIamPolicy", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -1237,17 +1314,7 @@ func (c *reasoningEngineRESTClient) GetIamPolicy(ctx context.Context, req *iampb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -1282,6 +1349,11 @@ func (c *reasoningEngineRESTClient) SetIamPolicy(ctx context.Context, req *iampb
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:setIamPolicy", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -1302,17 +1374,7 @@ func (c *reasoningEngineRESTClient) SetIamPolicy(ctx context.Context, req *iampb
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -1349,6 +1411,11 @@ func (c *reasoningEngineRESTClient) TestIamPermissions(ctx context.Context, req 
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:testIamPermissions", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -1369,17 +1436,7 @@ func (c *reasoningEngineRESTClient) TestIamPermissions(ctx context.Context, req 
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
 		if err != nil {
 			return err
 		}
@@ -1404,6 +1461,11 @@ func (c *reasoningEngineRESTClient) CancelOperation(ctx context.Context, req *lo
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v:cancel", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1421,15 +1483,8 @@ func (c *reasoningEngineRESTClient) CancelOperation(ctx context.Context, req *lo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "CancelOperation")
+		return err
 	}, opts...)
 }
 
@@ -1440,6 +1495,11 @@ func (c *reasoningEngineRESTClient) DeleteOperation(ctx context.Context, req *lo
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -1458,15 +1518,8 @@ func (c *reasoningEngineRESTClient) DeleteOperation(ctx context.Context, req *lo
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOperation")
+		return err
 	}, opts...)
 }
 
@@ -1477,6 +1530,11 @@ func (c *reasoningEngineRESTClient) GetOperation(ctx context.Context, req *longr
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -1498,17 +1556,7 @@ func (c *reasoningEngineRESTClient) GetOperation(ctx context.Context, req *longr
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -1547,6 +1595,7 @@ func (c *reasoningEngineRESTClient) ListOperations(ctx context.Context, req *lon
 		baseUrl.Path += fmt.Sprintf("/ui/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1572,21 +1621,10 @@ func (c *reasoningEngineRESTClient) ListOperations(ctx context.Context, req *lon
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -1625,12 +1663,13 @@ func (c *reasoningEngineRESTClient) WaitOperation(ctx context.Context, req *long
 	baseUrl.Path += fmt.Sprintf("/ui/%v:wait", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetTimeout() != nil {
-		timeout, err := protojson.Marshal(req.GetTimeout())
+		field, err := protojson.Marshal(req.GetTimeout())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("timeout", string(timeout[1:len(timeout)-1]))
+		params.Add("timeout", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1655,17 +1694,7 @@ func (c *reasoningEngineRESTClient) WaitOperation(ctx context.Context, req *long
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "WaitOperation")
 		if err != nil {
 			return err
 		}
@@ -1713,6 +1742,24 @@ func (c *reasoningEngineGRPCClient) DeleteReasoningEngineOperation(name string) 
 func (c *reasoningEngineRESTClient) DeleteReasoningEngineOperation(name string) *DeleteReasoningEngineOperation {
 	override := fmt.Sprintf("/ui/%s", name)
 	return &DeleteReasoningEngineOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// UpdateReasoningEngineOperation returns a new UpdateReasoningEngineOperation from a given name.
+// The name must be that of a previously created UpdateReasoningEngineOperation, possibly from a different process.
+func (c *reasoningEngineGRPCClient) UpdateReasoningEngineOperation(name string) *UpdateReasoningEngineOperation {
+	return &UpdateReasoningEngineOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateReasoningEngineOperation returns a new UpdateReasoningEngineOperation from a given name.
+// The name must be that of a previously created UpdateReasoningEngineOperation, possibly from a different process.
+func (c *reasoningEngineRESTClient) UpdateReasoningEngineOperation(name string) *UpdateReasoningEngineOperation {
+	override := fmt.Sprintf("/ui/%s", name)
+	return &UpdateReasoningEngineOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

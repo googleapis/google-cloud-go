@@ -1,5 +1,150 @@
 # Changelog
 
+## [0.10.0](https://github.com/googleapis/google-cloud-go/compare/ai/v0.9.0...ai/v0.10.0) (2025-01-08)
+
+
+### Features
+
+* **ai/generativelanguage:** Add civic_integrity toggle ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+* **ai/generativelanguage:** Add civic_integrity toggle to generation_config ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+* **ai/generativelanguage:** Add GenerateContentRespoinse.model_version ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **ai/generativelanguage:** Add GoogleSearch tool type ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+* **ai/generativelanguage:** Add GroundingMetadata.web_search_queries ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **ai/generativelanguage:** Add id to FunctionCall and FunctionResponse ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+* **ai/generativelanguage:** Add image_safety block_reason + finish_reason ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+* **ai/generativelanguage:** Add image_safety block_reason + finish_reason ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+* **ai/generativelanguage:** Add response_modalities to generation_config ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+* **ai/generativelanguage:** Add return type `Schema response` to function declarations ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+* **ai/generativelanguage:** Add voice_config to generation_config ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+* **ai/generativelanguage:** Adds `GenerateContentResponse.model_version` output ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **ai/generativelanguage:** Adds search grounding ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **ai:** New client(s) ([#11407](https://github.com/googleapis/google-cloud-go/issues/11407)) ([5b04931](https://github.com/googleapis/google-cloud-go/commit/5b04931038c8722dbe517deabb91e65ca351c76d))
+
+
+### Bug Fixes
+
+* **ai:** Update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+
+
+### Documentation
+
+* **ai/generativelanguage:** Small updates ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **ai/generativelanguage:** Some small updates. ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+* **ai/generativelanguage:** Update safety filter list to include civic_integrity ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+* **ai/generativelanguage:** Update safety filter list to include civic_integrity ([2e4feb9](https://github.com/googleapis/google-cloud-go/commit/2e4feb938ce9ab023c8aa6bd1dbdf36fe589213a))
+
+## [0.9.0](https://github.com/googleapis/google-cloud-go/compare/ai/v0.8.2...ai/v0.9.0) (2024-11-13)
+
+
+### Features
+
+* **ai/generativelanguage:** Add GenerationConfig.{presence_penalty, frequency_penalty, logprobs, response_logprobs, logprobs} and Candidate.{avg_logprobs, logprobs_result} ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+* **ai/generativelanguage:** Add GenerationConfig.{presence_penalty, frequency_penalty, logprobs, response_logprobs, logprobs} and Candidate.{avg_logprobs, logprobs_result} ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+* **ai/generativelanguage:** Add GoogleSearchRetrieval tool and candidate.grounding_metadata ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+* **ai/generativelanguage:** Add HarmBlockThreshold.OFF ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+* **ai/generativelanguage:** Add HarmBlockThreshold.OFF ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+* **ai/generativelanguage:** Add HarmCategory.HARM_CATEGORY_CIVIC_INTEGRITY ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+* **ai/generativelanguage:** Add HarmCategory.HARM_CATEGORY_CIVIC_INTEGRITY ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+* **ai/generativelanguage:** Add model max_temperature ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+* **ai/generativelanguage:** Add new PromptFeedback and FinishReason entries ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+* **ai/generativelanguage:** Add new PromptFeedback and FinishReason entries for https ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+* **ai/generativelanguage:** Add PredictionService (for Imagen) ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+* **ai/generativelanguage:** Add Schema.min_items ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+* **ai/generativelanguage:** Add TunedModels.reader_project_numbers ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+* **ai:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+
+### Bug Fixes
+
+* **ai:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+* **ai:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+* **ai:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **ai:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
+
+### Documentation
+
+* **ai/generativelanguage:** Many small fixes ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+* **ai/generativelanguage:** Many small fixes ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+* **ai/generativelanguage:** Small fixes ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+* **ai/generativelanguage:** Small fixes ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+* **ai/generativelanguage:** Tag HarmCategories by the model family they're used on. ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+* **ai/generativelanguage:** Tag HarmCategories by the model family they're used on. ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+
+## [0.8.2](https://github.com/googleapis/google-cloud-go/compare/ai/v0.8.1...ai/v0.8.2) (2024-07-22)
+
+
+### Bug Fixes
+
+* **ai:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+## [0.8.1](https://github.com/googleapis/google-cloud-go/compare/ai/v0.8.0...ai/v0.8.1) (2024-07-19)
+
+
+### Bug Fixes
+
+* **ai:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+* **ai:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [0.8.0](https://github.com/googleapis/google-cloud-go/compare/ai/v0.7.0...ai/v0.8.0) (2024-07-01)
+
+
+### Features
+
+* **ai/generativelanguage:** Add code execution ([eec7a3b](https://github.com/googleapis/google-cloud-go/commit/eec7a3b5c00fc18076f410ddc4910cdcc61c702c))
+* **ai/generativelanguage:** Add max_temperature ([eec7a3b](https://github.com/googleapis/google-cloud-go/commit/eec7a3b5c00fc18076f410ddc4910cdcc61c702c))
+
+
+### Documentation
+
+* **ai/generativelanguage:** Minor fixes ([eec7a3b](https://github.com/googleapis/google-cloud-go/commit/eec7a3b5c00fc18076f410ddc4910cdcc61c702c))
+
+## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/ai/v0.6.0...ai/v0.7.0) (2024-06-12)
+
+
+### Features
+
+* **ai/generativelanguage/apiv1beta:** Add SetGoogleClientInfo for all clients ([#10272](https://github.com/googleapis/google-cloud-go/issues/10272)) ([0dee490](https://github.com/googleapis/google-cloud-go/commit/0dee49034889f59160bd1beb8d5573fe002eb56a))
+* **ai/generativelanguage:** Add cached_content_token_count to CountTokensResponse ([fc9e895](https://github.com/googleapis/google-cloud-go/commit/fc9e895c460d6911edbe0b47d8fc689cf76a4a58))
+* **ai/generativelanguage:** Add cached_content_token_count to generative_service's UsageMetadata ([fc9e895](https://github.com/googleapis/google-cloud-go/commit/fc9e895c460d6911edbe0b47d8fc689cf76a4a58))
+* **ai/generativelanguage:** Add content caching ([fc9e895](https://github.com/googleapis/google-cloud-go/commit/fc9e895c460d6911edbe0b47d8fc689cf76a4a58))
+
+
+### Documentation
+
+* **ai/generativelanguage:** Small fixes ([fc9e895](https://github.com/googleapis/google-cloud-go/commit/fc9e895c460d6911edbe0b47d8fc689cf76a4a58))
+
+## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/ai/v0.5.0...ai/v0.6.0) (2024-05-29)
+
+
+### Features
+
+* **ai/generativelanguage:** Add generate_content_request to CountTokensRequest ([652ba8f](https://github.com/googleapis/google-cloud-go/commit/652ba8fa79d4d23b4267fd201acf5ca692228959))
+* **ai/generativelanguage:** Add usage metadata to GenerateContentResponse ([#10179](https://github.com/googleapis/google-cloud-go/issues/10179)) ([652ba8f](https://github.com/googleapis/google-cloud-go/commit/652ba8fa79d4d23b4267fd201acf5ca692228959))
+* **ai/generativelanguage:** Add video metadata to files API ([5238dbc](https://github.com/googleapis/google-cloud-go/commit/5238dbc48971a7295127be0f415280248608c6be))
+* **ai/generativelanguage:** Update timeouts ([652ba8f](https://github.com/googleapis/google-cloud-go/commit/652ba8fa79d4d23b4267fd201acf5ca692228959))
+* **ai/generativelanguage:** Update timeouts for generate content ([5238dbc](https://github.com/googleapis/google-cloud-go/commit/5238dbc48971a7295127be0f415280248608c6be))
+
+
+### Documentation
+
+* **ai/generativelanguage:** Minor updates ([5238dbc](https://github.com/googleapis/google-cloud-go/commit/5238dbc48971a7295127be0f415280248608c6be))
+* **ai/generativelanguage:** Minor updates ([652ba8f](https://github.com/googleapis/google-cloud-go/commit/652ba8fa79d4d23b4267fd201acf5ca692228959))
+
+## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/ai/v0.4.1...ai/v0.5.0) (2024-05-09)
+
+
+### Features
+
+* **ai/generativelanguage:** Add FileState to File ([3e25053](https://github.com/googleapis/google-cloud-go/commit/3e250530567ee81ed4f51a3856c5940dbec35289))
+
+## [0.4.1](https://github.com/googleapis/google-cloud-go/compare/ai/v0.4.0...ai/v0.4.1) (2024-05-01)
+
+
+### Bug Fixes
+
+* **ai:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/ai/v0.3.4...ai/v0.4.0) (2024-04-15)
 
 

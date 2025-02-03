@@ -261,9 +261,9 @@ func TestExtractTransforms(t *testing.T) {
 			FieldPath: "ar.k2",
 			TransformType: &pb.DocumentTransform_FieldTransform_RemoveAllFromArray{
 				RemoveAllFromArray: &pb.ArrayValue{Values: []*pb.Value{
-					{ValueType: &pb.Value_StringValue{"e"}},
-					{ValueType: &pb.Value_StringValue{"f"}},
-					{ValueType: &pb.Value_StringValue{"g"}},
+					{ValueType: &pb.Value_StringValue{StringValue: "e"}},
+					{ValueType: &pb.Value_StringValue{StringValue: "f"}},
+					{ValueType: &pb.Value_StringValue{StringValue: "g"}},
 				}},
 			},
 		},
@@ -271,16 +271,16 @@ func TestExtractTransforms(t *testing.T) {
 			FieldPath: "au.k1",
 			TransformType: &pb.DocumentTransform_FieldTransform_AppendMissingElements{
 				AppendMissingElements: &pb.ArrayValue{Values: []*pb.Value{
-					{ValueType: &pb.Value_StringValue{"a"}},
-					{ValueType: &pb.Value_StringValue{"b"}},
-					{ValueType: &pb.Value_StringValue{"c"}},
+					{ValueType: &pb.Value_StringValue{StringValue: "a"}},
+					{ValueType: &pb.Value_StringValue{StringValue: "b"}},
+					{ValueType: &pb.Value_StringValue{StringValue: "c"}},
 				}},
 			},
 		},
 		{
 			FieldPath: "inc.k3",
 			TransformType: &pb.DocumentTransform_FieldTransform_Increment{
-				Increment: &pb.Value{ValueType: &pb.Value_IntegerValue{7}},
+				Increment: &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 7}},
 			},
 		},
 		{

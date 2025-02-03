@@ -27,7 +27,7 @@ create a Server, and then connect to it with no security:
 
 	srv, err := spannertest.NewServer("localhost:0")
 	...
-	conn, err := grpc.DialContext(ctx, srv.Addr, grpc.WithInsecure())
+	conn, err := grpc.DialContext(ctx, srv.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	...
 	client, err := spanner.NewClient(ctx, db, option.WithGRPCConn(conn))
 	...
@@ -50,6 +50,7 @@ package spannertest
 import (
 	"context"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -191,7 +192,7 @@ func NewServer(laddr string) (*Server, error) {
 	s := &Server{
 		Addr: l.Addr().String(),
 		l:    l,
-		srv:  grpc.NewServer(),
+		srv:  grpc.NewServer(grpc.WaitForHandlers(true)),
 		s: &server{
 			logf: func(format string, args ...interface{}) {
 				log.Printf("spannertest.inmem: "+format, args...)
@@ -319,7 +320,7 @@ func (l *lro) Run(s *server, stmts []spansql.DDLStmt) {
 		if st := s.runOneDDL(ctx, stmt); st.Code() != codes.OK {
 			l.mu.Lock()
 			l.state.Done = true
-			l.state.Result = &lropb.Operation_Error{st.Proto()}
+			l.state.Result = &lropb.Operation_Error{Error: st.Proto()}
 			l.mu.Unlock()
 			return
 		}
@@ -327,7 +328,7 @@ func (l *lro) Run(s *server, stmts []spansql.DDLStmt) {
 
 	l.mu.Lock()
 	l.state.Done = true
-	l.state.Result = &lropb.Operation_Response{&anypb.Any{}}
+	l.state.Result = &lropb.Operation_Response{Response: &anypb.Any{}}
 	l.mu.Unlock()
 }
 
@@ -347,11 +348,20 @@ func (s *server) GetDatabaseDdl(ctx context.Context, req *adminpb.GetDatabaseDdl
 
 func (s *server) CreateSession(ctx context.Context, req *spannerpb.CreateSessionRequest) (*spannerpb.Session, error) {
 	//s.logf("CreateSession(%q)", req.Database)
-	return s.newSession(), nil
+	isMultiplexed := false
+	if req.Session != nil && req.Session.Multiplexed {
+		isMultiplexed = true
+	}
+	sess := s.newSession(isMultiplexed)
+
+	return sess, nil
 }
 
-func (s *server) newSession() *spannerpb.Session {
+func (s *server) newSession(isMultiplexed bool) *spannerpb.Session {
 	id := genRandomSession()
+	if isMultiplexed {
+		id = "multiplexed-" + id
+	}
 	now := time.Now()
 	sess := &session{
 		name:         id,
@@ -359,13 +369,15 @@ func (s *server) newSession() *spannerpb.Session {
 		lastUse:      now,
 		transactions: make(map[string]*transaction),
 	}
+
 	sess.ctx, sess.cancel = context.WithCancel(context.Background())
 
 	s.mu.Lock()
 	s.sessions[id] = sess
 	s.mu.Unlock()
-
-	return sess.Proto()
+	sesspb := sess.Proto()
+	sesspb.Multiplexed = isMultiplexed
+	return sesspb
 }
 
 func (s *server) BatchCreateSessions(ctx context.Context, req *spannerpb.BatchCreateSessionsRequest) (*spannerpb.BatchCreateSessionsResponse, error) {
@@ -373,7 +385,7 @@ func (s *server) BatchCreateSessions(ctx context.Context, req *spannerpb.BatchCr
 
 	var sessions []*spannerpb.Session
 	for i := int32(0); i < req.GetSessionCount(); i++ {
-		sessions = append(sessions, s.newSession())
+		sessions = append(sessions, s.newSession(false))
 	}
 
 	return &spannerpb.BatchCreateSessionsResponse{Session: sessions}, nil
@@ -618,10 +630,10 @@ func (s *server) StreamingRead(req *spannerpb.ReadRequest, stream spannerpb.Span
 	}
 	if len(req.ResumeToken) > 0 {
 		// This should only happen if we send resume_token ourselves.
-		return fmt.Errorf("read resumption not supported")
+		return errors.New("read resumption not supported")
 	}
 	if len(req.PartitionToken) > 0 {
-		return fmt.Errorf("partition restrictions not supported")
+		return errors.New("partition restrictions not supported")
 	}
 
 	var ri rowIter
@@ -961,24 +973,24 @@ func spannerValueFromValue(x interface{}) (*structpb.Value, error) {
 	default:
 		return nil, fmt.Errorf("unhandled database value type %T", x)
 	case bool:
-		return &structpb.Value{Kind: &structpb.Value_BoolValue{x}}, nil
+		return &structpb.Value{Kind: &structpb.Value_BoolValue{BoolValue: x}}, nil
 	case int64:
 		// The Spanner int64 is actually a decimal string.
 		s := strconv.FormatInt(x, 10)
-		return &structpb.Value{Kind: &structpb.Value_StringValue{s}}, nil
+		return &structpb.Value{Kind: &structpb.Value_StringValue{StringValue: s}}, nil
 	case float64:
-		return &structpb.Value{Kind: &structpb.Value_NumberValue{x}}, nil
+		return &structpb.Value{Kind: &structpb.Value_NumberValue{NumberValue: x}}, nil
 	case string:
-		return &structpb.Value{Kind: &structpb.Value_StringValue{x}}, nil
+		return &structpb.Value{Kind: &structpb.Value_StringValue{StringValue: x}}, nil
 	case []byte:
-		return &structpb.Value{Kind: &structpb.Value_StringValue{base64.StdEncoding.EncodeToString(x)}}, nil
+		return &structpb.Value{Kind: &structpb.Value_StringValue{StringValue: base64.StdEncoding.EncodeToString(x)}}, nil
 	case civil.Date:
 		// RFC 3339 date format.
-		return &structpb.Value{Kind: &structpb.Value_StringValue{x.String()}}, nil
+		return &structpb.Value{Kind: &structpb.Value_StringValue{StringValue: x.String()}}, nil
 	case time.Time:
 		// RFC 3339 timestamp format with zone Z.
 		s := x.Format("2006-01-02T15:04:05.999999999Z")
-		return &structpb.Value{Kind: &structpb.Value_StringValue{s}}, nil
+		return &structpb.Value{Kind: &structpb.Value_StringValue{StringValue: s}}, nil
 	case nil:
 		return &structpb.Value{Kind: &structpb.Value_NullValue{}}, nil
 	case []interface{}:
@@ -991,7 +1003,7 @@ func spannerValueFromValue(x interface{}) (*structpb.Value, error) {
 			vs = append(vs, v)
 		}
 		return &structpb.Value{Kind: &structpb.Value_ListValue{
-			&structpb.ListValue{Values: vs},
+			ListValue: &structpb.ListValue{Values: vs},
 		}}, nil
 	}
 }

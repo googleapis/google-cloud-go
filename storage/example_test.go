@@ -17,6 +17,7 @@ package storage_test
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"hash/crc32"
 	"io"
@@ -426,6 +427,26 @@ func ExampleObjectHandle_NewWriter() {
 	}
 	wc := client.Bucket("bucketname").Object("filename1").NewWriter(ctx)
 	_ = wc // TODO: Use the Writer.
+}
+
+func ExampleObjectHandle_OverrideUnlockedRetention() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	// Overriding the retention policy is required to shorten the retention period
+	// for an object.
+	retainUntilDate := time.Now().Add(24 * time.Hour)
+	uattrs := storage.ObjectAttrsToUpdate{
+		Retention: &storage.ObjectRetention{
+			Mode:        "Unlocked",
+			RetainUntil: retainUntilDate,
+		},
+	}
+	if _, err := client.Bucket("bucketname").Object("filename1").OverrideUnlockedRetention(true).Update(ctx, uattrs); err != nil {
+		// TODO: handle error.
+	}
 }
 
 func ExampleWriter_Write() {
@@ -858,7 +879,7 @@ func ExampleBucketHandle_exists() {
 	}
 
 	attrs, err := client.Bucket("my-bucket").Attrs(ctx)
-	if err == storage.ErrBucketNotExist {
+	if errors.Is(err, storage.ErrBucketNotExist) {
 		fmt.Println("The bucket does not exist")
 		return
 	}
@@ -876,7 +897,7 @@ func ExampleObjectHandle_exists() {
 	}
 
 	attrs, err := client.Bucket("my-bucket").Object("my-object").Attrs(ctx)
-	if err == storage.ErrObjectNotExist {
+	if errors.Is(err, storage.ErrObjectNotExist) {
 		fmt.Println("The object does not exist")
 		return
 	}

@@ -106,7 +106,7 @@ func TestWait(t *testing.T) {
 		t.Fatal(err)
 	}
 	if !proto.Equal(&resp, responseDur) {
-		t.Errorf("response, got %v, want %v", resp, responseDur)
+		t.Errorf("response, got %v, want %v", &resp, responseDur)
 	}
 	if !op.Done() {
 		t.Errorf("operation should have completed")
