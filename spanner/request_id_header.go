@@ -46,7 +46,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	randIDForProcess = r64.String()
+	randIDForProcess = fmt.Sprintf("%016x", r64.Uint64())
 }
 
 // Please bump this version whenever this implementation
