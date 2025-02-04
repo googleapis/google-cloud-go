@@ -1,5 +1,17 @@
 # Changes
 
+## [1.75.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.74.0...spanner/v1.75.0) (2025-02-02)
+
+
+### Features
+
+* **spanner/admin/database:** Add AddSplitPoints API ([59fe58a](https://github.com/googleapis/google-cloud-go/commit/59fe58aba61abf69bfb7549c0a03b21bdb4b8b2f))
+
+
+### Bug Fixes
+
+* **spanner:** Inject "x-goog-spanner-request-id" into outgoing client context ([#11544](https://github.com/googleapis/google-cloud-go/issues/11544)) ([a8f16ef](https://github.com/googleapis/google-cloud-go/commit/a8f16ef102068ad793b4aa8c6cf8c8f0ca0c2d03)), refs [#11543](https://github.com/googleapis/google-cloud-go/issues/11543)
+
 ## [1.74.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.73.0...spanner/v1.74.0) (2025-01-24)
 
 
