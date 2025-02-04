@@ -3,6 +3,13 @@
 
 
 
+## [1.66.1](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.66.0...bigquery/v1.66.1) (2025-02-03)
+
+
+### Bug Fixes
+
+* **bigquery:** Move MaxStaleness field to table level ([#10066](https://github.com/googleapis/google-cloud-go/issues/10066)) ([164492d](https://github.com/googleapis/google-cloud-go/commit/164492d749ef0eeaf03a93d94b4a2c6c407eb4d6))
+
 ## [1.66.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.65.0...bigquery/v1.66.0) (2025-01-20)
 
 
