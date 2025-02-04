@@ -17,6 +17,7 @@ package storage_test
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"hash/crc32"
 	"io"
@@ -878,7 +879,7 @@ func ExampleBucketHandle_exists() {
 	}
 
 	attrs, err := client.Bucket("my-bucket").Attrs(ctx)
-	if err == storage.ErrBucketNotExist {
+	if errors.Is(err, storage.ErrBucketNotExist) {
 		fmt.Println("The bucket does not exist")
 		return
 	}
@@ -896,7 +897,7 @@ func ExampleObjectHandle_exists() {
 	}
 
 	attrs, err := client.Bucket("my-bucket").Object("my-object").Attrs(ctx)
-	if err == storage.ErrObjectNotExist {
+	if errors.Is(err, storage.ErrObjectNotExist) {
 		fmt.Println("The object does not exist")
 		return
 	}
