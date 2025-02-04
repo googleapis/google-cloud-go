@@ -1,7 +1,7 @@
 {
   "auth": "0.14.1",
   "auth/oauth2adapt": "0.2.7",
-  "bigquery": "1.66.1",
+  "bigquery": "1.66.2",
   "bigtable": "1.35.0",
   "datastore": "1.20.0",
   "errorreporting": "0.3.2",
