@@ -36,6 +36,7 @@ import (
 	"google.golang.org/genproto/googleapis/api/distribution"
 	googlemetricpb "google.golang.org/genproto/googleapis/api/metric"
 	monitoredrespb "google.golang.org/genproto/googleapis/api/monitoredres"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -153,7 +154,15 @@ func (me *monitoringExporter) exportTimeSeries(ctx context.Context, rm *otelmetr
 			Name:       name,
 			TimeSeries: tss[i:j],
 		}
+
+		marshaler := protojson.MarshalOptions{
+			Multiline: true, // Makes JSON output more readable
+			Indent:    "  ", // Indentation for pretty printing
+		}
+		jsonBytes, _ := marshaler.Marshal(req)
+		fmt.Printf("string(jsonBytes): %+v\n", string(jsonBytes))
 		errs = append(errs, me.client.CreateServiceTimeSeries(ctx, req))
+		fmt.Printf("errs: %+v\n", errs)
 	}
 
 	return errors.Join(errs...)
