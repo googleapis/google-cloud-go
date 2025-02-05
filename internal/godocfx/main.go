@@ -185,8 +185,26 @@ func process(mod indexEntry, workingDir, outDir string, namer *friendlyAPINamer,
 		return fmt.Errorf("go mod tidy error: %v", err)
 	}
 	// Don't do /... because it fails on submodules.
-	if err := runCmd(workingDir, "go", "get", "-d", "-t", mod.Path+"@"+mod.Version); err != nil {
-		return fmt.Errorf("go get %s@%s: %v", mod.Path, mod.Version, err)
+	module := mod.Path + "@" + mod.Version
+	if err := runCmd(workingDir, "go", "get", "-t", module); err != nil {
+		// Retry to work around https://github.com/googleapis/google-cloud-go/issues/11542.
+		// First, add an explicit dependency on the Envoy module, then try getting the
+		// module to document.
+		// This can be removed in the future if you create a new, empty module and can
+		// successfully run `go get -t cloud.google.com/go/biquery@v1.66.2`.
+		// Alternatively, we could check stderr for the "ambiguous import" error, but this seems
+		// simpler.
+		log.Printf("go get -t %s failed: %v", module, err)
+		log.Printf("Adding hack to depend on envoy and retrying")
+
+		if err := runCmd(workingDir, "go", "get", "github.com/envoyproxy/go-control-plane/envoy"); err != nil {
+			return fmt.Errorf("go get github.com/envoyproxy/go-control-plane/envoy failed: %v", err)
+		}
+
+		log.Printf("Trying again with %s", module)
+		if err := runCmd(workingDir, "go", "get", "-t", module); err != nil {
+			return fmt.Errorf("go get -t %s@%s failed again: %v", mod.Path, mod.Version, err)
+		}
 	}
 
 	log.Println("Starting to parse")
