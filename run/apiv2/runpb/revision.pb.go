@@ -343,7 +343,8 @@ type Revision struct {
 	// [Google Cloud Platform Launch
 	// Stages](https://cloud.google.com/terms/launch-stages). Cloud Run supports
 	// `ALPHA`, `BETA`, and `GA`.
-	// <p>Note that this value might not be what was used
+	//
+	// Note that this value might not be what was used
 	// as input. For example, if ALPHA was provided as input in the parent
 	// resource, but only BETA and GA-level features are were, this field will be
 	// BETA.
