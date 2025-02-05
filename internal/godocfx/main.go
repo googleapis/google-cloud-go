@@ -40,7 +40,6 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -67,6 +66,10 @@ func main() {
 		log.Fatalf("%s missing required argument: module path/prefix", os.Args[0])
 	}
 
+	tSaver := &dsTimeSaver{projectID: *projectID}
+	var lastSeen time.Time
+
+	ctx := context.Background()
 	modNames := flag.Args()
 	var mods []indexEntry
 	if *newMods {
@@ -74,9 +77,14 @@ func main() {
 			log.Fatal("Must set -project when using -new-modules")
 		}
 		var err error
-		mods, err = newModules(context.Background(), indexClient{}, &dsTimeSaver{projectID: *projectID}, modNames)
+		lastSeen, err = tSaver.get(ctx)
 		if err != nil {
-			log.Fatal(err)
+			log.Fatalf("Failed to get latest timestamp: %v", err)
+		}
+		ic := indexClient{indexURL: "https://index.golang.org/index"}
+		mods, lastSeen, err = ic.get(ctx, modNames, lastSeen)
+		if err != nil {
+			log.Fatalf("Failed to get from index: %v", err)
 		}
 	} else {
 		for _, mod := range modNames {
@@ -108,9 +116,15 @@ func main() {
 	namer := &friendlyAPINamer{
 		metaURL: "https://raw.githubusercontent.com/googleapis/google-cloud-go/main/internal/.repo-metadata-full.json",
 	}
-	optionalExtraFiles := []string{}
-	if ok := processMods(mods, *outDir, namer, optionalExtraFiles, *print); !ok {
+	if ok := processMods(mods, *outDir, namer, nil, *print); !ok {
 		os.Exit(1)
+	}
+
+	// Only save the latest timestamp if we successfully processed all modules.
+	if *newMods {
+		if err := tSaver.put(ctx, lastSeen); err != nil {
+			log.Fatalf("Failed to save latest timestamp: %v", err)
+		}
 	}
 }
 
@@ -121,19 +135,19 @@ func runCmd(dir, name string, args ...string) error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Start(); err != nil {
-		return fmt.Errorf("Start: %v", err)
+		return fmt.Errorf("cmd.Start: %v", err)
 	}
 	if err := cmd.Wait(); err != nil {
-		return fmt.Errorf("Wait: %s", err)
+		return fmt.Errorf("cmd.Wait: %s", err)
 	}
 	return nil
 }
 
 func processMods(mods []indexEntry, outDir string, namer *friendlyAPINamer, optionalExtraFiles []string, print bool) bool {
 	// Create a temp module so we can get the exact version asked for.
-	workingDir, err := ioutil.TempDir("", "godocfx-*")
+	workingDir, err := os.MkdirTemp("", "godocfx-*")
 	if err != nil {
-		log.Fatalf("ioutil.TempDir: %v", err)
+		log.Fatalf("os.MkdirTemp: %v", err)
 	}
 	// Use a fake module that doesn't start with cloud.google.com/go.
 	runCmd(workingDir, "go", "mod", "init", "cloud.google.com/lets-build-some-docs")
