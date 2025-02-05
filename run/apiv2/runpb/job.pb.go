@@ -21,12 +21,9 @@
 package runpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	api "google.golang.org/genproto/googleapis/api"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
@@ -36,6 +33,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -657,7 +656,7 @@ type Job struct {
 	// Set the launch stage to a preview stage on input to allow use of preview
 	// features in that stage. On read (or output), describes whether the resource
 	// uses preview features.
-	// <p>
+	//
 	// For example, if ALPHA is provided as input, but only BETA and GA-level
 	// features are used, this field will be BETA on output.
 	LaunchStage api.LaunchStage `protobuf:"varint,14,opt,name=launch_stage,json=launchStage,proto3,enum=google.api.LaunchStage" json:"launch_stage,omitempty"`

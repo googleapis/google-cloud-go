@@ -21,11 +21,8 @@
 package runpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	api "google.golang.org/genproto/googleapis/api"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
@@ -35,6 +32,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -343,7 +342,8 @@ type Revision struct {
 	// [Google Cloud Platform Launch
 	// Stages](https://cloud.google.com/terms/launch-stages). Cloud Run supports
 	// `ALPHA`, `BETA`, and `GA`.
-	// <p>Note that this value might not be what was used
+	//
+	// Note that this value might not be what was used
 	// as input. For example, if ALPHA was provided as input in the parent
 	// resource, but only BETA and GA-level features are were, this field will be
 	// BETA.
