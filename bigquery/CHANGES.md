@@ -3,6 +3,13 @@
 
 
 
+## [1.66.2](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.66.1...bigquery/v1.66.2) (2025-02-04)
+
+
+### Bug Fixes
+
+* **bigquery:** Broken github.com/envoyproxy/go-control-plane/envoy dep ([#11556](https://github.com/googleapis/google-cloud-go/issues/11556)) ([e70d63b](https://github.com/googleapis/google-cloud-go/commit/e70d63bbc267c3b166bf264670b8b282a3651cc5)), refs [#11542](https://github.com/googleapis/google-cloud-go/issues/11542)
+
 ## [1.66.1](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.66.0...bigquery/v1.66.1) (2025-02-03)
 
 
