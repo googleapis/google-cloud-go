@@ -134,6 +134,14 @@ func TestTraceSpansMultiEmulated(t *testing.T) {
 				},
 			},
 			{
+				name:      "Object.Delete",
+				resources: []string{"bucket", "object"},
+				call: func(ctx context.Context, c *Client, fs *resources) error {
+					err := c.Bucket(fs.bucket.Name).Object(fs.object.Name).Delete(ctx)
+					return err
+				},
+			},
+			{
 				name:      "ACL.List",
 				resources: []string{"bucket"},
 				call: func(ctx context.Context, c *Client, fs *resources) error {
