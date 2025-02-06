@@ -3,7 +3,7 @@ module cloud.google.com/go/pubsublite
 go 1.22.7
 
 require (
-	cloud.google.com/go v0.118.0
+	cloud.google.com/go v0.118.1
 	cloud.google.com/go/longrunning v0.6.4
 	cloud.google.com/go/pubsub v1.45.3
 	github.com/google/go-cmp v0.6.0
@@ -13,10 +13,10 @@ require (
 	golang.org/x/sync v0.10.0
 	google.golang.org/api v0.218.0
 	google.golang.org/genproto v0.0.0-20250122153221-138b5a5a4fd4
-	google.golang.org/genproto/googleapis/api v0.0.0-20250115164207-1a7da9e5054f
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250115164207-1a7da9e5054f
-	google.golang.org/grpc v1.69.4
-	google.golang.org/protobuf v1.36.3
+	google.golang.org/genproto/googleapis/api v0.0.0-20250124145028-65684f501c47
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250124145028-65684f501c47
+	google.golang.org/grpc v1.70.0
+	google.golang.org/protobuf v1.36.4
 )
 
 require (
@@ -27,7 +27,6 @@ require (
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
-	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/google/s2a-go v0.1.9 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.4 // indirect
 	go.einride.tech/aip v0.68.1 // indirect

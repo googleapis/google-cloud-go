@@ -1,6 +1,25 @@
 # Changes
 
 
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.12.1...datastream/v1.13.0) (2025-01-30)
+
+
+### Features
+
+* **datastream:** A new field `ssl_config` is added to message `.google.cloud.datastream.v1.PostgresqlProfile` ([a694e11](https://github.com/googleapis/google-cloud-go/commit/a694e1152fc75307da6ca8dcfff26cae9189f29c))
+* **datastream:** A new message `PostgresqlSslConfig` is added ([a694e11](https://github.com/googleapis/google-cloud-go/commit/a694e1152fc75307da6ca8dcfff26cae9189f29c))
+
+
+### Documentation
+
+* **datastream:** A comment for field `name` in message `.google.cloud.datastream.v1.ConnectionProfile` is changed ([a694e11](https://github.com/googleapis/google-cloud-go/commit/a694e1152fc75307da6ca8dcfff26cae9189f29c))
+* **datastream:** A comment for field `name` in message `.google.cloud.datastream.v1.PrivateConnection` is changed ([a694e11](https://github.com/googleapis/google-cloud-go/commit/a694e1152fc75307da6ca8dcfff26cae9189f29c))
+* **datastream:** A comment for field `name` in message `.google.cloud.datastream.v1.Route` is changed ([a694e11](https://github.com/googleapis/google-cloud-go/commit/a694e1152fc75307da6ca8dcfff26cae9189f29c))
+* **datastream:** A comment for field `name` in message `.google.cloud.datastream.v1.Stream` is changed ([a694e11](https://github.com/googleapis/google-cloud-go/commit/a694e1152fc75307da6ca8dcfff26cae9189f29c))
+* **datastream:** A comment for field `name` in message `.google.cloud.datastream.v1.StreamObject` is changed ([a694e11](https://github.com/googleapis/google-cloud-go/commit/a694e1152fc75307da6ca8dcfff26cae9189f29c))
+* **datastream:** A comment for field `password` in message `.google.cloud.datastream.v1.OracleAsmConfig` is changed ([a694e11](https://github.com/googleapis/google-cloud-go/commit/a694e1152fc75307da6ca8dcfff26cae9189f29c))
+* **datastream:** A comment for message `OracleAsmConfig` is changed ([a694e11](https://github.com/googleapis/google-cloud-go/commit/a694e1152fc75307da6ca8dcfff26cae9189f29c))
+
 ## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.12.0...datastream/v1.12.1) (2025-01-02)
 
 

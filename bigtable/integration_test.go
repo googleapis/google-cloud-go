@@ -2645,7 +2645,7 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 		time.Sleep(time.Second * 10)
 	}
 	if encryptionKeyVersion == "" {
-		t.Fatalf("Encryption Key not created within alotted time end")
+		t.Fatalf("Encryption Key not created within allotted time end")
 	}
 
 	// Validate Encryption Info under getTable
@@ -2672,7 +2672,7 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 		t.Fatalf("KMS Key Version: %v, want: %v", got, want)
 	}
 
-	// Validate Encyrption Info retrieved via EncryptionInfo
+	// Validate Encryption Info retrieved via EncryptionInfo
 	encryptionInfo, err := adminClient.EncryptionInfo(ctx, table)
 	if err != nil {
 		t.Fatalf("EncryptionInfo: %v", err)
