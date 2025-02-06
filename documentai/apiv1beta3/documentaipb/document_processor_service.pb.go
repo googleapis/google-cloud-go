@@ -21,11 +21,8 @@
 package documentaipb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -36,6 +33,8 @@ import (
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -3906,11 +3905,11 @@ type ProcessOptions_LayoutConfig_ChunkingConfig struct {
 	// Optional. Whether or not to include ancestor headings when splitting.
 	IncludeAncestorHeadings bool `protobuf:"varint,2,opt,name=include_ancestor_headings,json=includeAncestorHeadings,proto3" json:"include_ancestor_headings,omitempty"`
 	// Optional. The number of tokens to group together when evaluating
-	// semantic similarity.
+	// semantic similarity. THIS FIELD IS NOT YET USED.
 	SemanticChunkingGroupSize bool `protobuf:"varint,3,opt,name=semantic_chunking_group_size,json=semanticChunkingGroupSize,proto3" json:"semantic_chunking_group_size,omitempty"`
 	// Optional. The percentile of cosine dissimilarity that must be exceeded
 	// between a group of tokens and the next. The smaller this number is, the
-	// more chunks will be generated.
+	// more chunks will be generated. THIS FIELD IS NOT YET USED.
 	BreakpointPercentileThreshold int32 `protobuf:"varint,4,opt,name=breakpoint_percentile_threshold,json=breakpointPercentileThreshold,proto3" json:"breakpoint_percentile_threshold,omitempty"`
 }
 
