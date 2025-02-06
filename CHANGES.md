@@ -1,6 +1,14 @@
 # Changes
 
 
+## [0.118.2](https://github.com/googleapis/google-cloud-go/compare/v0.118.1...v0.118.2) (2025-02-06)
+
+
+### Bug Fixes
+
+* **internal/godocfx:** Don't save timestamps until modules are successfully processed ([#11563](https://github.com/googleapis/google-cloud-go/issues/11563)) ([8f38b3d](https://github.com/googleapis/google-cloud-go/commit/8f38b3d912354027c30977b5adc928e0c6eff7a9))
+* **internal/godocfx:** Retry go get with explicit envoy dependency ([#11564](https://github.com/googleapis/google-cloud-go/issues/11564)) ([a06a6a5](https://github.com/googleapis/google-cloud-go/commit/a06a6a5542939b6239e1ec2c944eb1aae56745d9))
+
 ## [0.118.1](https://github.com/googleapis/google-cloud-go/compare/v0.118.0...v0.118.1) (2025-01-30)
 
 
