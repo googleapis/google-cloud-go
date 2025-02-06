@@ -23,7 +23,7 @@ cd github/google-cloud-go/internal/godocfx
 go install -buildvcs=false
 cd -
 
-export RELEASE_PROJECT_ID=google-cloud-go-releases
+export RELEASE_PROJECT_ID=cloud-sdk-go-releases
 
 if [[ -n "$FORCE_GENERATE_ALL" ]]; then
   for m in $(find . -name go.mod -execdir go list -m \; | grep -v internal); do
