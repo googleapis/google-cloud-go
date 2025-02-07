@@ -134,11 +134,11 @@ func initializeClientPools(ctx context.Context, opts *benchmarkOptions) func() {
 		gRPCClients, closeGRPC = newClientPool(
 			func() (*storage.Client, error) {
 				return initializeGRPCClient(context.Background(), clientConfig{
-					writeBufferSize:         opts.writeBufferSize,
-					readBufferSize:          opts.readBufferSize,
-					connectionPoolSize:      opts.connPoolSize,
-					endpoint:                opts.endpoint,
-					useMultiRangeDownloader: opts.multiRangeDownloader,
+					writeBufferSize:    opts.writeBufferSize,
+					readBufferSize:     opts.readBufferSize,
+					connectionPoolSize: opts.connPoolSize,
+					endpoint:           opts.endpoint,
+					useGRPCBidiReads:   opts.gRPCBidiReads,
 				})
 			},
 			opts.numClients,
@@ -181,7 +181,7 @@ type clientConfig struct {
 	useJSON                         bool // only applicable to HTTP Clients
 	setGCSFuseOpts                  bool // only applicable to HTTP Clients
 	connectionPoolSize              int  // only applicable to GRPC Clients
-	useMultiRangeDownloader         bool // only applicable to GRPC Clients
+	useGRPCBidiReads                bool // only applicable to GRPC Clients
 }
 
 func initializeHTTPClient(ctx context.Context, config clientConfig) (*storage.Client, error) {
@@ -250,7 +250,7 @@ func initializeGRPCClient(ctx context.Context, config clientConfig) (*storage.Cl
 	if config.readBufferSize != useDefault {
 		opts = append(opts, option.WithGRPCDialOption(grpc.WithReadBufferSize(config.readBufferSize)))
 	}
-	if config.useMultiRangeDownloader {
+	if config.useGRPCBidiReads {
 		opts = append(opts, experimental.WithGRPCBidiReads())
 	}
 
