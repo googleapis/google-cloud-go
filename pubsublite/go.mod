@@ -3,7 +3,7 @@ module cloud.google.com/go/pubsublite
 go 1.22.7
 
 require (
-	cloud.google.com/go v0.118.0
+	cloud.google.com/go v0.118.1
 	cloud.google.com/go/longrunning v0.6.4
 	cloud.google.com/go/pubsub v1.45.3
 	github.com/google/go-cmp v0.6.0
@@ -27,7 +27,6 @@ require (
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
-	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/google/s2a-go v0.1.9 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.4 // indirect
 	go.einride.tech/aip v0.68.1 // indirect

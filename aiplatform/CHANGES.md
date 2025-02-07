@@ -1,6 +1,46 @@
 # Changes
 
 
+## [1.72.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.71.0...aiplatform/v1.72.0) (2025-02-05)
+
+
+### Features
+
+* **aiplatform:** Add rag_files_count to RagCorpus to count number of associated files ([678944b](https://github.com/googleapis/google-cloud-go/commit/678944b30e389781687209caf3e3b9d35739a6f0))
+
+## [1.71.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.70.0...aiplatform/v1.71.0) (2025-01-30)
+
+
+### Features
+
+* **aiplatform:** Add Context Cache to v1 ([973e3d2](https://github.com/googleapis/google-cloud-go/commit/973e3d267844d251f5bfc33f473b853ac288b959))
+* **aiplatform:** Add machine_spec, data_persistent_disk_spec, network_spec, euc_config, shielded_vm_config to `.google.cloud.aiplatform.v1beta1.NotebookRuntime` ([a694e11](https://github.com/googleapis/google-cloud-go/commit/a694e1152fc75307da6ca8dcfff26cae9189f29c))
+* **aiplatform:** Add machine_spec, data_persistent_disk_spec, network_spec, euc_config, shielded_vm_config to message `.google.cloud.aiplatform.v1.NotebookRuntime` ([a694e11](https://github.com/googleapis/google-cloud-go/commit/a694e1152fc75307da6ca8dcfff26cae9189f29c))
+* **aiplatform:** Add optimized config in v1 API ([de5ca9d](https://github.com/googleapis/google-cloud-go/commit/de5ca9d636e15ca22c6487c690aeaf815630d129))
+* **aiplatform:** Add per-modality token count break downs for GenAI APIs ([90edd74](https://github.com/googleapis/google-cloud-go/commit/90edd74d13b9dd737134a75d5b18a064a8ee656a))
+* **aiplatform:** Add per-modality token count break downs for GenAI APIs ([90edd74](https://github.com/googleapis/google-cloud-go/commit/90edd74d13b9dd737134a75d5b18a064a8ee656a))
+* **aiplatform:** Add retrieval_config to ToolConfig v1 ([973e3d2](https://github.com/googleapis/google-cloud-go/commit/973e3d267844d251f5bfc33f473b853ac288b959))
+* **aiplatform:** Add retrieval_config to ToolConfig v1beta1 ([973e3d2](https://github.com/googleapis/google-cloud-go/commit/973e3d267844d251f5bfc33f473b853ac288b959))
+* **aiplatform:** Add speculative decoding spec to DeployedModel proto ([#11469](https://github.com/googleapis/google-cloud-go/issues/11469)) ([a694e11](https://github.com/googleapis/google-cloud-go/commit/a694e1152fc75307da6ca8dcfff26cae9189f29c))
+* **aiplatform:** Enable FeatureView Service Account in v1 API version ([90edd74](https://github.com/googleapis/google-cloud-go/commit/90edd74d13b9dd737134a75d5b18a064a8ee656a))
+* **aiplatform:** Enable UpdateFeatureMonitor in v1beta1 API version ([90edd74](https://github.com/googleapis/google-cloud-go/commit/90edd74d13b9dd737134a75d5b18a064a8ee656a))
+* **aiplatform:** Expose code execution tool API to v1 ([90edd74](https://github.com/googleapis/google-cloud-go/commit/90edd74d13b9dd737134a75d5b18a064a8ee656a))
+* **aiplatform:** Model Registry Checkpoint API ([de5ca9d](https://github.com/googleapis/google-cloud-go/commit/de5ca9d636e15ca22c6487c690aeaf815630d129))
+* **aiplatform:** Model Registry Checkpoint API ([de5ca9d](https://github.com/googleapis/google-cloud-go/commit/de5ca9d636e15ca22c6487c690aeaf815630d129))
+* **aiplatform:** Reasoning Engine v1 GAPIC release ([#11456](https://github.com/googleapis/google-cloud-go/issues/11456)) ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **aiplatform:** Remove autorater config related visibility v1beta1 ([90edd74](https://github.com/googleapis/google-cloud-go/commit/90edd74d13b9dd737134a75d5b18a064a8ee656a))
+
+
+### Documentation
+
+* **aiplatform:** Deprecate `is_default` in message `.google.cloud.aiplatform.v1.NotebookRuntimeTemplate` ([a694e11](https://github.com/googleapis/google-cloud-go/commit/a694e1152fc75307da6ca8dcfff26cae9189f29c))
+* **aiplatform:** Deprecate `is_default` in message `.google.cloud.aiplatform.v1beta1.NotebookRuntimeTemplate` ([a694e11](https://github.com/googleapis/google-cloud-go/commit/a694e1152fc75307da6ca8dcfff26cae9189f29c))
+* **aiplatform:** Deprecate `service_account` in message `.google.cloud.aiplatform.v1.NotebookRuntime` ([a694e11](https://github.com/googleapis/google-cloud-go/commit/a694e1152fc75307da6ca8dcfff26cae9189f29c))
+* **aiplatform:** Deprecate `service_account` in message `.google.cloud.aiplatform.v1.NotebookRuntimeTemplate` ([a694e11](https://github.com/googleapis/google-cloud-go/commit/a694e1152fc75307da6ca8dcfff26cae9189f29c))
+* **aiplatform:** Deprecate `service_account` in message `.google.cloud.aiplatform.v1beta1.NotebookRuntime` ([a694e11](https://github.com/googleapis/google-cloud-go/commit/a694e1152fc75307da6ca8dcfff26cae9189f29c))
+* **aiplatform:** Deprecate `service_account` in message `.google.cloud.aiplatform.v1beta1.NotebookRuntimeTemplate` ([a694e11](https://github.com/googleapis/google-cloud-go/commit/a694e1152fc75307da6ca8dcfff26cae9189f29c))
+* **aiplatform:** Update comments for NumericFilter and Operator ([de5ca9d](https://github.com/googleapis/google-cloud-go/commit/de5ca9d636e15ca22c6487c690aeaf815630d129))
+
 ## [1.70.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.69.0...aiplatform/v1.70.0) (2025-01-08)
 
 

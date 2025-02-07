@@ -2,6 +2,18 @@
 
 
 
+## [1.14.4](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.14.3...secretmanager/v1.14.4) (2025-01-30)
+
+
+### Documentation
+
+* **secretmanager:** Fix link in Markdown comments ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **secretmanager:** Updated comment for `customer_managed_encryption` in message `.google.cloud.secretmanager.v1.Secret` ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **secretmanager:** Updated comment for `customer_managed_encryption` in message `.google.cloud.secretmanager.v1.SecretVersion` ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **secretmanager:** Updated comment for `name` in message `.google.cloud.secretmanager.v1.Topic` ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **secretmanager:** Updated comment for `Replication` ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+* **secretmanager:** Updated comment for `scheduled_destroy_time` in message `.google.cloud.secretmanager.v1.SecretVersion` ([aa54375](https://github.com/googleapis/google-cloud-go/commit/aa54375c195b1bf8653de26400f342438a8d6f85))
+
 ## [1.14.3](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.14.2...secretmanager/v1.14.3) (2025-01-02)
 
 

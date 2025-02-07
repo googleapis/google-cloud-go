@@ -1,9 +1,9 @@
 module cloud.google.com/go/internal/protoveneer
 
-go 1.22
+go 1.22.7
 
 require (
-	cloud.google.com/go v0.118.0
+	cloud.google.com/go v0.118.1
 	github.com/google/go-cmp v0.6.0
 	github.com/googleapis/gax-go/v2 v2.14.1
 	google.golang.org/genproto v0.0.0-20250122153221-138b5a5a4fd4
