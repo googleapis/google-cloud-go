@@ -21,11 +21,8 @@
 package aiplatformpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -286,6 +285,8 @@ type ListNotebookRuntimeTemplatesRequest struct {
 	//   - A key including a space must be quoted. `labels."a key"`.
 	//   - `notebookRuntimeType` supports = and !=. notebookRuntimeType enum:
 	//     [USER_DEFINED, ONE_CLICK].
+	//   - `machineType` supports = and !=.
+	//   - `acceleratorType` supports = and !=.
 	//
 	// Some examples:
 	//
@@ -293,6 +294,8 @@ type ListNotebookRuntimeTemplatesRequest struct {
 	//   - `displayName="myDisplayName"`
 	//   - `labels.myKey="myValue"`
 	//   - `notebookRuntimeType=USER_DEFINED`
+	//   - `machineType=e2-standard-4`
+	//   - `acceleratorType=NVIDIA_TESLA_T4`
 	Filter string `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
 	// Optional. The standard list page size.
 	PageSize int32 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
@@ -782,6 +785,8 @@ type ListNotebookRuntimesRequest struct {
 	//     UI_RESOURCE_STATE_CREATION_FAILED].
 	//   - `notebookRuntimeType` supports = and !=. notebookRuntimeType enum:
 	//     [USER_DEFINED, ONE_CLICK].
+	//   - `machineType` supports = and !=.
+	//   - `acceleratorType` supports = and !=.
 	//
 	// Some examples:
 	//
@@ -793,6 +798,8 @@ type ListNotebookRuntimesRequest struct {
 	//   - `runtimeUser="test@google.com"`
 	//   - `uiState=UI_RESOURCE_STATE_BEING_DELETED`
 	//   - `notebookRuntimeType=USER_DEFINED`
+	//   - `machineType=e2-standard-4`
+	//   - `acceleratorType=NVIDIA_TESLA_T4`
 	Filter string `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
 	// Optional. The standard list page size.
 	PageSize int32 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
