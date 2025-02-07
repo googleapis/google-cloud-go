@@ -1833,6 +1833,55 @@ func TestClient_PreparedTransaction(t *testing.T) {
 	}
 }
 
+func TestClient_PreparedTransaction_SessionNotFoundOnBeginTransaction(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{SessionPoolConfig: SessionPoolConfig{MinOpened: 1, MaxOpened: 1}})
+	defer teardown()
+
+	// Simulate a SessionNotFound error for the BeginTransaction method.
+	server.TestSpanner.PutExecutionTime(
+		MethodBeginTransaction,
+		SimulatedExecutionTime{Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
+	)
+
+	// Prepare a transaction and expect it to handle the SessionNotFound error.
+	tx, err := client.prepareTransaction(ctx, TransactionOptions{})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var attempts int
+	expectedAttempts := 2 // Expecting a retry after the session not found error.
+	_, err = tx.run(ctx, func(ctx context.Context, transaction *ReadWriteTransaction) error {
+		attempts++
+		count, err := transaction.Update(ctx, Statement{SQL: UpdateBarSetFoo})
+		if err != nil {
+			return err
+		}
+		if g, w := int(count), UpdateBarSetFooRowCount; g != w {
+			t.Fatalf("affected rows mismatch\n Got: %v\nWant: %v", g, w)
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if expectedAttempts != attempts {
+		t.Fatalf("unexpected number of attempts: %d, expected %d", attempts, expectedAttempts)
+	}
+
+	requests := drainRequestsFromServer(server.TestSpanner)
+	if err := compareRequests([]interface{}{
+		&sppb.BeginTransactionRequest{},
+		&sppb.BeginTransactionRequest{}, // Retry due to SessionNotFound
+		&sppb.ExecuteSqlRequest{},
+		&sppb.CommitRequest{},
+	}, requests); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestClient_PooledTransaction(t *testing.T) {
 	t.Parallel()
 
