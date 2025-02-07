@@ -250,14 +250,17 @@ type internalIamClient interface {
 	getIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	setIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
-	QueryGrantableRoles(context.Context, *adminpb.QueryGrantableRolesRequest, ...gax.CallOption) *RoleIterator
-	ListRoles(context.Context, *adminpb.ListRolesRequest, ...gax.CallOption) *RoleIterator
+	QueryGrantableRoles(context.Context, *adminpb.QueryGrantableRolesRequest, ...gax.CallOption) (*adminpb.QueryGrantableRolesResponse, error)
+	QueryGrantableRolesIter(context.Context, *adminpb.QueryGrantableRolesRequest, ...gax.CallOption) *RoleIterator
+	ListRoles(context.Context, *adminpb.ListRolesRequest, ...gax.CallOption) (*adminpb.ListRolesResponse, error)
+	ListRolesIter(context.Context, *adminpb.ListRolesRequest, ...gax.CallOption) *RoleIterator
 	GetRole(context.Context, *adminpb.GetRoleRequest, ...gax.CallOption) (*adminpb.Role, error)
 	CreateRole(context.Context, *adminpb.CreateRoleRequest, ...gax.CallOption) (*adminpb.Role, error)
 	UpdateRole(context.Context, *adminpb.UpdateRoleRequest, ...gax.CallOption) (*adminpb.Role, error)
 	DeleteRole(context.Context, *adminpb.DeleteRoleRequest, ...gax.CallOption) (*adminpb.Role, error)
 	UndeleteRole(context.Context, *adminpb.UndeleteRoleRequest, ...gax.CallOption) (*adminpb.Role, error)
-	QueryTestablePermissions(context.Context, *adminpb.QueryTestablePermissionsRequest, ...gax.CallOption) *PermissionIterator
+	QueryTestablePermissions(context.Context, *adminpb.QueryTestablePermissionsRequest, ...gax.CallOption) (*adminpb.QueryTestablePermissionsResponse, error)
+	QueryTestablePermissionsIter(context.Context, *adminpb.QueryTestablePermissionsRequest, ...gax.CallOption) *PermissionIterator
 	QueryAuditableServices(context.Context, *adminpb.QueryAuditableServicesRequest, ...gax.CallOption) (*adminpb.QueryAuditableServicesResponse, error)
 	LintPolicy(context.Context, *adminpb.LintPolicyRequest, ...gax.CallOption) (*adminpb.LintPolicyResponse, error)
 }
@@ -542,14 +545,14 @@ func (c *IamClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPe
 // QueryGrantableRoles lists roles that can be granted on a Google Cloud resource. A role is
 // grantable if the IAM policy for the resource can contain bindings to the
 // role.
-func (c *IamClient) QueryGrantableRoles(ctx context.Context, req *adminpb.QueryGrantableRolesRequest, opts ...gax.CallOption) *RoleIterator {
-	return c.internalClient.QueryGrantableRoles(ctx, req, opts...)
+func (c *IamClient) QueryGrantableRolesIter(ctx context.Context, req *adminpb.QueryGrantableRolesRequest, opts ...gax.CallOption) *RoleIterator {
+	return c.internalClient.QueryGrantableRolesIter(ctx, req, opts...)
 }
 
 // ListRoles lists every predefined Role that IAM supports, or every custom role
 // that is defined for an organization or project.
-func (c *IamClient) ListRoles(ctx context.Context, req *adminpb.ListRolesRequest, opts ...gax.CallOption) *RoleIterator {
-	return c.internalClient.ListRoles(ctx, req, opts...)
+func (c *IamClient) ListRolesIter(ctx context.Context, req *adminpb.ListRolesRequest, opts ...gax.CallOption) *RoleIterator {
+	return c.internalClient.ListRolesIter(ctx, req, opts...)
 }
 
 // GetRole gets the definition of a Role.
@@ -599,8 +602,8 @@ func (c *IamClient) UndeleteRole(ctx context.Context, req *adminpb.UndeleteRoleR
 // QueryTestablePermissions lists every permission that you can test on a resource. A permission is
 // testable if you can check whether a principal has that permission on the
 // resource.
-func (c *IamClient) QueryTestablePermissions(ctx context.Context, req *adminpb.QueryTestablePermissionsRequest, opts ...gax.CallOption) *PermissionIterator {
-	return c.internalClient.QueryTestablePermissions(ctx, req, opts...)
+func (c *IamClient) QueryTestablePermissionsIter(ctx context.Context, req *adminpb.QueryTestablePermissionsRequest, opts ...gax.CallOption) *PermissionIterator {
+	return c.internalClient.QueryTestablePermissionsIter(ctx, req, opts...)
 }
 
 // QueryAuditableServices returns a list of services that allow you to opt into audit logs that are
@@ -1114,95 +1117,6 @@ func (c *iamGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestI
 	return resp, nil
 }
 
-func (c *iamGRPCClient) QueryGrantableRoles(ctx context.Context, req *adminpb.QueryGrantableRolesRequest, opts ...gax.CallOption) *RoleIterator {
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
-	opts = append((*c.CallOptions).QueryGrantableRoles[0:len((*c.CallOptions).QueryGrantableRoles):len((*c.CallOptions).QueryGrantableRoles)], opts...)
-	it := &RoleIterator{}
-	req = proto.Clone(req).(*adminpb.QueryGrantableRolesRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.Role, string, error) {
-		resp := &adminpb.QueryGrantableRolesResponse{}
-		if pageToken != "" {
-			req.PageToken = pageToken
-		}
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else if pageSize != 0 {
-			req.PageSize = int32(pageSize)
-		}
-		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			var err error
-			resp, err = executeRPC(ctx, c.iamClient.QueryGrantableRoles, req, settings.GRPC, c.logger, "QueryGrantableRoles")
-			return err
-		}, opts...)
-		if err != nil {
-			return nil, "", err
-		}
-
-		it.Response = resp
-		return resp.GetRoles(), resp.GetNextPageToken(), nil
-	}
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.GetPageSize())
-	it.pageInfo.Token = req.GetPageToken()
-
-	return it
-}
-
-func (c *iamGRPCClient) ListRoles(ctx context.Context, req *adminpb.ListRolesRequest, opts ...gax.CallOption) *RoleIterator {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	opts = append((*c.CallOptions).ListRoles[0:len((*c.CallOptions).ListRoles):len((*c.CallOptions).ListRoles)], opts...)
-	it := &RoleIterator{}
-	req = proto.Clone(req).(*adminpb.ListRolesRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.Role, string, error) {
-		resp := &adminpb.ListRolesResponse{}
-		if pageToken != "" {
-			req.PageToken = pageToken
-		}
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else if pageSize != 0 {
-			req.PageSize = int32(pageSize)
-		}
-		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			var err error
-			resp, err = executeRPC(ctx, c.iamClient.ListRoles, req, settings.GRPC, c.logger, "ListRoles")
-			return err
-		}, opts...)
-		if err != nil {
-			return nil, "", err
-		}
-
-		it.Response = resp
-		return resp.GetRoles(), resp.GetNextPageToken(), nil
-	}
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.GetPageSize())
-	it.pageInfo.Token = req.GetPageToken()
-
-	return it
-}
-
 func (c *iamGRPCClient) GetRole(ctx context.Context, req *adminpb.GetRoleRequest, opts ...gax.CallOption) (*adminpb.Role, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1291,49 +1205,6 @@ func (c *iamGRPCClient) UndeleteRole(ctx context.Context, req *adminpb.UndeleteR
 		return nil, err
 	}
 	return resp, nil
-}
-
-func (c *iamGRPCClient) QueryTestablePermissions(ctx context.Context, req *adminpb.QueryTestablePermissionsRequest, opts ...gax.CallOption) *PermissionIterator {
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
-	opts = append((*c.CallOptions).QueryTestablePermissions[0:len((*c.CallOptions).QueryTestablePermissions):len((*c.CallOptions).QueryTestablePermissions)], opts...)
-	it := &PermissionIterator{}
-	req = proto.Clone(req).(*adminpb.QueryTestablePermissionsRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.Permission, string, error) {
-		resp := &adminpb.QueryTestablePermissionsResponse{}
-		if pageToken != "" {
-			req.PageToken = pageToken
-		}
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else if pageSize != 0 {
-			req.PageSize = int32(pageSize)
-		}
-		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			var err error
-			resp, err = executeRPC(ctx, c.iamClient.QueryTestablePermissions, req, settings.GRPC, c.logger, "QueryTestablePermissions")
-			return err
-		}, opts...)
-		if err != nil {
-			return nil, "", err
-		}
-
-		it.Response = resp
-		return resp.GetPermissions(), resp.GetNextPageToken(), nil
-	}
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.GetPageSize())
-	it.pageInfo.Token = req.GetPageToken()
-
-	return it
 }
 
 func (c *iamGRPCClient) QueryAuditableServices(ctx context.Context, req *adminpb.QueryAuditableServicesRequest, opts ...gax.CallOption) (*adminpb.QueryAuditableServicesResponse, error) {

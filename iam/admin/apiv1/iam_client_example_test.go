@@ -405,7 +405,7 @@ func ExampleIamClient_LintPolicy() {
 	_ = resp
 }
 
-func ExampleIamClient_ListRoles() {
+func ExampleIamClient_ListRolesIter() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -422,7 +422,7 @@ func ExampleIamClient_ListRoles() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/cloud.google.com/go/iam/admin/apiv1/adminpb#ListRolesRequest.
 	}
-	it := c.ListRoles(ctx, req)
+	it := c.ListRolesIter(ctx, req)
 	for {
 		resp, err := it.Next()
 		if err == iterator.Done {
@@ -554,7 +554,7 @@ func ExampleIamClient_QueryAuditableServices() {
 	_ = resp
 }
 
-func ExampleIamClient_QueryGrantableRoles() {
+func ExampleIamClient_QueryGrantableRolesIter() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -571,7 +571,7 @@ func ExampleIamClient_QueryGrantableRoles() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/cloud.google.com/go/iam/admin/apiv1/adminpb#QueryGrantableRolesRequest.
 	}
-	it := c.QueryGrantableRoles(ctx, req)
+	it := c.QueryGrantableRolesIter(ctx, req)
 	for {
 		resp, err := it.Next()
 		if err == iterator.Done {
@@ -591,7 +591,7 @@ func ExampleIamClient_QueryGrantableRoles() {
 	}
 }
 
-func ExampleIamClient_QueryTestablePermissions() {
+func ExampleIamClient_QueryTestablePermissionsIter() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -608,7 +608,7 @@ func ExampleIamClient_QueryTestablePermissions() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/cloud.google.com/go/iam/admin/apiv1/adminpb#QueryTestablePermissionsRequest.
 	}
-	it := c.QueryTestablePermissions(ctx, req)
+	it := c.QueryTestablePermissionsIter(ctx, req)
 	for {
 		resp, err := it.Next()
 		if err == iterator.Done {

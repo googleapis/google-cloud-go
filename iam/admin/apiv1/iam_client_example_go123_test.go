@@ -25,7 +25,7 @@ import (
 	adminpb "cloud.google.com/go/iam/admin/apiv1/adminpb"
 )
 
-func ExampleIamClient_ListRoles_all() {
+func ExampleIamClient_ListRolesIter_all() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -42,7 +42,7 @@ func ExampleIamClient_ListRoles_all() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/cloud.google.com/go/iam/admin/apiv1/adminpb#ListRolesRequest.
 	}
-	for resp, err := range c.ListRoles(ctx, req).All() {
+	for resp, err := range c.ListRolesIter(ctx, req).All() {
 		if err != nil {
 			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
@@ -77,7 +77,7 @@ func ExampleIamClient_ListServiceAccounts_all() {
 	}
 }
 
-func ExampleIamClient_QueryGrantableRoles_all() {
+func ExampleIamClient_QueryGrantableRolesIter_all() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -94,7 +94,7 @@ func ExampleIamClient_QueryGrantableRoles_all() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/cloud.google.com/go/iam/admin/apiv1/adminpb#QueryGrantableRolesRequest.
 	}
-	for resp, err := range c.QueryGrantableRoles(ctx, req).All() {
+	for resp, err := range c.QueryGrantableRolesIter(ctx, req).All() {
 		if err != nil {
 			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
@@ -103,7 +103,7 @@ func ExampleIamClient_QueryGrantableRoles_all() {
 	}
 }
 
-func ExampleIamClient_QueryTestablePermissions_all() {
+func ExampleIamClient_QueryTestablePermissionsIter_all() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -120,7 +120,7 @@ func ExampleIamClient_QueryTestablePermissions_all() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/cloud.google.com/go/iam/admin/apiv1/adminpb#QueryTestablePermissionsRequest.
 	}
-	for resp, err := range c.QueryTestablePermissions(ctx, req).All() {
+	for resp, err := range c.QueryTestablePermissionsIter(ctx, req).All() {
 		if err != nil {
 			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
