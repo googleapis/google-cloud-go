@@ -21,11 +21,8 @@
 package dataplexpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -35,6 +32,8 @@ import (
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1125,11 +1124,17 @@ func (x *GenerateDataQualityRulesResponse) GetRule() []*DataQualityRule {
 //
 // For example:
 //
-//   - Data Quality: generates queries based on the rules and runs against the
-//     data to get data quality check results.
-//   - Data Profile: analyzes the data in table(s) and generates insights about
+//   - Data quality: generates queries based on the rules and runs against the
+//     data to get data quality check results. For more information, see [Auto
+//     data quality
+//     overview](https://cloud.google.com/dataplex/docs/auto-data-quality-overview).
+//   - Data profile: analyzes the data in tables and generates insights about
 //     the structure, content and relationships (such as null percent,
-//     cardinality, min/max/mean, etc).
+//     cardinality, min/max/mean, etc). For more information, see [About data
+//     profiling](https://cloud.google.com/dataplex/docs/data-profiling-overview).
+//   - Data discovery: scans data in Cloud Storage buckets to extract and then
+//     catalog metadata. For more information, see [Discover and catalog Cloud
+//     Storage data](https://cloud.google.com/bigquery/docs/automatic-discovery).
 type DataScan struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
