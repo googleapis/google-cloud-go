@@ -1833,6 +1833,51 @@ func TestClient_PreparedTransaction(t *testing.T) {
 	}
 }
 
+func TestClient_PreparedTransaction_SessionNotFoundOnBeginTransaction(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{SessionPoolConfig: SessionPoolConfig{MinOpened: 2, MaxOpened: 2}})
+	defer teardown()
+
+	// Simulate a SessionNotFound error for the BeginTransaction method.
+	server.TestSpanner.PutExecutionTime(
+		MethodBeginTransaction,
+		SimulatedExecutionTime{Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
+	)
+
+	// Prepare a transaction and expect it to handle the SessionNotFound error.
+	tx, err := client.prepareTransaction(ctx, TransactionOptions{})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = tx.run(ctx, func(ctx context.Context, transaction *ReadWriteTransaction) error {
+		count, err := transaction.Update(ctx, Statement{SQL: UpdateBarSetFoo})
+		if err != nil {
+			return err
+		}
+		if g, w := int(count), UpdateBarSetFooRowCount; g != w {
+			t.Fatalf("affected rows mismatch\n Got: %v\nWant: %v", g, w)
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	requests := drainRequestsFromServer(server.TestSpanner)
+	if err := compareRequests([]interface{}{
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.BeginTransactionRequest{}, // Retry due to SessionNotFound
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.CommitRequest{},
+	}, requests); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestClient_PooledTransaction(t *testing.T) {
 	t.Parallel()
 
