@@ -191,7 +191,7 @@ func parseFlags() {
 	flag.Int64Var(&opts.maxChunkSize, "max_chunksize", useDefault, "max chunksize in bytes")
 
 	flag.BoolVar(&opts.appendWrites, "append_writes", false, "use the append writer")
-	flag.BoolVar(&opts.gRPCBidiReads, "multi_range_downloader", false, "use BidiReadObject for gRPC reads")
+	flag.BoolVar(&opts.gRPCBidiReads, "grpc_bidi_reads", false, "use BidiReadObject for gRPC reads")
 
 	flag.IntVar(&opts.connPoolSize, "connection_pool_size", 4, "GRPC connection pool size")
 
@@ -242,7 +242,7 @@ func parseFlags() {
 		}
 
 		if opts.gRPCBidiReads {
-			log.Fatalf("--multi_range_downloader requires GRPC or DirectPath; got %v", opts.api)
+			log.Fatalf("--grpc_bidi_reads requires GRPC or DirectPath; got %v", opts.api)
 		}
 	}
 }
