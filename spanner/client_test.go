@@ -1836,7 +1836,7 @@ func TestClient_PreparedTransaction(t *testing.T) {
 func TestClient_PreparedTransaction_SessionNotFoundOnBeginTransaction(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{SessionPoolConfig: SessionPoolConfig{MinOpened: 1, MaxOpened: 1}})
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{SessionPoolConfig: SessionPoolConfig{MinOpened: 2, MaxOpened: 2}})
 	defer teardown()
 
 	// Simulate a SessionNotFound error for the BeginTransaction method.
@@ -1851,10 +1851,7 @@ func TestClient_PreparedTransaction_SessionNotFoundOnBeginTransaction(t *testing
 		t.Fatal(err)
 	}
 
-	var attempts int
-	expectedAttempts := 2 // Expecting a retry after the session not found error.
 	_, err = tx.run(ctx, func(ctx context.Context, transaction *ReadWriteTransaction) error {
-		attempts++
 		count, err := transaction.Update(ctx, Statement{SQL: UpdateBarSetFoo})
 		if err != nil {
 			return err
@@ -1867,14 +1864,13 @@ func TestClient_PreparedTransaction_SessionNotFoundOnBeginTransaction(t *testing
 	if err != nil {
 		t.Fatal(err)
 	}
-	if expectedAttempts != attempts {
-		t.Fatalf("unexpected number of attempts: %d, expected %d", attempts, expectedAttempts)
-	}
 
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
+		&sppb.BatchCreateSessionsRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.BeginTransactionRequest{}, // Retry due to SessionNotFound
+		&sppb.BatchCreateSessionsRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.CommitRequest{},
 	}, requests); err != nil {

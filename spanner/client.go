@@ -1005,12 +1005,12 @@ func (c *Client) prepareTransaction(ctx context.Context, options TransactionOpti
 	t := &ReadWriteTransaction{
 		txReadyOrClosed: make(chan struct{}),
 	}
-	//t.txReadOnly.sp = c.idleSessions
+	t.txReadOnly.sp = c.idleSessions
 	t.txReadOnly.sh = sh
-	//t.txReadOnly.txReadEnv = t
-	//t.txReadOnly.qo = c.qo
-	//t.txReadOnly.ro = c.ro
-	//t.txReadOnly.disableRouteToLeader = c.disableRouteToLeader
+	t.txReadOnly.txReadEnv = t
+	t.txReadOnly.qo = c.qo
+	t.txReadOnly.ro = c.ro
+	t.txReadOnly.disableRouteToLeader = c.disableRouteToLeader
 	t.txOpts = c.txo.merge(options)
 	if err := t.begin(ctx); err != nil {
 		sh.recycle()
