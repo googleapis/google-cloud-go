@@ -1005,6 +1005,7 @@ func (c *Client) prepareTransaction(ctx context.Context, options TransactionOpti
 	t := &ReadWriteTransaction{
 		txReadyOrClosed: make(chan struct{}),
 	}
+	t.txReadOnly.sp = c.idleSessions
 	t.txReadOnly.sh = sh
 	t.txOpts = c.txo.merge(options)
 	if err := t.begin(ctx); err != nil {
