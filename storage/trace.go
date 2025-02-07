@@ -54,7 +54,7 @@ func startSpan(ctx context.Context, name string, opts ...trace.SpanStartOption) 
 		ctx = internalTrace.StartSpan(ctx, name)
 		return ctx, nil
 	}
-	opts = append(opts, getCommonTraceOptions()...)
+	opts = append(opts, getCommonTraceOption()...)
 	ctx, span := tracer().Start(ctx, name, opts...)
 	return ctx, span
 }
@@ -76,18 +76,53 @@ func endSpan(ctx context.Context, err error) {
 	}
 }
 
-// getCommonTraceOptions includes the common attributes used for Cloud Trace adoption tracking.
-func getCommonTraceOptions() []trace.SpanStartOption {
+// getCommonTraceOption makes a SpanStartOption with common attributes.
+func getCommonTraceOption() []trace.SpanStartOption {
 	opts := []trace.SpanStartOption{
-		trace.WithAttributes(
-			attribute.String("gcp.client.version", internal.Version),
-			attribute.String("gcp.client.repo", gcpClientRepo),
-			attribute.String("gcp.client.artifact", gcpClientArtifact),
-		),
+		trace.WithAttributes(getCommonAttributes()...),
 	}
 	return opts
 }
 
+// getCommonAttributes includes the common attributes used for Cloud Trace adoption tracking.
+func getCommonAttributes() []attribute.KeyValue {
+	return []attribute.KeyValue{
+		attribute.String("gcp.client.version", internal.Version),
+		attribute.String("gcp.client.repo", gcpClientRepo),
+		attribute.String("gcp.client.artifact", gcpClientArtifact),
+	}
+}
+
 func appendPackageName(spanName string) string {
 	return fmt.Sprintf("%s.%s", gcpClientArtifact, spanName)
+}
+
+// makeSpanStartOptAttrs makes a SpanStartOption and converts a generic map to OpenTelemetry attributes.
+func makeSpanStartOptAttrs(attrMap map[string]interface{}) []trace.SpanStartOption {
+	attrs := otAttrs(attrMap)
+	return []trace.SpanStartOption{
+		trace.WithAttributes(attrs...),
+	}
+}
+
+// otAttrs converts a generic map to OpenTelemetry attributes.
+func otAttrs(attrMap map[string]interface{}) []attribute.KeyValue {
+	var attrs []attribute.KeyValue
+	for k, v := range attrMap {
+		var a attribute.KeyValue
+		switch v := v.(type) {
+		case string:
+			a = attribute.Key(k).String(v)
+		case bool:
+			a = attribute.Key(k).Bool(v)
+		case int:
+			a = attribute.Key(k).Int(v)
+		case int64:
+			a = attribute.Key(k).Int64(v)
+		default:
+			a = attribute.Key(k).String(fmt.Sprintf("%#v", v))
+		}
+		attrs = append(attrs, a)
+	}
+	return attrs
 }
