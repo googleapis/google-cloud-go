@@ -1787,55 +1787,6 @@ func testReadOnlyTransaction(t *testing.T, executionTimes map[string]SimulatedEx
 	return executeSingerQuery(ctx, tx)
 }
 
-func TestClient_PreparedTransaction(t *testing.T) {
-	t.Parallel()
-
-	ctx := context.Background()
-	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{SessionPoolConfig: SessionPoolConfig{MinOpened: 1, MaxOpened: 1}})
-	defer teardown()
-	// Wait for the session pool to contain 1 session, so we don't have to care about this in the
-	// checks for which requests we receive.
-	waitForSessionPool(t, client, 1, server)
-
-	for i := 0; i < 2; i++ {
-		tx, err := client.prepareTransaction(ctx, TransactionOptions{})
-		if err != nil {
-			t.Fatal(err)
-		}
-		_, err = tx.run(ctx, func(ctx context.Context, transaction *ReadWriteTransaction) error {
-			count, err := transaction.Update(ctx, Statement{SQL: UpdateBarSetFoo})
-			if err != nil {
-				return err
-			}
-			if g, w := int(count), UpdateBarSetFooRowCount; g != w {
-				t.Fatalf("affected rows mismatch\n Got: %v\nWant: %v", g, w)
-			}
-			return nil
-		})
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		requests := drainRequestsFromServer(server.TestSpanner)
-		if err := compareRequests([]interface{}{
-			&sppb.BeginTransactionRequest{},
-			&sppb.ExecuteSqlRequest{},
-			&sppb.CommitRequest{},
-		}, requests); err != nil {
-			t.Fatal(err)
-		}
-		execRequest := requests[1].(*sppb.ExecuteSqlRequest)
-		id := execRequest.Transaction.GetId()
-		begin := execRequest.Transaction.GetBegin()
-		if begin != nil {
-			t.Fatal("unexpected begin transaction selector")
-		}
-		if id == nil || len(id) == 0 {
-			t.Fatal("missing transaction id")
-		}
-	}
-}
-
 func TestClient_PreparedTransaction_SessionNotFoundOnBeginTransaction(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
@@ -1863,7 +1814,7 @@ func TestClient_PreparedTransaction_SessionNotFoundOnBeginTransaction(t *testing
 			t.Fatalf("affected rows mismatch\n Got: %v\nWant: %v", g, w)
 		}
 		return nil
-	})
+	}, TransactionOptions{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -1878,6 +1829,55 @@ func TestClient_PreparedTransaction_SessionNotFoundOnBeginTransaction(t *testing
 		&sppb.CommitRequest{},
 	}, requests); err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestClient_PreparedTransaction(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{SessionPoolConfig: SessionPoolConfig{MinOpened: 1, MaxOpened: 1}})
+	defer teardown()
+	// Wait for the session pool to contain 1 session, so we don't have to care about this in the
+	// checks for which requests we receive.
+	waitForSessionPool(t, client, 1, server)
+
+	for i := 0; i < 2; i++ {
+		tx, err := client.prepareTransaction(ctx, TransactionOptions{})
+		if err != nil {
+			t.Fatal(err)
+		}
+		_, err = tx.run(ctx, func(ctx context.Context, transaction *ReadWriteTransaction) error {
+			count, err := transaction.Update(ctx, Statement{SQL: UpdateBarSetFoo})
+			if err != nil {
+				return err
+			}
+			if g, w := int(count), UpdateBarSetFooRowCount; g != w {
+				t.Fatalf("affected rows mismatch\n Got: %v\nWant: %v", g, w)
+			}
+			return nil
+		}, TransactionOptions{})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		requests := drainRequestsFromServer(server.TestSpanner)
+		if err := compareRequests([]interface{}{
+			&sppb.BeginTransactionRequest{},
+			&sppb.ExecuteSqlRequest{},
+			&sppb.CommitRequest{},
+		}, requests); err != nil {
+			t.Fatal(err)
+		}
+		execRequest := requests[1].(*sppb.ExecuteSqlRequest)
+		id := execRequest.Transaction.GetId()
+		begin := execRequest.Transaction.GetBegin()
+		if begin != nil {
+			t.Fatal("unexpected begin transaction selector")
+		}
+		if id == nil || len(id) == 0 {
+			t.Fatal("missing transaction id")
+		}
 	}
 }
 
@@ -1926,7 +1926,7 @@ func TestClient_PooledTransaction(t *testing.T) {
 				t.Fatalf("affected rows mismatch\n Got: %v\nWant: %v", g, w)
 			}
 			return nil
-		})
+		}, TransactionOptions{TransactionTag: "test-tag", CommitOptions: CommitOptions{ReturnCommitStats: true}})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1947,16 +1947,25 @@ func TestClient_PooledTransaction(t *testing.T) {
 		if id == nil || len(id) == 0 {
 			t.Fatal("missing transaction id")
 		}
+		commitRequest := requests[1].(*sppb.CommitRequest)
+		if !commitRequest.ReturnCommitStats {
+			t.Fatal("missing commit request flag on CommitRequest")
+		}
+		if g, w := commitRequest.RequestOptions.TransactionTag, "test-tag"; g != w {
+			t.Fatalf("transaction tag mismatch\n Got: %v\nWant: %v", g, w)
+		}
 	}
-	// Verify that the next transaction fails, as the pool is exhausted and we have disabled the prepareFunc.
+	// Verify that the next transaction fails, as the pool is exhausted, and we have disabled the prepareFunc.
+	ctx, cancel := context.WithTimeout(ctx, time.Millisecond*10)
+	defer cancel()
 	_, err = txPool.RunTransaction(ctx, func(ctx context.Context, transaction *ReadWriteTransaction) error {
 		return nil
-	})
+	}, TransactionOptions{})
 	if err == nil {
 		t.Fatal("missing error for last transaction")
 	}
-	if g, w := ErrCode(err), codes.ResourceExhausted; g != w {
-		t.Fatalf("error code mismatch\n Got %v\nWant: %v", g, w)
+	if g, w := err, context.DeadlineExceeded; g != w {
+		t.Fatalf("error mismatch\n Got %v\nWant: %v", g, w)
 	}
 }
 
@@ -2033,15 +2042,17 @@ func TestClient_RegisterPool(t *testing.T) {
 			t.Fatal("missing transaction id")
 		}
 	}
-	// Verify that the next transaction fails, as the pool is exhausted and we have disabled the prepareFunc.
-	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, transaction *ReadWriteTransaction) error {
+	// Verify that the next transaction fails, as the pool is exhausted, and we have disabled the prepareFunc.
+	ctx, cancel := context.WithTimeout(ctx, time.Millisecond*10)
+	defer cancel()
+	_, err = txPool.RunTransaction(ctx, func(ctx context.Context, transaction *ReadWriteTransaction) error {
 		return nil
-	})
+	}, TransactionOptions{})
 	if err == nil {
 		t.Fatal("missing error for last transaction")
 	}
-	if g, w := ErrCode(err), codes.ResourceExhausted; g != w {
-		t.Fatalf("error code mismatch\n Got %v\nWant: %v", g, w)
+	if g, w := err, context.DeadlineExceeded; g != w {
+		t.Fatalf("error mismatch\n Got %v\nWant: %v", g, w)
 	}
 }
 

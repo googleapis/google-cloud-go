@@ -43,7 +43,7 @@ type TransactionPool interface {
 	// RunTransaction runs a transaction using a transaction from this pool.
 	//
 	// This method is experimental and may be removed in a future version of this library.
-	RunTransaction(ctx context.Context, f func(context.Context, *ReadWriteTransaction) error) (resp CommitResponse, err error)
+	RunTransaction(ctx context.Context, f func(context.Context, *ReadWriteTransaction) error, options TransactionOptions) (resp CommitResponse, err error)
 }
 
 type fixedSizePool struct {
@@ -58,6 +58,7 @@ type fixedSizePool struct {
 	numPrepareErrs int
 	maxPrepareErrs int
 	numFailed      int
+	numWaiters     int
 
 	prepareFunc func()
 }
@@ -89,14 +90,14 @@ func (p *fixedSizePool) RegisterPool(client *Client) error {
 }
 
 // RunTransaction runs a read/write transaction using a prepared transaction from the pool.
-func (p *fixedSizePool) RunTransaction(ctx context.Context, f func(context.Context, *ReadWriteTransaction) error) (resp CommitResponse, err error) {
+func (p *fixedSizePool) RunTransaction(ctx context.Context, f func(context.Context, *ReadWriteTransaction) error, options TransactionOptions) (resp CommitResponse, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.fixedSizePool.RunTransaction")
 	defer func() { trace.EndSpan(ctx, err) }()
 	tx, err := p.get(ctx)
 	if err != nil {
 		return resp, err
 	}
-	return tx.run(ctx, f)
+	return tx.run(ctx, f, options)
 }
 
 func (p *fixedSizePool) get(ctx context.Context) (*preparedTransaction, error) {
@@ -114,11 +115,13 @@ func (p *fixedSizePool) get(ctx context.Context) (*preparedTransaction, error) {
 				p.mu.Unlock()
 				return nil, err
 			}
+			p.numWaiters++
 			p.mu.Unlock()
 			if err := p.waitForTransaction(ctx); err != nil {
 				return nil, err
 			}
 			p.mu.Lock()
+			p.numWaiters--
 			l = len(p.transactions)
 			if l > 0 {
 				break
@@ -165,9 +168,12 @@ func (p *fixedSizePool) prepareTransaction() {
 			p.numPrepareErrs = 0
 			p.transactions = append(p.transactions, tx)
 		}
+		numWaiters := p.numWaiters
 		p.mu.Unlock()
 		if err == nil || maxErrsReached {
-			p.transactionReady <- true
+			if numWaiters > 0 {
+				p.transactionReady <- true
+			}
 			break
 		}
 	}
