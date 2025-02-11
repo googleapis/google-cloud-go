@@ -87,7 +87,15 @@ func (br *benchmarkResult) selectWriteParams(opts benchmarkOptions, api benchmar
 		api = jsonAPI
 	}
 
-	_, doMD5, doCRC32C := randomOf3()
+	doMD5, doCRC32C := false, false
+	switch opts.integrity {
+	case crc32cIC:
+		doCRC32C = true
+	case md5IC:
+		doMD5 = true
+	case randomIC:
+		_, doMD5, doCRC32C = randomOf3()
+	}
 	br.params = randomizedParams{
 		appBufferSize: opts.writeBufferSize,
 		chunkSize:     randomInt64(opts.minChunkSize, opts.maxChunkSize),

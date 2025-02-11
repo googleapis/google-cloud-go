@@ -53,8 +53,10 @@ import (
 	raw "google.golang.org/api/storage/v1"
 	"google.golang.org/api/transport"
 	htransport "google.golang.org/api/transport/http"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/experimental/stats"
 	"google.golang.org/grpc/stats/opentelemetry"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
@@ -65,9 +67,11 @@ import (
 var signedURLMethods = map[string]bool{"DELETE": true, "GET": true, "HEAD": true, "POST": true, "PUT": true}
 
 var (
-	// ErrBucketNotExist indicates that the bucket does not exist.
+	// ErrBucketNotExist indicates that the bucket does not exist. It should be
+	// checked for using [errors.Is] instead of direct equality.
 	ErrBucketNotExist = errors.New("storage: bucket doesn't exist")
-	// ErrObjectNotExist indicates that the object does not exist.
+	// ErrObjectNotExist indicates that the object does not exist. It should be
+	// checked for using [errors.Is] instead of direct equality.
 	ErrObjectNotExist = errors.New("storage: object doesn't exist")
 	// errMethodNotSupported indicates that the method called is not currently supported by the client.
 	// TODO: Export this error when launching the transport-agnostic client.
@@ -1030,8 +1034,8 @@ func (o *ObjectHandle) Key(encryptionKey []byte) *ObjectHandle {
 // Attrs returns meta information about the object.
 // ErrObjectNotExist will be returned if the object is not found.
 func (o *ObjectHandle) Attrs(ctx context.Context) (attrs *ObjectAttrs, err error) {
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Object.Attrs")
-	defer func() { trace.EndSpan(ctx, err) }()
+	ctx, _ = startSpan(ctx, "Object.Attrs")
+	defer func() { endSpan(ctx, err) }()
 
 	if err := o.validate(); err != nil {
 		return nil, err
@@ -1044,8 +1048,8 @@ func (o *ObjectHandle) Attrs(ctx context.Context) (attrs *ObjectAttrs, err error
 // ObjectAttrsToUpdate docs for details on treatment of zero values.
 // ErrObjectNotExist will be returned if the object is not found.
 func (o *ObjectHandle) Update(ctx context.Context, uattrs ObjectAttrsToUpdate) (oa *ObjectAttrs, err error) {
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Object.Update")
-	defer func() { trace.EndSpan(ctx, err) }()
+	ctx, _ = startSpan(ctx, "Object.Update")
+	defer func() { endSpan(ctx, err) }()
 
 	if err := o.validate(); err != nil {
 		return nil, err
@@ -2431,6 +2435,10 @@ type retryConfig struct {
 	policy      RetryPolicy
 	shouldRetry func(err error) bool
 	maxAttempts *int
+	// maxRetryDuration, if set, specifies a deadline after which the request
+	// will no longer be retried. A value of 0 allows infinite retries.
+	// maxRetryDuration is currently only set by Writer.ChunkRetryDeadline.
+	maxRetryDuration time.Duration
 }
 
 func (r *retryConfig) clone() *retryConfig {
@@ -2448,10 +2456,11 @@ func (r *retryConfig) clone() *retryConfig {
 	}
 
 	return &retryConfig{
-		backoff:     bo,
-		policy:      r.policy,
-		shouldRetry: r.shouldRetry,
-		maxAttempts: r.maxAttempts,
+		backoff:          bo,
+		policy:           r.policy,
+		shouldRetry:      r.shouldRetry,
+		maxAttempts:      r.maxAttempts,
+		maxRetryDuration: r.maxRetryDuration,
 	}
 }
 
@@ -2624,4 +2633,26 @@ func applyCondsProto(method string, gen int64, conds *Conditions, msg proto.Mess
 		}
 	}
 	return nil
+}
+
+// formatObjectErr checks if the provided error is NotFound and if so, wraps
+// it in an ErrObjectNotExist error. If not, formatObjectErr has no effect.
+func formatObjectErr(err error) error {
+	var e *googleapi.Error
+	if s, ok := status.FromError(err); (ok && s.Code() == codes.NotFound) ||
+		(errors.As(err, &e) && e.Code == http.StatusNotFound) {
+		return fmt.Errorf("%w: %w", ErrObjectNotExist, err)
+	}
+	return err
+}
+
+// formatBucketError checks if the provided error is NotFound and if so, wraps
+// it in an ErrBucketNotExist error. If not, formatBucketError has no effect.
+func formatBucketError(err error) error {
+	var e *googleapi.Error
+	if s, ok := status.FromError(err); (ok && s.Code() == codes.NotFound) ||
+		(errors.As(err, &e) && e.Code == http.StatusNotFound) {
+		return fmt.Errorf("%w: %w", ErrBucketNotExist, err)
+	}
+	return err
 }

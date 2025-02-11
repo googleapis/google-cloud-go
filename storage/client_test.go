@@ -17,11 +17,13 @@ package storage
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"log"
 	"math/rand"
+	"net/http"
 	"net/url"
 	"os"
 	"strconv"
@@ -1000,12 +1002,22 @@ func TestOpenAppendableWriterMultipleFlushesEmulated(t *testing.T) {
 		w.Append = true
 		// This should chunk the request into three separate flushes to storage.
 		w.ChunkSize = MiB
+		var lastReportedOffset int64
+		w.ProgressFunc = func(offset int64) {
+			if offset != lastReportedOffset+MiB {
+				t.Errorf("incorrect progress report: got %d; want %d", offset, lastReportedOffset+MiB)
+			}
+			lastReportedOffset = offset
+		}
 		_, err = w.Write(randomBytes3MiB)
 		if err != nil {
 			t.Fatalf("writing test data: got %v; want ok", err)
 		}
 		if err := w.Close(); err != nil {
 			t.Fatalf("closing test data writer: got %v; want ok", err)
+		}
+		if lastReportedOffset != 3*MiB {
+			t.Errorf("incorrect final progress report: got %d; want %d", lastReportedOffset, 3*MiB)
 		}
 
 		if diff := cmp.Diff(w.Attrs().Name, objName); diff != "" {
@@ -1849,7 +1861,7 @@ func TestRetryMaxAttemptsEmulated(t *testing.T) {
 		instructions := map[string][]string{"storage.buckets.get": {"return-503", "return-503", "return-503", "return-503", "return-503"}}
 		testID := createRetryTest(t, client, instructions)
 		ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
-		config := &retryConfig{maxAttempts: expectedAttempts(3), backoff: &gax.Backoff{Initial: 10 * time.Millisecond}}
+		config := &retryConfig{maxAttempts: intPointer(3), backoff: &gax.Backoff{Initial: 10 * time.Millisecond}}
 		_, err = client.GetBucket(ctx, bucket, nil, idempotent(true), withRetryConfig(config))
 
 		var ae *apierror.APIError
@@ -1900,7 +1912,7 @@ func TestRetryDeadlineExceededEmulated(t *testing.T) {
 		instructions := map[string][]string{"storage.buckets.get": {"return-504", "return-504"}}
 		testID := createRetryTest(t, client, instructions)
 		ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
-		config := &retryConfig{maxAttempts: expectedAttempts(4), backoff: &gax.Backoff{Initial: 10 * time.Millisecond}}
+		config := &retryConfig{maxAttempts: intPointer(4), backoff: &gax.Backoff{Initial: 10 * time.Millisecond}}
 		if _, err := client.GetBucket(ctx, bucket, nil, idempotent(true), withRetryConfig(config)); err != nil {
 			t.Fatalf("GetBucket: got unexpected error %v, want nil", err)
 		}
@@ -2098,6 +2110,77 @@ func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
 	})
 }
 
+func TestWriterChunkRetryDeadlineEmulated(t *testing.T) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		const (
+			// Resumable upload with smallest chunksize.
+			chunkSize = 256 * 1024
+			fileSize  = 600 * 1024
+			// A small value for testing, but large enough that we do encounter the error.
+			retryDeadline = time.Second
+			errCode       = 503
+		)
+
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{}, nil)
+		if err != nil {
+			t.Fatalf("creating bucket: %v", err)
+		}
+
+		// Populate instructions with a lot of errors so it will take a long time
+		// to suceed. Error only after the first chunk has been sent, as the
+		// retry deadline does not apply to the first chunk.
+		manyErrs := []string{fmt.Sprintf("return-%d-after-%dK", errCode, 257)}
+		for i := 0; i < 20; i++ {
+			manyErrs = append(manyErrs, fmt.Sprintf("return-%d", errCode))
+
+		}
+		instructions := map[string][]string{"storage.objects.insert": manyErrs}
+		testID := createRetryTest(t, client, instructions)
+
+		var cancel context.CancelFunc
+		ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
+		ctx, cancel = context.WithTimeout(ctx, 5*time.Second)
+		defer cancel()
+
+		params := &openWriterParams{
+			attrs: &ObjectAttrs{
+				Bucket:     bucket,
+				Name:       fmt.Sprintf("object-%d", time.Now().Nanosecond()),
+				Generation: defaultGen,
+			},
+			bucket:             bucket,
+			chunkSize:          chunkSize,
+			chunkRetryDeadline: retryDeadline,
+			ctx:                ctx,
+			donec:              make(chan struct{}),
+			setError:           func(_ error) {}, // no-op
+			progress:           func(_ int64) {}, // no-op
+			setObj:             func(_ *ObjectAttrs) {},
+		}
+
+		pw, err := client.OpenWriter(params, &idempotentOption{true})
+		if err != nil {
+			t.Fatalf("failed to open writer: %v", err)
+		}
+		buffer := bytes.Repeat([]byte("A"), fileSize)
+		_, err = pw.Write(buffer)
+		defer pw.Close()
+		if !errorIsStatusCode(err, errCode, codes.Unavailable) {
+			t.Errorf("expected err with status %d, got err: %v", errCode, err)
+		}
+
+		// Make sure there was more than one attempt.
+		got, err := numInstructionsLeft(testID, "storage.objects.insert")
+		if err != nil {
+			t.Errorf("getting emulator instructions: %v", err)
+		}
+
+		if got >= len(manyErrs)-1 {
+			t.Errorf("not enough attempts - the request may not have been retried; got %d instructions left, expected at most %d", got, len(manyErrs)-2)
+		}
+	})
+}
+
 // createRetryTest creates a bucket in the emulator and sets up a test using the
 // Retry Test API for the given instructions. This is intended for emulator tests
 // of retry behavior that are not covered by conformance tests.
@@ -2124,6 +2207,37 @@ func createRetryTest(t *testing.T, client storageClient, instructions map[string
 		et.delete()
 	})
 	return et.id
+}
+
+// Gets the number of unused instructions matching the method.
+func numInstructionsLeft(emulatorTestID, method string) (int, error) {
+	host := os.Getenv("STORAGE_EMULATOR_HOST")
+	endpoint, err := url.Parse(host)
+	if err != nil {
+		return 0, fmt.Errorf("parsing endpoint: %v", err)
+	}
+
+	endpoint.Path = strings.Join([]string{"retry_test", emulatorTestID}, "/")
+	c := http.DefaultClient
+	resp, err := c.Get(endpoint.String())
+	if err != nil || resp.StatusCode != 200 {
+		return 0, fmt.Errorf("getting retry test: err: %v, resp: %+v", err, resp)
+	}
+	defer func() {
+		closeErr := resp.Body.Close()
+		if err == nil {
+			err = closeErr
+		}
+	}()
+	testRes := struct {
+		Instructions map[string][]string
+		Completed    bool
+	}{}
+	if err := json.NewDecoder(resp.Body).Decode(&testRes); err != nil {
+		return 0, fmt.Errorf("decoding response: %v", err)
+	}
+	// Subtract one because the testbench is off by one (see storage-testbench/issues/707).
+	return len(testRes.Instructions[method]) - 1, nil
 }
 
 // createObject creates an object in the emulator with content randomBytesToWrite and

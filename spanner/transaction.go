@@ -1684,7 +1684,6 @@ func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions
 	}
 	t.state = txClosed // No further operations after commit.
 	close(t.txReadyOrClosed)
-	precommitToken := t.precommitToken
 	t.mu.Unlock()
 	if err != nil {
 		return resp, err
@@ -1703,17 +1702,32 @@ func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions
 	if options.MaxCommitDelay != nil {
 		maxCommitDelay = durationpb.New(*(options.MaxCommitDelay))
 	}
-	res, e := client.Commit(contextWithOutgoingMetadata(ctx, t.sh.getMetadata(), t.disableRouteToLeader), &sppb.CommitRequest{
-		Session: sid,
-		Transaction: &sppb.CommitRequest_TransactionId{
-			TransactionId: t.tx,
-		},
-		PrecommitToken:    precommitToken,
-		RequestOptions:    createRequestOptions(t.txOpts.CommitPriority, "", t.txOpts.TransactionTag),
-		Mutations:         mutationProtos,
-		ReturnCommitStats: options.ReturnCommitStats,
-		MaxCommitDelay:    maxCommitDelay,
-	}, gax.WithGRPCOptions(grpc.Header(&md)))
+	performCommit := func(includeMutations bool) (*sppb.CommitResponse, error) {
+		req := &sppb.CommitRequest{
+			Session: sid,
+			Transaction: &sppb.CommitRequest_TransactionId{
+				TransactionId: t.tx,
+			},
+			PrecommitToken:    t.precommitToken,
+			RequestOptions:    createRequestOptions(t.txOpts.CommitPriority, "", t.txOpts.TransactionTag),
+			ReturnCommitStats: options.ReturnCommitStats,
+			MaxCommitDelay:    maxCommitDelay,
+		}
+		if includeMutations {
+			req.Mutations = mutationProtos
+		}
+		return client.Commit(contextWithOutgoingMetadata(ctx, t.sh.getMetadata(), t.disableRouteToLeader), req, gax.WithGRPCOptions(grpc.Header(&md)))
+	}
+	// Initial commit attempt with mutations
+	res, err := performCommit(true)
+	if err != nil {
+		return resp, t.txReadOnly.updateTxState(toSpannerErrorWithCommitInfo(err, true))
+	}
+	// Retry if MultiplexedSessionRetry is present, without mutations
+	if res.GetMultiplexedSessionRetry() != nil {
+		t.updatePrecommitToken(res.GetPrecommitToken())
+		res, err = performCommit(false)
+	}
 	if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
 		if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "commit"); err != nil {
 			trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
@@ -1722,8 +1736,8 @@ func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions
 	if metricErr := recordGFELatencyMetricsOT(ctx, md, "commit", t.otConfig); metricErr != nil {
 		trace.TracePrintf(ctx, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", metricErr)
 	}
-	if e != nil {
-		return resp, t.txReadOnly.updateTxState(toSpannerErrorWithCommitInfo(e, true))
+	if err != nil {
+		return resp, t.txReadOnly.updateTxState(toSpannerErrorWithCommitInfo(err, true))
 	}
 	if tstamp := res.GetCommitTimestamp(); tstamp != nil {
 		resp.CommitTs = time.Unix(tstamp.Seconds, int64(tstamp.Nanos))

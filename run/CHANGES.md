@@ -1,6 +1,22 @@
 # Changelog
 
 
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/run/v1.8.1...run/v1.9.0) (2025-02-05)
+
+
+### Features
+
+* **run:** Add Base Image URI to Container ([72046f5](https://github.com/googleapis/google-cloud-go/commit/72046f59d15f19aa901cd43de23b42ded1860745))
+* **run:** Add BuildConfig to Services for configuring Run functions ([#11559](https://github.com/googleapis/google-cloud-go/issues/11559)) ([72046f5](https://github.com/googleapis/google-cloud-go/commit/72046f59d15f19aa901cd43de23b42ded1860745))
+* **run:** Add BuildInfo to Revision for displaying BuildConfig used for a specific revision deployment ([72046f5](https://github.com/googleapis/google-cloud-go/commit/72046f59d15f19aa901cd43de23b42ded1860745))
+* **run:** Add creator field to Execution ([72046f5](https://github.com/googleapis/google-cloud-go/commit/72046f59d15f19aa901cd43de23b42ded1860745))
+* **run:** Add project_descriptor to BuildspackBuild ([72046f5](https://github.com/googleapis/google-cloud-go/commit/72046f59d15f19aa901cd43de23b42ded1860745))
+
+
+### Documentation
+
+* **run:** Some typos were fixed and formatting changed ([72046f5](https://github.com/googleapis/google-cloud-go/commit/72046f59d15f19aa901cd43de23b42ded1860745))
+
 ## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/run/v1.8.0...run/v1.8.1) (2025-01-02)
 
 

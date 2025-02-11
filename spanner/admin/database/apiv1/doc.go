@@ -57,16 +57,11 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	req := &databasepb.CopyBackupRequest{
+//	req := &databasepb.AddSplitPointsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/spanner/admin/database/apiv1/databasepb#CopyBackupRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/spanner/admin/database/apiv1/databasepb#AddSplitPointsRequest.
 //	}
-//	op, err := c.CopyBackup(ctx, req)
-//	if err != nil {
-//		// TODO: Handle error.
-//	}
-//
-//	resp, err := op.Wait(ctx)
+//	resp, err := c.AddSplitPoints(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
