@@ -57,8 +57,11 @@ func (c *Client) partitionedUpdate(ctx context.Context, statement Statement, opt
 	} else {
 		sh, err = c.idleSessions.take(ctx)
 	}
-	if err != nil || sh == nil {
+	if err != nil {
 		return 0, ToSpannerError(err)
+	}
+	if sh == nil {
+		return 0, spannerErrorf(codes.Internal, "no session available")
 	}
 	defer sh.recycle()
 	// Mark isLongRunningTransaction to true, as the session in case of partitioned dml can be long-running
@@ -93,8 +96,11 @@ func (c *Client) partitionedUpdate(ctx context.Context, statement Statement, opt
 			if isUnimplementedErrorForMultiplexedPartitionedOps(err) && sh.session.pool.isMultiplexedSessionForPartitionedOpsEnabled() {
 				sh.session.pool.disableMultiplexedSessionForPartitionedOps()
 				sh, err = c.idleSessions.take(ctx)
-				if err != nil || sh == nil {
+				if err != nil {
 					return 0, ToSpannerError(err)
+				}
+				if sh == nil {
+					return 0, spannerErrorf(codes.Internal, "no session available")
 				}
 				defer sh.recycle()
 				// Mark isLongRunningTransaction to true, as the session in case of partitioned dml can be long-running

@@ -18,6 +18,7 @@ package spanner
 
 import (
 	"context"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -240,5 +241,134 @@ func TestPartitionQuery_Parallel(t *testing.T) {
 	wg.Wait()
 	if g, w := total, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount; g != w {
 		t.Errorf("Row count mismatch\nGot: %d\nWant: %d", g, w)
+	}
+}
+
+func TestPartitionQuery_Multiplexed(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			enableMultiplexSession:                    true,
+			enableMultiplexedSessionForPartitionedOps: true,
+		},
+		DisableNativeMetrics: true,
+	})
+	defer teardown()
+
+	txn, err := client.BatchReadOnlyTransaction(ctx, StrongRead())
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer txn.Cleanup(ctx)
+
+	// Test PartitionQuery
+	paritions, err := txn.PartitionQuery(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums), PartitionOptions{0, 3})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, p := range paritions {
+		iter := txn.Execute(ctx, p)
+		iter.Do(func(row *Row) error {
+			return nil
+		})
+		break
+	}
+	uniqueReq := make(map[string]bool)
+	handled := 0
+	reqs := drainRequestsFromServer(server.TestSpanner)
+	for _, s := range reqs {
+		switch req := s.(type) {
+		case *sppb.BeginTransactionRequest:
+			if !testEqual(isMultiplexEnabled, strings.Contains(req.Session, "multiplexed")) {
+				t.Errorf("TestPartitionQuery_Multiplexed expected multiplexed session to be used, got: %v", req.Session)
+			}
+			if _, ok := uniqueReq["BeginTransactionRequest"]; !ok {
+				handled++
+			}
+		case *sppb.ExecuteSqlRequest:
+			if !testEqual(isMultiplexEnabled, strings.Contains(req.Session, "multiplexed")) {
+				t.Errorf("TestPartitionQuery_Multiplexed expected multiplexed session to be used with execute sql request, got: %v", req.Session)
+			}
+			if _, ok := uniqueReq["ExecuteSqlRequest"]; !ok {
+				handled++
+			}
+		case *sppb.PartitionQueryRequest:
+			// Validate the session is multiplexed
+			if !testEqual(isMultiplexEnabled, strings.Contains(req.Session, "multiplexed")) {
+				t.Errorf("TestPartitionQuery_Multiplexed expected multiplexed session to be used with partition query request, got: %v", req.Session)
+			}
+			if _, ok := uniqueReq["PartitionQueryRequest"]; !ok {
+				handled++
+			}
+		}
+	}
+	if handled != 3 {
+		t.Errorf("TestPartitionQuery_Multiplexed: expected 3 requests to be handled, got: %d", handled)
+	}
+}
+
+func TestPartitionRead_Multiplexed(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			enableMultiplexSession:                    true,
+			enableMultiplexedSessionForPartitionedOps: true,
+		},
+		DisableNativeMetrics: true,
+	})
+	defer teardown()
+
+	txn, err := client.BatchReadOnlyTransaction(ctx, StrongRead())
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer txn.Cleanup(ctx)
+
+	// Test PartitionRead
+	paritions, err := txn.PartitionRead(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"}, PartitionOptions{0, 3})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, p := range paritions {
+		iter := txn.Execute(ctx, p)
+		iter.Do(func(row *Row) error {
+			return nil
+		})
+		break
+	}
+	reqs := drainRequestsFromServer(server.TestSpanner)
+	uniqueReq := make(map[string]bool)
+	handled := 0
+	for _, s := range reqs {
+		switch req := s.(type) {
+		case *sppb.BeginTransactionRequest:
+			if !testEqual(isMultiplexEnabled, strings.Contains(req.Session, "multiplexed")) {
+				t.Errorf("TestPartitionQuery_Multiplexed expected multiplexed session to be used, got: %v", req.Session)
+			}
+			if _, ok := uniqueReq["BeginTransactionRequest"]; !ok {
+				handled++
+			}
+		case *sppb.ReadRequest:
+			// Validate the session is multiplexed
+			if !testEqual(isMultiplexEnabled, strings.Contains(req.Session, "multiplexed")) {
+				t.Errorf("TestPartitionRead_Multiplexed expected multiplexed session to be used with read request, got: %v", req.Session)
+			}
+			if _, ok := uniqueReq["ReadRequest"]; !ok {
+				handled++
+			}
+		case *sppb.PartitionReadRequest:
+			// Validate the session is multiplexed
+			if !testEqual(isMultiplexEnabled, strings.Contains(req.Session, "multiplexed")) {
+				t.Errorf("TestPartitionRead_Multiplexed expected multiplexed session to be used with partition read request, got: %v", req.Session)
+			}
+			if _, ok := uniqueReq["PartitionReadRequest"]; !ok {
+				handled++
+			}
+		}
+	}
+	if handled != 3 {
+		t.Errorf("TestPartitionQuery_Multiplexed: expected 2 requests to be handled, got: %d", handled)
 	}
 }
