@@ -152,6 +152,9 @@ func (t *BatchReadOnlyTransaction) PartitionReadUsingIndexWithOptions(ctx contex
 	if metricErr := recordGFELatencyMetricsOT(ctx, md, "PartitionReadUsingIndexWithOptions", t.otConfig); metricErr != nil {
 		trace.TracePrintf(ctx, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", metricErr)
 	}
+	if isUnimplementedErrorForMultiplexedPartitionedOps(err) && t.sp.isMultiplexedSessionForPartitionedOpsEnabled() {
+		t.sp.disableMultiplexedSessionForPartitionedOps()
+	}
 	// Prepare ReadRequest.
 	req := &sppb.ReadRequest{
 		Session:             sid,
@@ -219,6 +222,9 @@ func (t *BatchReadOnlyTransaction) partitionQuery(ctx context.Context, statement
 	if metricErr := recordGFELatencyMetricsOT(ctx, md, "partitionQuery", t.otConfig); metricErr != nil {
 		trace.TracePrintf(ctx, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", metricErr)
 	}
+	if isUnimplementedErrorForMultiplexedPartitionedOps(err) && t.sp.isMultiplexedSessionForPartitionedOpsEnabled() {
+		t.sp.disableMultiplexedSessionForPartitionedOps()
+	}
 
 	// prepare ExecuteSqlRequest
 	r := &sppb.ExecuteSqlRequest{
@@ -281,6 +287,10 @@ func (t *BatchReadOnlyTransaction) Cleanup(ctx context.Context) {
 	}
 	t.sh = nil
 	sid, client := sh.getID(), sh.getClient()
+	// skip cleanup if session is multiplexed
+	if sh.session.isMultiplexed {
+		return
+	}
 
 	var md metadata.MD
 	err := client.DeleteSession(contextWithOutgoingMetadata(ctx, sh.getMetadata(), true), &sppb.DeleteSessionRequest{Name: sid}, gax.WithGRPCOptions(grpc.Header(&md)))
@@ -348,6 +358,9 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 			if metricErr := recordGFELatencyMetricsOT(ctx, md, "Execute", t.otConfig); metricErr != nil {
 				trace.TracePrintf(ctx, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", metricErr)
 			}
+			if isUnimplementedErrorForMultiplexedPartitionedOps(err) && t.sp.isMultiplexedSessionForPartitionedOpsEnabled() {
+				t.sp.disableMultiplexedSessionForPartitionedOps()
+			}
 			return client, err
 		}
 	} else {
@@ -377,6 +390,9 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 			}
 			if metricErr := recordGFELatencyMetricsOT(ctx, md, "Execute", t.otConfig); metricErr != nil {
 				trace.TracePrintf(ctx, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", metricErr)
+			}
+			if isUnimplementedErrorForMultiplexedPartitionedOps(err) && t.sp.isMultiplexedSessionForPartitionedOpsEnabled() {
+				t.sp.disableMultiplexedSessionForPartitionedOps()
 			}
 			return client, err
 		}
