@@ -1451,10 +1451,10 @@ func (mr *gRPCBidiReader) add(output io.Writer, offset, limit int64, callback fu
 		return
 	}
 	mr.mu.Lock()
-	curentID := (*mr).readID
+	currentID := (*mr).readID
 	(*mr).readID++
 	if !mr.done {
-		spec := rangeSpec{readID: curentID, writer: output, offset: offset, limit: limit, bytesWritten: 0, callback: callback}
+		spec := rangeSpec{readID: currentID, writer: output, offset: offset, limit: limit, bytesWritten: 0, callback: callback}
 		mr.activeTask++
 		mr.data <- []rangeSpec{spec}
 	} else {
@@ -1466,6 +1466,8 @@ func (mr *gRPCBidiReader) add(output io.Writer, offset, limit int64, callback fu
 func (mr *gRPCBidiReader) wait() {
 	mr.mu.Lock()
 	// we should wait until there is active task or an entry in the map.
+	// there can be a scenario we have nothing in map for a moment or too but still have active task.
+	// hence in case we have permanent errors we reduce active task to 0 so that this does not block wait.
 	keepWaiting := len(mr.mp) != 0 || mr.activeTask != 0
 	mr.mu.Unlock()
 
