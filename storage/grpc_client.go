@@ -1287,6 +1287,11 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 					for _, val := range arr {
 						id := val.GetReadRange().GetReadId()
 						rr.mu.Lock()
+						_, ok := rr.mp[id]
+						if !ok {
+							// it's ok to ignore responses for read_id not in map as user would have been notified by callback.
+							continue
+						}
 						_, err = rr.mp[id].writer.Write(val.GetChecksummedData().GetContent())
 						if err != nil {
 							rr.mp[id].callback(rr.mp[id].offset, rr.mp[id].limit, err)
@@ -1447,7 +1452,6 @@ func (mr *gRPCBidiReader) add(output io.Writer, offset, limit int64, callback fu
 	(*mr).readID++
 	if !mr.done {
 		spec := rangeSpec{readID: curentID, writer: output, offset: offset, limit: limit, bytesWritten: 0, callback: callback}
-		mr.mp[curentID] = spec
 		mr.activeTask++
 		mr.data <- []rangeSpec{spec}
 	} else {
