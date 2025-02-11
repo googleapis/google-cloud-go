@@ -145,7 +145,7 @@ func (b *BucketHandle) Object(name string) *ObjectHandle {
 		gen:            -1,
 		userProject:    b.userProject,
 		retry:          retry,
-		limitPerStream: 256 * 1 << 10 << 10, // 1MiB = 1 << 10 << 10
+		limitPerStream: -1, // default is -1 until we test the feature, which means don't open any subsequent stream.
 	}
 }
 

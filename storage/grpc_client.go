@@ -1188,10 +1188,10 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 		readSpec:         r,
 		data:             make(chan []rangeSpec, 100),
 		ctx:              ctx,
-		closeReceiver:    make(chan bool, 10),
+		closeReceiver:    []chan bool{make(chan bool, 10)},
 		closeManager:     make(chan bool, 10),
-		managerRetry:     make(chan bool), // create unbuffered channel for closing the streamManager goroutine.
-		receiverRetry:    make(chan bool), // create unbuffered channel for closing the streamReceiver goroutine.
+		managerRetry:     make(chan bool),              // create unbuffered channel for closing the streamManager goroutine.
+		receiverRetry:    []chan bool{make(chan bool)}, // create unbuffered channel for closing the streamReceiver goroutine.
 		mp:               make(map[int64]rangeSpec),
 		streamMap:        make(map[int][]int64),
 		done:             false,
@@ -1199,7 +1199,8 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 		streamRecreation: []bool{false},
 	}
 
-	// streamManager goroutine runs in background where we send message to gcs and process response.
+	// streamManager goroutine runs in background where we send message to gcs.
+	// For each request we try to find out the perfect stream to send request.
 	streamManager := func() {
 		var currentSpec []rangeSpec
 		for {
@@ -1241,6 +1242,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 				if currentStream == -1 {
 					resp, cancel, err := openStream(rr.readHandle)
 					if err != nil {
+						rr.mu.Unlock()
 						// error while opening the stream need to close all the resources.
 						rr.close()
 					}
@@ -1249,11 +1251,13 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 					rr.bytePerStream = append(rr.bytePerStream, totalReadBytes)
 					rr.streamRecreation = append(rr.streamRecreation, false)
 					currentStream = len(rr.stream) - 1
+					rr.closeReceiver = append(rr.closeReceiver, make(chan bool, 10))
+					rr.receiverRetry = append(rr.receiverRetry, make(chan bool))
 					go rr.streamReceiver(currentStream, resp.stream)
 				} else {
 					rr.bytePerStream[currentStream] += totalReadBytes
 				}
-				// streamMap stores the mapping of StreamIndex to readId
+				// streamMap stores the mapping of StreamIndex to readId.
 				for _, v := range currentSpec {
 					rr.streamMap[currentStream] = append(rr.streamMap[currentStream], v.readID)
 				}
@@ -1301,7 +1305,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 		if thread == "receiver" {
 			rr.managerRetry <- true
 		} else {
-			rr.receiverRetry <- true
+			rr.receiverRetry[streamIndex] <- true
 		}
 		err = rr.retryStream(streamIndex, err)
 		if err != nil {
@@ -1332,6 +1336,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 
 	go streamManager()
 	go rr.streamReceiver(0, resp.stream)
+	go rr.streamCloser()
 
 	return &MultiRangeDownloader{
 		Attrs: ReaderObjectAttrs{
@@ -1347,6 +1352,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 	}, nil
 }
 
+// Each stream will have it's own stream receiver go-routine.
 func (rr *gRPCBidiReader) streamReceiver(streamIndex int, stream storagepb.Storage_BidiReadObjectClient) {
 	var resp *storagepb.BidiReadObjectResponse
 	var err error
@@ -1355,9 +1361,9 @@ func (rr *gRPCBidiReader) streamReceiver(streamIndex int, stream storagepb.Stora
 		case <-rr.ctx.Done():
 			rr.done = true
 			return
-		case <-rr.receiverRetry:
+		case <-rr.receiverRetry[streamIndex]:
 			return
-		case <-rr.closeReceiver:
+		case <-rr.closeReceiver[streamIndex]:
 			return
 		default:
 			// This function reads the data sent for a particular range request and has a callback
@@ -1378,7 +1384,9 @@ func (rr *gRPCBidiReader) streamReceiver(streamIndex int, stream storagepb.Stora
 			if err == nil {
 				rr.mu.Lock()
 				if len(rr.mp) == 0 && rr.activeTask == 0 {
-					rr.closeReceiver <- true
+					for j := 0; j < len(rr.stream); j++ {
+						rr.closeReceiver[j] <- true
+					}
 					rr.closeManager <- true
 					return
 				}
@@ -1412,6 +1420,27 @@ func (rr *gRPCBidiReader) streamReceiver(streamIndex int, stream storagepb.Stora
 			}
 
 		}
+	}
+}
+
+// stream closer go-routine looks for the last current go-routine which is not used and removes that.
+func (rr *gRPCBidiReader) streamCloser() {
+	for {
+		rr.mu.Lock()
+		idx := len(rr.stream) - 1
+		// if we just have one stream don't close that.
+		if len(rr.bytePerStream) == 0 && idx > 0 {
+			rr.stream[idx].CloseSend()
+			rr.cancel[idx]()
+			rr.closeReceiver[idx] <- true
+			rr.stream = rr.stream[:idx]
+			rr.cancel = rr.cancel[:idx]
+			rr.bytePerStream = rr.bytePerStream[:idx]
+			rr.streamRecreation = rr.streamRecreation[:idx]
+			rr.closeReceiver = rr.closeReceiver[:idx]
+			rr.receiverRetry = rr.receiverRetry[:idx]
+		}
+		rr.mu.Unlock()
 	}
 }
 
@@ -1462,6 +1491,8 @@ func (r *gRPCBidiReader) reopenStream(streamIndex int, failSpec []rangeSpec) err
 	}
 	r.stream[streamIndex] = res.stream
 	r.cancel[streamIndex] = cancel
+	r.bytePerStream[streamIndex] = 0
+	r.streamRecreation[streamIndex] = false
 	r.readHandle = res.response.GetReadHandle().GetHandle()
 	if failSpec != nil {
 		r.data <- failSpec
@@ -1511,15 +1542,15 @@ func (mr *gRPCBidiReader) wait() {
 
 // Close will notify stream manager goroutine that the reader has been closed, if it's still running.
 func (mr *gRPCBidiReader) close() error {
-	for idx := 0; idx < len(mr.cancel); idx++ {
+	for idx := 0; idx < len(mr.stream); idx++ {
 		mr.stream[idx].CloseSend()
 		mr.cancel[idx]()
+		mr.closeReceiver[idx] <- true
 	}
 	mr.mu.Lock()
 	mr.done = true
 	mr.activeTask = 0
 	mr.mu.Unlock()
-	mr.closeReceiver <- true
 	mr.closeManager <- true
 	return nil
 }
@@ -1528,7 +1559,13 @@ func (mrr *gRPCBidiReader) getHandle() []byte {
 	return mrr.readHandle
 }
 
+// createNewStream looks for the first stream which can handle the current request.
+// In case there is no stream which can be used we will return -1.
 func createNewStream(bytes []int64, currentByte int64, limit int64) int {
+	if limit == -1 {
+		// limit -1 implies we don't want to open subsequent streams hence return stream index 0.
+		return 0
+	}
 	for i := range bytes {
 		if bytes[i]+currentByte <= limit || bytes[i] == 0 {
 			return i
@@ -1938,16 +1975,16 @@ type gRPCBidiReader struct {
 	readSpec         *storagepb.BidiReadObjectSpec
 	data             chan []rangeSpec
 	ctx              context.Context
-	closeReceiver    chan bool
+	closeReceiver    []chan bool
 	closeManager     chan bool
 	managerRetry     chan bool
-	receiverRetry    chan bool
+	receiverRetry    []chan bool
 	mu               sync.Mutex          // protects all vars in gRPCBidiReader from concurrent access
 	mp               map[int64]rangeSpec // always use the mutex when accessing the map
-	streamMap        map[int][]int64
-	done             bool  // always use the mutex when accessing this variable
-	activeTask       int64 // always use the mutex when accessing this variable
-	objectSize       int64 // always use the mutex when accessing this variable
+	streamMap        map[int][]int64     // map of streamIndex to readId.
+	done             bool                // always use the mutex when accessing this variable
+	activeTask       int64               // always use the mutex when accessing this variable
+	objectSize       int64               // always use the mutex when accessing this variable
 	retrier          func(int, error, string)
 	streamRecreation []bool // This helps us identify if stream recreation is in progress or not. If stream recreation gets called from two goroutine then this will stop second one.
 }
