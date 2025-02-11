@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.72.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.71.0...aiplatform/v1.72.0) (2025-02-05)
+
+
+### Features
+
+* **aiplatform:** Add rag_files_count to RagCorpus to count number of associated files ([678944b](https://github.com/googleapis/google-cloud-go/commit/678944b30e389781687209caf3e3b9d35739a6f0))
+
 ## [1.71.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.70.0...aiplatform/v1.71.0) (2025-01-30)
 
 
