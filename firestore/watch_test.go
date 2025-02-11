@@ -228,3 +228,35 @@ func TestWatchCancel(t *testing.T) {
 	// TODO(jba): Test that we get codes.Canceled when canceling an RPC.
 	// We had a test for this in a21236af, but it was flaky for unclear reasons.
 }
+
+func TestDocumentChangeKindString(t *testing.T) {
+	tests := []struct {
+		Name string
+		Kind DocumentChangeKind
+	}{
+		{
+			Name: "Added",
+			Kind: DocumentAdded,
+		},
+		{
+			Name: "Modified",
+			Kind: DocumentModified,
+		},
+		{
+			Name: "Removed",
+			Kind: DocumentRemoved,
+		},
+		{
+			Name: "Unknown",
+			Kind: DocumentChangeKind(-1),
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.Name, func(t *testing.T) {
+			got := test.Kind.String()
+			if got != test.Name {
+				t.Errorf("%s: DocumentChangeKindString(%d).String() = %q; want %q", test.Name, test.Kind, got, test.Name)
+			}
+		})
+	}
+}

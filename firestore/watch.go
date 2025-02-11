@@ -48,6 +48,20 @@ const (
 	DocumentModified
 )
 
+// String returns the string representation of the DocumentChangeKind.
+func (k DocumentChangeKind) String() string {
+	switch k {
+	case DocumentAdded:
+		return "Added"
+	case DocumentModified:
+		return "Modified"
+	case DocumentRemoved:
+		return "Removed"
+	default:
+		return "Unknown"
+	}
+}
+
 // A DocumentChange describes the change to a document from one query snapshot to the next.
 type DocumentChange struct {
 	Kind DocumentChangeKind
