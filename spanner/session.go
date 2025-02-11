@@ -1987,12 +1987,19 @@ func isUnimplementedErrorForMultiplexedRW(err error) bool {
 	return ErrCode(err) == codes.Unimplemented && strings.Contains(err.Error(), "Transaction type read_write not supported with multiplexed sessions")
 }
 
-// isUnimplementedErrorForMultiplexedPartitionedOps returns true if the gRPC error code is Unimplemented and related to use of multiplexed session with partitioned ops.
-func isUnimplementedErrorForMultiplexedPartitionedOps(err error) bool {
+// isUnimplementedErrorForMultiplexedPartitionedDML returns true if the gRPC error code is Unimplemented and related to use of multiplexed session with partitioned ops.
+func isUnimplementedErrorForMultiplexedPartitionedDML(err error) bool {
 	if err == nil {
 		return false
 	}
-	return strings.Contains(err.Error(), "Partitioned operations are not supported with multiplexed sessions")
+	return ErrCode(err) == codes.Unimplemented && strings.Contains(err.Error(), "Transaction type partitioned_dml not supported with multiplexed sessions")
+}
+
+func isUnimplementedErrorForMultiplexedPartitionReads(err error) bool {
+	if err == nil {
+		return false
+	}
+	return ErrCode(err) == codes.InvalidArgument && strings.Contains(err.Error(), "Partitioned operations are not supported with multiplexed sessions")
 }
 
 func isFailedInlineBeginTransaction(err error) bool {

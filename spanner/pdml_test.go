@@ -269,7 +269,7 @@ func TestPDMLFallbackWithMultiplexedSession(t *testing.T) {
 		MethodBeginTransaction,
 		SimulatedExecutionTime{
 			Errors: []error{
-				status.Error(codes.Unknown, "Partitioned operations are not supported with multiplexed sessions"),
+				status.Error(codes.Unimplemented, "Transaction type partitioned_dml not supported with multiplexed sessions"),
 			},
 		})
 
@@ -290,7 +290,6 @@ func TestPDMLFallbackWithMultiplexedSession(t *testing.T) {
 		if sqlReq, ok := req.(*sppb.BeginTransactionRequest); ok {
 			if strings.Contains(sqlReq.Session, "multiplexed") {
 				foundMultiplexedSession = true
-				break
 			}
 		}
 		if sqlReq, ok := req.(*sppb.ExecuteSqlRequest); ok {

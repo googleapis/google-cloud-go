@@ -93,7 +93,7 @@ func (c *Client) partitionedUpdate(ctx context.Context, statement Statement, opt
 			if err == nil {
 				return count, nil
 			}
-			if isUnimplementedErrorForMultiplexedPartitionedOps(err) && sh.session.pool.isMultiplexedSessionForPartitionedOpsEnabled() {
+			if isUnimplementedErrorForMultiplexedPartitionedDML(err) && sh.session.pool.isMultiplexedSessionForPartitionedOpsEnabled() {
 				sh.session.pool.disableMultiplexedSessionForPartitionedOps()
 				sh, err = c.idleSessions.take(ctx)
 				if err != nil {
@@ -107,6 +107,8 @@ func (c *Client) partitionedUpdate(ctx context.Context, statement Statement, opt
 				sh.mu.Lock()
 				sh.eligibleForLongRunning = true
 				sh.mu.Unlock()
+				req.Session = sh.getID()
+				continue
 			}
 			delay, shouldRetry := retryer.Retry(err)
 			if !shouldRetry {

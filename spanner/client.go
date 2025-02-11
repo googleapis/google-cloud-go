@@ -892,7 +892,7 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 		},
 	})
 	if err != nil {
-		if isUnimplementedErrorForMultiplexedPartitionedOps(err) && c.idleSessions.isMultiplexedSessionForPartitionedOpsEnabled() {
+		if isUnimplementedErrorForMultiplexedPartitionedDML(err) && c.idleSessions.isMultiplexedSessionForPartitionedOpsEnabled() {
 			c.idleSessions.disableMultiplexedSessionForRW()
 		}
 		return nil, ToSpannerError(err)
