@@ -1206,6 +1206,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 						delete(rr.mp, key)
 					}
 				}
+				rr.activeTask = 0
 				rr.mu.Unlock()
 				return
 			case currentSpec = <-rr.data:
@@ -1342,6 +1343,8 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 				rr.mp[key].callback(rr.mp[key].offset, rr.mp[key].limit, err)
 				delete(rr.mp, key)
 			}
+			// In case we hit an permanent error, delete entries from map and remove active tasks.
+			rr.activeTask = 0
 			rr.mu.Unlock()
 			rr.close()
 		} else {
@@ -1462,12 +1465,13 @@ func (mr *gRPCBidiReader) add(output io.Writer, offset, limit int64, callback fu
 
 func (mr *gRPCBidiReader) wait() {
 	mr.mu.Lock()
-	keepWaiting := len(mr.mp) != 0 && mr.activeTask != 0
+	// we should wait until there is active task or an entry in the map.
+	keepWaiting := len(mr.mp) != 0 || mr.activeTask != 0
 	mr.mu.Unlock()
 
 	for keepWaiting {
 		mr.mu.Lock()
-		keepWaiting = len(mr.mp) != 0 && mr.activeTask != 0
+		keepWaiting = len(mr.mp) != 0 || mr.activeTask != 0
 		mr.mu.Unlock()
 	}
 }
