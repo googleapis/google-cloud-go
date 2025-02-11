@@ -92,6 +92,15 @@ func (c *Client) partitionedUpdate(ctx context.Context, statement Statement, opt
 			}
 			if isUnimplementedErrorForMultiplexedPartitionedOps(err) && sh.session.pool.isMultiplexedSessionForPartitionedOpsEnabled() {
 				sh.session.pool.disableMultiplexedSessionForPartitionedOps()
+				sh, err = c.idleSessions.take(ctx)
+				if err != nil || sh == nil {
+					return 0, ToSpannerError(err)
+				}
+				defer sh.recycle()
+				// Mark isLongRunningTransaction to true, as the session in case of partitioned dml can be long-running
+				sh.mu.Lock()
+				sh.eligibleForLongRunning = true
+				sh.mu.Unlock()
 			}
 			delay, shouldRetry := retryer.Retry(err)
 			if !shouldRetry {

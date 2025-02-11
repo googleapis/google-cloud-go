@@ -1992,7 +1992,7 @@ func isUnimplementedErrorForMultiplexedPartitionedOps(err error) bool {
 	if err == nil {
 		return false
 	}
-	return ErrCode(err) == codes.Unimplemented && strings.Contains(err.Error(), "Partitioned operations are not supported with multiplexed sessions")
+	return strings.Contains(err.Error(), "Partitioned operations are not supported with multiplexed sessions")
 }
 
 func isFailedInlineBeginTransaction(err error) bool {
