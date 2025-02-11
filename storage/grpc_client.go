@@ -24,6 +24,7 @@ import (
 	"log"
 	"net/url"
 	"os"
+	"slices"
 	"sync"
 
 	"cloud.google.com/go/iam/apiv1/iampb"
@@ -1208,6 +1209,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 				rr.mu.Lock()
 				if len(rr.mp) != 0 {
 					for key := range rr.mp {
+						fmt.Println("remove from map stream manager", key)
 						rr.mp[key].callback(rr.mp[key].offset, rr.mp[key].limit, fmt.Errorf("stream closed early"))
 						delete(rr.mp, key)
 					}
@@ -1275,6 +1277,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 					if err != nil {
 						// cancel stream and reopen the stream again.
 						// Incase again an error is thrown close the streamManager goroutine.
+						fmt.Println("going from manager for", currentStream)
 						rr.retrier(currentStream, err, "manager")
 						break
 					}
@@ -1302,10 +1305,12 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 		err = rr.retryStream(streamIndex, err)
 		if err != nil {
 			rr.mu.Lock()
-			for key := range rr.mp {
-				rr.mp[key].callback(rr.mp[key].offset, rr.mp[key].limit, err)
-				delete(rr.mp, key)
+			for _, v := range rr.streamMap[streamIndex] {
+				fmt.Println("remove from map retrier", v)
+				rr.mp[v].callback(rr.mp[v].offset, rr.mp[v].limit, err)
+				delete(rr.mp, v)
 			}
+			delete(rr.streamMap, streamIndex)
 			rr.mu.Unlock()
 			rr.close()
 		} else {
@@ -1370,6 +1375,7 @@ func (rr *gRPCBidiReader) streamReceiver(streamIndex int, stream storagepb.Stora
 			if err != nil {
 				// cancel stream and reopen the stream again.
 				// Incase again an error is thrown close the streamManager goroutine.
+				fmt.Println("going from receiver for", streamIndex)
 				rr.retrier(streamIndex, err, "receiver")
 			}
 
@@ -1387,10 +1393,18 @@ func (rr *gRPCBidiReader) streamReceiver(streamIndex int, stream storagepb.Stora
 				for _, val := range arr {
 					id := val.GetReadRange().GetReadId()
 					rr.mu.Lock()
+					value1, ok1 := rr.mp[id]
+					fmt.Println("id", id, "value", value1, "ok", ok1)
 					_, err = rr.mp[id].writer.Write(val.GetChecksummedData().GetContent())
 					if err != nil {
+						fmt.Println("remove from map stream receiver", id)
 						rr.mp[id].callback(rr.mp[id].offset, rr.mp[id].limit, err)
 						rr.activeTask--
+						idx := slices.Index(rr.streamMap[streamIndex], id)
+						rr.streamMap[streamIndex] = slices.Delete(rr.streamMap[streamIndex], idx, idx+1)
+						if len(rr.streamMap[streamIndex]) == 0 {
+							delete(rr.streamMap, streamIndex)
+						}
 						delete(rr.mp, id)
 					} else {
 						rr.mp[id] = rangeSpec{
@@ -1403,9 +1417,16 @@ func (rr *gRPCBidiReader) streamReceiver(streamIndex int, stream storagepb.Stora
 						}
 					}
 					if val.GetRangeEnd() {
+						fmt.Println("remove from map upon completion", id)
 						rr.mp[id].callback(rr.mp[id].offset, rr.mp[id].limit, nil)
 						rr.activeTask--
+						idx := slices.Index(rr.streamMap[streamIndex], id)
+						rr.streamMap[streamIndex] = slices.Delete(rr.streamMap[streamIndex], idx, idx+1)
+						if len(rr.streamMap[streamIndex]) == 0 {
+							delete(rr.streamMap, streamIndex)
+						}
 						delete(rr.mp, id)
+
 					}
 					rr.mu.Unlock()
 				}
@@ -1512,6 +1533,7 @@ func (mr *gRPCBidiReader) add(output io.Writer, offset, limit int64, callback fu
 	if !mr.done {
 		spec := rangeSpec{readID: curentID, writer: output, offset: offset, limit: limit, bytesWritten: 0, callback: callback}
 		mr.mp[curentID] = spec
+		fmt.Println("id:", curentID, "offset:", offset, "limit:", limit)
 		mr.activeTask++
 		mr.data <- []rangeSpec{spec}
 	} else {
