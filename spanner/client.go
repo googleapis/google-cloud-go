@@ -869,6 +869,9 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 
 	if c.idleSessions.isMultiplexedSessionForPartitionedOpsEnabled() {
 		sh, err = c.idleSessions.takeMultiplexed(ctx)
+		if err != nil {
+			return nil, err
+		}
 	} else {
 		// Create session.
 		s, err = c.sc.createSession(ctx)

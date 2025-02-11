@@ -280,14 +280,14 @@ func TestPartitionQuery_Multiplexed(t *testing.T) {
 	for _, s := range reqs {
 		switch req := s.(type) {
 		case *sppb.BeginTransactionRequest:
-			if !testEqual(isMultiplexEnabled, strings.Contains(req.Session, "multiplexed")) {
+			if !strings.Contains(req.Session, "multiplexed") {
 				t.Errorf("TestPartitionQuery_Multiplexed expected multiplexed session to be used, got: %v", req.Session)
 			}
 			if _, ok := uniqueReq["BeginTransactionRequest"]; !ok {
 				handled++
 			}
 		case *sppb.ExecuteSqlRequest:
-			if !testEqual(isMultiplexEnabled, strings.Contains(req.Session, "multiplexed")) {
+			if !strings.Contains(req.Session, "multiplexed") {
 				t.Errorf("TestPartitionQuery_Multiplexed expected multiplexed session to be used with execute sql request, got: %v", req.Session)
 			}
 			if _, ok := uniqueReq["ExecuteSqlRequest"]; !ok {
@@ -295,7 +295,7 @@ func TestPartitionQuery_Multiplexed(t *testing.T) {
 			}
 		case *sppb.PartitionQueryRequest:
 			// Validate the session is multiplexed
-			if !testEqual(isMultiplexEnabled, strings.Contains(req.Session, "multiplexed")) {
+			if !strings.Contains(req.Session, "multiplexed") {
 				t.Errorf("TestPartitionQuery_Multiplexed expected multiplexed session to be used with partition query request, got: %v", req.Session)
 			}
 			if _, ok := uniqueReq["PartitionQueryRequest"]; !ok {
@@ -344,7 +344,7 @@ func TestPartitionRead_Multiplexed(t *testing.T) {
 	for _, s := range reqs {
 		switch req := s.(type) {
 		case *sppb.BeginTransactionRequest:
-			if !testEqual(isMultiplexEnabled, strings.Contains(req.Session, "multiplexed")) {
+			if !strings.Contains(req.Session, "multiplexed") {
 				t.Errorf("TestPartitionQuery_Multiplexed expected multiplexed session to be used, got: %v", req.Session)
 			}
 			if _, ok := uniqueReq["BeginTransactionRequest"]; !ok {
@@ -352,7 +352,7 @@ func TestPartitionRead_Multiplexed(t *testing.T) {
 			}
 		case *sppb.ReadRequest:
 			// Validate the session is multiplexed
-			if !testEqual(isMultiplexEnabled, strings.Contains(req.Session, "multiplexed")) {
+			if !strings.Contains(req.Session, "multiplexed") {
 				t.Errorf("TestPartitionRead_Multiplexed expected multiplexed session to be used with read request, got: %v", req.Session)
 			}
 			if _, ok := uniqueReq["ReadRequest"]; !ok {
@@ -360,7 +360,7 @@ func TestPartitionRead_Multiplexed(t *testing.T) {
 			}
 		case *sppb.PartitionReadRequest:
 			// Validate the session is multiplexed
-			if !testEqual(isMultiplexEnabled, strings.Contains(req.Session, "multiplexed")) {
+			if !strings.Contains(req.Session, "multiplexed") {
 				t.Errorf("TestPartitionRead_Multiplexed expected multiplexed session to be used with partition read request, got: %v", req.Session)
 			}
 			if _, ok := uniqueReq["PartitionReadRequest"]; !ok {
