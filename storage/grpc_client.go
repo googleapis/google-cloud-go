@@ -1107,7 +1107,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 		if err := applyCondsProto("grpcStorageClient.BidiReadObject", params.gen, params.conds, r); err != nil {
 			return nil, nil, err
 		}
-    
+
 		// We should open subsequent stream with readHandle that will fasten up the Open.
 		if readHandle != nil {
 			req.GetReadObjectSpec().ReadHandle = &storagepb.BidiReadHandle{
@@ -1154,7 +1154,6 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 		}
 		return &bidiReadStreamResponse{stream: stream, response: resp}, cancel, nil
 	}
-
 
 	// For the first time open stream without adding any range.
 	resp, cancel, err := openStream(nil)
