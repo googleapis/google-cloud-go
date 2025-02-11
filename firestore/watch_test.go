@@ -235,15 +235,15 @@ func TestDocumentChangeKindString(t *testing.T) {
 		Kind DocumentChangeKind
 	}{
 		{
-			Name: "Added",
+			Name: "DocumentAdded",
 			Kind: DocumentAdded,
 		},
 		{
-			Name: "Modified",
+			Name: "DocumentModified",
 			Kind: DocumentModified,
 		},
 		{
-			Name: "Removed",
+			Name: "DocumentRemoved",
 			Kind: DocumentRemoved,
 		},
 		{

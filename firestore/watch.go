@@ -52,11 +52,11 @@ const (
 func (k DocumentChangeKind) String() string {
 	switch k {
 	case DocumentAdded:
-		return "Added"
+		return "DocumentAdded"
 	case DocumentModified:
-		return "Modified"
+		return "DocumentModified"
 	case DocumentRemoved:
-		return "Removed"
+		return "DocumentRemoved"
 	default:
 		return "Unknown"
 	}
