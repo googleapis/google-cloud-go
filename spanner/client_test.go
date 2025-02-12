@@ -2726,8 +2726,8 @@ func TestClient_ReadWriteStmtBasedTransaction_TransactionOptions(t *testing.T) {
 				t.Fatalf("Failed initializing a read-write stmt based transaction: %v", err)
 			}
 
-			if got, want := tx.txOpts, *tt.want; got != want {
-				t.Fatalf("Transaction options mismatch, got %v, want %v", got, want)
+			if !itestutil.Equal(tx.txOpts, *tt.want, cmpopts.IgnoreUnexported(TransactionOptions{})) {
+				t.Fatalf("Transaction options mismatch, got %v, want %v", tx.txOpts, *tt.want)
 			}
 		})
 	}
