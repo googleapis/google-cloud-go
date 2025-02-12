@@ -1811,6 +1811,110 @@
         }
       }
     },
+    "PhoneNumbers": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "PhoneNumbersClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeletePhoneNumber": {
+              "methods": [
+                "DeletePhoneNumber"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListPhoneNumbers": {
+              "methods": [
+                "ListPhoneNumbers"
+              ]
+            },
+            "UndeletePhoneNumber": {
+              "methods": [
+                "UndeletePhoneNumber"
+              ]
+            },
+            "UpdatePhoneNumber": {
+              "methods": [
+                "UpdatePhoneNumber"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "PhoneNumbersClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeletePhoneNumber": {
+              "methods": [
+                "DeletePhoneNumber"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListPhoneNumbers": {
+              "methods": [
+                "ListPhoneNumbers"
+              ]
+            },
+            "UndeletePhoneNumber": {
+              "methods": [
+                "UndeletePhoneNumber"
+              ]
+            },
+            "UpdatePhoneNumber": {
+              "methods": [
+                "UpdatePhoneNumber"
+              ]
+            }
+          }
+        }
+      }
+    },
     "SessionEntityTypes": {
       "clients": {
         "grpc": {

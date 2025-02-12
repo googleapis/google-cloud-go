@@ -16,6 +16,7 @@ package spanner
 
 import (
 	"context"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"math"
@@ -1923,5 +1924,15 @@ func TestRequestIDHeader_SingleUseReadOnly_ExecuteStreamingSql_UnavailableDuring
 	}
 	if diff := cmp.Diff(interceptorTracker.streamClientRequestIDSegments, wantStreamingSegments); diff != "" {
 		t.Fatalf("RequestID streaming segments mismatch: got - want +\n%s", diff)
+	}
+}
+
+func TestRequestID_randIDForProcessIsHexadecimal(t *testing.T) {
+	decoded, err := hex.DecodeString(randIDForProcess)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(decoded) == 0 {
+		t.Fatal("Expected a non-empty decoded result")
 	}
 }

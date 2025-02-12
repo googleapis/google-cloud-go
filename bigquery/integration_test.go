@@ -3336,11 +3336,12 @@ func TestIntegration_MaterializedViewLifecycle(t *testing.T) {
 	`, qualified)
 
 	// Create materialized view
-
 	wantRefresh := 6 * time.Hour
+	maxStaleness := IntervalValueFromDuration(30 * time.Minute)
 	matViewID := tableIDs.New()
 	view := dataset.Table(matViewID)
 	if err := view.Create(ctx, &TableMetadata{
+		MaxStaleness: maxStaleness,
 		MaterializedView: &MaterializedViewDefinition{
 			Query:           sql,
 			RefreshInterval: wantRefresh,
@@ -3366,6 +3367,10 @@ func TestIntegration_MaterializedViewLifecycle(t *testing.T) {
 		t.Errorf("mismatch on refresh time: got %d usec want %d usec", 1000*curMeta.MaterializedView.RefreshInterval.Nanoseconds(), 1000*wantRefresh.Nanoseconds())
 	}
 
+	if curMeta.MaxStaleness.String() != maxStaleness.String() {
+		t.Errorf("mismatch on max staleness: got %s want %s", curMeta.MaxStaleness, maxStaleness)
+	}
+
 	// MaterializedView is a TableType constant
 	want := MaterializedView
 	if curMeta.Type != want {
@@ -3374,7 +3379,9 @@ func TestIntegration_MaterializedViewLifecycle(t *testing.T) {
 
 	// Update metadata
 	wantRefresh = time.Hour // 6hr -> 1hr
+	maxStaleness = IntervalValueFromDuration(5 * time.Hour)
 	upd := TableMetadataToUpdate{
+		MaxStaleness: maxStaleness,
 		MaterializedView: &MaterializedViewDefinition{
 			Query:           sql,
 			RefreshInterval: wantRefresh,
@@ -3392,6 +3399,10 @@ func TestIntegration_MaterializedViewLifecycle(t *testing.T) {
 
 	if newMeta.MaterializedView.RefreshInterval != wantRefresh {
 		t.Errorf("mismatch on updated refresh time: got %d usec want %d usec", 1000*curMeta.MaterializedView.RefreshInterval.Nanoseconds(), 1000*wantRefresh.Nanoseconds())
+	}
+
+	if newMeta.MaxStaleness.String() != maxStaleness.String() {
+		t.Errorf("mismatch on max staleness: got %s want %s", newMeta.MaxStaleness, maxStaleness)
 	}
 
 	// verify implicit setting of false due to partial population of update.

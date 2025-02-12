@@ -657,7 +657,7 @@ type Job struct {
 	// Set the launch stage to a preview stage on input to allow use of preview
 	// features in that stage. On read (or output), describes whether the resource
 	// uses preview features.
-	// <p>
+	//
 	// For example, if ALPHA is provided as input, but only BETA and GA-level
 	// features are used, this field will be BETA on output.
 	LaunchStage api.LaunchStage `protobuf:"varint,14,opt,name=launch_stage,json=launchStage,proto3,enum=google.api.LaunchStage" json:"launch_stage,omitempty"`

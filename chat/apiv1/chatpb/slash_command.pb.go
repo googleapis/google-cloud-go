@@ -36,7 +36,7 @@ const (
 )
 
 // A [slash
-// command](https://developers.google.com/workspace/chat/slash-commands) in
+// command](https://developers.google.com/workspace/chat/commands) in
 // Google Chat.
 type SlashCommand struct {
 	state         protoimpl.MessageState
