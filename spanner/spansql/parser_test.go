@@ -2207,7 +2207,11 @@ func TestParseDDL(t *testing.T) {
 
 			CREATE SEARCH INDEX TableTokensSearch
 			ON TableTokens(Name_Tokens, Value_Tokens)
-			STORING (ValueTwo);`,
+			STORING (ValueTwo)
+			PARTITION BY Value, ValueTwo
+			ORDER BY Value DESC, ValueTwo ASC,
+			INTERLEAVE IN SomeTable
+			OPTIONS (sort_order_sharding = true);`,
 			&DDL{
 				Filename: "filename",
 				List: []DDLStmt{
@@ -2302,8 +2306,12 @@ func TestParseDDL(t *testing.T) {
 							{Column: "Name_Tokens"},
 							{Column: "Value_Tokens"},
 						},
-						Storing:  []ID{"ValueTwo"},
-						Position: line(19),
+						Storing:     []ID{"ValueTwo"},
+						PartitionBy: []ID{"Value", "ValueTwo"},
+						OrderBy:     []Order{{Expr: ID("Value"), Desc: true}, {Expr: ID("ValueTwo"), Desc: false}},
+						Position:    line(19),
+						Interleave:  ID("SomeTable"),
+						Options:     SearchIndexOptions{SortOrderSharding: func(b bool) *bool { return &b }(true)},
 					},
 				},
 			},

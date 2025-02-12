@@ -137,7 +137,7 @@ type CreateSearchIndex struct {
 
 	Storing        []ID
 	PartitionBy    []ID
-	OrderBy        []ID
+	OrderBy        []Order
 	WhereIsNotNull []ID
 	Interleave     ID
 	Options        SearchIndexOptions

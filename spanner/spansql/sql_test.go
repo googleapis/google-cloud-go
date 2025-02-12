@@ -870,6 +870,24 @@ func TestSQL(t *testing.T) {
 			reparseDDL,
 		},
 		{
+			&CreateSearchIndex{
+				Name:  "TableTokensSearch",
+				Table: "TableTokens",
+				Columns: []KeyPart{
+					{Column: "Name_Tokens"},
+					{Column: "Value_Tokens"},
+				},
+				Storing:     []ID{"ValueTwo"},
+				PartitionBy: []ID{"Value", "ValueTwo"},
+				OrderBy:     []Order{{Expr: ID("Value"), Desc: true}, {Expr: ID("ValueTwo"), Desc: false}},
+				Interleave:  ID("SomeTable"),
+				Options:     SearchIndexOptions{SortOrderSharding: func(b bool) *bool { return &b }(true)},
+				Position:    line(1),
+			},
+			`CREATE SEARCH INDEX TableTokensSearch ON TableTokens(Name_Tokens, Value_Tokens) STORING (ValueTwo) PARTITION BY Value, ValueTwo ORDER BY Value DESC, ValueTwo, INTERLEAVE IN SomeTable OPTIONS (sort_order_sharding=true)`,
+			reparseDDL,
+		},
+		{
 			&CreateIndex{
 				Name:  "Ia",
 				Table: "Ta",

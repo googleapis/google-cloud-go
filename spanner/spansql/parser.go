@@ -1458,16 +1458,28 @@ func (p *parser) parseCreateSearchIndex() (*CreateSearchIndex, *parseError) {
 	}
 
 	if p.eat("PARTITION", "BY") {
-		ci.PartitionBy, err = p.parseColumnNameList()
+		ci.PartitionBy, err = p.parseIDList()
 		if err != nil {
 			return nil, err
 		}
 	}
 
 	if p.eat("ORDER", "BY") {
-		ci.OrderBy, err = p.parseColumnNameList()
-		if err != nil {
-			return nil, err
+		for {
+			o, err := p.parseOrder()
+			if err != nil {
+				return nil, err
+			}
+			ci.OrderBy = append(ci.OrderBy, o)
+
+			if p.sniff(",", "INTERLEAVE", "IN") {
+				break
+			}
+
+			if !p.eat(",") {
+				break
+			}
+
 		}
 	}
 
@@ -1498,7 +1510,7 @@ func (p *parser) parseCreateSearchIndex() (*CreateSearchIndex, *parseError) {
 		}
 	}
 
-	if p.eat("OPTIONS") {
+	if p.sniff("OPTIONS") {
 		ci.Options, err = p.parseSearchIndexOptions()
 		if err != nil {
 			return nil, err

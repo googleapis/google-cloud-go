@@ -99,7 +99,7 @@ func (ci CreateIndex) SQL() string {
 }
 
 func (csi CreateSearchIndex) SQL() string {
-	str := "CREATE SEARCH INDEX"
+	str := "CREATE SEARCH INDEX "
 
 	str += csi.Name.SQL() + " ON " + csi.Table.SQL() + "("
 	for i, c := range csi.Columns {
@@ -114,11 +114,17 @@ func (csi CreateSearchIndex) SQL() string {
 	}
 
 	if len(csi.PartitionBy) > 0 {
-		str += " PARTITION BY (" + idList(csi.PartitionBy, ", ") + ")"
+		str += " PARTITION BY " + idList(csi.PartitionBy, ", ")
 	}
 
 	if len(csi.OrderBy) > 0 {
-		str += " ORDER BY (" + idList(csi.OrderBy, ", ") + ")"
+		str += " ORDER BY "
+		for i, o := range csi.OrderBy {
+			if i > 0 {
+				str += ", "
+			}
+			str += o.SQL()
+		}
 	}
 
 	if len(csi.WhereIsNotNull) > 0 {
@@ -144,7 +150,7 @@ func (opts SearchIndexOptions) SQL() string {
 		hasOpt = true
 		str += fmt.Sprintf("disable_automatic_uid_column=%t", *opts.DisableAutomaticUIDColumn)
 	}
-	if opts.DisableAutomaticUIDColumn != nil {
+	if opts.SortOrderSharding != nil {
 		if hasOpt {
 			str += ", "
 		}
