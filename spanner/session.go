@@ -842,16 +842,7 @@ func (p *sessionPool) getLongRunningSessionsLocked() []*sessionHandle {
 	usedSessionsRatio := p.getRatioOfSessionsInUseLocked()
 	var longRunningSessions []*sessionHandle
 	if usedSessionsRatio > p.usedSessionsRatioThreshold {
-		element := p.trackedSessionHandles.Front()
-		for element != nil {
-			sh := element.Value.(*sessionHandle)
-			sh.mu.Lock()
-			if sh.session == nil {
-				// sessionHandle has already been recycled/destroyed.
-				sh.mu.Unlock()
-				element = element.Next()
-				continue
-			}
+		p.iterateTrackedSessionHandlesLocked(func(sh *sessionHandle) {
 			diff := time.Since(sh.lastUseTime)
 			if !sh.eligibleForLongRunning && diff.Seconds() >= p.idleTimeThreshold.Seconds() {
 				if (p.ActionOnInactiveTransaction == Warn || p.ActionOnInactiveTransaction == WarnAndClose) && !sh.isSessionLeakLogged {
@@ -874,11 +865,28 @@ func (p *sessionPool) getLongRunningSessionsLocked() []*sessionHandle {
 					longRunningSessions = append(longRunningSessions, sh)
 				}
 			}
-			sh.mu.Unlock()
-			element = element.Next()
-		}
+		})
 	}
 	return longRunningSessions
+}
+
+// iterateTrackedSessionHandlesLocked iterates over all tracked session handles and locking each for processing.
+// Requires p.mu to be held.
+func (p *sessionPool) iterateTrackedSessionHandlesLocked(fn func(*sessionHandle)) {
+	for element := p.trackedSessionHandles.Front(); element != nil; element = element.Next() {
+		func() {
+			sh := element.Value.(*sessionHandle)
+			sh.mu.Lock()
+			defer sh.mu.Unlock()
+
+			if sh.session == nil {
+				// sessionHandle has already been recycled/destroyed.
+				return
+			}
+
+			fn(sh)
+		}()
+	}
 }
 
 // removes or logs sessions that are unexpectedly long-running.
@@ -1063,6 +1071,17 @@ func (p *sessionPool) close(ctx context.Context) {
 			logf(p.sc.logger, "Failed to unregister callback from the OpenTelemetry meter, error : %v", err)
 		}
 	}
+
+	if p.TrackSessionHandles || p.ActionOnInactiveTransaction == Warn || p.ActionOnInactiveTransaction == WarnAndClose {
+		p.iterateTrackedSessionHandlesLocked(func(sh *sessionHandle) {
+			if sh.stack != nil {
+				logf(p.sc.logger, "session %s checked out of pool at %s and wasn't returned for closing of the pool: \n%s", sh.session.getID(), sh.checkoutTime.Format(time.RFC3339), sh.stack)
+			} else {
+				logf(p.sc.logger, "session %s checked out of pool at %s and wasn't returned for closing of the pool: \nEnable SessionPoolConfig.TrackSessionHandles to get stack trace associated with the session", sh.session.getID(), sh.checkoutTime.Format(time.RFC3339))
+			}
+		})
+	}
+
 	p.mu.Unlock()
 	p.hc.close()
 	// destroy all the sessions
@@ -1171,20 +1190,15 @@ func (p *sessionPool) errGetSessionTimeoutWithTrackedSessionHandles(code codes.C
 func (p *sessionPool) getTrackedSessionHandleStacksLocked() string {
 	p.mu.Lock()
 	defer p.mu.Unlock()
-	stackTraces := ""
+
+	var stackTraces strings.Builder
 	i := 1
-	element := p.trackedSessionHandles.Front()
-	for element != nil {
-		sh := element.Value.(*sessionHandle)
-		sh.mu.Lock()
-		if sh.stack != nil {
-			stackTraces = fmt.Sprintf("%s\n\nSession %d checked out of pool at %s by goroutine:\n%s", stackTraces, i, sh.checkoutTime.Format(time.RFC3339), sh.stack)
-		}
-		sh.mu.Unlock()
-		element = element.Next()
+	p.iterateTrackedSessionHandlesLocked(func(sh *sessionHandle) {
+		fmt.Fprintf(&stackTraces, "\n\nSession %d checked out of pool at %s by goroutine:\n%s", i, sh.checkoutTime.Format(time.RFC3339), sh.stack)
 		i++
-	}
-	return stackTraces
+	})
+
+	return stackTraces.String()
 }
 
 func (p *sessionPool) isHealthy(s *session) bool {
