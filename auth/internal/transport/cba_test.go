@@ -764,7 +764,7 @@ func TestGetGRPCTransportCredsAndEndpoint_UniverseDomain(t *testing.T) {
 			} else {
 				t.Setenv(googleAPIUseCertSource, "false")
 			}
-			_, endpoint, err := GetGRPCTransportCredsAndEndpoint(tc.opts)
+			_, endpoint, _, err := GetGRPCTransportCredsAndEndpoint(tc.opts)
 			if err != nil {
 				t.Fatalf("err: %v", err)
 			} else {

@@ -301,7 +301,7 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 		if opts.Credentials != nil {
 			creds = opts.Credentials
 		} else {
-			if transportType == "MTLS_S2A" {
+			if transportType == transport.TransportTypeMTLSS2A {
 				// Check that the client allows requesting hard-bound token for the transport type mTLS using S2A.
 				for _, ev := range opts.InternalOptions.AllowHardBoundTokens {
 					if ev == "MTLS_S2A" {
