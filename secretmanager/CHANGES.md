@@ -2,6 +2,13 @@
 
 
 
+## [1.14.5](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.14.4...secretmanager/v1.14.5) (2025-02-12)
+
+
+### Bug Fixes
+
+* **secretmanager:** Upgrade Go gRPC Protobuf generation ([90140b1](https://github.com/googleapis/google-cloud-go/commit/90140b17da6378fa87d4bec0d404c18a78d6b02a))
+
 ## [1.14.4](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.14.3...secretmanager/v1.14.4) (2025-01-30)
 
 

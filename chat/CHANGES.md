@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.1](https://github.com/googleapis/google-cloud-go/compare/chat/v0.10.0...chat/v0.10.1) (2025-02-12)
+
+
+### Documentation
+
+* **chat:** Update Google chat app command documentation ([#11581](https://github.com/googleapis/google-cloud-go/issues/11581)) ([93b6495](https://github.com/googleapis/google-cloud-go/commit/93b649580863dc8121c69263749064660a83e095))
+
 ## [0.10.0](https://github.com/googleapis/google-cloud-go/compare/chat/v0.9.1...chat/v0.10.0) (2025-01-30)
 
 

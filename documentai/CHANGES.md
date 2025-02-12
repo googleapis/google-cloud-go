@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.35.2](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.35.1...documentai/v1.35.2) (2025-02-12)
+
+
+### Documentation
+
+* **documentai:** Mark fields as unused ([7e10021](https://github.com/googleapis/google-cloud-go/commit/7e100215974a28e556e9b801b4922a0e97bd98c1))
+
 ## [1.35.1](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.35.0...documentai/v1.35.1) (2025-01-02)
 
 
