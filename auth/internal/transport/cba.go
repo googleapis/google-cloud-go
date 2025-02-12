@@ -46,6 +46,8 @@ const (
 	googleAPIUseMTLS       = "GOOGLE_API_USE_MTLS_ENDPOINT"
 	googleAPIUseMTLSOld    = "GOOGLE_API_USE_MTLS"
 
+	transportTypeMTLSS2A = "MTLS_S2A"
+
 	universeDomainPlaceholder = "UNIVERSE_DOMAIN"
 
 	mtlsMDSRoot = "/run/google-mds-mtls/root.crt"
@@ -123,10 +125,10 @@ func fixScheme(baseURL string) string {
 // GetGRPCTransportCredsAndEndpoint returns an instance of
 // [google.golang.org/grpc/credentials.TransportCredentials], and the
 // corresponding endpoint to use for GRPC client.
-func GetGRPCTransportCredsAndEndpoint(opts *Options) (credentials.TransportCredentials, string, error) {
+func GetGRPCTransportCredsAndEndpoint(opts *Options) (credentials.TransportCredentials, string, string, error) {
 	config, err := getTransportConfig(opts)
 	if err != nil {
-		return nil, "", err
+		return nil, "", "", err
 	}
 
 	defaultTransportCreds := credentials.NewTLS(&tls.Config{
@@ -144,13 +146,13 @@ func GetGRPCTransportCredsAndEndpoint(opts *Options) (credentials.TransportCrede
 			if config.s2aAddress != "" {
 				s2aAddr = config.s2aAddress
 			} else {
-				return defaultTransportCreds, config.endpoint, nil
+				return defaultTransportCreds, config.endpoint, "", nil
 			}
 		}
 	} else if config.s2aAddress != "" {
 		s2aAddr = config.s2aAddress
 	} else {
-		return defaultTransportCreds, config.endpoint, nil
+		return defaultTransportCreds, config.endpoint, "", nil
 	}
 
 	var fallbackOpts *s2a.FallbackOptions
@@ -168,9 +170,9 @@ func GetGRPCTransportCredsAndEndpoint(opts *Options) (credentials.TransportCrede
 	})
 	if err != nil {
 		// Use default if we cannot initialize S2A client transport credentials.
-		return defaultTransportCreds, config.endpoint, nil
+		return defaultTransportCreds, config.endpoint, "", nil
 	}
-	return s2aTransportCreds, config.s2aMTLSEndpoint, nil
+	return s2aTransportCreds, config.s2aMTLSEndpoint, transportTypeMTLSS2A, nil
 }
 
 // GetHTTPTransportConfig returns a client certificate source and a function for
