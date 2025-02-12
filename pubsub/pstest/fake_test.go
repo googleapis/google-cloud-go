@@ -89,7 +89,7 @@ func TestNewServerWithCallback(t *testing.T) {
 	}
 
 	// Pass a non 0 port to demonstrate we can pass a hardcoded port for the server to listen on
-	srv := NewServerWithCallback(port, callback)
+	srv := NewServerWithCallback(fmt.Sprintf("localhost:%d", port), callback)
 	if err != nil {
 		t.Fatal(err)
 	}

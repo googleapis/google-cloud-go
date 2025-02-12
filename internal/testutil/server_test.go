@@ -15,10 +15,12 @@
 package testutil
 
 import (
+	"fmt"
 	"testing"
 
 	grpc "google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
 )
 
@@ -29,11 +31,36 @@ func TestNewServer(t *testing.T) {
 	}
 	defer srv.Close()
 	srv.Start()
-	conn, err := grpc.Dial(srv.Addr, grpc.WithInsecure())
+	conn, err := grpc.NewClient(srv.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer conn.Close()
+}
+
+func TestNewServerWithHost(t *testing.T) {
+	hosts := []string{
+		":8181",
+		"0.0.0.0:8181",
+		"127.0.0.1:8181",
+		"localhost:8181",
+	}
+
+	for _, h := range hosts {
+		t.Run(fmt.Sprintf("GIVEN host %s THEN succeed to init new server", h), func(t *testing.T) {
+			srv, err := NewServerWithHost(h)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer srv.Close()
+			srv.Start()
+			conn, err := grpc.NewClient(srv.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+			if err != nil {
+				t.Fatal(err)
+			}
+			conn.Close()
+		})
+	}
 }
 
 func TestPageBounds(t *testing.T) {
