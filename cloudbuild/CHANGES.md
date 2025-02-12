@@ -1,5 +1,12 @@
 # Changes
 
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.20.0...cloudbuild/v1.21.0) (2025-02-12)
+
+
+### Features
+
+* **cloudbuild/apiv1:** Add option to enable fetching dependencies ([#11589](https://github.com/googleapis/google-cloud-go/issues/11589)) ([e99577b](https://github.com/googleapis/google-cloud-go/commit/e99577bf3b280c5e4affe5657c8d43823a976d3c))
+
 ## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.19.2...cloudbuild/v1.20.0) (2025-01-15)
 
 
