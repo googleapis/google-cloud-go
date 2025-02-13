@@ -1204,12 +1204,6 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 				return
 			case <-rr.closeManager:
 				rr.mu.Lock()
-				if len(rr.mp) != 0 {
-					for key := range rr.mp {
-						rr.mp[key].callback(rr.mp[key].offset, rr.mp[key].limit, fmt.Errorf("stream closed early"))
-						delete(rr.mp, key)
-					}
-				}
 				if rr.stream != nil {
 					rr.stream.CloseSend()
 				}
@@ -1262,7 +1256,14 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 			case <-rr.ctx.Done():
 				rr.mu.Lock()
 				rr.done = true
-				drainInboundReadStream(rr.stream)
+				if len(rr.mp) != 0 {
+					drainInboundReadStream(rr.stream)
+				}
+				for key := range rr.mp {
+					rr.mp[key].callback(rr.mp[key].offset, rr.mp[key].limit, rr.ctx.Err())
+					delete(rr.mp, key)
+				}
+				rr.activeTask = 0
 				rr.mu.Unlock()
 				return
 			case <-rr.receiverRetry:
@@ -1270,7 +1271,9 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 				return
 			case <-rr.closeReceiver:
 				rr.mu.Lock()
-				drainInboundReadStream(rr.stream)
+				if len(rr.mp) != 0 {
+					drainInboundReadStream(rr.stream)
+				}
 				rr.mu.Unlock()
 				return
 			default:
@@ -1484,16 +1487,19 @@ func (mr *gRPCBidiReader) wait() {
 
 // Close will notify stream manager goroutine that the reader has been closed, if it's still running.
 func (mr *gRPCBidiReader) close() error {
-	// Before release of resource we close the client->server connection.
+	mr.closeManager <- true
+	mr.closeReceiver <- true
+	mr.mu.Lock()
+	for key := range mr.mp {
+		mr.mp[key].callback(mr.mp[key].offset, mr.mp[key].limit, fmt.Errorf("stream closed early"))
+		delete(mr.mp, key)
+	}
+	mr.done = true
+	mr.activeTask = 0
 	if mr.cancel != nil {
 		mr.cancel()
 	}
-	mr.mu.Lock()
-	mr.done = true
-	mr.activeTask = 0
 	mr.mu.Unlock()
-	mr.closeReceiver <- true
-	mr.closeManager <- true
 	return nil
 }
 
