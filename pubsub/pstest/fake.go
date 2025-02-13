@@ -112,21 +112,24 @@ func NewServer(opts ...ServerReactorOption) *Server {
 	return NewServerWithPort(0, opts...)
 }
 
-// NewServerWithPort creates a new fake server running in the current process at the specified port.
+// NewServerWithPort creates a new fake server running in the current process at
+// the specified port.
 func NewServerWithPort(port int, opts ...ServerReactorOption) *Server {
-	return NewServerWithHost(fmt.Sprintf("localhost:%d", port), opts...)
+	return NewServerWithAddress(fmt.Sprintf("localhost:%d", port), opts...)
 }
 
-// NewServerWithPort creates a new fake server running in the current process at the specified host.
-func NewServerWithHost(host string, opts ...ServerReactorOption) *Server {
-	return NewServerWithCallback(host, func(*grpc.Server) { /* empty */ }, opts...)
+// NewServerWithAddress creates a new fake server running in the current process
+// at the specified host.
+func NewServerWithAddress(address string, opts ...ServerReactorOption) *Server {
+	return NewServerWithCallback(address, func(*grpc.Server) { /* empty */ }, opts...)
 }
 
-// NewServerWithCallback creates new fake server running in the current process at the specified host.
-// Before starting the server, the provided callback is called to allow caller to register additional fakes
-// into grpc server.
-func NewServerWithCallback(host string, callback func(*grpc.Server), opts ...ServerReactorOption) *Server {
-	srv, err := testutil.NewServerWithHost(host)
+// NewServerWithCallback creates new fake server running in the current process
+// at the specified address (host and port). Before starting the server, the
+// provided callback is called to allow caller to register additional fakes into
+// grpc server.
+func NewServerWithCallback(address string, callback func(*grpc.Server), opts ...ServerReactorOption) *Server {
+	srv, err := testutil.NewServerWithAddress(address)
 	if err != nil {
 		panic(fmt.Sprintf("pstest.NewServerWithCallback: %v", err))
 	}

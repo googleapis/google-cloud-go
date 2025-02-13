@@ -62,14 +62,14 @@ func NewServer(opts ...grpc.ServerOption) (*Server, error) {
 // Server will be listening for gRPC connections at the address named by the
 // Addr field, without TLS.
 func NewServerWithPort(port int, opts ...grpc.ServerOption) (*Server, error) {
-	return NewServerWithHost(fmt.Sprintf("localhost:%d", port))
+	return NewServerWithAddress(fmt.Sprintf("localhost:%d", port))
 }
 
-// NewServerWithHost creates a new Server with a specific host and port. The
-// Server will be listening for gRPC connections at the address named by the
-// Addr field, without TLS.
-func NewServerWithHost(host string, opts ...grpc.ServerOption) (*Server, error) {
-	l, err := net.Listen("tcp", host)
+// NewServerWithAddress creates a new Server with a specific address (host and
+// port). The Server will be listening for gRPC connections at the address named
+// by the Addr field, without TLS.
+func NewServerWithAddress(addr string, opts ...grpc.ServerOption) (*Server, error) {
+	l, err := net.Listen("tcp", addr)
 	if err != nil {
 		return nil, err
 	}
