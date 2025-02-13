@@ -138,7 +138,7 @@ func NewServerWithCallback(port int, callback func(*grpc.Server), opts ...Server
 func initNewServer(address string, callback func(*grpc.Server), opts ...ServerReactorOption) *Server {
 	srv, err := testutil.NewServerWithAddress(address)
 	if err != nil {
-		panic(fmt.Sprintf("pstest.NewServerWithCallback: %v", err))
+		panic(fmt.Sprintf("pstest.initNewServer: %v", err))
 	}
 	reactorOptions := ReactorOptions{}
 	for _, opt := range opts {
