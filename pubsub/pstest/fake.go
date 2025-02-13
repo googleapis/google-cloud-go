@@ -119,7 +119,7 @@ func NewServerWithPort(port int, opts ...ServerReactorOption) *Server {
 }
 
 // NewServerWithAddress creates a new fake server running in the current process
-// at the specified host.
+// at the specified address (host and port).
 func NewServerWithAddress(address string, opts ...ServerReactorOption) *Server {
 	return NewServerWithCallback(address, func(*grpc.Server) { /* empty */ }, opts...)
 }
