@@ -21,13 +21,12 @@
 package securitycenterpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -112,8 +111,9 @@ type ResourceValueConfig struct {
 	// request
 	ResourceValue ResourceValue `protobuf:"varint,2,opt,name=resource_value,json=resourceValue,proto3,enum=google.cloud.securitycenter.v2.ResourceValue" json:"resource_value,omitempty"`
 	// Tag values combined with `AND` to check against.
-	// Values in the form "tagValues/123"
-	// Example: `[ "tagValues/123", "tagValues/456", "tagValues/789" ]`
+	// For Google Cloud resources, they are tag value IDs in the form of
+	// "tagValues/123". Example: `[ "tagValues/123", "tagValues/456",
+	// "tagValues/789" ]`
 	// https://cloud.google.com/resource-manager/docs/tags/tags-creating-and-managing
 	TagValues []string `protobuf:"bytes,3,rep,name=tag_values,json=tagValues,proto3" json:"tag_values,omitempty"`
 	// Apply resource_value only to resources that match resource_type.
