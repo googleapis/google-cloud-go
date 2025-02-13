@@ -1,5 +1,22 @@
 # Changes
 
+## [0.26.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.25.3...analytics/v0.26.0) (2025-01-30)
+
+
+### Features
+
+* **analytics/admin:** Add `user_data_retention` field to `DataRetentionSettings` and mark as `REQUIRED` ([de5ca9d](https://github.com/googleapis/google-cloud-go/commit/de5ca9d636e15ca22c6487c690aeaf815630d129))
+
+
+### Bug Fixes
+
+* **analytics/admin:** Mark `event_data_retention` field in `DataRetentionSettings` as `REQUIRED` ([de5ca9d](https://github.com/googleapis/google-cloud-go/commit/de5ca9d636e15ca22c6487c690aeaf815630d129))
+
+
+### Documentation
+
+* **analytics/admin:** Replace "GA4" with "Google Analytics" or "GA" in all comments ([#11516](https://github.com/googleapis/google-cloud-go/issues/11516)) ([de5ca9d](https://github.com/googleapis/google-cloud-go/commit/de5ca9d636e15ca22c6487c690aeaf815630d129))
+
 ## [0.25.3](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.25.2...analytics/v0.25.3) (2025-01-02)
 
 

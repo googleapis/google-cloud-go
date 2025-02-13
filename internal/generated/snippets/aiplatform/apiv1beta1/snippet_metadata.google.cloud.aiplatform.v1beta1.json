@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1beta1",
-    "version": "1.70.0",
+    "version": "1.72.0",
     "language": "GO",
     "apis": [
       {
@@ -3035,6 +3035,52 @@
         {
           "start": 18,
           "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_EvaluationService_EvaluateDataset_sync",
+      "title": "aiplatform EvaluateDataset Sample",
+      "description": "EvaluateDataset evaluates a dataset based on a set of given metrics.",
+      "file": "EvaluationClient/EvaluateDataset/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "EvaluateDataset",
+        "fullName": "google.cloud.aiplatform.v1beta1.EvaluationClient.EvaluateDataset",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.EvaluateDatasetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "EvaluateDatasetOperation",
+        "client": {
+          "shortName": "EvaluationClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.EvaluationClient"
+        },
+        "method": {
+          "shortName": "EvaluateDataset",
+          "fullName": "google.cloud.aiplatform.v1beta1.EvaluationService.EvaluateDataset",
+          "service": {
+            "shortName": "EvaluationService",
+            "fullName": "google.cloud.aiplatform.v1beta1.EvaluationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]

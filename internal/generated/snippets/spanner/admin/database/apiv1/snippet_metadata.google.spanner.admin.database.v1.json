@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/spanner/admin/database/apiv1",
-    "version": "1.73.0",
+    "version": "1.75.0",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,52 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "spanner_v1_generated_DatabaseAdmin_AddSplitPoints_sync",
+      "title": "spanner AddSplitPoints Sample",
+      "description": "AddSplitPoints adds split points to specified tables, indexes of a database.",
+      "file": "DatabaseAdminClient/AddSplitPoints/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AddSplitPoints",
+        "fullName": "google.spanner.admin.database.v1.DatabaseAdminClient.AddSplitPoints",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "databasepb.AddSplitPointsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*databasepb.AddSplitPointsResponse",
+        "client": {
+          "shortName": "DatabaseAdminClient",
+          "fullName": "google.spanner.admin.database.v1.DatabaseAdminClient"
+        },
+        "method": {
+          "shortName": "AddSplitPoints",
+          "fullName": "google.spanner.admin.database.v1.DatabaseAdmin.AddSplitPoints",
+          "service": {
+            "shortName": "DatabaseAdmin",
+            "fullName": "google.spanner.admin.database.v1.DatabaseAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "spanner_v1_generated_DatabaseAdmin_CancelOperation_sync",
       "title": "spanner CancelOperation Sample",
