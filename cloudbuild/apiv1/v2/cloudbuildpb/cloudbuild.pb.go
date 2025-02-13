@@ -21,11 +21,8 @@
 package cloudbuildpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	grpc "google.golang.org/grpc"
@@ -37,6 +34,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -366,7 +365,7 @@ func (x Hash_HashType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Hash_HashType.Descriptor instead.
 func (Hash_HashType) EnumDescriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{23, 0}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{24, 0}
 }
 
 // Specifies the current state of a build's approval.
@@ -427,7 +426,7 @@ func (x BuildApproval_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use BuildApproval_State.Descriptor instead.
 func (BuildApproval_State) EnumDescriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{34, 0}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{35, 0}
 }
 
 // Specifies whether or not this manual approval result is to approve
@@ -481,7 +480,7 @@ func (x ApprovalResult_Decision) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ApprovalResult_Decision.Descriptor instead.
 func (ApprovalResult_Decision) EnumDescriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{36, 0}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{37, 0}
 }
 
 // The type of the repo, since it may not be explicit from the `repo` field
@@ -545,7 +544,7 @@ func (x GitFileSource_RepoType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use GitFileSource_RepoType.Descriptor instead.
 func (GitFileSource_RepoType) EnumDescriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{38, 0}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{39, 0}
 }
 
 // All possible SCM repo types from Repo API.
@@ -602,7 +601,7 @@ func (x RepositoryEventConfig_RepositoryType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use RepositoryEventConfig_RepositoryType.Descriptor instead.
 func (RepositoryEventConfig_RepositoryType) EnumDescriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{40, 0}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{41, 0}
 }
 
 // Enumerates potential issues with the underlying Pub/Sub subscription
@@ -664,7 +663,7 @@ func (x PubsubConfig_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use PubsubConfig_State.Descriptor instead.
 func (PubsubConfig_State) EnumDescriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{42, 0}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{43, 0}
 }
 
 // Enumerates potential issues with the Secret Manager secret provided by the
@@ -718,20 +717,36 @@ func (x WebhookConfig_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use WebhookConfig_State.Descriptor instead.
 func (WebhookConfig_State) EnumDescriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{43, 0}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{44, 0}
 }
 
-// Controls behavior of Pull Request comments.
+// Controls whether or not a `/gcbrun` comment is required from a user with
+// repository write permission or above in order to
+// trigger Build runs for pull requests. Pull Request update events differ
+// between repo types.
+// Check repo specific guides
+// ([GitHub](https://cloud.google.com/build/docs/automating-builds/github/build-repos-from-github-enterprise#creating_a_github_enterprise_trigger),
+// [Bitbucket](https://cloud.google.com/build/docs/automating-builds/bitbucket/build-repos-from-bitbucket-server#creating_a_bitbucket_server_trigger),
+// [GitLab](https://cloud.google.com/build/docs/automating-builds/gitlab/build-repos-from-gitlab#creating_a_gitlab_trigger)
+// for details.
 type PullRequestFilter_CommentControl int32
 
 const (
-	// Do not require comments on Pull Requests before builds are triggered.
+	// Do not require `/gcbrun` comments from a user with repository write
+	// permission or above on pull requests before builds are triggered.
+	// Comments that contain `/gcbrun` will still fire builds so this should
+	// be thought of as comments not required.
 	PullRequestFilter_COMMENTS_DISABLED PullRequestFilter_CommentControl = 0
-	// Enforce that repository owners or collaborators must comment on Pull
-	// Requests before builds are triggered.
+	// Builds will only fire in response to pull requests if:
+	// 1. The pull request author has repository write permission or above and
+	// `/gcbrun` is in the PR description.
+	// 2. A user with repository writer permissions or above comments `/gcbrun`
+	// on a pull request authored by any user.
 	PullRequestFilter_COMMENTS_ENABLED PullRequestFilter_CommentControl = 1
-	// Enforce that repository owners or collaborators must comment on external
-	// contributors' Pull Requests before builds are triggered.
+	// Builds will only fire in response to pull requests if:
+	// 1. The pull request author is a repository writer or above.
+	// 2. If the author does not have write permissions, a user with write
+	// permissions or above must comment `/gcbrun` in order to fire a build.
 	PullRequestFilter_COMMENTS_ENABLED_FOR_EXTERNAL_CONTRIBUTORS_ONLY PullRequestFilter_CommentControl = 2
 )
 
@@ -773,7 +788,7 @@ func (x PullRequestFilter_CommentControl) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use PullRequestFilter_CommentControl.Descriptor instead.
 func (PullRequestFilter_CommentControl) EnumDescriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{44, 0}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{45, 0}
 }
 
 // Specifies the manner in which the build should be verified, if at all.
@@ -831,7 +846,7 @@ func (x BuildOptions_VerifyOption) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use BuildOptions_VerifyOption.Descriptor instead.
 func (BuildOptions_VerifyOption) EnumDescriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{52, 0}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{53, 0}
 }
 
 // Supported Compute Engine machine types.
@@ -898,7 +913,7 @@ func (x BuildOptions_MachineType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use BuildOptions_MachineType.Descriptor instead.
 func (BuildOptions_MachineType) EnumDescriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{52, 1}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{53, 1}
 }
 
 // Specifies the behavior when there is an error in the substitution checks.
@@ -948,7 +963,7 @@ func (x BuildOptions_SubstitutionOption) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use BuildOptions_SubstitutionOption.Descriptor instead.
 func (BuildOptions_SubstitutionOption) EnumDescriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{52, 2}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{53, 2}
 }
 
 // Specifies the behavior when writing build logs to Cloud Storage.
@@ -1002,7 +1017,7 @@ func (x BuildOptions_LogStreamingOption) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use BuildOptions_LogStreamingOption.Descriptor instead.
 func (BuildOptions_LogStreamingOption) EnumDescriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{52, 3}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{53, 3}
 }
 
 // Specifies the logging mode.
@@ -1072,7 +1087,7 @@ func (x BuildOptions_LoggingMode) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use BuildOptions_LoggingMode.Descriptor instead.
 func (BuildOptions_LoggingMode) EnumDescriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{52, 4}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{53, 4}
 }
 
 // Default Cloud Storage log bucket behavior options.
@@ -1127,7 +1142,7 @@ func (x BuildOptions_DefaultLogsBucketBehavior) Number() protoreflect.EnumNumber
 
 // Deprecated: Use BuildOptions_DefaultLogsBucketBehavior.Descriptor instead.
 func (BuildOptions_DefaultLogsBucketBehavior) EnumDescriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{52, 5}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{53, 5}
 }
 
 // State of the `WorkerPool`.
@@ -1192,7 +1207,7 @@ func (x WorkerPool_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use WorkerPool_State.Descriptor instead.
 func (WorkerPool_State) EnumDescriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{57, 0}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{58, 0}
 }
 
 // Defines the egress option for the pool.
@@ -1247,7 +1262,7 @@ func (x PrivatePoolV1Config_NetworkConfig_EgressOption) Number() protoreflect.En
 
 // Deprecated: Use PrivatePoolV1Config_NetworkConfig_EgressOption.Descriptor instead.
 func (PrivatePoolV1Config_NetworkConfig_EgressOption) EnumDescriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{58, 1, 0}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{59, 1, 0}
 }
 
 // Specifies a build to retry.
@@ -2572,8 +2587,9 @@ type Results struct {
 	// corresponding to build step indices.
 	//
 	// [Cloud Builders](https://cloud.google.com/cloud-build/docs/cloud-builders)
-	// can produce this output by writing to `$BUILDER_OUTPUT/output`.
-	// Only the first 4KB of data is stored.
+	// can produce this output by writing to `$BUILDER_OUTPUT/output`. Only the
+	// first 50KB of data is stored. Note that the `$BUILDER_OUTPUT` variable is
+	// read-only and can't be substituted.
 	BuildStepOutputs [][]byte `protobuf:"bytes,6,rep,name=build_step_outputs,json=buildStepOutputs,proto3" json:"build_step_outputs,omitempty"`
 	// Time to push all non-container artifacts to Cloud Storage.
 	ArtifactTiming *TimeSpan `protobuf:"bytes,7,opt,name=artifact_timing,json=artifactTiming,proto3" json:"artifact_timing,omitempty"`
@@ -2874,6 +2890,8 @@ type Build struct {
 	// Output only. Non-fatal problems encountered during the execution of the
 	// build.
 	Warnings []*Build_Warning `protobuf:"bytes,49,rep,name=warnings,proto3" json:"warnings,omitempty"`
+	// Optional. Configuration for git operations.
+	GitConfig *GitConfig `protobuf:"bytes,48,opt,name=git_config,json=gitConfig,proto3" json:"git_config,omitempty"`
 	// Output only. Contains information about the build when status=FAILURE.
 	FailureInfo *Build_FailureInfo `protobuf:"bytes,51,opt,name=failure_info,json=failureInfo,proto3" json:"failure_info,omitempty"`
 	// Optional. Dependencies that the Cloud Build worker will fetch before
@@ -3107,6 +3125,13 @@ func (x *Build) GetWarnings() []*Build_Warning {
 	return nil
 }
 
+func (x *Build) GetGitConfig() *GitConfig {
+	if x != nil {
+		return x.GitConfig
+	}
+	return nil
+}
+
 func (x *Build) GetFailureInfo() *Build_FailureInfo {
 	if x != nil {
 		return x.FailureInfo
@@ -3207,6 +3232,53 @@ func (*Dependency_Empty) isDependency_Dep() {}
 
 func (*Dependency_GitSource) isDependency_Dep() {}
 
+// GitConfig is a configuration for git operations.
+type GitConfig struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Configuration for HTTP related git operations.
+	Http *GitConfig_HttpConfig `protobuf:"bytes,1,opt,name=http,proto3" json:"http,omitempty"`
+}
+
+func (x *GitConfig) Reset() {
+	*x = GitConfig{}
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GitConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GitConfig) ProtoMessage() {}
+
+func (x *GitConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GitConfig.ProtoReflect.Descriptor instead.
+func (*GitConfig) Descriptor() ([]byte, []int) {
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *GitConfig) GetHttp() *GitConfig_HttpConfig {
+	if x != nil {
+		return x.Http
+	}
+	return nil
+}
+
 // Artifacts produced by a build that should be uploaded upon
 // successful completion of all build steps.
 type Artifacts struct {
@@ -3270,7 +3342,7 @@ type Artifacts struct {
 
 func (x *Artifacts) Reset() {
 	*x = Artifacts{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[18]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3282,7 +3354,7 @@ func (x *Artifacts) String() string {
 func (*Artifacts) ProtoMessage() {}
 
 func (x *Artifacts) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[18]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3295,7 +3367,7 @@ func (x *Artifacts) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Artifacts.ProtoReflect.Descriptor instead.
 func (*Artifacts) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{18}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *Artifacts) GetImages() []string {
@@ -3354,7 +3426,7 @@ type TimeSpan struct {
 
 func (x *TimeSpan) Reset() {
 	*x = TimeSpan{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[19]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3366,7 +3438,7 @@ func (x *TimeSpan) String() string {
 func (*TimeSpan) ProtoMessage() {}
 
 func (x *TimeSpan) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[19]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3379,7 +3451,7 @@ func (x *TimeSpan) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TimeSpan.ProtoReflect.Descriptor instead.
 func (*TimeSpan) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{19}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *TimeSpan) GetStartTime() *timestamppb.Timestamp {
@@ -3408,7 +3480,7 @@ type BuildOperationMetadata struct {
 
 func (x *BuildOperationMetadata) Reset() {
 	*x = BuildOperationMetadata{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[20]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3420,7 +3492,7 @@ func (x *BuildOperationMetadata) String() string {
 func (*BuildOperationMetadata) ProtoMessage() {}
 
 func (x *BuildOperationMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[20]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3433,7 +3505,7 @@ func (x *BuildOperationMetadata) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BuildOperationMetadata.ProtoReflect.Descriptor instead.
 func (*BuildOperationMetadata) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{20}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *BuildOperationMetadata) GetBuild() *Build {
@@ -3475,7 +3547,7 @@ type SourceProvenance struct {
 
 func (x *SourceProvenance) Reset() {
 	*x = SourceProvenance{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[21]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3487,7 +3559,7 @@ func (x *SourceProvenance) String() string {
 func (*SourceProvenance) ProtoMessage() {}
 
 func (x *SourceProvenance) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[21]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3500,7 +3572,7 @@ func (x *SourceProvenance) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SourceProvenance.ProtoReflect.Descriptor instead.
 func (*SourceProvenance) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{21}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *SourceProvenance) GetResolvedStorageSource() *StorageSource {
@@ -3544,7 +3616,7 @@ type FileHashes struct {
 
 func (x *FileHashes) Reset() {
 	*x = FileHashes{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[22]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3556,7 +3628,7 @@ func (x *FileHashes) String() string {
 func (*FileHashes) ProtoMessage() {}
 
 func (x *FileHashes) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[22]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3569,7 +3641,7 @@ func (x *FileHashes) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FileHashes.ProtoReflect.Descriptor instead.
 func (*FileHashes) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{22}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *FileHashes) GetFileHash() []*Hash {
@@ -3593,7 +3665,7 @@ type Hash struct {
 
 func (x *Hash) Reset() {
 	*x = Hash{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[23]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3605,7 +3677,7 @@ func (x *Hash) String() string {
 func (*Hash) ProtoMessage() {}
 
 func (x *Hash) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[23]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3618,7 +3690,7 @@ func (x *Hash) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Hash.ProtoReflect.Descriptor instead.
 func (*Hash) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{23}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *Hash) GetType() Hash_HashType {
@@ -3650,7 +3722,7 @@ type Secrets struct {
 
 func (x *Secrets) Reset() {
 	*x = Secrets{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[24]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3662,7 +3734,7 @@ func (x *Secrets) String() string {
 func (*Secrets) ProtoMessage() {}
 
 func (x *Secrets) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[24]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3675,7 +3747,7 @@ func (x *Secrets) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Secrets.ProtoReflect.Descriptor instead.
 func (*Secrets) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{24}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *Secrets) GetSecretManager() []*SecretManagerSecret {
@@ -3713,7 +3785,7 @@ type InlineSecret struct {
 
 func (x *InlineSecret) Reset() {
 	*x = InlineSecret{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[25]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3725,7 +3797,7 @@ func (x *InlineSecret) String() string {
 func (*InlineSecret) ProtoMessage() {}
 
 func (x *InlineSecret) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[25]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3738,7 +3810,7 @@ func (x *InlineSecret) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InlineSecret.ProtoReflect.Descriptor instead.
 func (*InlineSecret) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{25}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *InlineSecret) GetKmsKeyName() string {
@@ -3772,7 +3844,7 @@ type SecretManagerSecret struct {
 
 func (x *SecretManagerSecret) Reset() {
 	*x = SecretManagerSecret{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[26]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3784,7 +3856,7 @@ func (x *SecretManagerSecret) String() string {
 func (*SecretManagerSecret) ProtoMessage() {}
 
 func (x *SecretManagerSecret) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[26]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3797,7 +3869,7 @@ func (x *SecretManagerSecret) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SecretManagerSecret.ProtoReflect.Descriptor instead.
 func (*SecretManagerSecret) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{26}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *SecretManagerSecret) GetVersionName() string {
@@ -3837,7 +3909,7 @@ type Secret struct {
 
 func (x *Secret) Reset() {
 	*x = Secret{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[27]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3849,7 +3921,7 @@ func (x *Secret) String() string {
 func (*Secret) ProtoMessage() {}
 
 func (x *Secret) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[27]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3862,7 +3934,7 @@ func (x *Secret) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Secret.ProtoReflect.Descriptor instead.
 func (*Secret) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{27}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *Secret) GetKmsKeyName() string {
@@ -3896,7 +3968,7 @@ type CreateBuildRequest struct {
 
 func (x *CreateBuildRequest) Reset() {
 	*x = CreateBuildRequest{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[28]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3908,7 +3980,7 @@ func (x *CreateBuildRequest) String() string {
 func (*CreateBuildRequest) ProtoMessage() {}
 
 func (x *CreateBuildRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[28]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3921,7 +3993,7 @@ func (x *CreateBuildRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateBuildRequest.ProtoReflect.Descriptor instead.
 func (*CreateBuildRequest) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{28}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *CreateBuildRequest) GetParent() string {
@@ -3962,7 +4034,7 @@ type GetBuildRequest struct {
 
 func (x *GetBuildRequest) Reset() {
 	*x = GetBuildRequest{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[29]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3974,7 +4046,7 @@ func (x *GetBuildRequest) String() string {
 func (*GetBuildRequest) ProtoMessage() {}
 
 func (x *GetBuildRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[29]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3987,7 +4059,7 @@ func (x *GetBuildRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetBuildRequest.ProtoReflect.Descriptor instead.
 func (*GetBuildRequest) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{29}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *GetBuildRequest) GetName() string {
@@ -4040,7 +4112,7 @@ type ListBuildsRequest struct {
 
 func (x *ListBuildsRequest) Reset() {
 	*x = ListBuildsRequest{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[30]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4052,7 +4124,7 @@ func (x *ListBuildsRequest) String() string {
 func (*ListBuildsRequest) ProtoMessage() {}
 
 func (x *ListBuildsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[30]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4065,7 +4137,7 @@ func (x *ListBuildsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListBuildsRequest.ProtoReflect.Descriptor instead.
 func (*ListBuildsRequest) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{30}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *ListBuildsRequest) GetParent() string {
@@ -4118,7 +4190,7 @@ type ListBuildsResponse struct {
 
 func (x *ListBuildsResponse) Reset() {
 	*x = ListBuildsResponse{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[31]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4130,7 +4202,7 @@ func (x *ListBuildsResponse) String() string {
 func (*ListBuildsResponse) ProtoMessage() {}
 
 func (x *ListBuildsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[31]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4143,7 +4215,7 @@ func (x *ListBuildsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListBuildsResponse.ProtoReflect.Descriptor instead.
 func (*ListBuildsResponse) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{31}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *ListBuildsResponse) GetBuilds() []*Build {
@@ -4177,7 +4249,7 @@ type CancelBuildRequest struct {
 
 func (x *CancelBuildRequest) Reset() {
 	*x = CancelBuildRequest{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[32]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4189,7 +4261,7 @@ func (x *CancelBuildRequest) String() string {
 func (*CancelBuildRequest) ProtoMessage() {}
 
 func (x *CancelBuildRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[32]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4202,7 +4274,7 @@ func (x *CancelBuildRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CancelBuildRequest.ProtoReflect.Descriptor instead.
 func (*CancelBuildRequest) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{32}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *CancelBuildRequest) GetName() string {
@@ -4241,7 +4313,7 @@ type ApproveBuildRequest struct {
 
 func (x *ApproveBuildRequest) Reset() {
 	*x = ApproveBuildRequest{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[33]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4253,7 +4325,7 @@ func (x *ApproveBuildRequest) String() string {
 func (*ApproveBuildRequest) ProtoMessage() {}
 
 func (x *ApproveBuildRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[33]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4266,7 +4338,7 @@ func (x *ApproveBuildRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ApproveBuildRequest.ProtoReflect.Descriptor instead.
 func (*ApproveBuildRequest) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{33}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *ApproveBuildRequest) GetName() string {
@@ -4300,7 +4372,7 @@ type BuildApproval struct {
 
 func (x *BuildApproval) Reset() {
 	*x = BuildApproval{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[34]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4312,7 +4384,7 @@ func (x *BuildApproval) String() string {
 func (*BuildApproval) ProtoMessage() {}
 
 func (x *BuildApproval) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[34]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4325,7 +4397,7 @@ func (x *BuildApproval) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BuildApproval.ProtoReflect.Descriptor instead.
 func (*BuildApproval) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{34}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *BuildApproval) GetState() BuildApproval_State {
@@ -4363,7 +4435,7 @@ type ApprovalConfig struct {
 
 func (x *ApprovalConfig) Reset() {
 	*x = ApprovalConfig{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[35]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4375,7 +4447,7 @@ func (x *ApprovalConfig) String() string {
 func (*ApprovalConfig) ProtoMessage() {}
 
 func (x *ApprovalConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[35]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4388,7 +4460,7 @@ func (x *ApprovalConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ApprovalConfig.ProtoReflect.Descriptor instead.
 func (*ApprovalConfig) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{35}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *ApprovalConfig) GetApprovalRequired() bool {
@@ -4423,7 +4495,7 @@ type ApprovalResult struct {
 
 func (x *ApprovalResult) Reset() {
 	*x = ApprovalResult{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[36]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4435,7 +4507,7 @@ func (x *ApprovalResult) String() string {
 func (*ApprovalResult) ProtoMessage() {}
 
 func (x *ApprovalResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[36]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4448,7 +4520,7 @@ func (x *ApprovalResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ApprovalResult.ProtoReflect.Descriptor instead.
 func (*ApprovalResult) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{36}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *ApprovalResult) GetApproverAccount() string {
@@ -4516,7 +4588,7 @@ type GitRepoSource struct {
 
 func (x *GitRepoSource) Reset() {
 	*x = GitRepoSource{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[37]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4528,7 +4600,7 @@ func (x *GitRepoSource) String() string {
 func (*GitRepoSource) ProtoMessage() {}
 
 func (x *GitRepoSource) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[37]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4541,7 +4613,7 @@ func (x *GitRepoSource) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GitRepoSource.ProtoReflect.Descriptor instead.
 func (*GitRepoSource) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{37}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *GitRepoSource) GetUri() string {
@@ -4659,7 +4731,7 @@ type GitFileSource struct {
 
 func (x *GitFileSource) Reset() {
 	*x = GitFileSource{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[38]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4671,7 +4743,7 @@ func (x *GitFileSource) String() string {
 func (*GitFileSource) ProtoMessage() {}
 
 func (x *GitFileSource) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[38]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4684,7 +4756,7 @@ func (x *GitFileSource) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GitFileSource.ProtoReflect.Descriptor instead.
 func (*GitFileSource) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{38}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *GitFileSource) GetPath() string {
@@ -4861,8 +4933,9 @@ type BuildTrigger struct {
 	SourceToBuild *GitRepoSource `protobuf:"bytes,26,opt,name=source_to_build,json=sourceToBuild,proto3" json:"source_to_build,omitempty"`
 	// The service account used for all user-controlled operations including
 	// UpdateBuildTrigger, RunBuildTrigger, CreateBuild, and CancelBuild.
-	// If no service account is set, then the standard Cloud Build service account
-	// ([PROJECT_NUM]@system.gserviceaccount.com) will be used instead.
+	// If no service account is set and the legacy Cloud Build service account
+	// (`[PROJECT_NUM]@cloudbuild.gserviceaccount.com`) is the default for the
+	// project then it will be used instead.
 	// Format: `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT_ID_OR_EMAIL}`
 	ServiceAccount string `protobuf:"bytes,33,opt,name=service_account,json=serviceAccount,proto3" json:"service_account,omitempty"`
 	// The configuration of a trigger that creates a build whenever an event from
@@ -4872,7 +4945,7 @@ type BuildTrigger struct {
 
 func (x *BuildTrigger) Reset() {
 	*x = BuildTrigger{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[39]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4884,7 +4957,7 @@ func (x *BuildTrigger) String() string {
 func (*BuildTrigger) ProtoMessage() {}
 
 func (x *BuildTrigger) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[39]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4897,7 +4970,7 @@ func (x *BuildTrigger) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BuildTrigger.ProtoReflect.Descriptor instead.
 func (*BuildTrigger) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{39}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{40}
 }
 
 func (x *BuildTrigger) GetResourceName() string {
@@ -5124,7 +5197,7 @@ type RepositoryEventConfig struct {
 
 func (x *RepositoryEventConfig) Reset() {
 	*x = RepositoryEventConfig{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[40]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5136,7 +5209,7 @@ func (x *RepositoryEventConfig) String() string {
 func (*RepositoryEventConfig) ProtoMessage() {}
 
 func (x *RepositoryEventConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[40]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5149,7 +5222,7 @@ func (x *RepositoryEventConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RepositoryEventConfig.ProtoReflect.Descriptor instead.
 func (*RepositoryEventConfig) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{40}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{41}
 }
 
 func (x *RepositoryEventConfig) GetRepository() string {
@@ -5235,7 +5308,7 @@ type GitHubEventsConfig struct {
 
 func (x *GitHubEventsConfig) Reset() {
 	*x = GitHubEventsConfig{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[41]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5247,7 +5320,7 @@ func (x *GitHubEventsConfig) String() string {
 func (*GitHubEventsConfig) ProtoMessage() {}
 
 func (x *GitHubEventsConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[41]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5260,7 +5333,7 @@ func (x *GitHubEventsConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GitHubEventsConfig.ProtoReflect.Descriptor instead.
 func (*GitHubEventsConfig) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{41}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{42}
 }
 
 // Deprecated: Marked as deprecated in google/devtools/cloudbuild/v1/cloudbuild.proto.
@@ -5346,7 +5419,7 @@ type PubsubConfig struct {
 
 func (x *PubsubConfig) Reset() {
 	*x = PubsubConfig{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[42]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5358,7 +5431,7 @@ func (x *PubsubConfig) String() string {
 func (*PubsubConfig) ProtoMessage() {}
 
 func (x *PubsubConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[42]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5371,7 +5444,7 @@ func (x *PubsubConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PubsubConfig.ProtoReflect.Descriptor instead.
 func (*PubsubConfig) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{42}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{43}
 }
 
 func (x *PubsubConfig) GetSubscription() string {
@@ -5422,7 +5495,7 @@ type WebhookConfig struct {
 
 func (x *WebhookConfig) Reset() {
 	*x = WebhookConfig{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[43]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5434,7 +5507,7 @@ func (x *WebhookConfig) String() string {
 func (*WebhookConfig) ProtoMessage() {}
 
 func (x *WebhookConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[43]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5447,7 +5520,7 @@ func (x *WebhookConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WebhookConfig.ProtoReflect.Descriptor instead.
 func (*WebhookConfig) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{43}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{44}
 }
 
 func (m *WebhookConfig) GetAuthMethod() isWebhookConfig_AuthMethod {
@@ -5496,8 +5569,14 @@ type PullRequestFilter struct {
 	//
 	//	*PullRequestFilter_Branch
 	GitRef isPullRequestFilter_GitRef `protobuf_oneof:"git_ref"`
-	// Configure builds to run whether a repository owner or collaborator need to
-	// comment `/gcbrun`.
+	// If CommentControl is enabled, depending on the setting, builds may not
+	// fire until a repository writer comments `/gcbrun` on a pull
+	// request or `/gcbrun` is in the pull request description.
+	// Only PR comments that contain `/gcbrun` will trigger builds.
+	//
+	// If CommentControl is set to disabled, comments with `/gcbrun` from a user
+	// with repository write permission or above will
+	// still trigger builds to run.
 	CommentControl PullRequestFilter_CommentControl `protobuf:"varint,5,opt,name=comment_control,json=commentControl,proto3,enum=google.devtools.cloudbuild.v1.PullRequestFilter_CommentControl" json:"comment_control,omitempty"`
 	// If true, branches that do NOT match the git_ref will trigger a build.
 	InvertRegex bool `protobuf:"varint,6,opt,name=invert_regex,json=invertRegex,proto3" json:"invert_regex,omitempty"`
@@ -5505,7 +5584,7 @@ type PullRequestFilter struct {
 
 func (x *PullRequestFilter) Reset() {
 	*x = PullRequestFilter{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[44]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5517,7 +5596,7 @@ func (x *PullRequestFilter) String() string {
 func (*PullRequestFilter) ProtoMessage() {}
 
 func (x *PullRequestFilter) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[44]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5530,7 +5609,7 @@ func (x *PullRequestFilter) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PullRequestFilter.ProtoReflect.Descriptor instead.
 func (*PullRequestFilter) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{44}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{45}
 }
 
 func (m *PullRequestFilter) GetGitRef() isPullRequestFilter_GitRef {
@@ -5596,7 +5675,7 @@ type PushFilter struct {
 
 func (x *PushFilter) Reset() {
 	*x = PushFilter{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[45]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5608,7 +5687,7 @@ func (x *PushFilter) String() string {
 func (*PushFilter) ProtoMessage() {}
 
 func (x *PushFilter) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[45]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5621,7 +5700,7 @@ func (x *PushFilter) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PushFilter.ProtoReflect.Descriptor instead.
 func (*PushFilter) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{45}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{46}
 }
 
 func (m *PushFilter) GetGitRef() isPushFilter_GitRef {
@@ -5693,7 +5772,7 @@ type CreateBuildTriggerRequest struct {
 
 func (x *CreateBuildTriggerRequest) Reset() {
 	*x = CreateBuildTriggerRequest{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[46]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5705,7 +5784,7 @@ func (x *CreateBuildTriggerRequest) String() string {
 func (*CreateBuildTriggerRequest) ProtoMessage() {}
 
 func (x *CreateBuildTriggerRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[46]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5718,7 +5797,7 @@ func (x *CreateBuildTriggerRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateBuildTriggerRequest.ProtoReflect.Descriptor instead.
 func (*CreateBuildTriggerRequest) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{46}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *CreateBuildTriggerRequest) GetParent() string {
@@ -5759,7 +5838,7 @@ type GetBuildTriggerRequest struct {
 
 func (x *GetBuildTriggerRequest) Reset() {
 	*x = GetBuildTriggerRequest{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[47]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5771,7 +5850,7 @@ func (x *GetBuildTriggerRequest) String() string {
 func (*GetBuildTriggerRequest) ProtoMessage() {}
 
 func (x *GetBuildTriggerRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[47]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5784,7 +5863,7 @@ func (x *GetBuildTriggerRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetBuildTriggerRequest.ProtoReflect.Descriptor instead.
 func (*GetBuildTriggerRequest) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{47}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{48}
 }
 
 func (x *GetBuildTriggerRequest) GetName() string {
@@ -5827,7 +5906,7 @@ type ListBuildTriggersRequest struct {
 
 func (x *ListBuildTriggersRequest) Reset() {
 	*x = ListBuildTriggersRequest{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[48]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[49]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5839,7 +5918,7 @@ func (x *ListBuildTriggersRequest) String() string {
 func (*ListBuildTriggersRequest) ProtoMessage() {}
 
 func (x *ListBuildTriggersRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[48]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[49]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5852,7 +5931,7 @@ func (x *ListBuildTriggersRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListBuildTriggersRequest.ProtoReflect.Descriptor instead.
 func (*ListBuildTriggersRequest) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{48}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{49}
 }
 
 func (x *ListBuildTriggersRequest) GetParent() string {
@@ -5897,7 +5976,7 @@ type ListBuildTriggersResponse struct {
 
 func (x *ListBuildTriggersResponse) Reset() {
 	*x = ListBuildTriggersResponse{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[49]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5909,7 +5988,7 @@ func (x *ListBuildTriggersResponse) String() string {
 func (*ListBuildTriggersResponse) ProtoMessage() {}
 
 func (x *ListBuildTriggersResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[49]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5922,7 +6001,7 @@ func (x *ListBuildTriggersResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListBuildTriggersResponse.ProtoReflect.Descriptor instead.
 func (*ListBuildTriggersResponse) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{49}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{50}
 }
 
 func (x *ListBuildTriggersResponse) GetTriggers() []*BuildTrigger {
@@ -5956,7 +6035,7 @@ type DeleteBuildTriggerRequest struct {
 
 func (x *DeleteBuildTriggerRequest) Reset() {
 	*x = DeleteBuildTriggerRequest{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[50]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[51]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5968,7 +6047,7 @@ func (x *DeleteBuildTriggerRequest) String() string {
 func (*DeleteBuildTriggerRequest) ProtoMessage() {}
 
 func (x *DeleteBuildTriggerRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[50]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[51]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5981,7 +6060,7 @@ func (x *DeleteBuildTriggerRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteBuildTriggerRequest.ProtoReflect.Descriptor instead.
 func (*DeleteBuildTriggerRequest) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{50}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{51}
 }
 
 func (x *DeleteBuildTriggerRequest) GetName() string {
@@ -6025,7 +6104,7 @@ type UpdateBuildTriggerRequest struct {
 
 func (x *UpdateBuildTriggerRequest) Reset() {
 	*x = UpdateBuildTriggerRequest{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[51]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[52]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6037,7 +6116,7 @@ func (x *UpdateBuildTriggerRequest) String() string {
 func (*UpdateBuildTriggerRequest) ProtoMessage() {}
 
 func (x *UpdateBuildTriggerRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[51]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[52]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6050,7 +6129,7 @@ func (x *UpdateBuildTriggerRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateBuildTriggerRequest.ProtoReflect.Descriptor instead.
 func (*UpdateBuildTriggerRequest) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{51}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{52}
 }
 
 func (x *UpdateBuildTriggerRequest) GetProjectId() string {
@@ -6097,7 +6176,7 @@ type BuildOptions struct {
 	// "disk free"; some of the space will be used by the operating system and
 	// build utilities. Also note that this is the minimum disk size that will be
 	// allocated for the build -- the build may run with a larger disk than
-	// requested. At present, the maximum disk size is 2000GB; builds that request
+	// requested. At present, the maximum disk size is 4000GB; builds that request
 	// more than the maximum are rejected with an error.
 	DiskSizeGb int64 `protobuf:"varint,6,opt,name=disk_size_gb,json=diskSizeGb,proto3" json:"disk_size_gb,omitempty"`
 	// Option to specify behavior when there is an error in the substitution
@@ -6163,7 +6242,7 @@ type BuildOptions struct {
 
 func (x *BuildOptions) Reset() {
 	*x = BuildOptions{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[52]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[53]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6175,7 +6254,7 @@ func (x *BuildOptions) String() string {
 func (*BuildOptions) ProtoMessage() {}
 
 func (x *BuildOptions) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[52]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[53]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6188,7 +6267,7 @@ func (x *BuildOptions) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BuildOptions.ProtoReflect.Descriptor instead.
 func (*BuildOptions) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{52}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{53}
 }
 
 func (x *BuildOptions) GetSourceProvenanceHash() []Hash_HashType {
@@ -6326,7 +6405,7 @@ type ReceiveTriggerWebhookRequest struct {
 
 func (x *ReceiveTriggerWebhookRequest) Reset() {
 	*x = ReceiveTriggerWebhookRequest{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[53]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[54]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6338,7 +6417,7 @@ func (x *ReceiveTriggerWebhookRequest) String() string {
 func (*ReceiveTriggerWebhookRequest) ProtoMessage() {}
 
 func (x *ReceiveTriggerWebhookRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[53]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[54]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6351,7 +6430,7 @@ func (x *ReceiveTriggerWebhookRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReceiveTriggerWebhookRequest.ProtoReflect.Descriptor instead.
 func (*ReceiveTriggerWebhookRequest) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{53}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{54}
 }
 
 func (x *ReceiveTriggerWebhookRequest) GetName() string {
@@ -6399,7 +6478,7 @@ type ReceiveTriggerWebhookResponse struct {
 
 func (x *ReceiveTriggerWebhookResponse) Reset() {
 	*x = ReceiveTriggerWebhookResponse{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[54]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[55]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6411,7 +6490,7 @@ func (x *ReceiveTriggerWebhookResponse) String() string {
 func (*ReceiveTriggerWebhookResponse) ProtoMessage() {}
 
 func (x *ReceiveTriggerWebhookResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[54]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[55]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6424,9 +6503,11 @@ func (x *ReceiveTriggerWebhookResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReceiveTriggerWebhookResponse.ProtoReflect.Descriptor instead.
 func (*ReceiveTriggerWebhookResponse) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{54}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{55}
 }
 
+// GitHubEnterpriseConfig represents a configuration for a GitHub Enterprise
+// server.
 type GitHubEnterpriseConfig struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -6467,7 +6548,7 @@ type GitHubEnterpriseConfig struct {
 
 func (x *GitHubEnterpriseConfig) Reset() {
 	*x = GitHubEnterpriseConfig{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[55]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[56]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6479,7 +6560,7 @@ func (x *GitHubEnterpriseConfig) String() string {
 func (*GitHubEnterpriseConfig) ProtoMessage() {}
 
 func (x *GitHubEnterpriseConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[55]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[56]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6492,7 +6573,7 @@ func (x *GitHubEnterpriseConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GitHubEnterpriseConfig.ProtoReflect.Descriptor instead.
 func (*GitHubEnterpriseConfig) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{55}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{56}
 }
 
 func (x *GitHubEnterpriseConfig) GetName() string {
@@ -6578,7 +6659,7 @@ type GitHubEnterpriseSecrets struct {
 
 func (x *GitHubEnterpriseSecrets) Reset() {
 	*x = GitHubEnterpriseSecrets{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[56]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[57]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6590,7 +6671,7 @@ func (x *GitHubEnterpriseSecrets) String() string {
 func (*GitHubEnterpriseSecrets) ProtoMessage() {}
 
 func (x *GitHubEnterpriseSecrets) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[56]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[57]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6603,7 +6684,7 @@ func (x *GitHubEnterpriseSecrets) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GitHubEnterpriseSecrets.ProtoReflect.Descriptor instead.
 func (*GitHubEnterpriseSecrets) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{56}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{57}
 }
 
 func (x *GitHubEnterpriseSecrets) GetPrivateKeyVersionName() string {
@@ -6691,7 +6772,7 @@ type WorkerPool struct {
 
 func (x *WorkerPool) Reset() {
 	*x = WorkerPool{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[57]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[58]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6703,7 +6784,7 @@ func (x *WorkerPool) String() string {
 func (*WorkerPool) ProtoMessage() {}
 
 func (x *WorkerPool) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[57]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[58]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6716,7 +6797,7 @@ func (x *WorkerPool) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WorkerPool.ProtoReflect.Descriptor instead.
 func (*WorkerPool) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{57}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{58}
 }
 
 func (x *WorkerPool) GetName() string {
@@ -6823,7 +6904,7 @@ type PrivatePoolV1Config struct {
 
 func (x *PrivatePoolV1Config) Reset() {
 	*x = PrivatePoolV1Config{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[58]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[59]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6835,7 +6916,7 @@ func (x *PrivatePoolV1Config) String() string {
 func (*PrivatePoolV1Config) ProtoMessage() {}
 
 func (x *PrivatePoolV1Config) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[58]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[59]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6848,7 +6929,7 @@ func (x *PrivatePoolV1Config) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PrivatePoolV1Config.ProtoReflect.Descriptor instead.
 func (*PrivatePoolV1Config) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{58}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{59}
 }
 
 func (x *PrivatePoolV1Config) GetWorkerConfig() *PrivatePoolV1Config_WorkerConfig {
@@ -6896,7 +6977,7 @@ type CreateWorkerPoolRequest struct {
 
 func (x *CreateWorkerPoolRequest) Reset() {
 	*x = CreateWorkerPoolRequest{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[59]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[60]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6908,7 +6989,7 @@ func (x *CreateWorkerPoolRequest) String() string {
 func (*CreateWorkerPoolRequest) ProtoMessage() {}
 
 func (x *CreateWorkerPoolRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[59]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[60]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6921,7 +7002,7 @@ func (x *CreateWorkerPoolRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateWorkerPoolRequest.ProtoReflect.Descriptor instead.
 func (*CreateWorkerPoolRequest) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{59}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{60}
 }
 
 func (x *CreateWorkerPoolRequest) GetParent() string {
@@ -6965,7 +7046,7 @@ type GetWorkerPoolRequest struct {
 
 func (x *GetWorkerPoolRequest) Reset() {
 	*x = GetWorkerPoolRequest{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[60]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[61]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6977,7 +7058,7 @@ func (x *GetWorkerPoolRequest) String() string {
 func (*GetWorkerPoolRequest) ProtoMessage() {}
 
 func (x *GetWorkerPoolRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[60]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[61]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6990,7 +7071,7 @@ func (x *GetWorkerPoolRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetWorkerPoolRequest.ProtoReflect.Descriptor instead.
 func (*GetWorkerPoolRequest) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{60}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{61}
 }
 
 func (x *GetWorkerPoolRequest) GetName() string {
@@ -7023,7 +7104,7 @@ type DeleteWorkerPoolRequest struct {
 
 func (x *DeleteWorkerPoolRequest) Reset() {
 	*x = DeleteWorkerPoolRequest{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[61]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[62]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7035,7 +7116,7 @@ func (x *DeleteWorkerPoolRequest) String() string {
 func (*DeleteWorkerPoolRequest) ProtoMessage() {}
 
 func (x *DeleteWorkerPoolRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[61]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[62]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7048,7 +7129,7 @@ func (x *DeleteWorkerPoolRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteWorkerPoolRequest.ProtoReflect.Descriptor instead.
 func (*DeleteWorkerPoolRequest) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{61}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{62}
 }
 
 func (x *DeleteWorkerPoolRequest) GetName() string {
@@ -7099,7 +7180,7 @@ type UpdateWorkerPoolRequest struct {
 
 func (x *UpdateWorkerPoolRequest) Reset() {
 	*x = UpdateWorkerPoolRequest{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[62]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[63]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7111,7 +7192,7 @@ func (x *UpdateWorkerPoolRequest) String() string {
 func (*UpdateWorkerPoolRequest) ProtoMessage() {}
 
 func (x *UpdateWorkerPoolRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[62]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[63]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7124,7 +7205,7 @@ func (x *UpdateWorkerPoolRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateWorkerPoolRequest.ProtoReflect.Descriptor instead.
 func (*UpdateWorkerPoolRequest) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{62}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{63}
 }
 
 func (x *UpdateWorkerPoolRequest) GetWorkerPool() *WorkerPool {
@@ -7167,7 +7248,7 @@ type ListWorkerPoolsRequest struct {
 
 func (x *ListWorkerPoolsRequest) Reset() {
 	*x = ListWorkerPoolsRequest{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[63]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[64]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7179,7 +7260,7 @@ func (x *ListWorkerPoolsRequest) String() string {
 func (*ListWorkerPoolsRequest) ProtoMessage() {}
 
 func (x *ListWorkerPoolsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[63]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[64]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7192,7 +7273,7 @@ func (x *ListWorkerPoolsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListWorkerPoolsRequest.ProtoReflect.Descriptor instead.
 func (*ListWorkerPoolsRequest) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{63}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{64}
 }
 
 func (x *ListWorkerPoolsRequest) GetParent() string {
@@ -7232,7 +7313,7 @@ type ListWorkerPoolsResponse struct {
 
 func (x *ListWorkerPoolsResponse) Reset() {
 	*x = ListWorkerPoolsResponse{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[64]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[65]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7244,7 +7325,7 @@ func (x *ListWorkerPoolsResponse) String() string {
 func (*ListWorkerPoolsResponse) ProtoMessage() {}
 
 func (x *ListWorkerPoolsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[64]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[65]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7257,7 +7338,7 @@ func (x *ListWorkerPoolsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListWorkerPoolsResponse.ProtoReflect.Descriptor instead.
 func (*ListWorkerPoolsResponse) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{64}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{65}
 }
 
 func (x *ListWorkerPoolsResponse) GetWorkerPools() []*WorkerPool {
@@ -7292,7 +7373,7 @@ type CreateWorkerPoolOperationMetadata struct {
 
 func (x *CreateWorkerPoolOperationMetadata) Reset() {
 	*x = CreateWorkerPoolOperationMetadata{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[65]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[66]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7304,7 +7385,7 @@ func (x *CreateWorkerPoolOperationMetadata) String() string {
 func (*CreateWorkerPoolOperationMetadata) ProtoMessage() {}
 
 func (x *CreateWorkerPoolOperationMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[65]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[66]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7317,7 +7398,7 @@ func (x *CreateWorkerPoolOperationMetadata) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use CreateWorkerPoolOperationMetadata.ProtoReflect.Descriptor instead.
 func (*CreateWorkerPoolOperationMetadata) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{65}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{66}
 }
 
 func (x *CreateWorkerPoolOperationMetadata) GetWorkerPool() string {
@@ -7359,7 +7440,7 @@ type UpdateWorkerPoolOperationMetadata struct {
 
 func (x *UpdateWorkerPoolOperationMetadata) Reset() {
 	*x = UpdateWorkerPoolOperationMetadata{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[66]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[67]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7371,7 +7452,7 @@ func (x *UpdateWorkerPoolOperationMetadata) String() string {
 func (*UpdateWorkerPoolOperationMetadata) ProtoMessage() {}
 
 func (x *UpdateWorkerPoolOperationMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[66]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[67]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7384,7 +7465,7 @@ func (x *UpdateWorkerPoolOperationMetadata) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use UpdateWorkerPoolOperationMetadata.ProtoReflect.Descriptor instead.
 func (*UpdateWorkerPoolOperationMetadata) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{66}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{67}
 }
 
 func (x *UpdateWorkerPoolOperationMetadata) GetWorkerPool() string {
@@ -7426,7 +7507,7 @@ type DeleteWorkerPoolOperationMetadata struct {
 
 func (x *DeleteWorkerPoolOperationMetadata) Reset() {
 	*x = DeleteWorkerPoolOperationMetadata{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[67]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[68]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7438,7 +7519,7 @@ func (x *DeleteWorkerPoolOperationMetadata) String() string {
 func (*DeleteWorkerPoolOperationMetadata) ProtoMessage() {}
 
 func (x *DeleteWorkerPoolOperationMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[67]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[68]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7451,7 +7532,7 @@ func (x *DeleteWorkerPoolOperationMetadata) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use DeleteWorkerPoolOperationMetadata.ProtoReflect.Descriptor instead.
 func (*DeleteWorkerPoolOperationMetadata) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{67}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{68}
 }
 
 func (x *DeleteWorkerPoolOperationMetadata) GetWorkerPool() string {
@@ -7489,7 +7570,7 @@ type Build_Warning struct {
 
 func (x *Build_Warning) Reset() {
 	*x = Build_Warning{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[69]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[70]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7501,7 +7582,7 @@ func (x *Build_Warning) String() string {
 func (*Build_Warning) ProtoMessage() {}
 
 func (x *Build_Warning) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[69]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[70]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7545,7 +7626,7 @@ type Build_FailureInfo struct {
 
 func (x *Build_FailureInfo) Reset() {
 	*x = Build_FailureInfo{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[70]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[71]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7557,7 +7638,7 @@ func (x *Build_FailureInfo) String() string {
 func (*Build_FailureInfo) ProtoMessage() {}
 
 func (x *Build_FailureInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[70]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[71]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7608,7 +7689,7 @@ type Dependency_GitSourceDependency struct {
 
 func (x *Dependency_GitSourceDependency) Reset() {
 	*x = Dependency_GitSourceDependency{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[73]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[74]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7620,7 +7701,7 @@ func (x *Dependency_GitSourceDependency) String() string {
 func (*Dependency_GitSourceDependency) ProtoMessage() {}
 
 func (x *Dependency_GitSourceDependency) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[73]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[74]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7688,7 +7769,7 @@ type Dependency_GitSourceRepository struct {
 
 func (x *Dependency_GitSourceRepository) Reset() {
 	*x = Dependency_GitSourceRepository{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[74]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[75]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7700,7 +7781,7 @@ func (x *Dependency_GitSourceRepository) String() string {
 func (*Dependency_GitSourceRepository) ProtoMessage() {}
 
 func (x *Dependency_GitSourceRepository) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[74]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[75]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7757,6 +7838,57 @@ func (*Dependency_GitSourceRepository_Url) isDependency_GitSourceRepository_Repo
 
 func (*Dependency_GitSourceRepository_DeveloperConnect) isDependency_GitSourceRepository_Repotype() {}
 
+// HttpConfig is a configuration for HTTP related git operations.
+type GitConfig_HttpConfig struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// SecretVersion resource of the HTTP proxy URL. The Service Account used in
+	// the build (either the default Service Account or
+	// user-specified Service Account) should have
+	// `secretmanager.versions.access` permissions on this secret. The proxy URL
+	// should be in format `[protocol://][user[:password]@]proxyhost[:port]`.
+	ProxySecretVersionName string `protobuf:"bytes,1,opt,name=proxy_secret_version_name,json=proxySecretVersionName,proto3" json:"proxy_secret_version_name,omitempty"`
+}
+
+func (x *GitConfig_HttpConfig) Reset() {
+	*x = GitConfig_HttpConfig{}
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[76]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GitConfig_HttpConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GitConfig_HttpConfig) ProtoMessage() {}
+
+func (x *GitConfig_HttpConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[76]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GitConfig_HttpConfig.ProtoReflect.Descriptor instead.
+func (*GitConfig_HttpConfig) Descriptor() ([]byte, []int) {
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{18, 0}
+}
+
+func (x *GitConfig_HttpConfig) GetProxySecretVersionName() string {
+	if x != nil {
+		return x.ProxySecretVersionName
+	}
+	return ""
+}
+
 // Files in the workspace to upload to Cloud Storage upon successful
 // completion of all build steps.
 type Artifacts_ArtifactObjects struct {
@@ -7779,7 +7911,7 @@ type Artifacts_ArtifactObjects struct {
 
 func (x *Artifacts_ArtifactObjects) Reset() {
 	*x = Artifacts_ArtifactObjects{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[75]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[77]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7791,7 +7923,7 @@ func (x *Artifacts_ArtifactObjects) String() string {
 func (*Artifacts_ArtifactObjects) ProtoMessage() {}
 
 func (x *Artifacts_ArtifactObjects) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[75]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[77]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7804,7 +7936,7 @@ func (x *Artifacts_ArtifactObjects) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Artifacts_ArtifactObjects.ProtoReflect.Descriptor instead.
 func (*Artifacts_ArtifactObjects) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{18, 0}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{19, 0}
 }
 
 func (x *Artifacts_ArtifactObjects) GetLocation() string {
@@ -7861,7 +7993,7 @@ type Artifacts_MavenArtifact struct {
 
 func (x *Artifacts_MavenArtifact) Reset() {
 	*x = Artifacts_MavenArtifact{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[76]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[78]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7873,7 +8005,7 @@ func (x *Artifacts_MavenArtifact) String() string {
 func (*Artifacts_MavenArtifact) ProtoMessage() {}
 
 func (x *Artifacts_MavenArtifact) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[76]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[78]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7886,7 +8018,7 @@ func (x *Artifacts_MavenArtifact) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Artifacts_MavenArtifact.ProtoReflect.Descriptor instead.
 func (*Artifacts_MavenArtifact) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{18, 1}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{19, 1}
 }
 
 func (x *Artifacts_MavenArtifact) GetRepository() string {
@@ -7959,7 +8091,7 @@ type Artifacts_GoModule struct {
 
 func (x *Artifacts_GoModule) Reset() {
 	*x = Artifacts_GoModule{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[77]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[79]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7971,7 +8103,7 @@ func (x *Artifacts_GoModule) String() string {
 func (*Artifacts_GoModule) ProtoMessage() {}
 
 func (x *Artifacts_GoModule) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[77]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[79]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7984,7 +8116,7 @@ func (x *Artifacts_GoModule) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Artifacts_GoModule.ProtoReflect.Descriptor instead.
 func (*Artifacts_GoModule) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{18, 2}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{19, 2}
 }
 
 func (x *Artifacts_GoModule) GetRepositoryName() string {
@@ -8051,7 +8183,7 @@ type Artifacts_PythonPackage struct {
 
 func (x *Artifacts_PythonPackage) Reset() {
 	*x = Artifacts_PythonPackage{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[78]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[80]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8063,7 +8195,7 @@ func (x *Artifacts_PythonPackage) String() string {
 func (*Artifacts_PythonPackage) ProtoMessage() {}
 
 func (x *Artifacts_PythonPackage) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[78]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[80]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8076,7 +8208,7 @@ func (x *Artifacts_PythonPackage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Artifacts_PythonPackage.ProtoReflect.Descriptor instead.
 func (*Artifacts_PythonPackage) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{18, 3}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{19, 3}
 }
 
 func (x *Artifacts_PythonPackage) GetRepository() string {
@@ -8113,7 +8245,7 @@ type Artifacts_NpmPackage struct {
 
 func (x *Artifacts_NpmPackage) Reset() {
 	*x = Artifacts_NpmPackage{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[79]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[81]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8125,7 +8257,7 @@ func (x *Artifacts_NpmPackage) String() string {
 func (*Artifacts_NpmPackage) ProtoMessage() {}
 
 func (x *Artifacts_NpmPackage) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[79]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[81]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8138,7 +8270,7 @@ func (x *Artifacts_NpmPackage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Artifacts_NpmPackage.ProtoReflect.Descriptor instead.
 func (*Artifacts_NpmPackage) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{18, 4}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{19, 4}
 }
 
 func (x *Artifacts_NpmPackage) GetRepository() string {
@@ -8175,7 +8307,7 @@ type BuildOptions_PoolOption struct {
 
 func (x *BuildOptions_PoolOption) Reset() {
 	*x = BuildOptions_PoolOption{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[84]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[86]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8187,7 +8319,7 @@ func (x *BuildOptions_PoolOption) String() string {
 func (*BuildOptions_PoolOption) ProtoMessage() {}
 
 func (x *BuildOptions_PoolOption) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[84]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[86]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8200,7 +8332,7 @@ func (x *BuildOptions_PoolOption) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BuildOptions_PoolOption.ProtoReflect.Descriptor instead.
 func (*BuildOptions_PoolOption) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{52, 0}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{53, 0}
 }
 
 func (x *BuildOptions_PoolOption) GetName() string {
@@ -8232,7 +8364,7 @@ type PrivatePoolV1Config_WorkerConfig struct {
 
 func (x *PrivatePoolV1Config_WorkerConfig) Reset() {
 	*x = PrivatePoolV1Config_WorkerConfig{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[86]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[88]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8244,7 +8376,7 @@ func (x *PrivatePoolV1Config_WorkerConfig) String() string {
 func (*PrivatePoolV1Config_WorkerConfig) ProtoMessage() {}
 
 func (x *PrivatePoolV1Config_WorkerConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[86]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[88]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8257,7 +8389,7 @@ func (x *PrivatePoolV1Config_WorkerConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PrivatePoolV1Config_WorkerConfig.ProtoReflect.Descriptor instead.
 func (*PrivatePoolV1Config_WorkerConfig) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{58, 0}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{59, 0}
 }
 
 func (x *PrivatePoolV1Config_WorkerConfig) GetMachineType() string {
@@ -8304,7 +8436,7 @@ type PrivatePoolV1Config_NetworkConfig struct {
 
 func (x *PrivatePoolV1Config_NetworkConfig) Reset() {
 	*x = PrivatePoolV1Config_NetworkConfig{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[87]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[89]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8316,7 +8448,7 @@ func (x *PrivatePoolV1Config_NetworkConfig) String() string {
 func (*PrivatePoolV1Config_NetworkConfig) ProtoMessage() {}
 
 func (x *PrivatePoolV1Config_NetworkConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[87]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[89]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8329,7 +8461,7 @@ func (x *PrivatePoolV1Config_NetworkConfig) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use PrivatePoolV1Config_NetworkConfig.ProtoReflect.Descriptor instead.
 func (*PrivatePoolV1Config_NetworkConfig) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{58, 1}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{59, 1}
 }
 
 func (x *PrivatePoolV1Config_NetworkConfig) GetPeeredNetwork() string {
@@ -8387,7 +8519,7 @@ type PrivatePoolV1Config_PrivateServiceConnect struct {
 
 func (x *PrivatePoolV1Config_PrivateServiceConnect) Reset() {
 	*x = PrivatePoolV1Config_PrivateServiceConnect{}
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[88]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[90]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8399,7 +8531,7 @@ func (x *PrivatePoolV1Config_PrivateServiceConnect) String() string {
 func (*PrivatePoolV1Config_PrivateServiceConnect) ProtoMessage() {}
 
 func (x *PrivatePoolV1Config_PrivateServiceConnect) ProtoReflect() protoreflect.Message {
-	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[88]
+	mi := &file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[90]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8412,7 +8544,7 @@ func (x *PrivatePoolV1Config_PrivateServiceConnect) ProtoReflect() protoreflect.
 
 // Deprecated: Use PrivatePoolV1Config_PrivateServiceConnect.ProtoReflect.Descriptor instead.
 func (*PrivatePoolV1Config_PrivateServiceConnect) Descriptor() ([]byte, []int) {
-	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{58, 2}
+	return file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP(), []int{59, 2}
 }
 
 func (x *PrivatePoolV1Config_PrivateServiceConnect) GetNetworkAttachment() string {
@@ -8724,7 +8856,7 @@ var file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDesc = []byte{
 	0x29, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x64, 0x65, 0x76, 0x74, 0x6f, 0x6f, 0x6c,
 	0x73, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x62, 0x75, 0x69, 0x6c, 0x64, 0x2e, 0x76, 0x31, 0x2e,
 	0x46, 0x69, 0x6c, 0x65, 0x48, 0x61, 0x73, 0x68, 0x65, 0x73, 0x52, 0x08, 0x66, 0x69, 0x6c, 0x65,
-	0x48, 0x61, 0x73, 0x68, 0x22, 0xde, 0x15, 0x0a, 0x05, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x12, 0x17,
+	0x48, 0x61, 0x73, 0x68, 0x22, 0xbd, 0x16, 0x0a, 0x05, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x12, 0x17,
 	0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x2d, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41,
 	0x03, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x13, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20,
 	0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x02, 0x69, 0x64, 0x12, 0x22, 0x0a, 0x0a,
@@ -8828,69 +8960,74 @@ var file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDesc = []byte{
 	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x64, 0x65, 0x76, 0x74, 0x6f, 0x6f, 0x6c, 0x73, 0x2e,
 	0x63, 0x6c, 0x6f, 0x75, 0x64, 0x62, 0x75, 0x69, 0x6c, 0x64, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x75,
 	0x69, 0x6c, 0x64, 0x2e, 0x57, 0x61, 0x72, 0x6e, 0x69, 0x6e, 0x67, 0x42, 0x03, 0xe0, 0x41, 0x03,
-	0x52, 0x08, 0x77, 0x61, 0x72, 0x6e, 0x69, 0x6e, 0x67, 0x73, 0x12, 0x58, 0x0a, 0x0c, 0x66, 0x61,
-	0x69, 0x6c, 0x75, 0x72, 0x65, 0x5f, 0x69, 0x6e, 0x66, 0x6f, 0x18, 0x33, 0x20, 0x01, 0x28, 0x0b,
-	0x32, 0x30, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x64, 0x65, 0x76, 0x74, 0x6f, 0x6f,
-	0x6c, 0x73, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x62, 0x75, 0x69, 0x6c, 0x64, 0x2e, 0x76, 0x31,
-	0x2e, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x2e, 0x46, 0x61, 0x69, 0x6c, 0x75, 0x72, 0x65, 0x49, 0x6e,
-	0x66, 0x6f, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x0b, 0x66, 0x61, 0x69, 0x6c, 0x75, 0x72, 0x65,
-	0x49, 0x6e, 0x66, 0x6f, 0x12, 0x52, 0x0a, 0x0c, 0x64, 0x65, 0x70, 0x65, 0x6e, 0x64, 0x65, 0x6e,
-	0x63, 0x69, 0x65, 0x73, 0x18, 0x38, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x29, 0x2e, 0x67, 0x6f, 0x6f,
-	0x67, 0x6c, 0x65, 0x2e, 0x64, 0x65, 0x76, 0x74, 0x6f, 0x6f, 0x6c, 0x73, 0x2e, 0x63, 0x6c, 0x6f,
-	0x75, 0x64, 0x62, 0x75, 0x69, 0x6c, 0x64, 0x2e, 0x76, 0x31, 0x2e, 0x44, 0x65, 0x70, 0x65, 0x6e,
-	0x64, 0x65, 0x6e, 0x63, 0x79, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x0c, 0x64, 0x65, 0x70, 0x65,
-	0x6e, 0x64, 0x65, 0x6e, 0x63, 0x69, 0x65, 0x73, 0x1a, 0xb8, 0x01, 0x0a, 0x07, 0x57, 0x61, 0x72,
-	0x6e, 0x69, 0x6e, 0x67, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x65, 0x78, 0x74, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x04, 0x74, 0x65, 0x78, 0x74, 0x12, 0x51, 0x0a, 0x08, 0x70, 0x72, 0x69, 0x6f,
-	0x72, 0x69, 0x74, 0x79, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x35, 0x2e, 0x67, 0x6f, 0x6f,
-	0x67, 0x6c, 0x65, 0x2e, 0x64, 0x65, 0x76, 0x74, 0x6f, 0x6f, 0x6c, 0x73, 0x2e, 0x63, 0x6c, 0x6f,
-	0x75, 0x64, 0x62, 0x75, 0x69, 0x6c, 0x64, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x75, 0x69, 0x6c, 0x64,
-	0x2e, 0x57, 0x61, 0x72, 0x6e, 0x69, 0x6e, 0x67, 0x2e, 0x50, 0x72, 0x69, 0x6f, 0x72, 0x69, 0x74,
-	0x79, 0x52, 0x08, 0x70, 0x72, 0x69, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x22, 0x46, 0x0a, 0x08, 0x50,
-	0x72, 0x69, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x12, 0x18, 0x0a, 0x14, 0x50, 0x52, 0x49, 0x4f, 0x52,
-	0x49, 0x54, 0x59, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10,
-	0x00, 0x12, 0x08, 0x0a, 0x04, 0x49, 0x4e, 0x46, 0x4f, 0x10, 0x01, 0x12, 0x0b, 0x0a, 0x07, 0x57,
-	0x41, 0x52, 0x4e, 0x49, 0x4e, 0x47, 0x10, 0x02, 0x12, 0x09, 0x0a, 0x05, 0x41, 0x4c, 0x45, 0x52,
-	0x54, 0x10, 0x03, 0x1a, 0xac, 0x02, 0x0a, 0x0b, 0x46, 0x61, 0x69, 0x6c, 0x75, 0x72, 0x65, 0x49,
-	0x6e, 0x66, 0x6f, 0x12, 0x50, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x0e, 0x32, 0x3c, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x64, 0x65, 0x76, 0x74, 0x6f,
-	0x6f, 0x6c, 0x73, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x62, 0x75, 0x69, 0x6c, 0x64, 0x2e, 0x76,
-	0x31, 0x2e, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x2e, 0x46, 0x61, 0x69, 0x6c, 0x75, 0x72, 0x65, 0x49,
-	0x6e, 0x66, 0x6f, 0x2e, 0x46, 0x61, 0x69, 0x6c, 0x75, 0x72, 0x65, 0x54, 0x79, 0x70, 0x65, 0x52,
-	0x04, 0x74, 0x79, 0x70, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x64, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18,
-	0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x64, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0xb2, 0x01,
-	0x0a, 0x0b, 0x46, 0x61, 0x69, 0x6c, 0x75, 0x72, 0x65, 0x54, 0x79, 0x70, 0x65, 0x12, 0x1c, 0x0a,
-	0x18, 0x46, 0x41, 0x49, 0x4c, 0x55, 0x52, 0x45, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x55, 0x4e,
-	0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x0f, 0x0a, 0x0b, 0x50,
-	0x55, 0x53, 0x48, 0x5f, 0x46, 0x41, 0x49, 0x4c, 0x45, 0x44, 0x10, 0x01, 0x12, 0x18, 0x0a, 0x14,
-	0x50, 0x55, 0x53, 0x48, 0x5f, 0x49, 0x4d, 0x41, 0x47, 0x45, 0x5f, 0x4e, 0x4f, 0x54, 0x5f, 0x46,
-	0x4f, 0x55, 0x4e, 0x44, 0x10, 0x02, 0x12, 0x17, 0x0a, 0x13, 0x50, 0x55, 0x53, 0x48, 0x5f, 0x4e,
-	0x4f, 0x54, 0x5f, 0x41, 0x55, 0x54, 0x48, 0x4f, 0x52, 0x49, 0x5a, 0x45, 0x44, 0x10, 0x03, 0x12,
-	0x13, 0x0a, 0x0f, 0x4c, 0x4f, 0x47, 0x47, 0x49, 0x4e, 0x47, 0x5f, 0x46, 0x41, 0x49, 0x4c, 0x55,
-	0x52, 0x45, 0x10, 0x04, 0x12, 0x13, 0x0a, 0x0f, 0x55, 0x53, 0x45, 0x52, 0x5f, 0x42, 0x55, 0x49,
-	0x4c, 0x44, 0x5f, 0x53, 0x54, 0x45, 0x50, 0x10, 0x05, 0x12, 0x17, 0x0a, 0x13, 0x46, 0x45, 0x54,
-	0x43, 0x48, 0x5f, 0x53, 0x4f, 0x55, 0x52, 0x43, 0x45, 0x5f, 0x46, 0x41, 0x49, 0x4c, 0x45, 0x44,
-	0x10, 0x06, 0x1a, 0x40, 0x0a, 0x12, 0x53, 0x75, 0x62, 0x73, 0x74, 0x69, 0x74, 0x75, 0x74, 0x69,
-	0x6f, 0x6e, 0x73, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x6b, 0x65, 0x79, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61,
-	0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65,
-	0x3a, 0x02, 0x38, 0x01, 0x1a, 0x62, 0x0a, 0x0b, 0x54, 0x69, 0x6d, 0x69, 0x6e, 0x67, 0x45, 0x6e,
-	0x74, 0x72, 0x79, 0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x03, 0x6b, 0x65, 0x79, 0x12, 0x3d, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02,
-	0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x64, 0x65,
-	0x76, 0x74, 0x6f, 0x6f, 0x6c, 0x73, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x62, 0x75, 0x69, 0x6c,
-	0x64, 0x2e, 0x76, 0x31, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x53, 0x70, 0x61, 0x6e, 0x52, 0x05, 0x76,
-	0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x22, 0x99, 0x01, 0x0a, 0x06, 0x53, 0x74, 0x61,
-	0x74, 0x75, 0x73, 0x12, 0x12, 0x0a, 0x0e, 0x53, 0x54, 0x41, 0x54, 0x55, 0x53, 0x5f, 0x55, 0x4e,
-	0x4b, 0x4e, 0x4f, 0x57, 0x4e, 0x10, 0x00, 0x12, 0x0b, 0x0a, 0x07, 0x50, 0x45, 0x4e, 0x44, 0x49,
-	0x4e, 0x47, 0x10, 0x0a, 0x12, 0x0a, 0x0a, 0x06, 0x51, 0x55, 0x45, 0x55, 0x45, 0x44, 0x10, 0x01,
-	0x12, 0x0b, 0x0a, 0x07, 0x57, 0x4f, 0x52, 0x4b, 0x49, 0x4e, 0x47, 0x10, 0x02, 0x12, 0x0b, 0x0a,
-	0x07, 0x53, 0x55, 0x43, 0x43, 0x45, 0x53, 0x53, 0x10, 0x03, 0x12, 0x0b, 0x0a, 0x07, 0x46, 0x41,
-	0x49, 0x4c, 0x55, 0x52, 0x45, 0x10, 0x04, 0x12, 0x12, 0x0a, 0x0e, 0x49, 0x4e, 0x54, 0x45, 0x52,
-	0x4e, 0x41, 0x4c, 0x5f, 0x45, 0x52, 0x52, 0x4f, 0x52, 0x10, 0x05, 0x12, 0x0b, 0x0a, 0x07, 0x54,
-	0x49, 0x4d, 0x45, 0x4f, 0x55, 0x54, 0x10, 0x06, 0x12, 0x0d, 0x0a, 0x09, 0x43, 0x41, 0x4e, 0x43,
-	0x45, 0x4c, 0x4c, 0x45, 0x44, 0x10, 0x07, 0x12, 0x0b, 0x0a, 0x07, 0x45, 0x58, 0x50, 0x49, 0x52,
-	0x45, 0x44, 0x10, 0x09, 0x3a, 0x7f, 0xea, 0x41, 0x7c, 0x0a, 0x1f, 0x63, 0x6c, 0x6f, 0x75, 0x64,
+	0x52, 0x08, 0x77, 0x61, 0x72, 0x6e, 0x69, 0x6e, 0x67, 0x73, 0x12, 0x4c, 0x0a, 0x0a, 0x67, 0x69,
+	0x74, 0x5f, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x18, 0x30, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x28,
+	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x64, 0x65, 0x76, 0x74, 0x6f, 0x6f, 0x6c, 0x73,
+	0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x62, 0x75, 0x69, 0x6c, 0x64, 0x2e, 0x76, 0x31, 0x2e, 0x47,
+	0x69, 0x74, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x09, 0x67,
+	0x69, 0x74, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x58, 0x0a, 0x0c, 0x66, 0x61, 0x69, 0x6c,
+	0x75, 0x72, 0x65, 0x5f, 0x69, 0x6e, 0x66, 0x6f, 0x18, 0x33, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x30,
+	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x64, 0x65, 0x76, 0x74, 0x6f, 0x6f, 0x6c, 0x73,
+	0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x62, 0x75, 0x69, 0x6c, 0x64, 0x2e, 0x76, 0x31, 0x2e, 0x42,
+	0x75, 0x69, 0x6c, 0x64, 0x2e, 0x46, 0x61, 0x69, 0x6c, 0x75, 0x72, 0x65, 0x49, 0x6e, 0x66, 0x6f,
+	0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x0b, 0x66, 0x61, 0x69, 0x6c, 0x75, 0x72, 0x65, 0x49, 0x6e,
+	0x66, 0x6f, 0x12, 0x52, 0x0a, 0x0c, 0x64, 0x65, 0x70, 0x65, 0x6e, 0x64, 0x65, 0x6e, 0x63, 0x69,
+	0x65, 0x73, 0x18, 0x38, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x29, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
+	0x65, 0x2e, 0x64, 0x65, 0x76, 0x74, 0x6f, 0x6f, 0x6c, 0x73, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64,
+	0x62, 0x75, 0x69, 0x6c, 0x64, 0x2e, 0x76, 0x31, 0x2e, 0x44, 0x65, 0x70, 0x65, 0x6e, 0x64, 0x65,
+	0x6e, 0x63, 0x79, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x0c, 0x64, 0x65, 0x70, 0x65, 0x6e, 0x64,
+	0x65, 0x6e, 0x63, 0x69, 0x65, 0x73, 0x1a, 0xb8, 0x01, 0x0a, 0x07, 0x57, 0x61, 0x72, 0x6e, 0x69,
+	0x6e, 0x67, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x65, 0x78, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x04, 0x74, 0x65, 0x78, 0x74, 0x12, 0x51, 0x0a, 0x08, 0x70, 0x72, 0x69, 0x6f, 0x72, 0x69,
+	0x74, 0x79, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x35, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
+	0x65, 0x2e, 0x64, 0x65, 0x76, 0x74, 0x6f, 0x6f, 0x6c, 0x73, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64,
+	0x62, 0x75, 0x69, 0x6c, 0x64, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x2e, 0x57,
+	0x61, 0x72, 0x6e, 0x69, 0x6e, 0x67, 0x2e, 0x50, 0x72, 0x69, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x52,
+	0x08, 0x70, 0x72, 0x69, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x22, 0x46, 0x0a, 0x08, 0x50, 0x72, 0x69,
+	0x6f, 0x72, 0x69, 0x74, 0x79, 0x12, 0x18, 0x0a, 0x14, 0x50, 0x52, 0x49, 0x4f, 0x52, 0x49, 0x54,
+	0x59, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12,
+	0x08, 0x0a, 0x04, 0x49, 0x4e, 0x46, 0x4f, 0x10, 0x01, 0x12, 0x0b, 0x0a, 0x07, 0x57, 0x41, 0x52,
+	0x4e, 0x49, 0x4e, 0x47, 0x10, 0x02, 0x12, 0x09, 0x0a, 0x05, 0x41, 0x4c, 0x45, 0x52, 0x54, 0x10,
+	0x03, 0x1a, 0xac, 0x02, 0x0a, 0x0b, 0x46, 0x61, 0x69, 0x6c, 0x75, 0x72, 0x65, 0x49, 0x6e, 0x66,
+	0x6f, 0x12, 0x50, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0e, 0x32,
+	0x3c, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x64, 0x65, 0x76, 0x74, 0x6f, 0x6f, 0x6c,
+	0x73, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x62, 0x75, 0x69, 0x6c, 0x64, 0x2e, 0x76, 0x31, 0x2e,
+	0x42, 0x75, 0x69, 0x6c, 0x64, 0x2e, 0x46, 0x61, 0x69, 0x6c, 0x75, 0x72, 0x65, 0x49, 0x6e, 0x66,
+	0x6f, 0x2e, 0x46, 0x61, 0x69, 0x6c, 0x75, 0x72, 0x65, 0x54, 0x79, 0x70, 0x65, 0x52, 0x04, 0x74,
+	0x79, 0x70, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x64, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x06, 0x64, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0xb2, 0x01, 0x0a, 0x0b,
+	0x46, 0x61, 0x69, 0x6c, 0x75, 0x72, 0x65, 0x54, 0x79, 0x70, 0x65, 0x12, 0x1c, 0x0a, 0x18, 0x46,
+	0x41, 0x49, 0x4c, 0x55, 0x52, 0x45, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x55, 0x4e, 0x53, 0x50,
+	0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x0f, 0x0a, 0x0b, 0x50, 0x55, 0x53,
+	0x48, 0x5f, 0x46, 0x41, 0x49, 0x4c, 0x45, 0x44, 0x10, 0x01, 0x12, 0x18, 0x0a, 0x14, 0x50, 0x55,
+	0x53, 0x48, 0x5f, 0x49, 0x4d, 0x41, 0x47, 0x45, 0x5f, 0x4e, 0x4f, 0x54, 0x5f, 0x46, 0x4f, 0x55,
+	0x4e, 0x44, 0x10, 0x02, 0x12, 0x17, 0x0a, 0x13, 0x50, 0x55, 0x53, 0x48, 0x5f, 0x4e, 0x4f, 0x54,
+	0x5f, 0x41, 0x55, 0x54, 0x48, 0x4f, 0x52, 0x49, 0x5a, 0x45, 0x44, 0x10, 0x03, 0x12, 0x13, 0x0a,
+	0x0f, 0x4c, 0x4f, 0x47, 0x47, 0x49, 0x4e, 0x47, 0x5f, 0x46, 0x41, 0x49, 0x4c, 0x55, 0x52, 0x45,
+	0x10, 0x04, 0x12, 0x13, 0x0a, 0x0f, 0x55, 0x53, 0x45, 0x52, 0x5f, 0x42, 0x55, 0x49, 0x4c, 0x44,
+	0x5f, 0x53, 0x54, 0x45, 0x50, 0x10, 0x05, 0x12, 0x17, 0x0a, 0x13, 0x46, 0x45, 0x54, 0x43, 0x48,
+	0x5f, 0x53, 0x4f, 0x55, 0x52, 0x43, 0x45, 0x5f, 0x46, 0x41, 0x49, 0x4c, 0x45, 0x44, 0x10, 0x06,
+	0x1a, 0x40, 0x0a, 0x12, 0x53, 0x75, 0x62, 0x73, 0x74, 0x69, 0x74, 0x75, 0x74, 0x69, 0x6f, 0x6e,
+	0x73, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x03, 0x6b, 0x65, 0x79, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75,
+	0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02,
+	0x38, 0x01, 0x1a, 0x62, 0x0a, 0x0b, 0x54, 0x69, 0x6d, 0x69, 0x6e, 0x67, 0x45, 0x6e, 0x74, 0x72,
+	0x79, 0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03,
+	0x6b, 0x65, 0x79, 0x12, 0x3d, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x27, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x64, 0x65, 0x76, 0x74,
+	0x6f, 0x6f, 0x6c, 0x73, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x62, 0x75, 0x69, 0x6c, 0x64, 0x2e,
+	0x76, 0x31, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x53, 0x70, 0x61, 0x6e, 0x52, 0x05, 0x76, 0x61, 0x6c,
+	0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x22, 0x99, 0x01, 0x0a, 0x06, 0x53, 0x74, 0x61, 0x74, 0x75,
+	0x73, 0x12, 0x12, 0x0a, 0x0e, 0x53, 0x54, 0x41, 0x54, 0x55, 0x53, 0x5f, 0x55, 0x4e, 0x4b, 0x4e,
+	0x4f, 0x57, 0x4e, 0x10, 0x00, 0x12, 0x0b, 0x0a, 0x07, 0x50, 0x45, 0x4e, 0x44, 0x49, 0x4e, 0x47,
+	0x10, 0x0a, 0x12, 0x0a, 0x0a, 0x06, 0x51, 0x55, 0x45, 0x55, 0x45, 0x44, 0x10, 0x01, 0x12, 0x0b,
+	0x0a, 0x07, 0x57, 0x4f, 0x52, 0x4b, 0x49, 0x4e, 0x47, 0x10, 0x02, 0x12, 0x0b, 0x0a, 0x07, 0x53,
+	0x55, 0x43, 0x43, 0x45, 0x53, 0x53, 0x10, 0x03, 0x12, 0x0b, 0x0a, 0x07, 0x46, 0x41, 0x49, 0x4c,
+	0x55, 0x52, 0x45, 0x10, 0x04, 0x12, 0x12, 0x0a, 0x0e, 0x49, 0x4e, 0x54, 0x45, 0x52, 0x4e, 0x41,
+	0x4c, 0x5f, 0x45, 0x52, 0x52, 0x4f, 0x52, 0x10, 0x05, 0x12, 0x0b, 0x0a, 0x07, 0x54, 0x49, 0x4d,
+	0x45, 0x4f, 0x55, 0x54, 0x10, 0x06, 0x12, 0x0d, 0x0a, 0x09, 0x43, 0x41, 0x4e, 0x43, 0x45, 0x4c,
+	0x4c, 0x45, 0x44, 0x10, 0x07, 0x12, 0x0b, 0x0a, 0x07, 0x45, 0x58, 0x50, 0x49, 0x52, 0x45, 0x44,
+	0x10, 0x09, 0x3a, 0x8f, 0x01, 0xea, 0x41, 0x8b, 0x01, 0x0a, 0x1f, 0x63, 0x6c, 0x6f, 0x75, 0x64,
 	0x62, 0x75, 0x69, 0x6c, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73,
 	0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x12, 0x21, 0x70, 0x72, 0x6f, 0x6a,
 	0x65, 0x63, 0x74, 0x73, 0x2f, 0x7b, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x7d, 0x2f, 0x62,
@@ -8898,42 +9035,56 @@ var file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDesc = []byte{
 	0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x2f, 0x7b, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74,
 	0x7d, 0x2f, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2f, 0x7b, 0x6c, 0x6f, 0x63,
 	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x7d, 0x2f, 0x62, 0x75, 0x69, 0x6c, 0x64, 0x73, 0x2f, 0x7b, 0x62,
-	0x75, 0x69, 0x6c, 0x64, 0x7d, 0x22, 0xb8, 0x04, 0x0a, 0x0a, 0x44, 0x65, 0x70, 0x65, 0x6e, 0x64,
-	0x65, 0x6e, 0x63, 0x79, 0x12, 0x16, 0x0a, 0x05, 0x65, 0x6d, 0x70, 0x74, 0x79, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x08, 0x48, 0x00, 0x52, 0x05, 0x65, 0x6d, 0x70, 0x74, 0x79, 0x12, 0x5e, 0x0a, 0x0a,
-	0x67, 0x69, 0x74, 0x5f, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b,
-	0x32, 0x3d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x64, 0x65, 0x76, 0x74, 0x6f, 0x6f,
-	0x6c, 0x73, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x62, 0x75, 0x69, 0x6c, 0x64, 0x2e, 0x76, 0x31,
-	0x2e, 0x44, 0x65, 0x70, 0x65, 0x6e, 0x64, 0x65, 0x6e, 0x63, 0x79, 0x2e, 0x47, 0x69, 0x74, 0x53,
-	0x6f, 0x75, 0x72, 0x63, 0x65, 0x44, 0x65, 0x70, 0x65, 0x6e, 0x64, 0x65, 0x6e, 0x63, 0x79, 0x48,
-	0x00, 0x52, 0x09, 0x67, 0x69, 0x74, 0x53, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x1a, 0x8b, 0x02, 0x0a,
-	0x13, 0x47, 0x69, 0x74, 0x53, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x44, 0x65, 0x70, 0x65, 0x6e, 0x64,
-	0x65, 0x6e, 0x63, 0x79, 0x12, 0x62, 0x0a, 0x0a, 0x72, 0x65, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x6f,
-	0x72, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x3d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
-	0x65, 0x2e, 0x64, 0x65, 0x76, 0x74, 0x6f, 0x6f, 0x6c, 0x73, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64,
-	0x62, 0x75, 0x69, 0x6c, 0x64, 0x2e, 0x76, 0x31, 0x2e, 0x44, 0x65, 0x70, 0x65, 0x6e, 0x64, 0x65,
-	0x6e, 0x63, 0x79, 0x2e, 0x47, 0x69, 0x74, 0x53, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x52, 0x65, 0x70,
-	0x6f, 0x73, 0x69, 0x74, 0x6f, 0x72, 0x79, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x0a, 0x72, 0x65,
-	0x70, 0x6f, 0x73, 0x69, 0x74, 0x6f, 0x72, 0x79, 0x12, 0x1f, 0x0a, 0x08, 0x72, 0x65, 0x76, 0x69,
-	0x73, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52,
-	0x08, 0x72, 0x65, 0x76, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x32, 0x0a, 0x12, 0x72, 0x65, 0x63,
-	0x75, 0x72, 0x73, 0x65, 0x5f, 0x73, 0x75, 0x62, 0x6d, 0x6f, 0x64, 0x75, 0x6c, 0x65, 0x73, 0x18,
-	0x03, 0x20, 0x01, 0x28, 0x08, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x11, 0x72, 0x65, 0x63, 0x75,
-	0x72, 0x73, 0x65, 0x53, 0x75, 0x62, 0x6d, 0x6f, 0x64, 0x75, 0x6c, 0x65, 0x73, 0x12, 0x19, 0x0a,
-	0x05, 0x64, 0x65, 0x70, 0x74, 0x68, 0x18, 0x04, 0x20, 0x01, 0x28, 0x03, 0x42, 0x03, 0xe0, 0x41,
-	0x01, 0x52, 0x05, 0x64, 0x65, 0x70, 0x74, 0x68, 0x12, 0x20, 0x0a, 0x09, 0x64, 0x65, 0x73, 0x74,
-	0x5f, 0x70, 0x61, 0x74, 0x68, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x02,
-	0x52, 0x08, 0x64, 0x65, 0x73, 0x74, 0x50, 0x61, 0x74, 0x68, 0x1a, 0x9c, 0x01, 0x0a, 0x13, 0x47,
-	0x69, 0x74, 0x53, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x52, 0x65, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x6f,
-	0x72, 0x79, 0x12, 0x12, 0x0a, 0x03, 0x75, 0x72, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x48,
-	0x00, 0x52, 0x03, 0x75, 0x72, 0x6c, 0x12, 0x65, 0x0a, 0x11, 0x64, 0x65, 0x76, 0x65, 0x6c, 0x6f,
-	0x70, 0x65, 0x72, 0x5f, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28,
-	0x09, 0x42, 0x36, 0xfa, 0x41, 0x33, 0x0a, 0x31, 0x64, 0x65, 0x76, 0x65, 0x6c, 0x6f, 0x70, 0x65,
-	0x72, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61,
-	0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x47, 0x69, 0x74, 0x52, 0x65, 0x70, 0x6f, 0x73,
-	0x69, 0x74, 0x6f, 0x72, 0x79, 0x4c, 0x69, 0x6e, 0x6b, 0x48, 0x00, 0x52, 0x10, 0x64, 0x65, 0x76,
-	0x65, 0x6c, 0x6f, 0x70, 0x65, 0x72, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x42, 0x0a, 0x0a,
-	0x08, 0x72, 0x65, 0x70, 0x6f, 0x74, 0x79, 0x70, 0x65, 0x42, 0x05, 0x0a, 0x03, 0x64, 0x65, 0x70,
+	0x75, 0x69, 0x6c, 0x64, 0x7d, 0x2a, 0x06, 0x62, 0x75, 0x69, 0x6c, 0x64, 0x73, 0x32, 0x05, 0x62,
+	0x75, 0x69, 0x6c, 0x64, 0x22, 0xb8, 0x04, 0x0a, 0x0a, 0x44, 0x65, 0x70, 0x65, 0x6e, 0x64, 0x65,
+	0x6e, 0x63, 0x79, 0x12, 0x16, 0x0a, 0x05, 0x65, 0x6d, 0x70, 0x74, 0x79, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x08, 0x48, 0x00, 0x52, 0x05, 0x65, 0x6d, 0x70, 0x74, 0x79, 0x12, 0x5e, 0x0a, 0x0a, 0x67,
+	0x69, 0x74, 0x5f, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x3d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x64, 0x65, 0x76, 0x74, 0x6f, 0x6f, 0x6c,
+	0x73, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x62, 0x75, 0x69, 0x6c, 0x64, 0x2e, 0x76, 0x31, 0x2e,
+	0x44, 0x65, 0x70, 0x65, 0x6e, 0x64, 0x65, 0x6e, 0x63, 0x79, 0x2e, 0x47, 0x69, 0x74, 0x53, 0x6f,
+	0x75, 0x72, 0x63, 0x65, 0x44, 0x65, 0x70, 0x65, 0x6e, 0x64, 0x65, 0x6e, 0x63, 0x79, 0x48, 0x00,
+	0x52, 0x09, 0x67, 0x69, 0x74, 0x53, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x1a, 0x8b, 0x02, 0x0a, 0x13,
+	0x47, 0x69, 0x74, 0x53, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x44, 0x65, 0x70, 0x65, 0x6e, 0x64, 0x65,
+	0x6e, 0x63, 0x79, 0x12, 0x62, 0x0a, 0x0a, 0x72, 0x65, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x6f, 0x72,
+	0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x3d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x2e, 0x64, 0x65, 0x76, 0x74, 0x6f, 0x6f, 0x6c, 0x73, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x62,
+	0x75, 0x69, 0x6c, 0x64, 0x2e, 0x76, 0x31, 0x2e, 0x44, 0x65, 0x70, 0x65, 0x6e, 0x64, 0x65, 0x6e,
+	0x63, 0x79, 0x2e, 0x47, 0x69, 0x74, 0x53, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x52, 0x65, 0x70, 0x6f,
+	0x73, 0x69, 0x74, 0x6f, 0x72, 0x79, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x0a, 0x72, 0x65, 0x70,
+	0x6f, 0x73, 0x69, 0x74, 0x6f, 0x72, 0x79, 0x12, 0x1f, 0x0a, 0x08, 0x72, 0x65, 0x76, 0x69, 0x73,
+	0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x08,
+	0x72, 0x65, 0x76, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x32, 0x0a, 0x12, 0x72, 0x65, 0x63, 0x75,
+	0x72, 0x73, 0x65, 0x5f, 0x73, 0x75, 0x62, 0x6d, 0x6f, 0x64, 0x75, 0x6c, 0x65, 0x73, 0x18, 0x03,
+	0x20, 0x01, 0x28, 0x08, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x11, 0x72, 0x65, 0x63, 0x75, 0x72,
+	0x73, 0x65, 0x53, 0x75, 0x62, 0x6d, 0x6f, 0x64, 0x75, 0x6c, 0x65, 0x73, 0x12, 0x19, 0x0a, 0x05,
+	0x64, 0x65, 0x70, 0x74, 0x68, 0x18, 0x04, 0x20, 0x01, 0x28, 0x03, 0x42, 0x03, 0xe0, 0x41, 0x01,
+	0x52, 0x05, 0x64, 0x65, 0x70, 0x74, 0x68, 0x12, 0x20, 0x0a, 0x09, 0x64, 0x65, 0x73, 0x74, 0x5f,
+	0x70, 0x61, 0x74, 0x68, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52,
+	0x08, 0x64, 0x65, 0x73, 0x74, 0x50, 0x61, 0x74, 0x68, 0x1a, 0x9c, 0x01, 0x0a, 0x13, 0x47, 0x69,
+	0x74, 0x53, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x52, 0x65, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x6f, 0x72,
+	0x79, 0x12, 0x12, 0x0a, 0x03, 0x75, 0x72, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x48, 0x00,
+	0x52, 0x03, 0x75, 0x72, 0x6c, 0x12, 0x65, 0x0a, 0x11, 0x64, 0x65, 0x76, 0x65, 0x6c, 0x6f, 0x70,
+	0x65, 0x72, 0x5f, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
+	0x42, 0x36, 0xfa, 0x41, 0x33, 0x0a, 0x31, 0x64, 0x65, 0x76, 0x65, 0x6c, 0x6f, 0x70, 0x65, 0x72,
+	0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70,
+	0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x47, 0x69, 0x74, 0x52, 0x65, 0x70, 0x6f, 0x73, 0x69,
+	0x74, 0x6f, 0x72, 0x79, 0x4c, 0x69, 0x6e, 0x6b, 0x48, 0x00, 0x52, 0x10, 0x64, 0x65, 0x76, 0x65,
+	0x6c, 0x6f, 0x70, 0x65, 0x72, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x42, 0x0a, 0x0a, 0x08,
+	0x72, 0x65, 0x70, 0x6f, 0x74, 0x79, 0x70, 0x65, 0x42, 0x05, 0x0a, 0x03, 0x64, 0x65, 0x70, 0x22,
+	0xce, 0x01, 0x0a, 0x09, 0x47, 0x69, 0x74, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x47, 0x0a,
+	0x04, 0x68, 0x74, 0x74, 0x70, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x33, 0x2e, 0x67, 0x6f,
+	0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x64, 0x65, 0x76, 0x74, 0x6f, 0x6f, 0x6c, 0x73, 0x2e, 0x63, 0x6c,
+	0x6f, 0x75, 0x64, 0x62, 0x75, 0x69, 0x6c, 0x64, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x69, 0x74, 0x43,
+	0x6f, 0x6e, 0x66, 0x69, 0x67, 0x2e, 0x48, 0x74, 0x74, 0x70, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67,
+	0x52, 0x04, 0x68, 0x74, 0x74, 0x70, 0x1a, 0x78, 0x0a, 0x0a, 0x48, 0x74, 0x74, 0x70, 0x43, 0x6f,
+	0x6e, 0x66, 0x69, 0x67, 0x12, 0x6a, 0x0a, 0x19, 0x70, 0x72, 0x6f, 0x78, 0x79, 0x5f, 0x73, 0x65,
+	0x63, 0x72, 0x65, 0x74, 0x5f, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x5f, 0x6e, 0x61, 0x6d,
+	0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x2f, 0xfa, 0x41, 0x2c, 0x0a, 0x2a, 0x73, 0x65,
+	0x63, 0x72, 0x65, 0x74, 0x6d, 0x61, 0x6e, 0x61, 0x67, 0x65, 0x72, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
+	0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x53, 0x65, 0x63, 0x72, 0x65,
+	0x74, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x16, 0x70, 0x72, 0x6f, 0x78, 0x79, 0x53,
+	0x65, 0x63, 0x72, 0x65, 0x74, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x4e, 0x61, 0x6d, 0x65,
 	0x22, 0xca, 0x09, 0x0a, 0x09, 0x41, 0x72, 0x74, 0x69, 0x66, 0x61, 0x63, 0x74, 0x73, 0x12, 0x16,
 	0x0a, 0x06, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x09, 0x52, 0x06,
 	0x69, 0x6d, 0x61, 0x67, 0x65, 0x73, 0x12, 0x52, 0x0a, 0x07, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74,
@@ -10433,7 +10584,7 @@ func file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDescGZIP() []byte {
 }
 
 var file_google_devtools_cloudbuild_v1_cloudbuild_proto_enumTypes = make([]protoimpl.EnumInfo, 20)
-var file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes = make([]protoimpl.MessageInfo, 89)
+var file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes = make([]protoimpl.MessageInfo, 91)
 var file_google_devtools_cloudbuild_v1_cloudbuild_proto_goTypes = []any{
 	(StorageSource_SourceFetcher)(0),                    // 0: google.devtools.cloudbuild.v1.StorageSource.SourceFetcher
 	(Build_Status)(0),                                   // 1: google.devtools.cloudbuild.v1.Build.Status
@@ -10473,263 +10624,267 @@ var file_google_devtools_cloudbuild_v1_cloudbuild_proto_goTypes = []any{
 	(*ArtifactResult)(nil),                              // 35: google.devtools.cloudbuild.v1.ArtifactResult
 	(*Build)(nil),                                       // 36: google.devtools.cloudbuild.v1.Build
 	(*Dependency)(nil),                                  // 37: google.devtools.cloudbuild.v1.Dependency
-	(*Artifacts)(nil),                                   // 38: google.devtools.cloudbuild.v1.Artifacts
-	(*TimeSpan)(nil),                                    // 39: google.devtools.cloudbuild.v1.TimeSpan
-	(*BuildOperationMetadata)(nil),                      // 40: google.devtools.cloudbuild.v1.BuildOperationMetadata
-	(*SourceProvenance)(nil),                            // 41: google.devtools.cloudbuild.v1.SourceProvenance
-	(*FileHashes)(nil),                                  // 42: google.devtools.cloudbuild.v1.FileHashes
-	(*Hash)(nil),                                        // 43: google.devtools.cloudbuild.v1.Hash
-	(*Secrets)(nil),                                     // 44: google.devtools.cloudbuild.v1.Secrets
-	(*InlineSecret)(nil),                                // 45: google.devtools.cloudbuild.v1.InlineSecret
-	(*SecretManagerSecret)(nil),                         // 46: google.devtools.cloudbuild.v1.SecretManagerSecret
-	(*Secret)(nil),                                      // 47: google.devtools.cloudbuild.v1.Secret
-	(*CreateBuildRequest)(nil),                          // 48: google.devtools.cloudbuild.v1.CreateBuildRequest
-	(*GetBuildRequest)(nil),                             // 49: google.devtools.cloudbuild.v1.GetBuildRequest
-	(*ListBuildsRequest)(nil),                           // 50: google.devtools.cloudbuild.v1.ListBuildsRequest
-	(*ListBuildsResponse)(nil),                          // 51: google.devtools.cloudbuild.v1.ListBuildsResponse
-	(*CancelBuildRequest)(nil),                          // 52: google.devtools.cloudbuild.v1.CancelBuildRequest
-	(*ApproveBuildRequest)(nil),                         // 53: google.devtools.cloudbuild.v1.ApproveBuildRequest
-	(*BuildApproval)(nil),                               // 54: google.devtools.cloudbuild.v1.BuildApproval
-	(*ApprovalConfig)(nil),                              // 55: google.devtools.cloudbuild.v1.ApprovalConfig
-	(*ApprovalResult)(nil),                              // 56: google.devtools.cloudbuild.v1.ApprovalResult
-	(*GitRepoSource)(nil),                               // 57: google.devtools.cloudbuild.v1.GitRepoSource
-	(*GitFileSource)(nil),                               // 58: google.devtools.cloudbuild.v1.GitFileSource
-	(*BuildTrigger)(nil),                                // 59: google.devtools.cloudbuild.v1.BuildTrigger
-	(*RepositoryEventConfig)(nil),                       // 60: google.devtools.cloudbuild.v1.RepositoryEventConfig
-	(*GitHubEventsConfig)(nil),                          // 61: google.devtools.cloudbuild.v1.GitHubEventsConfig
-	(*PubsubConfig)(nil),                                // 62: google.devtools.cloudbuild.v1.PubsubConfig
-	(*WebhookConfig)(nil),                               // 63: google.devtools.cloudbuild.v1.WebhookConfig
-	(*PullRequestFilter)(nil),                           // 64: google.devtools.cloudbuild.v1.PullRequestFilter
-	(*PushFilter)(nil),                                  // 65: google.devtools.cloudbuild.v1.PushFilter
-	(*CreateBuildTriggerRequest)(nil),                   // 66: google.devtools.cloudbuild.v1.CreateBuildTriggerRequest
-	(*GetBuildTriggerRequest)(nil),                      // 67: google.devtools.cloudbuild.v1.GetBuildTriggerRequest
-	(*ListBuildTriggersRequest)(nil),                    // 68: google.devtools.cloudbuild.v1.ListBuildTriggersRequest
-	(*ListBuildTriggersResponse)(nil),                   // 69: google.devtools.cloudbuild.v1.ListBuildTriggersResponse
-	(*DeleteBuildTriggerRequest)(nil),                   // 70: google.devtools.cloudbuild.v1.DeleteBuildTriggerRequest
-	(*UpdateBuildTriggerRequest)(nil),                   // 71: google.devtools.cloudbuild.v1.UpdateBuildTriggerRequest
-	(*BuildOptions)(nil),                                // 72: google.devtools.cloudbuild.v1.BuildOptions
-	(*ReceiveTriggerWebhookRequest)(nil),                // 73: google.devtools.cloudbuild.v1.ReceiveTriggerWebhookRequest
-	(*ReceiveTriggerWebhookResponse)(nil),               // 74: google.devtools.cloudbuild.v1.ReceiveTriggerWebhookResponse
-	(*GitHubEnterpriseConfig)(nil),                      // 75: google.devtools.cloudbuild.v1.GitHubEnterpriseConfig
-	(*GitHubEnterpriseSecrets)(nil),                     // 76: google.devtools.cloudbuild.v1.GitHubEnterpriseSecrets
-	(*WorkerPool)(nil),                                  // 77: google.devtools.cloudbuild.v1.WorkerPool
-	(*PrivatePoolV1Config)(nil),                         // 78: google.devtools.cloudbuild.v1.PrivatePoolV1Config
-	(*CreateWorkerPoolRequest)(nil),                     // 79: google.devtools.cloudbuild.v1.CreateWorkerPoolRequest
-	(*GetWorkerPoolRequest)(nil),                        // 80: google.devtools.cloudbuild.v1.GetWorkerPoolRequest
-	(*DeleteWorkerPoolRequest)(nil),                     // 81: google.devtools.cloudbuild.v1.DeleteWorkerPoolRequest
-	(*UpdateWorkerPoolRequest)(nil),                     // 82: google.devtools.cloudbuild.v1.UpdateWorkerPoolRequest
-	(*ListWorkerPoolsRequest)(nil),                      // 83: google.devtools.cloudbuild.v1.ListWorkerPoolsRequest
-	(*ListWorkerPoolsResponse)(nil),                     // 84: google.devtools.cloudbuild.v1.ListWorkerPoolsResponse
-	(*CreateWorkerPoolOperationMetadata)(nil),           // 85: google.devtools.cloudbuild.v1.CreateWorkerPoolOperationMetadata
-	(*UpdateWorkerPoolOperationMetadata)(nil),           // 86: google.devtools.cloudbuild.v1.UpdateWorkerPoolOperationMetadata
-	(*DeleteWorkerPoolOperationMetadata)(nil),           // 87: google.devtools.cloudbuild.v1.DeleteWorkerPoolOperationMetadata
-	nil,                                      // 88: google.devtools.cloudbuild.v1.RepoSource.SubstitutionsEntry
-	(*Build_Warning)(nil),                    // 89: google.devtools.cloudbuild.v1.Build.Warning
-	(*Build_FailureInfo)(nil),                // 90: google.devtools.cloudbuild.v1.Build.FailureInfo
-	nil,                                      // 91: google.devtools.cloudbuild.v1.Build.SubstitutionsEntry
-	nil,                                      // 92: google.devtools.cloudbuild.v1.Build.TimingEntry
-	(*Dependency_GitSourceDependency)(nil),   // 93: google.devtools.cloudbuild.v1.Dependency.GitSourceDependency
-	(*Dependency_GitSourceRepository)(nil),   // 94: google.devtools.cloudbuild.v1.Dependency.GitSourceRepository
-	(*Artifacts_ArtifactObjects)(nil),        // 95: google.devtools.cloudbuild.v1.Artifacts.ArtifactObjects
-	(*Artifacts_MavenArtifact)(nil),          // 96: google.devtools.cloudbuild.v1.Artifacts.MavenArtifact
-	(*Artifacts_GoModule)(nil),               // 97: google.devtools.cloudbuild.v1.Artifacts.GoModule
-	(*Artifacts_PythonPackage)(nil),          // 98: google.devtools.cloudbuild.v1.Artifacts.PythonPackage
-	(*Artifacts_NpmPackage)(nil),             // 99: google.devtools.cloudbuild.v1.Artifacts.NpmPackage
-	nil,                                      // 100: google.devtools.cloudbuild.v1.SourceProvenance.FileHashesEntry
-	nil,                                      // 101: google.devtools.cloudbuild.v1.InlineSecret.EnvMapEntry
-	nil,                                      // 102: google.devtools.cloudbuild.v1.Secret.SecretEnvEntry
-	nil,                                      // 103: google.devtools.cloudbuild.v1.BuildTrigger.SubstitutionsEntry
-	(*BuildOptions_PoolOption)(nil),          // 104: google.devtools.cloudbuild.v1.BuildOptions.PoolOption
-	nil,                                      // 105: google.devtools.cloudbuild.v1.WorkerPool.AnnotationsEntry
-	(*PrivatePoolV1Config_WorkerConfig)(nil), // 106: google.devtools.cloudbuild.v1.PrivatePoolV1Config.WorkerConfig
-	(*PrivatePoolV1Config_NetworkConfig)(nil),         // 107: google.devtools.cloudbuild.v1.PrivatePoolV1Config.NetworkConfig
-	(*PrivatePoolV1Config_PrivateServiceConnect)(nil), // 108: google.devtools.cloudbuild.v1.PrivatePoolV1Config.PrivateServiceConnect
-	(*durationpb.Duration)(nil),                       // 109: google.protobuf.Duration
-	(*timestamppb.Timestamp)(nil),                     // 110: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil),                     // 111: google.protobuf.FieldMask
-	(*httpbody.HttpBody)(nil),                         // 112: google.api.HttpBody
-	(*longrunningpb.Operation)(nil),                   // 113: google.longrunning.Operation
-	(*emptypb.Empty)(nil),                             // 114: google.protobuf.Empty
+	(*GitConfig)(nil),                                   // 38: google.devtools.cloudbuild.v1.GitConfig
+	(*Artifacts)(nil),                                   // 39: google.devtools.cloudbuild.v1.Artifacts
+	(*TimeSpan)(nil),                                    // 40: google.devtools.cloudbuild.v1.TimeSpan
+	(*BuildOperationMetadata)(nil),                      // 41: google.devtools.cloudbuild.v1.BuildOperationMetadata
+	(*SourceProvenance)(nil),                            // 42: google.devtools.cloudbuild.v1.SourceProvenance
+	(*FileHashes)(nil),                                  // 43: google.devtools.cloudbuild.v1.FileHashes
+	(*Hash)(nil),                                        // 44: google.devtools.cloudbuild.v1.Hash
+	(*Secrets)(nil),                                     // 45: google.devtools.cloudbuild.v1.Secrets
+	(*InlineSecret)(nil),                                // 46: google.devtools.cloudbuild.v1.InlineSecret
+	(*SecretManagerSecret)(nil),                         // 47: google.devtools.cloudbuild.v1.SecretManagerSecret
+	(*Secret)(nil),                                      // 48: google.devtools.cloudbuild.v1.Secret
+	(*CreateBuildRequest)(nil),                          // 49: google.devtools.cloudbuild.v1.CreateBuildRequest
+	(*GetBuildRequest)(nil),                             // 50: google.devtools.cloudbuild.v1.GetBuildRequest
+	(*ListBuildsRequest)(nil),                           // 51: google.devtools.cloudbuild.v1.ListBuildsRequest
+	(*ListBuildsResponse)(nil),                          // 52: google.devtools.cloudbuild.v1.ListBuildsResponse
+	(*CancelBuildRequest)(nil),                          // 53: google.devtools.cloudbuild.v1.CancelBuildRequest
+	(*ApproveBuildRequest)(nil),                         // 54: google.devtools.cloudbuild.v1.ApproveBuildRequest
+	(*BuildApproval)(nil),                               // 55: google.devtools.cloudbuild.v1.BuildApproval
+	(*ApprovalConfig)(nil),                              // 56: google.devtools.cloudbuild.v1.ApprovalConfig
+	(*ApprovalResult)(nil),                              // 57: google.devtools.cloudbuild.v1.ApprovalResult
+	(*GitRepoSource)(nil),                               // 58: google.devtools.cloudbuild.v1.GitRepoSource
+	(*GitFileSource)(nil),                               // 59: google.devtools.cloudbuild.v1.GitFileSource
+	(*BuildTrigger)(nil),                                // 60: google.devtools.cloudbuild.v1.BuildTrigger
+	(*RepositoryEventConfig)(nil),                       // 61: google.devtools.cloudbuild.v1.RepositoryEventConfig
+	(*GitHubEventsConfig)(nil),                          // 62: google.devtools.cloudbuild.v1.GitHubEventsConfig
+	(*PubsubConfig)(nil),                                // 63: google.devtools.cloudbuild.v1.PubsubConfig
+	(*WebhookConfig)(nil),                               // 64: google.devtools.cloudbuild.v1.WebhookConfig
+	(*PullRequestFilter)(nil),                           // 65: google.devtools.cloudbuild.v1.PullRequestFilter
+	(*PushFilter)(nil),                                  // 66: google.devtools.cloudbuild.v1.PushFilter
+	(*CreateBuildTriggerRequest)(nil),                   // 67: google.devtools.cloudbuild.v1.CreateBuildTriggerRequest
+	(*GetBuildTriggerRequest)(nil),                      // 68: google.devtools.cloudbuild.v1.GetBuildTriggerRequest
+	(*ListBuildTriggersRequest)(nil),                    // 69: google.devtools.cloudbuild.v1.ListBuildTriggersRequest
+	(*ListBuildTriggersResponse)(nil),                   // 70: google.devtools.cloudbuild.v1.ListBuildTriggersResponse
+	(*DeleteBuildTriggerRequest)(nil),                   // 71: google.devtools.cloudbuild.v1.DeleteBuildTriggerRequest
+	(*UpdateBuildTriggerRequest)(nil),                   // 72: google.devtools.cloudbuild.v1.UpdateBuildTriggerRequest
+	(*BuildOptions)(nil),                                // 73: google.devtools.cloudbuild.v1.BuildOptions
+	(*ReceiveTriggerWebhookRequest)(nil),                // 74: google.devtools.cloudbuild.v1.ReceiveTriggerWebhookRequest
+	(*ReceiveTriggerWebhookResponse)(nil),               // 75: google.devtools.cloudbuild.v1.ReceiveTriggerWebhookResponse
+	(*GitHubEnterpriseConfig)(nil),                      // 76: google.devtools.cloudbuild.v1.GitHubEnterpriseConfig
+	(*GitHubEnterpriseSecrets)(nil),                     // 77: google.devtools.cloudbuild.v1.GitHubEnterpriseSecrets
+	(*WorkerPool)(nil),                                  // 78: google.devtools.cloudbuild.v1.WorkerPool
+	(*PrivatePoolV1Config)(nil),                         // 79: google.devtools.cloudbuild.v1.PrivatePoolV1Config
+	(*CreateWorkerPoolRequest)(nil),                     // 80: google.devtools.cloudbuild.v1.CreateWorkerPoolRequest
+	(*GetWorkerPoolRequest)(nil),                        // 81: google.devtools.cloudbuild.v1.GetWorkerPoolRequest
+	(*DeleteWorkerPoolRequest)(nil),                     // 82: google.devtools.cloudbuild.v1.DeleteWorkerPoolRequest
+	(*UpdateWorkerPoolRequest)(nil),                     // 83: google.devtools.cloudbuild.v1.UpdateWorkerPoolRequest
+	(*ListWorkerPoolsRequest)(nil),                      // 84: google.devtools.cloudbuild.v1.ListWorkerPoolsRequest
+	(*ListWorkerPoolsResponse)(nil),                     // 85: google.devtools.cloudbuild.v1.ListWorkerPoolsResponse
+	(*CreateWorkerPoolOperationMetadata)(nil),           // 86: google.devtools.cloudbuild.v1.CreateWorkerPoolOperationMetadata
+	(*UpdateWorkerPoolOperationMetadata)(nil),           // 87: google.devtools.cloudbuild.v1.UpdateWorkerPoolOperationMetadata
+	(*DeleteWorkerPoolOperationMetadata)(nil),           // 88: google.devtools.cloudbuild.v1.DeleteWorkerPoolOperationMetadata
+	nil,                                      // 89: google.devtools.cloudbuild.v1.RepoSource.SubstitutionsEntry
+	(*Build_Warning)(nil),                    // 90: google.devtools.cloudbuild.v1.Build.Warning
+	(*Build_FailureInfo)(nil),                // 91: google.devtools.cloudbuild.v1.Build.FailureInfo
+	nil,                                      // 92: google.devtools.cloudbuild.v1.Build.SubstitutionsEntry
+	nil,                                      // 93: google.devtools.cloudbuild.v1.Build.TimingEntry
+	(*Dependency_GitSourceDependency)(nil),   // 94: google.devtools.cloudbuild.v1.Dependency.GitSourceDependency
+	(*Dependency_GitSourceRepository)(nil),   // 95: google.devtools.cloudbuild.v1.Dependency.GitSourceRepository
+	(*GitConfig_HttpConfig)(nil),             // 96: google.devtools.cloudbuild.v1.GitConfig.HttpConfig
+	(*Artifacts_ArtifactObjects)(nil),        // 97: google.devtools.cloudbuild.v1.Artifacts.ArtifactObjects
+	(*Artifacts_MavenArtifact)(nil),          // 98: google.devtools.cloudbuild.v1.Artifacts.MavenArtifact
+	(*Artifacts_GoModule)(nil),               // 99: google.devtools.cloudbuild.v1.Artifacts.GoModule
+	(*Artifacts_PythonPackage)(nil),          // 100: google.devtools.cloudbuild.v1.Artifacts.PythonPackage
+	(*Artifacts_NpmPackage)(nil),             // 101: google.devtools.cloudbuild.v1.Artifacts.NpmPackage
+	nil,                                      // 102: google.devtools.cloudbuild.v1.SourceProvenance.FileHashesEntry
+	nil,                                      // 103: google.devtools.cloudbuild.v1.InlineSecret.EnvMapEntry
+	nil,                                      // 104: google.devtools.cloudbuild.v1.Secret.SecretEnvEntry
+	nil,                                      // 105: google.devtools.cloudbuild.v1.BuildTrigger.SubstitutionsEntry
+	(*BuildOptions_PoolOption)(nil),          // 106: google.devtools.cloudbuild.v1.BuildOptions.PoolOption
+	nil,                                      // 107: google.devtools.cloudbuild.v1.WorkerPool.AnnotationsEntry
+	(*PrivatePoolV1Config_WorkerConfig)(nil), // 108: google.devtools.cloudbuild.v1.PrivatePoolV1Config.WorkerConfig
+	(*PrivatePoolV1Config_NetworkConfig)(nil),         // 109: google.devtools.cloudbuild.v1.PrivatePoolV1Config.NetworkConfig
+	(*PrivatePoolV1Config_PrivateServiceConnect)(nil), // 110: google.devtools.cloudbuild.v1.PrivatePoolV1Config.PrivateServiceConnect
+	(*durationpb.Duration)(nil),                       // 111: google.protobuf.Duration
+	(*timestamppb.Timestamp)(nil),                     // 112: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),                     // 113: google.protobuf.FieldMask
+	(*httpbody.HttpBody)(nil),                         // 114: google.api.HttpBody
+	(*longrunningpb.Operation)(nil),                   // 115: google.longrunning.Operation
+	(*emptypb.Empty)(nil),                             // 116: google.protobuf.Empty
 }
 var file_google_devtools_cloudbuild_v1_cloudbuild_proto_depIdxs = []int32{
 	24,  // 0: google.devtools.cloudbuild.v1.RunBuildTriggerRequest.source:type_name -> google.devtools.cloudbuild.v1.RepoSource
 	0,   // 1: google.devtools.cloudbuild.v1.StorageSource.source_fetcher:type_name -> google.devtools.cloudbuild.v1.StorageSource.SourceFetcher
-	88,  // 2: google.devtools.cloudbuild.v1.RepoSource.substitutions:type_name -> google.devtools.cloudbuild.v1.RepoSource.SubstitutionsEntry
+	89,  // 2: google.devtools.cloudbuild.v1.RepoSource.substitutions:type_name -> google.devtools.cloudbuild.v1.RepoSource.SubstitutionsEntry
 	22,  // 3: google.devtools.cloudbuild.v1.Source.storage_source:type_name -> google.devtools.cloudbuild.v1.StorageSource
 	24,  // 4: google.devtools.cloudbuild.v1.Source.repo_source:type_name -> google.devtools.cloudbuild.v1.RepoSource
 	23,  // 5: google.devtools.cloudbuild.v1.Source.git_source:type_name -> google.devtools.cloudbuild.v1.GitSource
 	25,  // 6: google.devtools.cloudbuild.v1.Source.storage_source_manifest:type_name -> google.devtools.cloudbuild.v1.StorageSourceManifest
-	39,  // 7: google.devtools.cloudbuild.v1.BuiltImage.push_timing:type_name -> google.devtools.cloudbuild.v1.TimeSpan
-	42,  // 8: google.devtools.cloudbuild.v1.UploadedPythonPackage.file_hashes:type_name -> google.devtools.cloudbuild.v1.FileHashes
-	39,  // 9: google.devtools.cloudbuild.v1.UploadedPythonPackage.push_timing:type_name -> google.devtools.cloudbuild.v1.TimeSpan
-	42,  // 10: google.devtools.cloudbuild.v1.UploadedMavenArtifact.file_hashes:type_name -> google.devtools.cloudbuild.v1.FileHashes
-	39,  // 11: google.devtools.cloudbuild.v1.UploadedMavenArtifact.push_timing:type_name -> google.devtools.cloudbuild.v1.TimeSpan
-	42,  // 12: google.devtools.cloudbuild.v1.UploadedGoModule.file_hashes:type_name -> google.devtools.cloudbuild.v1.FileHashes
-	39,  // 13: google.devtools.cloudbuild.v1.UploadedGoModule.push_timing:type_name -> google.devtools.cloudbuild.v1.TimeSpan
-	42,  // 14: google.devtools.cloudbuild.v1.UploadedNpmPackage.file_hashes:type_name -> google.devtools.cloudbuild.v1.FileHashes
-	39,  // 15: google.devtools.cloudbuild.v1.UploadedNpmPackage.push_timing:type_name -> google.devtools.cloudbuild.v1.TimeSpan
+	40,  // 7: google.devtools.cloudbuild.v1.BuiltImage.push_timing:type_name -> google.devtools.cloudbuild.v1.TimeSpan
+	43,  // 8: google.devtools.cloudbuild.v1.UploadedPythonPackage.file_hashes:type_name -> google.devtools.cloudbuild.v1.FileHashes
+	40,  // 9: google.devtools.cloudbuild.v1.UploadedPythonPackage.push_timing:type_name -> google.devtools.cloudbuild.v1.TimeSpan
+	43,  // 10: google.devtools.cloudbuild.v1.UploadedMavenArtifact.file_hashes:type_name -> google.devtools.cloudbuild.v1.FileHashes
+	40,  // 11: google.devtools.cloudbuild.v1.UploadedMavenArtifact.push_timing:type_name -> google.devtools.cloudbuild.v1.TimeSpan
+	43,  // 12: google.devtools.cloudbuild.v1.UploadedGoModule.file_hashes:type_name -> google.devtools.cloudbuild.v1.FileHashes
+	40,  // 13: google.devtools.cloudbuild.v1.UploadedGoModule.push_timing:type_name -> google.devtools.cloudbuild.v1.TimeSpan
+	43,  // 14: google.devtools.cloudbuild.v1.UploadedNpmPackage.file_hashes:type_name -> google.devtools.cloudbuild.v1.FileHashes
+	40,  // 15: google.devtools.cloudbuild.v1.UploadedNpmPackage.push_timing:type_name -> google.devtools.cloudbuild.v1.TimeSpan
 	33,  // 16: google.devtools.cloudbuild.v1.BuildStep.volumes:type_name -> google.devtools.cloudbuild.v1.Volume
-	39,  // 17: google.devtools.cloudbuild.v1.BuildStep.timing:type_name -> google.devtools.cloudbuild.v1.TimeSpan
-	39,  // 18: google.devtools.cloudbuild.v1.BuildStep.pull_timing:type_name -> google.devtools.cloudbuild.v1.TimeSpan
-	109, // 19: google.devtools.cloudbuild.v1.BuildStep.timeout:type_name -> google.protobuf.Duration
+	40,  // 17: google.devtools.cloudbuild.v1.BuildStep.timing:type_name -> google.devtools.cloudbuild.v1.TimeSpan
+	40,  // 18: google.devtools.cloudbuild.v1.BuildStep.pull_timing:type_name -> google.devtools.cloudbuild.v1.TimeSpan
+	111, // 19: google.devtools.cloudbuild.v1.BuildStep.timeout:type_name -> google.protobuf.Duration
 	1,   // 20: google.devtools.cloudbuild.v1.BuildStep.status:type_name -> google.devtools.cloudbuild.v1.Build.Status
 	27,  // 21: google.devtools.cloudbuild.v1.Results.images:type_name -> google.devtools.cloudbuild.v1.BuiltImage
-	39,  // 22: google.devtools.cloudbuild.v1.Results.artifact_timing:type_name -> google.devtools.cloudbuild.v1.TimeSpan
+	40,  // 22: google.devtools.cloudbuild.v1.Results.artifact_timing:type_name -> google.devtools.cloudbuild.v1.TimeSpan
 	28,  // 23: google.devtools.cloudbuild.v1.Results.python_packages:type_name -> google.devtools.cloudbuild.v1.UploadedPythonPackage
 	29,  // 24: google.devtools.cloudbuild.v1.Results.maven_artifacts:type_name -> google.devtools.cloudbuild.v1.UploadedMavenArtifact
 	30,  // 25: google.devtools.cloudbuild.v1.Results.go_modules:type_name -> google.devtools.cloudbuild.v1.UploadedGoModule
 	31,  // 26: google.devtools.cloudbuild.v1.Results.npm_packages:type_name -> google.devtools.cloudbuild.v1.UploadedNpmPackage
-	42,  // 27: google.devtools.cloudbuild.v1.ArtifactResult.file_hash:type_name -> google.devtools.cloudbuild.v1.FileHashes
+	43,  // 27: google.devtools.cloudbuild.v1.ArtifactResult.file_hash:type_name -> google.devtools.cloudbuild.v1.FileHashes
 	1,   // 28: google.devtools.cloudbuild.v1.Build.status:type_name -> google.devtools.cloudbuild.v1.Build.Status
 	26,  // 29: google.devtools.cloudbuild.v1.Build.source:type_name -> google.devtools.cloudbuild.v1.Source
 	32,  // 30: google.devtools.cloudbuild.v1.Build.steps:type_name -> google.devtools.cloudbuild.v1.BuildStep
 	34,  // 31: google.devtools.cloudbuild.v1.Build.results:type_name -> google.devtools.cloudbuild.v1.Results
-	110, // 32: google.devtools.cloudbuild.v1.Build.create_time:type_name -> google.protobuf.Timestamp
-	110, // 33: google.devtools.cloudbuild.v1.Build.start_time:type_name -> google.protobuf.Timestamp
-	110, // 34: google.devtools.cloudbuild.v1.Build.finish_time:type_name -> google.protobuf.Timestamp
-	109, // 35: google.devtools.cloudbuild.v1.Build.timeout:type_name -> google.protobuf.Duration
-	109, // 36: google.devtools.cloudbuild.v1.Build.queue_ttl:type_name -> google.protobuf.Duration
-	38,  // 37: google.devtools.cloudbuild.v1.Build.artifacts:type_name -> google.devtools.cloudbuild.v1.Artifacts
-	41,  // 38: google.devtools.cloudbuild.v1.Build.source_provenance:type_name -> google.devtools.cloudbuild.v1.SourceProvenance
-	72,  // 39: google.devtools.cloudbuild.v1.Build.options:type_name -> google.devtools.cloudbuild.v1.BuildOptions
-	91,  // 40: google.devtools.cloudbuild.v1.Build.substitutions:type_name -> google.devtools.cloudbuild.v1.Build.SubstitutionsEntry
-	47,  // 41: google.devtools.cloudbuild.v1.Build.secrets:type_name -> google.devtools.cloudbuild.v1.Secret
-	92,  // 42: google.devtools.cloudbuild.v1.Build.timing:type_name -> google.devtools.cloudbuild.v1.Build.TimingEntry
-	54,  // 43: google.devtools.cloudbuild.v1.Build.approval:type_name -> google.devtools.cloudbuild.v1.BuildApproval
-	44,  // 44: google.devtools.cloudbuild.v1.Build.available_secrets:type_name -> google.devtools.cloudbuild.v1.Secrets
-	89,  // 45: google.devtools.cloudbuild.v1.Build.warnings:type_name -> google.devtools.cloudbuild.v1.Build.Warning
-	90,  // 46: google.devtools.cloudbuild.v1.Build.failure_info:type_name -> google.devtools.cloudbuild.v1.Build.FailureInfo
-	37,  // 47: google.devtools.cloudbuild.v1.Build.dependencies:type_name -> google.devtools.cloudbuild.v1.Dependency
-	93,  // 48: google.devtools.cloudbuild.v1.Dependency.git_source:type_name -> google.devtools.cloudbuild.v1.Dependency.GitSourceDependency
-	95,  // 49: google.devtools.cloudbuild.v1.Artifacts.objects:type_name -> google.devtools.cloudbuild.v1.Artifacts.ArtifactObjects
-	96,  // 50: google.devtools.cloudbuild.v1.Artifacts.maven_artifacts:type_name -> google.devtools.cloudbuild.v1.Artifacts.MavenArtifact
-	97,  // 51: google.devtools.cloudbuild.v1.Artifacts.go_modules:type_name -> google.devtools.cloudbuild.v1.Artifacts.GoModule
-	98,  // 52: google.devtools.cloudbuild.v1.Artifacts.python_packages:type_name -> google.devtools.cloudbuild.v1.Artifacts.PythonPackage
-	99,  // 53: google.devtools.cloudbuild.v1.Artifacts.npm_packages:type_name -> google.devtools.cloudbuild.v1.Artifacts.NpmPackage
-	110, // 54: google.devtools.cloudbuild.v1.TimeSpan.start_time:type_name -> google.protobuf.Timestamp
-	110, // 55: google.devtools.cloudbuild.v1.TimeSpan.end_time:type_name -> google.protobuf.Timestamp
-	36,  // 56: google.devtools.cloudbuild.v1.BuildOperationMetadata.build:type_name -> google.devtools.cloudbuild.v1.Build
-	22,  // 57: google.devtools.cloudbuild.v1.SourceProvenance.resolved_storage_source:type_name -> google.devtools.cloudbuild.v1.StorageSource
-	24,  // 58: google.devtools.cloudbuild.v1.SourceProvenance.resolved_repo_source:type_name -> google.devtools.cloudbuild.v1.RepoSource
-	25,  // 59: google.devtools.cloudbuild.v1.SourceProvenance.resolved_storage_source_manifest:type_name -> google.devtools.cloudbuild.v1.StorageSourceManifest
-	100, // 60: google.devtools.cloudbuild.v1.SourceProvenance.file_hashes:type_name -> google.devtools.cloudbuild.v1.SourceProvenance.FileHashesEntry
-	43,  // 61: google.devtools.cloudbuild.v1.FileHashes.file_hash:type_name -> google.devtools.cloudbuild.v1.Hash
-	4,   // 62: google.devtools.cloudbuild.v1.Hash.type:type_name -> google.devtools.cloudbuild.v1.Hash.HashType
-	46,  // 63: google.devtools.cloudbuild.v1.Secrets.secret_manager:type_name -> google.devtools.cloudbuild.v1.SecretManagerSecret
-	45,  // 64: google.devtools.cloudbuild.v1.Secrets.inline:type_name -> google.devtools.cloudbuild.v1.InlineSecret
-	101, // 65: google.devtools.cloudbuild.v1.InlineSecret.env_map:type_name -> google.devtools.cloudbuild.v1.InlineSecret.EnvMapEntry
-	102, // 66: google.devtools.cloudbuild.v1.Secret.secret_env:type_name -> google.devtools.cloudbuild.v1.Secret.SecretEnvEntry
-	36,  // 67: google.devtools.cloudbuild.v1.CreateBuildRequest.build:type_name -> google.devtools.cloudbuild.v1.Build
-	36,  // 68: google.devtools.cloudbuild.v1.ListBuildsResponse.builds:type_name -> google.devtools.cloudbuild.v1.Build
-	56,  // 69: google.devtools.cloudbuild.v1.ApproveBuildRequest.approval_result:type_name -> google.devtools.cloudbuild.v1.ApprovalResult
-	5,   // 70: google.devtools.cloudbuild.v1.BuildApproval.state:type_name -> google.devtools.cloudbuild.v1.BuildApproval.State
-	55,  // 71: google.devtools.cloudbuild.v1.BuildApproval.config:type_name -> google.devtools.cloudbuild.v1.ApprovalConfig
-	56,  // 72: google.devtools.cloudbuild.v1.BuildApproval.result:type_name -> google.devtools.cloudbuild.v1.ApprovalResult
-	110, // 73: google.devtools.cloudbuild.v1.ApprovalResult.approval_time:type_name -> google.protobuf.Timestamp
-	6,   // 74: google.devtools.cloudbuild.v1.ApprovalResult.decision:type_name -> google.devtools.cloudbuild.v1.ApprovalResult.Decision
-	7,   // 75: google.devtools.cloudbuild.v1.GitRepoSource.repo_type:type_name -> google.devtools.cloudbuild.v1.GitFileSource.RepoType
-	7,   // 76: google.devtools.cloudbuild.v1.GitFileSource.repo_type:type_name -> google.devtools.cloudbuild.v1.GitFileSource.RepoType
-	24,  // 77: google.devtools.cloudbuild.v1.BuildTrigger.trigger_template:type_name -> google.devtools.cloudbuild.v1.RepoSource
-	61,  // 78: google.devtools.cloudbuild.v1.BuildTrigger.github:type_name -> google.devtools.cloudbuild.v1.GitHubEventsConfig
-	62,  // 79: google.devtools.cloudbuild.v1.BuildTrigger.pubsub_config:type_name -> google.devtools.cloudbuild.v1.PubsubConfig
-	63,  // 80: google.devtools.cloudbuild.v1.BuildTrigger.webhook_config:type_name -> google.devtools.cloudbuild.v1.WebhookConfig
-	36,  // 81: google.devtools.cloudbuild.v1.BuildTrigger.build:type_name -> google.devtools.cloudbuild.v1.Build
-	58,  // 82: google.devtools.cloudbuild.v1.BuildTrigger.git_file_source:type_name -> google.devtools.cloudbuild.v1.GitFileSource
-	110, // 83: google.devtools.cloudbuild.v1.BuildTrigger.create_time:type_name -> google.protobuf.Timestamp
-	103, // 84: google.devtools.cloudbuild.v1.BuildTrigger.substitutions:type_name -> google.devtools.cloudbuild.v1.BuildTrigger.SubstitutionsEntry
-	57,  // 85: google.devtools.cloudbuild.v1.BuildTrigger.source_to_build:type_name -> google.devtools.cloudbuild.v1.GitRepoSource
-	60,  // 86: google.devtools.cloudbuild.v1.BuildTrigger.repository_event_config:type_name -> google.devtools.cloudbuild.v1.RepositoryEventConfig
-	8,   // 87: google.devtools.cloudbuild.v1.RepositoryEventConfig.repository_type:type_name -> google.devtools.cloudbuild.v1.RepositoryEventConfig.RepositoryType
-	64,  // 88: google.devtools.cloudbuild.v1.RepositoryEventConfig.pull_request:type_name -> google.devtools.cloudbuild.v1.PullRequestFilter
-	65,  // 89: google.devtools.cloudbuild.v1.RepositoryEventConfig.push:type_name -> google.devtools.cloudbuild.v1.PushFilter
-	64,  // 90: google.devtools.cloudbuild.v1.GitHubEventsConfig.pull_request:type_name -> google.devtools.cloudbuild.v1.PullRequestFilter
-	65,  // 91: google.devtools.cloudbuild.v1.GitHubEventsConfig.push:type_name -> google.devtools.cloudbuild.v1.PushFilter
-	9,   // 92: google.devtools.cloudbuild.v1.PubsubConfig.state:type_name -> google.devtools.cloudbuild.v1.PubsubConfig.State
-	10,  // 93: google.devtools.cloudbuild.v1.WebhookConfig.state:type_name -> google.devtools.cloudbuild.v1.WebhookConfig.State
-	11,  // 94: google.devtools.cloudbuild.v1.PullRequestFilter.comment_control:type_name -> google.devtools.cloudbuild.v1.PullRequestFilter.CommentControl
-	59,  // 95: google.devtools.cloudbuild.v1.CreateBuildTriggerRequest.trigger:type_name -> google.devtools.cloudbuild.v1.BuildTrigger
-	59,  // 96: google.devtools.cloudbuild.v1.ListBuildTriggersResponse.triggers:type_name -> google.devtools.cloudbuild.v1.BuildTrigger
-	59,  // 97: google.devtools.cloudbuild.v1.UpdateBuildTriggerRequest.trigger:type_name -> google.devtools.cloudbuild.v1.BuildTrigger
-	111, // 98: google.devtools.cloudbuild.v1.UpdateBuildTriggerRequest.update_mask:type_name -> google.protobuf.FieldMask
-	4,   // 99: google.devtools.cloudbuild.v1.BuildOptions.source_provenance_hash:type_name -> google.devtools.cloudbuild.v1.Hash.HashType
-	12,  // 100: google.devtools.cloudbuild.v1.BuildOptions.requested_verify_option:type_name -> google.devtools.cloudbuild.v1.BuildOptions.VerifyOption
-	13,  // 101: google.devtools.cloudbuild.v1.BuildOptions.machine_type:type_name -> google.devtools.cloudbuild.v1.BuildOptions.MachineType
-	14,  // 102: google.devtools.cloudbuild.v1.BuildOptions.substitution_option:type_name -> google.devtools.cloudbuild.v1.BuildOptions.SubstitutionOption
-	15,  // 103: google.devtools.cloudbuild.v1.BuildOptions.log_streaming_option:type_name -> google.devtools.cloudbuild.v1.BuildOptions.LogStreamingOption
-	104, // 104: google.devtools.cloudbuild.v1.BuildOptions.pool:type_name -> google.devtools.cloudbuild.v1.BuildOptions.PoolOption
-	16,  // 105: google.devtools.cloudbuild.v1.BuildOptions.logging:type_name -> google.devtools.cloudbuild.v1.BuildOptions.LoggingMode
-	33,  // 106: google.devtools.cloudbuild.v1.BuildOptions.volumes:type_name -> google.devtools.cloudbuild.v1.Volume
-	17,  // 107: google.devtools.cloudbuild.v1.BuildOptions.default_logs_bucket_behavior:type_name -> google.devtools.cloudbuild.v1.BuildOptions.DefaultLogsBucketBehavior
-	112, // 108: google.devtools.cloudbuild.v1.ReceiveTriggerWebhookRequest.body:type_name -> google.api.HttpBody
-	110, // 109: google.devtools.cloudbuild.v1.GitHubEnterpriseConfig.create_time:type_name -> google.protobuf.Timestamp
-	76,  // 110: google.devtools.cloudbuild.v1.GitHubEnterpriseConfig.secrets:type_name -> google.devtools.cloudbuild.v1.GitHubEnterpriseSecrets
-	105, // 111: google.devtools.cloudbuild.v1.WorkerPool.annotations:type_name -> google.devtools.cloudbuild.v1.WorkerPool.AnnotationsEntry
-	110, // 112: google.devtools.cloudbuild.v1.WorkerPool.create_time:type_name -> google.protobuf.Timestamp
-	110, // 113: google.devtools.cloudbuild.v1.WorkerPool.update_time:type_name -> google.protobuf.Timestamp
-	110, // 114: google.devtools.cloudbuild.v1.WorkerPool.delete_time:type_name -> google.protobuf.Timestamp
-	18,  // 115: google.devtools.cloudbuild.v1.WorkerPool.state:type_name -> google.devtools.cloudbuild.v1.WorkerPool.State
-	78,  // 116: google.devtools.cloudbuild.v1.WorkerPool.private_pool_v1_config:type_name -> google.devtools.cloudbuild.v1.PrivatePoolV1Config
-	106, // 117: google.devtools.cloudbuild.v1.PrivatePoolV1Config.worker_config:type_name -> google.devtools.cloudbuild.v1.PrivatePoolV1Config.WorkerConfig
-	107, // 118: google.devtools.cloudbuild.v1.PrivatePoolV1Config.network_config:type_name -> google.devtools.cloudbuild.v1.PrivatePoolV1Config.NetworkConfig
-	108, // 119: google.devtools.cloudbuild.v1.PrivatePoolV1Config.private_service_connect:type_name -> google.devtools.cloudbuild.v1.PrivatePoolV1Config.PrivateServiceConnect
-	77,  // 120: google.devtools.cloudbuild.v1.CreateWorkerPoolRequest.worker_pool:type_name -> google.devtools.cloudbuild.v1.WorkerPool
-	77,  // 121: google.devtools.cloudbuild.v1.UpdateWorkerPoolRequest.worker_pool:type_name -> google.devtools.cloudbuild.v1.WorkerPool
-	111, // 122: google.devtools.cloudbuild.v1.UpdateWorkerPoolRequest.update_mask:type_name -> google.protobuf.FieldMask
-	77,  // 123: google.devtools.cloudbuild.v1.ListWorkerPoolsResponse.worker_pools:type_name -> google.devtools.cloudbuild.v1.WorkerPool
-	110, // 124: google.devtools.cloudbuild.v1.CreateWorkerPoolOperationMetadata.create_time:type_name -> google.protobuf.Timestamp
-	110, // 125: google.devtools.cloudbuild.v1.CreateWorkerPoolOperationMetadata.complete_time:type_name -> google.protobuf.Timestamp
-	110, // 126: google.devtools.cloudbuild.v1.UpdateWorkerPoolOperationMetadata.create_time:type_name -> google.protobuf.Timestamp
-	110, // 127: google.devtools.cloudbuild.v1.UpdateWorkerPoolOperationMetadata.complete_time:type_name -> google.protobuf.Timestamp
-	110, // 128: google.devtools.cloudbuild.v1.DeleteWorkerPoolOperationMetadata.create_time:type_name -> google.protobuf.Timestamp
-	110, // 129: google.devtools.cloudbuild.v1.DeleteWorkerPoolOperationMetadata.complete_time:type_name -> google.protobuf.Timestamp
-	2,   // 130: google.devtools.cloudbuild.v1.Build.Warning.priority:type_name -> google.devtools.cloudbuild.v1.Build.Warning.Priority
-	3,   // 131: google.devtools.cloudbuild.v1.Build.FailureInfo.type:type_name -> google.devtools.cloudbuild.v1.Build.FailureInfo.FailureType
-	39,  // 132: google.devtools.cloudbuild.v1.Build.TimingEntry.value:type_name -> google.devtools.cloudbuild.v1.TimeSpan
-	94,  // 133: google.devtools.cloudbuild.v1.Dependency.GitSourceDependency.repository:type_name -> google.devtools.cloudbuild.v1.Dependency.GitSourceRepository
-	39,  // 134: google.devtools.cloudbuild.v1.Artifacts.ArtifactObjects.timing:type_name -> google.devtools.cloudbuild.v1.TimeSpan
-	42,  // 135: google.devtools.cloudbuild.v1.SourceProvenance.FileHashesEntry.value:type_name -> google.devtools.cloudbuild.v1.FileHashes
-	19,  // 136: google.devtools.cloudbuild.v1.PrivatePoolV1Config.NetworkConfig.egress_option:type_name -> google.devtools.cloudbuild.v1.PrivatePoolV1Config.NetworkConfig.EgressOption
-	48,  // 137: google.devtools.cloudbuild.v1.CloudBuild.CreateBuild:input_type -> google.devtools.cloudbuild.v1.CreateBuildRequest
-	49,  // 138: google.devtools.cloudbuild.v1.CloudBuild.GetBuild:input_type -> google.devtools.cloudbuild.v1.GetBuildRequest
-	50,  // 139: google.devtools.cloudbuild.v1.CloudBuild.ListBuilds:input_type -> google.devtools.cloudbuild.v1.ListBuildsRequest
-	52,  // 140: google.devtools.cloudbuild.v1.CloudBuild.CancelBuild:input_type -> google.devtools.cloudbuild.v1.CancelBuildRequest
-	20,  // 141: google.devtools.cloudbuild.v1.CloudBuild.RetryBuild:input_type -> google.devtools.cloudbuild.v1.RetryBuildRequest
-	53,  // 142: google.devtools.cloudbuild.v1.CloudBuild.ApproveBuild:input_type -> google.devtools.cloudbuild.v1.ApproveBuildRequest
-	66,  // 143: google.devtools.cloudbuild.v1.CloudBuild.CreateBuildTrigger:input_type -> google.devtools.cloudbuild.v1.CreateBuildTriggerRequest
-	67,  // 144: google.devtools.cloudbuild.v1.CloudBuild.GetBuildTrigger:input_type -> google.devtools.cloudbuild.v1.GetBuildTriggerRequest
-	68,  // 145: google.devtools.cloudbuild.v1.CloudBuild.ListBuildTriggers:input_type -> google.devtools.cloudbuild.v1.ListBuildTriggersRequest
-	70,  // 146: google.devtools.cloudbuild.v1.CloudBuild.DeleteBuildTrigger:input_type -> google.devtools.cloudbuild.v1.DeleteBuildTriggerRequest
-	71,  // 147: google.devtools.cloudbuild.v1.CloudBuild.UpdateBuildTrigger:input_type -> google.devtools.cloudbuild.v1.UpdateBuildTriggerRequest
-	21,  // 148: google.devtools.cloudbuild.v1.CloudBuild.RunBuildTrigger:input_type -> google.devtools.cloudbuild.v1.RunBuildTriggerRequest
-	73,  // 149: google.devtools.cloudbuild.v1.CloudBuild.ReceiveTriggerWebhook:input_type -> google.devtools.cloudbuild.v1.ReceiveTriggerWebhookRequest
-	79,  // 150: google.devtools.cloudbuild.v1.CloudBuild.CreateWorkerPool:input_type -> google.devtools.cloudbuild.v1.CreateWorkerPoolRequest
-	80,  // 151: google.devtools.cloudbuild.v1.CloudBuild.GetWorkerPool:input_type -> google.devtools.cloudbuild.v1.GetWorkerPoolRequest
-	81,  // 152: google.devtools.cloudbuild.v1.CloudBuild.DeleteWorkerPool:input_type -> google.devtools.cloudbuild.v1.DeleteWorkerPoolRequest
-	82,  // 153: google.devtools.cloudbuild.v1.CloudBuild.UpdateWorkerPool:input_type -> google.devtools.cloudbuild.v1.UpdateWorkerPoolRequest
-	83,  // 154: google.devtools.cloudbuild.v1.CloudBuild.ListWorkerPools:input_type -> google.devtools.cloudbuild.v1.ListWorkerPoolsRequest
-	113, // 155: google.devtools.cloudbuild.v1.CloudBuild.CreateBuild:output_type -> google.longrunning.Operation
-	36,  // 156: google.devtools.cloudbuild.v1.CloudBuild.GetBuild:output_type -> google.devtools.cloudbuild.v1.Build
-	51,  // 157: google.devtools.cloudbuild.v1.CloudBuild.ListBuilds:output_type -> google.devtools.cloudbuild.v1.ListBuildsResponse
-	36,  // 158: google.devtools.cloudbuild.v1.CloudBuild.CancelBuild:output_type -> google.devtools.cloudbuild.v1.Build
-	113, // 159: google.devtools.cloudbuild.v1.CloudBuild.RetryBuild:output_type -> google.longrunning.Operation
-	113, // 160: google.devtools.cloudbuild.v1.CloudBuild.ApproveBuild:output_type -> google.longrunning.Operation
-	59,  // 161: google.devtools.cloudbuild.v1.CloudBuild.CreateBuildTrigger:output_type -> google.devtools.cloudbuild.v1.BuildTrigger
-	59,  // 162: google.devtools.cloudbuild.v1.CloudBuild.GetBuildTrigger:output_type -> google.devtools.cloudbuild.v1.BuildTrigger
-	69,  // 163: google.devtools.cloudbuild.v1.CloudBuild.ListBuildTriggers:output_type -> google.devtools.cloudbuild.v1.ListBuildTriggersResponse
-	114, // 164: google.devtools.cloudbuild.v1.CloudBuild.DeleteBuildTrigger:output_type -> google.protobuf.Empty
-	59,  // 165: google.devtools.cloudbuild.v1.CloudBuild.UpdateBuildTrigger:output_type -> google.devtools.cloudbuild.v1.BuildTrigger
-	113, // 166: google.devtools.cloudbuild.v1.CloudBuild.RunBuildTrigger:output_type -> google.longrunning.Operation
-	74,  // 167: google.devtools.cloudbuild.v1.CloudBuild.ReceiveTriggerWebhook:output_type -> google.devtools.cloudbuild.v1.ReceiveTriggerWebhookResponse
-	113, // 168: google.devtools.cloudbuild.v1.CloudBuild.CreateWorkerPool:output_type -> google.longrunning.Operation
-	77,  // 169: google.devtools.cloudbuild.v1.CloudBuild.GetWorkerPool:output_type -> google.devtools.cloudbuild.v1.WorkerPool
-	113, // 170: google.devtools.cloudbuild.v1.CloudBuild.DeleteWorkerPool:output_type -> google.longrunning.Operation
-	113, // 171: google.devtools.cloudbuild.v1.CloudBuild.UpdateWorkerPool:output_type -> google.longrunning.Operation
-	84,  // 172: google.devtools.cloudbuild.v1.CloudBuild.ListWorkerPools:output_type -> google.devtools.cloudbuild.v1.ListWorkerPoolsResponse
-	155, // [155:173] is the sub-list for method output_type
-	137, // [137:155] is the sub-list for method input_type
-	137, // [137:137] is the sub-list for extension type_name
-	137, // [137:137] is the sub-list for extension extendee
-	0,   // [0:137] is the sub-list for field type_name
+	112, // 32: google.devtools.cloudbuild.v1.Build.create_time:type_name -> google.protobuf.Timestamp
+	112, // 33: google.devtools.cloudbuild.v1.Build.start_time:type_name -> google.protobuf.Timestamp
+	112, // 34: google.devtools.cloudbuild.v1.Build.finish_time:type_name -> google.protobuf.Timestamp
+	111, // 35: google.devtools.cloudbuild.v1.Build.timeout:type_name -> google.protobuf.Duration
+	111, // 36: google.devtools.cloudbuild.v1.Build.queue_ttl:type_name -> google.protobuf.Duration
+	39,  // 37: google.devtools.cloudbuild.v1.Build.artifacts:type_name -> google.devtools.cloudbuild.v1.Artifacts
+	42,  // 38: google.devtools.cloudbuild.v1.Build.source_provenance:type_name -> google.devtools.cloudbuild.v1.SourceProvenance
+	73,  // 39: google.devtools.cloudbuild.v1.Build.options:type_name -> google.devtools.cloudbuild.v1.BuildOptions
+	92,  // 40: google.devtools.cloudbuild.v1.Build.substitutions:type_name -> google.devtools.cloudbuild.v1.Build.SubstitutionsEntry
+	48,  // 41: google.devtools.cloudbuild.v1.Build.secrets:type_name -> google.devtools.cloudbuild.v1.Secret
+	93,  // 42: google.devtools.cloudbuild.v1.Build.timing:type_name -> google.devtools.cloudbuild.v1.Build.TimingEntry
+	55,  // 43: google.devtools.cloudbuild.v1.Build.approval:type_name -> google.devtools.cloudbuild.v1.BuildApproval
+	45,  // 44: google.devtools.cloudbuild.v1.Build.available_secrets:type_name -> google.devtools.cloudbuild.v1.Secrets
+	90,  // 45: google.devtools.cloudbuild.v1.Build.warnings:type_name -> google.devtools.cloudbuild.v1.Build.Warning
+	38,  // 46: google.devtools.cloudbuild.v1.Build.git_config:type_name -> google.devtools.cloudbuild.v1.GitConfig
+	91,  // 47: google.devtools.cloudbuild.v1.Build.failure_info:type_name -> google.devtools.cloudbuild.v1.Build.FailureInfo
+	37,  // 48: google.devtools.cloudbuild.v1.Build.dependencies:type_name -> google.devtools.cloudbuild.v1.Dependency
+	94,  // 49: google.devtools.cloudbuild.v1.Dependency.git_source:type_name -> google.devtools.cloudbuild.v1.Dependency.GitSourceDependency
+	96,  // 50: google.devtools.cloudbuild.v1.GitConfig.http:type_name -> google.devtools.cloudbuild.v1.GitConfig.HttpConfig
+	97,  // 51: google.devtools.cloudbuild.v1.Artifacts.objects:type_name -> google.devtools.cloudbuild.v1.Artifacts.ArtifactObjects
+	98,  // 52: google.devtools.cloudbuild.v1.Artifacts.maven_artifacts:type_name -> google.devtools.cloudbuild.v1.Artifacts.MavenArtifact
+	99,  // 53: google.devtools.cloudbuild.v1.Artifacts.go_modules:type_name -> google.devtools.cloudbuild.v1.Artifacts.GoModule
+	100, // 54: google.devtools.cloudbuild.v1.Artifacts.python_packages:type_name -> google.devtools.cloudbuild.v1.Artifacts.PythonPackage
+	101, // 55: google.devtools.cloudbuild.v1.Artifacts.npm_packages:type_name -> google.devtools.cloudbuild.v1.Artifacts.NpmPackage
+	112, // 56: google.devtools.cloudbuild.v1.TimeSpan.start_time:type_name -> google.protobuf.Timestamp
+	112, // 57: google.devtools.cloudbuild.v1.TimeSpan.end_time:type_name -> google.protobuf.Timestamp
+	36,  // 58: google.devtools.cloudbuild.v1.BuildOperationMetadata.build:type_name -> google.devtools.cloudbuild.v1.Build
+	22,  // 59: google.devtools.cloudbuild.v1.SourceProvenance.resolved_storage_source:type_name -> google.devtools.cloudbuild.v1.StorageSource
+	24,  // 60: google.devtools.cloudbuild.v1.SourceProvenance.resolved_repo_source:type_name -> google.devtools.cloudbuild.v1.RepoSource
+	25,  // 61: google.devtools.cloudbuild.v1.SourceProvenance.resolved_storage_source_manifest:type_name -> google.devtools.cloudbuild.v1.StorageSourceManifest
+	102, // 62: google.devtools.cloudbuild.v1.SourceProvenance.file_hashes:type_name -> google.devtools.cloudbuild.v1.SourceProvenance.FileHashesEntry
+	44,  // 63: google.devtools.cloudbuild.v1.FileHashes.file_hash:type_name -> google.devtools.cloudbuild.v1.Hash
+	4,   // 64: google.devtools.cloudbuild.v1.Hash.type:type_name -> google.devtools.cloudbuild.v1.Hash.HashType
+	47,  // 65: google.devtools.cloudbuild.v1.Secrets.secret_manager:type_name -> google.devtools.cloudbuild.v1.SecretManagerSecret
+	46,  // 66: google.devtools.cloudbuild.v1.Secrets.inline:type_name -> google.devtools.cloudbuild.v1.InlineSecret
+	103, // 67: google.devtools.cloudbuild.v1.InlineSecret.env_map:type_name -> google.devtools.cloudbuild.v1.InlineSecret.EnvMapEntry
+	104, // 68: google.devtools.cloudbuild.v1.Secret.secret_env:type_name -> google.devtools.cloudbuild.v1.Secret.SecretEnvEntry
+	36,  // 69: google.devtools.cloudbuild.v1.CreateBuildRequest.build:type_name -> google.devtools.cloudbuild.v1.Build
+	36,  // 70: google.devtools.cloudbuild.v1.ListBuildsResponse.builds:type_name -> google.devtools.cloudbuild.v1.Build
+	57,  // 71: google.devtools.cloudbuild.v1.ApproveBuildRequest.approval_result:type_name -> google.devtools.cloudbuild.v1.ApprovalResult
+	5,   // 72: google.devtools.cloudbuild.v1.BuildApproval.state:type_name -> google.devtools.cloudbuild.v1.BuildApproval.State
+	56,  // 73: google.devtools.cloudbuild.v1.BuildApproval.config:type_name -> google.devtools.cloudbuild.v1.ApprovalConfig
+	57,  // 74: google.devtools.cloudbuild.v1.BuildApproval.result:type_name -> google.devtools.cloudbuild.v1.ApprovalResult
+	112, // 75: google.devtools.cloudbuild.v1.ApprovalResult.approval_time:type_name -> google.protobuf.Timestamp
+	6,   // 76: google.devtools.cloudbuild.v1.ApprovalResult.decision:type_name -> google.devtools.cloudbuild.v1.ApprovalResult.Decision
+	7,   // 77: google.devtools.cloudbuild.v1.GitRepoSource.repo_type:type_name -> google.devtools.cloudbuild.v1.GitFileSource.RepoType
+	7,   // 78: google.devtools.cloudbuild.v1.GitFileSource.repo_type:type_name -> google.devtools.cloudbuild.v1.GitFileSource.RepoType
+	24,  // 79: google.devtools.cloudbuild.v1.BuildTrigger.trigger_template:type_name -> google.devtools.cloudbuild.v1.RepoSource
+	62,  // 80: google.devtools.cloudbuild.v1.BuildTrigger.github:type_name -> google.devtools.cloudbuild.v1.GitHubEventsConfig
+	63,  // 81: google.devtools.cloudbuild.v1.BuildTrigger.pubsub_config:type_name -> google.devtools.cloudbuild.v1.PubsubConfig
+	64,  // 82: google.devtools.cloudbuild.v1.BuildTrigger.webhook_config:type_name -> google.devtools.cloudbuild.v1.WebhookConfig
+	36,  // 83: google.devtools.cloudbuild.v1.BuildTrigger.build:type_name -> google.devtools.cloudbuild.v1.Build
+	59,  // 84: google.devtools.cloudbuild.v1.BuildTrigger.git_file_source:type_name -> google.devtools.cloudbuild.v1.GitFileSource
+	112, // 85: google.devtools.cloudbuild.v1.BuildTrigger.create_time:type_name -> google.protobuf.Timestamp
+	105, // 86: google.devtools.cloudbuild.v1.BuildTrigger.substitutions:type_name -> google.devtools.cloudbuild.v1.BuildTrigger.SubstitutionsEntry
+	58,  // 87: google.devtools.cloudbuild.v1.BuildTrigger.source_to_build:type_name -> google.devtools.cloudbuild.v1.GitRepoSource
+	61,  // 88: google.devtools.cloudbuild.v1.BuildTrigger.repository_event_config:type_name -> google.devtools.cloudbuild.v1.RepositoryEventConfig
+	8,   // 89: google.devtools.cloudbuild.v1.RepositoryEventConfig.repository_type:type_name -> google.devtools.cloudbuild.v1.RepositoryEventConfig.RepositoryType
+	65,  // 90: google.devtools.cloudbuild.v1.RepositoryEventConfig.pull_request:type_name -> google.devtools.cloudbuild.v1.PullRequestFilter
+	66,  // 91: google.devtools.cloudbuild.v1.RepositoryEventConfig.push:type_name -> google.devtools.cloudbuild.v1.PushFilter
+	65,  // 92: google.devtools.cloudbuild.v1.GitHubEventsConfig.pull_request:type_name -> google.devtools.cloudbuild.v1.PullRequestFilter
+	66,  // 93: google.devtools.cloudbuild.v1.GitHubEventsConfig.push:type_name -> google.devtools.cloudbuild.v1.PushFilter
+	9,   // 94: google.devtools.cloudbuild.v1.PubsubConfig.state:type_name -> google.devtools.cloudbuild.v1.PubsubConfig.State
+	10,  // 95: google.devtools.cloudbuild.v1.WebhookConfig.state:type_name -> google.devtools.cloudbuild.v1.WebhookConfig.State
+	11,  // 96: google.devtools.cloudbuild.v1.PullRequestFilter.comment_control:type_name -> google.devtools.cloudbuild.v1.PullRequestFilter.CommentControl
+	60,  // 97: google.devtools.cloudbuild.v1.CreateBuildTriggerRequest.trigger:type_name -> google.devtools.cloudbuild.v1.BuildTrigger
+	60,  // 98: google.devtools.cloudbuild.v1.ListBuildTriggersResponse.triggers:type_name -> google.devtools.cloudbuild.v1.BuildTrigger
+	60,  // 99: google.devtools.cloudbuild.v1.UpdateBuildTriggerRequest.trigger:type_name -> google.devtools.cloudbuild.v1.BuildTrigger
+	113, // 100: google.devtools.cloudbuild.v1.UpdateBuildTriggerRequest.update_mask:type_name -> google.protobuf.FieldMask
+	4,   // 101: google.devtools.cloudbuild.v1.BuildOptions.source_provenance_hash:type_name -> google.devtools.cloudbuild.v1.Hash.HashType
+	12,  // 102: google.devtools.cloudbuild.v1.BuildOptions.requested_verify_option:type_name -> google.devtools.cloudbuild.v1.BuildOptions.VerifyOption
+	13,  // 103: google.devtools.cloudbuild.v1.BuildOptions.machine_type:type_name -> google.devtools.cloudbuild.v1.BuildOptions.MachineType
+	14,  // 104: google.devtools.cloudbuild.v1.BuildOptions.substitution_option:type_name -> google.devtools.cloudbuild.v1.BuildOptions.SubstitutionOption
+	15,  // 105: google.devtools.cloudbuild.v1.BuildOptions.log_streaming_option:type_name -> google.devtools.cloudbuild.v1.BuildOptions.LogStreamingOption
+	106, // 106: google.devtools.cloudbuild.v1.BuildOptions.pool:type_name -> google.devtools.cloudbuild.v1.BuildOptions.PoolOption
+	16,  // 107: google.devtools.cloudbuild.v1.BuildOptions.logging:type_name -> google.devtools.cloudbuild.v1.BuildOptions.LoggingMode
+	33,  // 108: google.devtools.cloudbuild.v1.BuildOptions.volumes:type_name -> google.devtools.cloudbuild.v1.Volume
+	17,  // 109: google.devtools.cloudbuild.v1.BuildOptions.default_logs_bucket_behavior:type_name -> google.devtools.cloudbuild.v1.BuildOptions.DefaultLogsBucketBehavior
+	114, // 110: google.devtools.cloudbuild.v1.ReceiveTriggerWebhookRequest.body:type_name -> google.api.HttpBody
+	112, // 111: google.devtools.cloudbuild.v1.GitHubEnterpriseConfig.create_time:type_name -> google.protobuf.Timestamp
+	77,  // 112: google.devtools.cloudbuild.v1.GitHubEnterpriseConfig.secrets:type_name -> google.devtools.cloudbuild.v1.GitHubEnterpriseSecrets
+	107, // 113: google.devtools.cloudbuild.v1.WorkerPool.annotations:type_name -> google.devtools.cloudbuild.v1.WorkerPool.AnnotationsEntry
+	112, // 114: google.devtools.cloudbuild.v1.WorkerPool.create_time:type_name -> google.protobuf.Timestamp
+	112, // 115: google.devtools.cloudbuild.v1.WorkerPool.update_time:type_name -> google.protobuf.Timestamp
+	112, // 116: google.devtools.cloudbuild.v1.WorkerPool.delete_time:type_name -> google.protobuf.Timestamp
+	18,  // 117: google.devtools.cloudbuild.v1.WorkerPool.state:type_name -> google.devtools.cloudbuild.v1.WorkerPool.State
+	79,  // 118: google.devtools.cloudbuild.v1.WorkerPool.private_pool_v1_config:type_name -> google.devtools.cloudbuild.v1.PrivatePoolV1Config
+	108, // 119: google.devtools.cloudbuild.v1.PrivatePoolV1Config.worker_config:type_name -> google.devtools.cloudbuild.v1.PrivatePoolV1Config.WorkerConfig
+	109, // 120: google.devtools.cloudbuild.v1.PrivatePoolV1Config.network_config:type_name -> google.devtools.cloudbuild.v1.PrivatePoolV1Config.NetworkConfig
+	110, // 121: google.devtools.cloudbuild.v1.PrivatePoolV1Config.private_service_connect:type_name -> google.devtools.cloudbuild.v1.PrivatePoolV1Config.PrivateServiceConnect
+	78,  // 122: google.devtools.cloudbuild.v1.CreateWorkerPoolRequest.worker_pool:type_name -> google.devtools.cloudbuild.v1.WorkerPool
+	78,  // 123: google.devtools.cloudbuild.v1.UpdateWorkerPoolRequest.worker_pool:type_name -> google.devtools.cloudbuild.v1.WorkerPool
+	113, // 124: google.devtools.cloudbuild.v1.UpdateWorkerPoolRequest.update_mask:type_name -> google.protobuf.FieldMask
+	78,  // 125: google.devtools.cloudbuild.v1.ListWorkerPoolsResponse.worker_pools:type_name -> google.devtools.cloudbuild.v1.WorkerPool
+	112, // 126: google.devtools.cloudbuild.v1.CreateWorkerPoolOperationMetadata.create_time:type_name -> google.protobuf.Timestamp
+	112, // 127: google.devtools.cloudbuild.v1.CreateWorkerPoolOperationMetadata.complete_time:type_name -> google.protobuf.Timestamp
+	112, // 128: google.devtools.cloudbuild.v1.UpdateWorkerPoolOperationMetadata.create_time:type_name -> google.protobuf.Timestamp
+	112, // 129: google.devtools.cloudbuild.v1.UpdateWorkerPoolOperationMetadata.complete_time:type_name -> google.protobuf.Timestamp
+	112, // 130: google.devtools.cloudbuild.v1.DeleteWorkerPoolOperationMetadata.create_time:type_name -> google.protobuf.Timestamp
+	112, // 131: google.devtools.cloudbuild.v1.DeleteWorkerPoolOperationMetadata.complete_time:type_name -> google.protobuf.Timestamp
+	2,   // 132: google.devtools.cloudbuild.v1.Build.Warning.priority:type_name -> google.devtools.cloudbuild.v1.Build.Warning.Priority
+	3,   // 133: google.devtools.cloudbuild.v1.Build.FailureInfo.type:type_name -> google.devtools.cloudbuild.v1.Build.FailureInfo.FailureType
+	40,  // 134: google.devtools.cloudbuild.v1.Build.TimingEntry.value:type_name -> google.devtools.cloudbuild.v1.TimeSpan
+	95,  // 135: google.devtools.cloudbuild.v1.Dependency.GitSourceDependency.repository:type_name -> google.devtools.cloudbuild.v1.Dependency.GitSourceRepository
+	40,  // 136: google.devtools.cloudbuild.v1.Artifacts.ArtifactObjects.timing:type_name -> google.devtools.cloudbuild.v1.TimeSpan
+	43,  // 137: google.devtools.cloudbuild.v1.SourceProvenance.FileHashesEntry.value:type_name -> google.devtools.cloudbuild.v1.FileHashes
+	19,  // 138: google.devtools.cloudbuild.v1.PrivatePoolV1Config.NetworkConfig.egress_option:type_name -> google.devtools.cloudbuild.v1.PrivatePoolV1Config.NetworkConfig.EgressOption
+	49,  // 139: google.devtools.cloudbuild.v1.CloudBuild.CreateBuild:input_type -> google.devtools.cloudbuild.v1.CreateBuildRequest
+	50,  // 140: google.devtools.cloudbuild.v1.CloudBuild.GetBuild:input_type -> google.devtools.cloudbuild.v1.GetBuildRequest
+	51,  // 141: google.devtools.cloudbuild.v1.CloudBuild.ListBuilds:input_type -> google.devtools.cloudbuild.v1.ListBuildsRequest
+	53,  // 142: google.devtools.cloudbuild.v1.CloudBuild.CancelBuild:input_type -> google.devtools.cloudbuild.v1.CancelBuildRequest
+	20,  // 143: google.devtools.cloudbuild.v1.CloudBuild.RetryBuild:input_type -> google.devtools.cloudbuild.v1.RetryBuildRequest
+	54,  // 144: google.devtools.cloudbuild.v1.CloudBuild.ApproveBuild:input_type -> google.devtools.cloudbuild.v1.ApproveBuildRequest
+	67,  // 145: google.devtools.cloudbuild.v1.CloudBuild.CreateBuildTrigger:input_type -> google.devtools.cloudbuild.v1.CreateBuildTriggerRequest
+	68,  // 146: google.devtools.cloudbuild.v1.CloudBuild.GetBuildTrigger:input_type -> google.devtools.cloudbuild.v1.GetBuildTriggerRequest
+	69,  // 147: google.devtools.cloudbuild.v1.CloudBuild.ListBuildTriggers:input_type -> google.devtools.cloudbuild.v1.ListBuildTriggersRequest
+	71,  // 148: google.devtools.cloudbuild.v1.CloudBuild.DeleteBuildTrigger:input_type -> google.devtools.cloudbuild.v1.DeleteBuildTriggerRequest
+	72,  // 149: google.devtools.cloudbuild.v1.CloudBuild.UpdateBuildTrigger:input_type -> google.devtools.cloudbuild.v1.UpdateBuildTriggerRequest
+	21,  // 150: google.devtools.cloudbuild.v1.CloudBuild.RunBuildTrigger:input_type -> google.devtools.cloudbuild.v1.RunBuildTriggerRequest
+	74,  // 151: google.devtools.cloudbuild.v1.CloudBuild.ReceiveTriggerWebhook:input_type -> google.devtools.cloudbuild.v1.ReceiveTriggerWebhookRequest
+	80,  // 152: google.devtools.cloudbuild.v1.CloudBuild.CreateWorkerPool:input_type -> google.devtools.cloudbuild.v1.CreateWorkerPoolRequest
+	81,  // 153: google.devtools.cloudbuild.v1.CloudBuild.GetWorkerPool:input_type -> google.devtools.cloudbuild.v1.GetWorkerPoolRequest
+	82,  // 154: google.devtools.cloudbuild.v1.CloudBuild.DeleteWorkerPool:input_type -> google.devtools.cloudbuild.v1.DeleteWorkerPoolRequest
+	83,  // 155: google.devtools.cloudbuild.v1.CloudBuild.UpdateWorkerPool:input_type -> google.devtools.cloudbuild.v1.UpdateWorkerPoolRequest
+	84,  // 156: google.devtools.cloudbuild.v1.CloudBuild.ListWorkerPools:input_type -> google.devtools.cloudbuild.v1.ListWorkerPoolsRequest
+	115, // 157: google.devtools.cloudbuild.v1.CloudBuild.CreateBuild:output_type -> google.longrunning.Operation
+	36,  // 158: google.devtools.cloudbuild.v1.CloudBuild.GetBuild:output_type -> google.devtools.cloudbuild.v1.Build
+	52,  // 159: google.devtools.cloudbuild.v1.CloudBuild.ListBuilds:output_type -> google.devtools.cloudbuild.v1.ListBuildsResponse
+	36,  // 160: google.devtools.cloudbuild.v1.CloudBuild.CancelBuild:output_type -> google.devtools.cloudbuild.v1.Build
+	115, // 161: google.devtools.cloudbuild.v1.CloudBuild.RetryBuild:output_type -> google.longrunning.Operation
+	115, // 162: google.devtools.cloudbuild.v1.CloudBuild.ApproveBuild:output_type -> google.longrunning.Operation
+	60,  // 163: google.devtools.cloudbuild.v1.CloudBuild.CreateBuildTrigger:output_type -> google.devtools.cloudbuild.v1.BuildTrigger
+	60,  // 164: google.devtools.cloudbuild.v1.CloudBuild.GetBuildTrigger:output_type -> google.devtools.cloudbuild.v1.BuildTrigger
+	70,  // 165: google.devtools.cloudbuild.v1.CloudBuild.ListBuildTriggers:output_type -> google.devtools.cloudbuild.v1.ListBuildTriggersResponse
+	116, // 166: google.devtools.cloudbuild.v1.CloudBuild.DeleteBuildTrigger:output_type -> google.protobuf.Empty
+	60,  // 167: google.devtools.cloudbuild.v1.CloudBuild.UpdateBuildTrigger:output_type -> google.devtools.cloudbuild.v1.BuildTrigger
+	115, // 168: google.devtools.cloudbuild.v1.CloudBuild.RunBuildTrigger:output_type -> google.longrunning.Operation
+	75,  // 169: google.devtools.cloudbuild.v1.CloudBuild.ReceiveTriggerWebhook:output_type -> google.devtools.cloudbuild.v1.ReceiveTriggerWebhookResponse
+	115, // 170: google.devtools.cloudbuild.v1.CloudBuild.CreateWorkerPool:output_type -> google.longrunning.Operation
+	78,  // 171: google.devtools.cloudbuild.v1.CloudBuild.GetWorkerPool:output_type -> google.devtools.cloudbuild.v1.WorkerPool
+	115, // 172: google.devtools.cloudbuild.v1.CloudBuild.DeleteWorkerPool:output_type -> google.longrunning.Operation
+	115, // 173: google.devtools.cloudbuild.v1.CloudBuild.UpdateWorkerPool:output_type -> google.longrunning.Operation
+	85,  // 174: google.devtools.cloudbuild.v1.CloudBuild.ListWorkerPools:output_type -> google.devtools.cloudbuild.v1.ListWorkerPoolsResponse
+	157, // [157:175] is the sub-list for method output_type
+	139, // [139:157] is the sub-list for method input_type
+	139, // [139:139] is the sub-list for extension type_name
+	139, // [139:139] is the sub-list for extension extendee
+	0,   // [0:139] is the sub-list for field type_name
 }
 
 func init() { file_google_devtools_cloudbuild_v1_cloudbuild_proto_init() }
@@ -10753,42 +10908,42 @@ func file_google_devtools_cloudbuild_v1_cloudbuild_proto_init() {
 		(*Dependency_Empty)(nil),
 		(*Dependency_GitSource)(nil),
 	}
-	file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[37].OneofWrappers = []any{
+	file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[38].OneofWrappers = []any{
 		(*GitRepoSource_Repository)(nil),
 		(*GitRepoSource_GithubEnterpriseConfig)(nil),
 	}
-	file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[38].OneofWrappers = []any{
+	file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[39].OneofWrappers = []any{
 		(*GitFileSource_Repository)(nil),
 		(*GitFileSource_GithubEnterpriseConfig)(nil),
 	}
-	file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[39].OneofWrappers = []any{
+	file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[40].OneofWrappers = []any{
 		(*BuildTrigger_Autodetect)(nil),
 		(*BuildTrigger_Build)(nil),
 		(*BuildTrigger_Filename)(nil),
 		(*BuildTrigger_GitFileSource)(nil),
 	}
-	file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[40].OneofWrappers = []any{
+	file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[41].OneofWrappers = []any{
 		(*RepositoryEventConfig_PullRequest)(nil),
 		(*RepositoryEventConfig_Push)(nil),
 	}
-	file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[41].OneofWrappers = []any{
+	file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[42].OneofWrappers = []any{
 		(*GitHubEventsConfig_PullRequest)(nil),
 		(*GitHubEventsConfig_Push)(nil),
 	}
-	file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[43].OneofWrappers = []any{
+	file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[44].OneofWrappers = []any{
 		(*WebhookConfig_Secret)(nil),
 	}
-	file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[44].OneofWrappers = []any{
+	file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[45].OneofWrappers = []any{
 		(*PullRequestFilter_Branch)(nil),
 	}
-	file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[45].OneofWrappers = []any{
+	file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[46].OneofWrappers = []any{
 		(*PushFilter_Branch)(nil),
 		(*PushFilter_Tag)(nil),
 	}
-	file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[57].OneofWrappers = []any{
+	file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[58].OneofWrappers = []any{
 		(*WorkerPool_PrivatePoolV1Config)(nil),
 	}
-	file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[74].OneofWrappers = []any{
+	file_google_devtools_cloudbuild_v1_cloudbuild_proto_msgTypes[75].OneofWrappers = []any{
 		(*Dependency_GitSourceRepository_Url)(nil),
 		(*Dependency_GitSourceRepository_DeveloperConnect)(nil),
 	}
@@ -10798,7 +10953,7 @@ func file_google_devtools_cloudbuild_v1_cloudbuild_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDesc,
 			NumEnums:      20,
-			NumMessages:   89,
+			NumMessages:   91,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
