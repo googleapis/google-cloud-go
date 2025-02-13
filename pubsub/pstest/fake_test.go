@@ -96,7 +96,7 @@ func TestNewServerWithCallback(t *testing.T) {
 	}
 
 	// Pass a non 0 port to demonstrate we can pass a hardcoded port for the server to listen on
-	srv := NewServerWithCallback(fmt.Sprintf("localhost:%d", port), callback)
+	srv := NewServerWithCallback(port, callback)
 
 	conn, err := grpc.NewClient(srv.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
