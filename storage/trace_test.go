@@ -16,6 +16,7 @@ package storage
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"testing"
 
@@ -26,6 +27,7 @@ import (
 	otcodes "go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/sdk/instrumentation"
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
+	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/googleapi"
 )
 
@@ -154,4 +156,34 @@ func spanAttributesComparer(a, b tracetest.SpanStub) bool {
 		return false
 	}
 	return true
+}
+
+// makeSpanStartOptAttrs makes a SpanStartOption and converts a generic map to OpenTelemetry attributes.
+func makeSpanStartOptAttrs(attrMap map[string]interface{}) []trace.SpanStartOption {
+	attrs := otAttrs(attrMap)
+	return []trace.SpanStartOption{
+		trace.WithAttributes(attrs...),
+	}
+}
+
+// otAttrs converts a generic map to OpenTelemetry attributes.
+func otAttrs(attrMap map[string]interface{}) []attribute.KeyValue {
+	var attrs []attribute.KeyValue
+	for k, v := range attrMap {
+		var a attribute.KeyValue
+		switch v := v.(type) {
+		case string:
+			a = attribute.Key(k).String(v)
+		case bool:
+			a = attribute.Key(k).Bool(v)
+		case int:
+			a = attribute.Key(k).Int(v)
+		case int64:
+			a = attribute.Key(k).Int64(v)
+		default:
+			a = attribute.Key(k).String(fmt.Sprintf("%#v", v))
+		}
+		attrs = append(attrs, a)
+	}
+	return attrs
 }

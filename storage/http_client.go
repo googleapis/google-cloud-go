@@ -346,7 +346,7 @@ func (c *httpStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		var err error
 		// Add trace span around List API call within the fetch.
-		ctx, _ = startSpan(ctx, "httpStorageClient.ListObjects")
+		ctx, _ = startSpan(ctx, "httpStorageClient.ObjectsListCall")
 		defer func() { endSpan(ctx, err) }()
 		req := c.raw.Objects.List(bucket)
 		if it.query.SoftDeleted {

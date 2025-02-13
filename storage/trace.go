@@ -54,7 +54,7 @@ func startSpan(ctx context.Context, name string, opts ...trace.SpanStartOption) 
 		ctx = internalTrace.StartSpan(ctx, name)
 		return ctx, nil
 	}
-	opts = append(opts, getCommonTraceOption()...)
+	opts = append(opts, getCommonTraceOptions()...)
 	ctx, span := tracer().Start(ctx, name, opts...)
 	return ctx, span
 }
@@ -76,8 +76,8 @@ func endSpan(ctx context.Context, err error) {
 	}
 }
 
-// getCommonTraceOption makes a SpanStartOption with common attributes.
-func getCommonTraceOption() []trace.SpanStartOption {
+// getCommonTraceOptions makes a SpanStartOption with common attributes.
+func getCommonTraceOptions() []trace.SpanStartOption {
 	opts := []trace.SpanStartOption{
 		trace.WithAttributes(getCommonAttributes()...),
 	}
@@ -95,34 +95,4 @@ func getCommonAttributes() []attribute.KeyValue {
 
 func appendPackageName(spanName string) string {
 	return fmt.Sprintf("%s.%s", gcpClientArtifact, spanName)
-}
-
-// makeSpanStartOptAttrs makes a SpanStartOption and converts a generic map to OpenTelemetry attributes.
-func makeSpanStartOptAttrs(attrMap map[string]interface{}) []trace.SpanStartOption {
-	attrs := otAttrs(attrMap)
-	return []trace.SpanStartOption{
-		trace.WithAttributes(attrs...),
-	}
-}
-
-// otAttrs converts a generic map to OpenTelemetry attributes.
-func otAttrs(attrMap map[string]interface{}) []attribute.KeyValue {
-	var attrs []attribute.KeyValue
-	for k, v := range attrMap {
-		var a attribute.KeyValue
-		switch v := v.(type) {
-		case string:
-			a = attribute.Key(k).String(v)
-		case bool:
-			a = attribute.Key(k).Bool(v)
-		case int:
-			a = attribute.Key(k).Int(v)
-		case int64:
-			a = attribute.Key(k).Int64(v)
-		default:
-			a = attribute.Key(k).String(fmt.Sprintf("%#v", v))
-		}
-		attrs = append(attrs, a)
-	}
-	return attrs
 }

@@ -460,7 +460,7 @@ func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 	}
 	fetch := func(pageSize int, pageToken string) (token string, err error) {
 		// Add trace span around List API call within the fetch.
-		ctx, _ = startSpan(ctx, "grpcStorageClient.ListObjects")
+		ctx, _ = startSpan(ctx, "grpcStorageClient.ObjectsListCall")
 		defer func() { endSpan(ctx, err) }()
 		var objects []*storagepb.Object
 		var gitr *gapic.ObjectIterator
