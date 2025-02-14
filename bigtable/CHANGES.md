@@ -1,5 +1,12 @@
 # Changes
 
+## [1.35.1](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.35.0...bigtable/v1.35.1) (2025-02-14)
+
+
+### Bug Fixes
+
+* **bigtable:** Allow GC updates on emulated aggregate column family ([#11499](https://github.com/googleapis/google-cloud-go/issues/11499)) ([0682bfa](https://github.com/googleapis/google-cloud-go/commit/0682bfa5563ec81e2cf3fa9138142ebe482fb6fd))
+
 ## [1.35.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.34.0...bigtable/v1.35.0) (2025-01-22)
 
 
