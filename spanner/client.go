@@ -867,13 +867,20 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 		err error
 	)
 
-	// Create session.
-	s, err = c.sc.createSession(ctx)
-	if err != nil {
-		return nil, err
+	if c.idleSessions.isMultiplexedSessionForPartitionedOpsEnabled() {
+		sh, err = c.idleSessions.takeMultiplexed(ctx)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		// Create session.
+		s, err = c.sc.createSession(ctx)
+		if err != nil {
+			return nil, err
+		}
+		sh = &sessionHandle{session: s}
+		sh.updateLastUseTime()
 	}
-	sh = &sessionHandle{session: s}
-	sh.updateLastUseTime()
 
 	// Begin transaction.
 	res, err := sh.getClient().BeginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata(), true), &sppb.BeginTransactionRequest{
@@ -885,6 +892,9 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 		},
 	})
 	if err != nil {
+		if isUnimplementedErrorForMultiplexedPartitionedDML(err) && c.idleSessions.isMultiplexedSessionForPartitionedOpsEnabled() {
+			c.idleSessions.disableMultiplexedSessionForRW()
+		}
 		return nil, ToSpannerError(err)
 	}
 	tx = res.Id

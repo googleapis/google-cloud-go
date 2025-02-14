@@ -47,6 +47,7 @@ case $JOB_TYPE in
 integration-with-multiplexed-session )
   GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS=true
   GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_FOR_RW=true
+  GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_PARTITIONED_OPS=true
   echo "running presubmit with multiplexed sessions enabled: $GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS"
   ;;
 esac
