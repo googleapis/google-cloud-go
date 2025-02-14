@@ -351,6 +351,7 @@ type OnDelete int
 const (
 	NoActionOnDelete OnDelete = iota
 	CascadeOnDelete
+	OnDeleteUnspecified
 )
 
 type (
