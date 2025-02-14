@@ -29,7 +29,7 @@ import (
 // future. To make the test pass simply bump the int, but please also clone the
 // relevant fields.
 func TestCloneDetectOptions_FieldTest(t *testing.T) {
-	const WantNumberOfFields = 14
+	const WantNumberOfFields = 15
 	o := credentials.DetectOptions{}
 	got := reflect.TypeOf(o).NumField()
 	if got != WantNumberOfFields {
@@ -39,6 +39,7 @@ func TestCloneDetectOptions_FieldTest(t *testing.T) {
 
 func TestCloneDetectOptions(t *testing.T) {
 	oldDo := &credentials.DetectOptions{
+		TokenBindingType:  credentials.MTLSHardBinding,
 		Audience:          "aud",
 		Subject:           "sub",
 		EarlyTokenRefresh: 42,
@@ -64,6 +65,9 @@ func TestCloneDetectOptions(t *testing.T) {
 	newDo := CloneDetectOptions(oldDo)
 
 	// Simple fields
+	if got, want := newDo.TokenBindingType, oldDo.TokenBindingType; got != want {
+		t.Fatalf("got %v, want %v", got, want)
+	}
 	if got, want := newDo.Audience, oldDo.Audience; got != want {
 		t.Fatalf("got %v, want %v", got, want)
 	}

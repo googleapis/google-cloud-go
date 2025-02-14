@@ -51,6 +51,14 @@ var (
 	allowOnGCECheck = true
 )
 
+type TokenBindingType int
+
+const (
+	NoBinding TokenBindingType = iota
+	MTLSHardBinding
+	ALTSHardBinding
+)
+
 // OnGCE reports whether this process is running in Google Cloud.
 func OnGCE() bool {
 	// TODO(codyoss): once all libs use this auth lib move metadata check here
@@ -121,6 +129,10 @@ type DetectOptions struct {
 	// https://www.googleapis.com/auth/cloud-platform. Required if Audience is
 	// not provided.
 	Scopes []string
+	// TokenBindingType specifies the type of binding used when requesting a
+	// token whether to request a hard-bound identity token using mTLS or an
+	// instance-bound token using ALTS. Optional.
+	TokenBindingType TokenBindingType
 	// Audience that credentials tokens should have. Only applicable for 2LO
 	// flows with service accounts. If specified, scopes should not be provided.
 	Audience string
