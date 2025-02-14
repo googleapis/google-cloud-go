@@ -1,5 +1,17 @@
 # Changes
 
+## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.21.0...cloudbuild/v1.22.0) (2025-02-14)
+
+
+### Features
+
+* **cloudbuild/apiv1:** Support for git proxy setup ([#11590](https://github.com/googleapis/google-cloud-go/issues/11590)) ([c6a6dc7](https://github.com/googleapis/google-cloud-go/commit/c6a6dc7c6e63740ec25fc1eb34990f4550a6a1f3))
+
+
+### Documentation
+
+* **cloudbuild/apiv1:** Updates to proto message comments ([c6a6dc7](https://github.com/googleapis/google-cloud-go/commit/c6a6dc7c6e63740ec25fc1eb34990f4550a6a1f3))
+
 ## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.20.0...cloudbuild/v1.21.0) (2025-02-12)
 
 
