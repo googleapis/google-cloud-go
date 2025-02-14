@@ -41,7 +41,8 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 	if testing.Short() {
 		t.Skip("TestNewBuiltinMetricsTracerFactory tests skipped in -short mode.")
 	}
-	t.Parallel()
+
+	// Test cannot run in parallel due to setting environment variables.
 
 	ctx := context.Background()
 	clientUID := "test-uid"
