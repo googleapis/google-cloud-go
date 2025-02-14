@@ -1,5 +1,12 @@
 # Changes
 
+## [1.76.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.75.0...spanner/v1.76.0) (2025-02-14)
+
+
+### Features
+
+* **spanner/admin/database:** Add instance partitions field in backup proto ([c6a6dc7](https://github.com/googleapis/google-cloud-go/commit/c6a6dc7c6e63740ec25fc1eb34990f4550a6a1f3))
+
 ## [1.75.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.74.0...spanner/v1.75.0) (2025-02-02)
 
 
