@@ -596,6 +596,130 @@ func TestCommitWithMultiplexedSessionRetry(t *testing.T) {
 	}
 }
 
+func TestClient_ReadWriteTransaction_PreviousTransactionID(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened:                     1,
+			MaxOpened:                     1,
+			enableMultiplexSession:        true,
+			enableMultiplexedSessionForRW: true,
+		},
+	})
+	defer teardown()
+
+	// First ExecuteSql will fail with InvalidArgument to force explicit BeginTransaction
+	invalidSQL := "Update FOO Set BAR=1"
+	server.TestSpanner.PutStatementResult(
+		invalidSQL,
+		&StatementResult{
+			Type: StatementResultError,
+			Err:  status.Error(codes.InvalidArgument, "Invalid update"),
+		},
+	)
+
+	// First Commit will fail with Aborted to force transaction retry
+	server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
+		SimulatedExecutionTime{
+			Errors: []error{status.Error(codes.Aborted, "Transaction aborted")},
+		})
+
+	var attempts int
+	expectedAttempts := 4
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		if attempts == 1 || attempts == 3 {
+			// Replace the aborted result with a real result to prevent the
+			// transaction from aborting indefinitely.
+			server.TestSpanner.PutStatementResult(
+				invalidSQL,
+				&StatementResult{
+					Type:        StatementResultUpdateCount,
+					UpdateCount: 3,
+				},
+			)
+		}
+		if attempts == 2 {
+			server.TestSpanner.PutStatementResult(
+				invalidSQL,
+				&StatementResult{
+					Type: StatementResultError,
+					Err:  status.Error(codes.InvalidArgument, "Invalid update"),
+				},
+			)
+		}
+		attempts++
+		// First attempt: Inline begin fails due to invalid update
+		// Second attempt: Explicit begin succeeds but commit aborts
+		// Third attempt: Inline begin fails, previousTx set to txn2
+		// Fourth attempt: Explicit begin succeeds with previousTx=txn2
+		_, err := tx.Update(ctx, NewStatement(invalidSQL))
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if attempts != expectedAttempts {
+		t.Fatalf("got %d attempts, want %d", attempts, expectedAttempts)
+	}
+
+	requests := drainRequestsFromServer(server.TestSpanner)
+	var txID2 []byte
+	var foundPrevTxID bool
+
+	// Verify the sequence of requests and transaction IDs
+	for i, req := range requests {
+		switch r := req.(type) {
+		case *sppb.ExecuteSqlRequest:
+			// First and third attempts use inline begin
+			if i == 1 || i == 5 {
+				if _, ok := r.Transaction.GetSelector().(*sppb.TransactionSelector_Begin); !ok {
+					t.Errorf("Request %d: got %T, want Begin", i, r.Transaction.GetSelector())
+				}
+			}
+			if txID2 == nil && r.Transaction.GetId() != nil {
+				txID2 = r.Transaction.GetId()
+			}
+		case *sppb.BeginTransactionRequest:
+			if i == 7 {
+				opts := r.Options.GetReadWrite()
+				if opts == nil {
+					t.Fatal("Request 7: missing ReadWrite options")
+				}
+				if !testEqual(opts.MultiplexedSessionPreviousTransactionId, txID2) {
+					t.Errorf("Request 7: got prev txID %v, want %v",
+						opts.MultiplexedSessionPreviousTransactionId, txID2)
+				}
+				foundPrevTxID = true
+			}
+		}
+	}
+
+	if !foundPrevTxID {
+		t.Error("Did not find BeginTransaction request with previous transaction ID")
+	}
+
+	// Verify the complete sequence of requests
+	wantRequests := []interface{}{
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.ExecuteSqlRequest{},       // Attempt 1: Inline begin fails
+		&sppb.BeginTransactionRequest{}, // Attempt 2: Explicit begin
+		&sppb.ExecuteSqlRequest{},       // Attempt 2: Update succeeds
+		&sppb.CommitRequest{},           // Attempt 2: Commit aborts
+		&sppb.ExecuteSqlRequest{},       // Attempt 3: Inline begin fails
+		&sppb.BeginTransactionRequest{}, // Attempt 4: Explicit begin with prev txID
+		&sppb.ExecuteSqlRequest{},       // Attempt 4: Update succeeds
+		&sppb.CommitRequest{},           // Attempt 4: Commit succeeds
+	}
+	if err := compareRequests(wantRequests, requests); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestMutationOnlyCaseAborted(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()

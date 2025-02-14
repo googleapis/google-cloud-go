@@ -134,6 +134,9 @@ type TransactionOptions struct {
 	// Controls whether to exclude recording modifications in current transaction
 	// from the allowed tracking change streams(with DDL option allow_txn_exclusion=true).
 	ExcludeTxnFromChangeStreams bool
+
+	// previousTx is the transaction ID of the previous transaction, private to the library.
+	previousTx transactionID
 }
 
 // merge combines two TransactionOptions that the input parameter will have higher
@@ -1165,6 +1168,7 @@ type ReadWriteTransaction struct {
 	// ReadWriteTransaction. It is set only once in ReadWriteTransaction.begin()
 	// during the initialization of ReadWriteTransaction.
 	tx             transactionID
+	previousTx     transactionID
 	precommitToken *sppb.MultiplexedSessionPrecommitToken
 
 	// txReadyOrClosed is for broadcasting that transaction ID has been returned
@@ -1473,7 +1477,8 @@ func (t *ReadWriteTransaction) getTransactionSelector() *sppb.TransactionSelecto
 			Begin: &sppb.TransactionOptions{
 				Mode: &sppb.TransactionOptions_ReadWrite_{
 					ReadWrite: &sppb.TransactionOptions_ReadWrite{
-						ReadLockMode: t.txOpts.ReadLockMode,
+						ReadLockMode:                            t.txOpts.ReadLockMode,
+						MultiplexedSessionPreviousTransactionId: t.previousTx,
 					},
 				},
 				ExcludeTxnFromChangeStreams: t.txOpts.ExcludeTxnFromChangeStreams,
@@ -1541,7 +1546,8 @@ func beginTransaction(ctx context.Context, sid string, client spannerClient, opt
 		Options: &sppb.TransactionOptions{
 			Mode: &sppb.TransactionOptions_ReadWrite_{
 				ReadWrite: &sppb.TransactionOptions_ReadWrite{
-					ReadLockMode: opts.ReadLockMode,
+					ReadLockMode:                            opts.ReadLockMode,
+					MultiplexedSessionPreviousTransactionId: opts.previousTx,
 				},
 			},
 			ExcludeTxnFromChangeStreams: opts.ExcludeTxnFromChangeStreams,
@@ -1581,6 +1587,7 @@ func (t *ReadWriteTransaction) begin(ctx context.Context, mutation *sppb.Mutatio
 		return nil
 	}
 	sh := t.sh
+	t.txOpts.previousTx = t.previousTx
 	t.mu.Unlock()
 
 	var (
@@ -1791,6 +1798,9 @@ func (t *ReadWriteTransaction) runInTransaction(ctx context.Context, f func(cont
 		errDuringCommit = err != nil
 	}
 	if err != nil {
+		if t.tx != nil {
+			t.previousTx = t.tx
+		}
 		if isAbortedErr(err) {
 			// Retry the transaction using the same session on ABORT error.
 			// Cloud Spanner will create the new transaction with the previous
