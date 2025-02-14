@@ -52,7 +52,7 @@ func computeTokenProvider(opts *DetectOptions, client *metadata.Client) auth.Tok
 type computeProvider struct {
 	scopes           []string
 	client           *metadata.Client
-	tokenBindingType string
+	tokenBindingType TokenBindingType
 }
 
 type metadataTokenResp struct {
@@ -67,16 +67,16 @@ func (cs *computeProvider) Token(ctx context.Context) (*auth.Token, error) {
 		return nil, err
 	}
 	hasScopes := len(cs.scopes) > 0
-	if hasScopes || cs.tokenBindingType != "" {
+	if hasScopes || cs.tokenBindingType != NoBinding {
 		v := url.Values{}
 		if hasScopes {
 			v.Set("scopes", strings.Join(cs.scopes, ","))
 		}
 		switch cs.tokenBindingType {
-		case "MTLS_S2A":
+		case MTLSHardBinding:
 			v.Set("transport", "mtls")
 			v.Set("binding-enforcement", "on")
-		case "ALTS":
+		case ALTSHardBinding:
 			v.Set("transport", "alts")
 		}
 		tokenURI.RawQuery = v.Encode()
