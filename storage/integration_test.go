@@ -406,7 +406,7 @@ func TestIntegration_MultiRangeDownloader(t *testing.T) {
 // or race conditions when multiple goroutines call Add() concurrently on the same MRD multiple times.
 func TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader(t *testing.T) {
 	multiTransportTest(skipHTTP("gRPC implementation specific test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
-		content := make([]byte, 5<<20)
+		content := make([]byte, 5*1<<10<<10)
 		rand.New(rand.NewSource(0)).Read(content)
 		objName := "MultiRangeDownloader"
 
@@ -540,6 +540,132 @@ func TestIntegration_MRDWithNonRetriableError(t *testing.T) {
 			}
 			if k.err == nil && i != 0 {
 				t.Errorf("read range %v to %v want err: nil, got: %v", k.offset, k.limit, k.err)
+			}
+		}
+		if err = reader.Close(); err != nil {
+			t.Fatalf("Error while closing reader %v", err)
+		}
+	})
+}
+
+func TestMultiRangeDownloader_SingleStream(t *testing.T) {
+	multiTransportTest(skipHTTP("mrd is implemented for grpc client"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		content := make([]byte, 5<<20)
+		rand.New(rand.NewSource(0)).Read(content)
+		objName := "mrdnonretry"
+		// Upload test data.
+		obj := client.Bucket(bucket).Object(objName).LimitPerStream(256 * MiB)
+		if err := writeObject(ctx, obj, "text/plain", content); err != nil {
+			t.Fatal(err)
+		}
+		defer func() {
+			if err := obj.Delete(ctx); err != nil {
+				log.Printf("failed to delete test object: %v", err)
+			}
+		}()
+		res := make([]multiRangeDownloaderOutput, 4)
+		reader, err := obj.NewMultiRangeDownloader(context.Background())
+		if err != nil {
+			t.Fatalf("error opening multirangedownloader: %v", err)
+		}
+		callback1 := func(x, y int64, err error) {
+			res[0].offset = x
+			res[0].limit = y
+			res[0].err = err
+		}
+		callback2 := func(x, y int64, err error) {
+			res[1].offset = x
+			res[1].limit = y
+			res[1].err = err
+		}
+		callback3 := func(x, y int64, err error) {
+			res[2].offset = x
+			res[2].limit = y
+			res[2].err = err
+		}
+		callback4 := func(x, y int64, err error) {
+			res[3].offset = x
+			res[3].limit = y
+			res[3].err = err
+		}
+		reader.Add(&res[0].buf, 0, 5<<20, callback1)
+		reader.Add(&res[1].buf, 100, 1000, callback2)
+		reader.Add(&res[2].buf, 0, 600, callback3)
+		reader.Add(&res[3].buf, 36, 999, callback4)
+		reader.Wait()
+		for _, k := range res {
+			if !bytes.Equal(k.buf.Bytes(), content[k.offset:k.offset+k.limit]) {
+				t.Errorf("Error in read range offset %v, limit %v, got: %v; want: %v",
+					k.offset, k.limit, k.buf.Bytes(), content[k.offset:k.offset+k.limit])
+			}
+			if k.err != nil {
+				t.Errorf("read range %v to %v : %v", k.offset, k.limit, k.err)
+			}
+		}
+		if err = reader.Close(); err != nil {
+			t.Errorf("Error while closing reader %v", err)
+		}
+	})
+}
+
+func TestIntegration_MultiRangeDownloaderMultipleStream(t *testing.T) {
+	multiTransportTest(skipHTTP("gRPC implementation specific test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		content := make([]byte, 5<<20)
+		rand.New(rand.NewSource(0)).Read(content)
+		objName := "MultiRangeDownloader"
+
+		// Upload test data.
+		// Set LimtiPerStream to 1 MiB this way we open multiple stream as some of the request are greater than 1 MiB.
+		obj := client.Bucket(bucket).Object(objName).LimitPerStream(1 << 10 << 10)
+		if err := writeObject(ctx, obj, "text/plain", content); err != nil {
+			t.Fatal(err)
+		}
+		defer func() {
+			if err := obj.Delete(ctx); err != nil {
+				log.Printf("failed to delete test object: %v", err)
+			}
+		}()
+		reader, err := obj.NewMultiRangeDownloader(ctx)
+		if err != nil {
+			t.Fatalf("NewMultiRangeDownloader: %v", err)
+		}
+		res := make([]multiRangeDownloaderOutput, 3)
+		callback := func(x, y int64, err error) {
+			res[0].offset = x
+			res[0].limit = y
+			res[0].err = err
+		}
+		callback1 := func(x, y int64, err error) {
+			res[1].offset = x
+			res[1].limit = y
+			res[1].err = err
+		}
+		callback2 := func(x, y int64, err error) {
+			res[2].offset = x
+			res[2].limit = y
+			res[2].err = err
+		}
+		// Read All At Once.
+		reader.Add(&res[0].buf, 0, int64(len(content)), callback)
+		// Read from end. We will read the last 10 bytes.
+		reader.Add(&res[1].buf, -10, 0, callback1)
+		// Read from Front. This will read the starting 10 bytes.
+		reader.Add(&res[2].buf, 0, 10, callback2)
+		reader.Wait()
+		for _, k := range res {
+			if k.offset < 0 {
+				k.offset += int64(len(content))
+			}
+			want := content[k.offset:]
+			if k.limit != 0 {
+				want = content[k.offset : k.offset+k.limit]
+			}
+			if !bytes.Equal(k.buf.Bytes(), want) {
+				t.Errorf("Error in read range offset %v, limit %v, got: %v; want: %v",
+					k.offset, k.limit, k.buf.Bytes(), want)
+			}
+			if k.err != nil {
+				t.Errorf("read range %v to %v : %v", k.offset, k.limit, k.err)
 			}
 		}
 		if err = reader.Close(); err != nil {
