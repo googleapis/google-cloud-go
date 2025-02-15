@@ -1967,6 +1967,11 @@
                 "AddAssociation"
               ]
             },
+            "AddPacketMirroringRule": {
+              "methods": [
+                "AddPacketMirroringRule"
+              ]
+            },
             "AddRule": {
               "methods": [
                 "AddRule"
@@ -2002,6 +2007,11 @@
                 "GetIamPolicy"
               ]
             },
+            "GetPacketMirroringRule": {
+              "methods": [
+                "GetPacketMirroringRule"
+              ]
+            },
             "GetRule": {
               "methods": [
                 "GetRule"
@@ -2022,6 +2032,11 @@
                 "Patch"
               ]
             },
+            "PatchPacketMirroringRule": {
+              "methods": [
+                "PatchPacketMirroringRule"
+              ]
+            },
             "PatchRule": {
               "methods": [
                 "PatchRule"
@@ -2030,6 +2045,11 @@
             "RemoveAssociation": {
               "methods": [
                 "RemoveAssociation"
+              ]
+            },
+            "RemovePacketMirroringRule": {
+              "methods": [
+                "RemovePacketMirroringRule"
               ]
             },
             "RemoveRule": {
