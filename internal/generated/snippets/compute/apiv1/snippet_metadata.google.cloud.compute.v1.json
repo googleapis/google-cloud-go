@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/compute/apiv1",
-    "version": "1.33.0",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
@@ -14870,6 +14870,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_NetworkFirewallPolicies_AddPacketMirroringRule_sync",
+      "title": "compute AddPacketMirroringRule Sample",
+      "description": "AddPacketMirroringRule inserts a packet mirroring rule into a firewall policy.",
+      "file": "NetworkFirewallPoliciesClient/AddPacketMirroringRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AddPacketMirroringRule",
+        "fullName": "google.cloud.compute.v1.NetworkFirewallPoliciesClient.AddPacketMirroringRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.AddPacketMirroringRuleNetworkFirewallPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "NetworkFirewallPoliciesClient",
+          "fullName": "google.cloud.compute.v1.NetworkFirewallPoliciesClient"
+        },
+        "method": {
+          "shortName": "AddPacketMirroringRule",
+          "fullName": "google.cloud.compute.v1.NetworkFirewallPolicies.AddPacketMirroringRule",
+          "service": {
+            "shortName": "NetworkFirewallPolicies",
+            "fullName": "google.cloud.compute.v1.NetworkFirewallPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_NetworkFirewallPolicies_AddRule_sync",
       "title": "compute AddRule Sample",
       "description": "AddRule inserts a rule into a firewall policy.",
@@ -15192,6 +15238,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_NetworkFirewallPolicies_GetPacketMirroringRule_sync",
+      "title": "compute GetPacketMirroringRule Sample",
+      "description": "GetPacketMirroringRule gets a packet mirroring rule of the specified priority.",
+      "file": "NetworkFirewallPoliciesClient/GetPacketMirroringRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetPacketMirroringRule",
+        "fullName": "google.cloud.compute.v1.NetworkFirewallPoliciesClient.GetPacketMirroringRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetPacketMirroringRuleNetworkFirewallPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.FirewallPolicyRule",
+        "client": {
+          "shortName": "NetworkFirewallPoliciesClient",
+          "fullName": "google.cloud.compute.v1.NetworkFirewallPoliciesClient"
+        },
+        "method": {
+          "shortName": "GetPacketMirroringRule",
+          "fullName": "google.cloud.compute.v1.NetworkFirewallPolicies.GetPacketMirroringRule",
+          "service": {
+            "shortName": "NetworkFirewallPolicies",
+            "fullName": "google.cloud.compute.v1.NetworkFirewallPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_NetworkFirewallPolicies_GetRule_sync",
       "title": "compute GetRule Sample",
       "description": "GetRule gets a rule of the specified priority.",
@@ -15376,6 +15468,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_NetworkFirewallPolicies_PatchPacketMirroringRule_sync",
+      "title": "compute PatchPacketMirroringRule Sample",
+      "description": "PatchPacketMirroringRule patches a packet mirroring rule of the specified priority.",
+      "file": "NetworkFirewallPoliciesClient/PatchPacketMirroringRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PatchPacketMirroringRule",
+        "fullName": "google.cloud.compute.v1.NetworkFirewallPoliciesClient.PatchPacketMirroringRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.PatchPacketMirroringRuleNetworkFirewallPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "NetworkFirewallPoliciesClient",
+          "fullName": "google.cloud.compute.v1.NetworkFirewallPoliciesClient"
+        },
+        "method": {
+          "shortName": "PatchPacketMirroringRule",
+          "fullName": "google.cloud.compute.v1.NetworkFirewallPolicies.PatchPacketMirroringRule",
+          "service": {
+            "shortName": "NetworkFirewallPolicies",
+            "fullName": "google.cloud.compute.v1.NetworkFirewallPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_NetworkFirewallPolicies_PatchRule_sync",
       "title": "compute PatchRule Sample",
       "description": "PatchRule patches a rule of the specified priority.",
@@ -15452,6 +15590,52 @@
         "method": {
           "shortName": "RemoveAssociation",
           "fullName": "google.cloud.compute.v1.NetworkFirewallPolicies.RemoveAssociation",
+          "service": {
+            "shortName": "NetworkFirewallPolicies",
+            "fullName": "google.cloud.compute.v1.NetworkFirewallPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_NetworkFirewallPolicies_RemovePacketMirroringRule_sync",
+      "title": "compute RemovePacketMirroringRule Sample",
+      "description": "RemovePacketMirroringRule deletes a packet mirroring rule of the specified priority.",
+      "file": "NetworkFirewallPoliciesClient/RemovePacketMirroringRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RemovePacketMirroringRule",
+        "fullName": "google.cloud.compute.v1.NetworkFirewallPoliciesClient.RemovePacketMirroringRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.RemovePacketMirroringRuleNetworkFirewallPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "NetworkFirewallPoliciesClient",
+          "fullName": "google.cloud.compute.v1.NetworkFirewallPoliciesClient"
+        },
+        "method": {
+          "shortName": "RemovePacketMirroringRule",
+          "fullName": "google.cloud.compute.v1.NetworkFirewallPolicies.RemovePacketMirroringRule",
           "service": {
             "shortName": "NetworkFirewallPolicies",
             "fullName": "google.cloud.compute.v1.NetworkFirewallPolicies"
@@ -20070,7 +20254,7 @@
     {
       "regionTag": "compute_v1_generated_RegionCommitments_Update_sync",
       "title": "compute Update Sample",
-      "description": "Update updates the specified commitment with the data included in the request. Update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: auto_renew.",
+      "description": "Update updates the specified commitment with the data included in the request. Update is performed only on selected fields included as part of update-mask. Only the following fields can be updated: auto_renew and plan.",
       "file": "RegionCommitmentsClient/Update/main.go",
       "language": "GO",
       "clientMethod": {
