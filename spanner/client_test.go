@@ -129,7 +129,7 @@ func setupMockedTestServerWithConfigAndGCPMultiendpointPool(t *testing.T, config
 	if err != nil {
 		t.Fatal(err)
 	}
-	if isMultiplexEnabled {
+	if isMultiplexEnabled || config.enableMultiplexSession {
 		waitFor(t, func() error {
 			client.idleSessions.mu.Lock()
 			defer client.idleSessions.mu.Unlock()
@@ -2726,7 +2726,7 @@ func TestClient_ReadWriteStmtBasedTransaction_TransactionOptions(t *testing.T) {
 				t.Fatalf("Failed initializing a read-write stmt based transaction: %v", err)
 			}
 
-			if !itestutil.Equal(tx.txOpts, *tt.want, cmpopts.IgnoreUnexported(TransactionOptions{})) {
+			if got, want := tx.txOpts, *tt.want; got != want {
 				t.Fatalf("Transaction options mismatch, got %v, want %v", tx.txOpts, *tt.want)
 			}
 		})

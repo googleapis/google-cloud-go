@@ -134,9 +134,6 @@ type TransactionOptions struct {
 	// Controls whether to exclude recording modifications in current transaction
 	// from the allowed tracking change streams(with DDL option allow_txn_exclusion=true).
 	ExcludeTxnFromChangeStreams bool
-
-	// previousTx is the transaction ID of the previous transaction, private to the library.
-	previousTx transactionID
 }
 
 // merge combines two TransactionOptions that the input parameter will have higher
@@ -1540,19 +1537,19 @@ func (t *ReadWriteTransaction) setSessionEligibilityForLongRunning(sh *sessionHa
 	}
 }
 
-func beginTransaction(ctx context.Context, sid string, client spannerClient, opts TransactionOptions, mutationKey *sppb.Mutation) (transactionID, *sppb.MultiplexedSessionPrecommitToken, error) {
-	res, err := client.BeginTransaction(ctx, &sppb.BeginTransactionRequest{
-		Session: sid,
+func beginTransaction(ctx context.Context, opts transactionBeginOptions) (transactionID, *sppb.MultiplexedSessionPrecommitToken, error) {
+	res, err := opts.client.BeginTransaction(ctx, &sppb.BeginTransactionRequest{
+		Session: opts.sessionID,
 		Options: &sppb.TransactionOptions{
 			Mode: &sppb.TransactionOptions_ReadWrite_{
 				ReadWrite: &sppb.TransactionOptions_ReadWrite{
-					ReadLockMode:                            opts.ReadLockMode,
+					ReadLockMode:                            opts.txOptions.ReadLockMode,
 					MultiplexedSessionPreviousTransactionId: opts.previousTx,
 				},
 			},
-			ExcludeTxnFromChangeStreams: opts.ExcludeTxnFromChangeStreams,
+			ExcludeTxnFromChangeStreams: opts.txOptions.ExcludeTxnFromChangeStreams,
 		},
-		MutationKey: mutationKey,
+		MutationKey: opts.mutation,
 	})
 	if err != nil {
 		return nil, nil, err
@@ -1587,7 +1584,7 @@ func (t *ReadWriteTransaction) begin(ctx context.Context, mutation *sppb.Mutatio
 		return nil
 	}
 	sh := t.sh
-	t.txOpts.previousTx = t.previousTx
+	previousTx := t.previousTx
 	t.mu.Unlock()
 
 	var (
@@ -1611,7 +1608,13 @@ func (t *ReadWriteTransaction) begin(ctx context.Context, mutation *sppb.Mutatio
 		if sh != nil {
 			sh.updateLastUseTime()
 		}
-		tx, precommitToken, err = beginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), sh.getID(), sh.getClient(), t.txOpts, mutation)
+		tx, precommitToken, err = beginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), transactionBeginOptions{
+			sessionID:  sh.getID(),
+			client:     sh.getClient(),
+			txOptions:  t.txOpts,
+			mutation:   mutation,
+			previousTx: previousTx,
+		})
 		if isSessionNotFoundError(err) {
 			sh.destroy()
 			// this should not happen with multiplexed session, but if it does, we should not retry with multiplexed session
@@ -2082,4 +2085,16 @@ func isAbortedErr(err error) bool {
 		return true
 	}
 	return false
+}
+
+// transactionBeginOptions holds the parameters for beginning a transaction.
+type transactionBeginOptions struct {
+	context              context.Context
+	metadata             metadata.MD
+	disableRouteToLeader bool
+	sessionID            string
+	client               spannerClient
+	txOptions            TransactionOptions
+	previousTx           transactionID
+	mutation             *sppb.Mutation
 }

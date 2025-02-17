@@ -599,14 +599,15 @@ func TestCommitWithMultiplexedSessionRetry(t *testing.T) {
 func TestClient_ReadWriteTransaction_PreviousTransactionID(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
+	cfg := SessionPoolConfig{
+		MinOpened:                     1,
+		MaxOpened:                     1,
+		enableMultiplexSession:        true,
+		enableMultiplexedSessionForRW: true,
+	}
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
 		DisableNativeMetrics: true,
-		SessionPoolConfig: SessionPoolConfig{
-			MinOpened:                     1,
-			MaxOpened:                     1,
-			enableMultiplexSession:        true,
-			enableMultiplexedSessionForRW: true,
-		},
+		SessionPoolConfig:    cfg,
 	})
 	defer teardown()
 
@@ -715,7 +716,7 @@ func TestClient_ReadWriteTransaction_PreviousTransactionID(t *testing.T) {
 		&sppb.ExecuteSqlRequest{},       // Attempt 4: Update succeeds
 		&sppb.CommitRequest{},           // Attempt 4: Commit succeeds
 	}
-	if err := compareRequests(wantRequests, requests); err != nil {
+	if err := compareRequestsWithConfig(wantRequests, requests, &cfg); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -1351,8 +1352,18 @@ func shouldHaveReceived(server InMemSpannerServer, want []interface{}) ([]interf
 	return got, compareRequests(want, got)
 }
 
-// Compares expected requests (want) with actual requests (got).
+// Original function for backward compatibility
 func compareRequests(want []interface{}, got []interface{}) error {
+	return compareRequestsWithConfig(want, got, nil)
+}
+
+// New function that considers SessionPoolConfig
+func compareRequestsWithConfig(want []interface{}, got []interface{}, config *SessionPoolConfig) error {
+	// Determine if multiplexing is enabled
+	if config != nil {
+		isMultiplexEnabled = config.enableMultiplexSession
+	}
+
 	if reflect.TypeOf(want[0]) != reflect.TypeOf(&sppb.BatchCreateSessionsRequest{}) {
 		sessReq := 0
 		for i := 0; i < len(want); i++ {
