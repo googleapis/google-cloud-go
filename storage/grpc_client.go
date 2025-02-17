@@ -1279,6 +1279,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 				if len(rr.mp) != 0 {
 					drainInboundReadStream(rr.stream)
 				}
+				rr.endReceiver = true
 				rr.mu.Unlock()
 				return
 			default:
