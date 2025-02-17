@@ -132,7 +132,7 @@ func fixScheme(baseURL string) string {
 type GRPCTransportCredentials struct {
 	credentials.TransportCredentials
 	Endpoint string
-	// TransportType TransportType
+	TransportType TransportType
 }
 
 // GetGRPCTransportCredsAndEndpoint returns an instance of
@@ -159,13 +159,13 @@ func GetGRPCTransportCredsAndEndpoint(opts *Options) (*GRPCTransportCredentials,
 			if config.s2aAddress != "" {
 				s2aAddr = config.s2aAddress
 			} else {
-				return &GRPCTransportCredentials{defaultTransportCreds, config.endpoint}, nil
+				return &GRPCTransportCredentials{defaultTransportCreds, config.endpoint, TransportTypeUnknown}, nil
 			}
 		}
 	} else if config.s2aAddress != "" {
 		s2aAddr = config.s2aAddress
 	} else {
-		return &GRPCTransportCredentials{defaultTransportCreds, config.endpoint}, nil
+		return &GRPCTransportCredentials{defaultTransportCreds, config.endpoint, TransportTypeUnknown}, nil
 	}
 
 	var fallbackOpts *s2a.FallbackOptions
@@ -183,9 +183,9 @@ func GetGRPCTransportCredsAndEndpoint(opts *Options) (*GRPCTransportCredentials,
 	})
 	if err != nil {
 		// Use default if we cannot initialize S2A client transport credentials.
-		return &GRPCTransportCredentials{defaultTransportCreds, config.endpoint}, nil
+		return &GRPCTransportCredentials{defaultTransportCreds, config.endpoint, TransportTypeUnknown}, nil
 	}
-	return &GRPCTransportCredentials{s2aTransportCreds, config.s2aMTLSEndpoint}, nil
+	return &GRPCTransportCredentials{s2aTransportCreds, config.s2aMTLSEndpoint, TransportTypeMTLSS2A}, nil
 }
 
 // GetHTTPTransportConfig returns a client certificate source and a function for
