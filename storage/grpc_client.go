@@ -1184,6 +1184,8 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 		done:             false,
 		activeTask:       0,
 		streamRecreation: false,
+		endReceiver:      false,
+		endSender:        false,
 	}
 
 	// streamManager goroutine runs in background where we send message to gcs and process response.
@@ -1194,6 +1196,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 			case <-rr.ctx.Done():
 				rr.mu.Lock()
 				rr.done = true
+				rr.endSender = true
 				if rr.stream != nil {
 					rr.stream.CloseSend()
 				}
@@ -1207,6 +1210,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 				if rr.stream != nil {
 					rr.stream.CloseSend()
 				}
+				rr.endSender = true
 				rr.mu.Unlock()
 				return
 			case currentSpec = <-rr.data:
@@ -1255,6 +1259,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 			select {
 			case <-rr.ctx.Done():
 				rr.mu.Lock()
+				rr.endReceiver = true
 				rr.done = true
 				if len(rr.mp) != 0 {
 					drainInboundReadStream(rr.stream)
@@ -1284,7 +1289,9 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 					rr.readHandle = resp.GetReadHandle().GetHandle()
 				}
 				if err == io.EOF {
-					err = nil
+					rr.mu.Lock()
+					rr.endReceiver = true
+					rr.mu.Unlock()
 				}
 				if err != nil {
 					// cancel stream and reopen the stream again.
@@ -1350,6 +1357,8 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 		err = rr.retryStream(err)
 		if err != nil {
 			rr.mu.Lock()
+			rr.endReceiver = true
+			rr.endSender = true
 			for key := range rr.mp {
 				rr.mp[key].callback(rr.mp[key].offset, rr.mp[key].limit, err)
 				delete(rr.mp, key)
@@ -1357,6 +1366,10 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 			rr.mu.Unlock()
 			rr.close()
 		} else {
+			rr.mu.Lock()
+			rr.endReceiver = false
+			rr.endSender = false
+			rr.mu.Unlock()
 			// If stream recreation happened successfully lets again start
 			// both the goroutine making the whole flow asynchronous again.
 			if thread == "receiver" {
@@ -1496,10 +1509,17 @@ func (mr *gRPCBidiReader) close() error {
 	}
 	mr.done = true
 	mr.activeTask = 0
-	if mr.cancel != nil {
-		mr.cancel()
-	}
 	mr.mu.Unlock()
+	mr.mu.Lock()
+	tryClosing := !(mr.endReceiver && mr.endSender)
+	mr.mu.Unlock()
+
+	for tryClosing {
+		mr.mu.Lock()
+		tryClosing = !(mr.endReceiver && mr.endSender)
+		mr.mu.Unlock()
+	}
+	defer mr.cancel()
 	return nil
 }
 
@@ -1943,6 +1963,8 @@ type gRPCBidiReader struct {
 	objectSize       int64               // always use the mutex when accessing this variable
 	retrier          func(error, string)
 	streamRecreation bool // This helps us identify if stream recreation is in progress or not. If stream recreation gets called from two goroutine then this will stop second one.
+	endReceiver      bool
+	endSender        bool
 }
 
 // gRPCReader is used by storage.Reader if the experimental option WithGRPCBidiReads is passed.
@@ -2989,6 +3011,5 @@ func checkCanceled(err error) error {
 	if status.Code(err) == codes.Canceled {
 		return context.Canceled
 	}
-
 	return err
 }
