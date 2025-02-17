@@ -413,9 +413,9 @@ func TestGetGRPCTransportConfigAndEndpoint_S2A(t *testing.T) {
 			} else {
 				t.Setenv(googleAPIUseCertSource, "false")
 			}
-			_, endpoint, _, _ := GetGRPCTransportCredsAndEndpoint(tc.opts)
-			if tc.want != endpoint {
-				t.Fatalf("want endpoint: %s, got %s", tc.want, endpoint)
+			transportCreds, _ := GetGRPCTransportCredsAndEndpoint(tc.opts)
+			if tc.want != transportCreds.Endpoint {
+				t.Fatalf("want endpoint: %s, got %s", tc.want, transportCreds.Endpoint)
 			}
 		})
 	}
@@ -764,12 +764,12 @@ func TestGetGRPCTransportCredsAndEndpoint_UniverseDomain(t *testing.T) {
 			} else {
 				t.Setenv(googleAPIUseCertSource, "false")
 			}
-			_, endpoint, _, err := GetGRPCTransportCredsAndEndpoint(tc.opts)
+			transportCreds, err := GetGRPCTransportCredsAndEndpoint(tc.opts)
 			if err != nil {
 				t.Fatalf("err: %v", err)
 			} else {
-				if tc.wantEndpoint != endpoint {
-					t.Errorf("want endpoint: %s, got %s", tc.wantEndpoint, endpoint)
+				if tc.wantEndpoint != transportCreds.Endpoint {
+					t.Errorf("want endpoint: %s, got %s", tc.wantEndpoint, transportCreds.Endpoint)
 				}
 			}
 		})
