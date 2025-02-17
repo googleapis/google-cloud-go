@@ -2089,12 +2089,9 @@ func isAbortedErr(err error) bool {
 
 // transactionBeginOptions holds the parameters for beginning a transaction.
 type transactionBeginOptions struct {
-	context              context.Context
-	metadata             metadata.MD
-	disableRouteToLeader bool
-	sessionID            string
-	client               spannerClient
-	txOptions            TransactionOptions
-	previousTx           transactionID
-	mutation             *sppb.Mutation
+	sessionID  string
+	client     spannerClient
+	txOptions  TransactionOptions
+	previousTx transactionID
+	mutation   *sppb.Mutation
 }
