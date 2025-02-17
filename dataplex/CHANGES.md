@@ -1,6 +1,18 @@
 # Changes
 
 
+## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.21.0...dataplex/v1.22.0) (2025-02-12)
+
+
+### Features
+
+* **dataplex:** Added value `NONE` to  the `SyncMode` enum ([7e10021](https://github.com/googleapis/google-cloud-go/commit/7e100215974a28e556e9b801b4922a0e97bd98c1))
+
+
+### Documentation
+
+* **dataplex:** Modified various comments ([7e10021](https://github.com/googleapis/google-cloud-go/commit/7e100215974a28e556e9b801b4922a0e97bd98c1))
+
 ## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.20.0...dataplex/v1.21.0) (2025-01-02)
 
 

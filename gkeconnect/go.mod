@@ -2,8 +2,6 @@ module cloud.google.com/go/gkeconnect
 
 go 1.22.7
 
-toolchain go1.22.12
-
 require (
 	github.com/googleapis/gax-go/v2 v2.14.1
 	google.golang.org/api v0.220.0

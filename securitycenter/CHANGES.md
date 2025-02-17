@@ -1,5 +1,18 @@
 # Changes
 
+## [1.36.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.35.3...securitycenter/v1.36.0) (2025-02-14)
+
+
+### Features
+
+* **securitycenter:** Added data access event fields to finding proto ([5a3c5f3](https://github.com/googleapis/google-cloud-go/commit/5a3c5f3a614dbc8f91e5fcf3789bcced6ba4a625))
+* **securitycenter:** Added more information about DDoS attack in cloud armor proto ([#11597](https://github.com/googleapis/google-cloud-go/issues/11597)) ([5a3c5f3](https://github.com/googleapis/google-cloud-go/commit/5a3c5f3a614dbc8f91e5fcf3789bcced6ba4a625))
+
+
+### Documentation
+
+* **securitycenter:** Clarified comments for tag_values field in resource_value_config to make it clear that field represents tag value ids, not tag values ([5a3c5f3](https://github.com/googleapis/google-cloud-go/commit/5a3c5f3a614dbc8f91e5fcf3789bcced6ba4a625))
+
 ## [1.35.3](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.35.2...securitycenter/v1.35.3) (2025-01-02)
 
 
