@@ -1065,8 +1065,13 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 				return ToSpannerError(err)
 			}
 		} else {
+			var previousTx transactionID
+			if t != nil {
+				previousTx = t.previousTx
+			}
 			t = &ReadWriteTransaction{
 				txReadyOrClosed: make(chan struct{}),
+				previousTx:      previousTx,
 			}
 			t.txReadOnly.sh = sh
 		}
