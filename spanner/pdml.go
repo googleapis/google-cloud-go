@@ -94,6 +94,7 @@ func (c *Client) partitionedUpdate(ctx context.Context, statement Statement, opt
 				return count, nil
 			}
 			if isUnimplementedErrorForMultiplexedPartitionedDML(err) && sh.session.pool.isMultiplexedSessionForPartitionedOpsEnabled() {
+				logf(c.logger, "Warning: Multiplexed sessions are not supported for partitioned operations in this environment. Falling back to regular sessions.")
 				sh.session.pool.disableMultiplexedSessionForPartitionedOps()
 				sh, err = c.idleSessions.take(ctx)
 				if err != nil {

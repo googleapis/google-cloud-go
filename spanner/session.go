@@ -1999,7 +1999,7 @@ func isUnimplementedErrorForMultiplexedPartitionReads(err error) bool {
 	if err == nil {
 		return false
 	}
-	return ErrCode(err) == codes.InvalidArgument && strings.Contains(err.Error(), "Partitioned operations are not supported with multiplexed sessions")
+	return strings.Contains(err.Error(), "Partitioned operations are not supported with multiplexed sessions")
 }
 
 func isFailedInlineBeginTransaction(err error) bool {
