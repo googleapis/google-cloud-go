@@ -2727,7 +2727,7 @@ func TestClient_ReadWriteStmtBasedTransaction_TransactionOptions(t *testing.T) {
 			}
 
 			if got, want := tx.txOpts, *tt.want; got != want {
-				t.Fatalf("Transaction options mismatch, got %v, want %v", tx.txOpts, *tt.want)
+				t.Fatalf("Transaction options mismatch, got %v, want %v", got, want)
 			}
 		})
 	}

@@ -1352,18 +1352,12 @@ func shouldHaveReceived(server InMemSpannerServer, want []interface{}) ([]interf
 	return got, compareRequests(want, got)
 }
 
-// Original function for backward compatibility
+// Compares expected requests (want) with actual requests (got).
 func compareRequests(want []interface{}, got []interface{}) error {
 	return compareRequestsWithConfig(want, got, nil)
 }
 
-// New function that considers SessionPoolConfig
 func compareRequestsWithConfig(want []interface{}, got []interface{}, config *SessionPoolConfig) error {
-	// Determine if multiplexing is enabled
-	if config != nil {
-		isMultiplexEnabled = config.enableMultiplexSession
-	}
-
 	if reflect.TypeOf(want[0]) != reflect.TypeOf(&sppb.BatchCreateSessionsRequest{}) {
 		sessReq := 0
 		for i := 0; i < len(want); i++ {
@@ -1374,7 +1368,7 @@ func compareRequestsWithConfig(want []interface{}, got []interface{}, config *Se
 		}
 		want[0], want[sessReq] = want[sessReq], want[0]
 	}
-	if isMultiplexEnabled {
+	if isMultiplexEnabled || (config != nil && config.enableMultiplexSession) {
 		if reflect.TypeOf(want[0]) != reflect.TypeOf(&sppb.CreateSessionRequest{}) {
 			want = append([]interface{}{&sppb.CreateSessionRequest{}}, want...)
 		}
