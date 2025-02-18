@@ -262,13 +262,13 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 		tOpts.EnableDirectPath = io.EnableDirectPath
 		tOpts.EnableDirectPathXds = io.EnableDirectPathXds
 	}
-	transportCreds, endpoint, err := transport.GetGRPCTransportCredsAndEndpoint(tOpts)
+	transportCreds, err := transport.GetGRPCTransportCredsAndEndpoint(tOpts)
 	if err != nil {
 		return nil, err
 	}
 
 	if !secure {
-		transportCreds = grpcinsecure.NewCredentials()
+		transportCreds.TransportCredentials = grpcinsecure.NewCredentials()
 	}
 
 	// Initialize gRPC dial options with transport-level security options.
@@ -324,9 +324,8 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 				clientUniverseDomain: opts.UniverseDomain,
 			}),
 		)
-
 		// Attempt Direct Path
-		grpcOpts, endpoint = configureDirectPath(grpcOpts, opts, endpoint, creds)
+		grpcOpts, transportCreds.Endpoint = configureDirectPath(grpcOpts, opts, transportCreds.Endpoint, creds)
 	}
 
 	// Add tracing, but before the other options, so that clients can override the
@@ -335,7 +334,7 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 	grpcOpts = addOpenTelemetryStatsHandler(grpcOpts, opts)
 	grpcOpts = append(grpcOpts, opts.GRPCDialOpts...)
 
-	return grpc.Dial(endpoint, grpcOpts...)
+	return grpc.Dial(transportCreds.Endpoint, grpcOpts...)
 }
 
 // grpcKeyProvider satisfies https://pkg.go.dev/google.golang.org/grpc/credentials#PerRPCCredentials.
