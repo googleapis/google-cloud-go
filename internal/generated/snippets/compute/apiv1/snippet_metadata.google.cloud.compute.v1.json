@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/compute/apiv1",
-    "version": "1.33.0",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
@@ -28072,6 +28072,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_Routers_DeleteRoutePolicy_sync",
+      "title": "compute DeleteRoutePolicy Sample",
+      "description": "DeleteRoutePolicy deletes Route Policy",
+      "file": "RoutersClient/DeleteRoutePolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteRoutePolicy",
+        "fullName": "google.cloud.compute.v1.RoutersClient.DeleteRoutePolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.DeleteRoutePolicyRouterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RoutersClient",
+          "fullName": "google.cloud.compute.v1.RoutersClient"
+        },
+        "method": {
+          "shortName": "DeleteRoutePolicy",
+          "fullName": "google.cloud.compute.v1.Routers.DeleteRoutePolicy",
+          "service": {
+            "shortName": "Routers",
+            "fullName": "google.cloud.compute.v1.Routers"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_Routers_Get_sync",
       "title": "compute Get Sample",
       "description": "Get returns the specified Router resource.",
@@ -28205,6 +28251,52 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_Routers_GetRoutePolicy_sync",
+      "title": "compute GetRoutePolicy Sample",
+      "description": "GetRoutePolicy returns specified Route Policy",
+      "file": "RoutersClient/GetRoutePolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetRoutePolicy",
+        "fullName": "google.cloud.compute.v1.RoutersClient.GetRoutePolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetRoutePolicyRouterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.RoutersGetRoutePolicyResponse",
+        "client": {
+          "shortName": "RoutersClient",
+          "fullName": "google.cloud.compute.v1.RoutersClient"
+        },
+        "method": {
+          "shortName": "GetRoutePolicy",
+          "fullName": "google.cloud.compute.v1.Routers.GetRoutePolicy",
+          "service": {
+            "shortName": "Routers",
+            "fullName": "google.cloud.compute.v1.Routers"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -28348,6 +28440,98 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_Routers_ListBgpRoutes_sync",
+      "title": "compute ListBgpRoutes Sample",
+      "description": "ListBgpRoutes retrieves a list of router bgp routes available to the specified project.",
+      "file": "RoutersClient/ListBgpRoutes/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListBgpRoutes",
+        "fullName": "google.cloud.compute.v1.RoutersClient.ListBgpRoutes",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListBgpRoutesRoutersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BgpRouteIterator",
+        "client": {
+          "shortName": "RoutersClient",
+          "fullName": "google.cloud.compute.v1.RoutersClient"
+        },
+        "method": {
+          "shortName": "ListBgpRoutes",
+          "fullName": "google.cloud.compute.v1.Routers.ListBgpRoutes",
+          "service": {
+            "shortName": "Routers",
+            "fullName": "google.cloud.compute.v1.Routers"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_Routers_ListRoutePolicies_sync",
+      "title": "compute ListRoutePolicies Sample",
+      "description": "ListRoutePolicies retrieves a list of router route policy subresources available to the specified project.",
+      "file": "RoutersClient/ListRoutePolicies/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRoutePolicies",
+        "fullName": "google.cloud.compute.v1.RoutersClient.ListRoutePolicies",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListRoutePoliciesRoutersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RoutePolicyIterator",
+        "client": {
+          "shortName": "RoutersClient",
+          "fullName": "google.cloud.compute.v1.RoutersClient"
+        },
+        "method": {
+          "shortName": "ListRoutePolicies",
+          "fullName": "google.cloud.compute.v1.Routers.ListRoutePolicies",
+          "service": {
+            "shortName": "Routers",
+            "fullName": "google.cloud.compute.v1.Routers"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_Routers_Patch_sync",
       "title": "compute Patch Sample",
       "description": "Patch patches the specified Router resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.",
@@ -28378,6 +28562,52 @@
         "method": {
           "shortName": "Patch",
           "fullName": "google.cloud.compute.v1.Routers.Patch",
+          "service": {
+            "shortName": "Routers",
+            "fullName": "google.cloud.compute.v1.Routers"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_Routers_PatchRoutePolicy_sync",
+      "title": "compute PatchRoutePolicy Sample",
+      "description": "PatchRoutePolicy patches Route Policy",
+      "file": "RoutersClient/PatchRoutePolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PatchRoutePolicy",
+        "fullName": "google.cloud.compute.v1.RoutersClient.PatchRoutePolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.PatchRoutePolicyRouterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RoutersClient",
+          "fullName": "google.cloud.compute.v1.RoutersClient"
+        },
+        "method": {
+          "shortName": "PatchRoutePolicy",
+          "fullName": "google.cloud.compute.v1.Routers.PatchRoutePolicy",
           "service": {
             "shortName": "Routers",
             "fullName": "google.cloud.compute.v1.Routers"
@@ -28470,6 +28700,52 @@
         "method": {
           "shortName": "Update",
           "fullName": "google.cloud.compute.v1.Routers.Update",
+          "service": {
+            "shortName": "Routers",
+            "fullName": "google.cloud.compute.v1.Routers"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_Routers_UpdateRoutePolicy_sync",
+      "title": "compute UpdateRoutePolicy Sample",
+      "description": "UpdateRoutePolicy updates or creates new Route Policy",
+      "file": "RoutersClient/UpdateRoutePolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateRoutePolicy",
+        "fullName": "google.cloud.compute.v1.RoutersClient.UpdateRoutePolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.UpdateRoutePolicyRouterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RoutersClient",
+          "fullName": "google.cloud.compute.v1.RoutersClient"
+        },
+        "method": {
+          "shortName": "UpdateRoutePolicy",
+          "fullName": "google.cloud.compute.v1.Routers.UpdateRoutePolicy",
           "service": {
             "shortName": "Routers",
             "fullName": "google.cloud.compute.v1.Routers"
