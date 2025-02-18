@@ -120,13 +120,20 @@ func fixScheme(baseURL string) string {
 	return baseURL
 }
 
+// GRPCTransportCredentials embeds interface TransportCredentials with additional data.
+type GRPCTransportCredentials struct {
+	credentials.TransportCredentials
+	Endpoint string
+	// TransportType TransportType
+}
+
 // GetGRPCTransportCredsAndEndpoint returns an instance of
 // [google.golang.org/grpc/credentials.TransportCredentials], and the
 // corresponding endpoint to use for GRPC client.
-func GetGRPCTransportCredsAndEndpoint(opts *Options) (credentials.TransportCredentials, string, error) {
+func GetGRPCTransportCredsAndEndpoint(opts *Options) (*GRPCTransportCredentials, error) {
 	config, err := getTransportConfig(opts)
 	if err != nil {
-		return nil, "", err
+		return nil, err
 	}
 
 	defaultTransportCreds := credentials.NewTLS(&tls.Config{
@@ -144,13 +151,13 @@ func GetGRPCTransportCredsAndEndpoint(opts *Options) (credentials.TransportCrede
 			if config.s2aAddress != "" {
 				s2aAddr = config.s2aAddress
 			} else {
-				return defaultTransportCreds, config.endpoint, nil
+				return &GRPCTransportCredentials{defaultTransportCreds, config.endpoint}, nil
 			}
 		}
 	} else if config.s2aAddress != "" {
 		s2aAddr = config.s2aAddress
 	} else {
-		return defaultTransportCreds, config.endpoint, nil
+		return &GRPCTransportCredentials{defaultTransportCreds, config.endpoint}, nil
 	}
 
 	var fallbackOpts *s2a.FallbackOptions
@@ -168,9 +175,9 @@ func GetGRPCTransportCredsAndEndpoint(opts *Options) (credentials.TransportCrede
 	})
 	if err != nil {
 		// Use default if we cannot initialize S2A client transport credentials.
-		return defaultTransportCreds, config.endpoint, nil
+		return &GRPCTransportCredentials{defaultTransportCreds, config.endpoint}, nil
 	}
-	return s2aTransportCreds, config.s2aMTLSEndpoint, nil
+	return &GRPCTransportCredentials{s2aTransportCreds, config.s2aMTLSEndpoint}, nil
 }
 
 // GetHTTPTransportConfig returns a client certificate source and a function for
