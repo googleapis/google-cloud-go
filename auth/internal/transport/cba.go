@@ -52,11 +52,13 @@ const (
 	mtlsMDSKey  = "/run/google-mds-mtls/client.key"
 )
 
-// TransportType represents the type of transport.
-type TransportType int
+// Type represents the type of transport used.
+type Type int
 
 const (
-	TransportTypeUnknown TransportType = iota
+	// TransportTypeUnknown represents an unknown transport type and is the default option.
+	TransportTypeUnknown Type = iota
+	// TransportTypeMTLSS2A represents the mTLS transport type using S2A.
 	TransportTypeMTLSS2A
 )
 
@@ -132,12 +134,12 @@ func fixScheme(baseURL string) string {
 type GRPCTransportCredentials struct {
 	credentials.TransportCredentials
 	Endpoint      string
-	TransportType TransportType
+	TransportType Type
 }
 
 // GetGRPCTransportCredsAndEndpoint returns an instance of
 // [google.golang.org/grpc/credentials.TransportCredentials], and the
-// corresponding endpoint to use for GRPC client.
+// corresponding endpoint and transport type to use for GRPC client.
 func GetGRPCTransportCredsAndEndpoint(opts *Options) (*GRPCTransportCredentials, error) {
 	config, err := getTransportConfig(opts)
 	if err != nil {

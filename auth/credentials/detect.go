@@ -51,11 +51,20 @@ var (
 	allowOnGCECheck = true
 )
 
+// TokenBindingType specifies the type of binding used when requesting a
+// token whether to request a hard-bound identity token using mTLS or an
+// instance-bound token using ALTS.
 type TokenBindingType int
 
 const (
+	// NoBinding specifies that requested tokens are not required to have a
+	// binding. This is the default option.
 	NoBinding TokenBindingType = iota
+	// MTLSHardBinding specifies that a hard-bound identity token should be
+	// requested using an mTLS with S2A channel.
 	MTLSHardBinding
+	// ALTSHardBinding specifies that an instance-bound identity token should
+	// be requested using an ALTS channel.
 	ALTSHardBinding
 )
 

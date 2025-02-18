@@ -288,7 +288,7 @@ func TestGetGRPCTransportConfigAndEndpoint_S2A(t *testing.T) {
 		opts         *Options
 		s2ARespFn    func(*slog.Logger) (string, error)
 		wantEndpoint string
-		wantType     TransportType
+		wantType     Type
 	}{
 		{
 			name: "has client cert",
