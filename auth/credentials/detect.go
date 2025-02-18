@@ -51,19 +51,19 @@ var (
 	allowOnGCECheck = true
 )
 
-// TokenBindingType specifies the type of binding used when requesting a
-// token whether to request a hard-bound identity token using mTLS or an
-// instance-bound token using ALTS.
+// TokenBindingType specifies the type of binding used when requesting a token
+// whether to request a hard-bound token using mTLS or an instance identity
+// bound token using ALTS.
 type TokenBindingType int
 
 const (
 	// NoBinding specifies that requested tokens are not required to have a
 	// binding. This is the default option.
 	NoBinding TokenBindingType = iota
-	// MTLSHardBinding specifies that a hard-bound identity token should be
-	// requested using an mTLS with S2A channel.
+	// MTLSHardBinding specifies that a hard-bound token should be requested
+	// using an mTLS with S2A channel.
 	MTLSHardBinding
-	// ALTSHardBinding specifies that an instance-bound identity token should
+	// ALTSHardBinding specifies that an instance identity bound token should
 	// be requested using an ALTS channel.
 	ALTSHardBinding
 )
@@ -139,8 +139,8 @@ type DetectOptions struct {
 	// not provided.
 	Scopes []string
 	// TokenBindingType specifies the type of binding used when requesting a
-	// token whether to request a hard-bound identity token using mTLS or an
-	// instance-bound token using ALTS. Optional.
+	// token whether to request a hard-bound token using mTLS or an instance
+	// identity bound token using ALTS. Optional.
 	TokenBindingType TokenBindingType
 	// Audience that credentials tokens should have. Only applicable for 2LO
 	// flows with service accounts. If specified, scopes should not be provided.
