@@ -129,7 +129,7 @@ func setupMockedTestServerWithConfigAndGCPMultiendpointPool(t *testing.T, config
 	if err != nil {
 		t.Fatal(err)
 	}
-	if isMultiplexEnabled {
+	if isMultiplexEnabled || config.enableMultiplexSession {
 		waitFor(t, func() error {
 			client.idleSessions.mu.Lock()
 			defer client.idleSessions.mu.Unlock()
