@@ -131,7 +131,7 @@ func fixScheme(baseURL string) string {
 // GRPCTransportCredentials embeds interface TransportCredentials with additional data.
 type GRPCTransportCredentials struct {
 	credentials.TransportCredentials
-	Endpoint string
+	Endpoint      string
 	TransportType TransportType
 }
 
