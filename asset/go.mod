@@ -1,6 +1,6 @@
 module cloud.google.com/go/asset
 
-go 1.22.7
+go 1.23.0
 
 require (
 	cloud.google.com/go/accesscontextmanager v1.9.3
