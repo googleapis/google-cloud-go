@@ -385,6 +385,12 @@ type JobStatistics struct {
 	StartTime           time.Time
 	EndTime             time.Time
 	TotalBytesProcessed int64
+	TotalSlotMs         int64
+
+	// FinalExecutionDurationMs is the duration in milliseconds of the
+	// execution of the final attempt of this job, as BigQuery may internally
+	// re-attempt to execute the job.
+	FinalExecutionDurationMs int64
 
 	Details Statistics
 
@@ -399,7 +405,14 @@ type JobStatistics struct {
 	ScriptStatistics *ScriptStatistics
 
 	// ReservationUsage attributes slot consumption to reservations.
+	// This field reported misleading information and will no longer be populated.
 	ReservationUsage []*ReservationUsage
+
+	// ReservationId indicates the name of the primary reservation assigned to
+	// this job. Note that this could be different than reservations reported
+	// in the reservation usage field if parent reservations were used to
+	// execute this job.
+	ReservationId string
 
 	// TransactionInfo indicates the transaction ID associated with the job, if any.
 	TransactionInfo *TransactionInfo
@@ -1018,12 +1031,17 @@ func (j *Job) setStatistics(s *bq.JobStatistics, c *Client) {
 		StartTime:           unixMillisToTime(s.StartTime),
 		EndTime:             unixMillisToTime(s.EndTime),
 		TotalBytesProcessed: s.TotalBytesProcessed,
-		NumChildJobs:        s.NumChildJobs,
-		ParentJobID:         s.ParentJobId,
-		ScriptStatistics:    bqToScriptStatistics(s.ScriptStatistics),
-		ReservationUsage:    bqToReservationUsage(s.ReservationUsage),
-		TransactionInfo:     bqToTransactionInfo(s.TransactionInfo),
-		SessionInfo:         bqToSessionInfo(s.SessionInfo),
+		TotalSlotMs:         s.TotalSlotMs,
+
+		FinalExecutionDurationMs: s.FinalExecutionDurationMs,
+
+		NumChildJobs:     s.NumChildJobs,
+		ParentJobID:      s.ParentJobId,
+		ScriptStatistics: bqToScriptStatistics(s.ScriptStatistics),
+		ReservationUsage: bqToReservationUsage(s.ReservationUsage),
+		ReservationId:    s.ReservationId,
+		TransactionInfo:  bqToTransactionInfo(s.TransactionInfo),
+		SessionInfo:      bqToSessionInfo(s.SessionInfo),
 	}
 	switch {
 	case s.Extract != nil:
