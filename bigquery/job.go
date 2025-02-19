@@ -414,6 +414,17 @@ type JobStatistics struct {
 	// execute this job.
 	ReservationId string
 
+	// Edition is the name of edition corresponding to the reservation for
+	// this job at the time of this update.
+	//
+	// Possible values:
+	//   "RESERVATION_EDITION_UNSPECIFIED" - Default value, which will be treated
+	// as ENTERPRISE.
+	//   "STANDARD" - Standard edition.
+	//   "ENTERPRISE" - Enterprise edition.
+	//   "ENTERPRISE_PLUS" - Enterprise Plus edition.
+	Edition string
+
 	// TransactionInfo indicates the transaction ID associated with the job, if any.
 	TransactionInfo *TransactionInfo
 
@@ -1027,21 +1038,20 @@ func (j *Job) setStatistics(s *bq.JobStatistics, c *Client) {
 		return
 	}
 	js := &JobStatistics{
-		CreationTime:        unixMillisToTime(s.CreationTime),
-		StartTime:           unixMillisToTime(s.StartTime),
-		EndTime:             unixMillisToTime(s.EndTime),
-		TotalBytesProcessed: s.TotalBytesProcessed,
-		TotalSlotMs:         s.TotalSlotMs,
-
+		CreationTime:             unixMillisToTime(s.CreationTime),
+		StartTime:                unixMillisToTime(s.StartTime),
+		EndTime:                  unixMillisToTime(s.EndTime),
+		TotalBytesProcessed:      s.TotalBytesProcessed,
+		TotalSlotMs:              s.TotalSlotMs,
 		FinalExecutionDurationMs: s.FinalExecutionDurationMs,
-
-		NumChildJobs:     s.NumChildJobs,
-		ParentJobID:      s.ParentJobId,
-		ScriptStatistics: bqToScriptStatistics(s.ScriptStatistics),
-		ReservationUsage: bqToReservationUsage(s.ReservationUsage),
-		ReservationId:    s.ReservationId,
-		TransactionInfo:  bqToTransactionInfo(s.TransactionInfo),
-		SessionInfo:      bqToSessionInfo(s.SessionInfo),
+		NumChildJobs:             s.NumChildJobs,
+		ParentJobID:              s.ParentJobId,
+		ScriptStatistics:         bqToScriptStatistics(s.ScriptStatistics),
+		ReservationUsage:         bqToReservationUsage(s.ReservationUsage),
+		ReservationId:            s.ReservationId,
+		Edition:                  s.Edition,
+		TransactionInfo:          bqToTransactionInfo(s.TransactionInfo),
+		SessionInfo:              bqToSessionInfo(s.SessionInfo),
 	}
 	switch {
 	case s.Extract != nil:
