@@ -1200,7 +1200,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 			case <-rr.ctx.Done():
 				rr.mu.Lock()
 				rr.done = true
-				for i, _ := range rr.endSender {
+				for i := range rr.endSender {
 					rr.endSender[i] = true
 					if rr.stream != nil {
 						rr.stream[i].CloseSend()
@@ -1213,7 +1213,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 				return
 			case <-rr.closeManager:
 				rr.mu.Lock()
-				for i, _ := range rr.endSender {
+				for i := range rr.endSender {
 					rr.endSender[i] = true
 					if rr.stream != nil {
 						rr.stream[i].CloseSend()
