@@ -80,7 +80,7 @@ golint ./... 2>&1 | (
 ) |
   tee /dev/stderr | (! read)
 
-staticcheck -go 1.23 ./... 2>&1 | (
+staticcheck -go 1.24 ./... 2>&1 | (
   grep -v SA1019 |
     grep -v internal/btree/btree.go |
     grep -v httpreplay/internal/proxy/debug.go |
