@@ -1113,7 +1113,6 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 				Handle: readHandle,
 			}
 		}
-		fmt.Println("new stream creation in progress")
 		var stream storagepb.Storage_BidiReadObjectClient
 		var resp *storagepb.BidiReadObjectResponse
 		cc, cancel := context.WithCancel(ctx)
@@ -1200,7 +1199,6 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 			select {
 			case <-rr.ctx.Done():
 				rr.mu.Lock()
-				fmt.Println("context done")
 				rr.done = true
 				for i, _ := range rr.endSender {
 					rr.endSender[i] = true
@@ -1211,11 +1209,9 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 				rr.mu.Unlock()
 				return
 			case <-rr.managerRetry:
-				fmt.Println("manager retry")
 				// We are not closing stream here as it is already closed and we are retring it.
 				return
 			case <-rr.closeManager:
-				fmt.Println("close manager")
 				rr.mu.Lock()
 				for i, _ := range rr.endSender {
 					rr.endSender[i] = true
@@ -1226,7 +1222,6 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 				rr.mu.Unlock()
 				return
 			case currentSpec = <-rr.data:
-				fmt.Println("data sending to server", currentSpec)
 				var readRanges []*storagepb.ReadRange
 				var err error
 				totalBytesToRead := int64(0)
@@ -1243,7 +1238,6 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 					}
 				}
 				streamIndex := createNewStream(rr.bytePerStream, totalBytesToRead, rr.limitPerStream)
-				fmt.Println("using stream ,", streamIndex)
 				if streamIndex == -1 {
 					resp, cancel, err := openStream(rr.readHandle)
 					if err != nil {
@@ -1300,7 +1294,6 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 	}
 
 	rr.retrier = func(streamIndex int64, err error, thread string) {
-		fmt.Println("retry for stream ", streamIndex)
 		rr.mu.Lock()
 		if !rr.streamRecreation[streamIndex] {
 			rr.streamRecreation[streamIndex] = true
@@ -1317,7 +1310,6 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 		}
 		err = rr.retryStream(err, streamIndex)
 		if err != nil {
-			fmt.Println("retry failed", streamIndex, err)
 			rr.mu.Lock()
 			rr.endReceiver[streamIndex] = true
 			rr.endSender[streamIndex] = true
@@ -1329,7 +1321,6 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 			rr.mu.Unlock()
 			rr.close()
 		} else {
-			fmt.Println("retry successful", streamIndex, err)
 			rr.mu.Lock()
 			rr.streamMap[streamIndex] = []int64{}
 			rr.endReceiver[streamIndex] = false
@@ -1375,7 +1366,6 @@ func (rr *gRPCBidiReader) streamReceiver(streamIndex int64) {
 	for {
 		select {
 		case <-rr.ctx.Done():
-			fmt.Println("context done", streamIndex)
 			rr.mu.Lock()
 			rr.endReceiver[streamIndex] = true
 			rr.done = true
@@ -1390,11 +1380,9 @@ func (rr *gRPCBidiReader) streamReceiver(streamIndex int64) {
 			rr.mu.Unlock()
 			return
 		case <-rr.receiverRetry[streamIndex]:
-			fmt.Println("receiver retry", streamIndex)
 			// We are not draining from stream here as it is already closed and we are retring it.
 			return
 		case <-rr.closeReceiver[streamIndex]:
-			fmt.Println("close receiver", streamIndex)
 			rr.mu.Lock()
 			if len(rr.mp) != 0 {
 				drainInboundReadStream(rr.stream[streamIndex])
@@ -1406,7 +1394,6 @@ func (rr *gRPCBidiReader) streamReceiver(streamIndex int64) {
 			// This function reads the data sent for a particular range request and has a callback
 			// to indicate that output buffer is filled.
 			resp, err = rr.stream[streamIndex].Recv()
-			fmt.Println("stream receiver", streamIndex, err, len(resp.GetObjectDataRanges()))
 			if resp.GetReadHandle().GetHandle() != nil {
 				rr.readHandle = resp.GetReadHandle().GetHandle()
 			}
@@ -1470,8 +1457,6 @@ func (rr *gRPCBidiReader) streamReceiver(streamIndex int64) {
 					rr.mu.Unlock()
 				}
 
-				fmt.Println("after response map state", rr.mp)
-
 			}
 		}
 	}
@@ -1486,11 +1471,9 @@ func createNewStream(bytes []int64, currentReadByte int64, limit int64) int64 {
 	}
 	for i := range bytes {
 		if bytes[i]+currentReadByte <= limit || bytes[i] == 0 {
-			fmt.Println("reuse stream", i)
 			return int64(i)
 		}
 	}
-	fmt.Println("new stream is created")
 	return -1
 }
 
@@ -1509,9 +1492,6 @@ func getActiveRange(r *gRPCBidiReader, streamIndex int64) []rangeSpec {
 		})
 		r.mp[v] = activeRange[len(activeRange)-1]
 	}
-	fmt.Println(r.mp, "map")
-	fmt.Println(r.streamMap, "stream-map2")
-	fmt.Println("active range for stream index ", streamIndex, " is ", activeRange)
 	return activeRange
 }
 
@@ -1521,15 +1501,12 @@ func (r *gRPCBidiReader) retryStream(err error, streamIndex int64) error {
 	if r.settings.retry != nil && r.settings.retry.shouldRetry != nil {
 		shouldRetry = r.settings.retry.shouldRetry
 	}
-	fmt.Println("retry stream", err, streamIndex)
 	if shouldRetry(err) {
-		fmt.Println("retry successful", streamIndex)
 		// This will "close" the existing stream and immediately attempt to
 		// reopen the stream, but will backoff if further attempts are necessary.
 		// When Reopening the stream only failed readID will be added to stream.
 		return r.reopenStream(streamIndex, getActiveRange(r, streamIndex))
 	}
-	fmt.Println("retry un-successful", streamIndex)
 	return err
 }
 
@@ -1540,14 +1517,11 @@ func (r *gRPCBidiReader) reopenStream(streamIndex int64, failSpec []rangeSpec) e
 	if r.cancel != nil {
 		r.cancel[streamIndex]()
 	}
-	fmt.Println("reopening stream", streamIndex)
 
 	res, cancel, err := r.reopen(r.readHandle)
 	if err != nil {
-		fmt.Println("reopen unsuccessful", err)
 		return err
 	}
-	fmt.Println("stream reopen successful", streamIndex)
 	r.stream[streamIndex] = res.stream
 	r.cancel[streamIndex] = cancel
 	r.bytePerStream[streamIndex] = 0
@@ -1578,7 +1552,6 @@ func (mr *gRPCBidiReader) add(output io.Writer, offset, limit int64, callback fu
 	(*mr).readID++
 	if !mr.done {
 		spec := rangeSpec{readID: curentID, writer: output, offset: offset, limit: limit, bytesWritten: 0, callback: callback}
-		fmt.Println("new request", spec)
 		mr.mp[curentID] = spec
 		mr.activeTask++
 		mr.data <- []rangeSpec{spec}
@@ -1598,14 +1571,12 @@ func (mr *gRPCBidiReader) wait() {
 		keepWaiting = len(mr.mp) != 0 && mr.activeTask != 0
 		mr.mu.Unlock()
 	}
-	fmt.Println("done with wait")
 }
 
 // Close will notify stream manager goroutine that the reader has been closed, if it's still running.
 func (mr *gRPCBidiReader) close() error {
 	mr.closeManager <- true
 	for idx := 0; idx < len(mr.stream); idx++ {
-		fmt.Println("closing sending stream", idx)
 		mr.closeReceiver[idx] <- true
 	}
 	mr.mu.Lock()
@@ -1625,14 +1596,12 @@ func (mr *gRPCBidiReader) close() error {
 		mr.mu.Lock()
 		tryClosing = !(mr.endReceiver[idx] && mr.endSender[idx])
 		if !tryClosing {
-			fmt.Println("closing receiver stream", idx)
 			idx++
 		}
 		mr.mu.Unlock()
 	}
 	defer func() {
 		for idx := 0; idx < len(mr.cancel); idx++ {
-			fmt.Println("releasing resources", idx)
 			mr.cancel[idx]()
 		}
 	}()
