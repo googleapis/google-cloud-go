@@ -1120,9 +1120,10 @@ func TestMultiRangeDownloaderEmulated(t *testing.T) {
 		}
 		res := make([]multiRangeDownloaderOutput, 4)
 		params := &newMultiRangeDownloaderParams{
-			bucket: bucket,
-			object: objectName,
-			gen:    defaultGen,
+			bucket:         bucket,
+			object:         objectName,
+			gen:            defaultGen,
+			limitPerStream: -1,
 		}
 		reader, err := client.NewMultiRangeDownloader(context.Background(), params)
 		if err != nil {
@@ -1190,9 +1191,10 @@ func TestMRDAddAfterCloseEmulated(t *testing.T) {
 		}
 		buf := new(bytes.Buffer)
 		params := &newMultiRangeDownloaderParams{
-			bucket: bucket,
-			object: objectName,
-			gen:    defaultGen,
+			bucket:         bucket,
+			object:         objectName,
+			gen:            defaultGen,
+			limitPerStream: -1,
 		}
 		reader, err := client.NewMultiRangeDownloader(context.Background(), params)
 		if err != nil {
@@ -1239,10 +1241,11 @@ func TestMRDAddSanityCheck(t *testing.T) {
 		buf := new(bytes.Buffer)
 		sentHandle := ReadHandle([]byte("abcdef"))
 		params := &newMultiRangeDownloaderParams{
-			bucket: bucket,
-			object: objectName,
-			gen:    defaultGen,
-			handle: &sentHandle,
+			bucket:         bucket,
+			object:         objectName,
+			gen:            defaultGen,
+			handle:         &sentHandle,
+			limitPerStream: -1,
 		}
 		reader, err := client.NewMultiRangeDownloader(context.Background(), params)
 		if err != nil {
