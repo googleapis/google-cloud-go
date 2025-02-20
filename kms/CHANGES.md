@@ -1,6 +1,14 @@
 # Changes
 
 
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.20.5...kms/v1.21.0) (2025-02-20)
+
+
+### Features
+
+* **kms:** Add a PublicKeyFormat enum to allow specifying the format the public is going to be exported in ([c08d347](https://github.com/googleapis/google-cloud-go/commit/c08d34776d398a79f6962a26e8e2c75bc4958e2b))
+* **kms:** Support PQC asymmetric signing algorithms ML_DSA_65 and SLH_DSA_SHA2_128s ([c08d347](https://github.com/googleapis/google-cloud-go/commit/c08d34776d398a79f6962a26e8e2c75bc4958e2b))
+
 ## [1.20.5](https://github.com/googleapis/google-cloud-go/compare/kms/v1.20.4...kms/v1.20.5) (2025-01-08)
 
 
