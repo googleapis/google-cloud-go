@@ -1,6 +1,13 @@
 # Changes
 
 
+## [0.118.3](https://github.com/googleapis/google-cloud-go/compare/v0.118.2...v0.118.3) (2025-02-20)
+
+
+### Bug Fixes
+
+* **main:** Bump github.com/envoyproxy/go-control-plane/envoy to v1.32.4 ([#11591](https://github.com/googleapis/google-cloud-go/issues/11591)) ([d52451a](https://github.com/googleapis/google-cloud-go/commit/d52451aa22fb7120e37b43161d3d3103c19e5943))
+
 ## [0.118.2](https://github.com/googleapis/google-cloud-go/compare/v0.118.1...v0.118.2) (2025-02-06)
 
 

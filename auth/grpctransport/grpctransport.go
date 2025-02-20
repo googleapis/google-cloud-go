@@ -204,6 +204,10 @@ type InternalOptions struct {
 	EnableDirectPathXds bool
 	// EnableJWTWithScope specifies if scope can be used with self-signed JWT.
 	EnableJWTWithScope bool
+	// AllowHardBoundTokens allows libraries to request a hard-bound token.
+	// Obtaining hard-bound tokens requires the connection to be established
+	// using either ALTS or mTLS with S2A.
+	AllowHardBoundTokens []string
 	// DefaultAudience specifies a default audience to be used as the audience
 	// field ("aud") for the JWT token authentication.
 	DefaultAudience string
@@ -297,6 +301,18 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 		if opts.Credentials != nil {
 			creds = opts.Credentials
 		} else {
+			// This condition is only met for non-DirectPath clients because
+			// TransportTypeMTLSS2A is used only when InternalOptions.EnableDirectPath
+			// is false.
+			if transportCreds.TransportType == transport.TransportTypeMTLSS2A {
+				// Check that the client allows requesting hard-bound token for the transport type mTLS using S2A.
+				for _, ev := range opts.InternalOptions.AllowHardBoundTokens {
+					if ev == "MTLS_S2A" {
+						opts.DetectOpts.TokenBindingType = credentials.MTLSHardBinding
+						break
+					}
+				}
+			}
 			var err error
 			creds, err = credentials.DetectDefault(opts.resolveDetectOptions())
 			if err != nil {
