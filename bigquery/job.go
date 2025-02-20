@@ -385,6 +385,12 @@ type JobStatistics struct {
 	StartTime           time.Time
 	EndTime             time.Time
 	TotalBytesProcessed int64
+	TotalSlotMs         int64
+
+	// FinalExecutionDurationMs is the duration in milliseconds of the
+	// execution of the final attempt of this job, as BigQuery may internally
+	// re-attempt to execute the job.
+	FinalExecutionDurationMs int64
 
 	Details Statistics
 
@@ -399,7 +405,25 @@ type JobStatistics struct {
 	ScriptStatistics *ScriptStatistics
 
 	// ReservationUsage attributes slot consumption to reservations.
+	// This field reported misleading information and will no longer be populated.
 	ReservationUsage []*ReservationUsage
+
+	// ReservationId indicates the name of the primary reservation assigned to
+	// this job. Note that this could be different than reservations reported
+	// in the reservation usage field if parent reservations were used to
+	// execute this job.
+	ReservationId string
+
+	// Edition is the name of edition corresponding to the reservation for
+	// this job at the time of this update.
+	//
+	// Possible values:
+	//   "RESERVATION_EDITION_UNSPECIFIED" - Default value, which will be treated
+	// as ENTERPRISE.
+	//   "STANDARD" - Standard edition.
+	//   "ENTERPRISE" - Enterprise edition.
+	//   "ENTERPRISE_PLUS" - Enterprise Plus edition.
+	Edition string
 
 	// TransactionInfo indicates the transaction ID associated with the job, if any.
 	TransactionInfo *TransactionInfo
@@ -1014,16 +1038,20 @@ func (j *Job) setStatistics(s *bq.JobStatistics, c *Client) {
 		return
 	}
 	js := &JobStatistics{
-		CreationTime:        unixMillisToTime(s.CreationTime),
-		StartTime:           unixMillisToTime(s.StartTime),
-		EndTime:             unixMillisToTime(s.EndTime),
-		TotalBytesProcessed: s.TotalBytesProcessed,
-		NumChildJobs:        s.NumChildJobs,
-		ParentJobID:         s.ParentJobId,
-		ScriptStatistics:    bqToScriptStatistics(s.ScriptStatistics),
-		ReservationUsage:    bqToReservationUsage(s.ReservationUsage),
-		TransactionInfo:     bqToTransactionInfo(s.TransactionInfo),
-		SessionInfo:         bqToSessionInfo(s.SessionInfo),
+		CreationTime:             unixMillisToTime(s.CreationTime),
+		StartTime:                unixMillisToTime(s.StartTime),
+		EndTime:                  unixMillisToTime(s.EndTime),
+		TotalBytesProcessed:      s.TotalBytesProcessed,
+		TotalSlotMs:              s.TotalSlotMs,
+		FinalExecutionDurationMs: s.FinalExecutionDurationMs,
+		NumChildJobs:             s.NumChildJobs,
+		ParentJobID:              s.ParentJobId,
+		ScriptStatistics:         bqToScriptStatistics(s.ScriptStatistics),
+		ReservationUsage:         bqToReservationUsage(s.ReservationUsage),
+		ReservationId:            s.ReservationId,
+		Edition:                  s.Edition,
+		TransactionInfo:          bqToTransactionInfo(s.TransactionInfo),
+		SessionInfo:              bqToSessionInfo(s.SessionInfo),
 	}
 	switch {
 	case s.Extract != nil:
