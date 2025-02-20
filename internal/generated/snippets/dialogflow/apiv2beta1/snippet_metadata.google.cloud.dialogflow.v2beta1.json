@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dialogflow/apiv2beta1",
-    "version": "1.64.1",
+    "version": "1.65.0",
     "language": "GO",
     "apis": [
       {
@@ -7378,6 +7378,419 @@
           "service": {
             "shortName": "Participants",
             "fullName": "google.cloud.dialogflow.v2beta1.Participants"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2beta1_generated_PhoneNumbers_CancelOperation_sync",
+      "title": "dialogflow CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "PhoneNumbersClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.dialogflow.v2beta1.PhoneNumbersClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "PhoneNumbersClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.PhoneNumbersClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2beta1_generated_PhoneNumbers_DeletePhoneNumber_sync",
+      "title": "dialogflow DeletePhoneNumber Sample",
+      "description": "DeletePhoneNumber requests deletion of a `PhoneNumber`. The `PhoneNumber` is moved into the\n[DELETE_REQUESTED][google.cloud.dialogflow.v2beta1.PhoneNumber.LifecycleState.DELETE_REQUESTED]\nstate immediately, and is deleted approximately 30 days later. This method\nmay only be called on a `PhoneNumber` in the\n[ACTIVE][google.cloud.dialogflow.v2beta1.PhoneNumber.LifecycleState.ACTIVE]\nstate.",
+      "file": "PhoneNumbersClient/DeletePhoneNumber/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeletePhoneNumber",
+        "fullName": "google.cloud.dialogflow.v2beta1.PhoneNumbersClient.DeletePhoneNumber",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dialogflowpb.DeletePhoneNumberRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dialogflowpb.PhoneNumber",
+        "client": {
+          "shortName": "PhoneNumbersClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.PhoneNumbersClient"
+        },
+        "method": {
+          "shortName": "DeletePhoneNumber",
+          "fullName": "google.cloud.dialogflow.v2beta1.PhoneNumbers.DeletePhoneNumber",
+          "service": {
+            "shortName": "PhoneNumbers",
+            "fullName": "google.cloud.dialogflow.v2beta1.PhoneNumbers"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2beta1_generated_PhoneNumbers_GetLocation_sync",
+      "title": "dialogflow GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "PhoneNumbersClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.dialogflow.v2beta1.PhoneNumbersClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "PhoneNumbersClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.PhoneNumbersClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2beta1_generated_PhoneNumbers_GetOperation_sync",
+      "title": "dialogflow GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "PhoneNumbersClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.dialogflow.v2beta1.PhoneNumbersClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "PhoneNumbersClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.PhoneNumbersClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2beta1_generated_PhoneNumbers_ListLocations_sync",
+      "title": "dialogflow ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "PhoneNumbersClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.dialogflow.v2beta1.PhoneNumbersClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "PhoneNumbersClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.PhoneNumbersClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2beta1_generated_PhoneNumbers_ListOperations_sync",
+      "title": "dialogflow ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "PhoneNumbersClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.dialogflow.v2beta1.PhoneNumbersClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "PhoneNumbersClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.PhoneNumbersClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2beta1_generated_PhoneNumbers_ListPhoneNumbers_sync",
+      "title": "dialogflow ListPhoneNumbers Sample",
+      "description": "ListPhoneNumbers returns the list of all phone numbers in the specified project.",
+      "file": "PhoneNumbersClient/ListPhoneNumbers/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListPhoneNumbers",
+        "fullName": "google.cloud.dialogflow.v2beta1.PhoneNumbersClient.ListPhoneNumbers",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dialogflowpb.ListPhoneNumbersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PhoneNumberIterator",
+        "client": {
+          "shortName": "PhoneNumbersClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.PhoneNumbersClient"
+        },
+        "method": {
+          "shortName": "ListPhoneNumbers",
+          "fullName": "google.cloud.dialogflow.v2beta1.PhoneNumbers.ListPhoneNumbers",
+          "service": {
+            "shortName": "PhoneNumbers",
+            "fullName": "google.cloud.dialogflow.v2beta1.PhoneNumbers"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2beta1_generated_PhoneNumbers_UndeletePhoneNumber_sync",
+      "title": "dialogflow UndeletePhoneNumber Sample",
+      "description": "UndeletePhoneNumber cancels the deletion request for a `PhoneNumber`. This method may only be\ncalled on a `PhoneNumber` in the\n[DELETE_REQUESTED][google.cloud.dialogflow.v2beta1.PhoneNumber.LifecycleState.DELETE_REQUESTED]\nstate.",
+      "file": "PhoneNumbersClient/UndeletePhoneNumber/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UndeletePhoneNumber",
+        "fullName": "google.cloud.dialogflow.v2beta1.PhoneNumbersClient.UndeletePhoneNumber",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dialogflowpb.UndeletePhoneNumberRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dialogflowpb.PhoneNumber",
+        "client": {
+          "shortName": "PhoneNumbersClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.PhoneNumbersClient"
+        },
+        "method": {
+          "shortName": "UndeletePhoneNumber",
+          "fullName": "google.cloud.dialogflow.v2beta1.PhoneNumbers.UndeletePhoneNumber",
+          "service": {
+            "shortName": "PhoneNumbers",
+            "fullName": "google.cloud.dialogflow.v2beta1.PhoneNumbers"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2beta1_generated_PhoneNumbers_UpdatePhoneNumber_sync",
+      "title": "dialogflow UpdatePhoneNumber Sample",
+      "description": "UpdatePhoneNumber updates the specified `PhoneNumber`.",
+      "file": "PhoneNumbersClient/UpdatePhoneNumber/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdatePhoneNumber",
+        "fullName": "google.cloud.dialogflow.v2beta1.PhoneNumbersClient.UpdatePhoneNumber",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dialogflowpb.UpdatePhoneNumberRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dialogflowpb.PhoneNumber",
+        "client": {
+          "shortName": "PhoneNumbersClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.PhoneNumbersClient"
+        },
+        "method": {
+          "shortName": "UpdatePhoneNumber",
+          "fullName": "google.cloud.dialogflow.v2beta1.PhoneNumbers.UpdatePhoneNumber",
+          "service": {
+            "shortName": "PhoneNumbers",
+            "fullName": "google.cloud.dialogflow.v2beta1.PhoneNumbers"
           }
         }
       },

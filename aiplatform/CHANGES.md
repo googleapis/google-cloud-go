@@ -1,6 +1,29 @@
 # Changes
 
 
+## [1.73.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.72.0...aiplatform/v1.73.0) (2025-02-12)
+
+
+### Features
+
+* **aiplatform:** A new field `create_time` is added to message `.google.cloud.aiplatform.v1.GenerateContentResponse` ([93b6495](https://github.com/googleapis/google-cloud-go/commit/93b649580863dc8121c69263749064660a83e095))
+* **aiplatform:** A new field `create_time` is added to message `.google.cloud.aiplatform.v1.GenerateContentResponse` ([90140b1](https://github.com/googleapis/google-cloud-go/commit/90140b17da6378fa87d4bec0d404c18a78d6b02a))
+* **aiplatform:** A new field `response_id` is added to message `.google.cloud.aiplatform.v1.GenerateContentResponse` ([93b6495](https://github.com/googleapis/google-cloud-go/commit/93b649580863dc8121c69263749064660a83e095))
+* **aiplatform:** A new field `response_id` is added to message `.google.cloud.aiplatform.v1.GenerateContentResponse` ([90140b1](https://github.com/googleapis/google-cloud-go/commit/90140b17da6378fa87d4bec0d404c18a78d6b02a))
+* **aiplatform:** Add additional Probe options to v1 model.proto ([90140b1](https://github.com/googleapis/google-cloud-go/commit/90140b17da6378fa87d4bec0d404c18a78d6b02a))
+* **aiplatform:** Add Notebooks Runtime Software Configuration ([90140b1](https://github.com/googleapis/google-cloud-go/commit/90140b17da6378fa87d4bec0d404c18a78d6b02a))
+* **aiplatform:** Add Notebooks Runtime Software Configuration ([#11566](https://github.com/googleapis/google-cloud-go/issues/11566)) ([7e10021](https://github.com/googleapis/google-cloud-go/commit/7e100215974a28e556e9b801b4922a0e97bd98c1))
+* **aiplatform:** Add RolloutOptions to DeployedModel in v1beta1 endpoint.proto, add additional Probe options in v1beta1 model.proto ([#11574](https://github.com/googleapis/google-cloud-go/issues/11574)) ([1715e30](https://github.com/googleapis/google-cloud-go/commit/1715e30f6d9a383330e697672583a654562aae13))
+* **aiplatform:** EvaluateDataset API v1beta1 initial release ([7e10021](https://github.com/googleapis/google-cloud-go/commit/7e100215974a28e556e9b801b4922a0e97bd98c1))
+
+
+### Documentation
+
+* **aiplatform:** A comment for field `filter` in message `.google.cloud.aiplatform.v1.ListNotebookRuntimesRequest` is changed ([7e10021](https://github.com/googleapis/google-cloud-go/commit/7e100215974a28e556e9b801b4922a0e97bd98c1))
+* **aiplatform:** A comment for field `filter` in message `.google.cloud.aiplatform.v1.ListNotebookRuntimeTemplatesRequest` is changed ([7e10021](https://github.com/googleapis/google-cloud-go/commit/7e100215974a28e556e9b801b4922a0e97bd98c1))
+* **aiplatform:** A comment for field `filter` in message `.google.cloud.aiplatform.v1beta1.ListNotebookRuntimesRequest` is changed ([90140b1](https://github.com/googleapis/google-cloud-go/commit/90140b17da6378fa87d4bec0d404c18a78d6b02a))
+* **aiplatform:** A comment for field `filter` in message `.google.cloud.aiplatform.v1beta1.ListNotebookRuntimeTemplatesRequest` is changed ([90140b1](https://github.com/googleapis/google-cloud-go/commit/90140b17da6378fa87d4bec0d404c18a78d6b02a))
+
 ## [1.72.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.71.0...aiplatform/v1.72.0) (2025-02-05)
 
 

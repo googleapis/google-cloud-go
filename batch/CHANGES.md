@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.11.5...batch/v1.12.0) (2025-02-12)
+
+
+### Features
+
+* **batch:** Promote cancel job API to GA ([#11575](https://github.com/googleapis/google-cloud-go/issues/11575)) ([90140b1](https://github.com/googleapis/google-cloud-go/commit/90140b17da6378fa87d4bec0d404c18a78d6b02a))
+
 ## [1.11.5](https://github.com/googleapis/google-cloud-go/compare/batch/v1.11.4...batch/v1.11.5) (2025-01-02)
 
 

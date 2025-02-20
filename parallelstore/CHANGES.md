@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.10.0](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.9.2...parallelstore/v0.10.0) (2025-02-14)
+
+
+### Features
+
+* **parallelstore:** Adding `deployment_type` field ([9386bfd](https://github.com/googleapis/google-cloud-go/commit/9386bfd98da7af84aed9d4cc079f1dff78002a27))
+* **parallelstore:** Deprecating `daos_version` field ([#11598](https://github.com/googleapis/google-cloud-go/issues/11598)) ([9386bfd](https://github.com/googleapis/google-cloud-go/commit/9386bfd98da7af84aed9d4cc079f1dff78002a27))
+
+
+### Documentation
+
+* **parallelstore:** Updated `directory_stripe_level` in message `.google.cloud.parallelstore.v1.Instance` to reflect that the field is now immutable ([9386bfd](https://github.com/googleapis/google-cloud-go/commit/9386bfd98da7af84aed9d4cc079f1dff78002a27))
+* **parallelstore:** Updated documentation for field `daos_version` in message `.google.cloud.parallelstore.v1.Instance` to reflect that the field is deprecated. ([9386bfd](https://github.com/googleapis/google-cloud-go/commit/9386bfd98da7af84aed9d4cc079f1dff78002a27))
+* **parallelstore:** Updated field `file_stripe_level` in message `.google.cloud.parallelstore.v1.Instance` to reflected that message is now immutable ([9386bfd](https://github.com/googleapis/google-cloud-go/commit/9386bfd98da7af84aed9d4cc079f1dff78002a27))
+
 ## [0.9.2](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.9.1...parallelstore/v0.9.2) (2025-01-08)
 
 

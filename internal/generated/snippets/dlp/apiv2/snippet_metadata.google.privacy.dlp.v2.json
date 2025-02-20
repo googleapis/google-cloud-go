@@ -1843,7 +1843,7 @@
     {
       "regionTag": "dlp_v2_generated_DlpService_ListInfoTypes_sync",
       "title": "dlp ListInfoTypes Sample",
-      "description": "ListInfoTypes returns a list of the sensitive information types that DLP API\nsupports. See\nhttps: //cloud.google.com/sensitive-data-protection/docs/infotypes-reference\nto learn more.",
+      "description": "ListInfoTypes returns a list of the sensitive information types that the DLP API\nsupports. See\nhttps: //cloud.google.com/sensitive-data-protection/docs/infotypes-reference\nto learn more.",
       "file": "Client/ListInfoTypes/main.go",
       "language": "GO",
       "clientMethod": {
