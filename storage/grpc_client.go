@@ -1092,7 +1092,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 		r.Generation = params.gen
 	}
 
-	if params.handle != nil {
+	if params.handle != nil && len(*params.handle) != 0 {
 		r.ReadHandle = &storagepb.BidiReadHandle{
 			Handle: *params.handle,
 		}
@@ -1107,7 +1107,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 		if err := applyCondsProto("grpcStorageClient.BidiReadObject", params.gen, params.conds, r); err != nil {
 			return nil, nil, err
 		}
-		if readHandle != nil {
+		if len(readHandle) != 0 {
 			req.GetReadObjectSpec().ReadHandle = &storagepb.BidiReadHandle{
 				Handle: readHandle,
 			}
@@ -1516,7 +1516,7 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 	if err := applyCondsProto("gRPCReader.NewRangeReader", params.gen, params.conds, spec); err != nil {
 		return nil, err
 	}
-	if params.handle != nil {
+	if params.handle != nil && len(*params.handle) != 0 {
 		spec.ReadHandle = &storagepb.BidiReadHandle{
 			Handle: *params.handle,
 		}
