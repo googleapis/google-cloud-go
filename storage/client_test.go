@@ -1156,7 +1156,7 @@ func TestMultiRangeDownloaderEmulated(t *testing.T) {
 		for _, k := range res {
 			if !bytes.Equal(k.buf.Bytes(), content[k.offset:k.offset+k.limit]) {
 				t.Errorf("Error in read range offset %v, limit %v, got: %v; want: %v",
-					k.offset, k.limit, k.buf.Bytes(), content[k.offset:k.offset+k.limit])
+					k.offset, k.limit, len(k.buf.Bytes()), len(content[k.offset:k.offset+k.limit]))
 			}
 			if k.err != nil {
 				t.Errorf("read range %v to %v : %v", k.offset, k.limit, k.err)
