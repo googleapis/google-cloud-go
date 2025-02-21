@@ -21,7 +21,9 @@ import (
 	"io"
 	"net"
 	"net/url"
+	"os"
 	"strings"
+	"sync"
 	"time"
 
 	"cloud.google.com/go/internal"
@@ -39,8 +41,16 @@ var defaultRetry *retryConfig = &retryConfig{}
 var xGoogDefaultHeader = fmt.Sprintf("gl-go/%s gccl/%s", version.Go(), sinternal.Version)
 
 const (
-	xGoogHeaderKey       = "x-goog-api-client"
-	idempotencyHeaderKey = "x-goog-gcs-idempotency-token"
+	xGoogHeaderKey            = "x-goog-api-client"
+	idempotencyHeaderKey      = "x-goog-gcs-idempotency-token"
+	cookieHeaderKey           = "cookie"
+	directpathCookieHeaderKey = "x-directpath-tracing-cookie"
+)
+
+var (
+	cookieHeader = sync.OnceValue(func() string {
+		return os.Getenv("STORAGE_TRACING_COOKIE")
+	})
 )
 
 // run determines whether a retry is necessary based on the config and
@@ -113,6 +123,12 @@ func setInvocationHeaders(ctx context.Context, invocationID string, attempts int
 
 	ctx = callctx.SetHeaders(ctx, xGoogHeaderKey, xGoogHeader)
 	ctx = callctx.SetHeaders(ctx, idempotencyHeaderKey, invocationID)
+
+	if c := cookieHeader(); c != "" {
+		ctx = callctx.SetHeaders(ctx, cookieHeaderKey, c)
+		ctx = callctx.SetHeaders(ctx, directpathCookieHeaderKey, c)
+	}
+
 	return ctx
 }
 
