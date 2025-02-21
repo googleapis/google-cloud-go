@@ -141,9 +141,10 @@ func (b *BucketHandle) Object(name string) *ObjectHandle {
 			userProject: b.userProject,
 			retry:       retry,
 		},
-		gen:         -1,
-		userProject: b.userProject,
-		retry:       retry,
+		gen:            -1,
+		userProject:    b.userProject,
+		retry:          retry,
+		limitPerStream: -1,
 	}
 }
 

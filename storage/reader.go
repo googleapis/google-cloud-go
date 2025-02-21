@@ -179,12 +179,13 @@ func (o *ObjectHandle) NewMultiRangeDownloader(ctx context.Context) (mrd *MultiR
 	opts := makeStorageOpts(true, o.retry, o.userProject)
 
 	params := &newMultiRangeDownloaderParams{
-		bucket:        o.bucket,
-		conds:         o.conds,
-		encryptionKey: o.encryptionKey,
-		gen:           o.gen,
-		object:        o.object,
-		handle:        &o.readHandle,
+		bucket:         o.bucket,
+		conds:          o.conds,
+		encryptionKey:  o.encryptionKey,
+		gen:            o.gen,
+		object:         o.object,
+		handle:         &o.readHandle,
+		limitPerStream: o.limitPerStream,
 	}
 
 	r, err := o.c.tc.NewMultiRangeDownloader(ctx, params, opts...)
