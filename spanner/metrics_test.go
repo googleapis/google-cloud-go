@@ -41,7 +41,6 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 	if testing.Short() {
 		t.Skip("TestNewBuiltinMetricsTracerFactory tests skipped in -short mode.")
 	}
-	t.Parallel()
 
 	ctx := context.Background()
 	clientUID := "test-uid"
