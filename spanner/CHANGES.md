@@ -1,5 +1,12 @@
 # Changes
 
+## [1.76.1](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.76.0...spanner/v1.76.1) (2025-02-21)
+
+
+### Bug Fixes
+
+* **spanner:** Multiplexed_session_previous_transaction_id is not supported in the request for a non multiplexed session ([#11626](https://github.com/googleapis/google-cloud-go/issues/11626)) ([a940bef](https://github.com/googleapis/google-cloud-go/commit/a940befed09ba7ff0de12c720036bc93fee7e8c7))
+
 ## [1.76.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.75.0...spanner/v1.76.0) (2025-02-20)
 
 

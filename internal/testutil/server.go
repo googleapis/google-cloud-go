@@ -52,16 +52,24 @@ type Server struct {
 	Gsrv *grpc.Server
 }
 
-// NewServer creates a new Server. The Server will be listening for gRPC connections
-// at the address named by the Addr field, without TLS.
+// NewServer creates a new Server on localhost. The Server will be listening for
+// gRPC connections at the address named by the Addr field, without TLS.
 func NewServer(opts ...grpc.ServerOption) (*Server, error) {
 	return NewServerWithPort(0, opts...)
 }
 
-// NewServerWithPort creates a new Server at a specific port. The Server will be listening
-// for gRPC connections at the address named by the Addr field, without TLS.
+// NewServerWithPort creates a new Server on localhost at a specific port. The
+// Server will be listening for gRPC connections at the address named by the
+// Addr field, without TLS.
 func NewServerWithPort(port int, opts ...grpc.ServerOption) (*Server, error) {
-	l, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+	return NewServerWithAddress(fmt.Sprintf("localhost:%d", port))
+}
+
+// NewServerWithAddress creates a new Server with a specific address (host and
+// port). The Server will be listening for gRPC connections at the address named
+// by the Addr field, without TLS.
+func NewServerWithAddress(addr string, opts ...grpc.ServerOption) (*Server, error) {
+	l, err := net.Listen("tcp", addr)
 	if err != nil {
 		return nil, err
 	}
